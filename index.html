@@ -1,369 +1,384 @@
-<!DOCTYPE html>
-<html lang="mk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Protocol Academy | Sande Smiljanov</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#333;line-height:1.6;}
-        
-        /* Header */
-        header{background:linear-gradient(135deg,#0a1f3d 0%,#1a3d6b 100%);color:#fff;padding:60px 20px;text-align:center;}
-        h1{font-family:'Playfair Display',serif;font-size:3rem;margin-bottom:10px;}
-        .subtitle{font-size:1.2rem;opacity:0.9;}
-        
-        /* Language Switch */
-        .lang-switch{text-align:center;margin:30px 0;}
-        .lang-switch button{padding:12px 24px;margin:0 10px;border:none;background:#c9a227;color:#0a1f3d;font-weight:bold;cursor:pointer;border-radius:25px;font-size:14px;}
-        .lang-switch button.active{background:#0a1f3d;color:#fff;}
-        
-        .container{max-width:1200px;margin:0 auto;padding:20px;}
-        
-        /* Books */
-        .section-title{text-align:center;margin:40px 0;}
-        .section-title h2{font-family:'Playfair Display',serif;font-size:2.5rem;color:#0a1f3d;}
-        .books{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;margin:40px 0;}
-        
-        .book{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,0.1);transition:transform 0.3s;}
-        .book:hover{transform:translateY(-10px);}
-        
-        .book-cover{height:350px;background:#ddd;position:relative;overflow:hidden;}
-        .book-cover img{width:100%;height:100%;object-fit:cover;}
-        .book-cover-placeholder{height:100%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Playfair Display',serif;font-size:24px;text-align:center;padding:20px;}
-        
-        .new-badge{position:absolute;top:15px;right:15px;background:#e53e3e;color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:bold;z-index:10;}
-        
-        .book-info{padding:25px;}
-        .book-year{color:#c9a227;font-size:12px;font-weight:bold;letter-spacing:1px;margin-bottom:8px;}
-        .book-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:#0a1f3d;margin-bottom:10px;}
-        .book-subtitle{color:#666;font-size:14px;margin-bottom:15px;}
-        .book-details{background:#f8f9fa;padding:15px;border-radius:8px;font-size:13px;color:#555;margin-bottom:15px;line-height:1.6;}
-        .book-details strong{color:#0a1f3d;}
-        
-        .book-actions{display:flex;gap:10px;flex-wrap:wrap;}
-        .btn{flex:1;min-width:100px;padding:12px;text-align:center;text-decoration:none;border-radius:8px;font-weight:600;font-size:13px;transition:all 0.3s;border:none;cursor:pointer;}
-        .btn-primary{background:#0a1f3d;color:#fff;}
-        .btn-primary:hover{background:#1a3d6b;}
-        .btn-secondary{background:#c9a227;color:#0a1f3d;}
-        .btn-secondary:hover{background:#b8941f;}
-        .btn-outline{border:2px solid #0a1f3d;color:#0a1f3d;background:transparent;}
-        .btn-outline:hover{background:#0a1f3d;color:#fff;}
-        
-        /* Author */
-        .author-section{background:#fff;padding:60px 20px;margin:40px 0;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.05);}
-        .author-content{max-width:800px;margin:0 auto;text-align:center;}
-        .author-img{width:150px;height:150px;background:linear-gradient(135deg,#0a1f3d,#00d9ff);border-radius:50%;margin:0 auto 30px;display:flex;align-items:center;justify-content:center;font-size:60px;color:#fff;}
-        .author-name{font-family:'Playfair Display',serif;font-size:2rem;color:#0a1f3d;margin-bottom:10px;}
-        .author-title{color:#c9a227;font-weight:600;margin-bottom:20px;}
-        .author-bio{color:#666;line-height:1.8;margin-bottom:20px;}
-        
-        /* Footer */
-        footer{background:#0a1f3d;color:#fff;text-align:center;padding:40px 20px;}
-        footer a{color:#c9a227;text-decoration:none;}
-        
-        /* Language Content */
-        .lang-content{display:none;}
-        .lang-content.active{display:block;}
-        
-        /* Cover Image for Book 4 */
-        .book4-cover{background:linear-gradient(135deg,#1a3d6b 0%,#0a1f3d 50%,#c9a227 100%);position:relative;}
-        .book4-cover::before{content:'HANDBOOK';position:absolute;top:20%;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.1);font-size:48px;font-weight:bold;}
-        .book4-cover::after{content:'CONFERENCE';position:absolute;top:40%;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.1);font-size:36px;font-weight:bold;}
-        .book4-title{position:absolute;bottom:20%;left:50%;transform:translateX(-50%);color:#fff;text-align:center;font-family:'Playfair Display',serif;font-size:20px;padding:0 20px;}
-        
-        @media(max-width:768px){
-            h1{font-size:2rem;}
-            .books{grid-template-columns:1fr;}
-            .book-actions{flex-direction:column;}
-        }
-    </style>
-</head>
-<body>
+<div class="bc" data-cat="protocol diplomacy security" data-t="дигитална ера digital era transformation трансформација">
+      <div class="bcov" style="background:linear-gradient(135deg,#0a2240,#1a4080);">📘<span class="bbdg">НОВО 2023</span></div>
+      <div class="bbd">
+        <div class="byr">2023 · ISBN 978-608-66168-0-9</div>
+        <div class="btit lm">Дигитална Ера</div>
+        <div class="btit le" style="display:none">Digital Era</div>
+        <div class="bdsc lm">Трансформација, Безбедност, Протокол, Дипломатија и Етикета</div>
+        <div class="bdsc le" style="display:none">Transformation, Security, Protocol, Diplomacy & Etiquette</div>
+        <div class="bisbn">978-608-66168-0-9 · 232 стр. · МК+EN</div>
+        <div class="bft">
+          <div class="bpr">$19.99</div>
+          <div class="bbtns">
+            <button class="bsm bprev" onclick="GL('book1-protocol.html')">👁 <span class="lm">Преглед</span><span class="le" style="display:none">Preview</span></button>
+            <button class="bsm bbuy" onclick="openBuy('Дигитална Ера · $19.99')">🛒</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<header>
-    <h1>World Protocol Academy</h1>
-    <p class="subtitle">Доц. д-р Санде Смиљанов | Scientific Publications</p>
-</header>
+    <div class="bc" data-cat="protocol" data-t="единствен државен протокол single state protocol македонија">
+      <div class="bcov" style="background:linear-gradient(135deg,#1a0a40,#3a1a80);">📙<span class="bbdg">2. ИЗД.</span></div>
+      <div class="bbd">
+        <div class="byr">2021 · ISBN 978-608-66168-2-3</div>
+        <div class="btit lm">Единствен Државен Протокол</div>
+        <div class="btit le" style="display:none">Single State Protocol</div>
+        <div class="bdsc lm">Воспоставување протокол — Република Македонија</div>
+        <div class="bdsc le" style="display:none">Establishing state protocol — Republic of Macedonia</div>
+        <div class="bisbn">978-608-66168-2-3 · 302 стр. · МК+EN</div>
+        <div class="bft">
+          <div class="bpr">$19.99</div>
+          <div class="bbtns">
+            <button class="bsm bprev" onclick="GL('book2-economic.html')">👁 <span class="lm">Преглед</span><span class="le" style="display:none">Preview</span></button>
+            <button class="bsm bbuy" onclick="openBuy('Единствен Државен Протокол · $19.99')">🛒</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="lang-switch">
-    <button class="active" onclick="switchLang('mk')">🇲🇰 Македонски</button>
-    <button onclick="switchLang('en')">🇬🇧 English</button>
+    <div class="bc" data-cat="diplomacy security" data-t="дипломатија протокол безбедност diplomacy security">
+      <div class="bcov" style="background:linear-gradient(135deg,#1a3a0a,#2a6010);">📗<span class="bbdg">2015</span></div>
+      <div class="bbd">
+        <div class="byr">2015 · ISBN 978-608-66168-3-0</div>
+        <div class="btit lm">Дипломатија, Протокол и Безбедност</div>
+        <div class="btit le" style="display:none">Diplomacy, Protocol & Security</div>
+        <div class="bdsc lm">Академска монографија за дипломатијата и безбедноста</div>
+        <div class="bdsc le" style="display:none">Academic monograph on diplomacy and security</div>
+        <div class="bisbn">978-608-66168-3-0 · 348 стр. · МК+EN</div>
+        <div class="bft">
+          <div class="bpr">$19.99</div>
+          <div class="bbtns">
+            <button class="bsm bprev" onclick="GL('book3-digital.html')">👁 <span class="lm">Преглед</span><span class="le" style="display:none">Preview</span></button>
+            <button class="bsm bbuy" onclick="openBuy('Дипломатија, Протокол и Безбедност · $19.99')">🛒</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bc" data-cat="conference protocol" data-t="прирачник конференции handbook conference events организирање">
+      <div class="bcov" style="background:linear-gradient(135deg,#0a2040,#1a4870);">📕<span class="bbdg">2020</span></div>
+      <div class="bbd">
+        <div class="byr">2020 · ISBN 978-608-66168-1-6</div>
+        <div class="btit lm">Прирачник за организирање конференции</div>
+        <div class="btit le" style="display:none">Handbook on Conference Organization</div>
+        <div class="bdsc lm">Од А до Ш: Како до совршена конференција?</div>
+        <div class="bdsc le" style="display:none">From A to Z: How to organize the perfect conference?</div>
+        <div class="bisbn">978-608-66168-1-6 · 198 стр. · МК+EN</div>
+        <div class="bft">
+          <div class="bpr">$19.99</div>
+          <div class="bbtns">
+            <button class="bsm bprev" onclick="GL('book4-conference.html')">👁 <span class="lm">Преглед</span><span class="le" style="display:none">Preview</span></button>
+            <button class="bsm bbuy" onclick="openBuy('Прирачник за конференции · $19.99')">🛒</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bundle">
+    <div class="bntit lm">🎁 Комплет — Сите 4 Книги</div>
+    <div class="bntit le" style="display:none">🎁 Complete Bundle — All 4 Books</div>
+    <div class="bnsub lm">Заштеди 38% · PDF + онлајн читање · Доживотен пристап</div>
+    <div class="bnsub le" style="display:none">Save 38% · PDF + online reading · Lifetime access</div>
+    <div class="bnpr">
+      <div class="bnold">$79.96</div>
+      <div class="bnnew">$49</div>
+      <div class="bnsave">SAVE 38%</div>
+    </div>
+    <div class="bntags">
+      <span class="bntag">📘 Дигитална Ера</span>
+      <span class="bntag">📙 Државен Протокол</span>
+      <span class="bntag">📗 Дипломатија & Безбедност</span>
+      <span class="bntag">📕 Прирачник Конференции</span>
+    </div>
+    <button class="bg" onclick="openBuy('Комплет 4 Книги · $49')">🛒 <span class="lm">Купи ги сите 4 · $49</span><span class="le" style="display:none">Buy All 4 · $49</span></button>
+  </div>
 </div>
 
-<div class="container">
-
-<!-- МАКЕДОНСКИ -->
-<div id="mk" class="lang-content active">
-    
-    <div class="section-title">
-        <h2>📚 Мои Книги</h2>
+<!-- CITATION -->
+<div class="csec" id="cit">
+  <div class="cinner">
+    <div class="st lm">📋 Академски цитат</div>
+    <div class="st le" style="display:none">📋 Academic Citation</div>
+    <div class="stt lm" style="text-align:left;margin-bottom:22px;">Цитирање — BibTeX · APA · MLA</div>
+    <div class="stt le" style="display:none;text-align:left;margin-bottom:22px;">Citation — BibTeX · APA · MLA</div>
+    <div class="cbox">
+      <div class="ctabs">
+        <button class="ctab on" onclick="ctab('bibtex',this)">BibTeX</button>
+        <button class="ctab" onclick="ctab('apa',this)">APA</button>
+        <button class="ctab" onclick="ctab('mla',this)">MLA</button>
+      </div>
+      <select class="csel" id="cbk" onchange="gc()">
+        <option value="b1">Дигитална Ера (2023)</option>
+        <option value="b2">Единствен Државен Протокол (2021)</option>
+        <option value="b3">Дипломатија, Протокол и Безбедност (2015)</option>
+        <option value="b4">Прирачник за организирање конференции (2020)</option>
+      </select>
+      <div class="cout" id="cout"></div>
+      <button class="ccop" onclick="cc()">📋 <span class="lm">Копирај цитат</span><span class="le" style="display:none">Copy Citation</span></button>
     </div>
-    
-    <div class="books">
-        
-        <!-- Книга 1 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#667eea,#764ba2);">
-                    ДИГИТАЛНА<br>ЕРА
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2023 · НАЈНОВА</div>
-                <h3 class="book-title">Дигитална Ера</h3>
-                <p class="book-subtitle">Трансформација, Безбедност, Протокол, Дипломатија и Етикета</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-0-9<br>
-                    232 стр. | МК+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book1-protocol.html" class="btn btn-primary">Преглед</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Нарачка: Дигитална Ера" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Книга 2 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#8b1a1a,#c9a84c);">
-                    ЕДИНСТВЕН<br>ДРЖАВЕН<br>ПРОТОКОЛ
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2-РО ИЗДАНИЕ</div>
-                <h3 class="book-title">Единствен Државен Протокол</h3>
-                <p class="book-subtitle">Република Македонија</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-2-3<br>
-                    302 стр. | МК+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book2-economic.html" class="btn btn-primary">Преглед</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Нарачка: Единствен Државен Протокол" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Книга 3 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#0a1628,#c9a84c);">
-                    ДИПЛОМАТИЈА<br>ПРОТОКОЛ<br>&<br>БЕЗБЕДНОСТ
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2015</div>
-                <h3 class="book-title">Дипломатија, Протокол и Безбедност</h3>
-                <p class="book-subtitle">Академска монографија</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-3-0<br>
-                    348 стр. | МК+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book3-digital.html" class="btn btn-primary">Преглед</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Нарачка: Дипломатија, Протокол и Безбедност" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Книга 4 - НОВА СО ПОДОБРЕНА КОРИЦА -->
-        <div class="book">
-            <div class="book-cover book4-cover">
-                <span class="new-badge">НОВО 2020</span>
-                <div class="book4-title">
-                    ПРИРАЧНИК ЗА<br>ОРГАНИЗИРАЊЕ<br>КОНФЕРЕНЦИИ
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2020 · ДВОЈАЗИЧНО</div>
-                <h3 class="book-title">Прирачник за организирање конференции</h3>
-                <p class="book-subtitle">Од А до Ш: Како до совршена конференција?</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-1-6<br>
-                    <strong>Издавач:</strong> С. Смиљанов, Пелинце<br>
-                    <strong>Рецензенти:</strong> Проф. д-р Никола Дујовски, Проф. д-р Даниела Карадакова, Др. Лукреција Маљковиќ-Атанасовска<br>
-                    198 стр. | МК+EN
-                </div>
-                <div class="book-actions">
-                    <a href="KNIGA_SANDE_ANG_FINAL_za%20pecat_17.03.pdf" class="btn btn-primary" download>📥 PDF</a>
-                    <a href="book4-conference.html" class="btn btn-outline">Преглед</a>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-    
-    <!-- Author -->
-    <div class="author-section">
-        <div class="author-content">
-            <div class="author-img">👨‍🎓</div>
-            <h2 class="author-name">Доц. д-р Санде Смиљанов</h2>
-            <p class="author-title">MBA Специјалист · Експерт за протокол · Истражувач</p>
-            <p class="author-bio">
-                Водечки истражувач во дипломатски протокол, меѓународни односи и дигитална трансформација. 
-                Доцент на Европа Прима со 4 научни монографии и 20+ меѓународни истражувачки трудови.<br><br>
-                Пионерска работа на воспоставување единствен државен протокол во Република Македонија.
-            </p>
-            <p><strong>📧 contact@worldprotocolacademy.com</strong></p>
-        </div>
-    </div>
-    
+  </div>
 </div>
 
-<!-- ENGLISH -->
-<div id="en" class="lang-content">
-    
-    <div class="section-title">
-        <h2>📚 My Books</h2>
-    </div>
-    
-    <div class="books">
-        
-        <!-- Book 1 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#667eea,#764ba2);">
-                    DIGITAL<br>ERA
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2023 · LATEST</div>
-                <h3 class="book-title">Digital Era</h3>
-                <p class="book-subtitle">Transformation, Security, Protocol, Diplomacy & Etiquette</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-0-9<br>
-                    232 pp. | MK+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book1-protocol.html" class="btn btn-primary">Preview</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Order: Digital Era" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Book 2 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#8b1a1a,#c9a84c);">
-                    SINGLE<br>STATE<br>PROTOCOL
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2ND EDITION</div>
-                <h3 class="book-title">Single State Protocol</h3>
-                <p class="book-subtitle">Republic of Macedonia</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-2-3<br>
-                    302 pp. | MK+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book2-economic.html" class="btn btn-primary">Preview</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Order: Single State Protocol" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Book 3 -->
-        <div class="book">
-            <div class="book-cover">
-                <div class="book-cover-placeholder" style="background:linear-gradient(135deg,#0a1628,#c9a84c);">
-                    DIPLOMACY<br>PROTOCOL<br>&<br>SECURITY
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2015</div>
-                <h3 class="book-title">Diplomacy, Protocol & Security</h3>
-                <p class="book-subtitle">Academic monograph</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-3-0<br>
-                    348 pp. | MK+EN
-                </div>
-                <div class="book-actions">
-                    <a href="book3-digital.html" class="btn btn-primary">Preview</a>
-                    <a href="mailto:contact@worldprotocolacademy.com?subject=Order: Diplomacy, Protocol & Security" class="btn btn-secondary">$19.99</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Book 4 - NEW WITH IMPROVED COVER -->
-        <div class="book">
-            <div class="book-cover book4-cover">
-                <span class="new-badge">NEW 2020</span>
-                <div class="book4-title">
-                    CONFERENCE<br>ORGANIZATION<br>HANDBOOK
-                </div>
-            </div>
-            <div class="book-info">
-                <div class="book-year">2020 · BILINGUAL</div>
-                <h3 class="book-title">Handbook on Conference Organization</h3>
-                <p class="book-subtitle">From A to Z: How to organize the perfect conference?</p>
-                <div class="book-details">
-                    <strong>ISBN:</strong> 978-608-66168-1-6<br>
-                    <strong>Publisher:</strong> S. Smiljanov, Pelince<br>
-                    <strong>Reviewers:</strong> Prof. Dr. Nikola Dujovski, Prof. Dr. Daniela Karadakova, Dr. Lukrecija Maljkovic-Atanasovska<br>
-                    198 pp. | MK+EN
-                </div>
-                <div class="book-actions">
-                    <a href="KNIGA_SANDE_ANG_FINAL_za%20pecat_17.03.pdf" class="btn btn-primary" download>📥 PDF</a>
-                    <a href="book4-conference.html" class="btn btn-outline">Preview</a>
-                </div>
-            </div>
-        </div>
-        
-    </div>
-    
-    <!-- Author -->
-    <div class="author-section">
-        <div class="author-content">
-            <div class="author-img">👨‍🎓</div>
-            <h2 class="author-name">Assoc. Prof. Dr. Sande Smiljanov</h2>
-            <p class="author-title">MBA Specialist · Protocol Expert · Researcher</p>
-            <p class="author-bio">
-                Leading researcher in diplomatic protocol, international relations, and digital transformation. 
-                Assistant Professor at Europa Prima with 4 scientific monographs and 20+ international research papers.<br><br>
-                Pioneering work on establishing single state protocol in Republic of Macedonia.
-            </p>
-            <p><strong>📧 contact@worldprotocolacademy.com</strong></p>
-        </div>
-    </div>
-    
+<!-- NEWSLETTER -->
+<div class="nlbar">
+  <div class="nltit lm">📬 Останете информирани</div>
+  <div class="nltit le" style="display:none">📬 Stay Informed</div>
+  <div class="nlsub lm">Добивајте нови трудови и публикации директно на вашиот email</div>
+  <div class="nlsub le" style="display:none">Receive new papers and publications directly to your email</div>
+  <div class="nlfrm">
+    <input class="nlinp" id="nlem" type="email" placeholder="your@email.com">
+    <button class="nlbtn" onclick="nlsub()"><span class="lm">Претплати се →</span><span class="le" style="display:none">Subscribe →</span></button>
+  </div>
+  <div class="nlok" id="nlok">✅ <span class="lm">Благодарност!</span><span class="le" style="display:none">Thank you!</span></div>
 </div>
 
+<!-- AUTHOR -->
+<div class="sec" id="author">
+  <div class="sech">
+    <div class="st lm">👨‍🎓 Автор</div>
+    <div class="st le" style="display:none">👨‍🎓 Author</div>
+    <div class="stt lm">За Авторот</div>
+    <div class="stt le" style="display:none">About the Author</div>
+  </div>
+  <div class="ausec">
+    <div class="auc">
+      <div class="auav">👨‍🎓</div>
+      <div class="aunm lm">Доц. д-р Санде Смиљанов</div>
+      <div class="aunm le" style="display:none">Assoc. Prof. Dr. Sande Smiljanov</div>
+      <div class="autit lm">МБА Специјалист · Експерт за протокол</div>
+      <div class="autit le" style="display:none">MBA Specialist · Protocol Expert</div>
+      <div class="aubdgs">
+        <span class="aubdg lm">Дипломатија</span><span class="aubdg le" style="display:none">Diplomacy</span>
+        <span class="aubdg lm">Протокол</span><span class="aubdg le" style="display:none">Protocol</span>
+        <span class="aubdg lm">Безбедност</span><span class="aubdg le" style="display:none">Security</span>
+        <span class="aubdg">MBA</span>
+      </div>
+      <div class="auem">worldprotocolacademy@gmail.com</div>
+      <div style="margin-top:8px;font-size:12px;color:var(--textdim);">Europa Prima University · Skopje, MK</div>
+    </div>
+    <div class="auinfo">
+      <div class="autit2 lm">Водечки истражувач во дипломатски протокол</div>
+      <div class="autit2 le" style="display:none">Leading researcher in diplomatic protocol</div>
+      <div class="aubt lm">Доц. д-р Санде Смиљанов е водечки истражувач во областа на дипломатски протокол, меѓународни односи и дигитална трансформација. Доцент на Европа Прима со 4 научни монографии и 20+ меѓународни истражувачки трудови. Пионерска работа на воспоставување единствен државен протокол во Република Македонија.</div>
+      <div class="aubt le" style="display:none">Assoc. Prof. Dr. Sande Smiljanov is a leading researcher in diplomatic protocol, international relations, and digital transformation. Assistant Professor at Europa Prima with 4 scientific monographs and 20+ international research papers. Pioneering work on establishing single state protocol in Republic of Macedonia.</div>
+      <div class="ausg">
+        <div class="auss"><div class="auss-n">4</div><div class="auss-l lm">Монографии</div><div class="auss-l le" style="display:none">Monographs</div></div>
+        <div class="auss"><div class="auss-n">20+</div><div class="auss-l lm">Трудови</div><div class="auss-l le" style="display:none">Papers</div></div>
+        <div class="auss"><div class="auss-n">10+</div><div class="auss-l lm">Години</div><div class="auss-l le" style="display:none">Years</div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- SOCIAL -->
+<div class="socsec">
+  <div class="st lm">🌐 Следете нè</div>
+  <div class="st le" style="display:none">🌐 Follow Us</div>
+  <div class="stt lm">Социјални мрежи & Академски платформи</div>
+  <div class="stt le" style="display:none">Social Networks & Academic Platforms</div>
+  <div class="socg">
+    <a class="sb2 sli" href="https://linkedin.com/company/worldprotocolacademy" target="_blank">in LinkedIn</a>
+    <a class="sb2 sfb" href="https://facebook.com/worldprotocolacademy" target="_blank">f Facebook</a>
+    <a class="sb2 stw" href="https://x.com/worldprotocol" target="_blank">𝕏 X / Twitter</a>
+    <a class="sb2 stg" href="https://t.me/worldprotocolacademy" target="_blank">✈ Telegram</a>
+    <a class="sb2 swa" href="https://wa.me/worldprotocolacademy" target="_blank">💬 WhatsApp</a>
+    <a class="sb2 syt" href="https://youtube.com/@worldprotocolacademy" target="_blank">▶ YouTube</a>
+    <a class="sb2 sac" href="https://www.academia.edu" target="_blank">🎓 Academia.edu</a>
+    <a class="sb2 srg" href="https://www.researchgate.net" target="_blank">🔬 ResearchGate</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
 <footer>
-    <p>&copy; 2015-2024 World Protocol Academy | <a href="mailto:contact@worldprotocolacademy.com">contact@worldprotocolacademy.com</a></p>
+  <div class="fgrid">
+    <div class="fbrand">
+      <div class="logo" style="margin-bottom:10px;"><span class="logo-icon">🏛️</span><div><div class="logo-text">World Protocol Academy</div></div></div>
+      <p class="lm">Научни публикации во областа на дипломатија, протокол и безбедност. 4 монографии, 20+ меѓународни трудови.</p>
+      <p class="le" style="display:none">Scientific publications in diplomacy, protocol and security. 4 monographs, 20+ international papers.</p>
+    </div>
+    <div>
+      <div class="fct lm">📚 Книги</div>
+      <div class="fct le" style="display:none">📚 Books</div>
+      <ul class="fls">
+        <li><a href="book1-protocol.html">Дигитална Ера (2023)</a></li>
+        <li><a href="book2-economic.html">Државен Протокол (2021)</a></li>
+        <li><a href="book3-digital.html">Дипломатија & Безбедност (2015)</a></li>
+        <li><a href="book4-conference.html">Прирачник Конференции (2020)</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="fct lm">🔗 Линкови</div>
+      <div class="fct le" style="display:none">🔗 Links</div>
+      <ul class="fls">
+        <li><a href="https://www.academia.edu" target="_blank">Academia.edu</a></li>
+        <li><a href="https://www.researchgate.net" target="_blank">ResearchGate</a></li>
+        <li><a href="mailto:worldprotocolacademy@gmail.com">📧 Email</a></li>
+        <li><a href="#" onclick="openBuy('Комплет 4 Книги · $49');return false;">🛒 Buy Books</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="fbot">
+    <div>© 2015–2025 World Protocol Academy · Доц. д-р Санде Смиљанов</div>
+    <div>worldprotocolacademy@gmail.com · Skopje, North Macedonia</div>
+  </div>
 </footer>
 
+<!-- BUY POPUP -->
+<div class="ov" id="buypop">
+  <div class="pop">
+    <button class="pcl" onclick="cl('buypop')">×</button>
+    <div class="ptit">🛒 <span id="bplan">Нарачај</span></div>
+    <div class="psub lm">Пополнете форма · worldprotocolacademy@gmail.com</div>
+    <div class="psub le" style="display:none">Fill form · worldprotocolacademy@gmail.com</div>
+    <input class="pinp" id="bnm" type="text" placeholder="Вашето Ime / Your Name *">
+    <input class="pinp" id="bem" type="email" placeholder="Email *">
+    <input class="pinp" id="bins" type="text" placeholder="Институција / Institution (опционално)">
+    <div class="pmrow">
+      <button class="pm sel" onclick="SP(this)">💳 PayPal</button>
+      <button class="pm" onclick="SP(this)">🏦 Bank</button>
+      <button class="pm" onclick="SP(this)">₿ Crypto</button>
+      <button class="pm" onclick="SP(this)">📧 Contact</button>
+    </div>
+    <button class="pcfm" onclick="cbuy()">✅ <span class="lm">Потврди нарачка</span><span class="le" style="display:none">Confirm Order</span></button>
+  </div>
+</div>
+
+<!-- DISCOUNT POPUP -->
+<div class="dpop" id="dpop">
+  <button class="dcl" onclick="document.getElementById('dpop').classList.remove('show')">×</button>
+  <div class="dbdg">🎁</div>
+  <div class="dtit lm">Специјална понуда!</div>
+  <div class="dtit le" style="display:none">Special Offer!</div>
+  <div class="dtxt lm">Сите 4 книги за само $49 — заштедете 38%!</div>
+  <div class="dtxt le" style="display:none">All 4 books for just $49 — save 38%!</div>
+  <button class="dbtn" onclick="openBuy('Комплет 4 Книги · $49')"><span class="lm">Земи го попустот →</span><span class="le" style="display:none">Grab the deal →</span></button>
+</div>
+
 <script>
-function switchLang(lang) {
-    // Update buttons
-    document.querySelectorAll('.lang-switch button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    event.target.classList.add('active');
-    
-    // Show/hide content
-    document.querySelectorAll('.lang-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    document.getElementById(lang).classList.add('active');
-    
-    // Save preference
-    localStorage.setItem('lang', lang);
+// Progress bar
+window.addEventListener('scroll',function(){
+  var d=document.documentElement;
+  document.getElementById('pb').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+});
+
+// Language switch
+function SL(lang,btn){
+  document.querySelectorAll('.lb').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var isMk=lang==='mk';
+  document.querySelectorAll('.lm').forEach(function(el){el.style.display=isMk?'':'none';});
+  document.querySelectorAll('.le').forEach(function(el){el.style.display=isMk?'none':'';});
 }
 
-// Load saved language
-document.addEventListener('DOMContentLoaded', function() {
-    const savedLang = localStorage.getItem('lang');
-    if (savedLang === 'en') {
-        document.querySelectorAll('.lang-switch button')[1].click();
-    }
+// Scroll to
+function gto(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+
+// GL helper
+function GL(url){try{var w=window.open(url,'_blank');if(!w||w.closed||typeof w.closed=='undefined'){window.location.href=url;}}catch(e){window.location.href=url;}}
+
+// Book filter
+var cFilter='all';
+function sf(cat,btn){
+  document.querySelectorAll('.ft').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  cFilter=cat;
+  fbook(document.getElementById('bsrch').value);
+}
+function fbook(q){
+  q=q.toLowerCase();
+  document.querySelectorAll('.bc').forEach(function(card){
+    var cat=card.dataset.cat||'all';
+    var title=(card.dataset.t||'').toLowerCase();
+    var catOk=cFilter==='all'||cat.includes(cFilter);
+    var qOk=!q||title.includes(q);
+    card.style.display=(catOk&&qOk)?'':'none';
+  });
+}
+
+// Citation
+var cd={
+  b1:{t:'Дигитална Ера: Трансформација, Безбедност, Протокол, Дипломатија и Етикета',te:'Digital Era: Transformation, Security, Protocol, Diplomacy and Etiquette',y:'2023',isbn:'978-608-66168-0-9',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2023digital'},
+  b2:{t:'Воспоставување на единствен државен протокол на ниво на Република Македонија',te:'Establishing Single State Protocol in Republic of Macedonia',y:'2021',isbn:'978-608-66168-2-3',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2021protocol'},
+  b3:{t:'Дипломатијата, Протоколот и Безбедноста',te:'Diplomacy, Protocol and Security',y:'2015',isbn:'978-608-66168-3-0',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2015diplomacy'},
+  b4:{t:'Прирачник за организирање на конференции и настани',te:'Handbook on the Organization of Conferences and Events',y:'2020',isbn:'978-608-66168-1-6',pub:'Sande Smiljanov MBA',city:'Pelince',k:'smiljanov2020handbook'}
+};
+var cfmt='bibtex';
+function ctab(fmt,btn){
+  document.querySelectorAll('.ctab').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  cfmt=fmt;
+  gc();
+}
+function gc(){
+  var key=document.getElementById('cbk').value;
+  var d=cd[key];
+  var out='';
+  if(cfmt==='bibtex'){
+    out='@book{'+d.k+',\n  author = {Smiljanov, Sande},\n  title = {'+d.t+'},\n  year = {'+d.y+'},\n  publisher = {'+d.pub+'},\n  address = {'+d.city+'},\n  isbn = {'+d.isbn+'}\n}';
+  }else if(cfmt==='apa'){
+    out='Smiljanov, S. ('+d.y+'). '+d.te+'. '+d.pub+'. ISBN: '+d.isbn;
+  }else{
+    out='Smiljanov, Sande. '+d.te+'. '+d.pub+', '+d.y+'.';
+  }
+  document.getElementById('cout').textContent=out;
+}
+gc();
+
+function cc(){
+  var txt=document.getElementById('cout').textContent;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(function(){
+      var btn=document.querySelector('.ccop');
+      btn.textContent='✅ Копирано!';
+      setTimeout(function(){btn.innerHTML='📋 <span class="lm">Копирај цитат</span><span class="le" style="display:none">Copy Citation</span>';},2000);
+    });
+  }else{
+    var ta=document.createElement('textarea');
+    ta.value=txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Копирано!');
+  }
+}
+
+// Newsletter
+function nlsub(){
+  var em=document.getElementById('nlem').value;
+  if(!em||em.indexOf('@')<0){alert('Внесете валиден email');return;}
+  var s=encodeURIComponent('Newsletter: '+em);
+  var b=encodeURIComponent('Subscribe: '+em);
+  GL('mailto:worldprotocolacademy@gmail.com?subject='+s+'&body='+b);
+  document.getElementById('nlok').style.display='block';
+}
+
+// Buy popup
+function openBuy(plan){
+  document.getElementById('bplan').textContent=plan;
+  document.getElementById('buypop').classList.add('open');
+}
+function cl(id){document.getElementById(id).classList.remove('open');}
+function SP(el){document.querySelectorAll('.pm').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');}
+function cbuy(){
+  var name=document.getElementById('bnm').value;
+  var email=document.getElementById('bem').value;
+  var plan=document.getElementById('bplan').textContent;
+  if(!name||!email){alert('Внесете ime и email / Enter name and email');return;}
+  cl('buypop');
+  var sub=encodeURIComponent('ORDER: '+plan+' | '+name);
+  var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nOrder: '+plan);
+  GL('mailto:worldprotocolacademy@gmail.com?subject='+sub+'&body='+body);
+}
+
+// Discount popup after 8 sec
+setTimeout(function(){document.getElementById('dpop').classList.add('show');},8000);
+
+// Close on overlay click
+document.querySelectorAll('.ov').forEach(function(ov){
+  ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
 });
 </script>
-
 </body>
 </html>
