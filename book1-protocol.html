@@ -8040,64 +8040,150 @@ body{font-family:'Source Serif 4',Georgia,serif;background:var(--nv);color:var(-
     <p style="font-size:10px;color:rgba(253,248,240,.25);margin-top:8px;text-align:center;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3f48504d535b4f4d504b505c50535e5c5e5b5a52467f58525e5653115c5052">[email&#160;protected]</a></p>
   </div>
 </div>
-function GL(url){try{var w=window.open(url,'_blank');if(!w||w.closed||typeof w.closed=='undefined'){window.location.href=url;}}catch(e){window.location.href=url;}}
 
-function GL(url){try{var w=window.open(url,'_blank');if(!w||w.closed||typeof w.closed=='undefined'){window.location.href=url;}}catch(e){window.location.href=url;}}
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+/* ===== helpers ===== */
+function GL(url){
+  try{
+    const w = window.open(url,'_blank');
+    if(!w || w.closed || typeof w.closed === 'undefined'){ window.location.href = url; }
+  }catch(e){
+    window.location.href = url;
+  }
+}
+
+/* ===== chapter navigation ===== */
 function SC(id){
-  document.addEventListener('DOMContentLoaded',()=>SC('overview'));
   document.querySelectorAll('.ch').forEach(c=>c.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  const t=document.getElementById(id);
-  if(t){t.classList.add('active');document.querySelector('.cp').scrollTo({top:0,behavior:'smooth'});}
-  document.querySelectorAll('.ni').forEach(item=>{if(item.getAttribute('onclick')&&item.getAttribute('onclick').includes("'"+id+"'"))item.classList.add('active');});
+
+  const t = document.getElementById(id);
+  if(t){
+    t.classList.add('active');
+    const cp = document.querySelector('.cp');
+    if(cp) cp.scrollTo({top:0, behavior:'smooth'});
+    else t.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  document.querySelectorAll('.ni').forEach(item=>{
+    const oc = item.getAttribute('onclick') || '';
+    if(oc.includes("'" + id + "'") || oc.includes('"' + id + '"')) item.classList.add('active');
+  });
 }
+
+/* ===== language ===== */
 function SL(lang,btn){
   document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(lang==='en'){document.querySelectorAll('.lm').forEach(el=>el.style.display='none');document.querySelectorAll('.le').forEach(el=>el.style.display='block');}
-  else{document.querySelectorAll('.lm').forEach(el=>el.style.display='block');document.querySelectorAll('.le').forEach(el=>el.style.display='none');}
+  if(btn) btn.classList.add('active');
+
+  const en = (lang === 'en');
+  document.querySelectorAll('.lm').forEach(el=>el.style.display = en ? 'none' : '');
+  document.querySelectorAll('.le').forEach(el=>el.style.display = en ? '' : 'none');
 }
-function openPay(plan){document.getElementById('modal-plan').textContent=plan;document.getElementById('pay-modal').classList.add('open');}
-function closePay(){document.getElementById('pay-modal').classList.remove('open');}
-function SP(el){document.querySelectorAll('.pmb').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+
+/* ===== payment modal ===== */
+function openPay(plan){
+  const mp = document.getElementById('modal-plan');
+  if(mp) mp.textContent = plan || '';
+  const m = document.getElementById('pay-modal');
+  if(m) m.classList.add('open');
+}
+function closePay(){
+  const m = document.getElementById('pay-modal');
+  if(m) m.classList.remove('open');
+}
+function SP(el){
+  document.querySelectorAll('.pmb').forEach(b=>b.classList.remove('sel'));
+  if(el) el.classList.add('sel');
+}
 function confirmPay(){
-  const email=document.getElementById('pay-email').value;
-  const name=document.getElementById('pay-name').value;
-  const plan=document.getElementById('modal-plan').textContent;
-  if(!email||!name){alert('Внесете email и ime / Enter email and name');return;}
+  const email = (document.getElementById('pay-email')||{}).value || '';
+  const name  = (document.getElementById('pay-name')||{}).value  || '';
+  const plan  = (document.getElementById('modal-plan')||{}).textContent || '';
+  if(!email || !name){ alert('Внесете email и име / Enter email and name'); return; }
+
   closePay();
-  const subject=encodeURIComponent('ORDER: '+plan+' | '+name);
-  const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nPlan: '+plan);
-  GL('mailto:worldprotocolacademy@gmail.com?subject='+subject+'&body='+body);
-  alert('✅ Благодарност, '+name+'!\nworldprotocolacademy@gmail.com');
+  const subject = encodeURIComponent('ORDER: ' + plan + ' | ' + name);
+  const body    = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nPlan: ' + plan);
+  GL('mailto:worldprotocolacademy@gmail.com?subject=' + subject + '&body=' + body);
+  alert('✅ Благодарност, ' + name + '!\nworldprotocolacademy@gmail.com');
 }
-function toggleSF(){document.getElementById('sf-items').classList.toggle('open');}
-// Search
-const searchIndex=[];
-document.querySelectorAll('.ch').forEach(ch=>{
-  const id=ch.id;
-  ch.querySelectorAll('p.b,.sh').forEach(p=>{
-    const txt=p.textContent.trim();
-    if(txt.length>20)searchIndex.push({id,txt:txt.substring(0,180),full:txt});
+
+/* ===== share dropdown ===== */
+function toggleSF(){
+  const x = document.getElementById('sf-items');
+  if(x) x.classList.toggle('open');
+}
+
+/* ===== search ===== */
+let searchIndex = [];
+function buildSearchIndex(){
+  searchIndex = [];
+  document.querySelectorAll('.ch').forEach(ch=>{
+    const id = ch.id;
+    ch.querySelectorAll('p.b,.sh').forEach(p=>{
+      const txt = (p.textContent || '').trim();
+      if(txt.length > 20) searchIndex.push({id, txt: txt.substring(0,180), full: txt});
+    });
   });
-});
+}
 function doSearch(q){
-  const res=document.getElementById('srch-results');
-  const cnt=document.getElementById('srch-count');
-  q=q.trim();
-  if(q.length<2){res.innerHTML='';cnt.textContent='';return;}
-  const matches=searchIndex.filter(item=>item.full.toLowerCase().includes(q.toLowerCase())).slice(0,10);
-  cnt.textContent=matches.length+' резултати';
-  if(matches.length===0){res.innerHTML='<div style="padding:8px;font-size:11px;color:rgba(253,248,240,.3);">Нема резултати</div>';return;}
-  res.innerHTML=matches.map(m=>{
-    const hi=m.txt.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>');
+  const res = document.getElementById('srch-results');
+  const cnt = document.getElementById('srch-count');
+  if(!res || !cnt) return;
+
+  q = (q || '').trim();
+  if(q.length < 2){ res.innerHTML = ''; cnt.textContent = ''; return; }
+
+  const ql = q.toLowerCase();
+  const matches = searchIndex.filter(item => item.full.toLowerCase().includes(ql)).slice(0,10);
+
+  cnt.textContent = matches.length + ' резултати';
+  if(matches.length === 0){
+    res.innerHTML = '<div style="padding:8px;font-size:11px;color:rgba(253,248,240,.3);">Нема резултати</div>';
+    return;
+  }
+
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const rx  = new RegExp('(' + esc + ')','gi');
+
+  res.innerHTML = matches.map(m=>{
+    const hi = m.txt.replace(rx,'<mark>$1</mark>');
     return `<div class="sr-item" onclick="SC('${m.id}')"><div class="sr-chapter">${m.id.toUpperCase()}</div>${hi}</div>`;
   }).join('');
 }
-// Read progress
-document.querySelector('.cp').addEventListener('scroll',function(){
-  const pct=(this.scrollTop/(this.scrollHeight-this.clientHeight))*100;
-  document.getElementById('read-progress').style.width=Math.min(pct,100)+'%';
+
+/* ===== read progress ===== */
+function bindReadProgress(){
+  const cp = document.querySelector('.cp');
+  const bar = document.getElementById('read-progress');
+  if(!cp || !bar) return;
+
+  cp.addEventListener('scroll', function(){
+    const pct = (cp.scrollTop / (cp.scrollHeight - cp.clientHeight)) * 100;
+    bar.style.width = Math.min(pct,100) + '%';
+  }, {passive:true});
+}
+
+/* ===== init ===== */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // default language (MK)
+  if(document.querySelector('.lb.active')?.textContent?.includes('🇬🇧')) SL('en', document.querySelector('.lb.active'));
+  else SL('mk', document.querySelector('.lb.active'));
+
+  // default chapter
+  const first = document.querySelector('.ni.active')?.getAttribute('onclick');
+  if(first){
+    const m = first.match(/SC\(['"]([^'"]+)['"]\)/);
+    if(m && m[1]) SC(m[1]); else SC('overview');
+  }else{
+    SC('overview');
+  }
+
+  buildSearchIndex();
+  bindReadProgress();
 });
-// Blockchain
-let ha
+</script>
+</body>
+</html>
