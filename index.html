@@ -499,99 +499,130 @@ footer{background:rgba(4,9,22,0.97);border-top:1px solid var(--border);padding:4
   <div class="dtit le" style="display:none">Special Offer!</div>
   <div class="dtxt lm">Сите 4 книги за само $49 — заштедете 38%!</div>
   <div class="dtxt le" style="display:none">All 4 books for just $49 — save 38%!</div>
-  <button class="dbtn" onclick="openBuy('Комплет 4 Книги · $49')"><span class="lm">Земи го попустот →</span><span class="le" style="display:none">Grab the deal →</span></button>
+  <button class="dbtn" onclick="openBuy('Комплет 4 Книги · $49')">
+    <span class="lm">Земи го попустот →</span><span class="le" style="display:none">Grab the deal →</span>
+  </button>
 </div>
 
-<macedoniant>
+<script>
 // Progress bar
-window.addEventListener('scroll',function(){
-  var d=document.documentElement;
-  document.getElementById('pb').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+window.addEventListener('scroll', function () {
+  var d = document.documentElement;
+  var pb = document.getElementById('pb');
+  if (pb) pb.style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
 });
 
 // Language switch
-function SL(lang,btn){
-  document.querySelectorAll('.lb').forEach(function(b){b.classList.remove('active');});
-  btn.classList.add('active');
-  var isMk=lang==='mk';
-  document.querySelectorAll('.lm').forEach(function(el){el.style.display=isMk?'':'none';});
-  document.querySelectorAll('.le').forEach(function(el){el.style.display=isMk?'none':'';});
+function SL(lang, btn) {
+  document.querySelectorAll('.lb').forEach(function (b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+
+  var isMk = (lang === 'mk');
+  document.querySelectorAll('.lm').forEach(function (el) { el.style.display = isMk ? '' : 'none'; });
+  document.querySelectorAll('.le').forEach(function (el) { el.style.display = isMk ? 'none' : ''; });
 }
-  // ✅ Default language: Macedonian on load
+
+// ✅ Default language on load: Macedonian
 document.addEventListener('DOMContentLoaded', function () {
   var mkBtn = document.querySelectorAll('.lb')[0];
   if (mkBtn) SL('mk', mkBtn);
 });
-});
-  </script>
-</body>
-</html>
 
 // Scroll to
-function gto(id){var el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});}
+function gto(id) {
+  var el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
 
 // GL helper
-function GL(url){try{var w=window.open(url,'_blank');if(!w||w.closed||typeof w.closed=='undefined'){window.location.href=url;}}catch(e){window.location.href=url;}}
+function GL(url) {
+  try {
+    var w = window.open(url, '_blank');
+    if (!w || w.closed || typeof w.closed === 'undefined') window.location.href = url;
+  } catch (e) {
+    window.location.href = url;
+  }
+}
 
 // Book filter
-var cFilter='all';
-function sf(cat,btn){
-  document.querySelectorAll('.ft').forEach(function(t){t.classList.remove('on');});
-  btn.classList.add('on');
-  cFilter=cat;
-  fbook(document.getElementById('bsrch').value);
+var cFilter = 'all';
+function sf(cat, btn) {
+  document.querySelectorAll('.ft').forEach(function (t) { t.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  cFilter = cat;
+  fbook((document.getElementById('bsrch') || {}).value || '');
 }
-function fbook(q){
-  q=q.toLowerCase();
-  document.querySelectorAll('.bc').forEach(function(card){
-    var cat=card.dataset.cat||'all';
-    var title=(card.dataset.t||'').toLowerCase();
-    var catOk=cFilter==='all'||cat.includes(cFilter);
-    var qOk=!q||title.includes(q);
-    card.style.display=(catOk&&qOk)?'':'none';
+function fbook(q) {
+  q = (q || '').toLowerCase();
+  document.querySelectorAll('.bc').forEach(function (card) {
+    var cat = (card.dataset.cat || '');
+    var title = (card.dataset.t || '').toLowerCase();
+    var catOk = (cFilter === 'all') || cat.includes(cFilter);
+    var qOk = !q || title.includes(q);
+    card.style.display = (catOk && qOk) ? '' : 'none';
   });
 }
 
 // Citation
-var cd={
+var cd = {
   b1:{t:'Дигитална Ера: Трансформација, Безбедност, Протокол, Дипломатија и Етикета',te:'Digital Era: Transformation, Security, Protocol, Diplomacy and Etiquette',y:'2023',isbn:'978-608-66168-0-9',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2023digital'},
   b2:{t:'Воспоставување на единствен државен протокол на ниво на Република Македонија',te:'Establishing Single State Protocol in Republic of Macedonia',y:'2021',isbn:'978-608-66168-2-3',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2021protocol'},
   b3:{t:'Дипломатијата, Протоколот и Безбедноста',te:'Diplomacy, Protocol and Security',y:'2015',isbn:'978-608-66168-3-0',pub:'World Protocol Academy',city:'Skopje',k:'smiljanov2015diplomacy'},
   b4:{t:'Прирачник за организирање на конференции и настани',te:'Handbook on the Organization of Conferences and Events',y:'2020',isbn:'978-608-66168-1-6',pub:'Sande Smiljanov MBA',city:'Pelince',k:'smiljanov2020handbook'}
 };
-var cfmt='bibtex';
-function ctab(fmt,btn){
-  document.querySelectorAll('.ctab').forEach(function(t){t.classList.remove('on');});
-  btn.classList.add('on');
-  cfmt=fmt;
+var cfmt = 'bibtex';
+
+function ctab(fmt, btn) {
+  document.querySelectorAll('.ctab').forEach(function (t) { t.classList.remove('on'); });
+  if (btn) btn.classList.add('on');
+  cfmt = fmt;
   gc();
 }
-function gc(){
-  var key=document.getElementById('cbk').value;
-  var d=cd[key];
-  var out='';
-  if(cfmt==='bibtex'){
-    out='@book{'+d.k+',\n  author = {Smiljanov, Sande},\n  title = {'+d.t+'},\n  year = {'+d.y+'},\n  publisher = {'+d.pub+'},\n  address = {'+d.city+'},\n  isbn = {'+d.isbn+'}\n}';
-  }else if(cfmt==='apa'){
-    out='Smiljanov, S. ('+d.y+'). '+d.te+'. '+d.pub+'. ISBN: '+d.isbn;
-  }else{
-    out='Smiljanov, Sande. '+d.te+'. '+d.pub+', '+d.y+'.';
+
+function gc() {
+  var sel = document.getElementById('cbk');
+  var outEl = document.getElementById('cout');
+  if (!sel || !outEl) return;
+
+  var d = cd[sel.value];
+  if (!d) return;
+
+  var out = '';
+  if (cfmt === 'bibtex') {
+    out = '@book{' + d.k + ',\n' +
+          '  author = {Smiljanov, Sande},\n' +
+          '  title = {' + d.t + '},\n' +
+          '  year = {' + d.y + '},\n' +
+          '  publisher = {' + d.pub + '},\n' +
+          '  address = {' + d.city + '},\n' +
+          '  isbn = {' + d.isbn + '}\n' +
+          '}';
+  } else if (cfmt === 'apa') {
+    out = 'Smiljanov, S. (' + d.y + '). ' + d.te + '. ' + d.pub + '. ISBN: ' + d.isbn;
+  } else {
+    out = 'Smiljanov, Sande. ' + d.te + '. ' + d.pub + ', ' + d.y + '.';
   }
-  document.getElementById('cout').textContent=out;
+  outEl.textContent = out;
 }
 gc();
 
-function cc(){
-  var txt=document.getElementById('cout').textContent;
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(txt).then(function(){
-      var btn=document.querySelector('.ccop');
-      btn.textContent='✅ Копирано!';
-      setTimeout(function(){btn.innerHTML='📋 <span class="lm">Копирај цитат</span><span class="le" style="display:none">Copy Citation</span>';},2000);
+function cc() {
+  var outEl = document.getElementById('cout');
+  if (!outEl) return;
+  var txt = outEl.textContent || '';
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(txt).then(function () {
+      var btn = document.querySelector('.ccop');
+      if (!btn) return;
+      btn.textContent = '✅ Копирано!';
+      setTimeout(function () {
+        btn.innerHTML = '📋 <span class="lm">Копирај цитат</span><span class="le" style="display:none">Copy Citation</span>';
+      }, 2000);
     });
-  }else{
-    var ta=document.createElement('textarea');
-    ta.value=txt;
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
     document.body.appendChild(ta);
     ta.select();
     document.execCommand('copy');
@@ -601,42 +632,59 @@ function cc(){
 }
 
 // Newsletter
-function nlsub(){
-  var em=document.getElementById('nlem').value;
-  if(!em||em.indexOf('@')<0){alert('Внесете валиден email');return;}
-  var s=encodeURIComponent('Newsletter: '+em);
-  var b=encodeURIComponent('Subscribe: '+em);
-  GL('mailto:worldprotocolacademy@gmail.com?subject='+s+'&body='+b);
-  document.getElementById('nlok').style.display='block';
+function nlsub() {
+  var emEl = document.getElementById('nlem');
+  var okEl = document.getElementById('nlok');
+  if (!emEl) return;
+
+  var em = emEl.value;
+  if (!em || em.indexOf('@') < 0) { alert('Внесете валиден email'); return; }
+
+  var s = encodeURIComponent('Newsletter: ' + em);
+  var b = encodeURIComponent('Subscribe: ' + em);
+  GL('mailto:worldprotocolacademy@gmail.com?subject=' + s + '&body=' + b);
+
+  if (okEl) okEl.style.display = 'block';
 }
 
 // Buy popup
-function openBuy(plan){
-  document.getElementById('bplan').textContent=plan;
-  document.getElementById('buypop').classList.add('open');
+function openBuy(plan) {
+  var p = document.getElementById('bplan');
+  var pop = document.getElementById('buypop');
+  if (p) p.textContent = plan;
+  if (pop) pop.classList.add('open');
 }
-function cl(id){document.getElementById(id).classList.remove('open');}
-function SP(el){document.querySelectorAll('.pm').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');}
-function cbuy(){
-  var name=document.getElementById('bnm').value;
-  var email=document.getElementById('bem').value;
-  var plan=document.getElementById('bplan').textContent;
-  if(!name||!email){alert('Внесете ime и email / Enter name and email');return;}
+function cl(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+function SP(el) {
+  document.querySelectorAll('.pm').forEach(function (b) { b.classList.remove('sel'); });
+  if (el) el.classList.add('sel');
+}
+function cbuy() {
+  var name = (document.getElementById('bnm') || {}).value || '';
+  var email = (document.getElementById('bem') || {}).value || '';
+  var plan = (document.getElementById('bplan') || {}).textContent || '';
+  if (!name || !email) { alert('Внесете ime и email / Enter name and email'); return; }
   cl('buypop');
-  var sub=encodeURIComponent('ORDER: '+plan+' | '+name);
-  var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nOrder: '+plan);
-  GL('mailto:worldprotocolacademy@gmail.com?subject='+sub+'&body='+body);
+  var sub = encodeURIComponent('ORDER: ' + plan + ' | ' + name);
+  var body = encodeURIComponent('Name: ' + name + '\nEmail: ' + email + '\nOrder: ' + plan);
+  GL('mailto:worldprotocolacademy@gmail.com?subject=' + sub + '&body=' + body);
 }
 
 // Discount popup after 8 sec
-setTimeout(function(){document.getElementById('dpop').classList.add('show');},8000);
+setTimeout(function () {
+  var dp = document.getElementById('dpop');
+  if (dp) dp.classList.add('show');
+}, 8000);
 
 // Close on overlay click
-document.querySelectorAll('.ov').forEach(function(ov){
-  ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
+document.querySelectorAll('.ov').forEach(function (ov) {
+  ov.addEventListener('click', function (e) {
+    if (e.target === ov) ov.classList.remove('open');
+  });
 });
-</macedoniant>
+</script>
 </body>
 </html>
-
-
