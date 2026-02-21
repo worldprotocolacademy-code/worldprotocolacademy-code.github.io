@@ -448,10 +448,10 @@ footer{background:rgba(4,9,22,0.97);border-top:1px solid var(--border);padding:4
       <div class="fct lm">📚 Книги</div>
       <div class="fct le" style="display:none">📚 Books</div>
       <ul class="fls">
-<li><a href="book4-digital-era.html">Дигитална Ера (2023)</a></li>
-<li><a href="book1-protocol.html">Единствен Државен Протокол (2021)</a></li>
-<li><a href="book3-diplomacy.html">Дипломатија, Протокол и Безбедност (2015)</a></li>
-<li><a href="book2-conference.html">Прирачник за организирање конференции (2020)</a></li>
+  <li><a href="book4-digital-era.html">Дигитална Ера (2023)</a></li>
+  <li><a href="book1-protocol.html">Единствен Државен Протокол (2021)</a></li>
+  <li><a href="book3-diplomacy.html">Дипломатија, Протокол и Безбедност (2015)</a></li>
+  <li><a href="book2-conference.html">Прирачник за организирање конференции (2020)</a></li>
 </ul>
     </div>
     <div>
@@ -627,6 +627,15 @@ document.querySelectorAll('.ov').forEach(function(ov){
   ov.addEventListener('click',function(e){if(e.target===ov)ov.classList.remove('open');});
 });
 </script>
+  document.addEventListener('DOMContentLoaded', () => {
+  // Default language: Macedonian
+  document.body.setAttribute('data-lang', 'mk');
+
+  // Make sure MK button is marked active
+  const mkBtn = document.querySelector('.lb[onclick*="SL(\\'mk\\'"]') || document.querySelectorAll('.lb')[0];
+  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
+  if(mkBtn) mkBtn.classList.add('active');
+});
 </body>
 </html>
 
