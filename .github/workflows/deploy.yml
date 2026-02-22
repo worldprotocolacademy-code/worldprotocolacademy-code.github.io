@@ -1,0 +1,69 @@
+# .github/workflows/deploy.yml
+# 🚀 Автоматско деплоирање на GitHub Pages со cache-busting
+
+name: 🚀 Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Овозможува рачно активирање
+
+# Дозволи за деплој
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Откажи ги претходните деплои ако има нови промени
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout код
+        uses: actions/checkout@v4
+      
+      - name: 🧹 Подготви билд директориум
+        run: |
+          rm -rf dist/
+          mkdir -p dist
+          cp index.html thanks.html privacy.html test-modals.html README.md dist/ 2>/dev/null || true
+          cp -r assets/ dist/ 2>/dev/null || true
+          
+          # Додади timestamp за cache-busting
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          if [ -f dist/index.html ]; then
+            sed -i "s|href=\"assets/|href=\"assets/?v=$TIMESTAMP|g" dist/index.html
+            sed -i "s|src=\"assets/|src=\"assets/?v=$TIMESTAMP|g" dist/index.html
+          fi
+          echo "v$TIMESTAMP" > dist/version.txt
+          echo "Deployed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> dist/version.txt
+      
+      - name: 🔍 Валидирај HTML (опционално)
+        run: |
+          npm install -g html-validator-cli 2>/dev/null || true
+          html-validator --file=dist/index.html --errors-only 2>/dev/null || echo "⚠️ Валидација: продолжува без блокирање"
+      
+      - name: 📤 Конфигурирај GitHub Pages
+        uses: actions/configure-pages@v4
+        
+      - name: 📦 Прикачи артефакт
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+          
+      - name: 🌐 Деплој
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
+      - name: 💬 Пост-деплој порака
+        run: |
+          echo "✅ Деплоирањето е успешно!"
+          echo "🌐 Live URL: ${{ steps.deployment.outputs.page_url }}?v=$(date +%Y%m%d%H%M%S)"
+          echo "💡 Совет: Притиснете Ctrl+F5 за да го видите ажурирањето веднаш"
