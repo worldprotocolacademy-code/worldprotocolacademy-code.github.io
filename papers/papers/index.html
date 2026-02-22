@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📄 Научни Трудови • World Protocol Academy</title>
+  <meta name="description" content="Научни трудови од Доц. д-р Санде Смиљанов за дипломатија, протокол и безбедност">
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/papers/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{--primary:#1a3a5c;--secondary:#c9a961;--light:#f8f9fa;--dark:#212529;--gray:#6c757d;--success:#28a745;--shadow:0 4px 12px rgba(0,0,0,.1);--radius:12px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',sans-serif;line-height:1.6;color:var(--dark);background:var(--light)}
+    header{background:linear-gradient(135deg,var(--primary),#0f2640);color:#fff;padding:1rem 2rem;box-shadow:var(--shadow)}
+    .header-container{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:1.3rem;color:#fff;text-decoration:none}
+    .logo img{width:50px;height:50px;border-radius:50%;border:3px solid var(--secondary)}
+    nav{display:flex;gap:.5rem;flex-wrap:wrap}
+    nav a{color:rgba(255,255,255,.9);padding:.6rem 1rem;border-radius:8px;font-weight:500;text-decoration:none;transition:.2s}
+    nav a:hover{background:rgba(255,255,255,.15);color:#fff}
+    main{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
+    .page-title{text-align:center;margin-bottom:2rem}
+    .page-title h1{font-family:'Merriweather',serif;font-size:clamp(1.8rem,4vw,2.5rem);color:var(--primary);margin-bottom:.5rem}
+    .page-title p{color:var(--gray);max-width:700px;margin:0 auto}
+    .filters{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;justify-content:center}
+    .filter-btn{padding:.6rem 1.25rem;border:2px solid var(--gray-light);border-radius:50px;background:#fff;cursor:pointer;font-weight:500;transition:.2s}
+    .filter-btn:hover,.filter-btn.active{border-color:var(--secondary);background:var(--secondary);color:var(--dark)}
+    .papers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.5rem;margin-bottom:3rem}
+    .paper-card{background:#fff;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);transition:.3s;border:1px solid var(--gray-light);display:flex;flex-direction:column}
+    .paper-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.15);border-color:var(--secondary)}
+    .paper-type{display:inline-block;padding:.25rem .75rem;border-radius:6px;font-size:.8rem;font-weight:600;margin-bottom:.75rem}
+    .paper-type.flagship{background:linear-gradient(135deg,#ffd700,#ffb300);color:#000}
+    .paper-type.premium{background:linear-gradient(135deg,#c0c0c0,#a0a0a0);color:#000}
+    .paper-type.standard{background:#e9ecef;color:var(--dark)}
+    .paper-title{font-family:'Merriweather',serif;font-size:1.15rem;font-weight:700;color:var(--primary);margin-bottom:.5rem;line-height:1.3}
+    .paper-meta{display:flex;gap:1rem;font-size:.85rem;color:var(--gray);margin-bottom:.75rem;flex-wrap:wrap}
+    .paper-abstract{font-size:.95rem;color:var(--dark);margin-bottom:1rem;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .paper-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+    .tag{background:var(--light);padding:.25rem .6rem;border-radius:6px;font-size:.8rem;color:var(--gray)}
+    .paper-price{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+    .price-current{font-size:1.5rem;font-weight:800;color:var(--primary)}
+    .price-original{font-size:1rem;color:var(--gray);text-decoration:line-through}
+    .discount-badge{background:var(--success);color:#fff;padding:.2rem .5rem;border-radius:4px;font-size:.75rem;font-weight:700}
+    .paper-actions{display:flex;gap:.5rem;margin-top:auto}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.6rem 1.25rem;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none;border:none;font-size:.9rem}
+    .btn-primary{background:var(--secondary);color:var(--dark)}
+    .btn-primary:hover{background:#b8964e;transform:translateY(-2px)}
+    .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
+    .btn-outline:hover{background:var(--primary);color:#fff}
+    .btn-sm{padding:.4rem 1rem;font-size:.85rem}
+    
+    /* Academic Discount Block */
+    .academic-discount{background:linear-gradient(135deg,#e3f2fd,#bbdefb);padding:2.5rem;border-radius:16px;margin:3rem 0;text-align:center;box-shadow:var(--shadow)}
+    .academic-discount h3{color:var(--primary);font-family:'Merriweather',serif;font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:1rem}
+    .academic-discount p{color:#495057;margin-bottom:1.5rem;font-size:1.05rem}
+    .discount-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+    .tier-card{background:#fff;padding:1.25rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:.2s}
+    .tier-card:hover{transform:translateY(-3px);box-shadow:0 4px 15px rgba(0,0,0,.12)}
+    .tier-icon{font-size:2.5rem;margin-bottom:.5rem}
+    .tier-name{font-weight:600;margin-bottom:.25rem}
+    .tier-discount{color:var(--success);font-weight:700;font-size:1.2rem}
+    .verify-form{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem}
+    .verify-form select,.verify-form input{padding:.85rem 1rem;border:2px solid #ccc;border-radius:8px;font-size:1rem;font-family:inherit}
+    .verify-form select:focus,.verify-form input:focus{outline:none;border-color:var(--secondary);box-shadow:0 0 0 4px rgba(201,169,97,.15)}
+    .verify-form button{background:var(--primary);color:#fff;padding:.85rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;transition:.2s}
+    .verify-form button:hover{background:#0f2640;transform:translateY(-2px)}
+    .success-message{display:none;margin-top:1rem;padding:1rem;background:#d4edda;color:#155724;border-radius:8px;border-left:4px solid var(--success);text-align:left}
+    .discount-code{background:#fff;padding:.25rem .5rem;border-radius:4px;font-family:monospace;font-weight:700}
+    
+    footer{background:#0f2640;color:rgba(255,255,255,.85);padding:2rem 1.5rem;margin-top:3rem;text-align:center}
+    footer a{color:var(--secondary);text-decoration:none}
+    footer a:hover{text-decoration:underline}
+    
+    [data-lang]:not([data-lang="mk"]){display:none}
+    body.lang-en [data-lang="mk"]{display:none!important}
+    body.lang-en [data-lang="en"]{display:block!important}
+    
+    @media(max-width:768px){
+      .header-container{flex-direction:column}
+      nav{flex-direction:column;width:100%}
+      .papers-grid{grid-template-columns:1fr}
+      .discount-tiers{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <a href="https://worldprotocolacademy-code.github.io/" class="logo">
+        <img src="../logo.png" alt="WPA Logo" onerror="this.style.display='none'">
+        <div>
+          <div style="font-size:.85rem;color:var(--secondary)">WORLD PROTOCOL</div>
+          <div style="font-size:1.1rem">ACADEMY</div>
+        </div>
+      </a>
+      <nav>
+        <a href="https://worldprotocolacademy-code.github.io/#books"><i class="fas fa-book"></i> <span data-lang="mk">Книги</span><span data-lang="en">Books</span></a>
+        <a href="#"><i class="fas fa-file-alt"></i> <span data-lang="mk">Трудови</span><span data-lang="en">Papers</span></a>
+        <a href="https://worldprotocolacademy-code.github.io/#contact"><i class="fas fa-envelope"></i> <span data-lang="mk">Контакт</span><span data-lang="en">Contact</span></a>
+      </nav>
+      <div style="display:flex;gap:.5rem">
+        <button class="filter-btn" data-lang="mk">МК</button>
+        <button class="filter-btn" data-lang="en">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    
+    <!-- Page Title -->
+    <div class="page-title">
+      <h1 data-lang="mk">📄 Научни Трудови</h1>
+      <h1 data-lang="en">📄 Research Papers</h1>
+      <p data-lang="mk">20+ peer-reviewed трудови за дипломатија, протокол и меѓународно право</p>
+      <p data-lang="en">20+ peer-reviewed papers on diplomacy, protocol and international law</p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">
+        <span data-lang="mk">Сите</span><span data-lang="en">All</span>
+      </button>
+      <button class="filter-btn" data-filter="flagship">
+        <i class="fas fa-star"></i> Flagship
+      </button>
+      <button class="filter-btn" data-filter="premium">
+        <i class="fas fa-medal"></i> Premium
+      </button>
+      <button class="filter-btn" data-filter="standard">
+        <i class="fas fa-file"></i> Standard
+      </button>
+    </div>
+    
+    <!-- Academic Discount Block -->
+    <section class="academic-discount" id="academic-discount">
+      <h3>
+        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+        <span data-lang="mk">Специјални цени за академска заедница</span>
+        <span data-lang="en">Special pricing for academic community</span>
+      </h3>
+      
+      <p data-lang="mk">Верификувајте го Вашиот академски статус и добијте моментален попуст на сите научни трудови.</p>
+      <p data-lang="en">Verify your academic status and get instant discount on all research papers.</p>
+      
+      <!-- Discount Tiers -->
+      <div class="discount-tiers">
+        <div class="tier-card">
+          <div class="tier-icon">🎒</div>
+          <div class="tier-name" data-lang="mk">Додипломски</div>
+          <div class="tier-name" data-lang="en">Undergraduate</div>
+          <div class="tier-discount">40% OFF</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-icon">🎓</div>
+          <div class="tier-name" data-lang="mk">Последипломски</div>
+          <div class="tier-name" data-lang="en">Master's</div>
+          <div class="tier-discount">35% OFF</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-icon">🔬</div>
+          <div class="tier-name" data-lang="mk">Докторски</div>
+          <div class="tier-name" data-lang="en">PhD</div>
+          <div class="tier-discount">30% OFF</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-icon">🧪</div>
+          <div class="tier-name" data-lang="mk">Пост-докторски</div>
+          <div class="tier-name" data-lang="en">Post-Doc</div>
+          <div class="tier-discount">25% OFF</div>
+        </div>
+      </div>
+      
+      <!-- Verification Form -->
+      <form id="academic-verify-form" class="verify-form">
+        <select id="academic-level" required>
+          <option value="" disabled selected data-lang="mk">Изберете го Вашиот статус...</option>
+          <option value="" disabled selected data-lang="en">Select your academic status...</option>
+          <option value="undergrad" data-lang="mk">🎒 Додипломски студент</option>
+          <option value="undergrad" data-lang="en">🎒 Undergraduate student</option>
+          <option value="master" data-lang="mk">🎓 Последипломски студент</option>
+          <option value="master" data-lang="en">🎓 Master's student</option>
+          <option value="phd" data-lang="mk">🔬 Докторски кандидат</option>
+          <option value="phd" data-lang="en">🔬 PhD candidate</option>
+          <option value="postdoc" data-lang="mk">🧪 Пост-докторски истражувач</option>
+          <option value="postdoc" data-lang="en">🧪 Post-Doc researcher</option>
+          <option value="institution" data-lang="mk">🏛️ Институција / Библиотека</option>
+          <option value="institution" data-lang="en">🏛️ Institution / Library</option>
+        </select>
+        
+        <input type="email" id="academic-email" placeholder="your.name@university.edu" required 
+               aria-label="Academic email address">
+        
+        <button type="submit">
+          <i class="fas fa-check-circle" aria-hidden="true"></i>
+          <span data-lang="mk">Верификувај и активирај попуст</span>
+          <span data-lang="en">Verify & activate discount</span>
+        </button>
+      </form>
+      
+      <!-- Success Message -->
+      <div id="academic-success" class="success-message">
+        <strong>✅ <span data-lang="mk">Верификацијата е успешна!</span><span data-lang="en">Verification successful!</span></strong>
+        <p style="margin:0.5rem 0 0" data-lang="mk">Вашиот попуст е применет. Сега можете да купувате по намалени цени во наредните 12 месеци.</p>
+        <p style="margin:0.5rem 0 0" data-lang="en">Your discount has been applied. You can now purchase at reduced prices for the next 12 months.</p>
+        <p style="margin:0.5rem 0 0;font-size:0.9rem">
+          <span data-lang="mk">Код за рачно внесување: </span>
+          <span data-lang="en">Manual code for checkout: </span>
+          <strong id="discount-code" class="discount-code">ACAD-[RANDOM]</strong>
+        </p>
+      </div>
+      
+      <p style="margin-top:1.5rem;font-size:0.85rem;color:#6c757d">
+        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+        <span data-lang="mk">Вашата email адреса се користи само за верификација и никогаш не се споделува.</span>
+        <span data-lang="en">Your email is used for verification only and never shared.</span>
+      </p>
+    </section>
+    
+    <!-- Papers Grid -->
+    <div class="papers-grid" id="papers-list">
+      <!-- Paper cards will be injected by JavaScript -->
+    </div>
+    
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; <span id="year">2026</span> World Protocol Academy • 
+      <span data-lang="mk">Сите права задржани</span>
+      <span data-lang="en">All rights reserved</span>
+    </p>
+    <p style="margin-top:0.5rem">
+      <a href="https://worldprotocolacademy-code.github.io/" data-lang="mk">← Назад кон главна страница</a>
+      <a href="https://worldprotocolacademy-code.github.io/" data-lang="en">← Back to homepage</a>
+    </p>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // ===== PAPERS DATABASE =====
+    const papersDB = [
+      {
+        id: 'paper-01',
+        title: {
+          mk: 'Дигиталната трансформација на дипломатскиот протокол во 21 век',
+          en: 'Digital Transformation of Diplomatic Protocol in the 21st Century'
+        },
+        type: 'flagship',
+        year: 2023,
+        journal: { mk: 'Journal of International Diplomacy', en: 'Journal of International Diplomacy' },
+        citations: 24,
+        abstract: {
+          mk: 'Анализа на како дигиталните технологии го менуваат традиционалниот дипломатски протокол, со фокус на виртуелни самити, дигитални акредитиви и онлајн церемонии.',
+          en: 'Analysis of how digital technologies are transforming traditional diplomatic protocol, with focus on virtual summits, digital credentials, and online ceremonies.'
+        },
+        tags: ['дипломатија', 'дигитално', 'протокол'],
+        price: 19.99,
+        pdf: 'assets/papers/paper-01.pdf'
+      },
+      {
+        id: 'paper-02',
+        title: {
+          mk: 'Виенската конвенција за дипломатски односи: Практична имплементација',
+          en: 'Vienna Convention on Diplomatic Relations: Practical Implementation'
+        },
+        type: 'flagship',
+        year: 2022,
+        journal: { mk: 'International Law Review', en: 'International Law Review' },
+        citations: 31,
+        abstract: {
+          mk: 'Практичен водич за имплементација на Виенската конвенција во современата дипломатска пракса, со case studies од 15 земји.',
+          en: 'Practical guide for implementing the Vienna Convention in modern diplomatic practice, with case studies from 15 countries.'
+        },
+        tags: ['Виенска конвенција', 'меѓународно право', 'дипломатија'],
+        price: 19.99,
+        pdf: 'assets/papers/paper-02.pdf'
+      },
+      {
+        id: 'paper-03',
+        title: {
+          mk: 'Протоколарни грешки на меѓународни самити: Анализа и превенција',
+          en: 'Protocol Errors at International Summits: Analysis and Prevention'
+        },
+        type: 'premium',
+        year: 2023,
+        journal: { mk: 'Protocol Quarterly', en: 'Protocol Quarterly' },
+        citations: 18,
+        abstract: {
+          mk: 'Студија на 50+ протоколарни грешки на меѓународни настани и како да се спречат.',
+          en: 'Study of 50+ protocol errors at international events and how to prevent them.'
+        },
+        tags: ['протокол', 'самити', 'case study'],
+        price: 14.99,
+        pdf: 'assets/papers/paper-03.pdf'
+      },
+      {
+        id: 'paper-04',
+        title: {
+          mk: 'Химни и знамиња: Церемонијален протокол за државни настани',
+          en: 'Anthems and Flags: Ceremonial Protocol for State Events'
+        },
+        type: 'premium',
+        year: 2024,
+        journal: { mk: 'Ceremonial Studies Journal', en: 'Ceremonial Studies Journal' },
+        citations: 12,
+        abstract: {
+          mk: 'Комплетен водич за правилно изведување на химни и истакнување на знамиња на државни настани.',
+          en: 'Complete guide for proper performance of anthems and display of flags at state events.'
+        },
+        tags: ['химни', 'знамиња', 'церемонијал'],
+        price: 14.99,
+        pdf: 'assets/papers/paper-04.pdf'
+      },
+      {
+        id: 'paper-05',
+        title: {
+          mk: 'Етикета во бизнис дипломатијата',
+          en: 'Etiquette in Business Diplomacy'
+        },
+        type: 'standard',
+        year: 2023,
+        journal: { mk: 'Business & Diplomacy Review', en: 'Business & Diplomacy Review' },
+        citations: 9,
+        abstract: {
+          mk: 'Практични совети за етикета во бизнис дипломатијата и корпоративниот протокол.',
+          en: 'Practical tips for etiquette in business diplomacy and corporate protocol.'
+        },
+        tags: ['етикета', 'бизнис', 'дипломатија'],
+        price: 9.99,
+        pdf: 'assets/papers/paper-05.pdf'
+      }
+    ];
+
+    // ===== STATE =====
+    let state = {
+      lang: localStorage.getItem('wpa-lang') || 'mk',
+      academicDiscount: JSON.parse(localStorage.getItem('wpa-academic-discount')) || null,
+      filter: 'all'
+    };
+
+    // ===== DOM ELEMENTS =====
+    const els = {
+      papersList: document.getElementById('papers-list'),
+      filterBtns: document.querySelectorAll('.filter-btn[data-filter]'),
+      verifyForm: document.getElementById('academic-verify-form'),
+      academicLevel: document.getElementById('academic-level'),
+      academicEmail: document.getElementById('academic-email'),
+      academicSuccess: document.getElementById('academic-success'),
+      discountCode: document.getElementById('discount-code'),
+      year: document.getElementById('year'),
+      langBtns: document.querySelectorAll('.filter-btn[style*="display"]')
+    };
+
+    // ===== LANGUAGE TOGGLE =====
+    els.langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.lang = btn.textContent === 'МК' ? 'mk' : 'en';
+        localStorage.setItem('wpa-lang', state.lang);
+        document.body.classList.toggle('lang-en', state.lang === 'en');
+        renderPapers();
+      });
+    });
+
+    // ===== FILTER FUNCTIONALITY =====
+    els.filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        els.filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.filter = btn.dataset.filter;
+        renderPapers();
+      });
+    });
+
+    // ===== RENDER PAPERS =====
+    function renderPapers() {
+      if (!els.papersList) return;
+      
+      const filtered = state.filter === 'all' 
+        ? papersDB 
+        : papersDB.filter(p => p.type === state.filter);
+      
+      els.papersList.innerHTML = filtered.map(paper => {
+        const title = paper.title[state.lang] || paper.title.en;
+        const abstract = paper.abstract[state.lang] || paper.abstract.en;
+        const journal = paper.journal[state.lang] || paper.journal.en;
+        const tags = paper.tags.map(t => `<span class="tag">#${t}</span>`).join('');
+        
+        // Calculate discounted price
+        let finalPrice = paper.price;
+        let showDiscount = false;
+        if (state.academicDiscount && state.academicDiscount.expires > Date.now()) {
+          finalPrice = paper.price * (1 - state.academicDiscount.discount/100);
+          showDiscount = true;
+        }
+        
+        const typeLabels = {
+          flagship: { mk: 'Флагман', en: 'Flagship' },
+          premium: { mk: 'Премиум', en: 'Premium' },
+          standard: { mk: 'Стандард', en: 'Standard' }
+        };
+        
+        return `
+          <article class="paper-card" data-paper-id="${paper.id}">
+            <span class="paper-type ${paper.type}">${typeLabels[paper.type][state.lang]}</span>
+            <h3 class="paper-title">${title}</h3>
+            <div class="paper-meta">
+              <span><i class="far fa-calendar"></i> ${paper.year}</span>
+              <span><i class="fas fa-book"></i> ${journal}</span>
+              <span><i class="fas fa-quote-right"></i> ${paper.citations} ${state.lang==='mk'?'цитати':'citations'}</span>
+            </div>
+            <p class="paper-abstract">${abstract}</p>
+            <div class="paper-tags">${tags}</div>
+            <div class="paper-price">
+              ${showDiscount ? `<span class="price-original">$${paper.price.toFixed(2)}</span>` : ''}
+              <span class="price-current">$${finalPrice.toFixed(2)}</span>
+              ${showDiscount ? `<span class="discount-badge">-${state.academicDiscount.discount}%</span>` : ''}
+            </div>
+            <div class="paper-actions">
+              <button class="btn btn-primary btn-sm" onclick="addToCart('${paper.id}','${title.replace(/'/g,"\\'")}',${finalPrice})">
+                <i class="fas fa-cart-plus"></i>
+                <span data-lang="mk">Додади</span>
+                <span data-lang="en">Add</span>
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="viewPreview('${paper.id}')">
+                <i class="fas fa-eye"></i>
+                <span data-lang="mk">Преглед</span>
+                <span data-lang="en">Preview</span>
+              </button>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // ===== ACADEMIC VERIFICATION =====
+    els.verifyForm?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const level = els.academicLevel.value;
+      const email = els.academicEmail.value;
+      
+      // Simple validation
+      const academicDomains = ['.edu', '.ac.', '.univ.', '.uni.', '.mk'];
+      const isAcademic = academicDomains.some(domain => email.toLowerCase().includes(domain));
+      
+      if (!isAcademic && level !== 'institution') {
+        alert('⚠️ ' + (state.lang === 'mk' 
+          ? 'Ве молиме внесете валиден академски email' 
+          : 'Please enter a valid academic email'));
+        return;
+      }
+      
+      // Generate discount
+      const discounts = { undergrad: 40, master: 35, phd: 30, postdoc: 25, institution: 50 };
+      const discount = discounts[level] || 0;
+      const code = `ACAD-${level.toUpperCase()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
+      
+      // Save to localStorage
+      state.academicDiscount = {
+        code: code,
+        discount: discount,
+        level: level,
+        email: email,
+        expires: Date.now() + (365 * 24 * 60 * 60 * 1000)
+      };
+      localStorage.setItem('wpa-academic-discount', JSON.stringify(state.academicDiscount));
+      
+      // Show success
+      els.academicSuccess.style.display = 'block';
+      els.discountCode.textContent = code;
+      
+      // Re-render papers with new prices
+      renderPapers();
+      
+      // Scroll to papers
+      els.papersList?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // ===== ADD TO CART (placeholder) =====
+    window.addToCart = function(id, title, price) {
+      alert(`${state.lang==='mk'?'✅ Додадено во кошничка':'✅ Added to cart'}: ${title}`);
+      // In production: integrate with your cart system
+    };
+
+    // ===== VIEW PREVIEW (placeholder) =====
+    window.viewPreview = function(id) {
+      alert(`${state.lang==='mk'?'👁 Преглед':'👁 Preview'}: ${id}`);
+      // In production: open modal or navigate to paper detail page
+    };
+
+    // ===== INITIALIZE =====
+    els.year.textContent = new Date().getFullYear();
+    document.body.classList.toggle('lang-en', state.lang === 'en');
+    renderPapers();
+  </script>
+</body>
+</html>
