@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧪 Test Modals — World Protocol Academy</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 2rem; background: #f8f9fa; line-height: 1.6; }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { color: #1a3a5c; border-bottom: 3px solid #c9a961; padding-bottom: 0.5rem; }
+    .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 1rem; margin: 2rem 0; }
+    .test-card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #c9a961; }
+    .test-card h3 { margin-top: 0; color: #1a3a5c; }
+    .btn { background: #1a3a5c; color: white; padding: 0.6rem 1.2rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; }
+    .btn:hover { background: #2c5282; transform: translateY(-1px); }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+    .modal[hidden] { display: none; }
+    .modal-content { background: white; padding: 2rem; border-radius: 16px; max-width: 500px; width: 100%; position: relative; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .close { position: absolute; top: 1rem; right: 1rem; background: #eee; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .close:hover { background: #dc3545; color: white; }
+    .console { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem; max-height: 300px; overflow-y: auto; margin-top: 1rem; border: 1px solid #444; }
+    .success { color: #28a745; font-weight: 600; }
+    .error { color: #dc3545; font-weight: 600; }
+    footer { margin-top: 3rem; text-align: center; color: #666; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Modal Test Suite — World Protocol Academy</h1>
+    <p>✅ <strong>Инструкции:</strong> Кликнете на секое копче — соодветниот модал треба да се отвори. Проверете го Console-от подолу за потврда.</p>
+    
+    <div class="test-grid">
+      <div class="test-card">
+        <h3>📘 Digital Era</h3>
+        <p style="font-size:0.9rem; color:#666;">ISBN: 978-608-66168-0-9</p>
+        <button class="btn" data-test-modal="modal-digital-era">🔍 Тестирај модал</button>
+      </div>
+      <div class="test-card">
+        <h3>📙 State Protocol</h3>
+        <p style="font-size:0.9rem; color:#666;">ISBN: 978-608-66168-2-3</p>
+        <button class="btn" data-test-modal="modal-state-protocol">🔍 Тестирај модал</button>
+      </div>
+      <div class="test-card">
+        <h3>📗 Diplomacy & Security</h3>
+        <p style="font-size:0.9rem; color:#666;">ISBN: 978-608-66168-4-7</p>
+        <button class="btn" data-test-modal="modal-diplomacy-security">🔍 Тестирај модал</button>
+      </div>
+      <div class="test-card">
+        <h3>📕 Conference Handbook</h3>
+        <p style="font-size:0.9rem; color:#666;">ISBN: 978-608-66168-6-1</p>
+        <button class="btn" data-test-modal="modal-conference-handbook">🔍 Тестирај модал</button>
+      </div>
+    </div>
+    
+    <h3>🖥️ Console Output (Live)</h3>
+    <div class="console" id="console">
+      <div>[Систем] 🚀 Test suite ready. Click buttons to verify modals.</div>
+    </div>
+    
+    <footer>
+      <p>🔗 <a href="index.html" style="color:#1a3a5c;">← Назад кон главната страница</a></p>
+      <p>&copy; 2026 World Protocol Academy • Тест алатка за верификација</p>
+    </footer>
+  </div>
+  
+  <!-- Test Modals -->
+  <div id="modal-digital-era" class="modal" hidden>
+    <div class="modal-content">
+      <button class="close" aria-label="Close">&times;</button>
+      <h3 style="color:#1a3a5c; margin-top:0;">✅ Digital Era Modal</h3>
+      <p class="success">Овој модал функционира правилно!</p>
+      <p style="background:#f8f9fa; padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem;">
+        <strong>Modal ID:</strong> modal-digital-era<br>
+        <strong>ISBN:</strong> 978-608-66168-0-9<br>
+        <strong>Статус:</strong> <span style="color:#28a745;">✓ Active</span>
+      </p>
+      <button class="btn" onclick="document.getElementById('modal-digital-era').hidden=true" style="margin-top:1rem;">✓ Затвори</button>
+    </div>
+  </div>
+  
+  <div id="modal-state-protocol" class="modal" hidden>
+    <div class="modal-content">
+      <button class="close" aria-label="Close">&times;</button>
+      <h3 style="color:#1a3a5c; margin-top:0;">✅ State Protocol Modal</h3>
+      <p class="success">Овој модал функционира правилно!</p>
+      <p style="background:#f8f9fa; padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem;">
+        <strong>Modal ID:</strong> modal-state-protocol<br>
+        <strong>ISBN:</strong> 978-608-66168-2-3<br>
+        <strong>Статус:</strong> <span style="color:#28a745;">✓ Active</span>
+      </p>
+      <button class="btn" onclick="document.getElementById('modal-state-protocol').hidden=true" style="margin-top:1rem;">✓ Затвори</button>
+    </div>
+  </div>
+  
+  <div id="modal-diplomacy-security" class="modal" hidden>
+    <div class="modal-content">
+      <button class="close" aria-label="Close">&times;</button>
+      <h3 style="color:#1a3a5c; margin-top:0;">✅ Diplomacy & Security Modal</h3>
+      <p class="success">Овој модал функционира правилно!</p>
+      <p style="background:#f8f9fa; padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem;">
+        <strong>Modal ID:</strong> modal-diplomacy-security<br>
+        <strong>ISBN:</strong> 978-608-66168-4-7<br>
+        <strong>Статус:</strong> <span style="color:#28a745;">✓ Active</span>
+      </p>
+      <button class="btn" onclick="document.getElementById('modal-diplomacy-security').hidden=true" style="margin-top:1rem;">✓ Затвори</button>
+    </div>
+  </div>
+  
+  <div id="modal-conference-handbook" class="modal" hidden>
+    <div class="modal-content">
+      <button class="close" aria-label="Close">&times;</button>
+      <h3 style="color:#1a3a5c; margin-top:0;">✅ Conference Handbook Modal</h3>
+      <p class="success">Овој модал функционира правилно!</p>
+      <p style="background:#f8f9fa; padding:1rem; border-radius:8px; font-family:monospace; font-size:0.85rem;">
+        <strong>Modal ID:</strong> modal-conference-handbook<br>
+        <strong>ISBN:</strong> 978-608-66168-6-1<br>
+        <strong>Статус:</strong> <span style="color:#28a745;">✓ Active</span>
+      </p>
+      <button class="btn" onclick="document.getElementById('modal-conference-handbook').hidden=true" style="margin-top:1rem;">✓ Затвори</button>
+    </div>
+  </div>
+  
+  <script>
+    const log = (msg, type='info') => {
+      const consoleEl = document.getElementById('console');
+      const time = new Date().toLocaleTimeString('mk-MK');
+      const color = type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#d4d4d4';
+      consoleEl.innerHTML = `<div style="border-bottom:1px solid #444; padding:0.3rem 0;"><span style="color:#888">[${time}]</span> <span style="color:${color}">${msg}</span></div>` + consoleEl.innerHTML;
+    };
+    
+    document.querySelectorAll('[data-test-modal]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const modalId = btn.dataset.testModal;
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.hidden = false;
+          log(`✅ Отворен: ${modalId}`, 'success');
+        } else {
+          log(`❌ Грешка: Модалот ${modalId} не постои!`, 'error');
+        }
+      });
+    });
+    
+    document.querySelectorAll('.modal .close, .modal .btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if(e.target.tagName === 'BUTTON') {
+          const modal = btn.closest('.modal');
+          if(modal) {
+            modal.hidden = true;
+            log(`✅ Затворен: ${modal.id}`, 'success');
+          }
+        }
+      });
+    });
+    
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.hidden = true;
+          log(`✅ Затворен (надворешен клик): ${modal.id}`, 'success');
+        }
+      });
+    });
+    
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal:not([hidden])').forEach(modal => {
+          modal.hidden = true;
+          log(`✅ Затворен (ESC): ${modal.id}`, 'success');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
