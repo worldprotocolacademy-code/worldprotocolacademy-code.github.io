@@ -1,0 +1,156 @@
+  <!-- ============================================
+       ANALYTICS SETUP GUIDE - INTERNAL REFERENCE
+       (Може да се избрише после читање)
+       ============================================ -->
+  <script>
+    /*
+    📊 WORLD PROTOCOL ACADEMY — ANALYTICS SETUP GUIDE
+    ==================================================
+    
+    ## ЧЕКОР 1: КРЕИРАЈТЕ GOOGLE ANALYTICS 4 PROPERTY
+    
+    1. Одете на https://analytics.google.com/
+    2. Кликнете "Admin" (запченик долу лево)
+    3. Под "Account", кликнете "+ Create Account"
+    4. Име на account: "World Protocol Academy"
+    5. Име на property: "WPA Website"
+    6. Time zone: "Europe/Skopje", Currency: "USD"
+    7. Кликнете "Next" → "Web" → "Create stream"
+    8. Website URL: https://worldprotocolacademy-code.github.io/
+    9. Stream name: "Main Website"
+    10. Копирајте го Measurement ID (G-XXXXXXXXXX)
+    
+    ## ЧЕКОР 2: ЗАМЕНИ ГО PLACEHOLDER-ОТ ВО КОДОТ
+    
+    Во кодот погоре, заменете:
+    ```
+    G-XXXXXXXXXX  →  Вашиот вистински ID
+    ```
+    
+    ## ЧЕКОР 3: ВКЛУЧЕТЕ ENHANCED MEASUREMENT
+    
+    Во GA4 Stream settings:
+    ✓ Page views (автоматски)
+    ✓ Scrolls (автоматски)
+    ✓ Outbound clicks (автоматски)
+    ✓ Site search (автоматски)
+    ✓ File downloads (автоматски)
+    
+    ## ЧЕКОР 4: КРЕИРАЈТЕ CUSTOM DIMENSIONS
+    
+    Во GA4 Admin → Custom definitions → Create custom dimension:
+    
+    | Dimension name | Parameter name | Scope | Description |
+    |---------------|----------------|-------|-------------|
+    | Book ID | book_id | Event | ID на книгата што се гледа |
+    | Book Title | item_name | Event | Наслов на книгата |
+    | Language | language | Event | МК или EN |
+    | Device Type | device_category | Event | Mobile/Desktop |
+    | Traffic Source | source | Event | LinkedIn, ResearchGate, Direct |
+    
+    ## ЧЕКОР 5: КРЕИРАЈТЕ ДАШБОРД ЗА СЛЕДЕЊЕ
+    
+    Во GA4 → Reports → Library → Create new report:
+    
+    ### 📈 "КНИГИ PERFORMANCE" ДАШБОРД:
+    
+    Widget 1: Page views по книга
+    - Dimension: book_id или item_name
+    - Metric: event_count (за book_view events)
+    
+    Widget 2: Конверзии (Add to Cart → Checkout)
+    - Dimension: item_name
+    - Metrics: add_to_cart, begin_checkout
+    - Filter: event_name contains 'cart' or 'checkout'
+    
+    Widget 3: Јазична дистрибуција
+    - Dimension: language
+    - Metric: active_users или event_count
+    
+    Widget 4: Уреди (Mobile vs Desktop)
+    - Dimension: device_category
+    - Metric: active_users
+    
+    Widget 5: Извори на трафик
+    - Dimension: source / medium
+    - Metric: sessions или active_users
+    
+    ## ЧЕКОР 6: НАГОДЕТЕ ALERTS (ОПЦИОНАЛНО)
+    
+    Во GA4 Admin → Configure → Custom alerts:
+    
+    Alert 1: "Висока конверзија"
+    - Condition: add_to_cart events > 10 во 1 ден
+    - Email notification: worldprotocolacademy@gmail.com
+    
+    Alert 2: "Пад во трафик"
+    - Condition: sessions < 50% од просекот за 7 дена
+    - Email notification: worldprotocolacademy@gmail.com
+    
+    ## ЧЕКОР 7: ЕКСПОРТИРАЊЕ НА ПОДАТОЦИ
+    
+    За месечни извештаи:
+    1. Одете на Reports → Exploration
+    2. Креирајте "Free form" exploration
+    3. Додадете Dimensions: date, book_id, language, device_category
+    4. Додадете Metrics: event_count, total_revenue (ако имате)
+    5. Кликнете "Share" → "Download" → CSV/PDF
+    
+    ## 🔍 КАКО ДА ЧИТАТЕ ПОДАТОЦИТЕ:
+    
+    ### Page views по книга:
+    • Висок број = интерес, но не и продажба
+    • Споредете со add_to_cart за конверзија
+    
+    ### Конверзија (Add to Cart → Checkout):
+    • Просек за e-commerce: 2-5%
+    • За академски сајт: 5-15% е одлично
+    • Ако е ниска: проверете го checkout процесот
+    
+    ### Јазична дистрибуција:
+    • МК > EN = фокус на локален пазар
+    • EN > МК = глобален интерес
+    • Прилагодете го маркетингот според тоа
+    
+    ### Уреди:
+    • Mobile > 60% = оптимизирајте за мобилни
+    • Desktop > 60% = фокус на детален content
+    
+    ### Извори на трафик:
+    • LinkedIn = професионална публика
+    • ResearchGate = академска публика
+    • Direct = бренд свесност
+    • Organic = SEO работи
+    
+    ## 🎯 БРЗИ ИНСАЈТИ:
+    
+    ✓ Ако "Дигитална Ера" има најмногу views → направете ја featured
+    ✓ Ако EN корисници конвертираат подобро → додадете повеќе EN content
+    ✓ Ако Mobile конверзија е ниска → тестирајте поедноставен checkout
+    ✓ Ако LinkedIn носи најмногу трафик → зголемете го LinkedIn маркетингот
+    
+    ## 📧 МЕСЕЧЕН EMAIL ИЗВЕШТАЈ ШАБЛОН:
+    
+    Subject: 📊 WPA Analytics — [Месец] [Година]
+    
+    Body:
+    "📈 Клучни метрики за [Месец]:
+    
+    • Вкупно посети: [X]
+    • Уникатни корисници: [Y]
+    • Page views по книга:
+      - Дигитална Ера: [A]
+      - Државен Протокол: [B]
+      - Дипломатија: [C]
+      - Прирачник: [D]
+    • Add to Cart: [E]
+    • Конверзија: [F]%
+    • Јазична дистрибуција: МК [G]% / EN [H]%
+    • Уреди: Mobile [I]% / Desktop [J]%
+    • Топ извор на трафик: [K]
+    
+    🎯 Акција за следниот месец: [L]
+    
+    [Линк до GA4 dashboard]"
+    */
+  </script>
