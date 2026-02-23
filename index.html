@@ -1129,6 +1129,158 @@
             .footer-col a { justify-content: center; }
         }
     </style>
+      <!-- ============================================
+       GOOGLE ANALYTICS 4 + CUSTOM TRACKING
+       Заменете G-XXXXXXXXXX со Вашиот Measurement ID
+       ============================================ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', {
+      page_title: document.title,
+      send_page_view: true
+    });
+
+    /* ============================================
+       CUSTOM EVENT TRACKING
+       ============================================ */
+    
+    // Track page views per book section
+    function trackBookView(bookId, bookTitle) {
+      gtag('event', 'book_view', {
+        event_category: 'Engagement',
+        event_label: bookTitle,
+        book_id: bookId,
+        language: state.lang,
+        device: /Mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
+      });
+    }
+
+    // Track Add to Cart
+    function trackAddToCart(bookId, bookTitle, price) {
+      gtag('event', 'add_to_cart', {
+        event_category: 'Ecommerce',
+        event_label: bookTitle,
+        items: [{
+          item_id: bookId,
+          item_name: bookTitle,
+          price: price,
+          quantity: 1
+        }],
+        language: state.lang,
+        device: /Mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'
+      });
+    }
+
+    // Track Checkout Start
+    function trackCheckoutStart(cartValue, itemCount) {
+      gtag('event', 'begin_checkout', {
+        event_category: 'Ecommerce',
+        value: cartValue,
+        items: state.cart.map(item => ({
+          item_id: item.id,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.qty
+        })),
+        language: state.lang
+      });
+    }
+
+    // Track Language Change
+    function trackLanguageChange(newLang) {
+      gtag('event', 'language_change', {
+        event_category: 'User Preferences',
+        event_label: newLang,
+        previous_language: state.lang
+      });
+    }
+
+    // Track Traffic Source (UTM parameters)
+    function trackTrafficSource() {
+      const params = new URLSearchParams(window.location.search);
+      const source = params.get('utm_source') || document.referrer || 'direct';
+      const medium = params.get('utm_medium') || 'organic';
+      const campaign = params.get('utm_campaign') || 'none';
+      
+      gtag('event', 'traffic_source', {
+        event_category: 'Acquisition',
+        source: source,
+        medium: medium,
+        campaign: campaign,
+        language: state.lang
+      });
+    }
+
+    // Track AI Chatbot Usage
+    function trackChatbotMessage(message, isUser) {
+      gtag('event', 'chatbot_interaction', {
+        event_category: 'AI Assistant',
+        event_label: isUser ? 'user_message' : 'bot_response',
+        message_preview: message.substring(0, 50),
+        language: state.lang
+      });
+    }
+
+    /* ============================================
+       AUTO-TRACKING HOOKS
+       ============================================ */
+    
+    // Hook into addToCart function
+    const originalAddToCart = window.addToCart;
+    window.addToCart = function(id, name, price) {
+      originalAddToCart(id, name, price);
+      trackAddToCart(id, name, price);
+    };
+
+    // Hook into language toggle
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setTimeout(() => trackLanguageChange(state.lang), 100);
+      });
+    });
+
+    // Track book cover clicks (Quick View)
+    document.querySelectorAll('.book-cover').forEach(cover => {
+      cover.addEventListener('click', (e) => {
+        const card = e.target.closest('.book-card');
+        if (card) {
+          const bookId = card.dataset.bookId;
+          const bookTitle = card.querySelector('.book-title')?.textContent || 'Unknown';
+          trackBookView(bookId, bookTitle);
+        }
+      });
+    });
+
+    // Track on page load
+    window.addEventListener('load', () => {
+      trackTrafficSource();
+      
+      // Track device type
+      gtag('event', 'page_view', {
+        device_category: /Mobile/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+        language: state.lang,
+        theme: state.theme
+      });
+    });
+
+    // Track scroll depth for engagement
+    let scrollTracked = false;
+    window.addEventListener('scroll', () => {
+      if (scrollTracked) return;
+      const scrollPercent = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      if (scrollPercent >= 50) {
+        gtag('event', 'scroll_depth', {
+          event_category: 'Engagement',
+          percent: scrollPercent,
+          language: state.lang
+        });
+        scrollTracked = true;
+      }
+    });
+  </script>
 </head>
 <body>
     <header role="banner">
