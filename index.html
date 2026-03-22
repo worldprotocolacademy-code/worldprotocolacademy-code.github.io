@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,7 +12,7 @@
   <meta property="og:description" content="Independent digital academy and professional platform for protocol, diplomacy, security, institutional communication and AI-assisted professional readiness." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://worldprotocolacademy-code.github.io/" />
-  <meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png" />
+  <meta property="og:image" content="logo.png" />
 
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="canonical" href="https://worldprotocolacademy-code.github.io/" />
@@ -619,7 +619,7 @@
     "@type":"EducationalOrganization",
     "name":"World Protocol Academy",
     "url":"https://worldprotocolacademy-code.github.io/",
-    "logo":"https://worldprotocolacademy-code.github.io/logo.png",
+    "logo":"logo.png",
     "description":"Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-supported learning.",
     "founder":{
       "@type":"Person",
@@ -632,14 +632,14 @@
   <div class="topbar">
     <div class="container topbar-inner">
       <div><strong>World Protocol Academy</strong> — premium independent academy for protocol, diplomacy, security and institutional communication.</div>
-      <div>Founder-led • Publications-backed • AI-supported • Global-facing</div>
+      <div>Founder-led • Publications-backed • AI-supported • Global-facing • worldprotocolacademy@gmail.com</div>
     </div>
   </div>
 
   <header>
     <div class="container nav">
       <a href="#top" class="brand">
-        <img src="logo.png" alt="World Protocol Academy logo" />
+        <img src="logo.png" alt="World Protocol Academy logo" onerror="this.style.display='none';" />
         <div class="brand-text">
           <h1>World Protocol Academy</h1>
           <p>Protocol • Diplomacy • Security • Communication • Professional Readiness</p>
@@ -1135,6 +1135,10 @@
         </div>
 
         <div class="founder">
+          <div class="founder-panel founder-photo-panel">
+            <img src="founder.jpg" alt="Assoc. Prof. Sande Smiljanov" class="founder-photo" />
+          </div>
+
           <div class="founder-panel">
             <h4>Assoc. Prof. Sande Smiljanov</h4>
             <p>
@@ -1226,7 +1230,8 @@
       </div>
 
       <div class="footer-bottom">
-        © <span id="year"></span> World Protocol Academy. All rights reserved.
+        <div>worldprotocolacademy@gmail.com</div>
+        <div>© <span id="year"></span> World Protocol Academy. All rights reserved.</div>
       </div>
     </div>
   </footer>
@@ -1673,6 +1678,8 @@
 
         if (data && data.ok && data.answer) {
           addMessage("bot", data.answer);
+        } else if (data && data.error) {
+          addMessage("bot", data.error);
         } else {
           addMessage("bot", ui().error);
         }
