@@ -1239,474 +1239,661 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
-<!-- WPA FINAL AI BOT START -->
-<style>
-  .wpa2-bot-wrap {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    z-index: 99999;
-    font-family: Arial, Helvetica, sans-serif;
-  }
 
-  .wpa2-bot-toggle {
-    width: 62px;
-    height: 62px;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 26px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.22);
-    background: #b9974d;
-    color: #13263f;
-  }
-
-  .wpa2-bot-panel {
-    width: 380px;
-    max-width: calc(100vw - 24px);
-    height: 580px;
-    max-height: 78vh;
-    background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 16px 40px rgba(0,0,0,0.22);
-    overflow: hidden;
-    display: none;
-    flex-direction: column;
-    margin-bottom: 12px;
-    border: 1px solid rgba(0,0,0,0.08);
-  }
-
-  .wpa2-bot-panel.open {
-    display: flex;
-  }
-
-  .wpa2-bot-header {
-    background: linear-gradient(135deg, #17324f, #0e2238);
-    color: #ffffff;
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .wpa2-bot-title {
-    font-weight: 700;
-    font-size: 15px;
-    line-height: 1.2;
-  }
-
-  .wpa2-bot-subtitle {
-    font-size: 12px;
-    opacity: 0.88;
-    margin-top: 2px;
-  }
-
-  .wpa2-bot-close {
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 22px;
-    cursor: pointer;
-  }
-
-  .wpa2-bot-toolbar {
-    display: flex;
-    gap: 8px;
-    padding: 10px 12px;
-    border-bottom: 1px solid #e8e8e8;
-    background: #fafafa;
-  }
-
-  .wpa2-bot-toolbar select,
-  .wpa2-bot-toolbar button {
-    border: 1px solid #d8d8d8;
-    background: #fff;
-    border-radius: 10px;
-    padding: 8px 10px;
-    font-size: 13px;
-  }
-
-  .wpa2-bot-toolbar button {
-    cursor: pointer;
-  }
-
-  .wpa2-bot-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px 12px;
-    background: #f7f8fa;
-  }
-
-  .wpa2-bot-msg {
-    margin-bottom: 12px;
-    display: flex;
-  }
-
-  .wpa2-bot-msg.user {
-    justify-content: flex-end;
-  }
-
-  .wpa2-bot-bubble {
-    max-width: 88%;
-    padding: 10px 12px;
-    border-radius: 14px;
-    line-height: 1.55;
-    font-size: 14px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-
-  .wpa2-bot-msg.bot .wpa2-bot-bubble {
-    background: #ffffff;
-    color: #1d1d1d;
-    border: 1px solid #e4e4e4;
-  }
-
-  .wpa2-bot-msg.user .wpa2-bot-bubble {
-    background: #17324f;
-    color: #ffffff;
-  }
-
-  .wpa2-bot-footer {
-    border-top: 1px solid #e8e8e8;
-    padding: 10px;
-    background: #ffffff;
-  }
-
-  .wpa2-bot-input-row {
-    display: flex;
-    gap: 8px;
-  }
-
-  .wpa2-bot-input {
-    flex: 1;
-    border: 1px solid #d6d6d6;
-    border-radius: 12px;
-    padding: 10px 12px;
-    font-size: 14px;
-    outline: none;
-  }
-
-  .wpa2-bot-send {
-    border: none;
-    border-radius: 12px;
-    background: #b9974d;
-    color: #13263f;
-    font-weight: 700;
-    padding: 0 16px;
-    cursor: pointer;
-  }
-
-  .wpa2-bot-note {
-    font-size: 11px;
-    color: #6d6d6d;
-    margin-top: 8px;
-    line-height: 1.4;
-  }
-
-  @media (max-width: 640px) {
+  <!-- WPA FINAL AI BOT START -->
+  <style>
     .wpa2-bot-wrap {
-      right: 12px;
-      bottom: 12px;
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 99999;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .wpa2-bot-toggle {
+      width: 62px;
+      height: 62px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 26px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+      background: #b9974d;
+      color: #13263f;
     }
 
     .wpa2-bot-panel {
-      width: min(96vw, 380px);
-      height: 72vh;
+      width: 380px;
+      max-width: calc(100vw - 24px);
+      height: 580px;
+      max-height: 78vh;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      margin-bottom: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
     }
-  }
-</style>
 
-<div class="wpa2-bot-wrap">
-  <div class="wpa2-bot-panel" id="wpa2BotPanel">
-    <div class="wpa2-bot-header">
-      <div>
-        <div class="wpa2-bot-title">Virtual Sande AI</div>
-        <div class="wpa2-bot-subtitle">World Protocol Academy</div>
+    .wpa2-bot-panel.open {
+      display: flex;
+    }
+
+    .wpa2-bot-header {
+      background: linear-gradient(135deg, #17324f, #0e2238);
+      color: #ffffff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .wpa2-bot-title {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+
+    .wpa2-bot-subtitle {
+      font-size: 12px;
+      opacity: 0.88;
+      margin-top: 2px;
+    }
+
+    .wpa2-bot-close {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .wpa2-bot-toolbar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #e8e8e8;
+      background: #fafafa;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .wpa2-bot-toolbar select,
+    .wpa2-bot-toolbar button {
+      border: 1px solid #d8d8d8;
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .wpa2-bot-toolbar button {
+      cursor: pointer;
+    }
+
+    .wpa2-bot-status {
+      margin-left: auto;
+      font-size: 11px;
+      color: #6a6a6a;
+    }
+
+    .wpa2-bot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 12px;
+      background: #f7f8fa;
+    }
+
+    .wpa2-bot-msg {
+      margin-bottom: 12px;
+      display: flex;
+    }
+
+    .wpa2-bot-msg.user {
+      justify-content: flex-end;
+    }
+
+    .wpa2-bot-bubble {
+      max-width: 88%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      line-height: 1.55;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .wpa2-bot-msg.bot .wpa2-bot-bubble {
+      background: #ffffff;
+      color: #1d1d1d;
+      border: 1px solid #e4e4e4;
+    }
+
+    .wpa2-bot-msg.user .wpa2-bot-bubble {
+      background: #17324f;
+      color: #ffffff;
+    }
+
+    .wpa2-bot-meta {
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: #6b7280;
+    }
+
+    .wpa2-bot-footer {
+      border-top: 1px solid #e8e8e8;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .wpa2-bot-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .wpa2-bot-input {
+      flex: 1;
+      border: 1px solid #d6d6d6;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .wpa2-bot-send {
+      border: none;
+      border-radius: 12px;
+      background: #b9974d;
+      color: #13263f;
+      font-weight: 700;
+      padding: 0 16px;
+      cursor: pointer;
+    }
+
+    .wpa2-bot-note {
+      font-size: 11px;
+      color: #6d6d6d;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .wpa2-bot-send:disabled,
+    .wpa2-bot-toolbar button:disabled,
+    .wpa2-bot-toolbar select:disabled,
+    .wpa2-bot-input:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 640px) {
+      .wpa2-bot-wrap {
+        right: 12px;
+        bottom: 12px;
+      }
+
+      .wpa2-bot-panel {
+        width: min(96vw, 380px);
+        height: 72vh;
+      }
+
+      .wpa2-bot-status {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+
+  <div class="wpa2-bot-wrap">
+    <div class="wpa2-bot-panel" id="wpa2BotPanel">
+      <div class="wpa2-bot-header">
+        <div>
+          <div class="wpa2-bot-title">Virtual Sande AI</div>
+          <div class="wpa2-bot-subtitle">World Protocol Academy</div>
+        </div>
+        <button class="wpa2-bot-close" id="wpa2BotClose" aria-label="Close">×</button>
       </div>
-      <button class="wpa2-bot-close" id="wpa2BotClose" aria-label="Close">×</button>
+
+      <div class="wpa2-bot-toolbar">
+        <select id="wpa2BotLang" aria-label="Language">
+          <option value="mk">Македонски</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="es">Español</option>
+          <option value="sq">Shqip</option>
+          <option value="tr">Türkçe</option>
+          <option value="hr">Hrvatski</option>
+          <option value="bs">Bosanski</option>
+          <option value="sl">Slovenščina</option>
+        </select>
+        <button type="button" id="wpa2BotClear">Исчисти</button>
+        <div class="wpa2-bot-status" id="wpa2BotStatus"></div>
+      </div>
+
+      <div class="wpa2-bot-messages" id="wpa2BotMessages"></div>
+
+      <div class="wpa2-bot-footer">
+        <div class="wpa2-bot-input-row">
+          <input
+            type="text"
+            id="wpa2BotInput"
+            class="wpa2-bot-input"
+            placeholder="Напишете прашање..."
+            maxlength="700"
+          />
+          <button type="button" class="wpa2-bot-send" id="wpa2BotSend">Испрати</button>
+        </div>
+        <div class="wpa2-bot-note" id="wpa2BotNote">
+          Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.
+        </div>
+      </div>
     </div>
 
-    <div class="wpa2-bot-toolbar">
-      <select id="wpa2BotLang">
-        <option value="mk">Македонски</option>
-        <option value="en">English</option>
-        <option value="de">Deutsch</option>
-        <option value="fr">Français</option>
-        <option value="it">Italiano</option>
-        <option value="es">Español</option>
-        <option value="sq">Shqip</option>
-        <option value="tr">Türkçe</option>
-        <option value="hr">Hrvatski</option>
-        <option value="bs">Bosanski</option>
-        <option value="sl">Slovenščina</option>
-      </select>
-      <button type="button" id="wpa2BotClear">Исчисти</button>
-    </div>
-
-    <div class="wpa2-bot-messages" id="wpa2BotMessages"></div>
-
-    <div class="wpa2-bot-footer">
-      <div class="wpa2-bot-input-row">
-        <input
-          type="text"
-          id="wpa2BotInput"
-          class="wpa2-bot-input"
-          placeholder="Напишете прашање..."
-          maxlength="700"
-        />
-        <button type="button" class="wpa2-bot-send" id="wpa2BotSend">Испрати</button>
-      </div>
-      <div class="wpa2-bot-note" id="wpa2BotNote">
-        Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.
-      </div>
-    </div>
+    <button class="wpa2-bot-toggle" id="wpa2BotToggle" aria-label="Open AI bot">🤖</button>
   </div>
 
-  <button class="wpa2-bot-toggle" id="wpa2BotToggle" aria-label="Open AI bot">🤖</button>
-</div>
+  <script>
+    (function () {
+      const API_URL = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask";
+      const STORAGE_LANG = "wpa2-bot-lang";
+      const STORAGE_CHAT = "wpa2-bot-history-v2";
+      const MAX_HISTORY_ITEMS = 6;
+      const CLIENT_TIMEOUT_MS = 13000;
 
-<script>
-  (function () {
-    const API_URL = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask";
-    const STORAGE_LANG = "wpa2-bot-lang";
+      const panel = document.getElementById("wpa2BotPanel");
+      const toggle = document.getElementById("wpa2BotToggle");
+      const closeBtn = document.getElementById("wpa2BotClose");
+      const clearBtn = document.getElementById("wpa2BotClear");
+      const messagesEl = document.getElementById("wpa2BotMessages");
+      const inputEl = document.getElementById("wpa2BotInput");
+      const sendBtn = document.getElementById("wpa2BotSend");
+      const langEl = document.getElementById("wpa2BotLang");
+      const noteEl = document.getElementById("wpa2BotNote");
+      const statusEl = document.getElementById("wpa2BotStatus");
 
-    const panel = document.getElementById("wpa2BotPanel");
-    const toggle = document.getElementById("wpa2BotToggle");
-    const closeBtn = document.getElementById("wpa2BotClose");
-    const clearBtn = document.getElementById("wpa2BotClear");
-    const messagesEl = document.getElementById("wpa2BotMessages");
-    const inputEl = document.getElementById("wpa2BotInput");
-    const sendBtn = document.getElementById("wpa2BotSend");
-    const langEl = document.getElementById("wpa2BotLang");
-    const noteEl = document.getElementById("wpa2BotNote");
+      let isBusy = false;
+      let conversation = [];
 
-    const UI_TEXT = {
-      mk: {
-        welcome: "Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.",
-        placeholder: "Напишете прашање...",
-        send: "Испрати",
-        clear: "Исчисти",
-        note: "Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.",
-        typing: "Virtual Sande пишува...",
-        error: "Привремена грешка. Обидете се повторно.",
-        network: "Проблем со конекцијата."
-      },
-      en: {
-        welcome: "Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.",
-        placeholder: "Type your question...",
-        send: "Send",
-        clear: "Clear",
-        note: "Ask about protocol, diplomacy, state protocol, etiquette, and international relations.",
-        typing: "Virtual Sande is typing...",
-        error: "Temporary error. Please try again.",
-        network: "Network problem."
-      },
-      de: {
-        welcome: "Willkommen. Ich bin Virtual Sande AI. Stellen Sie eine Frage zu Protokoll, Diplomatie, Staatsprotokoll, Etikette oder internationalen Beziehungen.",
-        placeholder: "Schreiben Sie Ihre Frage...",
-        send: "Senden",
-        clear: "Löschen",
-        note: "Fragen Sie zu Protokoll, Diplomatie, Staatsprotokoll, Etikette und internationalen Beziehungen.",
-        typing: "Virtual Sande schreibt...",
-        error: "Vorübergehender Fehler. Bitte versuchen Sie es erneut.",
-        network: "Netzwerkproblem."
-      },
-      fr: {
-        welcome: "Bienvenue. Je suis Virtual Sande AI. Posez une question sur le protocole, la diplomatie, le protocole d'État, l'étiquette ou les relations internationales.",
-        placeholder: "Écrivez votre question...",
-        send: "Envoyer",
-        clear: "Effacer",
-        note: "Posez des questions sur le protocole, la diplomatie, le protocole d'État, l'étiquette et les relations internationales.",
-        typing: "Virtual Sande écrit...",
-        error: "Erreur temporaire. Veuillez réessayer.",
-        network: "Problème réseau."
-      },
-      it: {
-        welcome: "Benvenuto. Sono Virtual Sande AI. Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta o relazioni internazionali.",
-        placeholder: "Scrivi la tua domanda...",
-        send: "Invia",
-        clear: "Pulisci",
-        note: "Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta e relazioni internazionali.",
-        typing: "Virtual Sande sta scrivendo...",
-        error: "Errore temporaneo. Riprova.",
-        network: "Problema di rete."
-      },
-      es: {
-        welcome: "Bienvenido. Soy Virtual Sande AI. Haz una pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta o relaciones internacionales.",
-        placeholder: "Escribe tu pregunta...",
-        send: "Enviar",
-        clear: "Borrar",
-        note: "Pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta y relaciones internacionales.",
-        typing: "Virtual Sande está escribiendo...",
-        error: "Error temporal. Inténtalo de nuevo.",
-        network: "Problema de red."
-      },
-      sq: {
-        welcome: "Mirë se vini. Unë jam Virtual Sande AI. Bëni një pyetje për protokollin, diplomacinë, protokollin shtetëror, etikën ose marrëdhëniet ndërkombëtare.",
-        placeholder: "Shkruani pyetjen tuaj...",
-        send: "Dërgo",
-        clear: "Pastro",
-        note: "Pyesni për protokollin, diplomacinë, protokollin shtetëror, etikën dhe marrëdhëniet ndërkombëtare.",
-        typing: "Virtual Sande po shkruan...",
-        error: "Gabim i përkohshëm. Provoni përsëri.",
-        network: "Problem rrjeti."
-      },
-      tr: {
-        welcome: "Hoş geldiniz. Ben Virtual Sande AI. Protokol, diplomasi, devlet protokolü, görgü veya uluslararası ilişkiler hakkında soru sorun.",
-        placeholder: "Sorunuzu yazın...",
-        send: "Gönder",
-        clear: "Temizle",
-        note: "Protokol, diplomasi, devlet protokolü, görgü ve uluslararası ilişkiler hakkında sorun.",
-        typing: "Virtual Sande yazıyor...",
-        error: "Geçici hata. Lütfen tekrar deneyin.",
-        network: "Ağ sorunu."
-      },
-      hr: {
-        welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomaciji, državnom protokolu, bontonu ili međunarodnim odnosima.",
-        placeholder: "Upišite svoje pitanje...",
-        send: "Pošalji",
-        clear: "Obriši",
-        note: "Pitajte o protokolu, diplomaciji, državnom protokolu, bontonu i međunarodnim odnosima.",
-        typing: "Virtual Sande piše...",
-        error: "Privremena greška. Pokušajte ponovno.",
-        network: "Problem s mrežom."
-      },
-      bs: {
-        welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomatiji, državnom protokolu, bontonu ili međunarodnim odnosima.",
-        placeholder: "Upišite svoje pitanje...",
-        send: "Pošalji",
-        clear: "Obriši",
-        note: "Pitajte o protokolu, diplomatiji, državnom protokolu, bontonu i međunarodnim odnosima.",
-        typing: "Virtual Sande piše...",
-        error: "Privremena greška. Pokušajte ponovo.",
-        network: "Problem s mrežom."
-      },
-      sl: {
-        welcome: "Dobrodošli. Sem Virtual Sande AI. Zastavite vprašanje o protokolu, diplomaciji, državnem protokolu, bontonu ali mednarodnih odnosih.",
-        placeholder: "Vpišite svoje vprašanje...",
-        send: "Pošlji",
-        clear: "Počisti",
-        note: "Vprašajte o protokolu, diplomaciji, državnem protokolu, bontonu in mednarodnih odnosih.",
-        typing: "Virtual Sande piše...",
-        error: "Začasna napaka. Poskusite znova.",
-        network: "Težava z omrežjem."
-      }
-    };
-
-    function currentLang() {
-      return langEl.value || "mk";
-    }
-
-    function ui() {
-      return UI_TEXT[currentLang()] || UI_TEXT.mk;
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;");
-    }
-
-    function addMessage(role, text) {
-      const row = document.createElement("div");
-      row.className = "wpa2-bot-msg " + role;
-
-      const bubble = document.createElement("div");
-      bubble.className = "wpa2-bot-bubble";
-      bubble.innerHTML = escapeHtml(text);
-
-      row.appendChild(bubble);
-      messagesEl.appendChild(row);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    function renderWelcome() {
-      messagesEl.innerHTML = "";
-      addMessage("bot", ui().welcome);
-    }
-
-    function applyLanguageTexts() {
-      inputEl.placeholder = ui().placeholder;
-      sendBtn.textContent = ui().send;
-      clearBtn.textContent = ui().clear;
-      noteEl.textContent = ui().note;
-      localStorage.setItem(STORAGE_LANG, currentLang());
-      renderWelcome();
-    }
-
-    function openBot() {
-      panel.classList.add("open");
-      inputEl.focus();
-    }
-
-    function closeBot() {
-      panel.classList.remove("open");
-    }
-
-    function clearChat() {
-      inputEl.value = "";
-      renderWelcome();
-    }
-
-    async function askBot() {
-      const message = inputEl.value.trim();
-      if (!message) return;
-
-      addMessage("user", message);
-      inputEl.value = "";
-      addMessage("bot", ui().typing);
-
-      try {
-        const res = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            message,
-            lang: currentLang()
-          })
-        });
-
-        const data = await res.json();
-
-        const typingNode = messagesEl.querySelector(".wpa2-bot-msg.bot:last-child");
-        if (typingNode) typingNode.remove();
-
-        if (data && data.ok && data.answer) {
-          addMessage("bot", data.answer);
-        } else if (data && data.error) {
-          addMessage("bot", data.error);
-        } else {
-          addMessage("bot", ui().error);
+      const UI_TEXT = {
+        mk: {
+          welcome: "Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.",
+          placeholder: "Напишете прашање...",
+          send: "Испрати",
+          clear: "Исчисти",
+          note: "Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.",
+          typing: "Virtual Sande пишува...",
+          error: "Привремена грешка. Обидете се повторно.",
+          network: "Проблем со конекцијата.",
+          timeout: "Одговорот доцни. Обидете се повторно за момент.",
+          cleared: "Разговорот е исчистен."
+        },
+        en: {
+          welcome: "Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.",
+          placeholder: "Type your question...",
+          send: "Send",
+          clear: "Clear",
+          note: "Ask about protocol, diplomacy, state protocol, etiquette, and international relations.",
+          typing: "Virtual Sande is typing...",
+          error: "Temporary error. Please try again.",
+          network: "Network problem.",
+          timeout: "The response is taking too long. Please try again.",
+          cleared: "The conversation has been cleared."
+        },
+        de: {
+          welcome: "Willkommen. Ich bin Virtual Sande AI. Stellen Sie eine Frage zu Protokoll, Diplomatie, Staatsprotokoll, Etikette oder internationalen Beziehungen.",
+          placeholder: "Schreiben Sie Ihre Frage...",
+          send: "Senden",
+          clear: "Löschen",
+          note: "Fragen Sie zu Protokoll, Diplomatie, Staatsprotokoll, Etikette und internationalen Beziehungen.",
+          typing: "Virtual Sande schreibt...",
+          error: "Vorübergehender Fehler. Bitte versuchen Sie es erneut.",
+          network: "Netzwerkproblem.",
+          timeout: "Die Antwort dauert zu lange. Bitte versuchen Sie es erneut.",
+          cleared: "Das Gespräch wurde gelöscht."
+        },
+        fr: {
+          welcome: "Bienvenue. Je suis Virtual Sande AI. Posez une question sur le protocole, la diplomatie, le protocole d'État, l'étiquette ou les relations internationales.",
+          placeholder: "Écrivez votre question...",
+          send: "Envoyer",
+          clear: "Effacer",
+          note: "Posez des questions sur le protocole, la diplomatie, le protocole d'État, l'étiquette et les relations internationales.",
+          typing: "Virtual Sande écrit...",
+          error: "Erreur temporaire. Veuillez réessayer.",
+          network: "Problème réseau.",
+          timeout: "La réponse prend trop de temps. Veuillez réessayer.",
+          cleared: "La conversation a été effacée."
+        },
+        it: {
+          welcome: "Benvenuto. Sono Virtual Sande AI. Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta o relazioni internazionali.",
+          placeholder: "Scrivi la tua domanda...",
+          send: "Invia",
+          clear: "Pulisci",
+          note: "Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta e relazioni internazionali.",
+          typing: "Virtual Sande sta scrivendo...",
+          error: "Errore temporaneo. Riprova.",
+          network: "Problema di rete.",
+          timeout: "La risposta sta impiegando troppo tempo. Riprova.",
+          cleared: "La conversazione è stata cancellata."
+        },
+        es: {
+          welcome: "Bienvenido. Soy Virtual Sande AI. Haz una pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta o relaciones internacionales.",
+          placeholder: "Escribe tu pregunta...",
+          send: "Enviar",
+          clear: "Borrar",
+          note: "Pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta y relaciones internacionales.",
+          typing: "Virtual Sande está escribiendo...",
+          error: "Error temporal. Inténtalo de nuevo.",
+          network: "Problema de red.",
+          timeout: "La respuesta está tardando demasiado. Inténtalo de nuevo.",
+          cleared: "La conversación ha sido borrada."
+        },
+        sq: {
+          welcome: "Mirë se vini. Unë jam Virtual Sande AI. Bëni një pyetje për protokollin, diplomacinë, protokollin shtetëror, etikën ose marrëdhëniet ndërkombëtare.",
+          placeholder: "Shkruani pyetjen tuaj...",
+          send: "Dërgo",
+          clear: "Pastro",
+          note: "Pyesni për protokollin, diplomacinë, protokollin shtetëror, etikën dhe marrëdhëniet ndërkombëtare.",
+          typing: "Virtual Sande po shkruan...",
+          error: "Gabim i përkohshëm. Provoni përsëri.",
+          network: "Problem rrjeti.",
+          timeout: "Përgjigjja po zgjat shumë. Provoni përsëri.",
+          cleared: "Biseda u pastrua."
+        },
+        tr: {
+          welcome: "Hoş geldiniz. Ben Virtual Sande AI. Protokol, diplomasi, devlet protokolü, görgü veya uluslararası ilişkiler hakkında soru sorun.",
+          placeholder: "Sorunuzu yazın...",
+          send: "Gönder",
+          clear: "Temizle",
+          note: "Protokol, diplomasi, devlet protokolü, görgü ve uluslararası ilişkiler hakkında sorun.",
+          typing: "Virtual Sande yazıyor...",
+          error: "Geçici hata. Lütfen tekrar deneyin.",
+          network: "Ağ sorunu.",
+          timeout: "Yanıt çok uzun sürüyor. Lütfen tekrar deneyin.",
+          cleared: "Konuşma temizlendi."
+        },
+        hr: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomaciji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomaciji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovno.",
+          network: "Problem s mrežom.",
+          timeout: "Odgovor predugo traje. Pokušajte ponovno.",
+          cleared: "Razgovor je obrisan."
+        },
+        bs: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomatiji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomatiji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovo.",
+          network: "Problem s mrežom.",
+          timeout: "Odgovor predugo traje. Pokušajte ponovo.",
+          cleared: "Razgovor je obrisan."
+        },
+        sl: {
+          welcome: "Dobrodošli. Sem Virtual Sande AI. Zastavite vprašanje o protokolu, diplomaciji, državnem protokolu, bontonu ali mednarodnih odnosih.",
+          placeholder: "Vpišite svoje vprašanje...",
+          send: "Pošlji",
+          clear: "Počisti",
+          note: "Vprašajte o protokolu, diplomaciji, državnem protokolu, bontonu in mednarodnih odnosih.",
+          typing: "Virtual Sande piše...",
+          error: "Začasna napaka. Poskusite znova.",
+          network: "Težava z omrežjem.",
+          timeout: "Odgovor traja predolgo. Poskusite znova.",
+          cleared: "Pogovor je bil počiščen."
         }
-      } catch (e) {
-        const typingNode = messagesEl.querySelector(".wpa2-bot-msg.bot:last-child");
-        if (typingNode) typingNode.remove();
-        addMessage("bot", ui().network);
+      };
+
+      function currentLang() {
+        return langEl.value || "mk";
       }
-    }
 
-    toggle.addEventListener("click", openBot);
-    closeBtn.addEventListener("click", closeBot);
-    clearBtn.addEventListener("click", clearChat);
-    sendBtn.addEventListener("click", askBot);
+      function ui() {
+        return UI_TEXT[currentLang()] || UI_TEXT.mk;
+      }
 
-    inputEl.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") askBot();
-    });
+      function escapeHtml(str) {
+        return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+      }
 
-    langEl.addEventListener("change", applyLanguageTexts);
+      function saveConversation() {
+        try {
+          sessionStorage.setItem(STORAGE_CHAT, JSON.stringify(conversation.slice(-MAX_HISTORY_ITEMS)));
+        } catch (_) {}
+      }
 
-    const savedLang = localStorage.getItem(STORAGE_LANG);
-    langEl.value = savedLang && UI_TEXT[savedLang] ? savedLang : "mk";
-    applyLanguageTexts();
-  })();
-</script>
-<!-- WPA FINAL AI BOT END -->
+      function loadConversation() {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_CHAT);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .filter(item => item && typeof item === "object")
+            .map(item => ({
+              role: item.role === "assistant" ? "assistant" : "user",
+              content: String(item.content || "").trim()
+            }))
+            .filter(item => item.content)
+            .slice(-MAX_HISTORY_ITEMS);
+        } catch (_) {
+          return [];
+        }
+      }
 
+      function setBusy(state) {
+        isBusy = state;
+        inputEl.disabled = state;
+        sendBtn.disabled = state;
+        clearBtn.disabled = state;
+        langEl.disabled = state;
+      }
+
+      function setStatus(text) {
+        statusEl.textContent = text || "";
+      }
+
+      function createMessageNode(role, text, metaText) {
+        const row = document.createElement("div");
+        row.className = "wpa2-bot-msg " + role;
+
+        const bubble = document.createElement("div");
+        bubble.className = "wpa2-bot-bubble";
+        bubble.innerHTML = escapeHtml(text);
+
+        if (metaText) {
+          const meta = document.createElement("div");
+          meta.className = "wpa2-bot-meta";
+          meta.innerHTML = escapeHtml(metaText);
+          bubble.appendChild(meta);
+        }
+
+        row.appendChild(bubble);
+        return row;
+      }
+
+      function appendMessage(role, text, metaText) {
+        const node = createMessageNode(role, text, metaText);
+        messagesEl.appendChild(node);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return node;
+      }
+
+      function renderConversation() {
+        messagesEl.innerHTML = "";
+
+        if (!conversation.length) {
+          appendMessage("bot", ui().welcome);
+          return;
+        }
+
+        for (const item of conversation) {
+          appendMessage(item.role === "user" ? "user" : "bot", item.content);
+        }
+      }
+
+      function applyLanguageTexts() {
+        inputEl.placeholder = ui().placeholder;
+        sendBtn.textContent = ui().send;
+        clearBtn.textContent = ui().clear;
+        noteEl.textContent = ui().note;
+        localStorage.setItem(STORAGE_LANG, currentLang());
+
+        if (!conversation.length) {
+          renderConversation();
+        }
+      }
+
+      function openBot() {
+        panel.classList.add("open");
+        inputEl.focus();
+      }
+
+      function closeBot() {
+        panel.classList.remove("open");
+      }
+
+      function clearChat() {
+        if (isBusy) return;
+        conversation = [];
+        saveConversation();
+        renderConversation();
+        inputEl.value = "";
+        setStatus(ui().cleared);
+        setTimeout(() => {
+          if (statusEl.textContent === ui().cleared) setStatus("");
+        }, 1800);
+      }
+
+      function buildHistoryPayload() {
+        return conversation.slice(-MAX_HISTORY_ITEMS).map(item => ({
+          role: item.role === "assistant" ? "assistant" : "user",
+          content: item.content
+        }));
+      }
+
+      function pushConversation(role, content) {
+        conversation.push({
+          role,
+          content: String(content || "").trim()
+        });
+        conversation = conversation.filter(x => x.content).slice(-MAX_HISTORY_ITEMS);
+        saveConversation();
+      }
+
+      function buildMetaFromResponse(data) {
+        if (!data || typeof data !== "object") return "";
+
+        const parts = [];
+
+        if (data.mode === "author") parts.push("author mode");
+        if (data.mode === "fallback") parts.push("fallback mode");
+        if (data.mode === "boundary") parts.push("boundary");
+        if (data.followUpUsed) parts.push("follow-up");
+        if (data.servedBy) parts.push("served by: " + data.servedBy);
+        if (Array.isArray(data.sources) && data.sources.length) {
+          parts.push("sources: " + data.sources.join("; "));
+        }
+
+        return parts.join(" • ");
+      }
+
+      async function askBot() {
+        const message = inputEl.value.trim();
+        if (!message || isBusy) return;
+
+        appendMessage("user", message);
+        pushConversation("user", message);
+        inputEl.value = "";
+
+        setBusy(true);
+        setStatus(ui().typing);
+
+        const typingNode = appendMessage("bot", ui().typing);
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), CLIENT_TIMEOUT_MS);
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message,
+              lang: currentLang(),
+              history: buildHistoryPayload()
+            }),
+            signal: controller.signal
+          });
+
+          let data = null;
+          try {
+            data = await res.json();
+          } catch (_) {}
+
+          typingNode.remove();
+
+          if (data && data.ok && data.answer) {
+            const metaText = buildMetaFromResponse(data);
+            appendMessage("bot", data.answer, metaText);
+            pushConversation("assistant", data.answer);
+            setStatus("");
+          } else if (data && data.error) {
+            appendMessage("bot", data.error);
+            pushConversation("assistant", data.error);
+            setStatus("");
+          } else {
+            appendMessage("bot", ui().error);
+            pushConversation("assistant", ui().error);
+            setStatus("");
+          }
+        } catch (e) {
+          typingNode.remove();
+
+          const msg = e && e.name === "AbortError" ? ui().timeout : ui().network;
+          appendMessage("bot", msg);
+          pushConversation("assistant", msg);
+          setStatus("");
+        } finally {
+          clearTimeout(timer);
+          setBusy(false);
+          inputEl.focus();
+        }
+      }
+
+      toggle.addEventListener("click", openBot);
+      closeBtn.addEventListener("click", closeBot);
+      clearBtn.addEventListener("click", clearChat);
+      sendBtn.addEventListener("click", askBot);
+
+      inputEl.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") askBot();
+      });
+
+      langEl.addEventListener("change", applyLanguageTexts);
+
+      const savedLang = localStorage.getItem(STORAGE_LANG);
+      langEl.value = savedLang && UI_TEXT[savedLang] ? savedLang : "mk";
+
+      conversation = loadConversation();
+      applyLanguageTexts();
+      renderConversation();
+    })();
+  </script>
+  <!-- WPA FINAL AI BOT END -->
 </body>
 </html>
