@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="google-site-verification" content="rJy6kmqcyxuq-qV-QxBOJcSgaleKxoJwf9j_1ZBk3Lw" />
@@ -1042,30 +1042,271 @@
       const STORAGE_BOT_LANG = "wpa2-bot-lang";
       const switcher = document.getElementById("wpaSiteLang");
 
-      function applySiteLanguage(lang) {
-        document.documentElement.lang = lang || "mk";
-        try { localStorage.setItem(STORAGE_SITE_LANG, lang); } catch (_) {}
-        try { localStorage.setItem(STORAGE_BOT_LANG, lang); } catch (_) {}
+      const translations = {
+        en: {
+          pageTitle: "World Protocol Academy | Protocol, Diplomacy, Security & Institutional Communication",
+          metaDescription: "World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-supported learning.",
+          topbarLeft: "<strong>World Protocol Academy</strong> — premium independent academy for protocol, diplomacy, security and institutional communication.",
+          topbarRight: "Founder-led • Publications-backed • AI-supported • Global-facing • worldprotocolacademy@gmail.com",
+          brandSubtitle: "Protocol • Diplomacy • Security • Communication • Professional Readiness",
+          nav: ["About", "Programmes", "Formats", "Certification", "AI", "Books", "Papers", "Institutional", "Founder"],
+          langLabel: "Lang",
+          heroEyebrow: "Independent Digital Academy • Professional Platform • Global Perspective",
+          heroTitle: "Where Protocol Meets Diplomacy, Security, Communication and Professional Dignity.",
+          heroText: "World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification, and AI-assisted learning.",
+          heroBtn1: "Explore the Academy",
+          heroBtn2: "Meet Virtual Sande",
+          heroNote: "Built from the distilled essence of the world’s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined into one modern, premium and founder-led academy.",
+          heroCardTitle: "WPA Core Architecture",
+          heroCard: [
+            "<strong>Academy Layer:</strong> programmes, modules and structured learning levels",
+            "<strong>Certification Layer:</strong> assessment, progression and verified digital credentials",
+            "<strong>AI Layer:</strong> Virtual Sande, Q&A, revision and protocol guidance",
+            "<strong>Publication Layer:</strong> books, papers and research-backed authority",
+            "<strong>Institutional Layer:</strong> ministries, embassies, universities and executive teams",
+            "<strong>Trainer Layer:</strong> train-the-trainer and consultant-level development"
+          ],
+          aboutLabel: "About WPA",
+          aboutTitle: "A new standard in protocol education.",
+          aboutText: "World Protocol Academy is designed as a premium hybrid between academy, certification hub, AI-supported learning platform, publications center and institutional advisory model. It does not imitate a state diplomatic academy, nor reduce itself to a soft etiquette school. It stands at the intersection of protocol, diplomacy, security, communication, etiquette and institutional readiness.",
+          aboutCards: [
+            ["Academic Weight", "Research-backed authority", "Books, papers, founder expertise and a serious intellectual base — not empty marketing language."],
+            ["Professional Relevance", "Institutional applicability", "Built for ministries, embassies, protocol officers, public institutions, universities, executives and professionals."],
+            ["Digital Innovation", "AI, testing and modern learning", "Virtual Sande, structured assessment, future 2000-question engine and intelligent revision pathways."]
+          ],
+          progLabel: "Programme Architecture",
+          progTitle: "Four levels. One coherent academy.",
+          progText: "WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.",
+          progCards: [
+            ["Level 1", "Foundation", "Protocol literacy, etiquette basics, bon ton, representation, first impressions and institutional conduct."],
+            ["Level 2", "Professional", "State protocol, diplomatic protocol, official visits, ceremonies, communication and institutional representation."],
+            ["Level 3", "Advanced", "Protocol and security, multilateral readiness, strategic representation and high-responsibility coordination."],
+            ["Level 4", "Train-the-Trainer", "Instructor methodology, structured delivery, protocol pedagogy, assessment standards and ethical teaching practice."]
+          ],
+          connectLabel: "Connect & Presence",
+          connectTitle: "Official channels and academic presence.",
+          connectText: "World Protocol Academy combines public-facing digital channels with a strong academic and professional footprint led by its founder.",
+          connectCards: [
+            ["Official WPA Channels", "Follow World Protocol Academy", "Stay connected through the Academy’s official channels for updates, educational content, announcements and public visibility."],
+            ["Founder’s Academic & Professional Profiles", "Academic and institutional footprint", "Explore the founder’s academic, institutional and professional presence across trusted educational and scholarly platforms."]
+          ],
+          founderLabel: "Founder",
+          founderTitle: "Founder-led. Academic in spirit. Professional in execution.",
+          founderCards: [
+            ["Assoc. Prof. Sande Smiljanov", ["Founder of World Protocol Academy and a protocol professional whose work connects protocol, diplomacy, security, public representation and institutional communication.", "WPA is built on a founder-led model that combines real-world institutional experience, academic publications, structured learning and a future-facing digital architecture.", "This academy is designed not as a symbolic project, but as a serious professional ecosystem with educational, institutional, communication and AI-supported dimensions."]],
+            ["Why this academy matters", ["Protocol today is not merely ceremony. It is order, representation, readiness, communication, dignity, security awareness and institutional intelligence.", "WPA brings these dimensions together into one coherent platform: academic depth, practical application, certification pathways, AI support, etiquette and communication development, and institutional relevance.", "The long-term vision is clear: to become a distinctive world-class academy in protocol, diplomacy, security, communication and professional readiness."]]
+          ],
+          ctaTitle: "We are building a world-class academy — with structure, dignity and clear direction.",
+          ctaText: "This homepage is the first integrated foundation of the new World Protocol Academy identity. The next phases will add dedicated programme pages, certification pages, AI assistant pages, institutional training pages, resources, test architecture and structured learner pathways.",
+          ctaBtn1: "See Programme Logic",
+          ctaBtn2: "Explore Papers",
+          footerHead: "World Protocol Academy",
+          footerText: "Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-assisted learning.",
+          footerDisclaimer: "WPA is an independent academy and digital platform. It is not presented as a state diplomatic academy or a degree-awarding university institution.",
+          footerCore: "Core Areas",
+          footerUseful: "Useful Pages",
+          footerChannels: "Official Channels",
+          footerAcademic: "Academic Profiles",
+          footerContact: "Contact",
+          footerRights: "World Protocol Academy. All rights reserved."
+        },
+        mk: {
+          pageTitle: "World Protocol Academy | Протокол, дипломатија, безбедност и институционална комуникација",
+          metaDescription: "World Protocol Academy е независна дигитална академија и професионална платформа фокусирана на протокол, дипломатија, безбедност, институционална комуникација, мултилатерална професионална подготвеност, сертификација и AI-поддржано учење.",
+          topbarLeft: "<strong>World Protocol Academy</strong> — премиум независна академија за протокол, дипломатија, безбедност и институционална комуникација.",
+          topbarRight: "Водена од основач • Поткрепена со публикации • AI-поддржана • Глобално насочена • worldprotocolacademy@gmail.com",
+          brandSubtitle: "Протокол • Дипломатија • Безбедност • Комуникација • Професионална подготвеност",
+          nav: ["За нас", "Програми", "Формати", "Сертификација", "AI", "Книги", "Трудови", "Институционално", "Основач"],
+          langLabel: "Јазик",
+          heroEyebrow: "Независна дигитална академија • Професионална платформа • Глобална перспектива",
+          heroTitle: "Каде што протоколот се среќава со дипломатијата, безбедноста, комуникацијата и професионалното достоинство.",
+          heroText: "World Protocol Academy е независна дигитална академија и професионална платформа фокусирана на протокол, дипломатија, безбедност, институционална комуникација, мултилатерална професионална подготвеност, сертификација и AI-поддржано учење.",
+          heroBtn1: "Истражете ја Академијата",
+          heroBtn2: "Запознајте го Virtual Sande",
+          heroNote: "Изградена од дестилираната суштина на најсилните светски протоколарни школи, дипломатски академии, системи за извршно учење и институционални модели за обука — преобликувани во една модерна, премиум и академија водена од основач.",
+          heroCardTitle: "WPA Основна архитектура",
+          heroCard: [
+            "<strong>Академски слој:</strong> програми, модули и структурирани нивоа на учење",
+            "<strong>Слој на сертификација:</strong> оценување, прогресија и верификувани дигитални акредитиви",
+            "<strong>AI слој:</strong> Virtual Sande, прашања и одговори, ревизија и протоколарни насоки",
+            "<strong>Публикациски слој:</strong> книги, трудови и авторитет поткрепен со истражување",
+            "<strong>Институционален слој:</strong> министерства, амбасади, универзитети и извршни тимови",
+            "<strong>Тренерски слој:</strong> train-the-trainer и развој на консултантско ниво"
+          ],
+          aboutLabel: "За WPA",
+          aboutTitle: "Нов стандард во образованието за протокол.",
+          aboutText: "World Protocol Academy е замислена како премиум хибрид меѓу академија, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел. Таа не имитира државна дипломатска академија, ниту се сведува на мека школа за етикеција. Се наоѓа на пресекот меѓу протокол, дипломатија, безбедност, комуникација, етикеција и институционална подготвеност.",
+          aboutCards: [
+            ["Академска тежина", "Авторитет поткрепен со истражување", "Книги, трудови, основачка експертиза и сериозна интелектуална база — не празен маркетиншки јазик."],
+            ["Професионална релевантност", "Институционална применливост", "Создадена за министерства, амбасади, протоколарни службеници, јавни институции, универзитети, извршни лица и професионалци."],
+            ["Дигитална иновација", "AI, тестирање и модерно учење", "Virtual Sande, структурирано оценување, идeн мотор со 2000 прашања и интелигентни патеки за ревизија."]
+          ],
+          progLabel: "Архитектура на програми",
+          progTitle: "Четири нивоа. Една кохерентна академија.",
+          progText: "WPA учењето е структурирано да им служи на почетници, професионалци, напредни практичари и идни тренери.",
+          progCards: [
+            ["Ниво 1", "Основно", "Протоколарна писменост, основи на етикеција, бон-тон, репрезентација, прв впечаток и институционално однесување."],
+            ["Ниво 2", "Професионално", "Државен протокол, дипломатски протокол, официјални посети, церемонии, комуникација и институционална репрезентација."],
+            ["Ниво 3", "Напредно", "Протокол и безбедност, мултилатерална подготвеност, стратешка репрезентација и координација со висока одговорност."],
+            ["Ниво 4", "Train-the-Trainer", "Инструкторска методологија, структурирана испорака, протоколарна педагогија, стандарди за оценување и етичка наставна практика."]
+          ],
+          connectLabel: "Поврзување и присуство",
+          connectTitle: "Официјални канали и академско присуство.",
+          connectText: "World Protocol Academy комбинира јавни дигитални канали со силно академско и професионално присуство предводено од својот основач.",
+          connectCards: [
+            ["Официјални WPA канали", "Следете ја World Protocol Academy", "Останете поврзани преку официјалните канали на Академијата за новости, едукативни содржини, соопштенија и јавна видливост."],
+            ["Академски и професионални профили на основачот", "Академски и институционален отпечаток", "Истражете го академското, институционалното и професионалното присуство на основачот преку доверливи образовни и научни платформи."]
+          ],
+          founderLabel: "Основач",
+          founderTitle: "Водена од основач. Академска по дух. Професионална по изведба.",
+          founderCards: [
+            ["Доц. д-р Санде Смиљанов", ["Основач на World Protocol Academy и протоколарен професионалец чија работа ги поврзува протоколот, дипломатијата, безбедноста, јавната репрезентација и институционалната комуникација.", "WPA е изградена врз модел воден од основач кој комбинира реално институционално искуство, академски публикации, структурирано учење и архитектура насочена кон иднината.", "Оваа академија не е замислена како симболичен проект, туку како сериозен професионален екосистем со образовни, институционални, комуникациски и AI-поддржани димензии."]],
+            ["Зошто оваа академија е важна", ["Протоколот денес не е само церемонија. Тој е ред, репрезентација, подготвеност, комуникација, достоинство, безбедносна свесност и институционална интелигенција.", "WPA ги обединува овие димензии во една кохерентна платформа: академска длабочина, практична примена, патеки за сертификација, AI поддршка, развој на етикеција и комуникација и институционална релевантност.", "Долгорочната визија е јасна: да стане препознатлива светска академија за протокол, дипломатија, безбедност, комуникација и професионална подготвеност."]]
+          ],
+          ctaTitle: "Градиме светска академија — со структура, достоинство и јасна насока.",
+          ctaText: "Оваа почетна страница е првата интегрирана основа на новиот идентитет на World Protocol Academy. Следните фази ќе додадат посебни страници за програми, сертификација, AI асистент, институционални обуки, ресурси, тест архитектура и структурирани патеки за учење.",
+          ctaBtn1: "Видете ја логиката на програмите",
+          ctaBtn2: "Истражете ги трудовите",
+          footerHead: "World Protocol Academy",
+          footerText: "Независна дигитална академија и професионална платформа фокусирана на протокол, дипломатија, безбедност, институционална комуникација, мултилатерална професионална подготвеност и AI-поддржано учење.",
+          footerDisclaimer: "WPA е независна академија и дигитална платформа. Таа не се претставува како државна дипломатска академија или универзитетска институција што доделува дипломи.",
+          footerCore: "Клучни области",
+          footerUseful: "Корисни страници",
+          footerChannels: "Официјални канали",
+          footerAcademic: "Академски профили",
+          footerContact: "Контакт",
+          footerRights: "World Protocol Academy. Сите права се задржани."
+        }
+      };
 
+      function fallbackLang(lang) {
+        return translations[lang] ? lang : "en";
+      }
+
+      function setText(selector, value) {
+        const el = document.querySelector(selector);
+        if (el && typeof value === 'string') el.textContent = value;
+      }
+      function setHTML(selector, value) {
+        const el = document.querySelector(selector);
+        if (el && typeof value === 'string') el.innerHTML = value;
+      }
+      function setAttr(selector, attr, value) {
+        const el = document.querySelector(selector);
+        if (el && typeof value === 'string') el.setAttribute(attr, value);
+      }
+
+      function applyContent(lang) {
+        const t = translations[fallbackLang(lang)];
+        document.documentElement.lang = fallbackLang(lang);
+        document.title = t.pageTitle;
+        setAttr('meta[name="description"]', 'content', t.metaDescription);
+        setAttr('meta[property="og:title"]', 'content', t.pageTitle);
+        setAttr('meta[property="og:description"]', 'content', t.metaDescription);
+        setHTML('.topbar-inner > div:first-child', t.topbarLeft);
+        setText('.topbar-inner > div:last-child', t.topbarRight);
+        setText('.brand-text p', t.brandSubtitle);
+        const navLinks = document.querySelectorAll('nav[aria-label="Primary Navigation"] a');
+        t.nav.forEach((txt, i) => { if (navLinks[i]) navLinks[i].textContent = txt; });
+        setText('.wpa-lang-switcher label', t.langLabel);
+        setText('.hero .eyebrow', t.heroEyebrow);
+        setText('.hero h2', t.heroTitle);
+        setText('.hero-grid > div > p', t.heroText);
+        const heroBtns = document.querySelectorAll('.hero-actions a');
+        if (heroBtns[0]) heroBtns[0].textContent = t.heroBtn1;
+        if (heroBtns[1]) heroBtns[1].textContent = t.heroBtn2;
+        setText('.hero-note', t.heroNote);
+        setText('.hero-card h3', t.heroCardTitle);
+        document.querySelectorAll('.hero-list li').forEach((el, i) => { if (t.heroCard[i]) el.innerHTML = t.heroCard[i]; });
+        setText('#about .label', t.aboutLabel);
+        setText('#about .section-header h3', t.aboutTitle);
+        setText('#about .section-header p', t.aboutText);
+        document.querySelectorAll('#about .grid-3 article').forEach((card, i) => {
+          const vals = t.aboutCards[i]; if (!vals) return;
+          const k = card.querySelector('.small-kicker'); const h = card.querySelector('h4'); const p = card.querySelector('p');
+          if (k) k.textContent = vals[0]; if (h) h.textContent = vals[1]; if (p) p.textContent = vals[2];
+        });
+        setText('#programmes .label', t.progLabel);
+        setText('#programmes .section-header h3', t.progTitle);
+        setText('#programmes .section-header p', t.progText);
+        document.querySelectorAll('#programmes .program-level').forEach((card, i) => {
+          const vals = t.progCards[i]; if (!vals) return;
+          const k = card.querySelector('.small-kicker'); const h = card.querySelector('h4'); const p = card.querySelector('p');
+          if (k) k.textContent = vals[0]; if (h) h.textContent = vals[1]; if (p) p.textContent = vals[2];
+        });
+        setText('#founder .label', t.founderLabel);
+        setText('#founder .section-header h3', t.founderTitle);
+        const founderPanels = document.querySelectorAll('#founder .founder-panel:not(.founder-photo-panel)');
+        if (founderPanels[0]) {
+          founderPanels[0].querySelector('h4').textContent = t.founderCards[0][0];
+          founderPanels[0].querySelectorAll('p').forEach((p, i) => { if (t.founderCards[0][1][i]) p.textContent = t.founderCards[0][1][i]; });
+        }
+        if (founderPanels[1]) {
+          founderPanels[1].querySelector('h4').textContent = t.founderCards[1][0];
+          founderPanels[1].querySelectorAll('p').forEach((p, i) => { if (t.founderCards[1][1][i]) p.textContent = t.founderCards[1][1][i]; });
+        }
+        const cta = document.querySelector('.cta-band');
+        if (cta) {
+          const h = cta.querySelector('h3'); const p = cta.querySelector('p'); const a = cta.querySelectorAll('a');
+          if (h) h.textContent = t.ctaTitle; if (p) p.textContent = t.ctaText;
+          if (a[0]) a[0].textContent = t.ctaBtn1; if (a[1]) a[1].textContent = t.ctaBtn2;
+        }
+        const footerCols = document.querySelectorAll('.footer-grid > div');
+        if (footerCols[0]) {
+          footerCols[0].querySelector('h4').textContent = t.footerHead;
+          const ps = footerCols[0].querySelectorAll('p');
+          if (ps[0]) ps[0].textContent = t.footerText;
+          if (ps[1]) ps[1].textContent = t.footerDisclaimer;
+        }
+        if (footerCols[1]) footerCols[1].querySelector('h4').textContent = t.footerCore;
+        if (footerCols[2]) footerCols[2].querySelector('h4').textContent = t.footerUseful;
+        if (footerCols[3]) footerCols[3].querySelector('h4').textContent = t.footerChannels;
+        if (footerCols[4]) footerCols[4].querySelector('h4').textContent = t.footerAcademic;
+        if (footerCols[5]) footerCols[5].querySelector('h4').textContent = t.footerContact;
+        const footerBottom = document.querySelector('.footer-bottom div:last-child');
+        if (footerBottom) footerBottom.innerHTML = '© <span id="year">' + new Date().getFullYear() + '</span> ' + t.footerRights;
+
+        const connectSection = Array.from(document.querySelectorAll('section')).find(sec => sec.querySelector('.label')?.textContent.includes('Connect') || sec.querySelector('.label')?.textContent.includes('Поврзување'));
+        if (connectSection) {
+          const label = connectSection.querySelector('.label');
+          const h3 = connectSection.querySelector('.section-header h3');
+          const p = connectSection.querySelector('.section-header p');
+          if (label) label.textContent = t.connectLabel;
+          if (h3) h3.textContent = t.connectTitle;
+          if (p) p.textContent = t.connectText;
+          connectSection.querySelectorAll('.grid-2 article').forEach((card, i) => {
+            const vals = t.connectCards[i]; if (!vals) return;
+            const k = card.querySelector('.small-kicker'); const h = card.querySelector('h4'); const pp = card.querySelector('p');
+            if (k) k.textContent = vals[0]; if (h) h.textContent = vals[1]; if (pp) pp.textContent = vals[2];
+          });
+        }
+      }
+
+      function applySiteLanguage(lang) {
+        const effective = fallbackLang(lang);
+        try { localStorage.setItem(STORAGE_SITE_LANG, effective); } catch (_) {}
+        try { localStorage.setItem(STORAGE_BOT_LANG, effective); } catch (_) {}
+        applyContent(effective);
         const botLangSelect = document.getElementById("wpa2BotLang");
         if (botLangSelect) {
-          botLangSelect.value = lang;
+          botLangSelect.value = effective;
           botLangSelect.dispatchEvent(new Event("change"));
         }
       }
 
       const savedLang = (() => {
-        try { return localStorage.getItem(STORAGE_SITE_LANG) || localStorage.getItem(STORAGE_BOT_LANG) || "mk"; }
-        catch (_) { return "mk"; }
+        try { return localStorage.getItem(STORAGE_SITE_LANG) || localStorage.getItem(STORAGE_BOT_LANG) || "en"; }
+        catch (_) { return "en"; }
       })();
 
       if (switcher) {
         switcher.value = savedLang;
         switcher.addEventListener("change", function () {
-          applySiteLanguage(this.value || "mk");
+          applySiteLanguage(this.value || "en");
         });
       }
 
+      window.WPA_APPLY_SITE_LANG = applySiteLanguage;
       applySiteLanguage(savedLang);
     })();
   </script>
@@ -1364,6 +1605,7 @@
       siteLangSelect.addEventListener("change", () => {
         langEl.value = siteLangSelect.value;
         applyLanguageTexts();
+        if (window.WPA_APPLY_SITE_LANG) window.WPA_APPLY_SITE_LANG(siteLangSelect.value);
       });
     }
   })();
