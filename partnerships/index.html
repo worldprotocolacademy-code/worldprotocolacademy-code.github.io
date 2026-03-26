@@ -1,121 +1,1123 @@
-Create a complete, production-ready HTML page for the World Protocol Academy website at /partnerships/index.html.
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Institutional Partnerships | World Protocol Academy</title>
+  <meta name="description" content="Institutional partnerships, academic collaboration, library access, and global protocol and diplomacy contacts at World Protocol Academy." />
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/partnerships/" />
 
-IMPORTANT CONTEXT:
-- This is NOT a generic sales page.
-- It must function as an institutional partnerships page for an academic and professional platform focused on protocol, diplomacy, security, institutional communication, etiquette, and executive education.
-- The tone must be serious, academic, elegant, and internationally credible.
-- Avoid fake testimonials, exaggerated marketing language, and aggressive sales copy.
-- The page must feel like an institutional gateway for academic collaboration, library access, strategic cooperation, and future global networking.
+  <meta property="og:title" content="Institutional Partnerships | World Protocol Academy" />
+  <meta property="og:description" content="Academic collaboration, institutional access, strategic cooperation, and a curated global protocol and diplomacy directory." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://worldprotocolacademy-code.github.io/partnerships/" />
+  <meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png" />
 
-BRAND / IDENTITY:
-- Site name: World Protocol Academy
-- Positioning: independent digital academy and professional platform
-- Main fields: protocol, diplomacy, security, institutional communication
-- Audience: universities, faculties, libraries, diplomatic academies, ministries, training centres, conference organisers, research centres, professional networks
+  <meta name="theme-color" content="#12324a" />
 
-GOAL OF THE PAGE:
-Build a partnerships page that presents:
-1. institutional partnership models
-2. areas of possible cooperation
-3. a future-facing Global Protocol & Diplomacy Contacts / Directory section
-4. a clean inquiry form for academic/institutional collaboration
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
-STRUCTURE REQUIRED:
-1. Sticky top header with:
-   - logo
-   - navigation links to homepage, programmes, papers, directory/contact
-   - working MK / EN language switch using localStorage
+  <style>
+    :root{
+      --navy:#12324a;
+      --navy-2:#0d2436;
+      --gold:#c8a55a;
+      --gold-2:#b48c39;
+      --ink:#1f2933;
+      --muted:#667085;
+      --bg:#f7f8fa;
+      --card:#ffffff;
+      --line:#dde3ea;
+      --radius:16px;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --max:1240px;
+    }
 
-2. Hero section with:
-   - institutional tone
-   - strong headline
-   - short subheadline
-   - two call-to-action buttons:
-     - Partnership models
-     - Send inquiry
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:Inter,system-ui,-apple-system,sans-serif;
+      line-height:1.68;
+      background:var(--bg);
+      color:var(--ink);
+    }
 
-3. Intro / institutional note box:
-   Explain that this is not a conventional pricing page, but an institutional entry point for academic cooperation, library access, co-developed programmes, conference cooperation, and wider global networking.
+    img{max-width:100%;display:block}
+    a{text-decoration:none;color:inherit}
 
-4. Partnership Models section with 3 cards:
-   - Academic Partnership
-   - Library / Institutional Access
-   - Strategic / Inter-institutional Cooperation
-   Each card should include:
-   - icon
-   - title
-   - short description
-   - bullet list of what is included
+    .skip-link{
+      position:absolute;
+      left:-9999px;
+      top:auto;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+    }
 
-5. Areas of Possible Cooperation section:
-   Use a clean split layout with two cards:
-   - Areas of cooperation
-   - Who the page is for
+    .skip-link:focus{
+      left:1rem;
+      top:1rem;
+      width:auto;
+      height:auto;
+      background:#fff;
+      color:#000;
+      padding:.75rem 1rem;
+      border-radius:10px;
+      z-index:9999;
+      box-shadow:var(--shadow);
+    }
 
-6. Global Protocol & Diplomacy Contacts section:
-   This must be presented as a curated future-facing directory, not a random list.
-   Use 3 directory cards:
-   - Protocol Academies & Institutes
-   - Diplomatic Academies / Schools
-   - Multilateral / Global Training
-   Each should have a short explanation and “coming soon” type link placeholder.
+    .container{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:0 1.25rem;
+    }
 
-7. Editorial / institutional note:
-   Clarify that WPA partnerships are developed institutionally and by agreement, and that the priority is academic cooperation, library access, strategic usefulness, and quality of jointly developed content.
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:linear-gradient(135deg,var(--navy),var(--navy-2));
+      box-shadow:var(--shadow);
+    }
 
-8. Contact / Inquiry Form:
-   Include fields:
-   - full name
-   - email
-   - institution
-   - type of interest
-   - short message
-   Use FormSubmit-compatible form action.
-   Include hidden fields for subject, captcha false, and next redirect.
-   Style it as an institutional inquiry form, not a commercial sales form.
+    .header-inner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:1rem;
+      flex-wrap:wrap;
+      padding:1rem 0;
+    }
 
-DESIGN REQUIREMENTS:
-- Clean premium academic design
-- Responsive layout
-- Use serif headings + sans-serif body
-- Colour palette:
-  - dark academic blue
-  - gold accent
-  - clean white/light background
-- Soft shadows, elegant spacing, card-based layout
-- Accessible structure
-- Mobile friendly
-- Include skip link for accessibility
-- Use semantic HTML
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:.85rem;
+      color:#fff;
+    }
 
-LANGUAGE REQUIREMENTS:
-- Full bilingual support:
-  - Macedonian
-  - English
-- Use data-lang and data-lang-inline attributes
-- Use localStorage to preserve selected language
-- Default language: Macedonian
-- English toggle should add a class such as body.lang-en
+    .brand img{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      background:#fff;
+      border:3px solid var(--gold);
+    }
 
-TECHNICAL REQUIREMENTS:
-- Deliver the FULL HTML document
-- Include internal CSS in <style>
-- Include JS at the bottom for the language switch
-- Use proper meta title, meta description, canonical, OG tags
-- Footer should link back to homepage
-- Use realistic icons (Font Awesome is acceptable)
+    .brand small{
+      display:block;
+      color:var(--gold);
+      font-size:.8rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
 
-AVOID:
-- fake testimonials
-- fake university logos
-- aggressive conversion language
-- “buy now” wording
-- startup jargon
-- corporate buzzword clutter
+    .brand strong{
+      display:block;
+      font-size:1.05rem;
+      letter-spacing:.04em;
+    }
 
-DESIRED IMPRESSION:
-The page should feel like the partnerships page of a serious, emerging international academy that is building a long-term ecosystem in protocol, diplomacy, and institutional education.
+    .header-right{
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      flex-wrap:wrap;
+    }
 
-Output:
-- full HTML only
-- no explanation outside the code
+    nav ul{
+      list-style:none;
+      display:flex;
+      gap:.4rem;
+      flex-wrap:wrap;
+    }
+
+    nav a{
+      display:inline-flex;
+      align-items:center;
+      gap:.45rem;
+      color:rgba(255,255,255,.94);
+      padding:.65rem .9rem;
+      border-radius:10px;
+      font-weight:600;
+      transition:.2s ease;
+    }
+
+    nav a:hover,
+    nav a:focus{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+    }
+
+    .lang-switch{
+      display:flex;
+      gap:.35rem;
+    }
+
+    .lang-btn{
+      border:1px solid rgba(255,255,255,.25);
+      background:transparent;
+      color:#fff;
+      padding:.45rem .7rem;
+      border-radius:8px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .lang-btn.active,
+    .lang-btn:hover{
+      background:var(--gold);
+      color:#111827;
+      border-color:var(--gold);
+    }
+
+    .hero{
+      background:linear-gradient(135deg,var(--navy),var(--navy-2));
+      color:#fff;
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:3.25rem 0;
+      margin:1.5rem 0 2rem;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:1.4rem;
+      align-items:start;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:.35rem .8rem;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      color:var(--gold);
+      font-weight:700;
+      font-size:.82rem;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      margin-bottom:1rem;
+    }
+
+    h1,h2,h3,h4{
+      font-family:Merriweather,Georgia,serif;
+    }
+
+    h1{
+      font-size:clamp(2rem,4vw,3.2rem);
+      line-height:1.2;
+      margin-bottom:1rem;
+    }
+
+    h2{
+      font-size:clamp(1.6rem,3vw,2.35rem);
+      line-height:1.3;
+      color:var(--navy);
+      margin-bottom:.55rem;
+    }
+
+    h3{
+      font-size:1.28rem;
+      color:var(--navy);
+      margin-bottom:.7rem;
+    }
+
+    h4{
+      font-size:1.05rem;
+      color:var(--navy);
+      margin-bottom:.55rem;
+    }
+
+    .lead{
+      font-size:1.08rem;
+      color:#eef2f6;
+      max-width:820px;
+    }
+
+    .hero-card,
+    .card,
+    .note-card,
+    .directory-card,
+    .contact-card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:1.35rem;
+    }
+
+    .hero-card p,
+    .hero-card li,
+    .card p,
+    .card li,
+    .note-card p,
+    .directory-card p,
+    .contact-card p{
+      color:var(--muted);
+    }
+
+    .hero-list,
+    .list-clean{
+      list-style:none;
+      padding:0;
+    }
+
+    .hero-list li{
+      margin:.65rem 0;
+    }
+
+    .section{
+      padding:1.2rem 0 2rem;
+    }
+
+    .section-header{
+      margin-bottom:1.25rem;
+    }
+
+    .label{
+      display:inline-block;
+      margin-bottom:.6rem;
+      font-size:.82rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--gold-2);
+    }
+
+    .section-header p{
+      color:var(--muted);
+      max-width:920px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:1.2rem;
+    }
+
+    .card ul{
+      margin-left:1.15rem;
+      margin-top:.8rem;
+    }
+
+    .card li{
+      margin:.45rem 0;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:.4rem;
+      background:#f2f5f8;
+      color:var(--navy);
+      border-radius:999px;
+      padding:.3rem .65rem;
+      font-size:.82rem;
+      font-weight:700;
+      margin-bottom:.75rem;
+    }
+
+    .split{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.2rem;
+    }
+
+    .list-clean li{
+      display:flex;
+      gap:.7rem;
+      align-items:flex-start;
+      margin:.7rem 0;
+    }
+
+    .list-clean .dot{
+      color:var(--gold-2);
+      font-weight:900;
+      margin-top:.05rem;
+    }
+
+    .directory-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:1.2rem;
+    }
+
+    .directory-card a{
+      display:inline-flex;
+      align-items:center;
+      gap:.45rem;
+      color:var(--navy);
+      font-weight:700;
+      margin-top:.5rem;
+    }
+
+    .note-card{
+      border-left:5px solid var(--gold);
+      background:linear-gradient(135deg,#ffffff,#fbf8ef);
+    }
+
+    .hero-actions,
+    .cta-actions{
+      display:flex;
+      gap:.8rem;
+      flex-wrap:wrap;
+      margin-top:1.4rem;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.55rem;
+      padding:.9rem 1.2rem;
+      border-radius:12px;
+      font-weight:800;
+      border:none;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    .btn-primary{
+      background:var(--gold);
+      color:#111827;
+    }
+
+    .btn-primary:hover{
+      background:var(--gold-2);
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--navy);
+    }
+
+    .btn-secondary:hover{
+      background:#f4f5f6;
+    }
+
+    .contact-card{
+      max-width:860px;
+      margin:0 auto;
+    }
+
+    .contact-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1rem;
+      margin-top:1rem;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:.45rem;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    label{
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    input,
+    select,
+    textarea{
+      width:100%;
+      padding:.9rem 1rem;
+      border:1px solid var(--line);
+      border-radius:10px;
+      font:inherit;
+      background:#fff;
+      color:var(--ink);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus{
+      outline:none;
+      border-color:var(--gold);
+      box-shadow:0 0 0 4px rgba(200,165,90,.15);
+    }
+
+    textarea{
+      min-height:140px;
+      resize:vertical;
+    }
+
+    footer{
+      margin-top:2rem;
+      background:var(--navy-2);
+      color:rgba(255,255,255,.9);
+      padding:2rem 0;
+    }
+
+    .footer-grid{
+      display:grid;
+      grid-template-columns:2fr 1fr 1fr;
+      gap:1.2rem;
+    }
+
+    footer h4{
+      color:#fff;
+      margin-bottom:.6rem;
+    }
+
+    footer ul{
+      list-style:none;
+    }
+
+    footer li{
+      margin:.45rem 0;
+    }
+
+    footer a{
+      color:var(--gold);
+    }
+
+    .footer-bottom{
+      margin-top:1.2rem;
+      padding-top:1rem;
+      border-top:1px solid rgba(255,255,255,.12);
+      font-size:.92rem;
+    }
+
+    [data-lang="en"]{display:none}
+    body.lang-en [data-lang="mk"]{display:none !important}
+    body.lang-en [data-lang="en"]{display:block !important}
+    body.lang-en [data-lang-inline="mk"]{display:none !important}
+    body:not(.lang-en) [data-lang-inline="en"]{display:none !important}
+
+    @media (max-width: 920px){
+      .hero-grid,
+      .split,
+      .footer-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 760px){
+      .header-inner{
+        align-items:flex-start;
+      }
+
+      .header-right{
+        width:100%;
+        justify-content:space-between;
+      }
+
+      .contact-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 680px){
+      nav ul{
+        flex-direction:column;
+      }
+
+      .hero-actions,
+      .cta-actions{
+        flex-direction:column;
+      }
+
+      .btn{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header>
+    <div class="container header-inner">
+      <a href="../index.html" class="brand" aria-label="World Protocol Academy homepage">
+        <img src="../logo.png" alt="WPA Logo" onerror="this.style.display='none'">
+        <div>
+          <small>World Protocol</small>
+          <strong>Academy</strong>
+        </div>
+      </a>
+
+      <div class="header-right">
+        <nav aria-label="Primary navigation">
+          <ul>
+            <li>
+              <a href="../index.html">
+                <i class="fa-solid fa-house"></i>
+                <span data-lang-inline="mk">Дома</span>
+                <span data-lang-inline="en">Home</span>
+              </a>
+            </li>
+            <li>
+              <a href="../programmes.html">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span data-lang-inline="mk">Програми</span>
+                <span data-lang-inline="en">Programmes</span>
+              </a>
+            </li>
+            <li>
+              <a href="../papers.html">
+                <i class="fa-solid fa-file-lines"></i>
+                <span data-lang-inline="mk">Трудови</span>
+                <span data-lang-inline="en">Papers</span>
+              </a>
+            </li>
+            <li>
+              <a href="#directory">
+                <i class="fa-solid fa-globe"></i>
+                <span data-lang-inline="mk">Директориум</span>
+                <span data-lang-inline="en">Directory</span>
+              </a>
+            </li>
+            <li>
+              <a href="#contact-form">
+                <i class="fa-solid fa-envelope"></i>
+                <span data-lang-inline="mk">Контакт</span>
+                <span data-lang-inline="en">Contact</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="lang-switch" aria-label="Language switch">
+          <button class="lang-btn active" data-set-lang="mk" type="button">МК</button>
+          <button class="lang-btn" data-set-lang="en" type="button">EN</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content" class="container">
+
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow" data-lang="mk">Institutional Cooperation</span>
+          <span class="eyebrow" data-lang="en">Institutional Cooperation</span>
+
+          <h1 data-lang="mk">Институционални партнерства, академска соработка и глобални контакти</h1>
+          <h1 data-lang="en">Institutional partnerships, academic cooperation, and global contacts</h1>
+
+          <p class="lead" data-lang="mk">
+            World Protocol Academy развива соработка со универзитети, библиотеки, дипломатски академии,
+            министерства, training centres, истражувачки институции и професионални мрежи што работат на
+            пресекот меѓу протокол, дипломатија, безбедност и институционална комуникација.
+          </p>
+
+          <p class="lead" data-lang="en">
+            World Protocol Academy develops cooperation with universities, libraries, diplomatic academies,
+            ministries, training centres, research institutions, and professional networks working at the
+            intersection of protocol, diplomacy, security, and institutional communication.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#models">
+              <i class="fa-solid fa-handshake"></i>
+              <span data-lang-inline="mk">Модели на соработка</span>
+              <span data-lang-inline="en">Partnership models</span>
+            </a>
+            <a class="btn btn-secondary" href="#contact-form">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span data-lang-inline="mk">Испрати барање</span>
+              <span data-lang-inline="en">Send inquiry</span>
+            </a>
+          </div>
+        </div>
+
+        <aside class="hero-card">
+          <h3 data-lang="mk">Institutional Focus</h3>
+          <h3 data-lang="en">Institutional Focus</h3>
+
+          <ul class="hero-list">
+            <li data-lang="mk"><strong>академска соработка</strong> за наставни, истражувачки и curriculum формати</li>
+            <li data-lang="en"><strong>academic collaboration</strong> for teaching, research, and curriculum formats</li>
+
+            <li data-lang="mk"><strong>библиотечен и институционален пристап</strong> до WPA ресурси</li>
+            <li data-lang="en"><strong>library and institutional access</strong> to WPA resources</li>
+
+            <li data-lang="mk"><strong>заеднички настани и masterclasses</strong> со практична применливост</li>
+            <li data-lang="en"><strong>joint events and masterclasses</strong> with practical applicability</li>
+
+            <li data-lang="mk"><strong>глобална мрежа</strong> на протоколарни и дипломатски контакти во развој</li>
+            <li data-lang="en"><strong>global network</strong> of protocol and diplomacy contacts in development</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="note-card">
+        <p data-lang="mk">
+          Ова не е класична sales-страница. Ова е институционален влез за академска соработка, библиотечен
+          пристап, ко-развој на програми, конференциска и training соработка, како и за вклучување во
+          поширока глобална мрежа на протоколарни и дипломатски институции.
+        </p>
+        <p data-lang="en">
+          This is not a conventional sales page. It is an institutional gateway for academic collaboration,
+          library access, co-developed programmes, conference and training cooperation, and inclusion in a
+          wider global network of protocol and diplomacy institutions.
+        </p>
+      </div>
+    </section>
+
+    <section class="section" id="models">
+      <div class="section-header">
+        <span class="label" data-lang="mk">Partnership Models</span>
+        <span class="label" data-lang="en">Partnership Models</span>
+
+        <h2 data-lang="mk">Модели на институционална соработка</h2>
+        <h2 data-lang="en">Institutional partnership models</h2>
+
+        <p data-lang="mk">
+          WPA не нуди агресивни комерцијални пакети, туку модели на соработка што можат да се приспособат
+          на академски, библиотечни, стратешки и професионални потреби.
+        </p>
+        <p data-lang="en">
+          WPA does not offer aggressive commercial packages, but collaboration models that can be adapted to
+          academic, library, strategic, and professional needs.
+        </p>
+      </div>
+
+      <div class="cards">
+        <article class="card">
+          <div class="tag">
+            <i class="fa-solid fa-building-columns"></i>
+            <span data-lang-inline="mk">Academic Partnership</span>
+            <span data-lang-inline="en">Academic Partnership</span>
+          </div>
+
+          <h3 data-lang="mk">Академско партнерство</h3>
+          <h3 data-lang="en">Academic Partnership</h3>
+
+          <p data-lang="mk">
+            За катедри, институти, факултети и студиски програми што сакаат WPA материјали и expertise
+            во наставна, истражувачка или развојна рамка.
+          </p>
+          <p data-lang="en">
+            For departments, institutes, faculties, and study programmes seeking WPA materials and expertise
+            within a teaching, research, or development framework.
+          </p>
+
+          <ul>
+            <li data-lang="mk">поддршка за syllabi, reading lists и тематски модули</li>
+            <li data-lang="en">support for syllabi, reading lists, and thematic modules</li>
+
+            <li data-lang="mk">guest lectures, masterclasses и panel participation</li>
+            <li data-lang="en">guest lectures, masterclasses, and panel participation</li>
+
+            <li data-lang="mk">co-developed academic formats и programme enhancement</li>
+            <li data-lang="en">co-developed academic formats and programme enhancement</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="tag">
+            <i class="fa-solid fa-book-open-reader"></i>
+            <span data-lang-inline="mk">Library / Institutional Access</span>
+            <span data-lang-inline="en">Library / Institutional Access</span>
+          </div>
+
+          <h3 data-lang="mk">Библиотечен и институционален пристап</h3>
+          <h3 data-lang="en">Library and institutional access</h3>
+
+          <p data-lang="mk">
+            За универзитети, библиотеки и истражувачки центри што сакаат поширок пристап до WPA книги,
+            трудови, тематски пакети и идни learning resources.
+          </p>
+          <p data-lang="en">
+            For universities, libraries, and research centres seeking broader access to WPA books,
+            papers, thematic packages, and future learning resources.
+          </p>
+
+          <ul>
+            <li data-lang="mk">договорен институционален пристап</li>
+            <li data-lang="en">agreed institutional access</li>
+
+            <li data-lang="mk">приоритет за нови тематски содржини</li>
+            <li data-lang="en">priority access to new thematic content</li>
+
+            <li data-lang="mk">можност за custom arrangements според потребите на институцијата</li>
+            <li data-lang="en">option for custom arrangements based on institutional needs</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <div class="tag">
+            <i class="fa-solid fa-globe"></i>
+            <span data-lang-inline="mk">Strategic Cooperation</span>
+            <span data-lang-inline="en">Strategic Cooperation</span>
+          </div>
+
+          <h3 data-lang="mk">Стратешка и меѓуинституционална соработка</h3>
+          <h3 data-lang="en">Strategic and inter-institutional cooperation</h3>
+
+          <p data-lang="mk">
+            За министерства, дипломатски академии, training centres, конференциски иницијативи и
+            меѓународни партнери што бараат посилна програмска или стратешка рамка на соработка.
+          </p>
+          <p data-lang="en">
+            For ministries, diplomatic academies, training centres, conference initiatives, and
+            international partners seeking a stronger programme or strategic cooperation framework.
+          </p>
+
+          <ul>
+            <li data-lang="mk">co-branded events, executive briefings и тематски серии</li>
+            <li data-lang="en">co-branded events, executive briefings, and thematic series</li>
+
+            <li data-lang="mk">консултативна и содржинска поддршка</li>
+            <li data-lang="en">consultative and content support</li>
+
+            <li data-lang="mk">прилагодени формати за институционални и професионални потреби</li>
+            <li data-lang="en">custom formats for institutional and professional needs</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="split">
+        <article class="card">
+          <h3 data-lang="mk">Области на можна соработка</h3>
+          <h3 data-lang="en">Areas of possible cooperation</h3>
+
+          <ul class="list-clean">
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">протокол, дипломатија, безбедност и институционална комуникација</span>
+              <span data-lang="en">protocol, diplomacy, security, and institutional communication</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">академски програми, executive training и short-form masterclasses</span>
+              <span data-lang="en">academic programmes, executive training, and short-form masterclasses</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">конференции, панели, research exchange и јавни академски формати</span>
+              <span data-lang="en">conferences, panels, research exchange, and public academic formats</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">библиотечен пристап до книги, трудови и тематски пакети</span>
+              <span data-lang="en">library access to books, papers, and thematic packages</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">заеднички иницијативи со дипломатски школи и протоколарни институции</span>
+              <span data-lang="en">joint initiatives with diplomatic schools and protocol institutions</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3 data-lang="mk">Кому е наменета оваа страница</h3>
+          <h3 data-lang="en">Who this page is for</h3>
+
+          <ul class="list-clean">
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">универзитети и факултети</span>
+              <span data-lang="en">universities and faculties</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">библиотеки и истражувачки центри</span>
+              <span data-lang="en">libraries and research centres</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">министерства, дипломатски институти и training единици</span>
+              <span data-lang="en">ministries, diplomatic institutes, and training units</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">конференциски, професионални и policy мрежи</span>
+              <span data-lang="en">conference, professional, and policy networks</span>
+            </li>
+            <li>
+              <span class="dot">•</span>
+              <span data-lang="mk">глобални партнери од областа на протокол и дипломатија</span>
+              <span data-lang="en">global partners in protocol and diplomacy</span>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="directory">
+      <div class="section-header">
+        <span class="label">Global Protocol & Diplomacy Contacts</span>
+
+        <h2 data-lang="mk">Куриран директориум во развој</h2>
+        <h2 data-lang="en">Curated directory in development</h2>
+
+        <p data-lang="mk">
+          Овој блок е поставен како идно јадро за WPA global contacts. Тој не е случаен список,
+          туку уредуван директориум што ќе поддржува академска, професионална и институционална размена.
+        </p>
+        <p data-lang="en">
+          This block is designed as a future core for WPA global contacts. It is not a random list,
+          but an editorially curated directory intended to support academic, professional, and institutional exchange.
+        </p>
+      </div>
+
+      <div class="directory-grid">
+        <article class="directory-card">
+          <h3 data-lang="mk">Protocol Academies & Institutes</h3>
+          <h3 data-lang="en">Protocol Academies & Institutes</h3>
+
+          <p data-lang="mk">
+            Специјализирани институции за протокол, етикеција, церемонијал, precedence, visual discipline
+            и executive conduct.
+          </p>
+          <p data-lang="en">
+            Specialized institutions in protocol, etiquette, ceremonial practice, precedence, visual discipline,
+            and executive conduct.
+          </p>
+
+          <a href="#contact-form">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span data-lang-inline="mk">Наскоро: проширен директориум</span>
+            <span data-lang-inline="en">Coming soon: expanded directory</span>
+          </a>
+        </article>
+
+        <article class="directory-card">
+          <h3 data-lang="mk">Diplomatic Academies / Schools</h3>
+          <h3 data-lang="en">Diplomatic Academies / Schools</h3>
+
+          <p data-lang="mk">
+            Државни, универзитетски и специјализирани дипломатски школи и институти со акцент на
+            дипломатска обука, foreign service preparation и меѓународна практика.
+          </p>
+          <p data-lang="en">
+            State, university-based, and specialized diplomatic schools and institutes focused on
+            diplomatic training, foreign service preparation, and international practice.
+          </p>
+
+          <a href="#contact-form">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span data-lang-inline="mk">Наскоро: академски контакти</span>
+            <span data-lang-inline="en">Coming soon: academic contacts</span>
+          </a>
+        </article>
+
+        <article class="directory-card">
+          <h3 data-lang="mk">Multilateral / Global Training</h3>
+          <h3 data-lang="en">Multilateral / Global Training</h3>
+
+          <p data-lang="mk">
+            НАТО, ЕУ, УН, ОБСЕ и сродни институции со training, executive и policy формати
+            поврзани со дипломатија, безбедност и меѓународна соработка.
+          </p>
+          <p data-lang="en">
+            NATO, EU, UN, OSCE, and related institutions with training, executive, and policy formats
+            connected to diplomacy, security, and international cooperation.
+          </p>
+
+          <a href="#contact-form">
+            <i class="fa-solid fa-arrow-right"></i>
+            <span data-lang-inline="mk">Наскоро: глобални ресурси</span>
+            <span data-lang-inline="en">Coming soon: global resources</span>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="note-card">
+        <p data-lang="mk">
+          WPA партнерствата се развиваат институционално и по договор. Приоритет не е продажна агресија,
+          туку академска соработка, библиотечен пристап, стратешка применливост и квалитет на заеднички
+          развиената содржина.
+        </p>
+        <p data-lang="en">
+          WPA partnerships are developed institutionally and by agreement. The priority is not sales pressure,
+          but academic collaboration, library access, strategic usefulness, and the quality of jointly developed content.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="contact-card" id="contact-form">
+        <div class="section-header">
+          <span class="label" data-lang="mk">Institutional Inquiry</span>
+          <span class="label" data-lang="en">Institutional Inquiry</span>
+
+          <h2 data-lang="mk">Партнерско барање</h2>
+          <h2 data-lang="en">Partnership inquiry</h2>
+
+          <p data-lang="mk">
+            За академска, институционална, библиотечна или стратешка соработка, испратете кратко барање
+            со основни информации за Вашата институција и интересот за соработка.
+          </p>
+          <p data-lang="en">
+            For academic, institutional, library, or strategic cooperation, please send a short inquiry
+            with basic information about your institution and your area of interest.
+          </p>
+        </div>
+
+        <form action="https://formsubmit.co/worldprotocolacademy@gmail.com" method="POST">
+          <input type="hidden" name="_subject" value="WPA Partnership Inquiry" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="https://worldprotocolacademy-code.github.io/thanks.html" />
+
+          <div class="contact-grid">
+            <div class="field">
+              <label for="fullName">
+                <span data-lang-inline="mk">Име и презиме</span>
+                <span data-lang-inline="en">Full name</span>
+              </label>
+              <input id="fullName" name="name" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="email">
+                <span data-lang-inline="mk">Е-пошта</span>
+                <span data-lang-inline="en">Email</span>
+              </label>
+              <input id="email" name="email" type="email" required />
+            </div>
+
+            <div class="field">
+              <label for="institution">
+                <span data-lang-inline="mk">Институција</span>
+                <span data-lang-inline="en">Institution</span>
+              </label>
+              <input id="institution" name="institution" type="text" required />
+            </div>
+
+            <div class="field">
+              <label for="interest">
+                <span data-lang-inline="mk">Тип на интерес</span>
+                <span data-lang-inline="en">Type of interest</span>
+              </label>
+              <select id="interest" name="interest_type" required>
+                <option value="" data-label-mk="Изберете..." data-label-en="Select..." selected disabled>Изберете...</option>
+                <option value="academic" data-label-mk="Академско партнерство" data-label-en="Academic partnership">Академско партнерство</option>
+                <option value="library" data-label-mk="Библиотечен / институционален пристап" data-label-en="Library / institutional access">Библиотечен / институционален пристап</option>
+                <option value="strategic" data-label-mk="Стратешка соработка" data-label-en="Strategic cooperation">Стратешка соработка</option>
+                <option value="events" data-label-mk="Настан / конференција / обука" data-label-en="Event / conference / training">Настан / конференција / обука</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label for="message">
+                <span data-lang-inline="mk">Кратка порака</span>
+                <span data-lang-inline="en">Short message</span>
+              </label>
+              <textarea id="message" name="message" placeholder=""></textarea>
+            </div>
+          </div>
+
+          <div class="cta-actions">
+            <button class="btn btn-primary" type="submit">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span data-lang-inline="mk">Испрати барање</span>
+              <span data-lang-inline="en">Send inquiry</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>World Protocol Academy</h4>
+          <p data-lang="mk">
+            Независна дигитална академија и професионална платформа за протокол, дипломатија, безбедност
+            и институционална комуникација.
+          </p>
+          <p data-lang="en">
+            An independent digital academy and professional platform for protocol, diplomacy, security,
+            and institutional communication.
+          </p>
+        </div>
+
+        <div>
+          <h4 data-lang="mk">Навигација</h4>
+          <h4 data-lang="en">Navigation</h4>
+          <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="../programmes.html">Programmes</a></li>
+            <li><a href="../papers.html">Papers</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 data-lang="mk">Назад</h4>
+          <h4 data-lang="en">Back</h4>
+          <ul>
+            <li>
+              <a href="../index.html">
+                <span data-lang-inline="mk">← Главна страница</span>
+                <span data-lang-inline="en">← Homepage</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © <span id="year"></span> World Protocol Academy. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const savedLang = localStorage.getItem('wpaLang') || 'mk';
+      const body = document.body;
+      const buttons = document.querySelectorAll('[data-set-lang]');
+      const translatableOptions = document.querySelectorAll('option[data-label-mk][data-label-en]');
+
+      function applyOptionLanguage(lang) {
+        translatableOptions.forEach(function (option) {
+          option.textContent = lang === 'en'
+            ? option.getAttribute('data-label-en')
+            : option.getAttribute('data-label-mk');
+        });
+      }
+
+      function setLang(lang) {
+        if (lang === 'en') {
+          body.classList.add('lang-en');
+        } else {
+          body.classList.remove('lang-en');
+        }
+
+        localStorage.setItem('wpaLang', lang);
+        document.documentElement.lang = lang;
+        applyOptionLanguage(lang);
+
+        buttons.forEach(function (btn) {
+          btn.classList.toggle('active', btn.getAttribute('data-set-lang') === lang);
+        });
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          setLang(btn.getAttribute('data-set-lang'));
+        });
+      });
+
+      document.getElementById('year').textContent = new Date().getFullYear();
+      setLang(savedLang);
+    })();
+  </script>
+</body>
+</html>
