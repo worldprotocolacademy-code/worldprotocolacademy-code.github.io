@@ -1,504 +1,1360 @@
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📄 Научни Трудови • World Protocol Academy</title>
-  <meta name="description" content="Научни трудови од Доц. д-р Санде Смиљанов за дипломатија, протокол и безбедност">
-  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/papers/">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scientific Papers | World Protocol Academy</title>
+  <meta name="description" content="Explore 17 scientific and conference papers by Assoc. Prof. Sande Smiljanov in protocol, diplomacy, security, institutional communication and related fields." />
+  <meta name="keywords" content="World Protocol Academy papers, Sande Smiljanov papers, protocol papers, diplomacy papers, security papers, state protocol research" />
+  <meta name="author" content="Assoc. Prof. Sande Smiljanov" />
+
+  <meta property="og:title" content="Scientific Papers | World Protocol Academy" />
+  <meta property="og:description" content="17 scientific and conference papers in protocol, diplomacy, security and institutional communication." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://worldprotocolacademy-code.github.io/papers.html" />
+  <meta property="og:image" content="logo.png" />
+
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/papers.html" />
+  <link rel="manifest" href="manifest.json" />
+
   <style>
-    :root{--primary:#1a3a5c;--secondary:#c9a961;--light:#f8f9fa;--dark:#212529;--gray:#6c757d;--success:#28a745;--shadow:0 4px 12px rgba(0,0,0,.1);--radius:12px}
-    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f6f2eb;
+      --surface:#ffffff;
+      --surface-2:#fbf8f3;
+      --text:#1d2430;
+      --muted:#5a6577;
+      --line:#ddd3c3;
+      --gold:#9a7728;
+      --gold-dark:#7b5f1f;
+      --navy:#162947;
+      --navy-2:#22385c;
+      --shadow:0 10px 30px rgba(20,31,52,.08);
+      --radius:18px;
+      --max:1220px;
+    }
+
+    *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{font-family:'Inter',sans-serif;line-height:1.6;color:var(--dark);background:var(--light)}
-    header{background:linear-gradient(135deg,var(--primary),#0f2640);color:#fff;padding:1rem 2rem;box-shadow:var(--shadow)}
-    .header-container{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.75rem;font-weight:700;font-size:1.3rem;color:#fff;text-decoration:none}
-    .logo img{width:50px;height:50px;border-radius:50%;border:3px solid var(--secondary)}
-    nav{display:flex;gap:.5rem;flex-wrap:wrap}
-    nav a{color:rgba(255,255,255,.9);padding:.6rem 1rem;border-radius:8px;font-weight:500;text-decoration:none;transition:.2s}
-    nav a:hover{background:rgba(255,255,255,.15);color:#fff}
-    main{max-width:1400px;margin:0 auto;padding:2rem 1.5rem}
-    .page-title{text-align:center;margin-bottom:2rem}
-    .page-title h1{font-family:'Merriweather',serif;font-size:clamp(1.8rem,4vw,2.5rem);color:var(--primary);margin-bottom:.5rem}
-    .page-title p{color:var(--gray);max-width:700px;margin:0 auto}
-    .filters{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem;justify-content:center}
-    .filter-btn{padding:.6rem 1.25rem;border:2px solid var(--gray-light);border-radius:50px;background:#fff;cursor:pointer;font-weight:500;transition:.2s}
-    .filter-btn:hover,.filter-btn.active{border-color:var(--secondary);background:var(--secondary);color:var(--dark)}
-    .papers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.5rem;margin-bottom:3rem}
-    .paper-card{background:#fff;border-radius:var(--radius);padding:1.5rem;box-shadow:var(--shadow);transition:.3s;border:1px solid var(--gray-light);display:flex;flex-direction:column}
-    .paper-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.15);border-color:var(--secondary)}
-    .paper-type{display:inline-block;padding:.25rem .75rem;border-radius:6px;font-size:.8rem;font-weight:600;margin-bottom:.75rem}
-    .paper-type.flagship{background:linear-gradient(135deg,#ffd700,#ffb300);color:#000}
-    .paper-type.premium{background:linear-gradient(135deg,#c0c0c0,#a0a0a0);color:#000}
-    .paper-type.standard{background:#e9ecef;color:var(--dark)}
-    .paper-title{font-family:'Merriweather',serif;font-size:1.15rem;font-weight:700;color:var(--primary);margin-bottom:.5rem;line-height:1.3}
-    .paper-meta{display:flex;gap:1rem;font-size:.85rem;color:var(--gray);margin-bottom:.75rem;flex-wrap:wrap}
-    .paper-abstract{font-size:.95rem;color:var(--dark);margin-bottom:1rem;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-    .paper-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
-    .tag{background:var(--light);padding:.25rem .6rem;border-radius:6px;font-size:.8rem;color:var(--gray)}
-    .paper-price{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
-    .price-current{font-size:1.5rem;font-weight:800;color:var(--primary)}
-    .price-original{font-size:1rem;color:var(--gray);text-decoration:line-through}
-    .discount-badge{background:var(--success);color:#fff;padding:.2rem .5rem;border-radius:4px;font-size:.75rem;font-weight:700}
-    .paper-actions{display:flex;gap:.5rem;margin-top:auto}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.6rem 1.25rem;border-radius:8px;font-weight:600;cursor:pointer;transition:.2s;text-decoration:none;border:none;font-size:.9rem}
-    .btn-primary{background:var(--secondary);color:var(--dark)}
-    .btn-primary:hover{background:#b8964e;transform:translateY(-2px)}
-    .btn-outline{background:transparent;border:2px solid var(--primary);color:var(--primary)}
-    .btn-outline:hover{background:var(--primary);color:#fff}
-    .btn-sm{padding:.4rem 1rem;font-size:.85rem}
-    
-    /* Academic Discount Block */
-    .academic-discount{background:linear-gradient(135deg,#e3f2fd,#bbdefb);padding:2.5rem;border-radius:16px;margin:3rem 0;text-align:center;box-shadow:var(--shadow)}
-    .academic-discount h3{color:var(--primary);font-family:'Merriweather',serif;font-size:clamp(1.3rem,3vw,1.8rem);margin-bottom:1rem}
-    .academic-discount p{color:#495057;margin-bottom:1.5rem;font-size:1.05rem}
-    .discount-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
-    .tier-card{background:#fff;padding:1.25rem;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:.2s}
-    .tier-card:hover{transform:translateY(-3px);box-shadow:0 4px 15px rgba(0,0,0,.12)}
-    .tier-icon{font-size:2.5rem;margin-bottom:.5rem}
-    .tier-name{font-weight:600;margin-bottom:.25rem}
-    .tier-discount{color:var(--success);font-weight:700;font-size:1.2rem}
-    .verify-form{max-width:500px;margin:0 auto;display:flex;flex-direction:column;gap:.75rem}
-    .verify-form select,.verify-form input{padding:.85rem 1rem;border:2px solid #ccc;border-radius:8px;font-size:1rem;font-family:inherit}
-    .verify-form select:focus,.verify-form input:focus{outline:none;border-color:var(--secondary);box-shadow:0 0 0 4px rgba(201,169,97,.15)}
-    .verify-form button{background:var(--primary);color:#fff;padding:.85rem 1.5rem;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:1rem;transition:.2s}
-    .verify-form button:hover{background:#0f2640;transform:translateY(-2px)}
-    .success-message{display:none;margin-top:1rem;padding:1rem;background:#d4edda;color:#155724;border-radius:8px;border-left:4px solid var(--success);text-align:left}
-    .discount-code{background:#fff;padding:.25rem .5rem;border-radius:4px;font-family:monospace;font-weight:700}
-    
-    footer{background:#0f2640;color:rgba(255,255,255,.85);padding:2rem 1.5rem;margin-top:3rem;text-align:center}
-    footer a{color:var(--secondary);text-decoration:none}
-    footer a:hover{text-decoration:underline}
-    
-    [data-lang]:not([data-lang="mk"]){display:none}
-    body.lang-en [data-lang="mk"]{display:none!important}
-    body.lang-en [data-lang="en"]{display:block!important}
-    
-    @media(max-width:768px){
-      .header-container{flex-direction:column}
-      nav{flex-direction:column;width:100%}
-      .papers-grid{grid-template-columns:1fr}
-      .discount-tiers{grid-template-columns:repeat(2,1fr)}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+
+    .container{
+      width:min(var(--max), calc(100% - 32px));
+      margin:0 auto;
+    }
+
+    .topbar{
+      background:var(--navy);
+      color:#eef3fb;
+      font-size:14px;
+      padding:10px 0;
+    }
+
+    .topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .topbar strong{color:#f4d697}
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(255,255,255,.95);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:24px;
+      padding:14px 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .brand img{
+      width:56px;
+      height:56px;
+      object-fit:contain;
+      padding:6px;
+      border-radius:12px;
+      background:#fff;
+      box-shadow:var(--shadow);
+    }
+
+    .brand-text h1{
+      margin:0;
+      font-size:20px;
+      line-height:1.1;
+      color:var(--navy);
+      letter-spacing:.2px;
+    }
+
+    .brand-text p{
+      margin:4px 0 0;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    nav ul{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    nav a{
+      color:var(--navy);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    nav a:hover{color:var(--gold-dark)}
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border-radius:999px;
+      padding:14px 22px;
+      font-weight:800;
+      transition:.2s ease;
+      border:1px solid transparent;
+    }
+
+    .btn-primary{
+      background:var(--gold);
+      color:#fff;
+      box-shadow:var(--shadow);
+    }
+
+    .btn-primary:hover{
+      background:var(--gold-dark);
+      transform:translateY(-1px);
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--navy);
+      border-color:var(--line);
+    }
+
+    .btn-secondary:hover{
+      border-color:var(--gold);
+      color:var(--gold-dark);
+    }
+
+    .hero{
+      background:
+        linear-gradient(135deg, rgba(22,41,71,.96), rgba(34,56,92,.92)),
+        radial-gradient(circle at top right, rgba(255,255,255,.08), transparent 38%);
+      color:#fff;
+      padding:86px 0 72px;
+      overflow:hidden;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:38px;
+      align-items:center;
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.16);
+      color:#f7dca8;
+      font-size:13px;
+      letter-spacing:.3px;
+      margin-bottom:18px;
+    }
+
+    .hero h2{
+      margin:0 0 16px;
+      font-size:clamp(34px, 4vw, 56px);
+      line-height:1.08;
+      letter-spacing:-.9px;
+    }
+
+    .hero p{
+      margin:0 0 26px;
+      color:rgba(255,255,255,.88);
+      font-size:18px;
+      max-width:760px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .hero-note{
+      font-size:14px;
+      color:rgba(255,255,255,.75);
+      max-width:760px;
+    }
+
+    .hero-card{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero-card h3{
+      margin:0 0 14px;
+      font-size:24px;
+      color:#fff;
+    }
+
+    .hero-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:12px;
+    }
+
+    .hero-list li{
+      padding:12px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      font-size:15px;
+    }
+
+    section{padding:82px 0}
+
+    .accent-section{
+      background:var(--surface-2);
+      border-top:1px solid rgba(0,0,0,.04);
+      border-bottom:1px solid rgba(0,0,0,.04);
+    }
+
+    .section-header{
+      max-width:860px;
+      margin-bottom:34px;
+    }
+
+    .label{
+      display:inline-block;
+      color:var(--gold-dark);
+      font-weight:800;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      margin-bottom:10px;
+    }
+
+    .section-header h3{
+      margin:0 0 12px;
+      color:var(--navy);
+      font-size:clamp(28px, 3vw, 42px);
+      line-height:1.12;
+    }
+
+    .section-header p{
+      margin:0;
+      color:var(--muted);
+      font-size:17px;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:20px;
+      margin-top:26px;
+    }
+
+    .stat-card{
+      background:var(--surface);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:var(--radius);
+      padding:22px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat-card strong{
+      display:block;
+      font-size:28px;
+      color:var(--navy);
+      line-height:1;
+      margin-bottom:8px;
+    }
+
+    .stat-card span{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .grid-3{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:22px;
+    }
+
+    .card{
+      background:var(--surface);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow);
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .small-kicker{
+      display:block;
+      color:var(--gold-dark);
+      font-weight:800;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.28px;
+      margin-bottom:10px;
+    }
+
+    .paper-title{
+      margin:0 0 10px;
+      color:var(--navy);
+      font-size:21px;
+      line-height:1.2;
+    }
+
+    .paper-summary{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .paper-tags{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:0 0 18px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      padding:7px 11px;
+      border-radius:999px;
+      background:var(--surface-2);
+      border:1px solid var(--line);
+      color:var(--navy);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .paper-actions{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .note-card{
+      background:linear-gradient(180deg, #fff, #fbfaf7);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:20px;
+      padding:24px;
+      box-shadow:var(--shadow);
+    }
+
+    .note-card h4{
+      margin:0 0 10px;
+      color:var(--navy);
+      font-size:24px;
+      line-height:1.15;
+    }
+
+    .note-card p{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .note-list{
+      margin:0;
+      padding-left:18px;
+      color:var(--muted);
+    }
+
+    .note-list li{margin-bottom:8px}
+
+    .cta-band{
+      background:linear-gradient(135deg, var(--gold), #b78a2a);
+      color:#fff;
+      border-radius:28px;
+      padding:34px;
+      box-shadow:var(--shadow);
+    }
+
+    .cta-band h3{
+      margin:0 0 12px;
+      font-size:32px;
+      line-height:1.1;
+    }
+
+    .cta-band p{
+      margin:0 0 18px;
+      color:rgba(255,255,255,.9);
+      max-width:820px;
+    }
+
+    .footer{
+      background:#0f1b30;
+      color:#d7ddeb;
+      padding:48px 0 28px;
+      margin-top:40px;
+    }
+
+    .footer-grid{
+      display:grid;
+      grid-template-columns:1.2fr .9fr .9fr;
+      gap:24px;
+      margin-bottom:24px;
+    }
+
+    .footer h4{
+      margin:0 0 12px;
+      color:#fff;
+      font-size:18px;
+    }
+
+    .footer p,
+    .footer li,
+    .footer a{
+      color:#d7ddeb;
+      font-size:14px;
+    }
+
+    .footer ul{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:grid;
+      gap:8px;
+    }
+
+    .footer-bottom{
+      border-top:1px solid rgba(255,255,255,.1);
+      padding-top:18px;
+      font-size:13px;
+      color:#b9c3d6;
+    }
+
+    .disclaimer{
+      margin-top:10px;
+      color:#7a8597;
+      font-size:13px;
+    }
+
+    .wpa2-bot-wrap {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 99999;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .wpa2-bot-toggle {
+      width: 62px;
+      height: 62px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 26px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+      background: #b9974d;
+      color: #13263f;
+    }
+
+    .wpa2-bot-panel {
+      width: 380px;
+      max-width: calc(100vw - 24px);
+      height: 580px;
+      max-height: 78vh;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.22);
+      overflow: hidden;
+      display: none;
+      flex-direction: column;
+      margin-bottom: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .wpa2-bot-panel.open { display: flex; }
+
+    .wpa2-bot-header {
+      background: linear-gradient(135deg, #17324f, #0e2238);
+      color: #ffffff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .wpa2-bot-title { font-weight:700; font-size:15px; line-height:1.2; }
+    .wpa2-bot-subtitle { font-size:12px; opacity:.88; margin-top:2px; }
+    .wpa2-bot-close { background:transparent; border:none; color:#fff; font-size:22px; cursor:pointer; }
+
+    .wpa2-bot-toolbar {
+      display:flex;
+      gap:8px;
+      padding:10px 12px;
+      border-bottom:1px solid #e8e8e8;
+      background:#fafafa;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .wpa2-bot-toolbar select,
+    .wpa2-bot-toolbar button {
+      border:1px solid #d8d8d8;
+      background:#fff;
+      border-radius:10px;
+      padding:8px 10px;
+      font-size:13px;
+    }
+
+    .wpa2-bot-toolbar button { cursor:pointer; }
+    .wpa2-bot-toolbar button:disabled,
+    .wpa2-bot-send:disabled { opacity:.65; cursor:not-allowed; }
+
+    .wpa2-bot-status {
+      margin-left:auto;
+      font-size:11px;
+      color:#6a6a6a;
+      white-space:nowrap;
+    }
+
+    .wpa2-bot-messages {
+      flex:1;
+      overflow-y:auto;
+      padding:14px 12px;
+      background:#f7f8fa;
+    }
+
+    .wpa2-bot-msg { margin-bottom:12px; display:flex; }
+    .wpa2-bot-msg.user { justify-content:flex-end; }
+
+    .wpa2-bot-bubble {
+      max-width:88%;
+      padding:10px 12px;
+      border-radius:14px;
+      line-height:1.55;
+      font-size:14px;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+    }
+
+    .wpa2-bot-msg.bot .wpa2-bot-bubble {
+      background:#ffffff;
+      color:#1d1d1d;
+      border:1px solid #e4e4e4;
+    }
+
+    .wpa2-bot-msg.user .wpa2-bot-bubble {
+      background:#17324f;
+      color:#ffffff;
+    }
+
+    .wpa2-bot-meta {
+      margin-top:6px;
+      font-size:11px;
+      line-height:1.4;
+      color:#6b7280;
+    }
+
+    .wpa2-bot-footer {
+      border-top:1px solid #e8e8e8;
+      padding:10px;
+      background:#ffffff;
+    }
+
+    .wpa2-bot-input-row { display:flex; gap:8px; }
+    .wpa2-bot-input {
+      flex:1;
+      border:1px solid #d6d6d6;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    .wpa2-bot-input:disabled { background:#f4f4f4; }
+    .wpa2-bot-send {
+      border:none;
+      border-radius:12px;
+      background:#b9974d;
+      color:#13263f;
+      font-weight:700;
+      padding:0 16px;
+      cursor:pointer;
+    }
+
+    .wpa2-bot-note {
+      font-size:11px;
+      color:#6d6d6d;
+      margin-top:8px;
+      line-height:1.4;
+    }
+
+    @media (max-width: 1100px){
+      .hero-grid,
+      .stats-grid,
+      .footer-grid { grid-template-columns:repeat(2, 1fr); }
+      .grid-3 { grid-template-columns:repeat(2, 1fr); }
+    }
+
+    @media (max-width: 760px){
+      .nav { flex-direction:column; align-items:flex-start; }
+      nav ul { justify-content:flex-start; gap:12px 16px; }
+      .hero { padding:64px 0 56px; }
+      .hero-grid,
+      .grid-3,
+      .stats-grid,
+      .footer-grid { grid-template-columns:1fr; }
+      .cta-band { padding:24px; }
+      .cta-band h3 { font-size:28px; }
+      .wpa2-bot-wrap { right:12px; bottom:12px; }
+      .wpa2-bot-panel { width:min(96vw, 380px); height:72vh; }
+      .wpa2-bot-status { margin-left:0; width:100%; }
     }
   </style>
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"CollectionPage",
+    "name":"Scientific Papers | World Protocol Academy",
+    "url":"https://worldprotocolacademy-code.github.io/papers.html",
+    "description":"17 scientific and conference papers by Assoc. Prof. Sande Smiljanov in protocol, diplomacy, security and related fields.",
+    "publisher": {
+      "@type":"EducationalOrganization",
+      "name":"World Protocol Academy"
+    },
+    "author": {
+      "@type":"Person",
+      "name":"Sande Smiljanov"
+    }
+  }
+  </script>
 </head>
 <body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div><strong>World Protocol Academy</strong> — scientific papers, protocol research and founder-led academic work.</div>
+      <div>17 papers • Open PDF access • Founder-led • Research-backed</div>
+    </div>
+  </div>
 
-  <!-- Header -->
   <header>
-    <div class="header-container">
-      <a href="https://worldprotocolacademy-code.github.io/" class="logo">
-        <img src="../logo.png" alt="WPA Logo" onerror="this.style.display='none'">
-        <div>
-          <div style="font-size:.85rem;color:var(--secondary)">WORLD PROTOCOL</div>
-          <div style="font-size:1.1rem">ACADEMY</div>
+    <div class="container nav">
+      <a href="index.html#top" class="brand">
+        <img src="logo.png" alt="World Protocol Academy logo" onerror="this.style.display='none';" />
+        <div class="brand-text">
+          <h1>World Protocol Academy</h1>
+          <p>Scientific Papers • Protocol • Diplomacy • Security • Institutional Communication</p>
         </div>
       </a>
-      <nav>
-        <a href="https://worldprotocolacademy-code.github.io/#books"><i class="fas fa-book"></i> <span data-lang="mk">Книги</span><span data-lang="en">Books</span></a>
-        <a href="#"><i class="fas fa-file-alt"></i> <span data-lang="mk">Трудови</span><span data-lang="en">Papers</span></a>
-        <a href="https://worldprotocolacademy-code.github.io/#contact"><i class="fas fa-envelope"></i> <span data-lang="mk">Контакт</span><span data-lang="en">Contact</span></a>
+
+      <nav aria-label="Primary Navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programmes.html">Programmes</a></li>
+          <li><a href="index.html#ai">AI</a></li>
+          <li><a href="index.html#publications">Books</a></li>
+          <li><a href="papers.html">Papers</a></li>
+          <li><a href="index.html#founder">Founder</a></li>
+        </ul>
       </nav>
-      <div style="display:flex;gap:.5rem">
-        <button class="filter-btn" data-lang="mk">МК</button>
-        <button class="filter-btn" data-lang="en">EN</button>
-      </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main>
-    
-    <!-- Page Title -->
-    <div class="page-title">
-      <h1 data-lang="mk">📄 Научни Трудови</h1>
-      <h1 data-lang="en">📄 Research Papers</h1>
-      <p data-lang="mk">20+ peer-reviewed трудови за дипломатија, протокол и меѓународно право</p>
-      <p data-lang="en">20+ peer-reviewed papers on diplomacy, protocol and international law</p>
-    </div>
-    
-    <!-- Filters -->
-    <div class="filters">
-      <button class="filter-btn active" data-filter="all">
-        <span data-lang="mk">Сите</span><span data-lang="en">All</span>
-      </button>
-      <button class="filter-btn" data-filter="flagship">
-        <i class="fas fa-star"></i> Flagship
-      </button>
-      <button class="filter-btn" data-filter="premium">
-        <i class="fas fa-medal"></i> Premium
-      </button>
-      <button class="filter-btn" data-filter="standard">
-        <i class="fas fa-file"></i> Standard
-      </button>
-    </div>
-    
-    <!-- Academic Discount Block -->
-    <section class="academic-discount" id="academic-discount">
-      <h3>
-        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
-        <span data-lang="mk">Специјални цени за академска заедница</span>
-        <span data-lang="en">Special pricing for academic community</span>
-      </h3>
-      
-      <p data-lang="mk">Верификувајте го Вашиот академски статус и добијте моментален попуст на сите научни трудови.</p>
-      <p data-lang="en">Verify your academic status and get instant discount on all research papers.</p>
-      
-      <!-- Discount Tiers -->
-      <div class="discount-tiers">
-        <div class="tier-card">
-          <div class="tier-icon">🎒</div>
-          <div class="tier-name" data-lang="mk">Додипломски</div>
-          <div class="tier-name" data-lang="en">Undergraduate</div>
-          <div class="tier-discount">40% OFF</div>
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Scientific Papers • Conference Publications • Open PDF Access</span>
+          <h2>The research archive behind World Protocol Academy.</h2>
+          <p>
+            This page presents the current curated set of 17 scientific and conference papers by Assoc. Prof. Sande Smiljanov,
+            focused on protocol, diplomacy, security, state protocol, institutional communication and related professional fields.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#papers-list" class="btn btn-primary">Browse Papers</a>
+            <a href="index.html#ai" class="btn btn-secondary">Ask Virtual Sande</a>
+          </div>
+
+          <div class="hero-note">
+            The structure below follows the newer, standardised paper inventory aligned to the current R2 organisation.
+            If needed, titles and summaries can be refined further paper by paper.
+          </div>
         </div>
-        <div class="tier-card">
-          <div class="tier-icon">🎓</div>
-          <div class="tier-name" data-lang="mk">Последипломски</div>
-          <div class="tier-name" data-lang="en">Master's</div>
-          <div class="tier-discount">35% OFF</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-icon">🔬</div>
-          <div class="tier-name" data-lang="mk">Докторски</div>
-          <div class="tier-name" data-lang="en">PhD</div>
-          <div class="tier-discount">30% OFF</div>
-        </div>
-        <div class="tier-card">
-          <div class="tier-icon">🧪</div>
-          <div class="tier-name" data-lang="mk">Пост-докторски</div>
-          <div class="tier-name" data-lang="en">Post-Doc</div>
-          <div class="tier-discount">25% OFF</div>
-        </div>
+
+        <aside class="hero-card">
+          <h3>Paper Collection Snapshot</h3>
+          <ul class="hero-list">
+            <li><strong>17 papers</strong> in the current curated collection</li>
+            <li><strong>Main fields:</strong> protocol, diplomacy, security, state protocol, leadership, institutional practice</li>
+            <li><strong>Use case:</strong> open reading, research reference and AI-supported learning</li>
+            <li><strong>Founder-led:</strong> directly connected to the intellectual base of WPA</li>
+          </ul>
+        </aside>
       </div>
-      
-      <!-- Verification Form -->
-      <form id="academic-verify-form" class="verify-form">
-        <select id="academic-level" required>
-          <option value="" disabled selected data-lang="mk">Изберете го Вашиот статус...</option>
-          <option value="" disabled selected data-lang="en">Select your academic status...</option>
-          <option value="undergrad" data-lang="mk">🎒 Додипломски студент</option>
-          <option value="undergrad" data-lang="en">🎒 Undergraduate student</option>
-          <option value="master" data-lang="mk">🎓 Последипломски студент</option>
-          <option value="master" data-lang="en">🎓 Master's student</option>
-          <option value="phd" data-lang="mk">🔬 Докторски кандидат</option>
-          <option value="phd" data-lang="en">🔬 PhD candidate</option>
-          <option value="postdoc" data-lang="mk">🧪 Пост-докторски истражувач</option>
-          <option value="postdoc" data-lang="en">🧪 Post-Doc researcher</option>
-          <option value="institution" data-lang="mk">🏛️ Институција / Библиотека</option>
-          <option value="institution" data-lang="en">🏛️ Institution / Library</option>
-        </select>
-        
-        <input type="email" id="academic-email" placeholder="your.name@university.edu" required 
-               aria-label="Academic email address">
-        
-        <button type="submit">
-          <i class="fas fa-check-circle" aria-hidden="true"></i>
-          <span data-lang="mk">Верификувај и активирај попуст</span>
-          <span data-lang="en">Verify & activate discount</span>
-        </button>
-      </form>
-      
-      <!-- Success Message -->
-      <div id="academic-success" class="success-message">
-        <strong>✅ <span data-lang="mk">Верификацијата е успешна!</span><span data-lang="en">Verification successful!</span></strong>
-        <p style="margin:0.5rem 0 0" data-lang="mk">Вашиот попуст е применет. Сега можете да купувате по намалени цени во наредните 12 месеци.</p>
-        <p style="margin:0.5rem 0 0" data-lang="en">Your discount has been applied. You can now purchase at reduced prices for the next 12 months.</p>
-        <p style="margin:0.5rem 0 0;font-size:0.9rem">
-          <span data-lang="mk">Код за рачно внесување: </span>
-          <span data-lang="en">Manual code for checkout: </span>
-          <strong id="discount-code" class="discount-code">ACAD-[RANDOM]</strong>
-        </p>
-      </div>
-      
-      <p style="margin-top:1.5rem;font-size:0.85rem;color:#6c757d">
-        <i class="fas fa-shield-alt" aria-hidden="true"></i>
-        <span data-lang="mk">Вашата email адреса се користи само за верификација и никогаш не се споделува.</span>
-        <span data-lang="en">Your email is used for verification only and never shared.</span>
-      </p>
     </section>
-    
-    <!-- Papers Grid -->
-    <div class="papers-grid" id="papers-list">
-      <!-- Paper cards will be injected by JavaScript -->
-    </div>
-    
+
+    <section>
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Collection Overview</span>
+          <h3>A structured public-facing research layer.</h3>
+          <p>
+            This section gives visitors, institutions, students and professionals a direct route into the published research archive
+            behind World Protocol Academy.
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card"><strong>17</strong><span>Scientific and conference papers</span></article>
+          <article class="stat-card"><strong>4+</strong><span>Main thematic clusters across protocol and diplomacy</span></article>
+          <article class="stat-card"><strong>PDF</strong><span>Direct-access format for reading and citation</span></article>
+          <article class="stat-card"><strong>WPA</strong><span>Research-backed authority, not generic content</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="papers-list" class="accent-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Paper Archive</span>
+          <h3>Current curated list of 17 papers.</h3>
+          <p>
+            The links below assume the PDFs are stored in the website repository under the <strong>papers/</strong> folder using the same standardised filenames.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <span class="small-kicker">P01</span>
+            <h4 class="paper-title">Unintentional Mistakes in the Field of Protocol</h4>
+            <p class="paper-summary">A protocol-focused paper on mistakes, symbolism, representation and the practical consequences of protocol failure.</p>
+            <div class="paper-tags"><span class="tag">Protocol</span><span class="tag">Mistakes</span><span class="tag">Case Insight</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p01-unintentional-mistakes-protocol.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P02</span>
+            <h4 class="paper-title">Protocol within the Ministry of Internal Affairs</h4>
+            <p class="paper-summary">A paper dealing with protocol logic, institutional application and the public-sector dimensions of protocol order.</p>
+            <div class="paper-tags"><span class="tag">State Protocol</span><span class="tag">Institutional Practice</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p02-protocol-mvr.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P03</span>
+            <h4 class="paper-title">UBK: Historical Overview</h4>
+            <p class="paper-summary">A historical and institutional paper linked to state structures, development, continuity and administrative context.</p>
+            <div class="paper-tags"><span class="tag">History</span><span class="tag">Security Context</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p03-ubk-history.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P04</span>
+            <h4 class="paper-title">Leadership and Protocol</h4>
+            <p class="paper-summary">An exploration of protocol through the prism of leadership, responsibility, conduct and institutional representation.</p>
+            <div class="paper-tags"><span class="tag">Leadership</span><span class="tag">Protocol</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p04-leadership-protocol.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P05</span>
+            <h4 class="paper-title">Planning and Organising Conferences</h4>
+            <p class="paper-summary">A practical paper on structured planning, conference logic, organisation and public-event protocol.</p>
+            <div class="paper-tags"><span class="tag">Conferences</span><span class="tag">Planning</span><span class="tag">Events</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p05-planning-conference.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P06</span>
+            <h4 class="paper-title">Protocol and Security</h4>
+            <p class="paper-summary">A focused contribution on the connection between protocol order, safety awareness and sensitive professional environments.</p>
+            <div class="paper-tags"><span class="tag">Security</span><span class="tag">Protocol</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p06-protocol-security.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P07</span>
+            <h4 class="paper-title">Protocol and Policy</h4>
+            <p class="paper-summary">A paper connecting protocol standards, institutional rules and policy-sensitive professional behaviour.</p>
+            <div class="paper-tags"><span class="tag">Policy</span><span class="tag">Institutional Order</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p07-protocol-policy.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P08</span>
+            <h4 class="paper-title">Protocol, Defence and Diplomacy</h4>
+            <p class="paper-summary">A research contribution at the intersection of defence diplomacy, institutional coordination and protocol practice.</p>
+            <div class="paper-tags"><span class="tag">Defence Diplomacy</span><span class="tag">Protocol</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p08-protocol-defense-diplomacy.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P09</span>
+            <h4 class="paper-title">Protocol and Traditions</h4>
+            <p class="paper-summary">A paper on continuity, symbolic order, tradition and the layered cultural logic of protocol practice.</p>
+            <div class="paper-tags"><span class="tag">Tradition</span><span class="tag">Protocol Culture</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p09-protocol-traditions.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P10</span>
+            <h4 class="paper-title">Protocol in the Russo-Ukrainian Context</h4>
+            <p class="paper-summary">A paper connecting protocol logic with contemporary geopolitical context and diplomatic sensitivity.</p>
+            <div class="paper-tags"><span class="tag">Geopolitics</span><span class="tag">Diplomacy</span><span class="tag">Protocol</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p10-protocol-russo-ukraine.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P11</span>
+            <h4 class="paper-title">Official Apostolic Visit of Pope Francis to RDC (2021)</h4>
+            <p class="paper-summary">A protocol and visit-analysis paper focusing on the official apostolic visit of Pope Francis and related ceremonial context.</p>
+            <div class="paper-tags"><span class="tag">Official Visit</span><span class="tag">Ceremonial</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p11-pope-francis-rdc-2021.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P12</span>
+            <h4 class="paper-title">West Balkans Migration</h4>
+            <p class="paper-summary">A contribution dealing with regional dynamics, migration-related context and wider security or policy implications.</p>
+            <div class="paper-tags"><span class="tag">Migration</span><span class="tag">West Balkans</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p12-west-balkans-migration.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P13</span>
+            <h4 class="paper-title">State Protocol in North Macedonia</h4>
+            <p class="paper-summary">A direct state-protocol paper relevant to institutional order, public representation and protocol structure in North Macedonia.</p>
+            <div class="paper-tags"><span class="tag">State Protocol</span><span class="tag">North Macedonia</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p13-drzaven-protokol-mk.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P14</span>
+            <h4 class="paper-title">Corona Virus Handling — “Namaste”</h4>
+            <p class="paper-summary">A timely paper on conduct, communication and etiquette adaptation in pandemic conditions.</p>
+            <div class="paper-tags"><span class="tag">Pandemic</span><span class="tag">Etiquette</span><span class="tag">Communication</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p14-corona-namaste-full.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P15</span>
+            <h4 class="paper-title">A Unique State Protocol</h4>
+            <p class="paper-summary">A paper engaging state-protocol identity, particular institutional models and protocol distinctiveness.</p>
+            <div class="paper-tags"><span class="tag">State Protocol</span><span class="tag">Comparative View</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p15-edinstven-drzaven-protokol.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P16</span>
+            <h4 class="paper-title">Leadership Protocol — Macedonian Case</h4>
+            <p class="paper-summary">A case-based paper on the connection between leadership behaviour, protocol responsibility and public-facing institutional conduct.</p>
+            <div class="paper-tags"><span class="tag">Leadership</span><span class="tag">Case Study</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p16-leadership-protocol-case-mk.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">P17</span>
+            <h4 class="paper-title">Protocol and Leadership Characteristics</h4>
+            <p class="paper-summary">A paper connecting protocol culture, responsible conduct and the leadership profile of protocol-sensitive professionals.</p>
+            <div class="paper-tags"><span class="tag">Leadership</span><span class="tag">Protocol Culture</span></div>
+            <div class="paper-actions"><a class="btn btn-secondary" href="papers/p17-protokol-liderski-karakteristiki.pdf.pdf" target="_blank" rel="noopener">Open PDF</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="note-card">
+          <h4>Important implementation note</h4>
+          <p>
+            This page is aligned to the <strong>new standardised filenames</strong> now visible in your R2 structure. To make all buttons work immediately on GitHub Pages,
+            upload the same 17 PDFs into the repository <strong>papers/</strong> folder using the exact filenames shown on this page.
+          </p>
+          <ul class="note-list">
+            <li>If you prefer the old PDF names in GitHub, I can also prepare a second version mapped 1:1 to the existing repository filenames.</li>
+            <li>The titles above are clean public-facing labels inferred from the new filenames and can be refined later paper by paper.</li>
+            <li>This structure is ready to be expanded with publication year, abstract modal, citation box or bilingual labels.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-band">
+          <h3>Research, books, AI and institutional learning in one ecosystem.</h3>
+          <p>
+            World Protocol Academy is building a connected architecture where books, scientific papers, institutional knowledge and AI-supported learning reinforce one another.
+            The papers archive is one of the core pillars of that structure.
+          </p>
+          <div class="hero-actions">
+            <a href="index.html#publications" class="btn btn-secondary">Explore Books</a>
+            <a href="index.html#ai" class="btn btn-secondary">Ask Virtual Sande</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer>
-    <p>&copy; <span id="year">2026</span> World Protocol Academy • 
-      <span data-lang="mk">Сите права задржани</span>
-      <span data-lang="en">All rights reserved</span>
-    </p>
-    <p style="margin-top:0.5rem">
-      <a href="https://worldprotocolacademy-code.github.io/" data-lang="mk">← Назад кон главна страница</a>
-      <a href="https://worldprotocolacademy-code.github.io/" data-lang="en">← Back to homepage</a>
-    </p>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>World Protocol Academy</h4>
+          <p>
+            Independent digital academy and professional platform focused on protocol, diplomacy, security,
+            institutional communication, multilateral professional readiness and AI-assisted learning.
+          </p>
+          <p class="disclaimer">
+            WPA is an independent academy and digital platform. It is not presented as a state diplomatic academy
+            or a degree-awarding university institution.
+          </p>
+        </div>
+
+        <div>
+          <h4>Research & Learning</h4>
+          <ul>
+            <li><a href="index.html#publications">Books</a></li>
+            <li><a href="papers.html">Papers</a></li>
+            <li><a href="index.html#ai">AI Assistant</a></li>
+            <li><a href="programmes.html">Programmes</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Useful Pages</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="analytics-guide.html">Analytics Guide</a></li>
+            <li><a href="monetization-checklist.html">Monetization Checklist</a></li>
+            <li><a href="promotion-playbook.html">Promotion Playbook</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>worldprotocolacademy@gmail.com</div>
+        <div>© <span id="year"></span> World Protocol Academy. All rights reserved.</div>
+      </div>
+    </div>
   </footer>
 
-  <!-- JavaScript -->
+  <div class="wpa2-bot-wrap">
+    <div class="wpa2-bot-panel" id="wpa2BotPanel">
+      <div class="wpa2-bot-header">
+        <div>
+          <div class="wpa2-bot-title">Virtual Sande AI</div>
+          <div class="wpa2-bot-subtitle">World Protocol Academy</div>
+        </div>
+        <button class="wpa2-bot-close" id="wpa2BotClose" aria-label="Close">×</button>
+      </div>
+
+      <div class="wpa2-bot-toolbar">
+        <select id="wpa2BotLang" aria-label="Language">
+          <option value="mk">Македонски</option>
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="fr">Français</option>
+          <option value="it">Italiano</option>
+          <option value="es">Español</option>
+          <option value="sq">Shqip</option>
+          <option value="tr">Türkçe</option>
+          <option value="hr">Hrvatski</option>
+          <option value="bs">Bosanski</option>
+          <option value="sl">Slovenščina</option>
+        </select>
+        <button type="button" id="wpa2BotClear">Исчисти</button>
+        <div class="wpa2-bot-status" id="wpa2BotStatus"></div>
+      </div>
+
+      <div class="wpa2-bot-messages" id="wpa2BotMessages"></div>
+
+      <div class="wpa2-bot-footer">
+        <div class="wpa2-bot-input-row">
+          <input type="text" id="wpa2BotInput" class="wpa2-bot-input" placeholder="Напишете прашање..." maxlength="700" />
+          <button type="button" class="wpa2-bot-send" id="wpa2BotSend">Испрати</button>
+        </div>
+        <div class="wpa2-bot-note" id="wpa2BotNote">Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.</div>
+      </div>
+    </div>
+
+    <button class="wpa2-bot-toggle" id="wpa2BotToggle" aria-label="Open AI bot">🤖</button>
+  </div>
+
   <script>
-    // ===== PAPERS DATABASE =====
-    const papersDB = [
-      {
-        id: 'paper-01',
-        title: {
-          mk: 'Дигиталната трансформација на дипломатскиот протокол во 21 век',
-          en: 'Digital Transformation of Diplomatic Protocol in the 21st Century'
-        },
-        type: 'flagship',
-        year: 2023,
-        journal: { mk: 'Journal of International Diplomacy', en: 'Journal of International Diplomacy' },
-        citations: 24,
-        abstract: {
-          mk: 'Анализа на како дигиталните технологии го менуваат традиционалниот дипломатски протокол, со фокус на виртуелни самити, дигитални акредитиви и онлајн церемонии.',
-          en: 'Analysis of how digital technologies are transforming traditional diplomatic protocol, with focus on virtual summits, digital credentials, and online ceremonies.'
-        },
-        tags: ['дипломатија', 'дигитално', 'протокол'],
-        price: 19.99,
-        pdf: 'assets/papers/paper-01.pdf'
-      },
-      {
-        id: 'paper-02',
-        title: {
-          mk: 'Виенската конвенција за дипломатски односи: Практична имплементација',
-          en: 'Vienna Convention on Diplomatic Relations: Practical Implementation'
-        },
-        type: 'flagship',
-        year: 2022,
-        journal: { mk: 'International Law Review', en: 'International Law Review' },
-        citations: 31,
-        abstract: {
-          mk: 'Практичен водич за имплементација на Виенската конвенција во современата дипломатска пракса, со case studies од 15 земји.',
-          en: 'Practical guide for implementing the Vienna Convention in modern diplomatic practice, with case studies from 15 countries.'
-        },
-        tags: ['Виенска конвенција', 'меѓународно право', 'дипломатија'],
-        price: 19.99,
-        pdf: 'assets/papers/paper-02.pdf'
-      },
-      {
-        id: 'paper-03',
-        title: {
-          mk: 'Протоколарни грешки на меѓународни самити: Анализа и превенција',
-          en: 'Protocol Errors at International Summits: Analysis and Prevention'
-        },
-        type: 'premium',
-        year: 2023,
-        journal: { mk: 'Protocol Quarterly', en: 'Protocol Quarterly' },
-        citations: 18,
-        abstract: {
-          mk: 'Студија на 50+ протоколарни грешки на меѓународни настани и како да се спречат.',
-          en: 'Study of 50+ protocol errors at international events and how to prevent them.'
-        },
-        tags: ['протокол', 'самити', 'case study'],
-        price: 14.99,
-        pdf: 'assets/papers/paper-03.pdf'
-      },
-      {
-        id: 'paper-04',
-        title: {
-          mk: 'Химни и знамиња: Церемонијален протокол за државни настани',
-          en: 'Anthems and Flags: Ceremonial Protocol for State Events'
-        },
-        type: 'premium',
-        year: 2024,
-        journal: { mk: 'Ceremonial Studies Journal', en: 'Ceremonial Studies Journal' },
-        citations: 12,
-        abstract: {
-          mk: 'Комплетен водич за правилно изведување на химни и истакнување на знамиња на државни настани.',
-          en: 'Complete guide for proper performance of anthems and display of flags at state events.'
-        },
-        tags: ['химни', 'знамиња', 'церемонијал'],
-        price: 14.99,
-        pdf: 'assets/papers/paper-04.pdf'
-      },
-      {
-        id: 'paper-05',
-        title: {
-          mk: 'Етикета во бизнис дипломатијата',
-          en: 'Etiquette in Business Diplomacy'
-        },
-        type: 'standard',
-        year: 2023,
-        journal: { mk: 'Business & Diplomacy Review', en: 'Business & Diplomacy Review' },
-        citations: 9,
-        abstract: {
-          mk: 'Практични совети за етикета во бизнис дипломатијата и корпоративниот протокол.',
-          en: 'Practical tips for etiquette in business diplomacy and corporate protocol.'
-        },
-        tags: ['етикета', 'бизнис', 'дипломатија'],
-        price: 9.99,
-        pdf: 'assets/papers/paper-05.pdf'
-      }
-    ];
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 
-    // ===== STATE =====
-    let state = {
-      lang: localStorage.getItem('wpa-lang') || 'mk',
-      academicDiscount: JSON.parse(localStorage.getItem('wpa-academic-discount')) || null,
-      filter: 'all'
-    };
+  <script>
+    (function () {
+      const API_URL = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask";
+      const STORAGE_LANG = "wpa2-bot-lang";
+      const STORAGE_CHAT = "wpa2-bot-history-v1";
+      const MAX_HISTORY_ITEMS = 6;
 
-    // ===== DOM ELEMENTS =====
-    const els = {
-      papersList: document.getElementById('papers-list'),
-      filterBtns: document.querySelectorAll('.filter-btn[data-filter]'),
-      verifyForm: document.getElementById('academic-verify-form'),
-      academicLevel: document.getElementById('academic-level'),
-      academicEmail: document.getElementById('academic-email'),
-      academicSuccess: document.getElementById('academic-success'),
-      discountCode: document.getElementById('discount-code'),
-      year: document.getElementById('year'),
-      langBtns: document.querySelectorAll('.filter-btn[style*="display"]')
-    };
+      const panel = document.getElementById("wpa2BotPanel");
+      const toggle = document.getElementById("wpa2BotToggle");
+      const closeBtn = document.getElementById("wpa2BotClose");
+      const clearBtn = document.getElementById("wpa2BotClear");
+      const messagesEl = document.getElementById("wpa2BotMessages");
+      const inputEl = document.getElementById("wpa2BotInput");
+      const sendBtn = document.getElementById("wpa2BotSend");
+      const langEl = document.getElementById("wpa2BotLang");
+      const noteEl = document.getElementById("wpa2BotNote");
+      const statusEl = document.getElementById("wpa2BotStatus");
 
-    // ===== LANGUAGE TOGGLE =====
-    els.langBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.lang = btn.textContent === 'МК' ? 'mk' : 'en';
-        localStorage.setItem('wpa-lang', state.lang);
-        document.body.classList.toggle('lang-en', state.lang === 'en');
-        renderPapers();
-      });
-    });
+      let isBusy = false;
+      let conversation = [];
 
-    // ===== FILTER FUNCTIONALITY =====
-    els.filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        els.filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.filter = btn.dataset.filter;
-        renderPapers();
-      });
-    });
-
-    // ===== RENDER PAPERS =====
-    function renderPapers() {
-      if (!els.papersList) return;
-      
-      const filtered = state.filter === 'all' 
-        ? papersDB 
-        : papersDB.filter(p => p.type === state.filter);
-      
-      els.papersList.innerHTML = filtered.map(paper => {
-        const title = paper.title[state.lang] || paper.title.en;
-        const abstract = paper.abstract[state.lang] || paper.abstract.en;
-        const journal = paper.journal[state.lang] || paper.journal.en;
-        const tags = paper.tags.map(t => `<span class="tag">#${t}</span>`).join('');
-        
-        // Calculate discounted price
-        let finalPrice = paper.price;
-        let showDiscount = false;
-        if (state.academicDiscount && state.academicDiscount.expires > Date.now()) {
-          finalPrice = paper.price * (1 - state.academicDiscount.discount/100);
-          showDiscount = true;
+      const UI_TEXT = {
+        mk: {
+          welcome: "Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.",
+          placeholder: "Напишете прашање...",
+          send: "Испрати",
+          clear: "Исчисти",
+          note: "Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.",
+          typing: "Virtual Sande пишува...",
+          error: "Привремена грешка. Обидете се повторно.",
+          network: "Проблем со конекцијата.",
+          cleared: "Разговорот е исчистен."
+        },
+        en: {
+          welcome: "Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.",
+          placeholder: "Type your question...",
+          send: "Send",
+          clear: "Clear",
+          note: "Ask about protocol, diplomacy, state protocol, etiquette, and international relations.",
+          typing: "Virtual Sande is typing...",
+          error: "Temporary error. Please try again.",
+          network: "Network problem.",
+          cleared: "The conversation has been cleared."
+        },
+        de: {
+          welcome: "Willkommen. Ich bin Virtual Sande AI. Stellen Sie eine Frage zu Protokoll, Diplomatie, Staatsprotokoll, Etikette oder internationalen Beziehungen.",
+          placeholder: "Schreiben Sie Ihre Frage...",
+          send: "Senden",
+          clear: "Löschen",
+          note: "Fragen Sie zu Protokoll, Diplomatie, Staatsprotokoll, Etikette und internationalen Beziehungen.",
+          typing: "Virtual Sande schreibt...",
+          error: "Vorübergehender Fehler. Bitte versuchen Sie es erneut.",
+          network: "Netzwerkproblem.",
+          cleared: "Das Gespräch wurde gelöscht."
+        },
+        fr: {
+          welcome: "Bienvenue. Je suis Virtual Sande AI. Posez une question sur le protocole, la diplomatie, le protocole d'État, l'étiquette ou les relations internationales.",
+          placeholder: "Écrivez votre question...",
+          send: "Envoyer",
+          clear: "Effacer",
+          note: "Posez des questions sur le protocole, la diplomatie, le protocole d'État, l'étiquette et les relations internationales.",
+          typing: "Virtual Sande écrit...",
+          error: "Erreur temporaire. Veuillez réessayer.",
+          network: "Problème réseau.",
+          cleared: "La conversation a été effacée."
+        },
+        it: {
+          welcome: "Benvenuto. Sono Virtual Sande AI. Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta o relazioni internazionali.",
+          placeholder: "Scrivi la tua domanda...",
+          send: "Invia",
+          clear: "Pulisci",
+          note: "Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta e relazioni internazionali.",
+          typing: "Virtual Sande sta scrivendo...",
+          error: "Errore temporaneo. Riprova.",
+          network: "Problema di rete.",
+          cleared: "La conversazione è stata cancellata."
+        },
+        es: {
+          welcome: "Bienvenido. Soy Virtual Sande AI. Haz una pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta o relaciones internacionales.",
+          placeholder: "Escribe tu pregunta...",
+          send: "Enviar",
+          clear: "Borrar",
+          note: "Pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta y relaciones internacionales.",
+          typing: "Virtual Sande está escribiendo...",
+          error: "Error temporal. Inténtalo de nuevo.",
+          network: "Problema de red.",
+          cleared: "La conversación ha sido borrada."
+        },
+        sq: {
+          welcome: "Mirë se vini. Unë jam Virtual Sande AI. Bëni një pyetje për protokollin, diplomacinë, protokollin shtetëror, etikën ose marrëdhëniet ndërkombëtare.",
+          placeholder: "Shkruani pyetjen tuaj...",
+          send: "Dërgo",
+          clear: "Pastro",
+          note: "Pyesni për protokollin, diplomacinë, protokollin shtetëror, etikën dhe marrëdhëniet ndërkombëtare.",
+          typing: "Virtual Sande po shkruan...",
+          error: "Gabim i përkohshëm. Provoni përsëri.",
+          network: "Problem rrjeti.",
+          cleared: "Biseda u pastrua."
+        },
+        tr: {
+          welcome: "Hoş geldiniz. Ben Virtual Sande AI. Protokol, diplomasi, devlet protokolü, görgü veya uluslararası ilişkiler hakkında soru sorun.",
+          placeholder: "Sorunuzu yazın...",
+          send: "Gönder",
+          clear: "Temizle",
+          note: "Protokol, diplomasi, devlet protokolü, görgü ve uluslararası ilişkiler hakkında sorun.",
+          typing: "Virtual Sande yazıyor...",
+          error: "Geçici hata. Lütfen tekrar deneyin.",
+          network: "Ağ sorunu.",
+          cleared: "Konuşma temizlendi."
+        },
+        hr: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomaciji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomaciji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovno.",
+          network: "Problem s mrežom.",
+          cleared: "Razgovor je obrisan."
+        },
+        bs: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomatiji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomatiji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovo.",
+          network: "Problem s mrežom.",
+          cleared: "Razgovor je obrisan."
+        },
+        sl: {
+          welcome: "Dobrodošli. Sem Virtual Sande AI. Zastavite vprašanje o protokolu, diplomaciji, državnem protokolu, bontonu ali mednarodnih odnosih.",
+          placeholder: "Vpišite svoje vprašanje...",
+          send: "Pošlji",
+          clear: "Počisti",
+          note: "Vprašajte o protokolu, diplomaciji, državnem protokolu, bontonu in mednarodnih odnosih.",
+          typing: "Virtual Sande piše...",
+          error: "Začasna napaka. Poskusite znova.",
+          network: "Težava z omrežjem.",
+          cleared: "Pogovor je bil počiščen."
         }
-        
-        const typeLabels = {
-          flagship: { mk: 'Флагман', en: 'Flagship' },
-          premium: { mk: 'Премиум', en: 'Premium' },
-          standard: { mk: 'Стандард', en: 'Standard' }
-        };
-        
-        return `
-          <article class="paper-card" data-paper-id="${paper.id}">
-            <span class="paper-type ${paper.type}">${typeLabels[paper.type][state.lang]}</span>
-            <h3 class="paper-title">${title}</h3>
-            <div class="paper-meta">
-              <span><i class="far fa-calendar"></i> ${paper.year}</span>
-              <span><i class="fas fa-book"></i> ${journal}</span>
-              <span><i class="fas fa-quote-right"></i> ${paper.citations} ${state.lang==='mk'?'цитати':'citations'}</span>
-            </div>
-            <p class="paper-abstract">${abstract}</p>
-            <div class="paper-tags">${tags}</div>
-            <div class="paper-price">
-              ${showDiscount ? `<span class="price-original">$${paper.price.toFixed(2)}</span>` : ''}
-              <span class="price-current">$${finalPrice.toFixed(2)}</span>
-              ${showDiscount ? `<span class="discount-badge">-${state.academicDiscount.discount}%</span>` : ''}
-            </div>
-            <div class="paper-actions">
-              <button class="btn btn-primary btn-sm" onclick="addToCart('${paper.id}','${title.replace(/'/g,"\\'")}',${finalPrice})">
-                <i class="fas fa-cart-plus"></i>
-                <span data-lang="mk">Додади</span>
-                <span data-lang="en">Add</span>
-              </button>
-              <button class="btn btn-outline btn-sm" onclick="viewPreview('${paper.id}')">
-                <i class="fas fa-eye"></i>
-                <span data-lang="mk">Преглед</span>
-                <span data-lang="en">Preview</span>
-              </button>
-            </div>
-          </article>
-        `;
-      }).join('');
-    }
-
-    // ===== ACADEMIC VERIFICATION =====
-    els.verifyForm?.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const level = els.academicLevel.value;
-      const email = els.academicEmail.value;
-      
-      // Simple validation
-      const academicDomains = ['.edu', '.ac.', '.univ.', '.uni.', '.mk'];
-      const isAcademic = academicDomains.some(domain => email.toLowerCase().includes(domain));
-      
-      if (!isAcademic && level !== 'institution') {
-        alert('⚠️ ' + (state.lang === 'mk' 
-          ? 'Ве молиме внесете валиден академски email' 
-          : 'Please enter a valid academic email'));
-        return;
-      }
-      
-      // Generate discount
-      const discounts = { undergrad: 40, master: 35, phd: 30, postdoc: 25, institution: 50 };
-      const discount = discounts[level] || 0;
-      const code = `ACAD-${level.toUpperCase()}-${Math.random().toString(36).substr(2,6).toUpperCase()}`;
-      
-      // Save to localStorage
-      state.academicDiscount = {
-        code: code,
-        discount: discount,
-        level: level,
-        email: email,
-        expires: Date.now() + (365 * 24 * 60 * 60 * 1000)
       };
-      localStorage.setItem('wpa-academic-discount', JSON.stringify(state.academicDiscount));
-      
-      // Show success
-      els.academicSuccess.style.display = 'block';
-      els.discountCode.textContent = code;
-      
-      // Re-render papers with new prices
-      renderPapers();
-      
-      // Scroll to papers
-      els.papersList?.scrollIntoView({ behavior: 'smooth' });
-    });
 
-    // ===== ADD TO CART (placeholder) =====
-    window.addToCart = function(id, title, price) {
-      alert(`${state.lang==='mk'?'✅ Додадено во кошничка':'✅ Added to cart'}: ${title}`);
-      // In production: integrate with your cart system
-    };
+      function currentLang() { return langEl.value || "mk"; }
+      function ui() { return UI_TEXT[currentLang()] || UI_TEXT.mk; }
+      function escapeHtml(str) {
+        return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      }
 
-    // ===== VIEW PREVIEW (placeholder) =====
-    window.viewPreview = function(id) {
-      alert(`${state.lang==='mk'?'👁 Преглед':'👁 Preview'}: ${id}`);
-      // In production: open modal or navigate to paper detail page
-    };
+      function saveConversation() {
+        try { sessionStorage.setItem(STORAGE_CHAT, JSON.stringify(conversation.slice(-MAX_HISTORY_ITEMS))); } catch (_) {}
+      }
 
-    // ===== INITIALIZE =====
-    els.year.textContent = new Date().getFullYear();
-    document.body.classList.toggle('lang-en', state.lang === 'en');
-    renderPapers();
+      function loadConversation() {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_CHAT);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .filter(item => item && typeof item === "object")
+            .map(item => ({
+              role: item.role === "assistant" ? "assistant" : "user",
+              content: String(item.content || "").trim()
+            }))
+            .filter(item => item.content)
+            .slice(-MAX_HISTORY_ITEMS);
+        } catch (_) { return []; }
+      }
+
+      function setBusy(state) {
+        isBusy = state;
+        inputEl.disabled = state;
+        sendBtn.disabled = state;
+        clearBtn.disabled = state;
+        langEl.disabled = state;
+      }
+
+      function setStatus(text) { statusEl.textContent = text || ""; }
+
+      function createMessageNode(role, text, metaText) {
+        const row = document.createElement("div");
+        row.className = "wpa2-bot-msg " + role;
+        const bubble = document.createElement("div");
+        bubble.className = "wpa2-bot-bubble";
+        bubble.innerHTML = escapeHtml(text);
+        if (metaText) {
+          const meta = document.createElement("div");
+          meta.className = "wpa2-bot-meta";
+          meta.innerHTML = escapeHtml(metaText);
+          bubble.appendChild(meta);
+        }
+        row.appendChild(bubble);
+        return row;
+      }
+
+      function appendMessage(role, text, metaText) {
+        const node = createMessageNode(role, text, metaText);
+        messagesEl.appendChild(node);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return node;
+      }
+
+      function renderConversation() {
+        messagesEl.innerHTML = "";
+        if (!conversation.length) {
+          appendMessage("bot", ui().welcome);
+          return;
+        }
+        for (const item of conversation) appendMessage(item.role === "user" ? "user" : "bot", item.content);
+      }
+
+      function applyLanguageTexts() {
+        inputEl.placeholder = ui().placeholder;
+        sendBtn.textContent = ui().send;
+        clearBtn.textContent = ui().clear;
+        noteEl.textContent = ui().note;
+        localStorage.setItem(STORAGE_LANG, currentLang());
+        if (!conversation.length) renderConversation();
+      }
+
+      function openBot() { panel.classList.add("open"); inputEl.focus(); }
+      function closeBot() { panel.classList.remove("open"); }
+      function clearChat() {
+        if (isBusy) return;
+        conversation = [];
+        saveConversation();
+        renderConversation();
+        inputEl.value = "";
+        setStatus(ui().cleared);
+        setTimeout(() => {
+          if (statusEl.textContent === ui().cleared) setStatus("");
+        }, 1800);
+      }
+
+      function buildHistoryPayload() {
+        return conversation.slice(-MAX_HISTORY_ITEMS).map(item => ({ role: item.role === "assistant" ? "assistant" : "user", content: item.content }));
+      }
+
+      function pushConversation(role, content) {
+        conversation.push({ role, content: String(content || "").trim() });
+        conversation = conversation.filter(x => x.content).slice(-MAX_HISTORY_ITEMS);
+        saveConversation();
+      }
+
+      function buildMetaFromResponse(data) {
+        if (!data || typeof data !== "object") return "";
+        const parts = [];
+        if (data.mode === "author") parts.push("author mode");
+        if (data.mode === "fallback") parts.push("fallback mode");
+        if (data.mode === "boundary") parts.push("boundary");
+        if (data.followUpUsed) parts.push("follow-up");
+        if (data.servedBy) parts.push("served by: " + data.servedBy);
+        if (Array.isArray(data.sources) && data.sources.length) parts.push("sources: " + data.sources.join("; "));
+        return parts.join(" • ");
+      }
+
+      async function askBot() {
+        const message = inputEl.value.trim();
+        if (!message || isBusy) return;
+
+        appendMessage("user", message);
+        pushConversation("user", message);
+        inputEl.value = "";
+        setBusy(true);
+        setStatus(ui().typing);
+        const typingNode = appendMessage("bot", ui().typing);
+
+        try {
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message,
+              lang: currentLang(),
+              history: buildHistoryPayload()
+            })
+          });
+
+          let data = null;
+          try { data = await res.json(); } catch (_) {}
+          typingNode.remove();
+
+          if (data && data.ok && data.answer) {
+            const metaText = buildMetaFromResponse(data);
+            appendMessage("bot", data.answer, metaText);
+            pushConversation("assistant", data.answer);
+            setStatus("");
+          } else if (data && data.error) {
+            appendMessage("bot", data.error);
+            pushConversation("assistant", data.error);
+            setStatus("");
+          } else {
+            appendMessage("bot", ui().error);
+            pushConversation("assistant", ui().error);
+            setStatus("");
+          }
+        } catch (_) {
+          typingNode.remove();
+          appendMessage("bot", ui().network);
+          pushConversation("assistant", ui().network);
+          setStatus("");
+        } finally {
+          setBusy(false);
+          inputEl.focus();
+        }
+      }
+
+      toggle.addEventListener("click", openBot);
+      closeBtn.addEventListener("click", closeBot);
+      clearBtn.addEventListener("click", clearChat);
+      sendBtn.addEventListener("click", askBot);
+      inputEl.addEventListener("keydown", function (e) { if (e.key === "Enter") askBot(); });
+      langEl.addEventListener("change", applyLanguageTexts);
+
+      const savedLang = localStorage.getItem(STORAGE_LANG);
+      langEl.value = savedLang && UI_TEXT[savedLang] ? savedLang : "mk";
+      conversation = loadConversation();
+      applyLanguageTexts();
+      renderConversation();
+    })();
   </script>
 </body>
 </html>
