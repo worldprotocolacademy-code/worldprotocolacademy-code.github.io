@@ -708,7 +708,39 @@
             имитира државна дипломатска академија, ниту се сведува на мека школа за етикеција.
           </p>
         </div>
+<script>
+const SITE_TRANSLATIONS = {
+  mk: {
+    about_title: "Нов стандард во образованието за протокол.",
+    about_text: "World Protocol Academy е замислена како премиум хибрид..."
+  },
+  en: {
+    about_title: "A new standard in protocol education.",
+    about_text: "World Protocol Academy is designed as a premium hybrid..."
+  }
+};
 
+function applySiteLanguage(lang) {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (SITE_TRANSLATIONS[lang] && SITE_TRANSLATIONS[lang][key]) {
+      el.textContent = SITE_TRANSLATIONS[lang][key];
+    }
+  });
+  localStorage.setItem("wpa-site-lang", lang);
+}
+
+const siteLangSync = document.getElementById("wpa2BotLangSync");
+if (siteLangSync) {
+  siteLangSync.addEventListener("change", function () {
+    applySiteLanguage(this.value);
+  });
+}
+
+const savedSiteLang = localStorage.getItem("wpa-site-lang") || "mk";
+if (siteLangSync) siteLangSync.value = savedSiteLang;
+applySiteLanguage(savedSiteLang);
+</script>
         <div class="grid-3">
           <article class="card">
             <span class="small-kicker">Академска тежина</span>
@@ -1122,7 +1154,10 @@
               <a class="presence-link" href="https://www.linkedin.com/in/asst-prof-sande-smiljanov-ph-d-a6706323b/" target="_blank" rel="noopener"><span>LinkedIn</span><span>Отвори →</span></a>
               <a class="presence-link" href="https://independent.academia.edu/SandeSmiljanov" target="_blank" rel="noopener"><span>Academia</span><span>Отвори →</span></a>
               <a class="presence-link" href="https://www.researchgate.net/" target="_blank" rel="noopener"><span>ResearchGate</span><span>Додај профил →</span></a>
-              <a class="presence-link" href="https://www.adscientificindex.com/" target="_blank" rel="noopener"><span>AD Scientific Index</span><span>Додај профил →</span></a>
+              <a class="presence-link" href="https://adscientificindex.com/h-index-ranking/?ft_search=sande+smiljanov&ft_search_type=name&ft_mode=all" target="_blank" rel="noopener">
+  <span>AD Scientific Index</span>
+  <span>Отвори →</span>
+</a>
             </div>
           </article>
         </div>
