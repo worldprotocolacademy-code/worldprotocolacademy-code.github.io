@@ -19,6 +19,427 @@
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="canonical" href="https://worldprotocolacademy-code.github.io/" />
   <link rel="manifest" href="manifest.json" />
+WPA FINAL IMPLEMENTATION GUIDE
+
+FILES IN THIS BUNDLE
+1. wpa_index_integrated_sections_final.html
+2. wpa_rights_takedown_page_final.html
+3. wpa_worker_integrated_additions_final.js
+4. wpa_final_integration_guide.txt
+
+STEP 1 — INDEX.HTML
+Open:
+wpa_index_integrated_sections_final.html
+
+Copy:
+- Virtual Sande mission section
+- Pricing section
+- Copyright/IP section
+- CSS block
+
+Paste into:
+index.html
+
+Replace placeholders:
+- STRIPE_PRO_LINK
+- PAYPAL_PRO_LINK
+- STRIPE_ACADEMIC_LINK
+- PAYPAL_ACADEMIC_LINK
+
+STEP 2 — RIGHTS PAGE
+Upload:
+wpa_rights_takedown_page_final.html
+
+Rename on your site to:
+rights-takedown.html
+
+STEP 3 — WORKER
+Open:
+wpa_worker_integrated_additions_final.js
+
+Copy the helper functions into your Worker file.
+
+Then inside /ask flow:
+A) After selection is computed, add:
+   const rightsPartition = partitionItemsByRights(selection.items);
+   const insights = computeQuestionInsights(message, selection.items);
+
+B) Log the question event:
+   await logBotEvent(env, buildAnalyticsEvent("question_sent", {
+     lang: answerLang,
+     semantic_mode: insights.semanticMode,
+     quote_requested: insights.quoteRequested ? 1 : 0,
+     source_count: insights.sourceCount
+   }));
+
+C) Before normal answer generation, add third-party-safe branch:
+   if (rightsPartition.own.length === 0 && rightsPartition.thirdParty.length > 0) {
+     const safeAnswer = buildThirdPartySafeAnswer(message, rightsPartition.thirdParty, answerLang);
+     return jsonResponse({
+       ok: true,
+       answer: safeAnswer,
+       mode: "third_party_reference",
+       sources: sourceList(rightsPartition.thirdParty),
+       followUpUsed,
+       servedBy: VERSION
+     }, 200, { origin });
+   }
+
+D) Optional premium gating:
+   if (detectSemanticMode(message) === "realize" && !canUsePremiumScenario(userPlan)) {
+     return jsonResponse({
+       ok: true,
+       answer: buildUpgradeMessage(answerLang, "pro"),
+       mode: "upgrade_required",
+       sources: [],
+       followUpUsed,
+       servedBy: VERSION
+     }, 200, { origin });
+   }
+
+STEP 4 — ANALYTICS (PHASE 2)
+Wire logBotEvent() to:
+- Workers Analytics Engine
+or
+- D1
+
+Suggested event types:
+- bot_open
+- question_sent
+- answer_success
+- answer_fallback
+- no_answer
+- source_used
+- quote_used
+- upgrade_click
+- payment_success
+
+STEP 5 — PRODUCT POSITIONING
+Public name:
+Virtual Sande by World Protocol Academy
+
+Core mission:
+Semantic Read
+Semantic Learn
+Semantic Realize
+
+Rights policy:
+- own corpus = deep use
+- third-party = reference-only
+- no long verbatim excerpts from third-party works
+<!-- =========================
+WPA FINAL INTEGRATED SECTIONS
+Paste these sections into index.html
+Suggested order:
+1) Virtual Sande mission block
+2) Pricing block
+3) Copyright/IP notice block
+========================= -->
+
+<section id="virtual-sande-mission" class="accent-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Virtual Sande</span>
+      <h3>Семантички чита. Структурирано учи. Практично реализира.</h3>
+      <p>
+        Virtual Sande by World Protocol Academy е семантички академски асистент
+        создаден да чита со значење, да учи со структура и да реализира со
+        практична примена во протокол, дипломатија, етикеција, безбедност
+        и институционална комуникација.
+      </p>
+    </div>
+
+    <div class="grid-3">
+      <article class="card">
+        <span class="small-kicker">Semantic Read</span>
+        <h4>Семантичко читање</h4>
+        <p>
+          Ботот не пребарува само зборови, туку ја препознава намерата на прашањето,
+          контекстот и најрелевантните извори.
+        </p>
+      </article>
+
+      <article class="card">
+        <span class="small-kicker">Semantic Learn</span>
+        <h4>Структурирано учење</h4>
+        <p>
+          Одговара, објаснува, споредува, претвора прашања во лекции, а лекции во
+          патеки за учење и подготовка.
+        </p>
+      </article>
+
+      <article class="card">
+        <span class="small-kicker">Semantic Realize</span>
+        <h4>Практична реализација</h4>
+        <p>
+          Знаењето го претвора во сценарија, насоки, checklist логика и применливи
+          протоколарни решенија за реални ситуации.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" class="accent-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Пристап и членство</span>
+      <h3>Изберете го нивото што одговара на вашата патека.</h3>
+      <p>
+        World Protocol Academy комбинира бесплатен пристап за основно учење
+        со премиум нивоа за продлабочени лекции, сценарија, тестови,
+        сертификациска подготовка и институционална поддршка.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <article class="pricing-card">
+        <div class="pricing-badge">Free</div>
+        <h4>Основен пристап</h4>
+        <div class="price-line">€0</div>
+        <p class="pricing-text">
+          За основни дефиниции, кратки одговори, дел од интервјуа,
+          preview лекции и општ вовед во протокол, дипломатија и етикеција.
+        </p>
+        <ul class="pricing-list">
+          <li>Кратки bot одговори</li>
+          <li>Основни лекции и поими</li>
+          <li>Дел од книги и трудови</li>
+          <li>Preview на learning paths</li>
+        </ul>
+        <a class="btn btn-secondary pricing-btn" href="#top">Започни бесплатно</a>
+      </article>
+
+      <article class="pricing-card pricing-card-featured">
+        <div class="pricing-badge">WPA Pro</div>
+        <h4>Професионално ниво</h4>
+        <div class="price-line">€9.99 <span>/ месечно</span></div>
+        <p class="pricing-text">
+          За подлабоки одговори, premium lessons, сценарија, structured learning,
+          дел од осумслојниот тест и понапредна подготовка.
+        </p>
+        <ul class="pricing-list">
+          <li>Подолги и попрецизни bot одговори</li>
+          <li>Premium lessons</li>
+          <li>Сценарија за вежбање</li>
+          <li>Дел од тест архитектурата</li>
+          <li>Guided study mode</li>
+        </ul>
+        <div class="payment-buttons">
+          <a class="btn btn-primary pricing-btn" href="STRIPE_PRO_LINK">Отклучи WPA Pro</a>
+          <a class="btn btn-secondary pricing-btn" href="PAYPAL_PRO_LINK">PayPal</a>
+        </div>
+      </article>
+
+      <article class="pricing-card">
+        <div class="pricing-badge">Academic Pro</div>
+        <h4>Академско ниво</h4>
+        <div class="price-line">€19.99 <span>/ месечно</span></div>
+        <p class="pricing-text">
+          За студенти, истражувачи, академски корисници и посериозна подготовка
+          низ advanced lessons, test prep и certificate pathway.
+        </p>
+        <ul class="pricing-list">
+          <li>Advanced lesson paths</li>
+          <li>Подлабока анализа на сценарија</li>
+          <li>Подготовка за сертификати</li>
+          <li>Проширен test prep</li>
+          <li>Академски фокусиран Virtual Sande</li>
+        </ul>
+        <div class="payment-buttons">
+          <a class="btn btn-primary pricing-btn" href="STRIPE_ACADEMIC_LINK">Отклучи Academic Pro</a>
+          <a class="btn btn-secondary pricing-btn" href="PAYPAL_ACADEMIC_LINK">PayPal</a>
+        </div>
+      </article>
+
+      <article class="pricing-card">
+        <div class="pricing-badge">Institutional</div>
+        <h4>Executive / Institutional</h4>
+        <div class="price-line">По договор</div>
+        <p class="pricing-text">
+          За министерства, амбасади, универзитети, јавни институции,
+          корпорации и извршни тимови со прилагодени обуки и затворени групи.
+        </p>
+        <ul class="pricing-list">
+          <li>Custom training packages</li>
+          <li>Meet / Zoom / Webex delivery</li>
+          <li>Institutional briefing</li>
+          <li>Verification и certificate logic</li>
+          <li>Годишни партнерства</li>
+        </ul>
+        <a class="btn btn-secondary pricing-btn" href="mailto:worldprotocolacademy@gmail.com?subject=Institutional%20Inquiry%20-%20World%20Protocol%20Academy">Побарај понуда</a>
+      </article>
+    </div>
+
+    <div class="payments-note card" style="margin-top: 24px;">
+      <h4>Достапни начини на плаќање</h4>
+      <p style="margin-bottom: 12px;">
+        Плаќањето може да се овозможи преку Stripe и PayPal, со поддршка за
+        Visa, Mastercard и други достапни дигитални методи на плаќање според поставките.
+      </p>
+
+      <div class="meta-pills">
+        <span class="pill">Stripe</span>
+        <span class="pill">PayPal</span>
+        <span class="pill">Visa</span>
+        <span class="pill">Mastercard</span>
+      </div>
+
+      <p class="disclaimer" style="margin-top: 12px;">
+        Контакт и деловна комуникација: <strong>worldprotocolacademy@gmail.com</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="copyright-policy" class="accent-section">
+  <div class="container">
+    <div class="section-header">
+      <span class="label">Авторски права и користење на содржина</span>
+      <h3>Интелектуална сопственост, референци и ограничено користење на извори</h3>
+      <p>
+        World Protocol Academy користи сопствени, дозволени и селективно референтни материјали
+        за образовни, академски и информативни цели.
+      </p>
+    </div>
+
+    <div class="card">
+      <h4>Политика за содржина</h4>
+      <p style="margin-bottom:14px;">
+        Материјалите на Доц. д-р Санде Смиљанов, вклучително и книги, трудови, интервјуа,
+        лекции, презентации, сценарија, прашања и оригинални WPA содржини, се дел од
+        сопствениот или контролираниот образовен корпус на World Protocol Academy.
+      </p>
+      <p style="margin-bottom:14px;">
+        Материјали од други автори и јавно достапни интернет-извори не се автоматски
+        слободни за неограничена употреба. WPA и Virtual Sande ги користат ограничено,
+        како академски референци, библиографски насоки или кратки интерпретативни осврти.
+      </p>
+      <p style="margin-bottom:14px;">
+        За извори од трети автори, WPA се стреми да прикажува: име на автор, наслов на дело
+        и краток опис на релевантната идеја, без подолги дословни извадоци, реконструкции на
+        поглавја или репродукција на значајни делови од делото без соодветна дозвола.
+      </p>
+      <p style="margin-bottom:14px;">
+        Сите авторски права за материјали од трети лица остануваат кај нивните носители.
+        Ако сте носител на права и сметате дека одреден материјал или начин на употреба
+        бара корекција, ограничување или отстранување, контактирајте нè.
+      </p>
+
+      <div class="meta-pills">
+        <span class="pill">Сопствени дела</span>
+        <span class="pill">Академски референци</span>
+        <span class="pill">Ограничено цитирање</span>
+        <span class="pill">Право на приговор</span>
+      </div>
+
+      <p class="disclaimer" style="margin-top:16px;">
+        Контакт за права, приговори и барања за корекција:
+        <strong>worldprotocolacademy@gmail.com</strong>
+      </p>
+      <p style="margin-top: 12px;">
+        <a class="inline-link" href="rights-takedown.html">Отворете ја страницата за права и барања за отстранување →</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Add this CSS in your <style> block -->
+<style>
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.pricing-card {
+  position: relative;
+  height: 100%;
+  padding: 26px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.pricing-card-featured {
+  border: 2px solid var(--gold);
+  background: linear-gradient(180deg, #fffdf8, #fbf7ef);
+}
+
+.pricing-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 14px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--gold-dark);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.pricing-card h4 {
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.price-line {
+  margin-bottom: 12px;
+  color: var(--navy);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.price-line span {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.pricing-text {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.pricing-list {
+  margin: 0 0 20px;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.pricing-list li {
+  margin-bottom: 10px;
+}
+
+.payment-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pricing-btn {
+  width: 100%;
+}
+
+@media (max-width: 1180px) {
+  .pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
 
   <style>
     :root {
