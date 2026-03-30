@@ -2132,17 +2132,30 @@
         saveConversation();
       }
 
-      function buildMetaFromResponse(data) {
-        if (!data || typeof data !== 'object') return '';
-        const parts = [];
-        if (data.mode === 'author') parts.push('author mode');
-        if (data.mode === 'fallback') parts.push('fallback mode');
-        if (data.mode === 'boundary') parts.push('boundary');
-        if (data.followUpUsed) parts.push('follow-up');
-        if (data.servedBy) parts.push('served by: ' + data.servedBy);
-        if (Array.isArray(data.sources) && data.sources.length) parts.push('sources: ' + data.sources.join('; '));
-        return parts.join(' • ');
-      }
+      /* ===== WPA bilingual fix ===== */
+[data-lang="mk"], [data-lang="en"] {
+  display: none;
+}
+
+body:not(.lang-en) [data-lang="mk"] {
+  display: revert !important;
+}
+
+body.lang-en [data-lang="en"] {
+  display: revert !important;
+}
+
+[data-lang-inline="mk"], [data-lang-inline="en"] {
+  display: none;
+}
+
+body:not(.lang-en) [data-lang-inline="mk"] {
+  display: inline !important;
+}
+
+body.lang-en [data-lang-inline="en"] {
+  display: inline !important;
+}
 
       async function askBot() {
         const message = inputEl.value.trim();
