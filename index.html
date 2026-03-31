@@ -2157,7 +2157,7 @@ body.lang-en [data-lang-inline="en"] {
   display: inline !important;
 }
 
-      async function askBot() {
+ async function askBot() {
   const message = inputEl.value.trim();
   if (!message || isBusy) return;
 
@@ -2214,53 +2214,10 @@ body.lang-en [data-lang-inline="en"] {
   }
 }
 
-        setBusy(true);
-        setStatus(ui().typing);
-        const typingNode = appendMessage('bot', ui().typing);
-
-        try {
-          const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              message,
-              lang: currentLang(),
-              history: buildHistoryPayload()
-            })
-          });
-
-          let data = null;
-          try {
-            data = await res.json();
-          } catch (_) {}
-
-          typingNode.remove();
-
-          if (data && data.ok && data.answer) {
-            const metaText = buildMetaFromResponse(data);
-            appendMessage('bot', data.answer, metaText);
-            pushConversation('assistant', data.answer);
-            setStatus('');
-          } else if (data && data.error) {
-            appendMessage('bot', data.error);
-            pushConversation('assistant', data.error);
-            setStatus('');
-          } else {
-            appendMessage('bot', ui().error);
-            pushConversation('assistant', ui().error);
-            setStatus('');
-          }
-        } catch (_) {
-          typingNode.remove();
-          appendMessage('bot', ui().network);
-          pushConversation('assistant', ui().network);
-          setStatus('');
-        } finally {
-          setBusy(false);
-          inputEl.focus();
-        }
-      }
-
+toggle.addEventListener('click', openBot);
+closeBtn.addEventListener('click', closeBot);
+clearBtn.addEventListener('click', clearChat);
+sendBtn.addEventListener('click', askBot);
       toggle.addEventListener('click', openBot);
       closeBtn.addEventListener('click', closeBot);
       clearBtn.addEventListener('click', clearChat);
