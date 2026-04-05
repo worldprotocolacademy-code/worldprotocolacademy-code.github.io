@@ -7,75 +7,564 @@
   <meta name="description" content="Structured WPA programme for official speaking, institutional messaging, media-facing conduct, camera presence and executive confidence.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://worldprotocolacademy-code.github.io/communication-presence-track.html">
+
+  <style>
+    :root{
+      --bg:#f6f2eb;
+      --surface:#ffffff;
+      --text:#1d2430;
+      --muted:#5a6577;
+      --line:#ddd3c3;
+      --gold:#9a7728;
+      --gold-dark:#7b5f1f;
+      --navy:#162947;
+      --shadow:0 10px 30px rgba(20,31,52,.08);
+      --radius:18px;
+      --max:1100px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: #eef3fb;
+      font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .topbar strong { color: #f4d697; }
+
+    .site-header {
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      padding: 6px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.1;
+      color: var(--navy);
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    nav a:hover { color: var(--gold-dark); }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(22,41,71,.96), rgba(34,56,92,.92));
+      color: #fff;
+      padding: 72px 0 56px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #f7dca8;
+      font-size: 13px;
+      letter-spacing: .3px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      margin: 0 0 16px;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.08;
+      max-width: 900px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      font-size: 18px;
+      max-width: 900px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: #f7dca8;
+      font-weight: 700;
+    }
+
+    .block {
+      padding: 34px 0;
+    }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    h4 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: 22px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .grid-3, .grid-2 {
+      display: grid;
+      gap: 22px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      height: 100%;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    li { margin-bottom: 10px; }
+
+    .cta-box {
+      background: linear-gradient(135deg, var(--gold), #b78a2a);
+      color: #fff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .cta-box h3 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .cta-box p {
+      margin: 0 0 18px;
+      color: rgba(255,255,255,.92);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: var(--navy);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.16);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.3);
+    }
+
+    .footer {
+      background: #0f1b30;
+      color: #d7ddeb;
+      padding: 48px 0 28px;
+      margin-top: 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr .9fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .footer h4 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .footer p,
+    .footer li,
+    .footer a {
+      color: #d7ddeb;
+      font-size: 14px;
+    }
+
+    .footer ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 18px;
+      font-size: 13px;
+      color: #b9c3d6;
+    }
+
+    .disclaimer {
+      margin-top: 10px;
+      color: #7a8597;
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .grid-3, .grid-2, .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav ul {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        padding: 58px 0 44px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <p><a href="index.html">← Back to Home</a></p>
-    <h1>Communication and Presence Track</h1>
-    <p>Структурирана WPA програма за официјално говорење, институционално поракување, media-facing conduct, camera presence и executive confidence.</p>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div><strong>World Protocol Academy</strong> — structured learning for communication, public presence and institutional readiness.</div>
+      <div>Professional • Premium • Global-facing</div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="World Protocol Academy logo">
+        <div class="brand-text">
+          <h1>World Protocol Academy</h1>
+          <p>Communication and Presence Track</p>
+        </div>
+      </a>
+
+      <nav aria-label="Primary Navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programmes.html">Programmes</a></li>
+          <li><a href="papers.html">Papers</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
   <main>
-    <section>
-      <h2>За кого е програмата</h2>
-      <ul>
-        <li>PR тимови и комуникациски професионалци</li>
-        <li>портпароли и лица што даваат официјални изјави</li>
-        <li>public-facing staff и institutional representatives</li>
-        <li>executives, speakers и leaders со формална јавна улога</li>
-      </ul>
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Flagship Programme | Communication & Public Presence</span>
+        <h2>Communication and Presence Track</h2>
+        <p>
+          Структурирана WPA програма за официјално говорење, институционално поракување,
+          media-facing conduct, camera presence и executive confidence.
+        </p>
+        <a class="back-link" href="programmes.html">← Back to Programmes</a>
+      </div>
     </section>
 
-    <section>
-      <h2>Што ќе научите</h2>
-      <ul>
-        <li>појасно и посмирено институционално говорење</li>
-        <li>читање на јавна појава преку тон, држење и on-record behaviour</li>
-        <li>структурирање official statements и institution-facing messages</li>
-        <li>корекција на camera presence, message discipline и public optics</li>
-      </ul>
+    <section class="block">
+      <div class="container">
+        <div class="grid-3">
+          <article class="card">
+            <h4>Формат</h4>
+            <p>6–10 недели structured track или short executive lab</p>
+          </article>
+          <article class="card">
+            <h4>Оценување</h4>
+            <p>Performance review + camera/public optics exercises</p>
+          </article>
+          <article class="card">
+            <h4>Излез</h4>
+            <p>WPA completion / assessment record + certificate pathway</p>
+          </article>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Како ќе бидете оценувани</h2>
-      <ul>
-        <li>Review layer — кратки анализи на говор, тон и framing</li>
-        <li>Camera/public optics layer — structured review of visible signals</li>
-        <li>Practicum layer — on-camera drills, statement correction и short institutional address</li>
-      </ul>
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>За кого е програмата</h3>
+          <ul>
+            <li>PR тимови и комуникациски професионалци</li>
+            <li>портпароли и лица што даваат официјални изјави</li>
+            <li>public-facing staff и institutional representatives</li>
+            <li>executives, speakers и leaders со формална јавна улога</li>
+            <li>организации што сакаат поконзистентен јавен настап и better messaging</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Што ќе вежбате практично</h2>
-      <ul>
-        <li>deliver a short official statement on camera</li>
-        <li>correct an unclear public message</li>
-        <li>analyse what a public appearance communicates</li>
-        <li>improve tone, posture and recorded delivery</li>
-      </ul>
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Што ќе научите</h3>
+          <ul>
+            <li>појасно и посмирено институционално говорење</li>
+            <li>читање на јавна појава преку тон, држење и on-record behaviour</li>
+            <li>структурирање official statements и institution-facing messages</li>
+            <li>корекција на camera presence, message discipline и public optics</li>
+            <li>сигурно движење меѓу протокол, PR и executive presence</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Certificate / completion note</h2>
-      <p>
-        Учесниците што успешно ќе ја поминат програмата добиваат WPA completion /
-        assessment record, а programme completion е дел од WPA certificate pathway.
-      </p>
-      <p>
-        WPA е независна академија и професионална платформа; таа не се претставува
-        како државна академија или degree-granting university.
-      </p>
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Како е структурирана програмата</h3>
+          <div class="grid-2">
+            <article class="card">
+              <h4>Module 1 — Foundations of Institutional Communication</h4>
+              <p>формален тон, институционална јасност, public-role discipline</p>
+            </article>
+            <article class="card">
+              <h4>Module 2 — Official Speaking and Formal Address</h4>
+              <p>opening, pacing, tone, structure, authority without aggression</p>
+            </article>
+            <article class="card">
+              <h4>Module 3 — Institutional Messaging and PR Logic</h4>
+              <p>message hierarchy, correction, framing, credibility and calmness</p>
+            </article>
+            <article class="card">
+              <h4>Module 4 — Camera Presence and On-Record Behaviour</h4>
+              <p>posture, facial control, eye line, gesture discipline, public optics</p>
+            </article>
+            <article class="card">
+              <h4>Module 5 — Media-Facing Conduct and Visible Pressure</h4>
+              <p>interviews, statements, difficult questions, visible composure</p>
+            </article>
+            <article class="card">
+              <h4>Module 6 — Executive Presence and Applied Review</h4>
+              <p>confidence, authority, correction loops, final recorded review</p>
+            </article>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <section>
-      <h2>Јавен настап со повеќе контрола, јасност и институционална тежина.</h2>
-      <p>
-        Овој track е наменет за луѓе и тимови што не сакаат само да звучат добро,
-        туку да делуваат смирено, јасно и credibly on record.
-      </p>
-      <p><a href="thanks.html">Apply Now</a></p>
-      <p><a href="partnerships/">Book Executive Cohort</a></p>
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Како ќе бидете оценувани</h3>
+          <div class="grid-3">
+            <article class="card">
+              <h4>Review layer</h4>
+              <p>кратки анализи на говор, тон, framing и official-message clarity</p>
+            </article>
+            <article class="card">
+              <h4>Camera/public optics layer</h4>
+              <p>structured review of visible signals, delivery quality и correction points</p>
+            </article>
+            <article class="card">
+              <h4>Practicum layer</h4>
+              <p>on-camera drills, statement correction, short institutional address и public-record review</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Што ќе вежбате практично</h3>
+          <ul>
+            <li>deliver a short official statement on camera</li>
+            <li>correct an institutionally weak or unclear public message</li>
+            <li>analyse what a public appearance communicates before audience or media</li>
+            <li>improve tone, posture, gesture discipline and recorded delivery</li>
+            <li>prepare a calmer and more credible executive/public-facing intervention</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Certificate / completion note</h3>
+          <p class="lead">
+            Учесниците што успешно ќе ја поминат програмата добиваат WPA completion /
+            assessment record, а programme completion е дел од WPA certificate pathway.
+          </p>
+          <p class="lead" style="margin-top:12px;">
+            WPA е независна академија и професионална платформа; таа не се претставува
+            како државна академија или degree-granting university.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="cta-box">
+          <h3>Јавен настап со повеќе контрола, јасност и институционална тежина.</h3>
+          <p>
+            Овој track е наменет за луѓе и тимови што не сакаат само да звучат добро,
+            туку да делуваат смирено, јасно и credibly on record.
+          </p>
+          <div class="cta-row">
+            <a href="thanks.html" class="btn btn-primary">Apply Now</a>
+            <a href="partnerships/" class="btn btn-secondary">Book Executive Cohort</a>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>World Protocol Academy</h4>
+          <p>Structured learning in protocol, diplomacy, security, communication, etiquette, bon ton and institutional readiness.</p>
+          <p class="disclaimer">WPA is an independent academy and digital platform. It is not presented as a state diplomatic academy or a degree-awarding university institution.</p>
+        </div>
+
+        <div>
+          <h4>Programme Areas</h4>
+          <ul>
+            <li><a href="programmes.html">Programmes</a></li>
+            <li><a href="papers.html">Papers</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="protocol-professional-track.html">Protocol Track</a></li>
+            <li><a href="institutional-diplomatic-track.html">Institutional Track</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © <span id="year"></span> World Protocol Academy. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
