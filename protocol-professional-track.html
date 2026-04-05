@@ -7,72 +7,564 @@
   <meta name="description" content="Structured WPA programme for state protocol, official visits, ceremonies, precedence, seating, flags and symbols.">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://worldprotocolacademy-code.github.io/protocol-professional-track.html">
+
+  <style>
+    :root{
+      --bg:#f6f2eb;
+      --surface:#ffffff;
+      --text:#1d2430;
+      --muted:#5a6577;
+      --line:#ddd3c3;
+      --gold:#9a7728;
+      --gold-dark:#7b5f1f;
+      --navy:#162947;
+      --shadow:0 10px 30px rgba(20,31,52,.08);
+      --radius:18px;
+      --max:1100px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: #eef3fb;
+      font-size: 14px;
+      padding: 10px 0;
+    }
+
+    .topbar-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .topbar strong { color: #f4d697; }
+
+    .site-header {
+      background: #fff;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      padding: 6px;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.1;
+      color: var(--navy);
+    }
+
+    .brand-text p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    nav a {
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    nav a:hover { color: var(--gold-dark); }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(22,41,71,.96), rgba(34,56,92,.92));
+      color: #fff;
+      padding: 72px 0 56px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.16);
+      color: #f7dca8;
+      font-size: 13px;
+      letter-spacing: .3px;
+      margin-bottom: 18px;
+    }
+
+    .hero h2 {
+      margin: 0 0 16px;
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.08;
+      max-width: 900px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      font-size: 18px;
+      max-width: 900px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      color: #f7dca8;
+      font-weight: 700;
+    }
+
+    .block {
+      padding: 34px 0;
+    }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 28px;
+      line-height: 1.15;
+    }
+
+    h4 {
+      margin: 0 0 10px;
+      color: var(--navy);
+      font-size: 22px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: 17px;
+      margin: 0;
+    }
+
+    .grid-3, .grid-2 {
+      display: grid;
+      gap: 22px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      height: 100%;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--muted);
+    }
+
+    li { margin-bottom: 10px; }
+
+    .cta-box {
+      background: linear-gradient(135deg, var(--gold), #b78a2a);
+      color: #fff;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .cta-box h3 {
+      color: #fff;
+      margin-bottom: 10px;
+    }
+
+    .cta-box p {
+      margin: 0 0 18px;
+      color: rgba(255,255,255,.92);
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: var(--navy);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.16);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.3);
+    }
+
+    .footer {
+      background: #0f1b30;
+      color: #d7ddeb;
+      padding: 48px 0 28px;
+      margin-top: 30px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .9fr .9fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .footer h4 {
+      margin: 0 0 12px;
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .footer p,
+    .footer li,
+    .footer a {
+      color: #d7ddeb;
+      font-size: 14px;
+    }
+
+    .footer ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 18px;
+      font-size: 13px;
+      color: #b9c3d6;
+    }
+
+    .disclaimer {
+      margin-top: 10px;
+      color: #7a8597;
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .grid-3, .grid-2, .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav ul {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        padding: 58px 0 44px;
+      }
+    }
+  </style>
 </head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div><strong>World Protocol Academy</strong> — structured learning for protocol, diplomacy and institutional readiness.</div>
+      <div>Professional • Premium • Global-facing</div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="World Protocol Academy logo">
+        <div class="brand-text">
+          <h1>World Protocol Academy</h1>
+          <p>Protocol Professional Track</p>
+        </div>
+      </a>
+
+      <nav aria-label="Primary Navigation">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="programmes.html">Programmes</a></li>
+          <li><a href="papers.html">Papers</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
   <main>
-    <section>
-      <h2>За кого е програмата</h2>
-      <ul>
-        <li>протоколарни единици и јавни институции</li>
-        <li>кабинети и извршни канцеларии</li>
-        <li>формални професионални средини со јавна и институционална одговорност</li>
-        <li>лица што работат со официјални посети, церемонии и репрезентација</li>
-      </ul>
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Flagship Programme | Professional Track</span>
+        <h2>Protocol Professional Track</h2>
+        <p>
+          Структурирана WPA програма за државен протокол, официјални посети, церемонии,
+          precedence, seating, знамиња и симболи.
+        </p>
+        <a class="back-link" href="programmes.html">← Back to Programmes</a>
+      </div>
     </section>
 
-    <section>
-      <h2>Што ќе научите</h2>
-      <ul>
-        <li>логика на државниот и институционалниот протокол</li>
-        <li>planning на protocol flow за официјални посети и церемонии</li>
-        <li>precedence, seating и visual-symbolic correctness</li>
-        <li>препознавање протоколарни ризици и грешки</li>
-      </ul>
+    <section class="block">
+      <div class="container">
+        <div class="grid-3">
+          <article class="card">
+            <h4>Формат</h4>
+            <p>8–12 недели structured cohort или premium intensive</p>
+          </article>
+          <article class="card">
+            <h4>Оценување</h4>
+            <p>Quiz + Scenario + Practicum Task</p>
+          </article>
+          <article class="card">
+            <h4>Излез</h4>
+            <p>WPA completion / assessment record + certificate pathway</p>
+          </article>
+        </div>
+      </div>
     </section>
-<section>
-  <h2>Како ќе бидете оценувани</h2>
-  <ul>
-    <li>Quiz layer — основи, поими и formal order</li>
-    <li>Scenario layer — protocol cases за diagnosis и correction</li>
-    <li>Practicum layer — flags, seating, reception flow и official lunch/dinner arrangement</li>
-  </ul>
-  <section>
-  <h2>Што ќе вежбате практично</h2>
-  <ul>
-    <li>поставете ги знамињата за билатерална конференција</li>
-    <li>направете seating plan за официјална средба</li>
-    <li>определете reception order за делегација</li>
-    <li>организирајте official lunch / dinner arrangement</li>
-    <li>коригирајте протоколарна грешка непосредно пред настан</li>
-  </ul>
-    <section>
-  <h2>Certificate / completion note</h2>
-  <p>
-    Учесниците што успешно ќе ја поминат програмата добиваат WPA completion /
-    assessment record, а programme completion е дел од WPA certificate pathway.
-  </p>
-  <p>
-    WPA е независна академија и професионална платформа; таа не се претставува
-    како државна академија или degree-granting university.
-  </p>
-</section>
-</section>
-</section>
-    <section>
-  <h2>Подгответе се за формална одговорност со реална protocol practice.</h2>
-  <p>
-    Овој track е наменет за учесници и институции што не сакаат само да знаат што е протокол,
-    туку да можат да го применат со ред, достоинство и практична точност.
-  </p>
-  <p><a href="thanks.html">Apply Now</a></p>
-  <section>
-  <h2>Подгответе се за формална одговорност со реална protocol practice.</h2>
-  <p>
-    Овој track е наменет за учесници и институции што не сакаат само да знаат што е протокол,
-    туку да можат да го применат со ред, достоинство и практична точност.
-  </p>
-  <p><a href="thanks.html">Apply Now</a></p>
-  <p><a href="partnerships/">Request Institutional Delivery</a></p>
-</section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>За кого е програмата</h3>
+          <ul>
+            <li>протоколарни единици и јавни институции</li>
+            <li>кабинети и извршни канцеларии</li>
+            <li>формални професионални средини со јавна и институционална одговорност</li>
+            <li>лица што работат со официјални посети, церемонии и репрезентација</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Што ќе научите</h3>
+          <ul>
+            <li>логика на државниот и институционалниот протокол</li>
+            <li>planning на protocol flow за официјални посети и церемонии</li>
+            <li>precedence, seating и visual-symbolic correctness</li>
+            <li>препознавање протоколарни ризици и грешки</li>
+            <li>formal sequence, reception order и representational discipline</li>
+            <li>премин од „знаење за протокол“ во „извршување на протокол“</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Како е структурирана програмата</h3>
+          <div class="grid-2">
+            <article class="card">
+              <h4>Module 1 — Foundations of Professional Protocol</h4>
+              <p>основи, логика, формалност, institutional order</p>
+            </article>
+            <article class="card">
+              <h4>Module 2 — State Protocol and Official Order</h4>
+              <p>домаќинство, редослед, улоги, official flow</p>
+            </article>
+            <article class="card">
+              <h4>Module 3 — Precedence, Seating and Representation</h4>
+              <p>rank logic, seating structure, public and institutional representation</p>
+            </article>
+            <article class="card">
+              <h4>Module 4 — Flags, Symbols and Formal Accuracy</h4>
+              <p>симболичка точност, визуелна дисциплина, јавна чувствителност</p>
+            </article>
+            <article class="card">
+              <h4>Module 5 — Official Visits and Ceremonial Readiness</h4>
+              <p>arrival, reception, movement logic, greeting order, lunch/dinner logic</p>
+            </article>
+            <article class="card">
+              <h4>Module 6 — Correction, Error Prevention and Applied Review</h4>
+              <p>најчести грешки, recovery logic, final applied preparation</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Како ќе бидете оценувани</h3>
+          <div class="grid-3">
+            <article class="card">
+              <h4>Quiz layer</h4>
+              <p>основи, поими, distinction и правилен formal order</p>
+            </article>
+            <article class="card">
+              <h4>Scenario layer</h4>
+              <p>кратки и средни protocol cases за diagnosis, correction и lessons learned</p>
+            </article>
+            <article class="card">
+              <h4>Practicum layer</h4>
+              <p>реални applied tasks: flags, seating, reception flow и official lunch/dinner arrangement</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Што ќе вежбате практично</h3>
+          <ul>
+            <li>поставете ги знамињата за билатерална конференција</li>
+            <li>направете seating plan за официјална средба</li>
+            <li>определете reception order за делегација</li>
+            <li>организирајте official lunch / dinner arrangement</li>
+            <li>коригирајте протоколарна грешка непосредно пред настан</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="section-card">
+          <h3>Certificate / completion note</h3>
+          <p class="lead">
+            Учесниците што успешно ќе ја поминат програмата добиваат WPA completion /
+            assessment record, а programme completion е дел од WPA certificate pathway.
+          </p>
+          <p class="lead" style="margin-top:12px;">
+            WPA е независна академија и професионална платформа; таа не се претставува
+            како државна академија или degree-granting university.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="container">
+        <div class="cta-box">
+          <h3>Подгответе се за формална одговорност со реална protocol practice.</h3>
+          <p>
+            Овој track е наменет за учесници и институции што не сакаат само да знаат што е протокол,
+            туку да можат да го применат со ред, достоинство и практична точност.
+          </p>
+          <div class="cta-row">
+            <a href="thanks.html" class="btn btn-primary">Apply Now</a>
+            <a href="partnerships/" class="btn btn-secondary">Request Institutional Delivery</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>World Protocol Academy</h4>
+          <p>Structured learning in protocol, diplomacy, security, communication, etiquette, bon ton and institutional readiness.</p>
+          <p class="disclaimer">WPA is an independent academy and digital platform. It is not presented as a state diplomatic academy or a degree-awarding university institution.</p>
+        </div>
+
+        <div>
+          <h4>Programme Areas</h4>
+          <ul>
+            <li><a href="programmes.html">Programmes</a></li>
+            <li><a href="papers.html">Papers</a></li>
+            <li><a href="privacy.html">Privacy</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="communication-presence-track.html">Communication Track</a></li>
+            <li><a href="institutional-diplomatic-track.html">Institutional Track</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © <span id="year"></span> World Protocol Academy. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
