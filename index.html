@@ -484,19 +484,18 @@ section{padding:88px 0}
 /* ============================================================
    BOT — VIRTUAL SANDE
    ============================================================ */
-.bot-wrap{position:fixed;right:24px;bottom:24px;z-index:99999;font-family:var(--fb);pointer-events:none}
+.bot-wrap{position:fixed;right:24px;bottom:24px;z-index:99999;font-family:var(--fb)}
 .bot-toggle{
   width:64px;height:64px;border:none;border-radius:50%;
-  background:var(--navy);
+  background:linear-gradient(135deg,var(--navy),var(--navy2));
   color:var(--goldl);font-size:24px;cursor:pointer;
-  box-shadow:0 8px 32px rgba(13,31,60,.35),0 0 0 3px rgba(201,168,76,.4);
+  box-shadow:0 8px 32px rgba(13,31,60,.35),0 0 0 3px rgba(201,168,76,.2);
   transition:transform .22s,box-shadow .22s;
   display:flex;align-items:center;justify-content:center;
-  padding:0;overflow:hidden;
-  pointer-events:auto;position:relative;z-index:100000}
+}
 .bot-toggle:hover{transform:scale(1.06);box-shadow:0 12px 48px rgba(13,31,60,.45),0 0 0 4px rgba(201,168,76,.35)}
 .bot-toggle svg{width:26px;height:26px;fill:none;stroke:var(--goldl);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.bot-panel{pointer-events:auto;
+.bot-panel{
   display:none;flex-direction:column;
   width:400px;max-width:calc(100vw - 24px);
   height:600px;max-height:80vh;
@@ -587,6 +586,15 @@ section{padding:88px 0}
   .footer-top{grid-template-columns:1fr}
   .hero-stats{grid-template-columns:1fr 1fr}
 }
+
+/* Protocol Symbols Lab 4-col cards responsive */
+@media(max-width:900px){
+  #symbols-lab [style*="repeat(4,1fr)"]{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:560px){
+  #symbols-lab [style*="repeat(4,1fr)"]{grid-template-columns:1fr!important}
+  #symbols-lab [style*="repeat(3,1fr)"]{grid-template-columns:1fr!important}
+}
 </style>
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalOrganization","name":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална академија и платформа за протокол, дипломатија, безбедност и институционална комуникација.","founder":{"@type":"Person","name":"Sande Smiljanov"}}</script>
@@ -598,7 +606,7 @@ section{padding:88px 0}
 <div class="announce">
   <div class="container announce-inner">
     <div><strong>World Protocol Academy</strong> — <span data-t="topbar1">премиум независна академија за протокол, дипломатија, безбедност и институционална комуникација.</span></div>
-    <div data-t="topbar2">Водена од основач · AI-поддржана · WPAWS · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></div>
+    <div data-t="topbar2">Водена од основач · AI-поддржана · WPAWS · <a href="mailto:worldprotocolacademy@gmail.com">[email&#160;protected]</a></div>
   </div>
 </div>
 
@@ -627,7 +635,6 @@ section{padding:88px 0}
           <li><a href="https://worldprotocolacademy-code.github.io/partnerships/index.html" data-t="navPartner">Партнерства</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/wpaws/index.html" data-t="navWpaws">WPAWS</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/" data-t="navSymbols">Симболи</a></li>
-          <li><a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/" data-t="navDal">Аналитичка лаб</a></li>
           <li><a href="#pricing" data-t="navPricing">Членство</a></li>
           <li><a href="#who" data-t="navWho">За кого</a></li>
           <li><a href="#institutional" data-t="navInstitutional">Институционално</a></li>
@@ -665,8 +672,8 @@ section{padding:88px 0}
         <a href="#ai" class="btn btn-ghost" data-t="heroBtn2">Запознајте го Virtual Sande</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/index.html" class="btn btn-ghost" data-t="heroBtn3">Отвори WPAWS</a>
         <a href="https://worldprotocolacademy-code.github.io/ai/student-desk.html" class="btn btn-ghost" data-t="heroStudentDesk">Отвори WPA Student Desk</a>
-        <a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/" class="btn btn-ghost" data-t="heroBtn4">Отвори Protocol Symbols Lab</a>
-        <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/" class="btn btn-ghost" data-t="heroBtn5">Отвори Diplomatic Analysis Lab</a>
+        <a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/index.html" class="btn btn-ghost" data-t="heroBtn4">Отвори Protocol Symbols Lab</a>
+        <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/index.html" class="btn btn-ghost" data-t="heroBtn5">Отвори WPA Diplomatic Analysis Lab</a>
       </div>
       <div class="hero-rule"></div>
       <div class="hero-stats">
@@ -712,11 +719,11 @@ section{padding:88px 0}
       <div class="platform-card" style="border-left:3px solid var(--gold)">
         <div class="card-kicker">Платформски слој</div>
         <h4>WPAWS — Работен мотор</h4>
-        <p>WPAWS (World Protocol Academic Writing System) е академскиот работен простор на WPA. Шест модули: Доктрина, Истражување, Протокол, Дипломатија, Настава, Прес.</p>
+        <p>WPAWS (World Protocol Academic Writing System) е академскиот работен простор на WPA. Шест модули: Doctrine, Research, Protocol, Diplomacy, Teaching, Press.</p>
         <ul class="card-list" style="margin-top:14px">
-          <li>Академско пишување и истражувачки алатки</li>
+          <li>Academic writing и истражувачки алатки</li>
           <li>Virtual Sande во Academic режим</li>
-          <li>Банка на прашања и Систем за оценување</li>
+          <li>Question Bank и Assessment engine</li>
         </ul>
         <a class="card-link" href="https://worldprotocolacademy-code.github.io/wpaws/index.html">Отвори WPAWS</a>
       </div>
@@ -725,7 +732,7 @@ section{padding:88px 0}
       <div class="platform-card">
         <div class="card-kicker">Специјализиран потсистем</div>
         <h4>Protocol Symbols Lab</h4>
-        <p>Строго фактографски модул за знамиња, химни, грбови, географија и протоколарни симболи. Верифицирана база, политика без халуцинации.</p>
+        <p>Строго фактографски модул за знамиња, химни, грбови, географија и протоколарни симболи. Верифицирана база, zero hallucination политика.</p>
         <ul class="card-list" style="margin-top:10px">
           <li>Знамиња и грбови — фактографски</li>
           <li>Официјални и инструментални химни</li>
@@ -738,8 +745,8 @@ section{padding:88px 0}
         <h4>Институционални партнерства</h4>
         <p>Посебна порта за универзитети, библиотеки, дипломатски академии и стратешки институционални партнери на WPA.</p>
         <ul class="card-list" style="margin-top:10px">
-          <li>Академски партнерски модели</li>
-          <li>Библиотечен и институционален пристап</li>
+          <li>Academic partnership models</li>
+          <li>Library и institutional access</li>
           <li>Годишни советодавни договори</li>
         </ul>
         <a class="card-link" href="https://worldprotocolacademy-code.github.io/partnerships/index.html">Отвори Partnerships</a>
@@ -755,21 +762,102 @@ section{padding:88px 0}
         </ul>
         <a class="card-link" href="https://worldprotocolacademy-code.github.io/papers.html">Отвори Papers</a>
       </div>
-      <div class="platform-card" style="border-left:3px solid #c9a84c">
-        <div class="card-kicker">Практична аналитичка лабораторија</div>
-        <h4>WPA Diplomatic Analysis Lab</h4>
-        <p>Дипломатски RSS мониторинг, студентска анализа, PR/протоколарни/безбедносни watch табови, сценарио вежби и практична комуникациска подготовка.</p>
-        <ul class="card-list" style="margin-top:10px">
-          <li>Дипломатски RSS агрегатор и сигнален тикер</li>
-          <li>PR Watch · Interview Watch · Protocol Watch</li>
-          <li>Студентска аналитичка редица</li>
-          <li>Scenario Exercise 360 · Camera Lab</li>
-        </ul>
-        <a class="card-link" href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/">Отвори Diplomatic Analysis Lab</a>
-      </div>
     </div>
   </div>
 </section>
+<!-- PROTOCOL SYMBOLS LAB PREVIEW -->
+<section id="symbols-lab" class="accent">
+  <div class="container">
+    <div class="sh">
+      <div class="section-label">WPA · Protocol Symbols Lab · Верифицирана база</div>
+      <h3 class="section-title">Знамиња. Химни. Грбови. <em style="font-style:italic;color:var(--goldd)">Само верифицирани факти.</em></h3>
+      <p class="section-lead">Структурирана протоколарна база со верифицирани записи за државни симболи — единствен извор на вистина за Virtual Sande и целата WPA платформа. Zero Hallucination Policy.</p>
+    </div>
+
+    <!-- 4 feature cards: 2×2 on mobile, 4-col on desktop -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px">
+      <div class="platform-card" style="border-top:3px solid var(--gold);border-left:none">
+        <div class="card-kicker">Знамиња</div>
+        <h4>Знамиња и грбови</h4>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.6">Верифицирани описи на знамиња, бои и симболи. Прецизна разлика: орел на знамето наспроти орел само на грбот.</p>
+      </div>
+      <div class="platform-card" style="border-top:3px solid var(--gold);border-left:none">
+        <div class="card-kicker">Химни</div>
+        <h4>Химни и инструментални</h4>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.6">Официјални наслови, верификација на инструменталност, протоколарни напомени. Строго разграничување.</p>
+      </div>
+      <div class="platform-card" style="border-top:3px solid var(--gold);border-left:none">
+        <div class="card-kicker">Грбови</div>
+        <h4>Грбови и државни печати</h4>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.6">Верифицирани описи на грбови, симболи и државни печати разграничени од знамињата.</p>
+      </div>
+      <div class="platform-card" style="border-top:3px solid var(--gold);border-left:none">
+        <div class="card-kicker">географија</div>
+        <h4>Главни градови · Континенти</h4>
+        <p style="font-size:13.5px;color:var(--muted);margin-top:8px;line-height:1.6">Верифицирани главни градови, континентална припадност и регионална класификација.</p>
+      </div>
+    </div>
+
+    <!-- 6 quick verified examples — navy panel -->
+    <div style="background:var(--navy);border-radius:var(--r2);padding:26px 30px;margin-bottom:28px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldl);font-family:var(--fb);margin-bottom:16px;display:flex;align-items:center;gap:10px">
+        <span style="width:16px;height:1px;background:var(--gold);display:inline-block"></span>
+        Брзи верифицирани одговори · директно од countries.json
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">ЕУ · знаме</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">12 златни ѕвезди во круг</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">europa.eu — официјален симбол</div>
+        </div>
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Унгарија · орел на знаме</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">Не — трицветна без симболи</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Fundamental Law of Hungary, 2011</div>
+        </div>
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Шпанија · химна</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">La Marcha Real — без официјален текст</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Royal Decree 1560/1997</div>
+        </div>
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Албанија · знаме</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">Двоглав орел — самостоен симбол</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Constitution of Albania, 1998</div>
+        </div>
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">Казахстан · континент</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">Азија (Централна Азија)</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Constitutional Law on State Symbols, 2007</div>
+        </div>
+
+        <div style="padding:13px 15px;background:rgba(255,255,255,.06);border-radius:var(--r2);border-left:2px solid var(--gold)">
+          <div style="font-size:10px;color:rgba(255,255,255,.4);font-family:var(--fb);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px">БиХ · химна</div>
+          <div style="font-family:var(--fd);font-size:15px;color:var(--goldl);line-height:1.25">Интермецо — официјално инструментална</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px">Decision of High Representative OHR, 1999</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center">
+      <a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/index.html" class="btn btn-gold" style="font-size:14px;padding:16px 36px">
+        Отвори Protocol Symbols Lab →
+      </a>
+      <p style="margin-top:12px;font-size:12px;color:var(--muted);font-family:var(--fb)">
+        53 верифицирани записи · countries.json v2.0 · Zero Hallucination Policy
+      </p>
+    </div>
+
+  </div>
+</section>
+
 
 <!-- ABOUT -->
 <section id="about">
@@ -824,7 +912,7 @@ section{padding:88px 0}
           <li>Професионалци за односи со јавност</li>
           <li>Организатори на настани и конференции</li>
           <li>Тимови за корпоративна репрезентација</li>
-          <li>Професионалци во угостителство и услуги со директен контакт</li>
+          <li>Професионалци во угостителство и front-facing услуги</li>
         </ul>
       </div>
       <div class="card">
@@ -899,7 +987,6 @@ section{padding:88px 0}
           <li>Протоколарна и институционална комуникација</li>
           <li>Медиумско однесување и јавна репрезентација</li>
           <li>Извршна самодоверба и комуникациска стратегија</li>
-          <li><strong>WPA Diplomatic Analysis Lab:</strong> дипломатски RSS мониторинг, студентска анализа, PR/протоколарни/безбедносни watch табови, Scenario Exercise 360 и Camera Lab за јавен настап</li>
         </ul>
       </div>
       <div class="card">
@@ -922,36 +1009,6 @@ section{padding:88px 0}
     </div>
   </div>
 </section>
-<section id="dal" class="accent">
-  <div class="container">
-    <div class="sh">
-      <div class="section-label">WPA Diplomatic Analysis Lab · Аналитичка лабораторија</div>
-      <h3 class="section-title">Дипломатски мониторинг. Студентска анализа. Протоколарна и медиумска подготовка.</h3>
-      <p class="section-lead">WPA Diplomatic Analysis Lab е практична аналитичка средина за дипломатски RSS мониторинг, преглед на јавна комуникација, протоколарно-чувствителна интерпретација, студентски вежби и применета институционална анализа.</p>
-    </div>
-    <div class="g3">
-      <div class="card">
-        <span class="card-kicker">Дипломатски мониторинг</span>
-        <h4>RSS Агрегатор · Сигнален тикер</h4>
-        <p>Следење на дипломатски, протоколарни и безбедносни сигнали. Smart ticker со PR Watch, Interview Watch, Protocol Watch, Security Watch и Economic Diplomacy Watch.</p>
-      </div>
-      <div class="card">
-        <span class="card-kicker">Студентска аналитичка средина</span>
-        <h4>Аналитичка редица · Article Drawer</h4>
-        <p>Студентска аналитичка редица за работа со реални содржини — анализа на написи, симулирани ситуации, Scenario Exercise 360 и протоколарни случаи.</p>
-      </div>
-      <div class="card">
-        <span class="card-kicker">Јавен настап · Камера лаб</span>
-        <h4>Camera Lab · Protocol Lab</h4>
-        <p>Практична подготовка за јавна комуникација, интервјуа, медиумски настап, протоколарна самодоверба и институционална репрезентација пред камера.</p>
-      </div>
-    </div>
-    <div style="margin-top:24px;text-align:center">
-      <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/" class="btn btn-navy">Отвори WPA Diplomatic Analysis Lab</a>
-    </div>
-  </div>
-</section>
-
 
 <!-- FORMATS -->
 <section id="formats" class="accent">
@@ -961,7 +1018,7 @@ section{padding:88px 0}
       <h3 class="section-title" data-t="fmtH3">Флексибилна испорака, сериозна структура.</h3>
     </div>
     <div class="g4">
-      <div class="card"><h4 data-t="fmt1H4">Онлајн во живо</h4><p data-t="fmt1P">Структурирани виртуелни сесии и напредна програма формати.</p></div>
+      <div class="card"><h4 data-t="fmt1H4">Онлајн во живо</h4><p data-t="fmt1P">Структурирани виртуелни сесии и masterclass формати.</p></div>
       <div class="card"><h4 data-t="fmt2H4">Самостојно темпо</h4><p data-t="fmt2P">Независни дигитални модули со AI-водена ревизија.</p></div>
       <div class="card"><h4 data-t="fmt3H4">Интензиви во живо</h4><p data-t="fmt3P">Фокусирани executive-style програми.</p></div>
       <div class="card"><h4 data-t="fmt4H4">Институционални групи</h4><p data-t="fmt4P">Прилагодени обуки за министерства, амбасади и тимови.</p></div>
@@ -974,7 +1031,7 @@ section{padding:88px 0}
     <div class="sh">
       <div class="section-label" data-t="sessLabel">Онлајн сесии</div>
       <h3 class="section-title" data-t="sessH3">Meet, Zoom и Webex како дел од испораката.</h3>
-      <p class="section-lead" data-t="sessP">WPA може да функционира преку контролирани виртуелни сесии за учење, консултации, извршен брифинг и институционални состаноци.</p>
+      <p class="section-lead" data-t="sessP">WPA може да функционира преку контролирани виртуелни сесии за учење, консултации, executive briefing и институционални состаноци.</p>
     </div>
     <div class="g3">
       <div class="card">
@@ -983,7 +1040,7 @@ section{padding:88px 0}
       </div>
       <div class="card">
         <h4 data-t="sess2H4">Zoom</h4>
-        <p data-t="sess2P">Идеален за групни напредни програми, вебинари, сертификациски часови и презентации.</p>
+        <p data-t="sess2P">Идеален за групни masterclass програми, вебинари, сертификациски часови и презентации.</p>
       </div>
       <div class="card">
         <h4 data-t="sess3H4">Webex</h4>
@@ -1010,9 +1067,9 @@ section{padding:88px 0}
         <h4 data-t="cert4H4">Track за тренери</h4>
         <p data-t="cert4P">Идни обучувачи и напредни едукатори во протокол.</p>
         <ul style="list-style:none;margin-top:12px;display:grid;gap:6px">
-          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/protocol-professional-track.html">Протоколарна патека</a></li>
-          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/communication-presence-track.html">Комуникациска патека</a></li>
-          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/institutional-diplomatic-track.html">Институционална патека</a></li>
+          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/protocol-professional-track.html">Protocol Track</a></li>
+          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/communication-presence-track.html">Communication Track</a></li>
+          <li><a class="card-link" href="https://worldprotocolacademy-code.github.io/institutional-diplomatic-track.html">Institutional Track</a></li>
         </ul>
       </div>
     </div>
@@ -1038,7 +1095,7 @@ section{padding:88px 0}
       <div>
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldl);font-family:var(--fb);margin-bottom:6px">Специјализиран AI модул</div>
         <h4 style="font-family:var(--fp);font-size:22px;color:var(--white);margin-bottom:6px">Protocol Symbols Lab</h4>
-        <p style="color:rgba(255,255,255,.65);font-size:14px;max-width:560px">Строго фактографски модул за знамиња, химни, грбови и протоколарни симболи. Верифицирана база, политика без халуцинации. Специјализирано WPA подрачје.</p>
+        <p style="color:rgba(255,255,255,.65);font-size:14px;max-width:560px">Строго фактографски модул за знамиња, химни, грбови и протоколарни симболи. Верифицирана база, zero hallucination политика. Специјализирано WPA подрачје.</p>
       </div>
       <a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/" class="btn btn-gold" style="flex-shrink:0">Отвори Protocol Symbols Lab</a>
     </div>
@@ -1095,8 +1152,8 @@ section{padding:88px 0}
         <div class="price-badge">WPA Pro</div>
         <h4 data-t="pr2H4">Професионално ниво</h4>
         <div class="price-amount">€9.99 <span>/ месечно</span></div>
-        <p class="price-text" data-t="pr2Text">За подлабоки одговори, напредни лекции и напредна подготовка.</p>
-        <ul class="price-list"><li>Подолги и попрецизни одговори</li><li>Напредни лекции</li><li>Сценарија за вежбање</li></ul>
+        <p class="price-text" data-t="pr2Text">За подлабоки одговори, premium lessons и напредна подготовка.</p>
+        <ul class="price-list"><li>Подолги и попрецизни одговори</li><li>Premium lessons</li><li>Сценарија за вежбање</li></ul>
         <a class="btn btn-gold price-btn" href="mailto:worldprotocolacademy@gmail.com" data-t="pr2Btn">Контактирај за Pro</a>
       </div>
       <div class="price-card">
@@ -1104,21 +1161,21 @@ section{padding:88px 0}
         <h4 data-t="pr3H4">Академско ниво</h4>
         <div class="price-amount">€19.99 <span>/ месечно</span></div>
         <p class="price-text" data-t="pr3Text">За студенти, истражувачи и сериозна академска подготовка.</p>
-        <ul class="price-list"><li>Напредни патеки за учење</li><li>Подготовка за сертификати</li><li>Академски Virtual Sande</li></ul>
+        <ul class="price-list"><li>Advanced lesson paths</li><li>Подготовка за сертификати</li><li>Академски Virtual Sande</li></ul>
         <a class="btn btn-outline price-btn" href="mailto:worldprotocolacademy@gmail.com" data-t="pr3Btn">Контактирај за Academic</a>
       </div>
       <div class="price-card">
         <div class="price-badge">Institutional</div>
-        <h4 data-t="pr4H4">Извршно и Институционално</h4>
+        <h4 data-t="pr4H4">Executive / Institutional</h4>
         <div class="price-amount" style="font-size:26px">По договор</div>
         <p class="price-text" data-t="pr4Text">За министерства, амбасади, универзитети и извршни тимови.</p>
-        <ul class="price-list"><li>Прилагодени пакети за обука</li><li>Meet / Zoom / Webex</li><li>Годишни партнерства</li></ul>
+        <ul class="price-list"><li>Custom training packages</li><li>Meet / Zoom / Webex</li><li>Годишни партнерства</li></ul>
         <a class="btn btn-navy price-btn" href="mailto:worldprotocolacademy@gmail.com" data-t="pr4Btn">Побарај понуда</a>
       </div>
     </div>
     <div class="card" style="padding:24px">
       <h4 style="font-family:var(--fd);font-size:20px;color:var(--navy);margin-bottom:10px" data-t="paymentH4">Достапни начини на плаќање</h4>
-      <p style="color:var(--muted);font-size:14px;margin-bottom:12px" data-t="paymentNote">Stripe и PayPal интеграцијата е во подготовка. За претплата: <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--goldd)">worldprotocolacademy@gmail.com</a></p>
+      <p style="color:var(--muted);font-size:14px;margin-bottom:12px" data-t="paymentNote">Stripe и PayPal интеграцијата е во подготовка. За претплата: <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--goldd)">[email&#160;protected]</a></p>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
         <span class="pill">Stripe</span><span class="pill">PayPal</span><span class="pill">Visa</span><span class="pill">Mastercard</span>
       </div>
@@ -1253,7 +1310,6 @@ section{padding:88px 0}
           <li><a href="#publications" data-t="navBooks">Публикации</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/wpaws/index.html" data-t="navWpaws">WPAWS</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/" data-t="navSymbols">Protocol Symbols Lab</a></li>
-          <li><a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/" data-t="navDal">Diplomatic Analysis Lab</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1269,7 +1325,7 @@ section{padding:88px 0}
       <div class="footer-col">
         <h5 data-t="ftContact">Контакт</h5>
         <ul>
-          <li><a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></li>
+          <li><a href="mailto:worldprotocolacademy@gmail.com">[email&#160;protected]</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/privacy.html">Privacy</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/rights-takedown.html">Rights &amp; Takedown</a></li>
         </ul>
@@ -1289,7 +1345,7 @@ section{padding:88px 0}
     </div>
     <div class="footer-divider"></div>
     <div class="footer-bottom">
-      <p><a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+      <p><a href="mailto:worldprotocolacademy@gmail.com">[email&#160;protected]</a></p>
       <p>© <span id="year"></span> World Protocol Academy. Сите права се задржани.</p>
     </div>
   </div>
@@ -1327,10 +1383,10 @@ section{padding:88px 0}
     </div>
   </div>
   <button class="bot-toggle" id="botToggle" aria-label="Open Virtual Sande AI">
-    <img src="https://worldprotocolacademy-code.github.io/logo.png" alt="Virtual Sande AI" style="width:44px;height:44px;border-radius:50%;object-fit:cover;display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
-    <svg viewBox="0 0 24 24" style="display:none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </button>
 </div>
+
 
 <!-- SCRIPTS -->
 
@@ -1352,6 +1408,7 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Партнерства',
     navWpaws: 'WPAWS',
     navSymbols: 'Симболи',
+    navDal: 'Дипломатска Лабораторија',
     navPricing: 'Членство',
     navInstitutional: 'Институционално',
     navPresence: 'Присуство',
@@ -1363,8 +1420,7 @@ const WPA_TRANSLATIONS = {
     heroBtn2: 'Запознајте го Virtual Sande',
     heroBtn3: 'Отвори WPAWS',
     heroBtn4: 'Отвори Protocol Symbols Lab',
-    heroBtn5: 'Отвори Diplomatic Analysis Lab',
-    navDal: 'Аналитичка лаб',
+    heroBtn5: 'Отвори WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Отвори WPA Student Desk',
     heroNote: 'Изградена од дестилираната суштина на најсилните светски протоколарни школи, дипломатски академии, системи за извршно учење и институционални модели за обука — преобликувани во една модерна, премиум академија водена од основач.',
     heroCardH3: 'WPA Основна архитектура',
@@ -1476,7 +1532,7 @@ const WPA_TRANSLATIONS = {
     pr3H4: 'Академско ниво',
     pr3Text: 'За студенти, истражувачи, академски корисници и посериозна подготовка низ advanced lessons и certificate pathway.',
     pr3Btn: 'Контактирај за Academic',
-    pr4H4: 'Извршно / Институционално',
+    pr4H4: 'Executive / Institutional',
     pr4Text: 'За министерства, амбасади, универзитети, јавни институции, корпорации и извршни тимови.',
     pr4Btn: 'Побарај понуда',
     paymentH4: 'Достапни начини на плаќање',
@@ -1540,6 +1596,7 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnerships',
     navWpaws: 'WPAWS',
     navSymbols: 'Symbols',
+    navDal: 'Diplomatic Analysis Lab',
     navPricing: 'Membership',
     navInstitutional: 'Institutional',
     navPresence: 'Presence',
@@ -1551,8 +1608,7 @@ const WPA_TRANSLATIONS = {
     heroBtn2: 'Meet Virtual Sande',
     heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
-    heroBtn5: 'Open Diplomatic Analysis Lab',
-    navDal: 'Analysis Lab',
+    heroBtn5: 'Open WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Open WPA Student Desk',
     heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
     heroCardH3: 'WPA Core Architecture',
@@ -1728,6 +1784,7 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnerschaften',
     navWpaws: 'WPAWS',
     navSymbols: 'Symbole',
+    navDal: 'Diplomatisches Analyselabor',
     navPricing: 'Mitgliedschaft',
     navInstitutional: 'Institutionell',
     navPresence: 'Präsenz',
@@ -1739,9 +1796,8 @@ const WPA_TRANSLATIONS = {
     heroBtn2: 'Virtual Sande kennenlernen',
     heroBtn3: 'WPAWS öffnen',
     heroBtn4: 'Protocol Symbols Lab öffnen',
+    heroBtn5: 'WPA Diplomatic Analysis Lab öffnen',
     heroStudentDesk: 'WPA Student Desk öffnen',
-    heroBtn5: 'Diplomatic Analysis Lab öffnen',
-    navDal: 'Analyse-Lab',
     heroNote: 'Aufgebaut aus dem destillierten Wesen der stärksten Protokollschulen, diplomatischen Akademien und Executive-Learning-Systeme der Welt.',
     heroCardH3: 'WPA Kernarchitektur',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
@@ -1916,6 +1972,7 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partenariats',
     navWpaws: 'WPAWS',
     navSymbols: 'Symboles',
+    navDal: 'Laboratoire d'Analyse Diplomatique',
     navPricing: 'Adhésion',
     navInstitutional: 'Institutionnel',
     navPresence: 'Présence',
@@ -1927,9 +1984,8 @@ const WPA_TRANSLATIONS = {
     heroBtn2: 'Rencontrer Virtual Sande',
     heroBtn3: 'Ouvrir WPAWS',
     heroBtn4: 'Ouvrir Protocol Symbols Lab',
+    heroBtn5: 'Ouvrir le WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Ouvrir WPA Student Desk',
-    heroBtn5: 'Ouvrir Diplomatic Analysis Lab',
-    navDal: 'Lab Analyse',
     heroNote: 'Construite à partir de l\'essence distillée des meilleures écoles de protocole, académies diplomatiques et systèmes d\'apprentissage exécutif du monde.',
     heroCardH3: 'Architecture de base WPA',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
@@ -2089,9 +2145,9 @@ const WPA_TRANSLATIONS = {
     ftContact: 'Contact'
   },
   it: {
-    topbar1: 'accademia premium indipendente per protocollo, diplomazia, sicurezza e comunicazione istituzionale.',
-    topbar2: 'Guidata dal fondatore · Supportata dall\'IA · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protocollo · Diplomazia · Sicurezza · Comunicazione',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Lingua',
     menuBtn: 'Menu',
     navAbout: 'Chi siamo',
@@ -2104,22 +2160,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnership',
     navWpaws: 'WPAWS',
     navSymbols: 'Simboli',
-    navPricing: 'Iscrizione',
+    navDal: 'Laboratorio di Analisi Diplomatica',
+    navPricing: 'Membership',
     navInstitutional: 'Istituzionale',
     navPresence: 'Presenza',
     navFounder: 'Fondatore',
-    eyebrow: 'Accademia Digitale Indipendente · Prospettiva Globale',
-    heroH2: 'Dove il protocollo incontra la <em>diplomazia</em>, la sicurezza e la dignità.',
-    heroP: 'World Protocol Academy è un’accademia digitale indipendente e una piattaforma professionale incentrata su protocollo, diplomazia, sicurezza e comunicazione istituzionale.',
-    heroBtn1: 'Esplora l\'Accademia',
-    heroBtn2: 'Incontra Virtual Sande',
-    heroBtn3: 'Apri WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Apri WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Apri WPA Student Desk',
-    heroBtn5: 'Apri Diplomatic Analysis Lab',
-    navDal: 'Lab Analisi',
-    heroNote: 'Costruita dall\'essenza distillata delle più forti scuole di protocollo, accademie diplomatiche e sistemi formativi istituzionali del mondo — reimmaginata come accademia digitale moderna, guidata dal fondatore.',
-    heroCardH3: 'Architettura di base WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -2130,7 +2186,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Un nuovo standard nell\'educazione al protocollo.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -2142,7 +2198,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Quattro livelli. Un\'accademia coerente.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -2181,7 +2237,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Apprendimento con prove, progressione e credibilità.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -2193,7 +2249,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentore, coach e consigliere di protocollo.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -2209,7 +2265,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA può operare attraverso sessioni virtuali controllate per apprendimento, consulenze, executive briefing e riunioni istituzionali.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -2217,11 +2273,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Scegli il livello adatto al tuo percorso.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Inizia gratuitamente',
+    pr1Btn: 'Inizia gratis',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Contatta per Pro',
@@ -2230,12 +2286,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Contatta per Academic',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Richiedi un preventivo',
+    pr4Btn: 'Richiedi preventivo',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA è concepita non solo per partecipanti individuali, ma anche per ministeri, ambasciate, università, istituzioni pubbliche e team dirigenziali.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -2277,9 +2333,9 @@ const WPA_TRANSLATIONS = {
     ftContact: 'Contatto'
   },
   es: {
-    topbar1: 'academia premium independiente para protocolo, diplomacia, seguridad y comunicación institucional.',
-    topbar2: 'Dirigida por el fundador · Impulsada por IA · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protocolo · Diplomacia · Seguridad · Comunicación',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Idioma',
     menuBtn: 'Menú',
     navAbout: 'Acerca de',
@@ -2292,22 +2348,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Asociaciones',
     navWpaws: 'WPAWS',
     navSymbols: 'Símbolos',
+    navDal: 'Laboratorio de Análisis Diplomático',
     navPricing: 'Membresía',
     navInstitutional: 'Institucional',
     navPresence: 'Presencia',
     navFounder: 'Fundador',
-    eyebrow: 'Academia Digital Independiente · Perspectiva Global',
-    heroH2: 'Donde el protocolo se encuentra con la <em>diplomacia</em>, la seguridad y la dignidad.',
-    heroP: 'World Protocol Academy es una academia digital independiente y plataforma profesional centrada en protocolo, diplomacia, seguridad y comunicación institucional.',
-    heroBtn1: 'Explorar la Academia',
-    heroBtn2: 'Conoce a Virtual Sande',
-    heroBtn3: 'Abrir WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Abrir WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Abrir WPA Student Desk',
-    heroBtn5: 'Abrir Diplomatic Analysis Lab',
-    navDal: 'Lab Análisis',
-    heroNote: 'Construida a partir de la esencia destilada de las escuelas de protocolo más sólidas del mundo, academias diplomáticas y sistemas de formación institucional — reimaginada como academia digital moderna, liderada por su fundador.',
-    heroCardH3: 'Arquitectura básica WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -2318,7 +2374,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Un nuevo estándar en la educación de protocolo.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -2330,7 +2386,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Cuatro niveles. Una academia coherente.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -2369,7 +2425,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Aprendizaje con evidencia, progreso y credibilidad.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -2381,7 +2437,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentor, coach y asesor de protocolo.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -2397,7 +2453,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA puede operar a través de sesiones virtuales controladas para aprendizaje, consultas, executive briefing y reuniones institucionales.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -2405,7 +2461,7 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Elige el nivel que se adapta a tu camino.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
@@ -2423,7 +2479,7 @@ const WPA_TRANSLATIONS = {
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA está diseñada no solo para participantes individuales, sino también para ministerios, embajadas, universidades, instituciones públicas y equipos directivos.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -2454,7 +2510,7 @@ const WPA_TRANSLATIONS = {
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
     ctaBtn1: 'Ver la lógica de programas',
-    ctaBtn2: 'Explorar los artículos',
+    ctaBtn2: 'Explorar artículos',
     openLink: 'Abrir →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
@@ -2465,11 +2521,11 @@ const WPA_TRANSLATIONS = {
     ftContact: 'Contacto'
   },
   sq: {
-    topbar1: 'akademi premium e pavarur për protokoll, diplomaci, siguri dhe komunikim institucional.',
-    topbar2: 'E drejtuar nga themeluesi · E mbështetur nga IA · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protokoll · Diplomaci · Siguri · Komunikim',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Gjuha',
-    menuBtn: 'Menu',
+    menuBtn: 'Meny',
     navAbout: 'Rreth nesh',
     navProgrammes: 'Programe',
     navFormats: 'Formate',
@@ -2480,22 +2536,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partneritete',
     navWpaws: 'WPAWS',
     navSymbols: 'Simbole',
+    navDal: 'Laboratori i Analizës Diplomatike',
     navPricing: 'Anëtarësi',
     navInstitutional: 'Institucional',
     navPresence: 'Prania',
     navFounder: 'Themeluesi',
-    eyebrow: 'Akademi Dixhitale e Pavarur · Perspektivë Globale',
-    heroH2: 'Ku protokolli takon <em>diplomacinë</em>, sigurinë dhe dinjitetin.',
-    heroP: 'World Protocol Academy është një akademi dixhitale e pavarur dhe platformë profesionale e fokusuar në protokoll, diplomaci, siguri dhe komunikim institucional.',
-    heroBtn1: 'Eksploroni Akademinë',
-    heroBtn2: 'Njihuni me Virtual Sande',
-    heroBtn3: 'Hap WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Hap WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Hap WPA Student Desk',
-    heroBtn5: 'Hap Diplomatic Analysis Lab',
-    navDal: 'Lab Analize',
-    heroNote: 'Ndërtuar nga esenca e distiluar e shkollave më të forta të protokollit, akademive diplomatike dhe sistemeve institucionale të trajnimit në botë — rikonceptuar si akademi dixhitale moderne, e udhëhequr nga themelusi.',
-    heroCardH3: 'Arkitektura bazë WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -2506,7 +2562,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Një standard i ri në edukimin e protokollit.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -2518,7 +2574,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Katër nivele. Një akademi koherente.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -2557,7 +2613,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Të mësuarit me dëshmi, progres dhe besueshmëri.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -2569,7 +2625,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentor, trajner dhe këshilltar protokolli.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -2585,7 +2641,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA mund të funksionojë nëpërmjet sesioneve virtuale të kontrolluara për mësim, konsultime, briefing ekzekutiv dhe takime institucionale.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -2593,11 +2649,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Zgjidhni nivelin që i përshtatet rrugës suaj.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Filloni falas',
+    pr1Btn: 'Fillo falas',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Kontakt për Pro',
@@ -2606,12 +2662,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Kontakt për Academic',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Kërkoni ofertë',
+    pr4Btn: 'Kërko ofertë',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA është konceptuar jo vetëm për pjesëmarrësit individualë, por edhe për ministri, ambasada, universitete, institucione publike dhe ekipe drejtuese.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -2642,20 +2698,20 @@ const WPA_TRANSLATIONS = {
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
     ctaBtn1: 'Shikoni logjikën e programeve',
-    ctaBtn2: 'Eksploroni punimet',
-    openLink: 'Hap →',
+    ctaBtn2: 'Eksploroni artikujt',
+    openLink: 'Hapni →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
     ftKeyAreas: 'Fushat kryesore',
     ftUseful: 'Faqe të dobishme',
-    ftChannels: 'Kanalet zyrtare',
+    ftChannels: 'Kanale zyrtare',
     ftAcad: 'Profile akademike',
     ftContact: 'Kontakt'
   },
   tr: {
-    topbar1: 'protokol, diplomasi, güvenlik ve kurumsal iletişim için bağımsız premium akademi.',
-    topbar2: 'Kurucu liderliğinde · YZ destekli · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protokol · Diplomasi · Güvenlik · İletişim',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Dil',
     menuBtn: 'Menü',
     navAbout: 'Hakkında',
@@ -2668,22 +2724,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Ortaklıklar',
     navWpaws: 'WPAWS',
     navSymbols: 'Semboller',
+    navDal: 'Diplomatik Analiz Laboratuvarı',
     navPricing: 'Üyelik',
     navInstitutional: 'Kurumsal',
     navPresence: 'Varlık',
     navFounder: 'Kurucu',
-    eyebrow: 'Bağımsız Dijital Akademi · Küresel Perspektif',
-    heroH2: 'Protokolün <em>diplomasi</em>, güvenlik ve onurla buluştuğu yer.',
-    heroP: 'World Protocol Academy, protokol, diplomasi, güvenlik ve kurumsal iletişim üzerine odaklanmış bağımsız bir dijital akademi ve profesyonel platformdur.',
-    heroBtn1: 'Akademiyi Keşfedin',
-    heroBtn2: 'Virtual Sande ile Tanışın',
-    heroBtn3: 'WPAWS Aç',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
-    heroStudentDesk: 'WPA Student Desk Aç',
-    heroBtn5: 'Diplomatic Analysis Lab Aç',
-    navDal: 'Analiz Lab',
-    heroNote: 'Dünyanın en güçlü protokol okullarının, diplomatik akademilerin ve kurumsal eğitim sistemlerinin damıtılmış özünden inşa edildi — modern, dijital ve kurucu liderliğinde bir akademi olarak yeniden tasarlandı.',
-    heroCardH3: 'WPA Temel Mimarisi',
+    heroBtn5: 'WPA Diplomatic Analysis Lab Aç',
+    heroStudentDesk: 'WPA Student Desk aç',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -2694,7 +2750,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Protokol eğitiminde yeni bir standart.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -2706,7 +2762,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Dört seviye. Bir tutarlı akademi.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -2745,7 +2801,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Kanıtla, ilerlemeyle ve güvenilirlikle öğrenme.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -2757,7 +2813,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentör, antrenör ve protokol danışmanı.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -2773,7 +2829,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA, öğrenme, danışmanlık, yönetici brifingleri ve kurumsal toplantılar için kontrollü sanal oturumlar aracılığıyla çalışabilir.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -2781,11 +2837,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Yolunuza uyan seviyeyi seçin.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Ücretsiz başlayın',
+    pr1Btn: 'Ücretsiz başla',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Pro için iletişim',
@@ -2794,12 +2850,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Academic için iletişim',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Teklif isteyin',
+    pr4Btn: 'Teklif al',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA yalnızca bireysel katılımcılar için değil; bakanlıklar, büyüelçilikler, üniversiteler, kamu kurumları ve yönetim ekipleri için de tasarlandı.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -2829,21 +2885,21 @@ const WPA_TRANSLATIONS = {
     whyP3: 'The long-term vision is clear: to become a recognised world academy for protocol, diplomacy, security, communication and professional readiness.',
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
-    ctaBtn1: 'Program mantiğını görün',
-    ctaBtn2: 'Makaleleri keşfedin',
+    ctaBtn1: 'Program mantığını görün',
+    ctaBtn2: 'Makaleleri keşfet',
     openLink: 'Aç →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
-    ftKeyAreas: 'Temel alanlar',
+    ftKeyAreas: 'Temel Alanlar',
     ftUseful: 'Faydalı Sayfalar',
-    ftChannels: 'Resmi kanallar',
-    ftAcad: 'Akademik profiller',
+    ftChannels: 'Resmi Kanallar',
+    ftAcad: 'Akademik Profiller',
     ftContact: 'İletişim'
   },
   hr: {
-    topbar1: 'neovisna premium akademija za protokol, diplomaciju, sigurnost i institucionalnu komunikaciju.',
-    topbar2: 'Vođena osnivanom · Podržana AI · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protokol · Diplomacija · Sigurnost · Komunikacija',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Jezik',
     menuBtn: 'Izbornik',
     navAbout: 'O nama',
@@ -2856,22 +2912,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnerstva',
     navWpaws: 'WPAWS',
     navSymbols: 'Simboli',
+    navDal: 'Diplomatski analitički laboratorij',
     navPricing: 'Članstvo',
     navInstitutional: 'Institucionalno',
     navPresence: 'Prisutnost',
     navFounder: 'Osnivač',
-    eyebrow: 'Neovisna Digitalna Akademija · Globalna Perspektiva',
-    heroH2: 'Gdje protokol susreće <em>diplomaciju</em>, sigurnost i dostojanstvo.',
-    heroP: 'World Protocol Academy je neovisna digitalna akademija i profesionalna platforma usmjerena na protokol, diplomaciju, sigurnost i institucionalnu komunikaciju.',
-    heroBtn1: 'Istražite Akademiju',
-    heroBtn2: 'Upoznajte Virtual Sande',
-    heroBtn3: 'Otvori WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Otvori WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Otvori WPA Student Desk',
-    heroBtn5: 'Otvori Diplomatic Analysis Lab',
-    navDal: 'Analitički Lab',
-    heroNote: 'Izgrađena iz destilirane biti najjačih protokolarnih škola, diplomatskih akademija i institucionalnih sustava obuke u svijetu — zamišljena kao moderna digitalna akademija pod vodstvom osnivača.',
-    heroCardH3: 'Osnovna arhitektura WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -2882,7 +2938,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Novi standard u obrazovanju za protokol.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -2894,7 +2950,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Četiri razine. Jedna koherentna akademija.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -2933,7 +2989,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Učenje s dokazima, napretkom i vjerodostojnošću.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -2945,7 +3001,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentor, coach i protokolarni savjetnik.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -2961,7 +3017,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA može funkcionirati putem kontroliranih virtualnih sesija za učenje, konzultacije, izvršne brifinge i institucionalne sastanke.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -2969,11 +3025,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Odaberite razinu koja odgovara vašem putu.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Počnite besplatno',
+    pr1Btn: 'Počni besplatno',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Kontakt za Pro',
@@ -2982,12 +3038,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Kontakt za Academic',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Zatražite ponudu',
+    pr4Btn: 'Zatraži ponudu',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA je zamišljena ne samo za individualne polaznike, već i za ministarstva, veleposlanstva, sveučilišta, javne institucije i rukovodeće timove.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -3017,8 +3073,8 @@ const WPA_TRANSLATIONS = {
     whyP3: 'The long-term vision is clear: to become a recognised world academy for protocol, diplomacy, security, communication and professional readiness.',
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
-    ctaBtn1: 'Pogledajte logiku programa',
-    ctaBtn2: 'Istražite radove',
+    ctaBtn1: 'Vidi logiku programa',
+    ctaBtn2: 'Istraži radove',
     openLink: 'Otvori →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
@@ -3029,9 +3085,9 @@ const WPA_TRANSLATIONS = {
     ftContact: 'Kontakt'
   },
   bs: {
-    topbar1: 'neovisna premium akademija za protokol, diplomatiju, sigurnost i institucionalnu komunikaciju.',
-    topbar2: 'Vođena osnivačem · Podržana AI · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protokol · Diplomatija · Sigurnost · Komunikacija',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Jezik',
     menuBtn: 'Izbornik',
     navAbout: 'O nama',
@@ -3044,22 +3100,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnerstva',
     navWpaws: 'WPAWS',
     navSymbols: 'Simboli',
+    navDal: 'Diplomatski analitički laboratorij',
     navPricing: 'Članstvo',
     navInstitutional: 'Institucionalno',
     navPresence: 'Prisustvo',
     navFounder: 'Osnivač',
-    eyebrow: 'Neovisna Digitalna Akademija · Globalna Perspektiva',
-    heroH2: 'Gdje protokol susreće <em>diplomatiju</em>, sigurnost i dostojanstvo.',
-    heroP: 'World Protocol Academy je neovisna digitalna akademija i profesionalna platforma usmjerena na protokol, diplomatiju, sigurnost i institucionalnu komunikaciju.',
-    heroBtn1: 'Istražite Akademiju',
-    heroBtn2: 'Upoznajte Virtual Sande',
-    heroBtn3: 'Otvori WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Otvori WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Otvori WPA Student Desk',
-    heroBtn5: 'Otvori Diplomatic Analysis Lab',
-    navDal: 'Analitički Lab',
-    heroNote: 'Izgrađena iz destilirane suštine najjačih protokolarnih škola, diplomatskih akademija i institucionalnih sistema obuke u svijetu — zamišljena kao moderna digitalna akademija pod vodstvom osnivača.',
-    heroCardH3: 'Osnovna arhitektura WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -3070,7 +3126,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Novi standard u obrazovanju za protokol.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -3082,7 +3138,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Četiri razine. Jedna koherentna akademija.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -3121,7 +3177,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Učenje s dokazima, napretkom i vjerodostojnošću.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -3133,7 +3189,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentor, coach i protokolarni savjetnik.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -3149,7 +3205,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA može funkcionisati putem kontroliranih virtualnih sesija za učenje, konsultacije, izvršne brifinge i institucionalne sastanke.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -3157,11 +3213,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Odaberite razinu koja odgovara vašem putu.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Počnite besplatno',
+    pr1Btn: 'Počni besplatno',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Kontakt za Pro',
@@ -3170,12 +3226,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Kontakt za Academic',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Zatražite ponudu',
+    pr4Btn: 'Zatraži ponudu',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA je zamišljena ne samo za individualne polaznike, nego i za ministarstva, ambasade, univerzitete, javne institucije i rukovodeće timove.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -3205,21 +3261,21 @@ const WPA_TRANSLATIONS = {
     whyP3: 'The long-term vision is clear: to become a recognised world academy for protocol, diplomacy, security, communication and professional readiness.',
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
-    ctaBtn1: 'Pogledajte logiku programa',
-    ctaBtn2: 'Istražite radove',
+    ctaBtn1: 'Vidi logiku programa',
+    ctaBtn2: 'Istraži radove',
     openLink: 'Otvori →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
-    ftKeyAreas: 'Ključna područja',
+    ftKeyAreas: 'Ključne oblasti',
     ftUseful: 'Korisne stranice',
     ftChannels: 'Službeni kanali',
     ftAcad: 'Akademski profili',
     ftContact: 'Kontakt'
   },
   sl: {
-    topbar1: 'neodvisna premium akademija za protokol, diplomacijo, varnost in institucionalno komuniciranje.',
-    topbar2: 'Pod vodstvom ustanovitelja · Podprta z UI · WPAWS · worldprotocolacademy@gmail.com',
-    brandSub: 'Protokol · Diplomacija · Varnost · Komunikacija',
+    topbar1: 'World Protocol Academy — premium independent academy for protocol, diplomacy, security and institutional communication.',
+    topbar2: 'Founder-led • Publication-backed • AI-powered • WPAWS • Protocol Symbols Lab • worldprotocolacademy@gmail.com',
+    brandSub: 'Protocol • Diplomacy • Security • Communication • Professional Readiness',
     langLabel: 'Jezik',
     menuBtn: 'Meni',
     navAbout: 'O nas',
@@ -3232,22 +3288,22 @@ const WPA_TRANSLATIONS = {
     navPartner: 'Partnerstva',
     navWpaws: 'WPAWS',
     navSymbols: 'Simboli',
+    navDal: 'Diplomatski analitični laboratorij',
     navPricing: 'Članstvo',
     navInstitutional: 'Institucionalno',
     navPresence: 'Prisotnost',
     navFounder: 'Ustanovitelj',
-    eyebrow: 'Neodvisna Digitalna Akademija · Globalna Perspektiva',
-    heroH2: 'Kjer protokol sreča <em>diplomacijo</em>, varnost in dostojanstvo.',
-    heroP: 'World Protocol Academy je neodvisna digitalna akademija in profesionalna platforma, osredotočena na protokol, diplomacijo, varnost in institucionalno komuniciranje.',
-    heroBtn1: 'Raziščite Akademijo',
-    heroBtn2: 'Spoznajte Virtual Sande',
-    heroBtn3: 'Odpri WPAWS',
+    eyebrow: 'Independent Digital Academy • Professional Platform • Global Perspective',
+    heroH2: 'Where protocol meets diplomacy, security, communication and professional dignity.',
+    heroP: 'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness, certification and AI-powered learning.',
+    heroBtn1: 'Explore the Academy',
+    heroBtn2: 'Meet Virtual Sande',
+    heroBtn3: 'Open WPAWS',
     heroBtn4: 'Open Protocol Symbols Lab',
+    heroBtn5: 'Odpri WPA Diplomatic Analysis Lab',
     heroStudentDesk: 'Odpri WPA Student Desk',
-    heroBtn5: 'Odpri Diplomatic Analysis Lab',
-    navDal: 'Analitični Lab',
-    heroNote: 'Zgrajena iz destilirane bistvene sržnosti najmočnejših protokolarnih šol, diplomatskih akademij in institucionalnih sistemov usposabljanja na svetu — preoblikovana v sodobno digitalno akademijo pod vodstvom ustanovitelja.',
-    heroCardH3: 'Osnovna arhitektura WPA',
+    heroNote: 'Built from the distilled essence of the world\'s strongest protocol schools, diplomatic academies, executive learning systems and institutional training models — reimagined as a modern, premium, founder-led academy.',
+    heroCardH3: 'WPA Core Architecture',
     hl1: '<strong>Academic Layer:</strong> programmes, modules and structured learning levels',
     hl2: '<strong>Certification Layer:</strong> assessment, progression and verified digital credentials',
     hl3: '<strong>AI Layer:</strong> Virtual Sande, Q&amp;A, revision and protocol guidance',
@@ -3258,7 +3314,7 @@ const WPA_TRANSLATIONS = {
     platformH3: 'Central entry into the digital architecture of World Protocol Academy.',
     platformP: 'WPA remains the house and institution. Within it, WPAWS serves as the working engine, Protocol Symbols Lab as a specialised sub-module, along with supporting pages for papers and institutional partnerships.',
     aboutLabel: 'About WPA',
-    aboutH3: 'Nov standard v izobraževanju protokola.',
+    aboutH3: 'A new standard in protocol education.',
     aboutP: 'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre, AI-powered learning platform, publication hub and institutional advisory model.',
     about1Kick: 'Academic Weight',
     about1H4: 'Research-backed authority',
@@ -3270,7 +3326,7 @@ const WPA_TRANSLATIONS = {
     about3H4: 'AI, testing and modern learning',
     about3P: 'Virtual Sande, structured assessment, a future engine of 2000 questions and intelligent revision paths.',
     progLabel: 'Programme Architecture',
-    progH3: 'Štiri ravni. Ena koherentna akademija.',
+    progH3: 'Four levels. One coherent academy.',
     progP: 'WPA learning is structured to serve beginners, professionals, advanced practitioners and future trainers.',
     lvl1: 'Level 1',
     lvl1H4: 'Foundation',
@@ -3309,7 +3365,7 @@ const WPA_TRANSLATIONS = {
     who2H4: 'Professional & Executive Roles',
     who3H4: 'Broader Learning Audience',
     certLabel: 'Certification',
-    certH3: 'Učenje z dokazom, napredovanjem in verodostojnostjo.',
+    certH3: 'Learning with proof, progression and credibility.',
     certP: 'WPA certification is designed as a structured professional ladder — not just attendance, but measurable readiness.',
     cert1H4: 'Foundation Certificate',
     cert1P: 'Protocol fundamentals, etiquette, bon ton, representation and institutional behaviour.',
@@ -3321,7 +3377,7 @@ const WPA_TRANSLATIONS = {
     cert4P: 'Future trainers, consultants and advanced educators in protocol and institutional communication.',
     certDisclaimer: 'Future WPA certificates will include assessment logic, serial numbers, levels and a digital verification model.',
     aiLabel: 'AI Protocol Assistant',
-    aiH3: 'Virtual Sande — mentor, coach in protokolarni svetovalec.',
+    aiH3: 'Virtual Sande — mentor, exam coach, communication guide and protocol advisor.',
     aiP: 'The WPA AI layer is designed to support learning, revision, protocol scenarios, communication practice and self-assessment.',
     ai1Kick: 'Mode 1',
     ai1H4: 'Learn',
@@ -3337,7 +3393,7 @@ const WPA_TRANSLATIONS = {
     ai4P: 'Support for public speaking, on-camera presence, institutional messaging and executive confidence.',
     sessLabel: 'Online Sessions',
     sessH3: 'Meet, Zoom and Webex as part of delivery.',
-    sessP: 'WPA lahko deluje prek kontroliranih virtualnih sej za učenje, posvetovanje, izvršne brifinge in institucionalne sestanke.',
+    sessP: 'WPA can operate through controlled virtual sessions for learning, consultations, executive briefings and institutional meetings.',
     sess1H4: 'Google Meet',
     sess1P: 'Suitable for academic sessions, short protocol briefings and individual consultations.',
     sess2H4: 'Zoom',
@@ -3345,11 +3401,11 @@ const WPA_TRANSLATIONS = {
     sess3H4: 'Webex',
     sess3P: 'Professional format for institutional and corporate environments with higher formality.',
     pricingLabel: 'Access & Membership',
-    pricingH3: 'Izberite raven, ki ustreza vaši poti.',
+    pricingH3: 'Choose the level that fits your path.',
     pricingP: 'World Protocol Academy combines free access for basic learning with premium tiers for deeper lessons, scenarios, tests, certification preparation and institutional support.',
     pr1H4: 'Basic Access',
     pr1Text: 'For basic definitions, short answers, preview lessons and a general introduction to protocol, diplomacy and etiquette.',
-    pr1Btn: 'Začnite brezplačno',
+    pr1Btn: 'Začni brezplačno',
     pr2H4: 'Professional Level',
     pr2Text: 'For deeper answers, premium lessons, scenarios, structured learning and advanced preparation.',
     pr2Btn: 'Kontakt za Pro',
@@ -3358,12 +3414,12 @@ const WPA_TRANSLATIONS = {
     pr3Btn: 'Kontakt za Academic',
     pr4H4: 'Executive / Institutional',
     pr4Text: 'For ministries, embassies, universities, public institutions, corporations and executive teams.',
-    pr4Btn: 'Zahtevajte ponudbo',
+    pr4Btn: 'Zahtevaj ponudbo',
     paymentH4: 'Available Payment Methods',
     paymentNote: 'Stripe and PayPal integration is in preparation. For subscriptions contact: worldprotocolacademy@gmail.com',
     instLabel: 'Institutional Training',
     instH3: 'Structured, tailored and executive-ready.',
-    instP: 'WPA je zasnovana ne le za posameznike, temveč tudi za ministrstva, veleposlaništva, univerze, javne institucije in vodstvene ekipe.',
+    instP: 'WPA is designed not only for individual participants, but for ministries, embassies, universities, public institutions, event structures and executive teams.',
     inst1H4: 'Structured Institutional Programmes',
     inst1P: 'Longer modular processes for protocol teams, institutions and organised groups.',
     inst2H4: 'Executive Briefings',
@@ -3394,7 +3450,7 @@ const WPA_TRANSLATIONS = {
     ctaH3: 'Building a world academy — with structure, dignity and clear direction.',
     ctaP: 'This homepage is the first integrated foundation of the new World Protocol Academy identity. Upcoming phases will add dedicated pages for programmes, certification, AI assistant, institutional training, resources and structured learning paths.',
     ctaBtn1: 'Oglejte si logiko programov',
-    ctaBtn2: 'Raziščite prispevke',
+    ctaBtn2: 'Raziščite članke',
     openLink: 'Odpri →',
     ftWpaDesc: 'Independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication, multilateral professional readiness and AI-powered learning.',
     ftDisclaimer: 'WPA is an independent academy and digital platform. It does not represent itself as a state diplomatic academy or a degree-granting university institution.',
