@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WPA Diplomatic Analysis Lab — Phase 1</title>
+  <meta name="description" content="WPA Diplomatic Analysis Lab — phase 1 прототип за дипломатски RSS мониторинг, студентска анализа и паметен кајрон." />
+  <style>
+    :root{
+      --bg:#07111d;
+      --bg-2:#0e1928;
+      --panel:#0f1d31;
+      --panel-2:#152740;
+      --panel-3:#1a2f4f;
+      --line:#274161;
+      --line-soft:rgba(255,255,255,.06);
+      --text:#edf3fb;
+      --muted:#9caec5;
+      --gold:#d4af37;
+      --gold-2:#f0ca64;
+      --ok:#2dd4bf;
+      --warn:#f59e0b;
+      --danger:#fb7185;
+      --info:#60a5fa;
+      --violet:#a78bfa;
+      --shadow:0 18px 50px rgba(0,0,0,.28);
+      --radius:18px;
+    }
+    body.light{
+      --bg:#eef4fa;
+      --bg-2:#f8fbff;
+      --panel:#ffffff;
+      --panel-2:#f3f7fc;
+      --panel-3:#eef4fb;
+      --line:#d6e0eb;
+      --line-soft:rgba(16,24,40,.08);
+      --text:#102033;
+      --muted:#5f7288;
+      --shadow:0 12px 34px rgba(16,24,40,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:radial-gradient(circle at top, rgba(212,175,55,.08), transparent 20%), linear-gradient(180deg,var(--bg),#0a1525 28%,var(--bg));
+      min-height:100vh;
+    }
+    a{color:inherit}
+    button,input,select,textarea{font:inherit}
+    .shell{max-width:1560px;margin:0 auto;padding:18px}
+    .hero{
+      background:radial-gradient(circle at right top, rgba(212,175,55,.15), transparent 24%), linear-gradient(145deg, var(--panel), var(--bg-2));
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hero-top{
+      padding:22px 24px 18px;
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      border-bottom:1px solid var(--line);
+    }
+    .brand{flex:1;min-width:280px}
+    .brand .crest{
+      display:inline-flex;align-items:center;gap:10px;
+      color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:.16em;font-size:.78rem;
+      margin-bottom:12px;
+    }
+    .crest-dot{width:10px;height:10px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-2));box-shadow:0 0 0 4px rgba(212,175,55,.14)}
+    .brand h1{margin:0;font-size:clamp(1.55rem,2.8vw,2.55rem);line-height:1.02}
+    .brand p{margin:10px 0 0;color:var(--muted);max-width:860px;line-height:1.56}
+    .hero-note{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+    .pill{
+      display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(255,255,255,.02);font-size:.82rem;color:var(--muted)
+    }
+    .pill b{color:var(--text)}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .input,.select,.btn,.textarea{
+      background:var(--panel-2);color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+    }
+    .input{min-width:260px}
+    .select{min-width:160px}
+    .textarea{width:100%;min-height:88px;resize:vertical;line-height:1.48}
+    .input:focus,.select:focus,.btn:focus,.textarea:focus{outline:2px solid rgba(212,175,55,.28);outline-offset:2px}
+    .btn{cursor:pointer;transition:.18s ease;background:var(--panel-2)}
+    .btn:hover{border-color:var(--gold);transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#211705;border-color:transparent;font-weight:800}
+    .btn.ghost{background:transparent}
+    .btn.soft{background:rgba(255,255,255,.02)}
+    .stats{padding:14px 24px 20px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+    .stat{
+      background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:18px;padding:14px;min-height:92px;
+    }
+    .stat .k{font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+    .stat .v{margin-top:8px;font-size:1.34rem;font-weight:850}
+    .stat .sub{margin-top:6px;font-size:.82rem;color:var(--muted);line-height:1.42}
+    .progress{height:7px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin-top:10px}
+    .progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .25s ease}
+    .ticker{margin-top:16px;border:1px solid var(--line);background:var(--panel);border-radius:18px;box-shadow:var(--shadow);padding:12px 16px;display:flex;gap:12px;align-items:center}
+    .ticker-label{flex-shrink:0;padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1d1603;font-size:.74rem;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+    .ticker-text{font-size:.93rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ticker-text a{text-decoration:none;color:inherit}
+    .watch-tabs,.meta-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .tab,.meta-tab{
+      border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:10px 14px;border-radius:999px;
+      cursor:pointer;font-weight:700;transition:.18s ease
+    }
+    .tab:hover,.tab.active,.meta-tab:hover,.meta-tab.active{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
+    .layout{display:grid;grid-template-columns:320px 1fr;gap:16px;margin-top:16px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+    .panel .hd{padding:18px 18px 0;font-size:.8rem;color:var(--gold);font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+    .panel .bd{padding:18px}
+    .stack{display:grid;gap:12px}
+    .info-card,.source-card,.queue-card,.rubric-card{
+      border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel-2),var(--panel));padding:13px
+    }
+    .info-card strong,.source-card strong,.queue-card strong,.rubric-card strong{display:block;margin-bottom:6px}
+    .info-card span,.source-card span,.queue-card span,.rubric-card span{display:block;color:var(--muted);line-height:1.5;font-size:.9rem}
+    .mini-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .tag{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid var(--line);font-size:.74rem;font-weight:800;background:rgba(255,255,255,.03)}
+    .tag.pr{color:var(--info)}
+    .tag.interview{color:var(--violet)}
+    .tag.protocol{color:var(--gold)}
+    .tag.security{color:var(--danger)}
+    .tag.economic{color:var(--ok)}
+    .track-box{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--panel-2)}
+    .track-box h3{margin:0 0 8px;font-size:1rem}
+    .track-box p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.52}
+    .source-list,.queue-list{display:grid;gap:10px;max-height:440px;overflow:auto;padding-right:4px}
+    .feed-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+    .feed-top h2{margin:0;font-size:1.18rem}
+    .feed-top .summary{color:var(--muted);font-size:.92rem;line-height:1.45}
+    .board-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+    .card{
+      border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel-2),var(--panel));overflow:hidden;
+      display:flex;flex-direction:column;min-height:290px;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease
+    }
+    .card:hover{transform:translateY(-3px);border-color:var(--gold);box-shadow:0 18px 36px rgba(0,0,0,.22)}
+    .card-top{padding:14px 14px 10px;border-bottom:1px solid var(--line-soft)}
+    .card-title{font-size:1rem;font-weight:800;line-height:1.38;margin-top:8px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.05);color:var(--muted);font-size:.72rem;font-weight:800;border:1px solid var(--line-soft)}
+    .chip.signal{border-color:transparent}
+    .chip.signal.pr{background:rgba(96,165,250,.12);color:var(--info)}
+    .chip.signal.interview{background:rgba(167,139,250,.14);color:var(--violet)}
+    .chip.signal.protocol{background:rgba(212,175,55,.14);color:var(--gold)}
+    .chip.signal.security{background:rgba(251,113,133,.14);color:var(--danger)}
+    .chip.signal.economic{background:rgba(45,212,191,.14);color:var(--ok)}
+    .card-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;flex:1}
+    .card-desc{color:var(--muted);font-size:.9rem;line-height:1.5;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+    .metric-row{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.82rem}
+    .card-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .btn.small{padding:9px 11px;border-radius:12px;font-size:.85rem}
+    .btn.warn{background:rgba(212,175,55,.08);color:var(--gold)}
+    .btn.ok{background:rgba(45,212,191,.08);color:var(--ok)}
+    .empty,.skeleton-wrap{padding:26px 14px}
+    .empty{border:1px dashed var(--line);border-radius:16px;background:rgba(255,255,255,.02);text-align:center;color:var(--muted)}
+    .skeleton-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+    .skeleton{height:290px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(90deg,var(--panel) 25%,var(--panel-2) 50%,var(--panel) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite linear}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .queue-board{margin-top:14px;border-top:1px solid var(--line-soft);padding-top:14px}
+    .queue-inline-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .footer{margin-top:16px}
+    .footer .bd{color:var(--muted);line-height:1.56;font-size:.92rem}
+    .overlay{position:fixed;inset:0;background:rgba(3,8,15,.74);display:none;align-items:flex-start;justify-content:center;padding:20px;z-index:999}
+    .overlay.open{display:flex}
+    .drawer{width:min(980px,100%);max-height:calc(100vh - 40px);overflow:auto;background:linear-gradient(180deg,var(--panel),var(--bg-2));border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+    .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .drawer-head h3{margin:0;font-size:1.2rem;line-height:1.35}
+    .drawer-close{border:none;background:var(--panel-2);color:var(--text);width:36px;height:36px;border-radius:999px;cursor:pointer;border:1px solid var(--line)}
+    .drawer-body{padding:20px;display:grid;gap:18px}
+    .drawer-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+    .lead{color:var(--muted);line-height:1.55;font-size:.95rem}
+    .rubric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .rubric-grid .full{grid-column:1/-1}
+    .callout{padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--panel-2)}
+    .callout h4{margin:0 0 8px;font-size:.96rem}
+    .callout ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.6}
+    .drawer-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .footer-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;background:var(--panel-2);padding:2px 6px;border-radius:7px;border:1px solid var(--line)}
+    @media (max-width: 1180px){
+      .stats{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .layout{grid-template-columns:1fr}
+    }
+    @media (max-width: 860px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .drawer-grid,.rubric-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 640px){
+      .shell{padding:12px}
+      .hero-top,.stats{padding-left:16px;padding-right:16px}
+      .stats{grid-template-columns:1fr}
+      .input,.select,.btn{width:100%}
+      .ticker{align-items:flex-start;flex-direction:column}
+      .controls{width:100%}
+    }
+  </style>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="brand">
+          <div class="crest"><span class="crest-dot"></span> WPA Diplomatic Analysis Lab</div>
+          <h1>Phase 1 — дипломатски мониторинг + студентска анализа</h1>
+          <p>
+            Жива WPA табла за дипломатски вести, интервјуа, протокол, безбедност и економска дипломатија.
+            Оваа верзија е изградена како наменски анализатор: паметен кајрон, watch tabs, Article Analysis Drawer
+            и Student Analysis Queue за настава, вежби и practicum работа.
+          </p>
+          <div class="hero-note">
+            <div class="pill"><b>WPA насока:</b> visible maturity, not invisible complexity</div>
+            <div class="pill"><b>Tracks:</b> Communication, Institutional, Security-aware</div>
+            <div class="pill"><b>Labs:</b> Protocol Lab · Scenario Exercise 360 · Camera/Public Presence Lab</div>
+          </div>
+        </div>
+        <div class="controls">
+          <input id="searchInput" class="input" type="search" placeholder="Пребарај по наслов, институција, сигнал или земја..." />
+          <select id="regionFilter" class="select"><option value="ALL">Сите региони</option></select>
+          <select id="typeFilter" class="select"><option value="ALL">Сите типови</option></select>
+          <button id="modeBtn" class="btn">Режим: Live</button>
+          <button id="themeBtn" class="btn ghost">Тема</button>
+          <button id="refreshBtn" class="btn primary">Освежи</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div class="k">Курирани извори</div>
+          <div class="v" id="statSources">0</div>
+          <div class="sub">Министерства, амбасади, организации, правда и think tank мрежа</div>
+        </div>
+        <div class="stat">
+          <div class="k">Активни вести</div>
+          <div class="v" id="statArticles">0</div>
+          <div class="sub">По тековен watch tab и филтри</div>
+        </div>
+        <div class="stat">
+          <div class="k">Вчитани извори</div>
+          <div class="v" id="statLoaded">0/0</div>
+          <div class="progress"><span id="progressBar"></span></div>
+        </div>
+        <div class="stat">
+          <div class="k">Студентска queue</div>
+          <div class="v" id="statQueue">0</div>
+          <div class="sub">Зачувани задачи за анализа и дискусија</div>
+        </div>
+        <div class="stat">
+          <div class="k">Најсилен сигнал</div>
+          <div class="v" id="statSignal">—</div>
+          <div class="sub" id="statusText">Подготвување...</div>
+        </div>
+        <div class="stat">
+          <div class="k">Последно ажурирање</div>
+          <div class="v" id="statUpdated">—</div>
+          <div class="sub" id="statCache">Cache: празен</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ticker">
+      <div class="ticker-label">Signal kajron</div>
+      <div class="ticker-text" id="tickerText">Се подготвува дипломатскиот преглед...</div>
+    </div>
+
+    <div class="watch-tabs" id="watchTabs"></div>
+    <div class="meta-tabs" id="metaTabs"></div>
+
+    <section class="layout">
+      <aside class="panel">
+        <div class="hd">WPA Alignment</div>
+        <div class="bd stack">
+          <div class="info-card">
+            <strong>Phase 1 цел</strong>
+            <span>Оваа алатка не е обичен RSS feed. Таа е наменет WPA analysis layer со паметен кајрон, watch tabs, rubric logic и студентска queue.</span>
+          </div>
+          <div class="track-box">
+            <h3>Communication and Presence Track</h3>
+            <p>PR Watch и Interview Watch носат message discipline, public optics, institutional messaging и camera/public presence логика.</p>
+          </div>
+          <div class="track-box">
+            <h3>Institutional and Diplomatic Track</h3>
+            <p>Protocol Watch и Economic Diplomacy Watch ги следат министерства, амбасади, официјални посети, институционални сигнали и дипломатска координација.</p>
+          </div>
+          <div class="track-box">
+            <h3>Advanced Security-Aware Track</h3>
+            <p>Security Watch ја фокусира анализата на high-level readiness, crisis-sensitive protocol, sanctions, humanitarian/security signals и difficult cases.</p>
+          </div>
+          <div class="info-card">
+            <strong>Signature labs</strong>
+            <span>Protocol Lab, Scenario Exercise 360 и Camera/Public Presence Lab се вградени како аналитичка логика во drawer-от и во queue задачите.</span>
+            <div class="mini-tags">
+              <span class="tag protocol">Protocol Lab</span>
+              <span class="tag security">Scenario 360</span>
+              <span class="tag pr">Camera / Public Presence</span>
+            </div>
+          </div>
+        </div>
+        <div class="hd">Клучни извори</div>
+        <div class="bd">
+          <div class="source-list" id="sourceList"></div>
+        </div>
+        <div class="hd">Student Analysis Queue</div>
+        <div class="bd">
+          <div class="queue-list" id="queueList"></div>
+        </div>
+      </aside>
+
+      <main class="panel">
+        <div class="bd">
+          <div class="feed-top">
+            <div>
+              <h2 id="feedTitle">WPA Diplomatic Board</h2>
+              <div class="summary" id="feedSummary">Следи signal layer, анализирај, зачувај во queue и користи го drawer-от за практикум.</div>
+            </div>
+            <div class="board-actions">
+              <button id="copyQueueBtn" class="btn small">Копирај queue brief</button>
+              <button id="clearQueueBtn" class="btn small ghost">Исчисти queue</button>
+            </div>
+          </div>
+          <div id="newsHost"></div>
+        </div>
+      </main>
+    </section>
+
+    <div class="footer panel">
+      <div class="bd">
+        За production на WPA, оваа HTML верзија најдобро работи со периодично генериран cache JSON на ист домен.
+        Поддржан е и <span class="footer-code">window.WPA_DIPLO_CACHE_URL</span> за серверски fallback. Student Analysis Queue и белешките се чуваат локално во browser.
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="drawer">
+      <div class="drawer-head">
+        <div>
+          <div class="mini-tags" id="drawerTags"></div>
+          <h3 id="drawerTitle">Article Analysis Drawer</h3>
+        </div>
+        <button class="drawer-close" id="drawerClose">✕</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-grid">
+          <div class="callout">
+            <h4>Зошто ова е важно</h4>
+            <div class="lead" id="drawerLead"></div>
+            <div class="mini-tags" id="drawerMeta"></div>
+            <div class="queue-inline-actions" style="margin-top:12px">
+              <a id="drawerOpenSource" class="btn small primary" href="#" target="_blank" rel="noopener noreferrer">Отвори извор</a>
+              <button id="drawerQueueBtn" class="btn small ok">Додај / ажурирај queue</button>
+              <button id="drawerCopyBtn" class="btn small warn">Копирај analysis brief</button>
+            </div>
+          </div>
+          <div class="callout">
+            <h4>Suggested practicum path</h4>
+            <ul id="drawerChecklist"></ul>
+          </div>
+        </div>
+
+        <div class="rubric-grid">
+          <div class="rubric-card">
+            <strong>1. Говорник / институција</strong>
+            <span>Кој зборува, во чие име и со каква институционална тежина?</span>
+            <textarea class="textarea" id="fieldSpeaker" placeholder="Пр. Министерство, амбасада, организација, портпарол, амбасадор..."></textarea>
+          </div>
+          <div class="rubric-card">
+            <strong>2. Главна порака</strong>
+            <span>Која е суштинската институционална порака?</span>
+            <textarea class="textarea" id="fieldMessage" placeholder="Кратка формулација на централната порака."></textarea>
+          </div>
+          <div class="rubric-card">
+            <strong>3. Публика / јавност</strong>
+            <span>Кон кого е насочена пораката и зошто?</span>
+            <textarea class="textarea" id="fieldAudience" placeholder="Домашна јавност, дипломатски корпус, медиуми, инвеститори..."></textarea>
+          </div>
+          <div class="rubric-card">
+            <strong>4. Тон и optics</strong>
+            <span>Каков е тонот: официјален, смирувачки, assertive, defensive, symbolic?</span>
+            <textarea class="textarea" id="fieldTone" placeholder="Оцени tone, framing и јавна појава."></textarea>
+          </div>
+          <div class="rubric-card">
+            <strong>5. Протоколарен сигнал</strong>
+            <span>Има ли visit flow, delegation logic, symbolism, ceremony, hierarchy или формален ризик?</span>
+            <textarea class="textarea" id="fieldProtocol" placeholder="Протоколарни елементи, официјални посети, церемонија..."></textarea>
+          </div>
+          <div class="rubric-card">
+            <strong>6. Ризик / безбедност</strong>
+            <span>Има ли reputational, diplomatic или security implication?</span>
+            <textarea class="textarea" id="fieldRisk" placeholder="Санкции, криза, чувствителни формулации, јавен ризик..."></textarea>
+          </div>
+          <div class="rubric-card full">
+            <strong>7. Корективна или следна институционална реакција</strong>
+            <span>Што би била поиздржана формулација, follow-up порака или краток official line?</span>
+            <textarea class="textarea" id="fieldCorrection" placeholder="Напиши краток поправен институционален одговор или next-step recommendation."></textarea>
+          </div>
+          <div class="rubric-card full">
+            <strong>8. Lessons learned</strong>
+            <span>Што треба студентот или тимот да научи од овој пример?</span>
+            <textarea class="textarea" id="fieldLesson" placeholder="Клучни лекции за PR, интервју, протокол, безбедност или економска дипломатија."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  'use strict';
+
+'use strict';
+
+    const CACHE_KEY = 'wpa-analysis-lab-cache-v2';
+    const QUEUE_KEY = 'wpa-analysis-lab-queue-v2';
+    const THEME_KEY = 'wpa-analysis-lab-theme-v2';
+    const CACHE_URL = window.WPA_DIPLO_CACHE_URL || '';
+
+    const FEEDS = [
+  {name:'🇲🇰 Diplomatski Klub Makedonija', url:'https://diplomatskiklub.org.mk/', type:'NATO/EU/ОН', region:'Балкан', weight:5},
+  {name:'🇲🇰 Gjorge Ivanov', url:'https://gjorgeivanov.mk/poranesen/info.html', type:'МНР', region:'Балкан', weight:5},
+  {name:'🗺️ Balkan Insight', url:'https://balkaninsight.com/feed', type:'NATO/EU/ОН', region:'Балкан', weight:5},
+  {name:'🇷🇸 Serbian Ministry of Foreign Affairs', url:'https://www.mfa.gov.rs/en/rss', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇭🇷 Croatian Ministry of Foreign Affairs', url:'https://mvep.gov.hr/rss', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇧🇦 Bosnia Ministry of Foreign Affairs', url:'http://www.mvp.gov.ba/RSS', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇲🇪 Montenegro Ministry of Foreign Affairs', url:'http://www.mip.gov.me/en/rss', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇸🇮 Slovenia Ministry of Foreign Affairs', url:'https://www.gov.si/en/state-authorities/ministries/ministry-of-foreign-affairs/', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇦🇱 Albania Ministry of Foreign Affairs', url:'https://www.punetejashtme.gov.al/en/', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇽🇰 Kosovo Ministry of Foreign Affairs', url:'https://www.mfa-ks.net/en/', type:'МНР', region:'Балкан', weight:5},
+  {name:'🇲🇰 North Macedonia MFA', url:'https://www.mfa.gov.mk/en/rss', type:'МНР', region:'Балкан', weight:5},
+  {name:'📰 Foreign Affairs', url:'https://www.foreignaffairs.com/feed', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 The Diplomat', url:'https://thediplomat.com/feed', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Foreign Policy', url:'https://foreignpolicy.com/feed', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 Diplomatic Courier', url:'https://www.diplomaticourier.com/rss.xml', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 World Politics Review', url:'https://www.worldpoliticsreview.com/feed', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 The National Interest', url:'https://nationalinterest.org/rss/all/feed', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 War on the Rocks', url:'https://warontherocks.com/feed', type:'Медиуми', region:'Америка', weight:5},
+  {name:'🧠 Carnegie Endowment', url:'https://carnegieendowment.org/feed.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Chatham House', url:'https://www.chathamhouse.org/feed', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Brookings Institution', url:'https://www.brookings.edu/feed/', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 CSIS', url:'https://www.csis.org/feed', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Council on Foreign Relations', url:'https://www.cfr.org/feeds/rss/experts', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 RAND Corporation', url:'https://www.rand.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Atlantic Council', url:'https://www.atlanticcouncil.org/feed/', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Wilson Center', url:'https://www.wilsoncenter.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Hoover Institution', url:'https://www.hoover.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 American Enterprise Institute', url:'https://www.aei.org/feed/', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Heritage Foundation', url:'https://www.heritage.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Cato Institute', url:'https://www.cato.org/rss', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Center for American Progress', url:'https://www.americanprogress.org/feed/', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 New America', url:'https://www.newamerica.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 German Marshall Fund', url:'https://www.gmfus.org/rss.xml', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 European Council on Foreign Relations', url:'https://ecfr.eu/rss/', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 International Crisis Group', url:'https://www.crisisgroup.org/rss.xml', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 International Institute for Strategic Studies', url:'https://www.iiss.org/rss/', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Stockholm International Peace Research Institute', url:'https://www.sipri.org/rss.xml', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Carnegie Moscow Center', url:'https://carnegie.ru/feed/', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 French Institute of International Relations', url:'https://www.ifri.org/en/rss.xml', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Stiftung Wissenschaft und Politik', url:'https://www.swp-berlin.org/en/rss/', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Clingendael Institute', url:'https://www.clingendael.org/rss.xml', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Egmont Institute', url:'https://www.egmontinstitute.be/feed/', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Polish Institute of International Affairs', url:'https://www.pism.pl/rss', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Czech Institute of International Relations', url:'https://www.iir.cz/en/rss', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Norwegian Institute of International Affairs', url:'https://www.nupi.no/en/rss', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Danish Institute for International Studies', url:'https://www.diis.dk/en/rss', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Finnish Institute of International Affairs', url:'https://www.fiia.fi/en/rss', type:'Think Tank', region:'Европа', weight:5},
+  {name:'🧠 Lowy Institute', url:'https://www.lowyinstitute.org/rss.xml', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 Asian Development Bank Institute', url:'https://www.adb.org/news/rss', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 China Institute of International Studies', url:'http://www.ciis.org.cn/english/rss', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 Shanghai Institutes for International Studies', url:'http://www.siis.org.cn/English/rss', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 Observer Research Foundation', url:'https://www.orfonline.org/feed/', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 Institute for Defence Studies and Analyses', url:'https://idsa.in/rss.xml', type:'Think Tank', region:'Азија', weight:5},
+  {name:'🧠 South African Institute of International Affairs', url:'https://saiia.org.za/feed/', type:'Think Tank', region:'Африка', weight:5},
+  {name:'🧠 Institute for Security Studies', url:'https://issafrica.org/rss.xml', type:'Think Tank', region:'Африка', weight:5},
+  {name:'🧠 Council on Foreign Relations Africa', url:'https://www.cfr.org/region/africa/rss', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🧠 Brazilian Center for International Relations', url:'https://www.cebri.org/en/rss', type:'Think Tank', region:'Америка', weight:5},
+  {name:'🇺🇳 UN News', url:'https://news.un.org/feed/subscribe/en/news/all/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UN Security Council', url:'https://www.un.org/securitycouncil/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UNESCO', url:'https://en.unesco.org/news/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UNICEF', url:'https://www.unicef.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 WHO', url:'https://www.who.int/rss-feeds/news-english.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UNHCR', url:'https://www.unhcr.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UN Development Programme', url:'https://www.undp.org/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 UN Environment Programme', url:'https://www.unep.org/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 International Court of Justice', url:'https://www.icj-cij.org/en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇺🇳 International Criminal Court', url:'https://www.icc-cpi.int/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🛡️ NATO', url:'https://www.nato.int/rss/rss-news.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🛡️ NATO Allied Command Operations', url:'https://shape.nato.int/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🛡️ NATO Parliamentary Assembly', url:'https://www.nato-pa.int/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 EU External Action', url:'https://www.eeas.europa.eu/eeas/rss_en', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 European Commission', url:'https://ec.europa.eu/commission/presscorner/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 European Parliament', url:'https://www.europarl.europa.eu/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 European Council', url:'https://www.consilium.europa.eu/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 EU Delegation to USA', url:'https://www.eeas.europa.eu/delegations/united-states-america/rss_en', type:'Амбасади', region:'Америка', weight:5},
+  {name:'🇪🇺 EU Delegation to UN', url:'https://www.eeas.europa.eu/delegations/united-nations-new-york/rss_en', type:'Амбасади', region:'Глобал', weight:5},
+  {name:'🇫🇷 France Ministry of Europe and Foreign Affairs', url:'https://www.diplomatie.gouv.fr/en/backend-fd.php3', type:'МНР', region:'Европа', weight:5},
+  {name:'🇩🇪 Germany Federal Foreign Office', url:'https://www.auswaertiges-amt.de/en/newsroom/newsletter/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇬🇧 United Kingdom FCDO', url:'https://blogs.fcdo.gov.uk/feed', type:'МНР', region:'Европа', weight:5},
+  {name:'🇮🇹 Italy Ministry of Foreign Affairs', url:'https://www.esteri.it/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇪🇸 Spain Ministry of Foreign Affairs', url:'http://www.exteriores.gob.es/RSS/RSS.xml', type:'МНР', region:'Европа', weight:5},
+  {name:'🇳🇱 Netherlands Ministry of Foreign Affairs', url:'https://www.government.nl/ministries/ministry-of-foreign-affairs/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇧🇪 Belgium Ministry of Foreign Affairs', url:'https://diplomatie.belgium.be/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇨🇭 Switzerland FDFA', url:'https://www.eda.admin.ch/eda/en/home.rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇦🇹 Austria Ministry of Foreign Affairs', url:'https://www.bmeia.gv.at/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇸🇪 Sweden Ministry of Foreign Affairs', url:'https://www.government.se/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇳🇴 Norway Ministry of Foreign Affairs', url:'https://www.regjeringen.no/en/rss2/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇩🇰 Denmark Ministry of Foreign Affairs', url:'https://um.dk/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇫🇮 Finland Ministry of Foreign Affairs', url:'https://um.fi/rss/en/news', type:'МНР', region:'Европа', weight:5},
+  {name:'🇵🇱 Poland Ministry of Foreign Affairs', url:'https://www.gov.pl/web/diplomacy/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇨🇿 Czech Republic Ministry of Foreign Affairs', url:'https://www.mzv.cz/jnp/en/rss/index.rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇸🇰 Slovakia Ministry of Foreign Affairs', url:'https://www.mzv.sk/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇭🇺 Hungary Ministry of Foreign Affairs', url:'https://kormany.hu/kulgazdasagi-es-kulugyminiszterium/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇷🇴 Romania Ministry of Foreign Affairs', url:'https://www.mae.ro/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇧🇬 Bulgaria Ministry of Foreign Affairs', url:'https://www.mfa.bg/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇬🇷 Greece Ministry of Foreign Affairs', url:'https://www.mfa.gr/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇵🇹 Portugal Ministry of Foreign Affairs', url:'https://portaldiplomatico.mne.gov.pt/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇮🇪 Ireland Department of Foreign Affairs', url:'https://www.dfa.ie/news-and-media/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇱🇺 Luxembourg Ministry of Foreign Affairs', url:'https://maee.gouvernement.lu/en/rss.html', type:'МНР', region:'Европа', weight:5},
+  {name:'🇲🇹 Malta Ministry of Foreign Affairs', url:'https://foreignandeu.gov.mt/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇨🇾 Cyprus Ministry of Foreign Affairs', url:'https://mfa.gov.cy/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇪🇪 Estonia Ministry of Foreign Affairs', url:'https://vm.ee/en/rss.xml', type:'МНР', region:'Европа', weight:5},
+  {name:'🇱🇻 Latvia Ministry of Foreign Affairs', url:'https://www.mfa.gov.lv/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇱🇹 Lithuania Ministry of Foreign Affairs', url:'https://www.urm.lt/default/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇮🇸 Iceland Ministry of Foreign Affairs', url:'https://www.government.is/ministries/ministry-for-foreign-affairs/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇲🇩 Moldova Ministry of Foreign Affairs', url:'https://mfa.gov.md/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇺🇦 Ukraine Ministry of Foreign Affairs', url:'https://mfa.gov.ua/en/rss', type:'МНР', region:'Европа', weight:5},
+  {name:'🇧🇾 Belarus Ministry of Foreign Affairs', url:'https://mfa.gov.by/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇷🇺 Russia Ministry of Foreign Affairs', url:'https://www.mid.ru/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇹🇷 Turkey Ministry of Foreign Affairs', url:'https://www.mfa.gov.tr/rss/en-US/rss.xml', type:'МНР', region:'Европа', weight:5},
+  {name:'🇦🇲 Armenia Ministry of Foreign Affairs', url:'https://www.mfa.am/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇬🇪 Georgia Ministry of Foreign Affairs', url:'https://mfa.gov.ge/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇦🇿 Azerbaijan Ministry of Foreign Affairs', url:'https://mfa.gov.az/en/rss/', type:'МНР', region:'Европа', weight:5},
+  {name:'🇨🇳 China Ministry of Foreign Affairs', url:'https://www.fmprc.gov.cn/mfa_eng/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇯🇵 Japan Ministry of Foreign Affairs', url:'https://www.mofa.go.jp/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇷 South Korea Ministry of Foreign Affairs', url:'https://www.mofa.go.kr/eng/rss/index.do', type:'МНР', region:'Азија', weight:5},
+  {name:'🇮🇳 India Ministry of External Affairs', url:'https://www.mea.gov.in/rss-feeds.htm', type:'МНР', region:'Азија', weight:5},
+  {name:'🇵🇰 Pakistan Ministry of Foreign Affairs', url:'https://mofa.gov.pk/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇮🇩 Indonesia Ministry of Foreign Affairs', url:'https://kemlu.go.id/portal/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇹🇭 Thailand Ministry of Foreign Affairs', url:'https://www.mfa.go.th/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇻🇳 Vietnam Ministry of Foreign Affairs', url:'https://www.mofa.gov.vn/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇲🇾 Malaysia Ministry of Foreign Affairs', url:'https://www.kln.gov.my/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇵🇭 Philippines Department of Foreign Affairs', url:'https://www.dfa.gov.ph/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇸🇬 Singapore Ministry of Foreign Affairs', url:'https://www.mfa.gov.sg/Newsroom/RSS-Feeds', type:'МНР', region:'Азија', weight:5},
+  {name:'🇲🇲 Myanmar Ministry of Foreign Affairs', url:'https://www.mofa.gov.mm/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇭 Cambodia Ministry of Foreign Affairs', url:'https://www.mfaic.gov.kh/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇱🇦 Laos Ministry of Foreign Affairs', url:'http://www.mofa.gov.la/index.php/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇧🇳 Brunei Ministry of Foreign Affairs', url:'http://www.mfa.gov.bn/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇧🇩 Bangladesh Ministry of Foreign Affairs', url:'https://mofa.gov.bd/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇱🇰 Sri Lanka Ministry of Foreign Affairs', url:'https://mfa.gov.lk/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇳🇵 Nepal Ministry of Foreign Affairs', url:'https://mofa.gov.np/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇦🇫 Afghanistan Ministry of Foreign Affairs', url:'https://mfa.gov.af/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇮🇷 Iran Ministry of Foreign Affairs', url:'https://en.mfa.ir/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇮🇶 Iraq Ministry of Foreign Affairs', url:'https://mofa.gov.iq/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇸🇦 Saudi Arabia Ministry of Foreign Affairs', url:'https://www.mofa.gov.sa/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇦🇪 UAE Ministry of Foreign Affairs', url:'https://www.mofaic.gov.ae/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇶🇦 Qatar Ministry of Foreign Affairs', url:'https://www.mofa.gov.qa/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇼 Kuwait Ministry of Foreign Affairs', url:'https://www.mofa.gov.kw/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇧🇭 Bahrain Ministry of Foreign Affairs', url:'https://www.mofa.gov.bh/Default.aspx?tabid=7724', type:'МНР', region:'Азија', weight:5},
+  {name:'🇴🇲 Oman Ministry of Foreign Affairs', url:'https://www.mofa.gov.om/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇾🇪 Yemen Ministry of Foreign Affairs', url:'https://www.mofa-ye.org/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇯🇴 Jordan Ministry of Foreign Affairs', url:'https://www.mfa.gov.jo/en/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇱🇧 Lebanon Ministry of Foreign Affairs', url:'http://www.mfa.gov.lb/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇸🇾 Syria Ministry of Foreign Affairs', url:'http://www.mofa.gov.sy/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇮🇱 Israel Ministry of Foreign Affairs', url:'https://mfa.gov.il/MFA/RSS/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇵🇸 Palestine Ministry of Foreign Affairs', url:'http://www.mofa.pna.ps/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇿 Kazakhstan Ministry of Foreign Affairs', url:'https://www.gov.kz/memleket/entities/mfa/rss', type:'МНР', region:'Азија', weight:5},
+  {name:'🇺🇿 Uzbekistan Ministry of Foreign Affairs', url:'https://mfa.uz/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇹🇲 Turkmenistan Ministry of Foreign Affairs', url:'https://mfa.gov.tm/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇬 Kyrgyzstan Ministry of Foreign Affairs', url:'http://mfa.gov.kg/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇹🇯 Tajikistan Ministry of Foreign Affairs', url:'https://mfa.tj/en/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇲🇳 Mongolia Ministry of Foreign Affairs', url:'https://www.mfa.gov.mn/rss/', type:'МНР', region:'Азија', weight:5},
+  {name:'🇰🇵 North Korea Ministry of Foreign Affairs', url:'http://www.mfa.gov.kp/rss/', type:'МНР', region:'Азија', weight:4},
+  {name:'🇹🇼 Taiwan Ministry of Foreign Affairs', url:'https://www.mofa.gov.tw/rss/', type:'МНР', region:'Азија', weight:4},
+  {name:'🇿🇦 South Africa DIRCO', url:'https://www.dirco.gov.za/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇪🇬 Egypt Ministry of Foreign Affairs', url:'https://www.mfa.gov.eg/English/Pages/rss.aspx', type:'МНР', region:'Африка', weight:5},
+  {name:'🇳🇬 Nigeria Ministry of Foreign Affairs', url:'https://foreignaffairs.gov.ng/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇰🇪 Kenya Ministry of Foreign Affairs', url:'http://www.mfa.go.ke/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇪🇹 Ethiopia Ministry of Foreign Affairs', url:'https://mfa.gov.et/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇬🇭 Ghana Ministry of Foreign Affairs', url:'https://mfa.gov.gh/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇲🇦 Morocco Ministry of Foreign Affairs', url:'https://www.diplomatie.ma/en/rss', type:'МНР', region:'Африка', weight:5},
+  {name:'🇩🇿 Algeria Ministry of Foreign Affairs', url:'https://www.mae.gov.dz/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇹🇳 Tunisia Ministry of Foreign Affairs', url:'http://www.diplomatie.gov.tn/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇱🇾 Libya Ministry of Foreign Affairs', url:'https://fm.gov.ly/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇩 Sudan Ministry of Foreign Affairs', url:'https://www.mfa.gov.sd/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇺🇬 Uganda Ministry of Foreign Affairs', url:'https://www.mofa.go.ug/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇹🇿 Tanzania Ministry of Foreign Affairs', url:'https://www.foreign.go.tz/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇷🇼 Rwanda Ministry of Foreign Affairs', url:'https://www.minaffet.gov.rw/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇦🇴 Angola Ministry of Foreign Affairs', url:'https://www.mirex.gov.ao/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇲🇿 Mozambique Ministry of Foreign Affairs', url:'http://www.minec.gov.mz/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇿🇼 Zimbabwe Ministry of Foreign Affairs', url:'http://www.zimfa.gov.zw/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇿🇲 Zambia Ministry of Foreign Affairs', url:'https://www.mofa.gov.zm/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇧🇼 Botswana Ministry of Foreign Affairs', url:'https://www.mfa.gov.bw/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇳🇦 Namibia Ministry of International Relations', url:'http://www.mirco.gov.na/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇲🇬 Madagascar Ministry of Foreign Affairs', url:'http://www.diplomatie.gov.mg/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇲🇺 Mauritius Ministry of Foreign Affairs', url:'http://foreign.govmu.org/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇳 Senegal Ministry of Foreign Affairs', url:'https://www.diplomatie.gouv.sn/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇮 Ivory Coast Ministry of Foreign Affairs', url:'http://www.diplomatie.gouv.ci/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇩 DR Congo Ministry of Foreign Affairs', url:'https://www.diplomatie.cd/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇲 Cameroon Ministry of Foreign Affairs', url:'https://www.minrex.cm/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇲🇱 Mali Ministry of Foreign Affairs', url:'http://www.diplomatie.gov.ml/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇧🇫 Burkina Faso Ministry of Foreign Affairs', url:'http://www.mae.gov.bf/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇳🇪 Niger Ministry of Foreign Affairs', url:'http://www.diplomatie.gouv.ne/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇹🇩 Chad Ministry of Foreign Affairs', url:'http://www.mae-tchad.org/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇧🇯 Benin Ministry of Foreign Affairs', url:'https://www.gouv.bj/mae/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇹🇬 Togo Ministry of Foreign Affairs', url:'http://www.diplomatie.gouv.tg/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇬🇳 Guinea Ministry of Foreign Affairs', url:'http://www.mae.gov.gn/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇬🇦 Gabon Ministry of Foreign Affairs', url:'https://www.diplomatie.gouv.ga/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇬 Congo-Brazzaville Ministry of Foreign Affairs', url:'http://www.diplomatie.cg/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇫 Central African Republic Ministry of Foreign Affairs', url:'http://www.diplomatie-rca.org/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇬🇶 Equatorial Guinea Ministry of Foreign Affairs', url:'https://www.guineaecuatorialpress.com/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇧🇮 Burundi Ministry of Foreign Affairs', url:'https://mae.gov.bi/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇪🇷 Eritrea Ministry of Foreign Affairs', url:'http://www.mfa.gov.er/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇩🇯 Djibouti Ministry of Foreign Affairs', url:'http://www.mae.gouv.dj/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇴 Somalia Ministry of Foreign Affairs', url:'https://mfa.gov.so/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇨 Seychelles Ministry of Foreign Affairs', url:'http://www.mfa.gov.sc/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇰🇲 Comoros Ministry of Foreign Affairs', url:'http://www.diplomatie.gov.km/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇨🇻 Cape Verde Ministry of Foreign Affairs', url:'https://www.mnec.gov.cv/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇹 Sao Tome and Principe Ministry of Foreign Affairs', url:'http://www.mnec.gov.st/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇬🇲 Gambia Ministry of Foreign Affairs', url:'http://www.mofa.gov.gm/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇱 Sierra Leone Ministry of Foreign Affairs', url:'http://www.foreign.gov.sl/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇱🇷 Liberia Ministry of Foreign Affairs', url:'http://www.mofa.gov.lr/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇱🇸 Lesotho Ministry of Foreign Affairs', url:'http://www.foreign.gov.ls/rss/', type:'МНР', region:'Африка', weight:5},
+  {name:'🇸🇿 Eswatini Ministry of Foreign Affairs', url:'http://www.gov.sz/index.php/ministries-departments/ministry-of-foreign-affairs-and-international-cooperation/rss', type:'МНР', region:'Африка', weight:5},
+  {name:'🇺🇸 USA State Department', url:'https://www.state.gov/rss-feed/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇨🇦 Canada Global Affairs', url:'https://www.international.gc.ca/global-affairs-affaires-mondiales/rss/rss-en.xml', type:'МНР', region:'Америка', weight:5},
+  {name:'🇲🇽 Mexico Secretariat of Foreign Affairs', url:'https://www.gob.mx/sre/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇨🇺 Cuba Ministry of Foreign Affairs', url:'http://www.minrex.gob.cu/es/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇬🇹 Guatemala Ministry of Foreign Affairs', url:'https://www.minex.gob.gt/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇸🇻 El Salvador Ministry of Foreign Affairs', url:'https://rree.gob.sv/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇭🇳 Honduras Ministry of Foreign Affairs', url:'https://www.srec.gob.hn/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇳🇮 Nicaragua Ministry of Foreign Affairs', url:'http://www.cancilleria.gob.ni/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇨🇷 Costa Rica Ministry of Foreign Affairs', url:'https://www.rree.go.cr/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇵🇦 Panama Ministry of Foreign Affairs', url:'https://mire.gob.pa/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇩🇴 Dominican Republic Ministry of Foreign Affairs', url:'https://mirex.gob.do/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇭🇹 Haiti Ministry of Foreign Affairs', url:'https://diplomatie.ht/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇯🇲 Jamaica Ministry of Foreign Affairs', url:'https://www.mfaft.gov.jm/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇹🇹 Trinidad and Tobago Ministry of Foreign Affairs', url:'https://foreign.gov.tt/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇧🇷 Brazil Ministry of Foreign Affairs', url:'https://www.gov.br/mre/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇦🇷 Argentina Ministry of Foreign Affairs', url:'https://www.cancilleria.gob.ar/es/rss.xml', type:'МНР', region:'Америка', weight:5},
+  {name:'🇨🇴 Colombia Ministry of Foreign Affairs', url:'https://www.cancilleria.gov.co/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇨🇱 Chile Ministry of Foreign Affairs', url:'https://www.minrel.gob.cl/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇵🇪 Peru Ministry of Foreign Affairs', url:'https://www.gob.pe/rree/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇻🇪 Venezuela Ministry of Foreign Affairs', url:'http://www.mppre.gob.ve/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇪🇨 Ecuador Ministry of Foreign Affairs', url:'https://www.cancilleria.gob.ec/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇧🇴 Bolivia Ministry of Foreign Affairs', url:'http://www.cancilleria.gob.bo/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇵🇾 Paraguay Ministry of Foreign Affairs', url:'https://www.mre.gov.py/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇺🇾 Uruguay Ministry of Foreign Affairs', url:'https://www.gub.uy/ministerio-relaciones-exteriores/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇬🇾 Guyana Ministry of Foreign Affairs', url:'https://www.minfor.gov.gy/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇸🇷 Suriname Ministry of Foreign Affairs', url:'https://www.gov.sr/ministeries/ministry-of-foreign-affairs-international-business-and-international-cooperation/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇧🇿 Belize Ministry of Foreign Affairs', url:'https://www.foreign.gov.bz/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇧🇸 Bahamas Ministry of Foreign Affairs', url:'https://mofa.gov.bs/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇧🇧 Barbados Ministry of Foreign Affairs', url:'https://www.foreign.gov.bb/rss/', type:'МНР', region:'Америка', weight:5},
+  {name:'🇱🇨 Saint Lucia Ministry of External Affairs', url:'http://www.govt.lc/ministries/external-affairs/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇬🇩 Grenada Ministry of Foreign Affairs', url:'https://www.gov.gd/ministries/foreign_affairs/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇻🇨 Saint Vincent Ministry of Foreign Affairs', url:'http://www.gov.vc/index.php/government/ministries/foreign-affairs/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇦🇬 Antigua and Barbuda Ministry of Foreign Affairs', url:'https://ab.gov.ag/detail_page.php?page=38&rss=1', type:'МНР', region:'Америка', weight:5},
+  {name:'🇰🇳 Saint Kitts and Nevis Ministry of Foreign Affairs', url:'https://www.gov.kn/ministries/foreign-affairs/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇩🇲 Dominica Ministry of Foreign Affairs', url:'https://www.dominica.gov.dm/ministries/foreign-affairs/rss', type:'МНР', region:'Америка', weight:5},
+  {name:'🇦🇺 Australia DFAT', url:'https://www.dfat.gov.au/rss/news-and-media.xml', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇳🇿 New Zealand MFAT', url:'https://www.mfat.govt.nz/en/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇫🇯 Fiji Ministry of Foreign Affairs', url:'https://www.foreignaffairs.gov.fj/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇵🇬 Papua New Guinea Department of Foreign Affairs', url:'http://www.foreignaffairs.gov.pg/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇸🇧 Solomon Islands Ministry of Foreign Affairs', url:'http://www.mfaet.gov.sb/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇻🇺 Vanuatu Ministry of Foreign Affairs', url:'https://foreignaffairs.gov.vu/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇼🇸 Samoa Ministry of Foreign Affairs', url:'http://www.mfat.gov.ws/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇹🇴 Tonga Ministry of Foreign Affairs', url:'http://www.mic.gov.to/foreign-affairs/rss', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇰🇮 Kiribati Ministry of Foreign Affairs', url:'http://www.mfai.gov.ki/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇹🇻 Tuvalu Ministry of Foreign Affairs', url:'http://www.tuvaluislands.com/gov_mfat.htm', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇳🇷 Nauru Department of Foreign Affairs', url:'http://www.naurugov.nr/government/departments/department-of-foreign-affairs-and-trade.aspx', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇲🇭 Marshall Islands Ministry of Foreign Affairs', url:'https://rmigovernment.org/ministries/foreign-affairs/rss', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇫🇲 Micronesia Department of Foreign Affairs', url:'http://www.fsmgov.org/dfa/rss/', type:'МНР', region:'Глобал', weight:5},
+  {name:'🇵🇼 Palau Ministry of State', url:'http://www.palaugov.pw/executive-branch/ministries/ministry-of-state/rss', type:'МНР', region:'Глобал', weight:5},
+  {name:'🏛️ France Ministry of Interior', url:'https://www.interieur.gouv.fr/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Germany Ministry of Interior', url:'https://www.bmi.bund.de/SiteGlobals/Functions/RSSFeed/EN/rss_en_node.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ UK Home Office', url:'https://homeofficemedia.blog.gov.uk/feed/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Italy Ministry of Interior', url:'https://www.interno.gov.it/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Spain Ministry of Interior', url:'http://www.interior.gob.es/rss/interior/destacados', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Netherlands Ministry of Interior', url:'https://www.government.nl/ministries/ministry-of-the-interior-and-kingdom-relations/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Belgium Ministry of Interior', url:'https://www.ibz.be/en/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Switzerland Federal Office of Police', url:'https://www.fedpol.admin.ch/fedpol/en/home.rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Austria Ministry of Interior', url:'https://www.bmi.gv.at/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Sweden Ministry of Justice', url:'https://www.government.se/government-of-sweden/ministry-of-justice/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Norway Ministry of Justice', url:'https://www.regjeringen.no/en/dep/jd/rss2/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Denmark Ministry of Justice', url:'https://www.justitsministeriet.dk/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Finland Ministry of Interior', url:'https://intermin.fi/en/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Poland Ministry of Interior', url:'https://www.gov.pl/web/mswia/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Czech Ministry of Interior', url:'https://www.mvcr.cz/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Slovakia Ministry of Interior', url:'https://www.minv.sk/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Hungary Ministry of Interior', url:'https://www.kormany.hu/hu/belugyminiszterium/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Romania Ministry of Interior', url:'https://www.mai.gov.ro/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Bulgaria Ministry of Interior', url:'https://www.mvr.bg/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Greece Ministry of Interior', url:'https://www.ypes.gr/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Portugal Ministry of Interior', url:'https://www.portugal.gov.pt/pt/gc22/area-de-governo/administracao-interna/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Ireland Department of Justice', url:'https://www.justice.ie/en/JELR/Pages/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Luxembourg Ministry of Interior', url:'https://miat.public.lu/en/rss.html', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Estonia Ministry of Interior', url:'https://www.siseministeerium.ee/en/rss.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Latvia Ministry of Interior', url:'https://www.iem.gov.lv/lv/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Lithuania Ministry of Interior', url:'https://vrm.lrv.lt/en/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Serbia Ministry of Interior', url:'https://www.mup.gov.rs/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Croatia Ministry of Interior', url:'https://mup.gov.hr/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Bosnia Ministry of Security', url:'http://www.msb.gov.ba/RSS/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Montenegro Ministry of Interior', url:'http://www.mup.gov.me/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ North Macedonia Ministry of Interior', url:'https://www.mvr.gov.mk/rss', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Albania Ministry of Interior', url:'https://www.punebrenda.gov.al/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Kosovo Ministry of Interior', url:'https://mpb.rks-gov.net/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Slovenia Ministry of Interior', url:'https://www.gov.si/drzavni-organi/ministrstva/ministrstvo-za-notranje-zadeve/rss/', type:'МНР', region:'Балкан', weight:4},
+  {name:'🏛️ Moldova Ministry of Interior', url:'https://politia.md/ro/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Ukraine Ministry of Interior', url:'https://mvs.gov.ua/en/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Russia Ministry of Interior', url:'https://мвд.рф/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🏛️ Turkey Ministry of Interior', url:'https://www.icisleri.gov.tr/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy London', url:'https://uk.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Paris', url:'https://fr.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Berlin', url:'https://de.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Rome', url:'https://it.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Madrid', url:'https://es.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Moscow', url:'https://ru.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Beijing', url:'https://china.usembassy-china.org.cn/feed/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇺🇸 US Embassy Tokyo', url:'https://jp.usembassy.gov/feed/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇺🇸 US Embassy Seoul', url:'https://kr.usembassy.gov/feed/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇺🇸 US Embassy New Delhi', url:'https://in.usembassy.gov/feed/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇺🇸 US Embassy Tel Aviv', url:'https://il.usembassy.gov/feed/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇺🇸 US Embassy Cairo', url:'https://eg.usembassy.gov/feed/', type:'Амбасади', region:'Африка', weight:4},
+  {name:'🇺🇸 US Embassy Pretoria', url:'https://za.usembassy.gov/feed/', type:'Амбасади', region:'Африка', weight:4},
+  {name:'🇺🇸 US Embassy Brasilia', url:'https://br.usembassy.gov/feed/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇸 US Embassy Mexico City', url:'https://mx.usembassy.gov/feed/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇸 US Embassy Ottawa', url:'https://ca.usembassy.gov/feed/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇸 US Embassy Canberra', url:'https://au.usembassy.gov/feed/', type:'Амбасади', region:'Глобал', weight:4},
+  {name:'🇺🇸 US Embassy Skopje', url:'https://mk.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Belgrade', url:'https://rs.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Zagreb', url:'https://hr.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Sarajevo', url:'https://ba.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Podgorica', url:'https://me.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Ljubljana', url:'https://si.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Tirana', url:'https://al.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Pristina', url:'https://xk.usembassy.gov/feed/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇺🇸 US Embassy Athens', url:'https://gr.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Warsaw', url:'https://pl.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Prague', url:'https://cz.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Budapest', url:'https://hu.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Bucharest', url:'https://ro.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Sofia', url:'https://bg.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Kyiv', url:'https://ua.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Brussels', url:'https://be.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy The Hague', url:'https://nl.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Vienna', url:'https://at.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Bern', url:'https://ch.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Stockholm', url:'https://se.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Oslo', url:'https://no.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Copenhagen', url:'https://dk.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Helsinki', url:'https://fi.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Tallinn', url:'https://ee.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Riga', url:'https://lv.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Vilnius', url:'https://lt.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Dublin', url:'https://ie.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Lisbon', url:'https://pt.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Ankara', url:'https://tr.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Yerevan', url:'https://am.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Tbilisi', url:'https://ge.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇺🇸 US Embassy Baku', url:'https://az.usembassy.gov/feed/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Washington', url:'https://www.gov.uk/government/world/usa/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇧 UK Embassy Paris', url:'https://www.gov.uk/government/world/france/rss', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Berlin', url:'https://www.gov.uk/government/world/germany/rss', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Rome', url:'https://www.gov.uk/government/world/italy/rss', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Madrid', url:'https://www.gov.uk/government/world/spain/rss', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Moscow', url:'https://www.gov.uk/government/world/russia/rss', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇬🇧 UK Embassy Beijing', url:'https://www.gov.uk/government/world/china/rss', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇬🇧 UK Embassy Tokyo', url:'https://www.gov.uk/government/world/japan/rss', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇬🇧 UK Embassy New Delhi', url:'https://www.gov.uk/government/world/india/rss', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇬🇧 UK Embassy Skopje', url:'https://www.gov.uk/government/world/north-macedonia/rss', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇬🇧 UK Embassy Belgrade', url:'https://www.gov.uk/government/world/serbia/rss', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇫🇷 French Embassy Washington', url:'https://www.ambafrance-us.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇫🇷 French Embassy London', url:'https://uk.ambafrance.org/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇫🇷 French Embassy Berlin', url:'https://de.ambafrance.org/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇫🇷 French Embassy Skopje', url:'https://mk.ambafrance.org/rss/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇩🇪 German Embassy Washington', url:'https://www.germany.info/us-en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇩🇪 German Embassy London', url:'https://www.germany.info/gb-en/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇩🇪 German Embassy Paris', url:'https://www.germany.info/fr-fr/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇩🇪 German Embassy Skopje', url:'https://skopje.diplo.de/mk-de/rss/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇨🇳 Chinese Embassy Washington', url:'http://www.china-embassy.org/eng/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇳 Chinese Embassy London', url:'http://www.chinese-embassy.org.uk/eng/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇨🇳 Chinese Embassy Skopje', url:'http://mk.china-embassy.gov.cn/rss/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇷🇺 Russian Embassy Washington', url:'https://washington.mid.ru/en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇷🇺 Russian Embassy London', url:'https://www.rusemb.org.uk/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇷🇺 Russian Embassy Skopje', url:'https://northmacedonia.mid.ru/en/rss/', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇯🇵 Japanese Embassy Washington', url:'https://www.us.emb-japan.go.jp/itprtop_en/rss.xml', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇯🇵 Japanese Embassy London', url:'https://www.uk.emb-japan.go.jp/itprtop_en/rss.xml', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇯🇵 Japanese Embassy Skopje', url:'https://www.mk.emb-japan.go.jp/itprtop_mk/rss.xml', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Washington', url:'https://www.eeas.europa.eu/delegations/united-states-america/rss_en', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇺 EU Delegation London', url:'https://www.eeas.europa.eu/delegations/united-kingdom/rss_en', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇪🇺 EU Delegation Skopje', url:'https://www.eeas.europa.eu/delegations/north-macedonia/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Belgrade', url:'https://www.eeas.europa.eu/delegations/serbia/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Zagreb', url:'https://www.eeas.europa.eu/delegations/croatia/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Sarajevo', url:'https://www.eeas.europa.eu/delegations/bosnia-and-herzegovina/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Podgorica', url:'https://www.eeas.europa.eu/delegations/montenegro/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Tirana', url:'https://www.eeas.europa.eu/delegations/albania/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Pristina', url:'https://www.eeas.europa.eu/delegations/kosovo/rss_en', type:'Амбасади', region:'Балкан', weight:4},
+  {name:'🇪🇺 EU Delegation Ankara', url:'https://www.eeas.europa.eu/delegations/turkey/rss_en', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇪🇺 EU Delegation Kyiv', url:'https://www.eeas.europa.eu/delegations/ukraine/rss_en', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇪🇺 EU Delegation Moscow', url:'https://www.eeas.europa.eu/delegations/russia/rss_en', type:'Амбасади', region:'Европа', weight:4},
+  {name:'🇪🇺 EU Delegation Beijing', url:'https://www.eeas.europa.eu/delegations/china/rss_en', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇪🇺 EU Delegation Tokyo', url:'https://www.eeas.europa.eu/delegations/japan/rss_en', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇪🇺 EU Delegation New Delhi', url:'https://www.eeas.europa.eu/delegations/india/rss_en', type:'Амбасади', region:'Азија', weight:4},
+  {name:'🇪🇺 EU Delegation Cairo', url:'https://www.eeas.europa.eu/delegations/egypt/rss_en', type:'Амбасади', region:'Африка', weight:4},
+  {name:'🇪🇺 EU Delegation Pretoria', url:'https://www.eeas.europa.eu/delegations/south-africa/rss_en', type:'Амбасади', region:'Африка', weight:4},
+  {name:'🇪🇺 EU Delegation Brasilia', url:'https://www.eeas.europa.eu/delegations/brazil/rss_en', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇺 EU Delegation Canberra', url:'https://www.eeas.europa.eu/delegations/australia/rss_en', type:'Амбасади', region:'Глобал', weight:4},
+  {name:'🎓 Protocol School of Washington', url:'https://psow.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 European Protocol Academy', url:'https://europeanprotocol.com/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Etiquette School of New York', url:'https://etiquetteschoolny.com/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Beaumont Etiquette', url:'https://beaumontetiquette.com/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 The English Manner', url:'https://theenglishmanner.com/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Minding Manners International', url:'https://mindingmanners.com/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Diplomatic Academy of Vienna', url:'https://www.da-vienna.ac.at/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Sciences Po Paris', url:'https://www.sciencespo.fr/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Fletcher School Tufts', url:'https://fletcher.tufts.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Georgetown School of Foreign Service', url:'https://sfs.georgetown.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 London School of Economics', url:'https://www.lse.ac.uk/international-relations/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Oxford Department of Politics', url:'https://www.politics.ox.ac.uk/rss.xml', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Cambridge Department of Politics', url:'https://www.polis.cam.ac.uk/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Harvard Kennedy School', url:'https://www.hks.harvard.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 SAIS Johns Hopkins', url:'https://sais.jhu.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Graduate Institute Geneva', url:'https://www.graduateinstitute.ch/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 College of Europe', url:'https://www.coleurope.eu/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Clingendael Academy', url:'https://www.clingendael.org/academy/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Diplomatic Academy Russia', url:'http://dipacademy.ru/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 China Foreign Affairs University', url:'http://www.cfau.edu.cn/en/rss/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Japan Institute International Affairs', url:'https://www.jiia.or.jp/en/rss/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Indian School International Studies', url:'https://www.isindia.edu.in/rss/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Brazilian Diplomatic Academy', url:'http://www.institutoriobranco.itamaraty.gov.br/en/rss', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Mexican Diplomatic Academy', url:'https://acervo.sre.gob.mx/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 South African Diplomatic Academy', url:'http://www.dirco.gov.za/department/sadti_training/rss/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Egyptian Diplomatic Institute', url:'http://www.edi.gov.eg/rss/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Turkish Diplomatic Academy', url:'https://www.mfa.gov.tr/diplomatic-academy.en.mfa', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Israeli Diplomatic Academy', url:'https://mfa.gov.il/MFA/AboutTheMinistry/Pages/Diplomatic-Academy.aspx', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Australian National University', url:'https://ips.anu.edu.au/rss/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Canadian Defence and Foreign Affairs Institute', url:'http://www.cdfai.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Glion Institute of Higher Education', url:'https://www.glion.edu/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Les Roches', url:'https://www.lesroches.edu/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 EHL Lausanne', url:'https://www.ehl.edu/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Cornell School of Hotel Administration', url:'https://sha.cornell.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Institut Paul Bocuse', url:'https://www.institutpaulbocuse.com/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Protocol & Diplomats International', url:'https://www.protocol-diplointernational.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 International Association of Protocol Consultants', url:'https://www.protocolconsultants.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 National Protocol Officers Association', url:'https://www.nationalprotocol.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'📰 Reuters', url:'https://www.reutersagency.com/feed/?taxonomy=best-topics&post_type=best', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 BBC News', url:'http://feeds.bbci.co.uk/news/world/rss.xml', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 AFP', url:'https://www.afp.com/en/rss', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 Associated Press', url:'https://www.ap.org/rss/', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 Al Jazeera', url:'https://www.aljazeera.com/xml/rss/all.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Deutsche Welle', url:'https://rss.dw.com/rdf/rss-en-all', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 France 24', url:'https://www.france24.com/en/rss', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 China Daily', url:'http://www.chinadaily.com.cn/rss/world_rss.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 RT', url:'https://www.rt.com/rss/', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 Xinhua', url:'http://www.xinhuanet.com/english/rss.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'🇸🇰 Slovak Embassy Washington', url:'https://www.mzv.sk/web/washington-en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇿 Czech Embassy Washington', url:'https://www.mzv.cz/washington/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇭🇺 Hungarian Embassy Washington', url:'https://washington.mfa.gov.hu/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇷🇴 Romanian Embassy Washington', url:'https://washington.mae.ro/en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇬 Bulgarian Embassy Washington', url:'https://www.mfa.bg/en/embassies/usa/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇱 Polish Embassy Washington', url:'https://www.gov.pl/web/usa/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇭🇷 Croatian Embassy Washington', url:'https://mvep.gov.hr/embassy-washington/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇮 Slovenian Embassy Washington', url:'https://washington.embassy.si/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇷🇸 Serbian Embassy Washington', url:'https://www.washington.mfa.gov.rs/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇰 Macedonian Embassy Washington', url:'https://usa.mfa.gov.mk/usa/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇱 Albanian Embassy Washington', url:'https://www.ambasadat.gov.al/usa/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇪 Estonian Embassy Washington', url:'https://washington.mfa.ee/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇻 Latvian Embassy Washington', url:'https://www.mfa.gov.lv/en/usa/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇹 Lithuanian Embassy Washington', url:'https://usa.mfa.lt/usa/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇩 Moldovan Embassy Washington', url:'https://sua.mfa.gov.md/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇦 Ukrainian Embassy Washington', url:'https://usa.mfa.gov.ua/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇪 Georgian Embassy Washington', url:'https://usa.mfa.gov.ge/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇲 Armenian Embassy Washington', url:'https://usa.mfa.am/en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇿 Azerbaijani Embassy Washington', url:'https://washington.mfa.gov.az/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇰🇿 Kazakh Embassy Washington', url:'https://www.gov.kz/memleket/entities/mfa-washington/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇿 Uzbek Embassy Washington', url:'https://mfa.uz/en/consular/usa/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇰🇬 Kyrgyz Embassy Washington', url:'http://mfa.gov.kg/en/dm/washington/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇯 Tajik Embassy Washington', url:'https://mfa.tj/en/washington/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇲 Turkmen Embassy Washington', url:'https://usa.tmembassy.gov.tm/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇳 Mongolian Embassy Washington', url:'https://www.mfa.gov.mn/?page_id=25045', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇮🇳 Indian Embassy Washington', url:'https://www.indianembassyusa.gov.in/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇰 Pakistani Embassy Washington', url:'https://embassyofpakistanusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇩 Bangladeshi Embassy Washington', url:'https://www.bdembassyusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇰 Sri Lankan Embassy Washington', url:'https://www.slembassyusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇳🇵 Nepali Embassy Washington', url:'https://us.nepalembassy.gov.np/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇫 Afghan Embassy Washington', url:'http://www.afghanembassy.us/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇮🇷 Iranian Interests Section Washington', url:'http://daftar.org/eng/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇮🇶 Iraqi Embassy Washington', url:'https://www.iraqiembassy.us/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇦 Saudi Embassy Washington', url:'https://www.saudiembassy.net/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇪 Emirati Embassy Washington', url:'https://www.uae-embassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇶🇦 Qatari Embassy Washington', url:'https://washington.embassy.qa/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇰🇼 Kuwaiti Embassy Washington', url:'https://www.kuwaitembassy.us/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇭 Bahraini Embassy Washington', url:'https://www.bahrainembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇴🇲 Omani Embassy Washington', url:'https://www.omanembassy.net/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇯🇴 Jordanian Embassy Washington', url:'https://www.jordanembassyus.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇧 Lebanese Embassy Washington', url:'https://www.lebanonembassyus.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇬 Egyptian Embassy Washington', url:'https://egyptembassy.net/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇦 Moroccan Embassy Washington', url:'https://www.moroccanembassy.us/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇩🇿 Algerian Embassy Washington', url:'https://www.algerianembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇳 Tunisian Embassy Washington', url:'https://www.tunisianembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇾 Libyan Embassy Washington', url:'https://www.embassyoflibyadc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇩 Sudanese Embassy Washington', url:'https://www.sudanembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇳🇬 Nigerian Embassy Washington', url:'https://www.nigeriaembassyusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇰🇪 Kenyan Embassy Washington', url:'https://www.kenyaembassydc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇹 Ethiopian Embassy Washington', url:'https://www.ethiopianembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇭 Ghanaian Embassy Washington', url:'https://www.ghanaembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇿🇦 South African Embassy Washington', url:'https://www.saembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇴 Angolan Embassy Washington', url:'https://www.angola.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇿 Mozambican Embassy Washington', url:'https://www.embamoc-usa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇿🇼 Zimbabwean Embassy Washington', url:'https://www.zimembassydc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇿🇲 Zambian Embassy Washington', url:'https://www.zambiaembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇿 Tanzanian Embassy Washington', url:'https://www.tanzaniaembassy-us.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇬 Ugandan Embassy Washington', url:'https://www.ugandaembassyus.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇷🇼 Rwandan Embassy Washington', url:'https://rwandaembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇳 Senegalese Embassy Washington', url:'https://www.ambasenegal-us.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇮 Ivorian Embassy Washington', url:'https://www.ambaci-usa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇲 Cameroonian Embassy Washington', url:'https://www.cameroonembassyusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇩 DRC Embassy Washington', url:'https://www.ambardcusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇦 Gabonese Embassy Washington', url:'https://www.gabonembassyusa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇮🇩 Indonesian Embassy Washington', url:'https://www.embassyofindonesia.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇭 Thai Embassy Washington', url:'https://washington.thaiembassy.org/en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇻🇳 Vietnamese Embassy Washington', url:'https://vietnamembassy-usa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇾 Malaysian Embassy Washington', url:'https://www.kln.gov.my/web/usa_washington/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇭 Philippine Embassy Washington', url:'https://washingtonpe.dfa.gov.ph/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇬 Singaporean Embassy Washington', url:'https://www.mfa.gov.sg/washington/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇲🇲 Myanmar Embassy Washington', url:'https://www.mewashingtondc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇰🇭 Cambodian Embassy Washington', url:'https://www.embassyofcambodiadc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇱🇦 Lao Embassy Washington', url:'https://www.laoembassy.com/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇳 Bruneian Embassy Washington', url:'https://www.bruneiembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇳🇿 New Zealand Embassy Washington', url:'https://www.mfat.govt.nz/en/countries-and-regions/north-america/united-states-of-america/new-zealand-embassy/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇫🇯 Fijian Embassy Washington', url:'https://www.fijiembassydc.com/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇦🇷 Argentine Embassy Washington', url:'https://eeeuu.cancilleria.gob.ar/en/rss', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇷 Brazilian Embassy Washington', url:'https://washingtondc.itamaraty.gov.br/en-us/rss.xml', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇱 Chilean Embassy Washington', url:'https://chile.gob.cl/estados-unidos/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇴 Colombian Embassy Washington', url:'https://www.colombiaemb.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇪 Peruvian Embassy Washington', url:'https://www.embassyofperu.us/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇻🇪 Venezuelan Embassy Washington', url:'https://www.embavenez-us.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇪🇨 Ecuadorian Embassy Washington', url:'https://www.ecuador.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇴 Bolivian Embassy Washington', url:'https://www.bolivia-usa.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇾 Paraguayan Embassy Washington', url:'https://www.embaparusa.gov.py/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇺🇾 Uruguayan Embassy Washington', url:'https://www.uruwashi.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇨🇷 Costa Rican Embassy Washington', url:'https://www.costarica-embassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇵🇦 Panamanian Embassy Washington', url:'https://www.embassyofpanama.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇹 Guatemalan Embassy Washington', url:'https://www.guatemala-embassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇻 Salvadoran Embassy Washington', url:'https://www.elsalvador.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇭🇳 Honduran Embassy Washington', url:'https://www.hondurasemb.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇳🇮 Nicaraguan Embassy Washington', url:'https://www.consuladodenicaragua.com/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇿 Belizean Embassy Washington', url:'https://www.embassyofbelize.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇯🇲 Jamaican Embassy Washington', url:'https://www.embassyofjamaica.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇭🇹 Haitian Embassy Washington', url:'https://www.haiti.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇸 Bahamian Embassy Washington', url:'https://www.bahamasembdc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇧🇧 Barbadian Embassy Washington', url:'https://www.foreignaffairs.gov.bb/embassies/washington/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇹🇹 Trinidad Embassy Washington', url:'https://www.ttembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇬🇾 Guyanese Embassy Washington', url:'https://guyanaembassydc.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🇸🇷 Surinamese Embassy Washington', url:'https://www.surinameembassy.org/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'🎓 National Defense University', url:'https://ndu.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Naval Postgraduate School', url:'https://nps.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Air War College', url:'https://www.au.af.mil/au/awc/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Army War College', url:'https://press.armywarcollege.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Marine Corps University', url:'https://www.usmcu.edu/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Foreign Service Institute', url:'https://www.state.gov/foreign-service-institute/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 George C Marshall Center', url:'https://www.marshallcenter.org/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 NATO Defense College', url:'https://www.ndc.nato.int/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Geneva Centre for Security Policy', url:'https://www.gcsp.ch/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Stockholm International Peace Research Institute', url:'https://www.sipri.org/education/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 International Institute for Applied Systems Analysis', url:'https://iiasa.ac.at/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Diplomatic Academy Madrid', url:'https://www.aecid.es/EN/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Portuguese Diplomatic Institute', url:'https://idi.mne.gov.pt/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Italian Diplomatic Academy', url:'https://www.esteri.it/mae/en/sala_stampa/archivionotizie/approfondimenti/accademia-diplomatica.html', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Netherlands Institute of International Relations', url:'https://www.clingendael.org/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Swedish Institute of International Affairs', url:'https://www.ui.se/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Norwegian Institute of International Affairs', url:'https://www.nupi.no/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Danish Institute for International Studies', url:'https://www.diis.dk/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Finnish Institute of International Affairs', url:'https://www.fiia.fi/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Polish Institute of International Affairs', url:'https://www.pism.pl/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Czech Institute of International Relations', url:'https://www.iir.cz/en/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Hungarian Institute of International Affairs', url:'https://kki.hu/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Romanian Diplomatic Institute', url:'https://www.ird.gov.ro/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Bulgarian Diplomatic Institute', url:'https://www.mfa.bg/en/pages/178/index.html', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Serbian Diplomatic Academy', url:'https://www.mfa.gov.rs/en/foreign-policy/diplomatic-academy', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Croatian Diplomatic Academy', url:'https://mvep.gov.hr/diplomatic-academy-22433/22433', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Slovenian Diplomatic Academy', url:'https://www.gov.si/en/state-authorities/ministries/ministry-of-foreign-affairs/about-the-ministry/diplomatic-academy/', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Macedonian Diplomatic Academy', url:'https://www.mfa.gov.mk/en/page/348/diplomatic-academy', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Albanian Diplomatic School', url:'https://www.punetejashtme.gov.al/diplomatic-school/', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Moldovan Diplomatic School', url:'https://mfa.gov.md/en/content/diplomatic-school', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Ukrainian Diplomatic Academy', url:'http://da.mfa.gov.ua/en/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Georgian Diplomatic Academy', url:'https://www.mfa.gov.ge/MainNav/ForeignPolicy/DiploSchool.aspx', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Armenian Diplomatic School', url:'https://www.mfa.am/en/diplomatic-school/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Azerbaijani Diplomatic Academy', url:'https://ada.edu.az/en/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Kazakh Diplomatic Academy', url:'https://www.gov.kz/memleket/entities/mfa/activities/directions?directionId=2062', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Uzbek University of World Economy and Diplomacy', url:'http://uwed.uz/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Kyrgyz Diplomatic Academy', url:'http://mfa.gov.kg/en/main/diplomaticacademy/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Tajik Diplomatic Institute', url:'https://mfa.tj/en/main/view/246/diplomatic-institute', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Turkmen Institute of International Relations', url:'http://tdim.edu.tm/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Mongolian Institute of Diplomatic Studies', url:'https://www.mfa.gov.mn/?page_id=223', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Korea National Diplomatic Academy', url:'http://www.knda.go.kr/knda/eng/index.do', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Singapore Diplomatic Academy', url:'https://www.mfa.gov.sg/Diplomatic-Academy', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Thai Diplomatic Academy', url:'https://www.mfa.go.th/en/organization/3481', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Vietnamese Diplomatic Academy', url:'http://www.dva.gov.vn/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Malaysian Institute of Diplomacy and Foreign Relations', url:'https://www.idfr.gov.my/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Philippine Foreign Service Institute', url:'https://www.fsi.gov.ph/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Indonesian Diplomatic Training Center', url:'https://kemlu.go.id/portal/en/page/128/pusdiklat', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Pakistani Foreign Service Academy', url:'http://www.fsa.gov.pk/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Bangladeshi Foreign Service Academy', url:'https://mofa.gov.bd/site/page/b5ba3e29-cbd4-483a-a7f5-29f90f6e9267', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Sri Lankan Diplomatic Academy', url:'https://mfa.gov.lk/diplomatic-academy/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Afghan Diplomatic Institute', url:'http://adi.mfa.gov.af/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Iranian School of International Relations', url:'http://isir.mfa.ir/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Iraqi Diplomatic Institute', url:'https://mofa.gov.iq/diplomatic-institute/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Saudi Diplomatic Institute', url:'https://www.saudidi.edu.sa/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Emirati Diplomatic Academy', url:'https://eda.ac.ae/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Qatari Diplomatic Institute', url:'https://qdi.gov.qa/en/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Kuwaiti Diplomatic Institute', url:'https://www.mofa.gov.kw/en/diplomatic-institute/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Bahraini Diplomatic Institute', url:'http://www.mofa.gov.bh/Default.aspx?tabid=7861', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Omani Diplomatic Institute', url:'https://www.mofa.gov.om/?page_id=831', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Jordanian Diplomatic Institute', url:'https://www.mfa.gov.jo/en/page/diplomatic-institute', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Lebanese Diplomatic Institute', url:'http://www.diplomatie.gov.lb/en/DiplomaticInstitute/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 Palestinian Diplomatic Institute', url:'http://www.mofa.pna.ps/diplomatic-institute/', type:'Аналитика', region:'Азија', weight:4},
+  {name:'🎓 South African Institute for Advanced Constitutional Public Human Rights and International Law', url:'http://www.saifac.org.za/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Nigerian Institute of International Affairs', url:'http://www.niia.gov.ng/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Kenyan Institute of Diplomacy and International Studies', url:'https://www.kidisglobal.org/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Ethiopian Diplomatic Academy', url:'https://mfa.gov.et/diplomatic-academy/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Ghanaian Institute of Foreign Service', url:'http://www.mfa.gov.gh/index.php/ifstrans/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Moroccan Diplomatic Institute', url:'https://www.irdiplomatie.ma/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Algerian Diplomatic Institute', url:'https://www.mae.gov.dz/institut-diplomatique-et-des-relations-internationales/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Tunisian Diplomatic Institute', url:'http://www.idai.tn/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Libyan Diplomatic Institute', url:'https://fm.gov.ly/diplomatic-institute/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Sudanese Diplomatic Institute', url:'https://www.mfa.gov.sd/index.php/en/diplomatic-institute', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Ugandan Institute of Diplomacy and International Studies', url:'https://www.mofa.go.ug/data/smenu/37/institute.html', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Tanzanian Foreign Service Academy', url:'https://www.foreign.go.tz/index.php/fsa', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Rwandan Diplomatic Institute', url:'https://www.minaffet.gov.rw/index.php?id=187', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Angolan Diplomatic Institute', url:'https://www.mirex.gov.ao/instituto-diplomatico/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Mozambican Diplomatic Institute', url:'http://www.minec.gov.mz/instituto-diplomatico', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Zimbabwean Foreign Service Institute', url:'http://www.zimfa.gov.zw/index.php/foreign-service-institute', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Zambian Foreign Service Institute', url:'https://www.mofa.gov.zm/?page_id=2287', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Botswanan Diplomatic Training Institute', url:'https://www.mfa.gov.bw/diplomatic-training-institute', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Namibian Diplomatic Institute', url:'http://www.mirco.gov.na/diplomatic-institute', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Senegalese Diplomatic Academy', url:'https://www.diplomatie.gouv.sn/Academie-diplomatique', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Ivorian Diplomatic Institute', url:'http://www.diplomatie.gouv.ci/institut-diplomatique/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Cameroonian Diplomatic Institute', url:'https://www.minrex.cm/index.php/en/institut-des-relations-internationales-du-cameroun-iric', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 DRC Diplomatic Institute', url:'https://www.diplomatie.cd/institut-diplomatique/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Gabonese Diplomatic Academy', url:'https://www.diplomatie.gouv.ga/academie-diplomatique/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Australian Diplomatic Academy', url:'https://www.dfat.gov.au/about-us/our-people/training-and-development', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 New Zealand Institute of Diplomacy and International Relations', url:'https://www.victoria.ac.nz/sog/research-centres/diplomacy', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Fijian Diplomatic Academy', url:'https://www.foreignaffairs.gov.fj/diplomatic-academy/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 PNG Diplomatic Training Institute', url:'http://www.foreignaffairs.gov.pg/dti/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Solomon Islands Diplomatic Institute', url:'http://www.mfaet.gov.sb/diplomatic-institute/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Vanuatu Diplomatic School', url:'https://foreignaffairs.gov.vu/diplomatic-school/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Samoan Diplomatic Academy', url:'http://www.mfat.gov.ws/diplomatic-academy/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Tongan Diplomatic Institute', url:'http://www.mic.gov.to/foreign-affairs/diplomatic-institute', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'🎓 Inter-American Defense College', url:'https://www.iadb.org/en/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Western Hemisphere Institute for Security Cooperation', url:'https://www.benning.army.mil/tenant/whinsec/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Center for Hemispheric Defense Studies', url:'https://chds.dodlive.mil/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Africa Center for Strategic Studies', url:'https://africacenter.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Asia-Pacific Center for Security Studies', url:'https://apcss.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Near East South Asia Center for Strategic Studies', url:'https://nesa-center.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 George C Marshall European Center for Security Studies', url:'https://www.marshallcenter.org/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 NATO School Oberammergau', url:'https://www.natoschool.nato.int/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 European Security and Defence College', url:'https://eeas.europa.eu/headquarters/headquarters-Homepage/7337/european-security-and-defence-college-esdc_en', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 PfP Consortium of Defense Academies', url:'https://pfp-consortium.org/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Kofi Annan International Peacekeeping Training Centre', url:'http://www.kaiptc.org/rss/', type:'Аналитика', region:'Африка', weight:4},
+  {name:'🎓 Pearson Peacekeeping Centre', url:'https://www.peaceoperations.org/rss/', type:'Аналитика', region:'Америка', weight:4},
+  {name:'🎓 Swedish Armed Forces International Centre', url:'https://www.swedint.se/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Finnish Defence Forces International Centre', url:'https://maanpuolustuskorkeakoulu.fi/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Norwegian Defence International Centre', url:'https://forsvaret.no/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Danish Defence Academy', url:'https://fak.dk/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Polish National Defence University', url:'https://www.so.wp.mil.pl/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Czech Defence University', url:'https://www.unob.cz/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Slovak Armed Forces Academy', url:'https://www.aos.sk/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Hungarian Defence Forces Military Academy', url:'https://www.knbsz.hu/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Romanian National Defence University', url:'https://unap.ro/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Bulgarian National Military University', url:'https://nvu.bg/en/rss/', type:'Аналитика', region:'Европа', weight:4},
+  {name:'🎓 Serbian Military Academy', url:'https://www.vs.rs/en/units/military-schools/military-academy/rss', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Croatian Defence Academy', url:'https://www.morh.hr/en/defence-academy/rss/', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🎓 Slovenian Armed Forces School for Command and General Staff', url:'https://www.slovenskavojska.si/en/rss/', type:'Аналитика', region:'Балкан', weight:4},
+  {name:'🌍 African Union', url:'https://au.int/en/rss', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌏 ASEAN', url:'https://asean.org/feed/', type:'NATO/EU/ОН', region:'Азија', weight:5},
+  {name:'🕌 Arab League', url:'http://www.lasportal.org/en/Pages/RSS.aspx', type:'NATO/EU/ОН', region:'Блиски Исток', weight:5},
+  {name:'🕌 Organization of Islamic Cooperation', url:'https://www.oic-oci.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🏝️ CARICOM', url:'https://caricom.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 MERCOSUR', url:'https://www.mercosur.int/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌍 ECOWAS', url:'https://www.ecowas.int/feed/', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌍 East African Community', url:'https://www.eac.int/rss', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌍 SADC', url:'https://www.sadc.int/rss/', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🕌 Gulf Cooperation Council', url:'https://www.gcc-sg.org/en-us/Pages/rss.aspx', type:'NATO/EU/ОН', region:'Блиски Исток', weight:5},
+  {name:'🌏 SAARC', url:'http://www.saarc-sec.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌏 Shanghai Cooperation Organisation', url:'http://eng.sectsco.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇷🇺 Commonwealth of Independent States', url:'https://cis.minsk.by/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 OSCE', url:'https://www.osce.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 Council of Europe', url:'https://www.coe.int/en/web/portal/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 Organization of American States', url:'http://www.oas.org/en/rss/', type:'NATO/EU/ОН', region:'Америка', weight:5},
+  {name:'🏝️ Pacific Islands Forum', url:'https://www.forumsec.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 Central American Integration System', url:'https://www.sica.int/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 Andean Community', url:'http://www.comunidadandina.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌍 Union for the Mediterranean', url:'https://ufmsecretariat.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌍 BRICS', url:'https://www.brics2023.gov.za/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 G7', url:'https://www.g7germany.de/g7-en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 G20', url:'https://www.g20.org/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Non-Aligned Movement', url:'http://www.nam.gov.za/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇬🇧 Commonwealth of Nations', url:'https://thecommonwealth.org/feed', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇫🇷 Organisation internationale de la Francophonie', url:'https://www.francophonie.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇵🇹 Community of Portuguese Language Countries', url:'https://www.cplp.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 Ibero-American Summit', url:'https://www.segib.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇹🇷 Turkic Council', url:'https://www.turkkon.org/en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇷🇺 Eurasian Economic Union', url:'http://www.eaeunion.org/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🇪🇺 Central European Initiative', url:'https://www.cei.int/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🇪🇺 Visegrad Group', url:'https://www.visegradgroup.eu/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🇪🇺 Nordic Council', url:'https://www.norden.org/en/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🇪🇺 Baltic Assembly', url:'http://www.baltasam.org/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🇪🇺 GUAM', url:'https://guam-organization.org/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌍 Black Sea Economic Cooperation', url:'http://www.bsec-organization.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌏 Economic Cooperation Organization', url:'http://www.ecosecretariat.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌏 South Asian Free Trade Area', url:'http://www.saarc-sec.org/safta/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌏 Bay of Bengal Initiative', url:'https://bimstec.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌏 Mekong River Commission', url:'http://www.mrcmekong.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 Pacific Alliance', url:'https://alianzapacifico.net/en/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 ALBA', url:'http://www.alianzabolivariana.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 CELAC', url:'https://www.celacinternational.org/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌎 UNASUR', url:'https://www.unasursg.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌍 CEMAC', url:'http://www.cemac.int/rss/', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌍 COMESA', url:'https://www.comesa.int/feed/', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌍 IGAD', url:'https://igad.int/feed/', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🌍 Maghreb Union', url:'http://www.maghrebarabe.org/en/rss.cfm', type:'NATO/EU/ОН', region:'Африка', weight:5},
+  {name:'🏝️ Melanesian Spearhead Group', url:'https://www.msgsec.info/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🏝️ Polynesian Leaders Group', url:'http://www.polynesialeadersgroup.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'💰 World Bank', url:'https://www.worldbank.org/en/news/rss', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'💰 International Monetary Fund', url:'https://www.imf.org/en/News/rss', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'💰 Asian Development Bank', url:'https://www.adb.org/news/rss', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 African Development Bank', url:'https://www.afdb.org/en/rss', type:'Економска дипломатија', region:'Африка', weight:5},
+  {name:'💰 Inter-American Development Bank', url:'https://www.iadb.org/en/rss', type:'Економска дипломатија', region:'Америка', weight:5},
+  {name:'💰 European Bank Reconstruction Development', url:'https://www.ebrd.com/rss-feeds', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💰 Islamic Development Bank', url:'https://www.isdb.org/rss', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 New Development Bank', url:'https://www.ndb.int/press-release/rss/', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 Asian Infrastructure Investment Bank', url:'https://www.aiib.org/en/news-events/rss/', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 European Investment Bank', url:'https://www.eib.org/en/rss/index.htm', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💰 Caribbean Development Bank', url:'https://www.caribank.org/rss', type:'Економска дипломатија', region:'Америка', weight:5},
+  {name:'💰 Islamic Corporation Development Private Sector', url:'https://www.icd-ps.org/rss/', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 Arab Fund Economic Social Development', url:'http://www.arabfund.org/rss/', type:'Економска дипломатија', region:'Азија', weight:5},
+  {name:'💰 OPEC Fund International Development', url:'https://opecfund.org/rss/', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💰 Nordic Investment Bank', url:'https://www.nib.int/rss', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'🌐 World Trade Organization', url:'https://www.wto.org/english/news_e/news_e.htm', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Labour Organization', url:'https://www.ilo.org/global/about-the-ilo/rss/lang--en/index.htm', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Food and Agriculture Organization', url:'http://www.fao.org/news/rss-feed/en/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Maritime Organization', url:'https://www.imo.org/en/rss/Pages/default.aspx', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Civil Aviation Organization', url:'https://www.icao.int/Newsroom/RSS/Pages/default.aspx', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Telecommunication Union', url:'https://www.itu.int/en/rss/Pages/default.aspx', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 World Meteorological Organization', url:'https://public.wmo.int/en/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 World Intellectual Property Organization', url:'https://www.wipo.int/pressroom/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Atomic Energy Agency', url:'https://www.iaea.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 UN Industrial Development Organization', url:'https://www.unido.org/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 UN World Tourism Organization', url:'https://www.unwto.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Universal Postal Union', url:'https://www.upu.int/en/rss.html', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Fund Agricultural Development', url:'https://www.ifad.org/en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 UN Conference Trade Development', url:'https://unctad.org/rss/press-releases', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 World Food Programme', url:'https://www.wfp.org/rss-feed/stories', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Organization Migration', url:'https://www.iom.int/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Office High Commissioner Human Rights', url:'https://www.ohchr.org/EN/NewsEvents/Pages/Rss.aspx', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 UN Office Drugs Crime', url:'https://www.unodc.org/rss/en/frontpage.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 UN Office Disaster Risk Reduction', url:'https://www.undrr.org/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Renewable Energy Agency', url:'https://www.irena.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'⚡ International Energy Agency', url:'https://www.iea.org/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🌐 Organization Prohibition Chemical Weapons', url:'https://www.opcw.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Comprehensive Nuclear Test Ban Treaty Organization', url:'https://www.ctbto.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Seabed Authority', url:'https://www.isa.org.jm/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 International Tribunal Law of Sea', url:'https://www.itlos.org/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Permanent Court of Arbitration', url:'https://pca-cpa.org/en/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌐 Hague Conference Private International Law', url:'https://www.hcch.net/en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🔬 International Bureau Weights Measures', url:'https://www.bipm.org/en/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🐄 World Organisation Animal Health', url:'https://www.woah.org/en/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🌊 International Hydrographic Organization', url:'https://iho.int/en/rss', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'🌱 UN Framework Convention Climate Change', url:'https://unfccc.int/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Intergovernmental Panel Climate Change', url:'https://www.ipcc.ch/feed/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 UN Environment Programme', url:'https://www.unep.org/rss.xml', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Greenpeace International', url:'https://www.greenpeace.org/international/feed/', type:'НГО', region:'Европа', weight:5},
+  {name:'🌱 World Wildlife Fund', url:'https://www.worldwildlife.org/rss', type:'НГО', region:'Америка', weight:5},
+  {name:'🌱 Climate Action Network', url:'https://climatenetwork.org/feed/', type:'НГО', region:'Глобал', weight:5},
+  {name:'🌱 C40 Cities', url:'https://www.c40.org/feed/', type:'НГО', region:'Европа', weight:5},
+  {name:'🌱 International Union Conservation Nature', url:'https://www.iucn.org/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'🌱 Global Environment Facility', url:'https://www.thegef.org/rss.xml', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'🌱 Green Climate Fund', url:'https://www.greenclimate.fund/rss', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'🌱 Convention Biological Diversity', url:'https://www.cbd.int/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Ramsar Convention Wetlands', url:'https://www.ramsar.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Convention International Trade Endangered Species', url:'https://www.cites.org/eng/rss/index.php', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Basel Convention Hazardous Wastes', url:'http://www.basel.int/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'🌱 Montreal Protocol Ozone', url:'https://ozone.unep.org/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'⚖️ Human Rights Watch', url:'https://www.hrw.org/rss', type:'НГО', region:'Америка', weight:5},
+  {name:'⚖️ Amnesty International', url:'https://www.amnesty.org/en/rss/', type:'НГО', region:'Европа', weight:5},
+  {name:'❤️ International Committee Red Cross', url:'https://www.icrc.org/en/rss-feeds', type:'НГО', region:'Европа', weight:5},
+  {name:'🏥 Doctors Without Borders', url:'https://www.msf.org/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'❤️ International Rescue Committee', url:'https://www.rescue.org/rss.xml', type:'НГО', region:'Америка', weight:5},
+  {name:'❤️ CARE International', url:'https://www.care-international.org/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'❤️ Oxfam International', url:'https://www.oxfam.org/en/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'👶 Save the Children', url:'https://www.savethechildren.net/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'👧 Plan International', url:'https://plan-international.org/rss/', type:'НГО', region:'Европа', weight:5},
+  {name:'👶 World Vision International', url:'https://www.wvi.org/rss', type:'НГО', region:'Европа', weight:5},
+  {name:'❤️ International Federation Red Cross', url:'https://www.ifrc.org/rss.xml', type:'НГО', region:'Европа', weight:5},
+  {name:'🏃 Norwegian Refugee Council', url:'https://www.nrc.no/rss/', type:'НГО', region:'Европа', weight:5},
+  {name:'🏃 Danish Refugee Council', url:'https://drc.ngo/rss/', type:'НГО', region:'Европа', weight:5},
+  {name:'🏃 Refugees International', url:'https://www.refugeesinternational.org/rss/', type:'НГО', region:'Америка', weight:5},
+  {name:'🏃 International Rescue Committee', url:'https://www.rescue.org/rss.xml', type:'НГО', region:'Америка', weight:5},
+  {name:'⚖️ Freedom House', url:'https://freedomhouse.org/rss.xml', type:'НГО', region:'Америка', weight:5},
+  {name:'⚖️ Transparency International', url:'https://www.transparency.org/en/rss', type:'НГО', region:'Европа', weight:5},
+  {name:'⚖️ Article 19', url:'https://www.article19.org/rss/', type:'НГО', region:'Европа', weight:5},
+  {name:'📰 Reporters Without Borders', url:'https://rsf.org/en/rss', type:'НГО', region:'Европа', weight:5},
+  {name:'📰 Committee Protect Journalists', url:'https://cpj.org/feed/', type:'НГО', region:'Америка', weight:5},
+  {name:'💼 World Economic Forum', url:'https://www.weforum.org/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'💼 OECD', url:'https://www.oecd.org/rss/', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💼 International Chamber of Commerce', url:'https://iccwbo.org/rss/', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'🌏 APEC', url:'https://www.apec.org/Press/News/RSS', type:'NATO/EU/ОН', region:'Азија', weight:5},
+  {name:'💼 UN Global Compact', url:'https://www.unglobalcompact.org/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'💼 World Customs Organization', url:'http://www.wcoomd.org/en/rss.aspx', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'📏 International Organization Standardization', url:'https://www.iso.org/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'⚡ International Electrotechnical Commission', url:'https://www.iec.ch/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'💼 International Accounting Standards Board', url:'https://www.ifrs.org/news-and-events/news/rss/', type:'NATO/EU/ОН', region:'Европа', weight:5},
+  {name:'💰 Bank International Settlements', url:'https://www.bis.org/rss/rssbis.xml', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💰 Financial Stability Board', url:'https://www.fsb.org/rss/', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💰 Paris Club', url:'https://clubdeparis.org/en/rss', type:'Економска дипломатија', region:'Европа', weight:5},
+  {name:'💼 G24', url:'https://www.g24.org/rss/', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'💼 G77', url:'https://www.g77.org/rss/', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'💼 BASIC countries', url:'https://www.basic-countries.org/rss/', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'💻 Internet Governance Forum', url:'https://www.intgovforum.org/en/rss', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'💻 ICANN', url:'https://www.icann.org/rss', type:'Аналитика', region:'Америка', weight:5},
+  {name:'💻 ITU Cybersecurity', url:'https://www.itu.int/en/ITU-D/Cybersecurity/Pages/rss.aspx', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'💻 Global Cyber Alliance', url:'https://www.globalcyberalliance.org/feed/', type:'НГО', region:'Америка', weight:5},
+  {name:'💻 CyberPeace Institute', url:'https://cyberpeaceinstitute.org/feed/', type:'НГО', region:'Европа', weight:5},
+  {name:'💻 Freedom Online Coalition', url:'https://freedomonlinecoalition.com/feed/', type:'НГО', region:'Глобал', weight:5},
+  {name:'💻 Internet Society', url:'https://www.internetsociety.org/feed/', type:'НГО', region:'Америка', weight:5},
+  {name:'💻 World Wide Web Consortium', url:'https://www.w3.org/blog/feed/', type:'NATO/EU/ОН', region:'Америка', weight:5},
+  {name:'⚡ IEEE', url:'https://www.ieee.org/rss/', type:'NATO/EU/ОН', region:'Америка', weight:5},
+  {name:'🛰️ International Telecommunications Satellite Organization', url:'https://itso.int/rss/', type:'NATO/EU/ОН', region:'Глобал', weight:5},
+  {name:'📚 International Affairs Chatham House', url:'https://academic.oup.com/rss/site_5506/3278.xml', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Survival IISS', url:'https://www.iiss.org/publications/survival/rss', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 International Security', url:'https://www.mitpressjournals.org/action/showFeed?type=etoc&feed=rss&jc=isec', type:'Аналитика', region:'Америка', weight:4},
+  {name:'📚 World Politics', url:'https://www.cambridge.org/core/rss/product/id/FA66048CC4F0DA4FD5BB9C68FD94DD45', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Journal of Conflict Resolution', url:'https://journals.sagepub.com/action/showFeed?type=etoc&feed=rss&jc=jcrb', type:'Аналитика', region:'Америка', weight:4},
+  {name:'📚 Diplomacy & Statecraft', url:'https://www.tandfonline.com/feed/rss/fdps20', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 European Journal of International Relations', url:'https://journals.sagepub.com/action/showFeed?type=etoc&feed=rss&jc=ejta', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 International Organization', url:'https://www.cambridge.org/core/rss/product/id/3946FD991AB56DA3FDD2E177E3C1FF46', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Review of International Studies', url:'https://www.cambridge.org/core/rss/product/id/1D935005E0B5D26E2D6B5DCD2F15D37E', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 International Studies Quarterly', url:'https://academic.oup.com/rss/site_5481/3261.xml', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Foreign Policy Analysis', url:'https://academic.oup.com/rss/site_5468/3255.xml', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Security Studies', url:'https://www.tandfonline.com/feed/rss/fsst20', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Contemporary Security Policy', url:'https://www.tandfonline.com/feed/rss/fcsp20', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Global Governance', url:'https://www.brill.com/rss/journal/15551', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📚 Third World Quarterly', url:'https://www.tandfonline.com/feed/rss/ctwq20', type:'Аналитика', region:'Европа', weight:4},
+  {name:'📰 Politico', url:'https://www.politico.com/rss/politics08.xml', type:'Медиуми', region:'Америка', weight:5},
+  {name:'📰 Politico Europe', url:'https://www.politico.eu/feed/', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 Euronews', url:'https://www.euronews.com/rss', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 CGTN', url:'http://www.cgtn.com/rss/news.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 NHK World', url:'https://www3.nhk.or.jp/nhkworld/en/rss/', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 TRT World', url:'https://www.trtworld.com/rss', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 Russia Today', url:'https://www.rt.com/rss/', type:'Медиуми', region:'Европа', weight:5},
+  {name:'📰 Straits Times', url:'https://www.straitstimes.com/news/rss.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 South China Morning Post', url:'https://www.scmp.com/rss/', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Haaretz', url:'https://www.haaretz.com/cmlink/1.628767', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Times of India', url:'https://timesofindia.indiatimes.com/rssfeedstopstories.cms', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Japan Times', url:'https://www.japantimes.co.jp/feed/', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Korea Herald', url:'http://www.koreaherald.com/common/rss_xml.php', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Arab News', url:'https://www.arabnews.com/rss.xml', type:'Медиуми', region:'Азија', weight:5},
+  {name:'📰 Gulf News', url:'https://gulfnews.com/rss', type:'Медиуми', region:'Азија', weight:5},
+  {name:'US State Department', url:'https://www.state.gov/rss-feeds/', type:'Амбасади', region:'Глобал', weight:5},
+  {name:'US Embassy Saudi Arabia', url:'https://sa.usembassy.gov/feed/', type:'Амбасади', region:'Блиски Исток', weight:4},
+  {name:'US Embassy UAE', url:'https://ae.usembassy.gov/feed/', type:'Амбасади', region:'Блиски Исток', weight:4},
+  {name:'US Embassy Kenya', url:'https://ke.usembassy.gov/feed/', type:'Амбасади', region:'Африка', weight:4},
+  {name:'UK FCO News', url:'https://www.gov.uk/government/organisations/foreign-commonwealth-development-office/rss', type:'Амбасади', region:'Глобал', weight:5},
+  {name:'German Embassy US', url:'https://washington.diplo.de/us-en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'German Embassy UK', url:'https://london.diplo.de/uk-en/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'German Embassy France', url:'https://paris.diplo.de/fr-de/rss/', type:'Амбасади', region:'Европа', weight:4},
+  {name:'German Embassy Russia', url:'https://moskau.diplo.de/ru-de/rss/', type:'Амбасади', region:'Европа', weight:3},
+  {name:'German Embassy China', url:'https://peking.diplo.de/cn-de/rss/', type:'Амбасади', region:'Азија', weight:4},
+  {name:'Australian DFAT', url:'https://www.dfat.gov.au/news/news/rss.xml', type:'МНР', region:'Глобал', weight:4},
+  {name:'Australian Embassy US', url:'https://usa.embassy.gov.au/feed/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'Canadian Global Affairs', url:'https://www.international.gc.ca/world-monde/rss/news_nouvelles.xml', type:'МНР', region:'Глобал', weight:4},
+  {name:'Japanese MFA', url:'https://www.mofa.go.jp/rss/mofa_rss2.xml', type:'МНР', region:'Азија', weight:4},
+  {name:'Japanese Embassy US', url:'https://www.us.emb-japan.go.jp/itpr_en/rss/', type:'Амбасади', region:'Америка', weight:4},
+  {name:'South Korean MFA', url:'https://www.mofa.go.kr/eng/rss/eng_10101/rss.do', type:'МНР', region:'Азија', weight:4},
+  {name:'Chinese MFA', url:'https://www.mfa.gov.cn/web/rss_630/rss_news.xml', type:'МНР', region:'Азија', weight:3},
+  {name:'Russian MFA', url:'https://www.mid.ru/en/press_service/news/rss/', type:'МНР', region:'Европа', weight:3},
+  {name:'Turkish MFA', url:'https://www.mfa.gov.tr/en/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'Israeli MFA', url:'https://mfa.gov.il/MFA/RSS/MFANews.xml', type:'МНР', region:'Блиски Исток', weight:4},
+  {name:'Saudi MFA', url:'https://www.mofa.gov.sa/En/MediaCenter/News/rss', type:'МНР', region:'Блиски Исток', weight:4},
+  {name:'Swiss FDFA', url:'https://www.eda.admin.ch/eda/en/home.rss.html', type:'МНР', region:'Европа', weight:4},
+  {name:'Norwegian MFA', url:'https://www.regjeringen.no/en/rss-feeds/rss-foreign-affairs/id448553/', type:'МНР', region:'Европа', weight:4},
+  {name:'Swedish MFA', url:'https://www.government.se/rss/ministry-of-foreign-affairs/', type:'МНР', region:'Европа', weight:4},
+  {name:'Finnish MFA', url:'https://um.fi/rss.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'Danish MFA', url:'https://www.um.dk/en/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'Belgian MFA', url:'https://diplomatie.belgium.be/en/rss.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'Austrian MFA', url:'https://www.bmeia.gv.at/en/the-ministry/press/current-affairs/rss.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'Czech MFA', url:'https://www.mzv.cz/jnp/rss/default.rss', type:'МНР', region:'Европа', weight:4},
+  {name:'Greek MFA', url:'https://www.mfa.gr/en/rss.xml', type:'МНР', region:'Европа', weight:4},
+  {name:'Portuguese MFA', url:'https://www.mne.gov.pt/en/noticias/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'Irish DFA', url:'https://www.dfa.ie/en/media-and-educational-centre/news/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'Hungarian MFA', url:'https://abouthungary.hu/rss', type:'МНР', region:'Европа', weight:4},
+  {name:'Slovak MFA', url:'https://www.mzv.sk/web/en/rss/', type:'МНР', region:'Европа', weight:4},
+  {name:'Slovenian MFA', url:'https://www.gov.si/en/rss/ministerstvo-za-zunanje-zadeve/', type:'МНР', region:'Европа', weight:4},
+  {name:'Croatian MFA', url:'https://mvep.gov.hr/rss/1', type:'МНР', region:'Балкан', weight:4},
+  {name:'Albanian MFA', url:'https://punetejashtme.gov.al/en/feed/', type:'МНР', region:'Балкан', weight:4},
+  {name:'Montenegrin MFA', url:'https://www.gov.me/en/mfaei/news/feed/', type:'МНР', region:'Балкан', weight:4},
+  {name:'BiH MFA', url:'https://www.mvp.gov.ba/rss/default.aspx?kat=vijesti_en', type:'МНР', region:'Балкан', weight:4},
+  {name:'Kosovo MFA', url:'https://www.mfa-ks.net/?page=2,3&lang=en', type:'МНР', region:'Балкан', weight:3},
+  {name:'NATO News', url:'https://www.nato.int/cps/en/natolive/news.htm?selectedLocale=en&rss=1', type:'NATO/EU/ОН', region:'NATO', weight:5},
+  {name:'NATO Topics', url:'https://www.nato.int/cps/en/natolive/topics.htm?rss=1', type:'NATO/EU/ОН', region:'NATO', weight:5},
+  {name:'NATO Secretary General', url:'https://www.nato.int/cps/en/natohq/news.htm?selectedLocale=en&rss=1', type:'NATO/EU/ОН', region:'NATO', weight:5},
+  {name:'European Commission', url:'https://ec.europa.eu/commission/presscorner/home/en/rss.xml', type:'NATO/EU/ОН', region:'ЕУ', weight:5},
+  {name:'European Parliament', url:'https://www.europarl.europa.eu/rss/doc/top-stories/en.xml', type:'NATO/EU/ОН', region:'ЕУ', weight:5},
+  {name:'EEAS News', url:'https://www.eeas.europa.eu/rss_en', type:'NATO/EU/ОН', region:'ЕУ', weight:5},
+  {name:'EU Enlargement', url:'https://neighbourhood-enlargement.ec.europa.eu/news/rss_en', type:'NATO/EU/ОН', region:'ЕУ', weight:5},
+  {name:'UN Security Council', url:'https://news.un.org/feed/subscribe/en/news/topic/security-council/rss.xml', type:'NATO/EU/ОН', region:'ОН', weight:5},
+  {name:'UN General Assembly', url:'https://news.un.org/feed/subscribe/en/news/topic/general-assembly/rss.xml', type:'NATO/EU/ОН', region:'ОН', weight:5},
+  {name:'UN Human Rights', url:'https://news.un.org/feed/subscribe/en/news/topic/human-rights/rss.xml', type:'NATO/EU/ОН', region:'ОН', weight:5},
+  {name:'UN Peacekeeping', url:'https://peacekeeping.un.org/en/rss', type:'NATO/EU/ОН', region:'ОН', weight:5},
+  {name:'UN Refugee Agency UNHCR', url:'https://www.unhcr.org/rss/news.xml', type:'NATO/EU/ОН', region:'ОН', weight:5},
+  {name:'OSCE News', url:'https://www.osce.org/rss/news', type:'NATO/EU/ОН', region:'ОSCE', weight:5},
+  {name:'World Bank', url:'https://feeds.worldbank.org/worldbank/all', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'IMF News', url:'https://www.imf.org/en/news/rss.xml', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'WTO News', url:'https://www.wto.org/english/news_e/rss_e/rss_e.htm', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'G20 News', url:'https://www.g20.org/rss/', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'G7 News', url:'https://www.g7germany.de/rss', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'ICRC', url:'https://www.icrc.org/en/rss', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'ICC', url:'https://www.icc-cpi.int/rss/news', type:'NATO/EU/ОН', region:'Правда', weight:4},
+  {name:'ICJ', url:'https://www.icj-cij.org/rss/press-releases', type:'NATO/EU/ОН', region:'Правда', weight:4},
+  {name:'Interpol', url:'https://www.interpol.int/News-and-Events/News/rss', type:'NATO/EU/ОН', region:'Безбедност', weight:4},
+  {name:'IOM Migration', url:'https://www.iom.int/rss', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'IAEA', url:'https://www.iaea.org/feeds/iaea-news.xml', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'OPCW', url:'https://www.opcw.org/rss/opcw-news', type:'NATO/EU/ОН', region:'Безбедност', weight:4},
+  {name:'WFP', url:'https://www.wfp.org/rss.xml', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'FAO', url:'https://www.fao.org/rss/fao-news.xml', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'UNESCO', url:'https://www.unesco.org/en/rss', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'UNICEF', url:'https://www.unicef.org/press-releases/rss', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'UNEP', url:'https://www.unep.org/rss', type:'NATO/EU/ОН', region:'ОН', weight:4},
+  {name:'African Union', url:'https://au.int/en/rss.xml', type:'NATO/EU/ОН', region:'Регионални', weight:4},
+  {name:'Arab League', url:'https://www.arableagueonline.org/rss/', type:'NATO/EU/ОН', region:'Регионални', weight:3},
+  {name:'CSTO', url:'https://odkb-csto.org/en/rss/', type:'NATO/EU/ОН', region:'Регионални', weight:3},
+  {name:'GCC Secretariat', url:'https://www.gcc-sg.org/en-us/rss', type:'NATO/EU/ОН', region:'Регионални', weight:3},
+  {name:'SAARC', url:'https://saarc-sec.org/feed/', type:'NATO/EU/ОН', region:'Регионални', weight:3},
+  {name:'Commonwealth', url:'https://thecommonwealth.org/media/rss', type:'NATO/EU/ОН', region:'Регионални', weight:4},
+  {name:'OECD', url:'https://www.oecd.org/newsroom/rss.xml', type:'NATO/EU/ОН', region:'Меѓународни', weight:4},
+  {name:'Council on Foreign Relations', url:'https://www.cfr.org/rss/all', type:'Think Tank', region:'SAD', weight:5},
+  {name:'Carnegie Endowment', url:'https://carnegieendowment.org/rss/publications', type:'Think Tank', region:'SAD', weight:5},
+  {name:'RAND Corporation', url:'https://www.rand.org/news.xml', type:'Think Tank', region:'SAD', weight:5},
+  {name:'Chatham House', url:'https://www.chathamhouse.org/rss.xml', type:'Think Tank', region:'UK', weight:5},
+  {name:'Royal United Services Institute', url:'https://rusi.org/rss.xml', type:'Think Tank', region:'UK', weight:5},
+  {name:'European Council on Foreign Relations', url:'https://ecfr.eu/feed/', type:'Think Tank', region:'ЕУ', weight:5},
+  {name:'Bruegel', url:'https://www.bruegel.org/rss.xml', type:'Think Tank', region:'ЕУ', weight:4},
+  {name:'European Policy Centre', url:'https://epc.eu/en/rss/', type:'Think Tank', region:'ЕУ', weight:4},
+  {name:'CSIS Center for Strategic', url:'https://www.csis.org/rss/commentary.xml', type:'Think Tank', region:'SAD', weight:5},
+  {name:'Heritage Foundation', url:'https://www.heritage.org/rss/foreign-policy', type:'Think Tank', region:'SAD', weight:4},
+  {name:'Stimson Center', url:'https://www.stimson.org/feed/', type:'Think Tank', region:'SAD', weight:4},
+  {name:'Belfer Center Harvard', url:'https://www.belfercenter.org/rss/all', type:'Think Tank', region:'SAD', weight:5},
+  {name:'Transparency International', url:'https://www.transparency.org/en/news/rss', type:'НГО', region:'Глобал', weight:4},
+  {name:'Human Rights Watch', url:'https://www.hrw.org/feeds/world-report', type:'НГО', region:'Глобал', weight:5},
+  {name:'Amnesty International', url:'https://www.amnesty.org/en/feed/', type:'НГО', region:'Глобал', weight:5},
+  {name:'Freedom House', url:'https://freedomhouse.org/rss/all', type:'НГО', region:'Глобал', weight:4},
+  {name:'International Crisis Group', url:'https://www.crisisgroup.org/rss', type:'НГО', region:'Глобал', weight:5},
+  {name:'Global Witness', url:'https://www.globalwitness.org/en/news/rss/', type:'НГО', region:'Глобал', weight:4},
+  {name:'Oxfam', url:'https://www.oxfam.org/en/news/rss.xml', type:'НГО', region:'Глобал', weight:4},
+  {name:'Open Society Foundations', url:'https://www.opensocietyfoundations.org/feed', type:'НГО', region:'Глобал', weight:4},
+  {name:'NDI National Democratic Institute', url:'https://www.ndi.org/rss/news', type:'НГО', region:'Демократија', weight:4},
+  {name:'IRI International Republican', url:'https://www.iri.org/feed', type:'НГО', region:'Демократија', weight:3},
+  {name:'USAID', url:'https://www.usaid.gov/rss/news', type:'НГО', region:'SAD', weight:4},
+  {name:'Balkans Peace Building', url:'https://www.balkaninsight.com/rss/', type:'НГО', region:'Балкан', weight:5},
+  {name:'Foreign Affairs', url:'https://www.foreignaffairs.com/rss.xml', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'EUobserver', url:'https://euobserver.com/rss', type:'Медиуми', region:'ЕУ', weight:5},
+  {name:'Deutsche Welle', url:'https://rss.dw.com/xml/rss-en-world', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'BBC Europe', url:'http://feeds.bbci.co.uk/news/world/europe/rss.xml', type:'Медиуми', region:'Европа', weight:5},
+  {name:'Reuters World', url:'https://feeds.reuters.com/Reuters/worldNews', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'Reuters Politics', url:'https://feeds.reuters.com/Reuters/PoliticsNews', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'AP Diplomacy', url:'https://apnews.com/rss/apf-intlnews', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'AFP World', url:'https://www.afp.com/en/rss/international-news.xml', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'Voice of America', url:'https://www.voanews.com/api/zqivmpiqge', type:'Медиуми', region:'Глобал', weight:4},
+  {name:'Radio Free Europe', url:'https://www.rferl.org/api/zqivmpiqge', type:'Медиуми', region:'Европа', weight:5},
+  {name:'Radio Free Europe Balkans', url:'https://www.slobodnaevropa.org/api/zqivmpiqge', type:'Медиуми', region:'Балкан', weight:5},
+  {name:'N1 Info Balkans', url:'https://n1info.com/feed/', type:'Медиуми', region:'Балкан', weight:4},
+  {name:'Euractiv', url:'https://www.euractiv.com/feed/', type:'Медиуми', region:'ЕУ', weight:5},
+  {name:'The Guardian World', url:'https://www.theguardian.com/world/rss', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'Financial Times World', url:'https://www.ft.com/world?format=rss', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'The Economist', url:'https://www.economist.com/international/rss.xml', type:'Медиуми', region:'Глобал', weight:5},
+  {name:'Le Monde Diplomatique', url:'https://www.monde-diplomatique.fr/rss.xml', type:'Медиуми', region:'Глобал', weight:4},
+  {name:'Spiegel International', url:'https://www.spiegel.de/international/index.rss', type:'Медиуми', region:'Глобал', weight:4},
+  {name:'NZZ International', url:'https://www.nzz.ch/international/rss', type:'Медиуми', region:'Глобал', weight:4},
+  {name:'Times of India World', url:'https://timesofindia.indiatimes.com/rssfeeds/296589292.cms', type:'Медиуми', region:'Азија', weight:4},
+  {name:'South China Morning Post', url:'https://www.scmp.com/rss/91/feed', type:'Медиуми', region:'Азија', weight:4},
+  {name:'Jerusalem Post', url:'https://www.jpost.com/Rss/RssFeedsHeadlines.aspx', type:'Медиуми', region:'Блиски Исток', weight:4},
+  {name:'Haaretz', url:'https://www.haaretz.com/cmlink/1.5249888', type:'Медиуми', region:'Блиски Исток', weight:4},
+  {name:'Middle East Eye', url:'https://www.middleeasteye.net/rss', type:'Медиуми', region:'Блиски Исток', weight:4},
+  {name:'Africa Report', url:'https://www.theafricareport.com/feed/', type:'Медиуми', region:'Африка', weight:4},
+  {name:'AllAfrica', url:'https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf', type:'Медиуми', region:'Африка', weight:4},
+  {name:'Moscow Times', url:'https://www.themoscowtimes.com/rss', type:'Медиуми', region:'Европа', weight:4},
+  {name:'Kyiv Independent', url:'https://kyivindependent.com/feed/', type:'Медиуми', region:'Европа', weight:5},
+  {name:'Meduza', url:'https://meduza.io/rss2/en/all', type:'Медиуми', region:'Европа', weight:4},
+  {name:'Latin America Report', url:'https://www.reuters.com/news/archive/RCOMUS_4.rss', type:'Медиуми', region:'Америка', weight:3},
+  {name:'NATO SHAPE', url:'https://shape.nato.int/page5736833.aspx', type:'Безбедност', region:'NATO', weight:5},
+  {name:'EDA European Defence', url:'https://eda.europa.eu/rss/news', type:'Безбедност', region:'ЕУ', weight:5},
+  {name:'DefenseNews', url:'https://www.defensenews.com/rss/', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'Janes Defence', url:'https://www.janes.com/feeds/news', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'Breaking Defense', url:'https://breakingdefense.com/feed/', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'The War Zone', url:'https://www.thedrive.com/the-war-zone/feed', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Lawfare Blog', url:'https://www.lawfareblog.com/rss.xml', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'Just Security', url:'https://www.justsecurity.org/feed/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Bellingcat', url:'https://www.bellingcat.com/feed/', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'IHS Conflict Monitor', url:'https://ihsconflict.com/feed/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'ACLED Conflict', url:'https://acleddata.com/feed/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Terrorism Research', url:'https://www.terrorism-research.com/feed/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'European Eye on Radicalization', url:'https://eeradicalization.com/feed/', type:'Безбедност', region:'Европа', weight:4},
+  {name:'ISW Institute for Study of War', url:'https://www.understandingwar.org/rss.xml', type:'Безбедност', region:'Глобал', weight:5},
+  {name:'Center for Naval Analyses', url:'https://www.cna.org/rss', type:'Безбедност', region:'SAD', weight:4},
+  {name:'Stimson Security', url:'https://www.stimson.org/project/security-feed/feed/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Nuclear Threat Initiative', url:'https://www.nti.org/rss/news/', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Arms Control Association', url:'https://www.armscontrol.org/rss', type:'Безбедност', region:'Глобал', weight:4},
+  {name:'Diplomatist', url:'https://diplomatist.com/feed/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'Diplomatic Courier', url:'https://www.diplomaticourier.com/feed/', type:'Аналитика', region:'Глобал', weight:5},
+  {name:'Diplomacy & Beyond', url:'https://diplomacybeyond.com/feed/', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'PassBlue UN Reporting', url:'https://www.passblue.com/feed/', type:'Аналитика', region:'ОН', weight:4},
+  {name:'Global Policy Journal', url:'https://www.globalpolicyjournal.com/rss.xml', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'E-IR International Relations', url:'https://www.e-ir.info/feed/', type:'Аналитика', region:'Академско', weight:4},
+  {name:'World Affairs Journal', url:'https://www.worldaffairsjournal.org/rss.xml', type:'Аналитика', region:'Глобал', weight:4},
+  {name:'International Studies Association', url:'https://www.isanet.org/rss', type:'Аналитика', region:'Академско', weight:3},
+  {name:'Journal of Diplomacy', url:'https://diplomacy.edu/feed/', type:'Аналитика', region:'Академско', weight:4},
+  {name:'USC Center on Public Diplomacy', url:'https://uscpublicdiplomacy.org/feed', type:'Аналитика', region:'Академско', weight:4},
+  {name:'Protocol & Diplomacy International', url:'https://www.pdia.org/feed/', type:'Аналитика', region:'Протокол', weight:5},
+  {name:'Disinfomation Review EU DisinfoLab', url:'https://eudisinfo.eu/feed/', type:'Аналитика', region:'Медиуми', weight:5},
+  {name:'EUvsDisinfo', url:'https://euvsdisinfo.eu/feed/', type:'Аналитика', region:'Медиуми', weight:5},
+  {name:'Media Diversity Institute', url:'https://www.media-diversity.org/feed/', type:'Аналитика', region:'Медиуми', weight:4},
+  {name:'Reuters Institute', url:'https://reutersinstitute.politics.ox.ac.uk/rss.xml', type:'Аналитика', region:'Медиуми', weight:4},
+  {name:'Balkan Diskurs', url:'https://balkandiskurs.com/en/feed/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'European Western Balkans', url:'https://europeanwesternbalkans.com/feed/', type:'Регионални', region:'Балкан', weight:5},
+  {name:'BiEPAG Balkans Europe', url:'https://biepag.eu/feed/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'RCC Regional Cooperation', url:'https://www.rcc.int/rss/news', type:'Регионални', region:'Балкан', weight:4},
+  {name:'RYCO Youth Cooperation', url:'https://www.rycoweb.eu/feed/', type:'Регионални', region:'Балкан', weight:3},
+  {name:'Prisma Reports Balkans', url:'https://prisma-reports.com/feed/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'Osservatorio Balcani', url:'https://www.balcanicaucaso.org/eng/rss', type:'Регионални', region:'Балкан', weight:4},
+  {name:'Kosovo 2.0', url:'https://kosovotwopointzero.com/en/feed/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'Exit News Albania', url:'https://exit.al/en/feed/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'Sbunker Kosovo', url:'https://sbunker.net/feed/', type:'Регионални', region:'Балкан', weight:3},
+  {name:'BETA Agency Serbia', url:'https://www.beta.rs/rss/vesti_english.xml', type:'Регионални', region:'Балкан', weight:4},
+  {name:'Hina Agency Croatia', url:'https://www.hina.hr/rss-feeds/', type:'Регионални', region:'Балкан', weight:4},
+  {name:'FENA Agency BiH', url:'https://www.fena.ba/en/rss', type:'Регионални', region:'Балкан', weight:4},
+  {name:'MIA Agency Macedonia', url:'https://mia.mk/en/rss/', type:'Регионални', region:'Македонија', weight:5},
+  {name:'Macedonia2025', url:'https://www.macedonia2025.com/feed/', type:'Регионални', region:'Македонија', weight:4},
+  {name:'Meta.mk', url:'https://meta.mk/feed/', type:'Регионални', region:'Македонија', weight:4},
+  {name:'Libertas International', url:'https://libertas.mk/feed/', type:'Регионални', region:'Македонија', weight:4},
+  {name:'WTO News', url:'https://www.wto.org/english/news_e/rss_e/rss_e.htm', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'World Bank Research', url:'https://feeds.worldbank.org/worldbank/all', type:'Економска дипломатија', region:'Глобал', weight:4},
+  {name:'UNCTAD', url:'https://unctad.org/rss', type:'Економска дипломатија', region:'ОН', weight:4},
+  {name:'EBRD News', url:'https://www.ebrd.com/rss/news', type:'Економска дипломатија', region:'Европа', weight:4},
+  {name:'EIB European Investment', url:'https://www.eib.org/rss/articles-rss.xml', type:'Економска дипломатија', region:'ЕУ', weight:4},
+  {name:'OECD Economy', url:'https://www.oecd.org/economy/rss.xml', type:'Економска дипломатија', region:'Глобал', weight:4},
+  {name:'G20 Finance', url:'https://g20.org/rss/', type:'Економска дипломатија', region:'Глобал', weight:4},
+  {name:'Trade Partnership Worldwide', url:'https://tradepartnership.com/feed/', type:'Економска дипломатија', region:'Глобал', weight:3},
+  {name:'USTR Trade Representative', url:'https://ustr.gov/rss.xml', type:'Економска дипломатија', region:'SAD', weight:5},
+  {name:'European Trade Policy', url:'https://policy.trade.ec.europa.eu/rss_en', type:'Економска дипломатија', region:'ЕУ', weight:5},
+  {name:'WEF World Economic Forum', url:'https://www.weforum.org/agenda/feed', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'Project Syndicate', url:'https://www.project-syndicate.org/rss', type:'Економска дипломатија', region:'Глобал', weight:5},
+  {name:'Brookings Economy', url:'https://www.brookings.edu/topic/economic-development/feed/', type:'Економска дипломатија', region:'Глобал', weight:4},
+  {name:'IMF Blog', url:'https://www.imf.org/en/blogs/rss.xml', type:'Економска дипломатија', region:'Глобал', weight:4},
+  {name:'Trade Vistas USCIB', url:'https://tradevistas.uscib.org/feed/', type:'Економска дипломатија', region:'Глобал', weight:3},
+];
+
+
+    const WATCHES = [
+      {id:'ALL', label:'Сите сигнали', className:'protocol'},
+      {id:'PR', label:'PR Watch', className:'pr'},
+      {id:'INTERVIEW', label:'Interview Watch', className:'interview'},
+      {id:'PROTOCOL', label:'Protocol Watch', className:'protocol'},
+      {id:'SECURITY', label:'Security Watch', className:'security'},
+      {id:'ECONOMIC', label:'Economic Diplomacy Watch', className:'economic'},
+      {id:'QUEUE', label:'Student Analysis Queue', className:'pr'}
+    ];
+
+    const META_TABS = [
+      {id:'ALL', label:'Сите извори'},
+      {id:'MIN', label:'Министерства'},
+      {id:'EMB', label:'Амбасади'},
+      {id:'ORG', label:'Организации'},
+      {id:'LAW', label:'Правда'},
+      {id:'TT', label:'Think Tank'}
+    ];
+
+    
+// ═══════════════════════════════════════════════════════════
+// WPA CACHE JSON MODE (Future — Phase 2)
+// ═══════════════════════════════════════════════════════════
+// When ready to go fully internal:
+// 1. Generate: feeds.json via GitHub Actions (worker pre-fetches all 1035 feeds)
+// 2. Upload to: https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/cache/feeds.json
+// 3. Replace loadFeeds() with:
+//
+//   async function loadCacheMode() {
+//     const resp = await fetch('https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/cache/feeds.json');
+//     const data = await resp.json();
+//     state.rawArticles = data.articles;
+//     state.lastUpdated = data.generated;
+//     renderArticles();
+//   }
+//
+// 4. Remove PROXIES array entirely.
+// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// WPA RSS PROXY ARCHITECTURE — v33.10
+//
+// TIER 1 (WPA-controlled): Cloudflare Worker /rss?url= endpoint
+//   - Server-side fetch, no CORS issues
+//   - 15-min CF edge cache per feed
+//   - No third-party dependency
+//   - Identifier: X-WPA-Source: wpa-worker
+//
+// TIER 2 (Temporary fallback): allorigins.win
+//   - Remove when Worker is confirmed stable
+//   - DELETE lines marked [REMOVABLE-T2]
+//
+// TIER 3 (Emergency fallback): corsproxy.io
+//   - Remove after T2 removal is confirmed clean
+//   - DELETE lines marked [REMOVABLE-T3]
+//
+// FUTURE: Replace all tiers with WPA Cache JSON mode:
+//   fetch('https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/cache/feeds.json')
+// ═══════════════════════════════════════════════════════════
+const PROXIES = [
+  // TIER 1 — WPA Worker (primary, WPA-controlled, always keep)
+  {
+    kind: 'wpaWorker',
+    label: 'WPA Worker',
+    make: u => 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/rss?url=' + encodeURIComponent(u)
+  },
+  // TIER 2 — allorigins fallback [REMOVABLE-T2]
+  {
+    kind: 'jsonText',
+    label: 'allorigins',
+    make: u => 'https://api.allorigins.win/get?url=' + encodeURIComponent(u)
+  },
+  // TIER 3 — corsproxy fallback [REMOVABLE-T3]
+  {
+    kind: 'text',
+    label: 'corsproxy',
+    make: u => 'https://corsproxy.io/?' + encodeURIComponent(u)
+  },
+];
+
+    const WATCH_COPY = {
+      PR: {
+        title:'PR Watch',
+        lead:'Фокус на официјално говорење, message discipline, јавна формулација и институционална optics логика.',
+        checklist:['Кој ја контролира пораката?','Дали тонот е соодветен за институционален контекст?','Каков reputational risk носи формулацијата?','Каква корективна линија би предложил WPA?'],
+        track:'Communication and Presence Track',
+        lab:'Camera/Public Presence Lab'
+      },
+      INTERVIEW: {
+        title:'Interview Watch',
+        lead:'Анализа на интервјуа, Q&A, јавни настапи и фразеологија под медиумски притисок.',
+        checklist:['Дали говорникот останува во рамка?','Кои фрази создаваат или намалуваат ризик?','Како изгледа контролата на одговор?','Каков public-presence impression се создава?'],
+        track:'Communication and Presence Track',
+        lab:'Camera/Public Presence Lab'
+      },
+      PROTOCOL: {
+        title:'Protocol Watch',
+        lead:'Фокус на официјални посети, делегации, церемонија, симболи, хиерархија и формален редослед.',
+        checklist:['Има ли јасна delegation logic?','Кој е симболичкиот или церемонијалниот сигнал?','Постои ли ризик од protocol misread?','Што би барало correction logic?'],
+        track:'Institutional and Diplomatic Track',
+        lab:'Protocol Lab'
+      },
+      SECURITY: {
+        title:'Security Watch',
+        lead:'High-responsibility analysis за криза, санкции, безбедносни сигнали, humanitarian pressure и difficult cases.',
+        checklist:['Кој е security implication?','Постои ли crisis-sensitive communication challenge?','Има ли протоколарно-безбедносен интерфејс?','Што би бил controlled response?'],
+        track:'Advanced Security-Aware Track',
+        lab:'Scenario Exercise 360'
+      },
+      ECONOMIC: {
+        title:'Economic Diplomacy Watch',
+        lead:'Анализа на трговија, развој, инвестиции, финансиски институции и економска институционална сигнализација.',
+        checklist:['Која е дипломатската економска порака?','Кој е институционалниот интерес?','Како е рамкирана соработката/ризикот?','Има ли policy or investor-signal angle?'],
+        track:'Institutional and Diplomatic Track',
+        lab:'Scenario Exercise 360'
+      }
+    };
+
+    const state = {
+      mode:'live',
+      currentWatch:'ALL',
+      currentMeta:'ALL',
+      region:'ALL',
+      type:'ALL',
+      search:'',
+      rawArticles:[],
+      visibleArticles:[],
+      loadedCount:0,
+      lastUpdated:null,
+      queue:[],
+      currentArticle:null
+    };
+
+    const el = {
+      searchInput: document.getElementById('searchInput'),
+      regionFilter: document.getElementById('regionFilter'),
+      typeFilter: document.getElementById('typeFilter'),
+      modeBtn: document.getElementById('modeBtn'),
+      themeBtn: document.getElementById('themeBtn'),
+      refreshBtn: document.getElementById('refreshBtn'),
+      statSources: document.getElementById('statSources'),
+      statArticles: document.getElementById('statArticles'),
+      statLoaded: document.getElementById('statLoaded'),
+      progressBar: document.getElementById('progressBar'),
+      statQueue: document.getElementById('statQueue'),
+      statSignal: document.getElementById('statSignal'),
+      statUpdated: document.getElementById('statUpdated'),
+      statCache: document.getElementById('statCache'),
+      statusText: document.getElementById('statusText'),
+      tickerText: document.getElementById('tickerText'),
+      watchTabs: document.getElementById('watchTabs'),
+      metaTabs: document.getElementById('metaTabs'),
+      sourceList: document.getElementById('sourceList'),
+      queueList: document.getElementById('queueList'),
+      feedTitle: document.getElementById('feedTitle'),
+      feedSummary: document.getElementById('feedSummary'),
+      newsHost: document.getElementById('newsHost'),
+      overlay: document.getElementById('overlay'),
+      drawerClose: document.getElementById('drawerClose'),
+      drawerTags: document.getElementById('drawerTags'),
+      drawerTitle: document.getElementById('drawerTitle'),
+      drawerLead: document.getElementById('drawerLead'),
+      drawerMeta: document.getElementById('drawerMeta'),
+      drawerChecklist: document.getElementById('drawerChecklist'),
+      drawerOpenSource: document.getElementById('drawerOpenSource'),
+      drawerQueueBtn: document.getElementById('drawerQueueBtn'),
+      drawerCopyBtn: document.getElementById('drawerCopyBtn'),
+      fieldSpeaker: document.getElementById('fieldSpeaker'),
+      fieldMessage: document.getElementById('fieldMessage'),
+      fieldAudience: document.getElementById('fieldAudience'),
+      fieldTone: document.getElementById('fieldTone'),
+      fieldProtocol: document.getElementById('fieldProtocol'),
+      fieldRisk: document.getElementById('fieldRisk'),
+      fieldCorrection: document.getElementById('fieldCorrection'),
+      fieldLesson: document.getElementById('fieldLesson'),
+      copyQueueBtn: document.getElementById('copyQueueBtn'),
+      clearQueueBtn: document.getElementById('clearQueueBtn')
+    };
+
+    function setupFilters(){
+      const regions = ['ALL', ...new Set(FEEDS.map(f => f.region))];
+      const types = ['ALL', ...new Set(FEEDS.map(f => f.type))];
+      el.regionFilter.innerHTML = regions.map(r => `<option value="${escapeHtml(r)}">${escapeHtml(r === 'ALL' ? 'Сите региони' : r)}</option>`).join('');
+      el.typeFilter.innerHTML = types.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t === 'ALL' ? 'Сите типови' : t)}</option>`).join('');
+    }
+
+    function renderWatchTabs(){
+      el.watchTabs.innerHTML = WATCHES.map(tab => `<button class="tab ${tab.id === state.currentWatch ? 'active' : ''}" data-watch="${tab.id}">${escapeHtml(tab.label)}</button>`).join('');
+      el.watchTabs.querySelectorAll('[data-watch]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.currentWatch = btn.dataset.watch;
+          renderWatchTabs();
+          applyFilters();
+        });
+      });
+    }
+
+    function renderMetaTabs(){
+      el.metaTabs.innerHTML = META_TABS.map(tab => `<button class="meta-tab ${tab.id === state.currentMeta ? 'active' : ''}" data-meta="${tab.id}">${escapeHtml(tab.label)}</button>`).join('');
+      el.metaTabs.querySelectorAll('[data-meta]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.currentMeta = btn.dataset.meta;
+          renderMetaTabs();
+          applyFilters();
+        });
+      });
+    }
+
+    function renderSources(){
+      const feeds = filteredFeeds();
+      el.sourceList.innerHTML = feeds.map(feed => `
+        <div class="source-card">
+          <strong>${escapeHtml(feed.name)}</strong>
+          <span>${escapeHtml(feed.type)} · ${escapeHtml(feed.region)} · приоритет ${feed.weight}</span>
+        </div>
+      `).join('') || `<div class="empty">Нема извори за избраната комбинација.</div>`;
+    }
+
+    function renderQueue(){
+      if (!state.queue.length) {
+        el.queueList.innerHTML = `<div class="empty">Queue е празна. Додај вест со копчето „Во queue“ и користи ја за задачи, семинарска анализа или дискусија.</div>`;
+        return;
+      }
+      el.queueList.innerHTML = state.queue.map(item => `
+        <div class="queue-card">
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${escapeHtml(item.signalLabel)} · ${escapeHtml(item.source)} · ${escapeHtml(formatDate(item.date))}</span>
+          <div class="mini-tags">
+            <span class="tag ${signalClass(item.signal)}">${escapeHtml(item.track)}</span>
+            <span class="tag ${signalClass(item.signal)}">${escapeHtml(item.lab)}</span>
+          </div>
+          <div class="queue-inline-actions">
+            <button class="btn small" data-open-queue="${escapeAttr(item.id)}">Отвори</button>
+            <button class="btn small ghost" data-remove-queue="${escapeAttr(item.id)}">Избриши</button>
+          </div>
+        </div>
+      `).join('');
+
+      el.queueList.querySelectorAll('[data-open-queue]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = state.queue.find(q => q.id === btn.dataset.openQueue);
+          if (item) openDrawer(item, true);
+        });
+      });
+      el.queueList.querySelectorAll('[data-remove-queue]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          removeFromQueue(btn.dataset.removeQueue);
+        });
+      });
+    }
+
+    function renderArticles(){
+      const items = state.currentWatch === 'QUEUE' ? state.queue : state.visibleArticles;
+      const watchTitle = (WATCHES.find(w => w.id === state.currentWatch) || WATCHES[0]).label;
+      el.feedTitle.textContent = watchTitle;
+      el.feedSummary.textContent = `${items.length} записи · ${state.region === 'ALL' ? 'сите региони' : state.region} · ${state.type === 'ALL' ? 'сите типови' : state.type} · ${state.currentMetaLabel || metaLabel()}`;
+
+      if (!items.length) {
+        el.newsHost.innerHTML = `<div class="empty">Нема резултати за тековниот watch layer. Пробај друг signal tab, исклучи пребарување или користи cache режим.</div>`;
+        return;
+      }
+
+      el.newsHost.innerHTML = `<div class="news-grid">${items.map(article => renderCard(article)).join('')}</div>`;
+      attachCardEvents();
+    }
+
+    function renderCard(article){
+      const queueLabel = isInQueue(article.id) ? 'Во queue' : 'Во queue';
+      const noteCount = article.notes ? filledNotes(article.notes) : filledNotes(getQueueItem(article.id)?.notes || {});
+      return `
+        <article class="card">
+          <div class="card-top">
+            <div class="chips">
+              <span class="chip signal ${signalClass(article.signal)}">${escapeHtml(article.signalLabel)}</span>
+              <span class="chip">${escapeHtml(article.source)}</span>
+              <span class="chip">${escapeHtml(article.type)}</span>
+            </div>
+            <div class="card-title">${escapeHtml(article.title)}</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">${escapeHtml(article.description || 'Нема опис. Отвори ја веста за целосен текст.')}</div>
+            <div class="mini-tags">
+              <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.track)}</span>
+              <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.lab)}</span>
+              <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.region)}</span>
+            </div>
+            <div class="metric-row">
+              <span>${escapeHtml(timeAgo(article.date))}</span>
+              <span>Priority ${article.priority}</span>
+            </div>
+            <div class="metric-row">
+              <span>${escapeHtml(article.analysisAngle)}</span>
+              <span>${noteCount ? noteCount + ' белешки' : 'Без белешки'}</span>
+            </div>
+            <div class="card-actions">
+              <button class="btn small" data-analyze="${escapeAttr(article.id)}">Analyze</button>
+              <button class="btn small ok" data-queue="${escapeAttr(article.id)}">${queueLabel}</button>
+              <a class="btn small warn" href="${escapeAttr(article.url)}" target="_blank" rel="noopener noreferrer">Извор</a>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function attachCardEvents(){
+      document.querySelectorAll('[data-analyze]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const article = findArticle(btn.dataset.analyze);
+          if (article) openDrawer(article, Boolean(getQueueItem(article.id)));
+        });
+      });
+      document.querySelectorAll('[data-queue]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const article = findArticle(btn.dataset.queue);
+          if (article) addToQueue(article);
+        });
+      });
+    }
+
+    function showSkeleton(count = 8){
+      el.newsHost.innerHTML = `<div class="skeleton-wrap">${'<div class="skeleton"></div>'.repeat(count)}</div>`;
+    }
+
+    function applyFilters(){
+      const needle = state.search.trim().toLowerCase();
+      const metaType = metaToType(state.currentMeta);
+      const queueItems = state.queue.map(item => enrichQueueItem(item));
+
+      let items = state.rawArticles
+        .filter(article => state.region === 'ALL' || article.region === state.region)
+        .filter(article => state.type === 'ALL' || article.type === state.type)
+        .filter(article => metaType === 'ALL' || article.type === metaType)
+        .filter(article => state.currentWatch === 'ALL' || state.currentWatch === 'QUEUE' || article.watches.includes(state.currentWatch))
+        .filter(article => !needle || [article.title, article.description, article.source, article.region, article.type, article.signalLabel, article.track, article.lab].join(' ').toLowerCase().includes(needle))
+        .sort((a,b) => b.priority - a.priority || safeDate(b.date) - safeDate(a.date));
+
+      state.visibleArticles = items;
+      if (state.currentWatch === 'QUEUE') {
+        state.queue = queueItems;
+      }
+      renderSources();
+      renderArticles();
+      renderQueue();
+      updateTicker();
+      updateStats();
+    }
+
+    function filteredFeeds(){
+      const metaType = metaToType(state.currentMeta);
+      return FEEDS.filter(feed => (state.region === 'ALL' || feed.region === state.region) && (state.type === 'ALL' || feed.type === state.type) && (metaType === 'ALL' || feed.type === metaType));
+    }
+
+    async function refresh(){
+      const selectedFeeds = filteredFeeds();
+      if (state.mode === 'cache') {
+        loadFromCacheToState();
+        setStatus('Cache режим: локално зачуван diplomatic signal layer.');
+        applyFilters();
+        return;
+      }
+      if (!selectedFeeds.length) {
+        state.rawArticles = [];
+        state.loadedCount = 0;
+        setStatus('Нема избрани извори.');
+        applyFilters();
+        return;
+      }
+
+      state.loadedCount = 0;
+      showSkeleton(Math.min(selectedFeeds.length, 8));
+      setStatus('Се обработуваат live RSS извори...');
+      updateStats();
+
+      const batches = chunk(selectedFeeds, 5);
+      let collected = [];
+      for (const group of batches) {
+        const results = await Promise.allSettled(group.map(fetchFeed));
+        results.forEach(result => {
+          state.loadedCount += 1;
+          if (result.status === 'fulfilled' && Array.isArray(result.value)) {
+            collected.push(...result.value);
+          }
+        });
+        state.rawArticles = dedupe(collected).map(enrichArticle);
+        state.lastUpdated = Date.now();
+        setStatus(`Live режим: ${state.loadedCount}/${selectedFeeds.length} извори обработени.`);
+        applyFilters();
+      }
+
+      if (state.rawArticles.length) {
+        writeCache({items:state.rawArticles, updatedAt:state.lastUpdated});
+        setStatus(`Завршено: ${state.rawArticles.length} дипломатски записи.`);
+      } else {
+        const cache = readCache();
+        if (cache && Array.isArray(cache.items) && cache.items.length) {
+          state.rawArticles = cache.items.map(enrichArticle);
+          state.lastUpdated = cache.updatedAt || Date.now();
+          setStatus('Live изворите не вратија резултат. Прикажан е последниот cache.');
+        } else {
+          setStatus('Нема live резултати и нема cache fallback.');
+        }
+      }
+      applyFilters();
+    }
+
+    async function fetchFeed(feed){
+      for (const proxy of PROXIES) {
+        try {
+          const response = await fetchWithTimeout(proxy.make(feed.url), 9000);
+          if (!response.ok) continue;
+          if (proxy.kind === 'rss2json') {
+            const data = await response.json();
+            if (data && data.status === 'ok' && Array.isArray(data.items)) return parseRss2Json(data.items, feed);
+            continue;
+          }
+          if (proxy.kind === 'jsonText') {
+            const data = await response.json();
+            const xml = data && typeof data.contents === 'string' ? data.contents : '';
+            if (xml) return parseXml(xml, feed);
+            continue;
+          }
+          const xmlText = await response.text();
+          if (xmlText) return parseXml(xmlText, feed);
+        } catch (_) {}
+      }
+      return [];
+    }
+
+    function parseRss2Json(items, feed){
+      return items.slice(0, 10).map(item => normalizeArticle({
+        title: stripTags(item.title || ''),
+        url: item.link || item.guid || '',
+        description: stripTags(item.description || item.content || '').slice(0, 280),
+        date: item.pubDate || item.published || '',
+        source: feed.name,
+        type: feed.type,
+        region: feed.region,
+        weight: feed.weight
+      })).filter(Boolean);
+    }
+
+    function parseXml(xml, feed){
+      try {
+        const doc = new DOMParser().parseFromString(xml, 'text/xml');
+        const entries = Array.from(doc.querySelectorAll('item, entry')).slice(0, 10);
+        return entries.map(entry => {
+          const title = stripTags(textOf(entry, 'title')).trim();
+          if (!title) return null;
+          const linkNode = entry.querySelector('link');
+          const link = linkNode ? (linkNode.getAttribute('href') || linkNode.textContent || '') : '';
+          const description = stripTags(htmlOf(entry, 'description, summary, content') || textOf(entry, 'description') || textOf(entry, 'summary') || '').slice(0, 280);
+          const date = textOf(entry, 'pubDate') || textOf(entry, 'published') || textOf(entry, 'updated') || '';
+          return normalizeArticle({title, url:link.trim(), description, date, source:feed.name, type:feed.type, region:feed.region, weight:feed.weight});
+        }).filter(Boolean);
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function normalizeArticle(article){
+      if (!article || !article.title || !article.url) return null;
+      return {
+        id: stableId(article.url || article.title),
+        title: article.title.trim(),
+        url: article.url.trim(),
+        description: (article.description || '').trim(),
+        date: article.date || '',
+        source: article.source,
+        type: article.type,
+        region: article.region,
+        weight: article.weight || 3
+      };
+    }
+
+    function enrichArticle(article){
+      const enriched = classifyArticle(article);
+      const queueItem = getQueueItem(article.id);
+      if (queueItem) enriched.notes = queueItem.notes || {};
+      return enriched;
+    }
+
+    function classifyArticle(article){
+      const text = [article.title, article.description, article.source, article.type, article.region].join(' ').toLowerCase();
+      const scores = {PR:0, INTERVIEW:0, PROTOCOL:0, SECURITY:0, ECONOMIC:0};
+
+      addScore(scores, 'PR', keywordHits(text, ['statement','remarks','speech','press','briefing','message','media','spokesperson','announcement','address','public note','joint statement']));
+      addScore(scores, 'INTERVIEW', keywordHits(text, ['interview','q&a','conversation','podcast','fireside','discussion','speaking with','questions and answers']));
+      addScore(scores, 'PROTOCOL', keywordHits(text, ['official visit','visit','delegation','courtesy call','ceremony','credentials','ambassador','protocol','reception','summit','meeting','official lunch','official dinner','bilateral']));
+      addScore(scores, 'SECURITY', keywordHits(text, ['security','crisis','sanction','defence','war','conflict','threat','nuclear','ceasefire','humanitarian','risk','military','stability','emergency']));
+      addScore(scores, 'ECONOMIC', keywordHits(text, ['trade','economic','economy','investment','finance','financial','development','funding','tariff','market','loan','business','growth','infrastructure']));
+
+      if (['IMF','World Bank','WTO'].includes(article.source)) scores.ECONOMIC += 4;
+      if (['IAEA','OSCE','ICRC','International Crisis Group'].includes(article.source)) scores.SECURITY += 4;
+      if (article.type === 'Амбасади' || article.type === 'Министерства') scores.PROTOCOL += 1;
+      if (article.type === 'Think Tank') scores.INTERVIEW += 1;
+      if (article.type === 'Правда') scores.SECURITY += 1;
+      if (/interview|q&a/i.test(article.title)) scores.INTERVIEW += 5;
+      if (/visit|delegation|ceremony|credentials|ambassador/i.test(article.title)) scores.PROTOCOL += 5;
+      if (/sanction|security|crisis|war|conflict|nuclear/i.test(article.title)) scores.SECURITY += 5;
+      if (/trade|economic|investment|development|finance|fund/i.test(article.title)) scores.ECONOMIC += 5;
+      if (/statement|remarks|speech|briefing|message|press/i.test(article.title)) scores.PR += 5;
+
+      const watches = Object.entries(scores).filter(([,v]) => v > 0).map(([k]) => k);
+      if (!watches.length) watches.push(defaultWatch(article));
+      const primary = Object.entries(scores).sort((a,b) => b[1]-a[1])[0]?.[0] || defaultWatch(article);
+      const baseScore = Math.max(1, Object.values(scores).reduce((a,b) => a+b, 0));
+      const ageBoost = computeFreshnessBoost(article.date);
+      const priority = Math.round(baseScore + ageBoost + (article.weight || 3));
+      const mapping = watchMeta(primary, article);
+      return {
+        ...article,
+        watches,
+        signal: primary,
+        signalLabel: mapping.label,
+        track: mapping.track,
+        lab: mapping.lab,
+        analysisAngle: mapping.angle,
+        priority
+      };
+    }
+
+    function defaultWatch(article){
+      if (article.type === 'Правда') return 'SECURITY';
+      if (article.type === 'Организации' && ['IMF','World Bank','WTO'].includes(article.source)) return 'ECONOMIC';
+      if (article.type === 'Амбасади' || article.type === 'Министерства') return 'PROTOCOL';
+      return 'PR';
+    }
+
+    function watchMeta(signal, article){
+      const map = {
+        PR:{label:'PR Signal',track:'Communication and Presence Track',lab:'Camera/Public Presence Lab',angle:'message discipline / optics'},
+        INTERVIEW:{label:'Interview Signal',track:'Communication and Presence Track',lab:'Camera/Public Presence Lab',angle:'Q&A / framing / control'},
+        PROTOCOL:{label:'Protocol Signal',track:'Institutional and Diplomatic Track',lab:'Protocol Lab',angle:'visit flow / symbolism / delegation'},
+        SECURITY:{label:'Security Signal',track:'Advanced Security-Aware Track',lab:'Scenario Exercise 360',angle:'crisis / security / difficult case'},
+        ECONOMIC:{label:'Economic Signal',track:'Institutional and Diplomatic Track',lab:'Scenario Exercise 360',angle:'trade / finance / institutional interest'}
+      };
+      return map[signal] || map[defaultWatch(article)];
+    }
+
+    function updateTicker(){
+      const items = state.currentWatch === 'QUEUE' ? state.queue : state.visibleArticles;
+      const top = items.slice(0, 6).map(item => `<a href="${escapeAttr(item.url || '#')}" target="_blank" rel="noopener noreferrer">[${escapeHtml(item.signalLabel)}] ${escapeHtml(item.source)}: ${escapeHtml(item.title)}</a>`).join(' • ');
+      el.tickerText.innerHTML = top || 'Нема сигнал за тековниот филтер.';
+    }
+
+    function updateStats(){
+      const items = state.currentWatch === 'QUEUE' ? state.queue : state.visibleArticles;
+      el.statSources.textContent = String(FEEDS.length);
+      el.statArticles.textContent = String(items.length);
+      el.statLoaded.textContent = `${state.loadedCount}/${filteredFeeds().length}`;
+      el.progressBar.style.width = filteredFeeds().length ? `${Math.round((state.loadedCount / filteredFeeds().length) * 100)}%` : '0%';
+      el.statQueue.textContent = String(state.queue.length);
+      el.statUpdated.textContent = state.lastUpdated ? new Date(state.lastUpdated).toLocaleTimeString('mk-MK',{hour:'2-digit',minute:'2-digit'}) : '—';
+      const cache = readCache();
+      el.statCache.textContent = cache && cache.items && cache.items.length ? `Cache: да (${cache.items.length})` : 'Cache: празен';
+      el.statSignal.textContent = items[0] ? items[0].signalLabel : '—';
+    }
+
+    function setStatus(text){
+      el.statusText.textContent = text;
+    }
+
+    function openDrawer(article, fromQueue = false){
+      const queueItem = getQueueItem(article.id);
+      state.currentArticle = queueItem ? {...article, ...queueItem, notes:queueItem.notes || {}} : {...article, notes:article.notes || {}};
+      const meta = WATCH_COPY[article.signal] || WATCH_COPY[defaultWatch(article)];
+
+      el.drawerTitle.textContent = article.title;
+      el.drawerLead.textContent = meta.lead;
+      el.drawerTags.innerHTML = `
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.signalLabel)}</span>
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.track)}</span>
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.lab)}</span>
+      `;
+      el.drawerMeta.innerHTML = `
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.source)}</span>
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.type)}</span>
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(article.region)}</span>
+        <span class="tag ${signalClass(article.signal)}">${escapeHtml(formatDate(article.date))}</span>
+        <span class="tag ${signalClass(article.signal)}">Priority ${article.priority}</span>
+      `;
+      el.drawerChecklist.innerHTML = meta.checklist.map(item => `<li>${escapeHtml(item)}</li>`).join('');
+      el.drawerOpenSource.href = article.url;
+      fillDrawerNotes((queueItem && queueItem.notes) || article.notes || {});
+      el.overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      if (fromQueue) setStatus('Отворена е queue анализа за доработка.');
+    }
+
+    function closeDrawer(){
+      el.overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      state.currentArticle = null;
+    }
+
+    function fillDrawerNotes(notes){
+      el.fieldSpeaker.value = notes.speaker || '';
+      el.fieldMessage.value = notes.message || '';
+      el.fieldAudience.value = notes.audience || '';
+      el.fieldTone.value = notes.tone || '';
+      el.fieldProtocol.value = notes.protocol || '';
+      el.fieldRisk.value = notes.risk || '';
+      el.fieldCorrection.value = notes.correction || '';
+      el.fieldLesson.value = notes.lesson || '';
+    }
+
+    function collectDrawerNotes(){
+      return {
+        speaker: el.fieldSpeaker.value.trim(),
+        message: el.fieldMessage.value.trim(),
+        audience: el.fieldAudience.value.trim(),
+        tone: el.fieldTone.value.trim(),
+        protocol: el.fieldProtocol.value.trim(),
+        risk: el.fieldRisk.value.trim(),
+        correction: el.fieldCorrection.value.trim(),
+        lesson: el.fieldLesson.value.trim()
+      };
+    }
+
+    function addToQueue(article){
+      const existing = getQueueItem(article.id);
+      const payload = {
+        id: article.id,
+        title: article.title,
+        url: article.url,
+        source: article.source,
+        type: article.type,
+        region: article.region,
+        date: article.date,
+        signal: article.signal,
+        signalLabel: article.signalLabel,
+        track: article.track,
+        lab: article.lab,
+        priority: article.priority,
+        analysisAngle: article.analysisAngle,
+        notes: existing ? existing.notes || {} : {},
+        description: article.description
+      };
+      if (existing) {
+        state.queue = state.queue.map(item => item.id === payload.id ? {...item, ...payload} : item);
+        setStatus('Записот е освежен во Student Analysis Queue.');
+      } else {
+        state.queue.unshift(payload);
+        setStatus('Додадено во Student Analysis Queue.');
+      }
+      writeQueue();
+      applyFilters();
+    }
+
+    function saveCurrentToQueue(){
+      if (!state.currentArticle) return;
+      const notes = collectDrawerNotes();
+      const article = findArticle(state.currentArticle.id) || state.currentArticle;
+      addToQueue({...article, notes});
+      state.queue = state.queue.map(item => item.id === article.id ? {...item, notes} : item);
+      writeQueue();
+      setStatus('Белешките се зачувани во queue.');
+      closeDrawer();
+      applyFilters();
+    }
+
+    function removeFromQueue(id){
+      state.queue = state.queue.filter(item => item.id !== id);
+      writeQueue();
+      setStatus('Записот е избришан од Student Analysis Queue.');
+      applyFilters();
+    }
+
+    function clearQueue(){
+      state.queue = [];
+      writeQueue();
+      setStatus('Student Analysis Queue е исчистена.');
+      applyFilters();
+    }
+
+    function copyCurrentBrief(){
+      if (!state.currentArticle) return;
+      const notes = collectDrawerNotes();
+      const article = state.currentArticle;
+      const brief = [
+        `WPA Analysis Brief`,
+        `Title: ${article.title}`,
+        `Source: ${article.source}`,
+        `Signal: ${article.signalLabel}`,
+        `Track: ${article.track}`,
+        `Lab: ${article.lab}`,
+        `Date: ${formatDate(article.date)}`,
+        ``,
+        `1. Speaker / Institution: ${notes.speaker || '—'}`,
+        `2. Core message: ${notes.message || '—'}`,
+        `3. Audience: ${notes.audience || '—'}`,
+        `4. Tone / optics: ${notes.tone || '—'}`,
+        `5. Protocol signal: ${notes.protocol || '—'}`,
+        `6. Risk / security: ${notes.risk || '—'}`,
+        `7. Corrective line: ${notes.correction || '—'}`,
+        `8. Lessons learned: ${notes.lesson || '—'}`,
+        ``,
+        `Source URL: ${article.url}`
+      ].join('\n');
+      copyText(brief, 'Analysis brief е копиран.');
+    }
+
+    function copyQueueBrief(){
+      if (!state.queue.length) {
+        setStatus('Queue е празна. Нема што да се копира.');
+        return;
+      }
+      const lines = ['WPA Student Analysis Queue'];
+      state.queue.forEach((item, idx) => {
+        lines.push(`${idx + 1}. ${item.signalLabel} | ${item.source} | ${item.title}`);
+        if (item.notes) {
+          const summary = Object.entries(item.notes).filter(([,v]) => v).map(([k,v]) => `${k}: ${v}`).join(' | ');
+          if (summary) lines.push(`   Notes: ${summary}`);
+        }
+        lines.push(`   URL: ${item.url}`);
+      });
+      copyText(lines.join('\n'), 'Queue brief е копиран.');
+    }
+
+    function copyText(text, successMessage){
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => setStatus(successMessage)).catch(() => fallbackCopy(text, successMessage));
+      } else {
+        fallbackCopy(text, successMessage);
+      }
+    }
+
+    function fallbackCopy(text, successMessage){
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      setStatus(successMessage);
+    }
+
+    function readCache(){
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) { return null; }
+    }
+
+    function writeCache(payload){
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(payload)); } catch (_) {}
+    }
+
+    function readQueue(){
+      try {
+        const raw = localStorage.getItem(QUEUE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (_) { return []; }
+    }
+
+    function writeQueue(){
+      try { localStorage.setItem(QUEUE_KEY, JSON.stringify(state.queue)); } catch (_) {}
+    }
+
+    function loadFromCacheToState(){
+      const cache = readCache();
+      if (cache && Array.isArray(cache.items)) {
+        state.rawArticles = cache.items.map(enrichArticle);
+        state.lastUpdated = cache.updatedAt || Date.now();
+      } else {
+        state.rawArticles = [];
+      }
+    }
+
+    async function tryServerCache(){
+      if (!CACHE_URL) return false;
+      try {
+        const response = await fetchWithTimeout(CACHE_URL, 6000);
+        if (!response.ok) return false;
+        const data = await response.json();
+        if (data && Array.isArray(data.items)) {
+          writeCache({items:data.items, updatedAt:data.updatedAt || Date.now()});
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function getQueueItem(id){
+      return state.queue.find(item => item.id === id) || null;
+    }
+
+    function enrichQueueItem(item){
+      return {...item, notes:item.notes || {}};
+    }
+
+    function findArticle(id){
+      return state.rawArticles.find(item => item.id === id) || state.queue.find(item => item.id === id) || null;
+    }
+
+    function isInQueue(id){
+      return Boolean(getQueueItem(id));
+    }
+
+    function filledNotes(notes){
+      return Object.values(notes || {}).filter(Boolean).length;
+    }
+
+    function dedupe(items){
+      const seen = new Map();
+      for (const item of items) {
+        const key = stableId((item.url || item.title).toLowerCase().replace(/\/$/, ''));
+        if (!seen.has(key)) seen.set(key, item);
+        else if (safeDate(item.date) > safeDate(seen.get(key).date)) seen.set(key, item);
+      }
+      return Array.from(seen.values()).sort((a,b) => safeDate(b.date) - safeDate(a.date));
+    }
+
+    function fetchWithTimeout(url, timeout){
+      return Promise.race([
+        fetch(url),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), timeout))
+      ]);
+    }
+
+    function textOf(root, selector){
+      const node = root.querySelector(selector);
+      return node ? (node.textContent || '') : '';
+    }
+
+    function htmlOf(root, selector){
+      const node = root.querySelector(selector);
+      return node ? node.innerHTML || '' : '';
+    }
+
+    function stripTags(input){
+      const div = document.createElement('div');
+      div.innerHTML = input || '';
+      return (div.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function timeAgo(value){
+      const ms = safeDate(value);
+      if (!ms) return 'Непознато време';
+      const diff = Math.floor((Date.now() - ms) / 1000);
+      if (diff < 60) return 'Само што';
+      if (diff < 3600) return `пред ${Math.floor(diff / 60)} мин.`;
+      if (diff < 86400) return `пред ${Math.floor(diff / 3600)} ч.`;
+      if (diff < 172800) return 'Вчера';
+      return `пред ${Math.floor(diff / 86400)} д.`;
+    }
+
+    function formatDate(value){
+      const ms = safeDate(value);
+      return ms ? new Date(ms).toLocaleDateString('mk-MK',{day:'2-digit',month:'2-digit',year:'numeric'}) : 'Без датум';
+    }
+
+    function safeDate(value){
+      const date = value ? new Date(value) : null;
+      return date && !Number.isNaN(date.valueOf()) ? date.valueOf() : 0;
+    }
+
+    function computeFreshnessBoost(value){
+      const ms = safeDate(value);
+      if (!ms) return 0;
+      const days = Math.max(0, Math.floor((Date.now() - ms) / 86400000));
+      if (days <= 1) return 6;
+      if (days <= 3) return 4;
+      if (days <= 7) return 2;
+      return 0;
+    }
+
+    function signalClass(signal){
+      return ({PR:'pr',INTERVIEW:'interview',PROTOCOL:'protocol',SECURITY:'security',ECONOMIC:'economic'}[signal] || 'protocol');
+    }
+
+    function keywordHits(text, keywords){
+      return keywords.reduce((sum, kw) => sum + (text.includes(kw) ? 2 : 0), 0);
+    }
+
+    function addScore(obj, key, value){
+      obj[key] = (obj[key] || 0) + value;
+    }
+
+    function metaToType(metaId){
+      return ({ALL:'ALL',MIN:'Министерства',EMB:'Амбасади',ORG:'Организации',LAW:'Правда',TT:'Think Tank'}[metaId] || 'ALL');
+    }
+
+    function metaLabel(){
+      return (META_TABS.find(t => t.id === state.currentMeta) || META_TABS[0]).label;
+    }
+
+    function stableId(value){
+      return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 140);
+    }
+
+    function chunk(arr, size){
+      const out = [];
+      for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+      return out;
+    }
+
+    function escapeHtml(value){
+      return String(value).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    }
+
+    function escapeAttr(value){
+      return escapeHtml(value);
+    }
+
+    function restoreTheme(){
+      try {
+        const theme = localStorage.getItem(THEME_KEY);
+        if (theme === 'light') document.body.classList.add('light');
+      } catch (_) {}
+    }
+
+    function toggleTheme(){
+      document.body.classList.toggle('light');
+      try { localStorage.setItem(THEME_KEY, document.body.classList.contains('light') ? 'light' : 'dark'); } catch (_) {}
+    }
+
+    function bindEvents(){
+      el.searchInput.addEventListener('input', evt => { state.search = evt.target.value || ''; applyFilters(); });
+      el.regionFilter.addEventListener('change', evt => { state.region = evt.target.value; state.loadedCount = 0; applyFilters(); });
+      el.typeFilter.addEventListener('change', evt => { state.type = evt.target.value; state.loadedCount = 0; applyFilters(); });
+      el.modeBtn.addEventListener('click', async () => {
+        state.mode = state.mode === 'live' ? 'cache' : 'live';
+        el.modeBtn.textContent = `Режим: ${state.mode === 'live' ? 'Live' : 'Cache'}`;
+        await refresh();
+      });
+      el.themeBtn.addEventListener('click', toggleTheme);
+      el.refreshBtn.addEventListener('click', refresh);
+      el.drawerClose.addEventListener('click', closeDrawer);
+      el.overlay.addEventListener('click', evt => { if (evt.target === el.overlay) closeDrawer(); });
+      el.drawerQueueBtn.addEventListener('click', saveCurrentToQueue);
+      el.drawerCopyBtn.addEventListener('click', copyCurrentBrief);
+      el.copyQueueBtn.addEventListener('click', copyQueueBrief);
+      el.clearQueueBtn.addEventListener('click', clearQueue);
+      document.addEventListener('keydown', evt => { if (evt.key === 'Escape') closeDrawer(); });
+    }
+
+    async function boot(){
+      restoreTheme();
+      state.queue = readQueue();
+      setupFilters();
+      renderWatchTabs();
+      renderMetaTabs();
+      bindEvents();
+      renderSources();
+      renderQueue();
+      showSkeleton();
+      updateStats();
+
+      const serverCacheLoaded = await tryServerCache();
+      loadFromCacheToState();
+      if (serverCacheLoaded || state.rawArticles.length) {
+        setStatus('Cache е подготвен. Се обидувам и со live RSS...');
+        applyFilters();
+      }
+      await refresh();
+    }
+
+    boot();
+</script>
+</body>
+</html>
