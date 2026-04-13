@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WPA Protocol Symbols Lab | World Protocol Academy</title>
+<meta name="description" content="WPA Protocol Symbols Lab — верифицирана база на знамиња, химни, грбови и протоколарни симболи. Единствен извор на вистина."/>
+<link rel="icon" href="https://worldprotocolacademy-code.github.io/logo.png" type="image/png"/>
+<!-- Deploy: wpaws/protocol-symbols/index.html -->
+<!-- Data:   wpaws/protocol-symbols/data/countries.json (PRIMARY) -->
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#0d1f3c;--navy2:#162947;--navy3:#1e3a5f;--gold:#c9a84c;--goldd:#a8873a;--goldl:#e8d49a;--cream:#f8f4ee;--cream2:#f0ead8;--white:#fff;--text:#1a1a2e;--muted:#5a6677;--line:#d8cdb8;--fd:'Cormorant Garamond',Georgia,serif;--fb:'Jost',system-ui,sans-serif;--r:3px;--r2:8px;--sh:0 4px 24px rgba(13,31,60,.10)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--text);line-height:1.65;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}h1,h2,h3,h4{font-family:var(--fd);font-weight:600;line-height:1.1}
+.container{width:min(1280px,calc(100% - 40px));margin:0 auto}
+.lab-header{background:var(--navy);border-bottom:1px solid rgba(201,168,76,.2);padding:14px 0;position:sticky;top:0;z-index:1000}
+.lab-header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.lab-brand{display:flex;align-items:center;gap:12px}
+.lab-brand-logo{width:40px;height:40px;border-radius:6px;overflow:hidden;background:rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center}
+.lab-brand-logo img{width:34px;height:34px;object-fit:contain}
+.lab-brand h1{color:var(--white);font-size:15px;font-weight:700;line-height:1.1}
+.lab-brand p{color:rgba(255,255,255,.55);font-size:10.5px;margin-top:2px}
+.lab-back{color:var(--goldl);font-size:12.5px;font-weight:500;transition:color .18s}
+.lab-back:hover{color:var(--white)}
+.lab-back::before{content:'← '}
+.lab-hero{background:linear-gradient(135deg,var(--navy),var(--navy3));padding:44px 0 34px;position:relative;overflow:hidden}
+.lab-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.05) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:16px;padding:5px 14px;border:1px solid rgba(201,168,76,.3);border-radius:var(--r);background:rgba(201,168,76,.07);color:var(--goldl);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px}
+.eyebrow::before{content:'◆';font-size:7px;color:var(--gold)}
+.lab-hero h2{font-family:var(--fd);font-size:clamp(26px,3.5vw,44px);font-weight:700;color:var(--white);margin-bottom:10px;line-height:1.06}
+.lab-hero h2 em{color:var(--goldl);font-style:italic}
+.lab-hero-sub{color:rgba(255,255,255,.65);font-size:14.5px;font-weight:300;max-width:580px;line-height:1.72;margin-bottom:18px}
+.zero-hallu{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:999px;color:var(--goldl);font-size:11.5px;font-weight:600}
+.zero-hallu::before{content:'✓';color:var(--gold)}
+.stats-bar{background:var(--navy);color:rgba(255,255,255,.7);padding:10px 0;font-size:12px}
+.stats-inner{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.stat-item strong{color:var(--goldl);font-size:15px}
+.stat-sep{color:rgba(255,255,255,.2)}
+.search-bar{padding:22px 0;background:var(--cream2);border-bottom:1px solid var(--line)}
+.search-wrap{display:flex;gap:10px;max-width:620px}
+.search-input{flex:1;border:1px solid var(--line);border-radius:var(--r2);padding:11px 15px;font-size:15px;font-family:var(--fb);outline:none;background:var(--white);color:var(--text);transition:border-color .18s}
+.search-input:focus{border-color:var(--gold)}
+.search-btn{padding:11px 20px;background:var(--navy);color:var(--goldl);border:none;border-radius:var(--r2);font-family:var(--fb);font-size:13px;font-weight:600;cursor:pointer}
+.filter-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.filter-btn{padding:5px 13px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--navy);font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;font-family:var(--fb)}
+.filter-btn:hover,.filter-btn.active{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+.lab-main{padding:28px 0 56px}
+.lab-grid{display:grid;grid-template-columns:290px 1fr;gap:22px;align-items:start}
+.entity-list{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)}
+.entity-list-header{padding:12px 15px;background:var(--navy);color:var(--white);font-family:var(--fd);font-size:15px;display:flex;align-items:center;justify-content:space-between}
+.entity-count{font-size:11px;color:var(--goldl)}
+.entity-items{max-height:66vh;overflow-y:auto}
+.entity-item{padding:10px 15px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:10px}
+.entity-item:hover{background:var(--cream)}
+.entity-item.active{background:rgba(201,168,76,.1);border-left:3px solid var(--gold)}
+.entity-flag-emoji{font-size:19px;width:25px;text-align:center;flex-shrink:0}
+.entity-name{font-family:var(--fd);font-size:14.5px;color:var(--navy);line-height:1.2}
+.entity-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.detail-panel{background:var(--white);border:1px solid var(--line);border-radius:var(--r2);box-shadow:var(--sh);overflow:hidden}
+.detail-empty{padding:36px;text-align:center}
+.detail-empty h4{font-family:var(--fd);font-size:18px;color:var(--navy);margin-bottom:8px}
+.detail-header{padding:18px 22px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--white);display:flex;align-items:flex-start;gap:14px}
+.detail-flag-big{font-size:48px;flex-shrink:0;line-height:1}
+.detail-title h2{font-family:var(--fd);font-size:22px;color:var(--white);margin-bottom:3px}
+.detail-title p{color:rgba(255,255,255,.6);font-size:12.5px}
+.detail-body{padding:20px}
+.ds{margin-bottom:18px}.ds:last-child{margin-bottom:0}
+.dst{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--goldd);font-family:var(--fb);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dst::before{content:'';width:14px;height:1px;background:var(--gold);display:inline-block}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fc{padding:10px 12px;background:var(--cream);border-radius:var(--r2);border-left:2px solid var(--goldl)}
+.fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+.fv{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.3}
+.fv.yes{color:#1a7a3c;font-weight:700}.fv.no{color:#c0392b;font-weight:700}
+.flag-desc{padding:12px 14px;background:var(--cream);border-radius:var(--r2);color:var(--muted);font-size:13.5px;line-height:1.65;border-left:2px solid var(--gold)}
+.anthem-block{padding:13px 15px;background:var(--navy);border-radius:var(--r2)}
+.anthem-title-text{font-family:var(--fd);font-size:16px;color:var(--goldl);margin-bottom:5px}
+.anthem-notes{font-size:12.5px;color:rgba(255,255,255,.65);line-height:1.6}
+.anthem-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(201,168,76,.2);border-radius:999px;color:var(--goldl);font-size:10px;font-weight:700;font-family:var(--fb);margin-top:7px}
+.sources-list{display:flex;flex-wrap:wrap;gap:5px}
+.source-pill{padding:3px 10px;background:var(--cream);border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:11px}
+.notes-block{padding:11px 13px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.2);border-radius:var(--r2);color:var(--text);font-size:13px;line-height:1.65}
+.quick-qa{padding:26px 0;background:var(--cream2);border-top:1px solid var(--line)}
+.qa-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.qa-card{padding:14px;background:var(--white);border:1px solid var(--line);border-radius:var(--r2);cursor:pointer;transition:border-color .18s,transform .18s;box-shadow:var(--sh)}
+.qa-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.qa-q{font-size:12.5px;color:var(--navy);font-weight:500;margin-bottom:5px;line-height:1.4}
+.qa-a{font-size:12px;color:var(--muted);line-height:1.5}
+.qa-verified{font-size:10px;color:var(--goldd);font-weight:700;font-family:var(--fb);margin-top:5px}
+.loading-msg{padding:18px;color:var(--muted);text-align:center;font-size:14px}
+.lab-footer{background:#060f1e;padding:18px 0;border-top:1px solid rgba(201,168,76,.15)}
+.lab-footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.lab-footer p{color:rgba(255,255,255,.4);font-size:12px}
+.lab-footer a{color:var(--goldl);font-size:12.5px}
+@media(max-width:900px){.lab-grid{grid-template-columns:1fr}.qa-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.qa-grid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="lab-header">
+  <div class="container lab-header-inner">
+    <div class="lab-brand">
+      <div class="lab-brand-logo"><img src="https://worldprotocolacademy-code.github.io/logo.png" alt="WPA" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--goldl);font-size:13px;font-weight:700&quot;>WPA</span>'"/></div>
+      <div><h1>WPA Protocol Symbols Lab</h1><p>Верифицирана база · Знамиња · Химни · Грбови · Географија</p></div>
+    </div>
+    <a href="https://worldprotocolacademy-code.github.io" class="lab-back">Назад кон WPA</a>
+  </div>
+</header>
+<section class="lab-hero">
+  <div class="container">
+    <div class="eyebrow">WPA · Protocol Symbols Lab · v2.0 · Единствен извор на вистина</div>
+    <h2>Знамиња. Химни. Грбови.<br><em>Само верифицирани факти.</em></h2>
+    <p class="lab-hero-sub">Структурирана протоколарна база со верифицирани податоци за државни симболи. Единствен извор на вистина за Protocol Symbols Lab и Virtual Sande Worker.</p>
+    <div class="zero-hallu">Zero Hallucination Policy — само верифицирани записи · countries.json v2.0</div>
+  </div>
+</section>
+<div class="stats-bar">
+  <div class="container stats-inner">
+    <div class="stat-item"><strong id="statTotal">–</strong> записи</div>
+    <span class="stat-sep">|</span>
+    <div class="stat-item"><strong id="statInstrumental">–</strong> инструментални химни</div>
+    <span class="stat-sep">|</span>
+    <div class="stat-item"><strong id="statEagles">–</strong> орел на знаме</div>
+    <span class="stat-sep">|</span>
+    <div class="stat-item">Извор: <strong>countries.json v2.0</strong></div>
+  </div>
+</div>
+<div class="search-bar">
+  <div class="container">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" class="search-input" placeholder="Пребарај: Унгарија, EU, химна, орел, инструментална..."/>
+      <button class="search-btn" onclick="doSearch()">Пребарај</button>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="setFilter('all',this)">Сите</button>
+      <button class="filter-btn" onclick="setFilter('eagle',this)">🦅 Орел на знаме</button>
+      <button class="filter-btn" onclick="setFilter('instrumental',this)">🎵 Инструментална</button>
+      <button class="filter-btn" onclick="setFilter('europe',this)">Европа</button>
+      <button class="filter-btn" onclick="setFilter('asia',this)">Азија</button>
+      <button class="filter-btn" onclick="setFilter('supranational',this)">Наднационални</button>
+    </div>
+  </div>
+</div>
+<section class="lab-main">
+  <div class="container">
+    <div class="lab-grid">
+      <div class="entity-list">
+        <div class="entity-list-header"><span>Записи</span><span class="entity-count" id="listCount">Вчитување...</span></div>
+        <div class="entity-items" id="entityList"><div class="loading-msg">Вчитување на базата...</div></div>
+      </div>
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-empty"><h4>Изберете запис</h4><p style="color:var(--muted);font-size:13.5px;margin-top:8px">Кликнете на земја или ентитет за верифицирани симболи.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="quick-qa">
+  <div class="container">
+    <div style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldd);font-family:var(--fb);margin-bottom:5px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:1px;background:var(--gold);display:inline-block"></span>Брзи одговори</div>
+      <h3 style="font-family:var(--fd);font-size:clamp(18px,2.2vw,28px);color:var(--navy)">Верифицирани · Директно од countries.json</h3>
+    </div>
+    <div class="qa-grid" id="qaGrid"><div class="loading-msg">Вчитување...</div></div>
+  </div>
+</section>
+<footer class="lab-footer">
+  <div class="container lab-footer-inner">
+    <p>&copy; 2026 World Protocol Academy · Protocol Symbols Lab · Zero Hallucination Policy · countries.json v2.0</p>
+    <a href="https://worldprotocolacademy-code.github.io">← Назад кон WPA</a>
+  </div>
+</footer>
+<script>
+// ═══════════════════════════════════════════════════════════
+// WPA Protocol Symbols Lab — Data Layer v2.0
+// PRIMARY:   https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols-verified/data/countries.json
+// FALLBACK:  4-record emergency stub [TEMPORARY — remove when fetch confirmed stable]
+// SAME DATA: Used by Worker /ask symbols router
+// ═══════════════════════════════════════════════════════════
+const DATA_URL = 'https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols-verified/data/countries.json';
+
+// EMERGENCY FALLBACK — 4 records only. [TEMPORARY]
+const EMERGENCY_STUB = [{"id":"EU","type":"supranational","name_mk":"Европска Унија","name_en":"European Union","aliases":["ЕУ","EU","European Union"],"capital":"Брисел","continent":"Европа","flag_stars":12,"has_eagle_on_flag":false,"flag_description_mk":"Сино знаме со 12 златни ѕвезди распоредени во круг. Бројот 12 симболизира совршенство и единство — не го претставува бројот на членки.","has_symbol_on_flag":true,"flag_symbol":"12 златни ѕвезди во круг","anthem_officially_instrumental":true,"anthem_title":"Ода на радоста (Ludwig van Beethoven, 9та симфонија)","anthem_notes_mk":"Химната на ЕУ е официјално инструментална. Не постои официјален текст на ниту еден од јазиците на ЕУ — тоа е свесна одлука поради мултилингвалната природа на Унијата.","flag_eagle_type":"","notes_mk":"Знамето е усвоено 1955 од Советот на Европа, а ЕУ го усвои во 1986 година.","coat_of_arms_summary_mk":"Европската Унија нема официјален грб. Единствениот официјален симбол е знамето со 12 ѕвезди."},{"id":"HU","type":"state","name_mk":"Унгарија","name_en":"Hungary","aliases":["Унгарија","Hungary","Magyarország"],"capital":"Будимпешта","continent":"Европа","flag_stars":0,"has_eagle_on_flag":false,"flag_description_mk":"Три хоризонтални ленти со еднаква ширина: горна црвена, средна бела, долна зелена. Знамето нема никакви симболи, грб или орел.","has_symbol_on_flag":false,"flag_symbol":null,"anthem_officially_instrumental":false,"anthem_title":"Himnusz — Isten, áldd meg a magyart","anthem_notes_mk":"Химната има официјален текст на унгарски јазик.","flag_eagle_type":"","notes_mk":"Честа грешка: орелот се наоѓа на грбот, не на знамето. Државното знаме е чиста трицветна без симболи.","coat_of_arms_summary_mk":"Грбот на Унгарија содржи крст, апостолска круна и хоризонтални ленти — но грбот не е прикажан на државното знаме."},{"id":"ES","type":"state","name_mk":"Шпанија","name_en":"Spain","aliases":["Шпанија","Spain","España"],"capital":"Мадрид","continent":"Европа","flag_stars":0,"has_eagle_on_flag":false,"flag_description_mk":"Три хоризонтални ленти: горна и долна потесна црвена, широка средна жолта. Во средната лента се наоѓа шпанскиот државен грб.","has_symbol_on_flag":true,"flag_symbol":"Шпански државен грб","anthem_officially_instrumental":true,"anthem_title":"La Marcha Real (Кралскиот марш)","anthem_notes_mk":"La Marcha Real е официјално инструментална химна — нема официјален текст од 1978 година. Шпанија е еден од ретките примери на суверена држава со химна без официјален текст.","flag_eagle_type":"","notes_mk":"Шпанија е единствена голема западна демократија чија државна химна е официјално без текст.","coat_of_arms_summary_mk":"Штит со кралска круна, Херкулови столбови и мото 'Plus Ultra'."},{"id":"AL","type":"state","name_mk":"Албанија","name_en":"Albania","aliases":["Албанија","Albania","Shqipëri"],"capital":"Тирана","continent":"Европа","flag_stars":0,"has_eagle_on_flag":true,"flag_description_mk":"Црвено знаме со црн двоглав орел во центарот.","has_symbol_on_flag":true,"flag_symbol":"Црн двоглав орел","anthem_officially_instrumental":false,"anthem_title":"Himni i Flamurit — Rreth flamurit të përbashkuar","anthem_notes_mk":"Химната има официјален текст на албански јазик.","flag_eagle_type":"двоглав орел (самостоен симбол на знамето)","notes_mk":"Двоглавиот орел е самостоен симбол директно на знамето — не дел од грб. Симболот датира уште од средниот век.","coat_of_arms_summary_mk":"Грбот содржи двоглав орел со штит на градите."}];
+
+const FLAG_EMOJI = {"EU": "🇪🇺", "HU": "🇭🇺", "ES": "🇪🇸", "BA": "🇧🇦", "SM": "🇸🇲", "MK": "🇲🇰", "RS": "🇷🇸", "HR": "🇭🇷", "AL": "🇦🇱", "DE": "🇩🇪", "FR": "🇫🇷", "IT": "🇮🇹", "GB": "🇬🇧", "US": "🇺🇸", "KZ": "🇰🇿", "XK": "🇽🇰", "ME": "🇲🇪", "RU": "🇷🇺", "CH": "🇨🇭", "VA": "🇻🇦", "TR": "🇹🇷", "GR": "🇬🇷", "AT": "🇦🇹", "BE": "🇧🇪", "NL": "🇳🇱", "PL": "🇵🇱", "CZ": "🇨🇿", "SK": "🇸🇰", "SI": "🇸🇮", "RO": "🇷🇴", "BG": "🇧🇬", "DK": "🇩🇰", "NO": "🇳🇴", "SE": "🇸🇪", "FI": "🇫🇮", "IS": "🇮🇸", "PT": "🇵🇹", "IE": "🇮🇪", "UA": "🇺🇦", "CN": "🇨🇳", "JP": "🇯🇵", "IN": "🇮🇳", "CA": "🇨🇦", "BR": "🇧🇷", "AU": "🇦🇺", "ZA": "🇿🇦", "LI": "🇱🇮", "IL": "🇮🇱", "SA": "🇸🇦", "EG": "🇪🇬", "MA": "🇲🇦", "NATO": "🏳️", "UN": "🏳️"};
+let DB = [], filtered = [], activeFilter = 'all';
+
+async function init() {
+  try {
+    const resp = await fetch(DATA_URL + '?v=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    DB = data.records || data;
+  } catch(e) {
+    console.warn('countries.json fetch failed — using emergency stub:', e.message);
+    DB = EMERGENCY_STUB;
+  }
+  filtered = [...DB];
+  renderStats(); renderList(); renderQA();
+}
+
+function renderStats() {
+  document.getElementById('statTotal').textContent = DB.length;
+  document.getElementById('statInstrumental').textContent = DB.filter(r=>r.anthem_officially_instrumental).length;
+  document.getElementById('statEagles').textContent = DB.filter(r=>r.has_eagle_on_flag).length;
+}
+
+function setFilter(f,btn) {
+  activeFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); applyFilter();
+}
+function doSearch() { applyFilter(); }
+document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&document.activeElement.id==='searchInput') doSearch(); });
+
+function applyFilter() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  filtered = DB.filter(r=>{
+    if(activeFilter==='eagle'&&!r.has_eagle_on_flag) return false;
+    if(activeFilter==='instrumental'&&!r.anthem_officially_instrumental) return false;
+    if(activeFilter==='europe'&&!String(r.continent||'').includes('Европа')) return false;
+    if(activeFilter==='asia'&&!String(r.continent||'').includes('Азија')) return false;
+    if(activeFilter==='supranational'&&r.type!=='supranational') return false;
+    if(!q) return true;
+    return [r.name_mk,r.name_en,...(r.aliases||[]),r.capital,r.anthem_title,r.continent].join(' ').toLowerCase().includes(q);
+  });
+  renderList();
+}
+
+function renderList() {
+  const el = document.getElementById('entityList');
+  document.getElementById('listCount').textContent = filtered.length + ' записи';
+  if(!filtered.length) { el.innerHTML='<div class="loading-msg">Нема резултати</div>'; return; }
+  el.innerHTML = filtered.map(r=>`
+    <div class="entity-item" onclick="showDetail('${r.id}')" id="item-${r.id}">
+      <span class="entity-flag-emoji">${FLAG_EMOJI[r.id]||'🏳️'}</span>
+      <div><div class="entity-name">${r.name_mk}</div><div class="entity-sub">${r.name_en} · ${r.continent}</div></div>
+    </div>`).join('');
+}
+
+function showDetail(id) {
+  const r = DB.find(x=>x.id===id); if(!r) return;
+  document.querySelectorAll('.entity-item').forEach(el=>el.classList.remove('active'));
+  const item=document.getElementById('item-'+id); if(item) item.classList.add('active');
+  const eagleHTML = r.has_eagle_on_flag
+    ? `<span class="fv yes">✓ Да — ${r.flag_eagle_type||'орел'}</span>`
+    : `<span class="fv no">✗ Не</span>`;
+  const starsHTML = r.flag_stars>0
+    ? `<span class="fv">${r.flag_stars} ${r.flag_stars===1?'ѕвезда':'ѕвезди'}</span>`
+    : `<span class="fv" style="color:var(--muted)">—</span>`;
+  const instrBadge = r.anthem_officially_instrumental ? '<div class="anthem-badge">🎵 Официјално инструментална</div>' : '';
+  const typeLabel = r.type==='supranational'?'Наднационален ентитет':r.sovereign_status==='partially_recognised'?'Делумно призната држава':'Суверена држава';
+  document.getElementById('detailPanel').innerHTML = `
+    <div class="detail-header">
+      <div class="detail-flag-big">${FLAG_EMOJI[r.id]||'🏳️'}</div>
+      <div class="detail-title"><h2>${r.name_mk}</h2><p>${r.name_en} · ${typeLabel}</p></div>
+    </div>
+    <div class="detail-body">
+      <div class="ds"><div class="dst">Основни факти</div>
+        <div class="fg">
+          <div class="fc"><div class="fl">Главен град</div><div class="fv">${r.capital}</div></div>
+          <div class="fc"><div class="fl">Континент</div><div class="fv">${r.continent}</div></div>
+        </div></div>
+      <div class="ds"><div class="dst">Знаме</div>
+        <div class="flag-desc">${r.flag_description_mk}</div>
+        <div class="fg" style="margin-top:9px">
+          <div class="fc"><div class="fl">Орел на знамето?</div>${eagleHTML}</div>
+          <div class="fc"><div class="fl">Симбол</div><div class="fv">${r.flag_symbol||'—'}</div></div>
+          <div class="fc"><div class="fl">Ѕвезди</div>${starsHTML}</div>
+          <div class="fc"><div class="fl">Бои</div><div class="fv">${(r.flag_colors||[]).join(', ')}</div></div>
+        </div></div>
+      <div class="ds"><div class="dst">Химна</div>
+        <div class="anthem-block">
+          <div class="anthem-title-text">${r.anthem_title||'—'}</div>
+          <div class="anthem-notes">${r.anthem_notes_mk||''}</div>
+          ${instrBadge}
+        </div></div>
+      <div class="ds"><div class="dst">Грб</div><div class="notes-block">${r.coat_of_arms_summary_mk||'—'}</div></div>
+      ${r.notes_mk?`<div class="ds"><div class="dst">Протоколарни белешки</div><div class="notes-block">${r.notes_mk}</div></div>`:''}
+      <div class="ds"><div class="dst">Верифицирани извори</div>
+        <div class="sources-list">${(r.sources||[]).map(s=>`<span class="source-pill">${s}</span>`).join('')}</div>
+      </div>
+    </div>`;
+}
+
+function renderQA() {
+  const get = id => DB.find(r=>r.id===id);
+  const eu=get('EU'),hu=get('HU'),al=get('AL'),kz=get('KZ'),es=get('ES');
+  const stateInstr = DB.filter(r=>r.anthem_officially_instrumental&&r.type==='state');
+  const supraInstr = DB.filter(r=>r.anthem_officially_instrumental&&r.type!=='state');
+  const instrTxt = 'Суверени: ' + stateInstr.map(r=>r.name_mk).join(', ') +
+    (supraInstr.length ? '. Наднационални: ' + supraInstr.map(r=>r.name_mk).join(', ') : '') + '.';
+  const qas = [
+    {q:'Дали Унгарија има орел на знамето?',a:hu?'Не. Знамето е трицветна (горна '+(hu.flag_colors||[])[0]+', средна бела, долна зелена) без симболи.':'–',id:'HU'},
+    {q:'Колку ѕвезди има на знамето на ЕУ?',a:eu?eu.flag_stars+' ѕвезди.':'–',id:'EU'},
+    {q:'Која е химната на Шпанија?',a:es?es.anthem_title+' — официјално инструментална.':'–',id:'ES'},
+    {q:'Кои химни се официјално инструментални?',a:instrTxt,id:null},
+    {q:'Кој е главен град на Албанија?',a:al?al.capital:'–',id:'AL'},
+    {q:'На кој континент е Казахстан?',a:kz?kz.continent:'–',id:'KZ'},
+  ];
+  document.getElementById('qaGrid').innerHTML = qas.map(qa=>`
+    <div class="qa-card" onclick="${qa.id?`showDetail('${qa.id}')`:''}">
+      <div class="qa-q">${qa.q}</div><div class="qa-a">${qa.a}</div>
+      <div class="qa-verified">✓ Верифициран · countries.json</div>
+    </div>`).join('');
+}
+init();
+</script>
+</body>
+</html>
