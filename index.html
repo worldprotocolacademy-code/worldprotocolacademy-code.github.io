@@ -237,9 +237,9 @@ section{padding:88px 0}
 .footer-col a{font-size:13.5px;color:rgba(255,255,255,.55);transition:color .18s}
 .footer-col a:hover{color:var(--goldl)}
 .footer-divider{height:1px;background:rgba(255,255,255,.07);margin-bottom:24px}
-.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.footer-bottom p{font-size:12.5px;color:rgba(255,255,255,.35)}
-.footer-bottom a{color:rgba(255,255,255,.4);transition:color .18s}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:8px}
+.footer-bottom p{font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.2px}
+.footer-bottom a{color:rgba(255,255,255,.5);transition:color .18s}
 .footer-bottom a:hover{color:var(--goldl)}
 
 .pill{display:inline-flex;align-items:center;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--white);color:var(--navy);font-size:12px;font-weight:500;font-family:var(--fb)}
@@ -261,10 +261,10 @@ section{padding:88px 0}
 
 /* BOT */
 .bot-wrap{position:fixed;right:24px;bottom:24px;z-index:99999;font-family:var(--fb)}
-.bot-toggle{width:64px;height:64px;border:none;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--goldl);font-size:24px;cursor:pointer;box-shadow:0 8px 32px rgba(13,31,60,.35),0 0 0 3px rgba(201,168,76,.2);transition:transform .22s,box-shadow .22s;display:flex;align-items:center;justify-content:center}
+.bot-toggle{width:64px;height:64px;border:none;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--goldl);font-size:24px;cursor:pointer;box-shadow:0 8px 32px rgba(13,31,60,.35),0 0 0 3px rgba(201,168,76,.2);transition:transform .22s,box-shadow .22s;display:flex;align-items:center;justify-content:center;background-image:url(https://worldprotocolacademy-code.github.io/logo.png);background-size:40px 40px;background-repeat:no-repeat;background-position:center}
 .bot-toggle:hover{transform:scale(1.06);box-shadow:0 12px 48px rgba(13,31,60,.45),0 0 0 4px rgba(201,168,76,.35)}
-.bot-toggle svg{width:26px;height:26px;fill:none;stroke:var(--goldl);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.bot-panel{display:none;flex-direction:column;width:400px;max-width:calc(100vw - 24px);height:600px;max-height:80vh;margin-bottom:12px;border-radius:12px;overflow:hidden;background:var(--white);box-shadow:0 24px 80px rgba(13,31,60,.28),0 0 0 1px rgba(201,168,76,.15)}
+.bot-toggle svg{width:26px;height:26px;fill:none;stroke:var(--goldl);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:none}
+.bot-panel{display:none;flex-direction:column;position:relative;z-index:100000;width:400px;max-width:calc(100vw - 24px);height:600px;max-height:80vh;margin-bottom:12px;border-radius:12px;overflow:hidden;background:var(--white);box-shadow:0 24px 80px rgba(13,31,60,.28),0 0 0 1px rgba(201,168,76,.15)}
 .bot-panel.open{display:flex}
 .bot-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--white);border-bottom:1px solid rgba(201,168,76,.2)}
 .bot-title{font-weight:700;font-size:15px;letter-spacing:.2px;font-family:var(--fd)}
@@ -304,6 +304,8 @@ section{padding:88px 0}
   .matrix-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:860px){
+  .meetings-grid{grid-template-columns:1fr!important}
+
   .nav{flex-wrap:wrap}
   .nav-center{order:3;width:100%;overflow-x:auto}
   .site-nav ul{flex-wrap:nowrap;padding-bottom:4px}
@@ -389,11 +391,41 @@ section{padding:88px 0}
       <button type="button" class="menu-toggle" id="mToggle" data-t="menuBtn">Мени</button>
       <div class="lang-sw">
         <label for="pageLang" data-t="langLabel">Јазик</label>
-        <select id="pageLang" aria-label="Изберете јазик">
-          <option value="mk">MK</option><option value="en">EN</option><option value="de">DE</option>
-          <option value="fr">FR</option><option value="it">IT</option><option value="es">ES</option>
-          <option value="sq">SQ</option><option value="tr">TR</option><option value="hr">HR</option>
-          <option value="bs">BS</option><option value="sl">SL</option>
+        <select id="pageLang" aria-label="Select language">
+          <option value="mk">MK — Македонски</option>
+          <option value="en">EN — English</option>
+          <option value="de">DE — Deutsch</option>
+          <option value="fr">FR — Français</option>
+          <option value="it">IT — Italiano</option>
+          <option value="es">ES — Español</option>
+          <option value="pt">PT — Português</option>
+          <option value="nl">NL — Nederlands</option>
+          <option value="pl">PL — Polski</option>
+          <option value="ru">RU — Русский</option>
+          <option value="uk">UK — Українська</option>
+          <option value="tr">TR — Türkçe</option>
+          <option value="el">EL — Ελληνικά</option>
+          <option value="sq">SQ — Shqip</option>
+          <option value="sr">SR — Српски</option>
+          <option value="hr">HR — Hrvatski</option>
+          <option value="bs">BS — Bosanski</option>
+          <option value="bg">BG — Български</option>
+          <option value="ro">RO — Română</option>
+          <option value="hu">HU — Magyar</option>
+          <option value="cs">CS — Čeština</option>
+          <option value="sv">SV — Svenska</option>
+          <option value="da">DA — Dansk</option>
+          <option value="fi">FI — Suomi</option>
+          <option value="ar">AR — العربية</option>
+          <option value="hi">HI — हिन्दी</option>
+          <option value="zh">ZH — 中文(简体)</option>
+          <option value="zht">ZHT — 中文(繁體)</option>
+          <option value="ja">JA — 日本語</option>
+          <option value="ko">KO — 한국어</option>
+          <option value="sw">SW — Kiswahili</option>
+          <option value="am">AM — አማርኛ</option>
+          <option value="af">AF — Afrikaans</option>
+          <option value="ha">HA — Hausa</option>
         </select>
       </div>
     </div>
@@ -516,7 +548,7 @@ section{padding:88px 0}
       <div class="platform-card">
         <div class="card-kicker">Публикациски слој</div>
         <h4>Книги и трудови</h4>
-        <p>5 монографии и прирачници, 1 докторска дисертација и 17 научни труда (23 вкупно). Интелектуалното јадро и академскиот авторитет на World Protocol Academy.</p>
+        <p>5 монографии и прирачници, 1 докторска дисертација и 17 научни трудови и прилози (23 вкупно). Интелектуалното јадро и академскиот авторитет на World Protocol Academy.</p>
         <a class="card-link" href="https://worldprotocolacademy-code.github.io/papers.html">Отвори Papers</a>
       </div>
     </div>
@@ -555,7 +587,7 @@ section{padding:88px 0}
       <p class="section-lead" data-t="aboutP">World Protocol Academy е замислена како премиум хибрид меѓу академија, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.</p>
     </div>
     <div class="g3">
-      <div class="card"><span class="card-kicker" data-t="about1Kick">Академска тежина</span><h4 data-t="about1H4">Авторитет поткрепен со истражување</h4><p data-t="about1P">5 монографии, 1 дисертација, 17 научни труда и сериозна академска интелектуална база.</p></div>
+      <div class="card"><span class="card-kicker" data-t="about1Kick">Академска тежина</span><h4 data-t="about1H4">Авторитет поткрепен со истражување</h4><p data-t="about1P">5 монографии, 1 дисертација, 17 научни трудови и прилози и сериозна академска интелектуална база.</p></div>
       <div class="card"><span class="card-kicker" data-t="about2Kick">Професионална релевантност</span><h4 data-t="about2H4">Институционална применливост</h4><p data-t="about2P">Создадена за министерства, амбасади, протоколарни службеници, јавни институции и извршни лица.</p></div>
       <div class="card"><span class="card-kicker" data-t="about3Kick">Дигитална иновација</span><h4 data-t="about3H4">AI, тестирање и модерно учење</h4><p data-t="about3P">Virtual Sande, структурирано оценување, иден мотор со 2000 прашања и интелигентни патеки за ревизија.</p></div>
     </div>
@@ -727,11 +759,48 @@ section{padding:88px 0}
 
 <section id="sessions" class="accent">
   <div class="container">
-    <div class="sh"><div class="section-label" data-t="sessLabel">Онлајн сесии</div><h3 class="section-title" data-t="sessH3">Meet, Zoom и Webex како дел од испораката.</h3></div>
+    <div class="sh">
+      <div class="section-label">Онлајн средби</div>
+      <h3 class="section-title">Онлајн средби и академски сесии</h3>
+      <p class="section-lead">За консултации, онлајн сесии, институционални состаноци и координација.</p>
+    </div>
     <div class="g3">
-      <div class="card"><h4 data-t="sess1H4">Google Meet</h4><p data-t="sess1P">Погоден за академски сесии, кратки протоколарни брифинзи и индивидуални консултации.</p></div>
-      <div class="card"><h4 data-t="sess2H4">Zoom</h4><p data-t="sess2P">Идеален за групни masterclass програми, вебинари, сертификациски часови и презентации.</p></div>
-      <div class="card"><h4 data-t="sess3H4">Webex</h4><p data-t="sess3P">Професионален формат за институционални и корпоративни средини со повисока формалност.</p></div>
+      <a href="https://meet.google.com/" target="_blank" rel="noopener" style="text-decoration:none;display:block;height:100%">
+        <div class="card" style="height:100%;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--goldl)" stroke-width="1.8" stroke-linecap="round"><path d="M15 10l4.55-2.97A1 1 0 0121 8v8a1 1 0 01-1.45.89L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+            </div>
+            <h4 style="font-family:var(--fd);font-size:20px;color:var(--navy)">Google Meet</h4>
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.65">Академски сесии, кратки брифинзи, индивидуални консултации</p>
+          <span style="display:inline-flex;align-items:center;gap:4px;margin-top:14px;color:var(--goldd);font-size:13px;font-weight:600;font-family:var(--fb)">Отвори Meet →</span>
+        </div>
+      </a>
+      <a href="https://zoom.us/" target="_blank" rel="noopener" style="text-decoration:none;display:block;height:100%">
+        <div class="card" style="height:100%;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--goldl)" stroke-width="1.8" stroke-linecap="round"><path d="M15 10l4.55-2.97A1 1 0 0121 8v8a1 1 0 01-1.45.89L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+            </div>
+            <h4 style="font-family:var(--fd);font-size:20px;color:var(--navy)">Zoom</h4>
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.65">Групни masterclass, вебинари, сертификациски часови</p>
+          <span style="display:inline-flex;align-items:center;gap:4px;margin-top:14px;color:var(--goldd);font-size:13px;font-weight:600;font-family:var(--fb)">Отвори Zoom →</span>
+        </div>
+      </a>
+      <a href="https://www.webex.com/" target="_blank" rel="noopener" style="text-decoration:none;display:block;height:100%">
+        <div class="card" style="height:100%;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="width:40px;height:40px;border-radius:8px;background:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--goldl)" stroke-width="1.8" stroke-linecap="round"><path d="M15 10l4.55-2.97A1 1 0 0121 8v8a1 1 0 01-1.45.89L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+            </div>
+            <h4 style="font-family:var(--fd);font-size:20px;color:var(--navy)">Webex</h4>
+          </div>
+          <p style="color:var(--muted);font-size:14px;line-height:1.65">Институционални и корпоративни средини, формален формат</p>
+          <span style="display:inline-flex;align-items:center;gap:4px;margin-top:14px;color:var(--goldd);font-size:13px;font-weight:600;font-family:var(--fb)">Отвори Webex →</span>
+        </div>
+      </a>
     </div>
   </div>
 </section>
@@ -817,7 +886,36 @@ section{padding:88px 0}
       <div class="price-card"><div class="price-badge">Academic Pro</div><h4 data-t="pr3H4">Академско ниво</h4><div class="price-amount">€19.99 <span>/ месечно</span></div><p class="price-text" data-t="pr3Text">За студенти, истражувачи и сериозна академска подготовка.</p><ul class="price-list"><li>Advanced lesson paths</li><li>Подготовка за сертификати</li><li>Академски Virtual Sande</li></ul><a class="btn btn-outline price-btn" href="/cdn-cgi/l/email-protection#a2d5cdd0cec6d2d0cdd6cdc1cdcec3c1c3c6c7cfdbe2c5cfc3cbce8cc1cdcf" data-t="pr3Btn">Контактирај за Academic</a></div>
       <div class="price-card"><div class="price-badge">Institutional</div><h4 data-t="pr4H4">Executive / Institutional</h4><div class="price-amount" style="font-size:26px">По договор</div><p class="price-text" data-t="pr4Text">За министерства, амбасади, универзитети и извршни тимови.</p><ul class="price-list"><li>Custom training packages</li><li>Meet / Zoom / Webex</li><li>Годишни партнерства</li></ul><a class="btn btn-navy price-btn" href="/cdn-cgi/l/email-protection#25524a57494155574a514a464a494446444140485c654248444c490b464a48" data-t="pr4Btn">Побарај понуда</a></div>
     </div>
-    <div class="card" style="padding:24px"><h4 style="font-family:var(--fd);font-size:20px;color:var(--navy);margin-bottom:10px">Достапни начини на плаќање</h4><p style="color:var(--muted);font-size:14px;margin-bottom:12px">Stripe и PayPal интеграцијата е во подготовка. За претплата: <a href="/cdn-cgi/l/email-protection#8ff8e0fde3ebfffde0fbe0ece0e3eeeceeebeae2f6cfe8e2eee6e3a1ece0e2" style="color:var(--goldd)">[email&#160;protected]</a></p><div style="display:flex;flex-wrap:wrap;gap:8px"><span class="pill">Stripe</span><span class="pill">PayPal</span><span class="pill">Visa</span><span class="pill">Mastercard</span></div></div>
+    <div style="padding:28px 30px;border:1px solid var(--line);border-radius:var(--r2);background:var(--white);box-shadow:var(--sh)">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px">
+        <div>
+          <div class="section-label" style="margin-bottom:6px">Начини на плаќање</div>
+          <h4 style="font-family:var(--fd);font-size:20px;color:var(--navy)">Достапни платежни опции</h4>
+        </div>
+        <a href="mailto:worldprotocolacademy@gmail.com" class="btn btn-outline btn-sm">Контактирај за претплата →</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+        <a href="https://stripe.com/" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream);text-decoration:none;transition:border-color .18s,transform .18s" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--navy)" stroke-width="1.6"/><line x1="2" y1="10" x2="22" y2="10" stroke="var(--navy)" stroke-width="1.6"/></svg>
+          <span style="font-size:12px;font-weight:700;color:var(--navy);font-family:var(--fb);letter-spacing:.3px">Stripe</span>
+        </a>
+        <a href="https://www.paypal.com/" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream);text-decoration:none;transition:border-color .18s,transform .18s" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 4C9 4 6.5 6 6 8.5c-.7 3.5 2 5.5 4 6.5 2-1 4.7-3 4-6.5C13.5 6 15 4 12 4z" stroke="var(--navy)" stroke-width="1.5"/><path d="M8 14c-2 1-4 3-3.5 5.5C5 21 8 21.5 12 21.5s7-.5 7.5-2C20 17 18 15 16 14" stroke="var(--navy)" stroke-width="1.5"/></svg>
+          <span style="font-size:12px;font-weight:700;color:var(--navy);font-family:var(--fb);letter-spacing:.3px">PayPal</span>
+        </a>
+        <a href="https://www.visa.com/" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream);text-decoration:none;transition:border-color .18s,transform .18s" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--navy)" stroke-width="1.6"/><circle cx="9" cy="12" r="3" stroke="#c9a84c" stroke-width="1.5"/><circle cx="15" cy="12" r="3" stroke="var(--navy)" stroke-width="1.5"/></svg>
+          <span style="font-size:12px;font-weight:700;color:var(--navy);font-family:var(--fb);letter-spacing:.3px">Visa</span>
+        </a>
+        <a href="https://www.mastercard.com/" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream);text-decoration:none;transition:border-color .18s,transform .18s" onmouseover="this.style.borderColor='var(--gold)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="14" rx="2" stroke="var(--navy)" stroke-width="1.6"/><circle cx="8.5" cy="12" r="3" fill="#c9a84c" opacity=".6"/><circle cx="15.5" cy="12" r="3" fill="var(--navy)" opacity=".6"/></svg>
+          <span style="font-size:12px;font-weight:700;color:var(--navy);font-family:var(--fb);letter-spacing:.3px">Mastercard</span>
+        </a>
+      </div>
+      <p id="pricing-contact" style="font-size:13px;color:var(--muted);padding-top:14px;border-top:1px solid var(--line)">
+        За активирање на претплата контактирајте: <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--goldd);font-weight:600">worldprotocolacademy@gmail.com</a> — директни checkout линкови ќе бидат достапни со активирање на платежниот портал.
+      </p>
+    </div></div>
   </div>
 </section>
 
@@ -826,8 +924,8 @@ section{padding:88px 0}
   <div class="container">
     <div class="sh"><div class="section-label" data-t="pubLabel">Публикации</div><h3 class="section-title" data-t="pubH3">Интелектуалната основа на WPA.</h3></div>
     <div class="hub-grid">
-      <div class="hub"><h4>Книги и монографии</h4><p>5 монографии и прирачници, 1 докторска дисертација, 17 научни труда — 23 публикации вкупно.</p><div class="pills"><span class="pill">5 монографии и прирачници</span><span class="pill">1 докторска дисертација</span><span class="pill">17 научни труда</span></div><a class="hub-link" href="/bibliography/">Разгледајте ја библиографијата →</a></div>
-      <div class="hub"><h4>Научни трудови</h4><p>17 научни и конференциски труда со отворен PDF пристап.</p><div class="pills"><span class="pill">17 труда</span><span class="pill">Отворен PDF пристап</span></div><a class="hub-link" href="https://worldprotocolacademy-code.github.io/papers.html">Отворете ги трудовите →</a></div>
+      <div class="hub"><h4>Книги и монографии</h4><p>5 монографии и прирачници, 1 докторска дисертација, 17 научни трудови и прилози — 23 публикации вкупно.</p><div class="pills"><span class="pill">5 монографии и прирачници</span><span class="pill">1 докторска дисертација</span><span class="pill">17 научни трудови и прилози</span></div><a class="hub-link" href="/bibliography/">Разгледајте ја библиографијата →</a></div>
+      <div class="hub"><h4>Научни трудови</h4><p>17 научни трудови и прилози со отворен PDF пристап.</p><div class="pills"><span class="pill">17 труда</span><span class="pill">Отворен PDF пристап</span></div><a class="hub-link" href="https://worldprotocolacademy-code.github.io/papers.html">Отворете ги трудовите →</a></div>
     </div>
     <div class="pub-grid">
       <div class="pub-card"><div class="pub-cover"><img src="https://worldprotocolacademy-code.github.io/state-protocol-cover.jpg" alt="Државен протокол" onerror="this.style.display='none'"/><div class="pub-spine">Државен протокол</div></div><div class="pub-body"><h4>Државен протокол</h4><p>Протоколарни системи и институционална логика.</p><a href="https://worldprotocolacademy-code.github.io/book1-protocol.html">Отворете →</a></div></div>
@@ -893,7 +991,7 @@ section{padding:88px 0}
       <div class="founder-content">
         <h3 style="font-family:var(--fp);font-size:36px;color:var(--navy);margin-bottom:6px" data-t="founderName">Доц. д-р Санде Смиљанов</h3>
         <p class="founder-title">Основач и директор на World Protocol Academy</p>
-        <p data-t="founderBio">Основач на World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 17 научни и конференциски труда (23 публикации вкупно).</p>
+        <p data-t="founderBio">Основач на World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 17 научни трудови и прилози (23 вкупно публикации).</p>
         <p data-t="founderDoc">25+ години практично дипломатско и протоколарно искуство.</p>
         <div class="doctrine"><p>„Преговарањето е опционално.<br>Протоколот е апсолутен."</p><small>— Доктрина на Доц. д-р Санде Смиљанов</small></div>
         <p data-t="founderModel" style="margin-top:16px">WPA е изградена врз модел воден од основач кој комбинира реално институционално искуство, академски публикации, структурирано учење и архитектура насочена кон иднината.</p>
@@ -990,6 +1088,8 @@ section{padding:88px 0}
 </main>
 
 <!-- FOOTER -->
+
+
 <footer class="footer">
   <div class="container">
     <div class="footer-top">
@@ -1037,21 +1137,24 @@ section{padding:88px 0}
       </div>
       <div class="footer-col">
         <h5 data-t="ftContact">Контакт</h5>
-        <ul>
-          <li><a href="/cdn-cgi/l/email-protection#d2a5bda0beb6a2a0bda6bdb1bdbeb3b1b3b6b7bfab92b5bfb3bbbefcb1bdbf">[email&#160;protected]</a></li>
-          <li><a href="https://worldprotocolacademy-code.github.io/privacy.html">Privacy</a></li>
-          <li><a href="https://worldprotocolacademy-code.github.io/rights-takedown.html">Rights &amp; Takedown</a></li>
+        <div style="margin-bottom:14px">
+          <a href="/cdn-cgi/l/email-protection#d2a5bda0beb6a2a0bda6bdb1bdbeb3b1b3b6b7bfab92b5bfb3bbbefcb1bdbf" style="font-size:13.5px;color:rgba(255,255,255,.82);font-weight:600;font-family:var(--fb);display:block;line-height:1.5">[email&#160;protected]</a>
+          <span style="font-size:11px;color:rgba(255,255,255,.32);font-family:var(--fb);margin-top:3px;display:block">Главен контакт · WPA</span>
+        </div>
+        <ul style="display:grid;gap:8px">
+          <li><a href="https://worldprotocolacademy-code.github.io/privacy.html" style="font-size:13px;color:rgba(255,255,255,.52)">Privacy Policy</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/rights-takedown.html" style="font-size:13px;color:rgba(255,255,255,.52)">Rights &amp; Takedown</a></li>
         </ul>
-        <p style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.28)">Skopje, North Macedonia</p>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07)">
+          <p style="font-size:12.5px;color:rgba(255,255,255,.72);font-weight:500;font-size:14px;letter-spacing:.3px">1000 Скопје, Северна Македонија</p>
+          <p style="font-size:11.5px;color:rgba(255,255,255,.3);margin-top:4px">World Protocol Academy · WPA</p>
+        </div>
       </div>
     </div>
-    <div class="footer-divider"></div>
-    <div class="footer-bottom">
-      <p><a href="/cdn-cgi/l/email-protection#681f071a040c181a071c070b0704090b090c0d0511280f05090104460b0705">[email&#160;protected]</a></p>
-      <p>© <span id="year"></span> World Protocol Academy. Сите права се задржани.</p>
-    </div>
+    
   </div>
 </footer>
+
 
 <!-- VIRTUAL SANDE BOT -->
 <div class="bot-wrap">
@@ -1062,12 +1165,32 @@ section{padding:88px 0}
     </div>
     <div class="bot-tb">
       <select id="botLang" aria-label="Bot language">
-        <option value="mk">Македонски</option><option value="en">English</option>
-        <option value="de">Deutsch</option><option value="fr">Français</option>
-        <option value="it">Italiano</option><option value="es">Español</option>
-        <option value="sq">Shqip</option><option value="tr">Türkçe</option>
-        <option value="hr">Hrvatski</option><option value="bs">Bosanski</option>
-        <option value="sl">Slovenščina</option>
+        <option value="mk">Македонски</option>
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="fr">Français</option>
+        <option value="it">Italiano</option>
+        <option value="es">Español</option>
+        <option value="pt">Português</option>
+        <option value="nl">Nederlands</option>
+        <option value="pl">Polski</option>
+        <option value="ru">Русский</option>
+        <option value="uk">Українська</option>
+        <option value="tr">Türkçe</option>
+        <option value="el">Ελληνικά</option>
+        <option value="sq">Shqip</option>
+        <option value="sr">Srpski</option>
+        <option value="hr">Hrvatski</option>
+        <option value="bs">Bosanski</option>
+        <option value="bg">Български</option>
+        <option value="ro">Română</option>
+        <option value="ar">العربية</option>
+        <option value="hi">हिन्दी</option>
+        <option value="zh">中文(简体)</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="sw">Kiswahili</option>
+        <option value="am">አማርኛ</option>
       </select>
       <button type="button" id="botClear">Исчисти</button>
       <div class="bot-status" id="botStatus"></div>
@@ -1081,14 +1204,17 @@ section{padding:88px 0}
       <div class="bot-note" id="botNote">Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.</div>
     </div>
   </div>
-  <button class="bot-toggle" id="botToggle" aria-label="Open Virtual Sande AI">
+  <button class="bot-toggle" id="botToggle" aria-label="Open Virtual Sande AI" aria-expanded="false">
     <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   </button>
 </div>
 
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ============================================================
-   WPA TRANSLATIONS — v3.0 (mk + en core, others inherit)
+   WPA TRANSLATIONS v4.0 — Production-safe, 33-language system
+   mk + en = full translations; all others extend en with
+   language-specific UI labels. Single init, no race conditions.
    ============================================================ */
 const WPA_TRANSLATIONS = {
   mk: {
@@ -1113,66 +1239,56 @@ const WPA_TRANSLATIONS = {
     hl4:'<strong>Публикации</strong>книги, трудови и авторитет поткрепен со истражување',
     hl5:'<strong>Институционален</strong>министерства, амбасади, универзитети',
     hl6:'<strong>Тренерски слој</strong>train-the-trainer и консултантско ниво',
-    platformLabel:'WPA Платформа',
-    platformH3:'Централен влез во дигиталната архитектура на WPA.',
-    platformP:'WPA останува куќата и институцијата. Во неа влегуваат WPAWS, Protocol Symbols Lab и поддржувачките модули.',
-    aboutLabel:'За WPA',aboutH3:'Нов стандард во образованието за протокол.',
-    aboutP:'World Protocol Academy е замислена како премиум хибрид меѓу академија, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.',
-    about1Kick:'Академска тежина',about1H4:'Авторитет поткрепен со истражување',about1P:'5 монографии, 1 дисертација, 17 научни труда и сериозна академска интелектуална база.',
+    platformLabel:'WPA Платформа',platformH3:'Централен влез во дигиталната архитектура на WPA.',platformP:'WPA останува куќата и институцијата. Во неа влегуваат WPAWS, Protocol Symbols Lab и поддржувачките модули.',
+    aboutLabel:'За WPA',aboutH3:'Нов стандард во образованието за протокол.',aboutP:'World Protocol Academy е замислена како премиум хибрид меѓу академија, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.',
+    about1Kick:'Академска тежина',about1H4:'Авторитет поткрепен со истражување',about1P:'5 монографии и прирачници, 1 дисертација, 17 научни трудови и прилози — сериозна академска база.',
     about2Kick:'Професионална релевантност',about2H4:'Институционална применливост',about2P:'Создадена за министерства, амбасади, протоколарни службеници, јавни институции и извршни лица.',
-    about3Kick:'Дигитална иновација',about3H4:'AI, тестирање и модерно учење',about3P:'Virtual Sande, структурирано оценување, иден мотор со 2000 прашања и интелигентни патеки за ревизија.',
+    about3Kick:'Дигитална иновација',about3H4:'AI, тестирање и модерно учење',about3P:'Virtual Sande, структурирано оценување и интелигентни патеки за ревизија.',
     famLabel:'Програмски семејства',famH3:'Интегрирани столбови на учење на WPA.',
-    fam1H4:'Протокол, дипломатија и институционален поредок',
-    fam2H4:'Комуникација, односи со јавност и јавна појава',
-    fam3H4:'Бон-тон, етикеција и професионално однесување',
-    fam4H4:'Безбедност, подготвеност и напреден професионализам',
+    fam1H4:'Протокол, дипломатија и институционален поредок',fam2H4:'Комуникација, односи со јавност и јавна појава',
+    fam3H4:'Бон-тон, етикеција и професионално однесување',fam4H4:'Безбедност, подготвеност и напреден професионализам',
     fmtLabel:'Формати на обука',fmtH3:'Флексибилна испорака, сериозна структура.',
     fmt1H4:'Онлајн во живо',fmt1P:'Структурирани виртуелни сесии и masterclass формати.',
     fmt2H4:'Самостојно темпо',fmt2P:'Независни дигитални модули со AI-водена ревизија.',
     fmt3H4:'Интензиви во живо',fmt3P:'Фокусирани executive-style програми.',
     fmt4H4:'Институционални групи',fmt4P:'Прилагодени обуки за министерства, амбасади и тимови.',
-    whoLabel:'За кого е WPA',whoH3:'Од протоколарни професионалци до пошироки јавни и професионални улоги.',whoP:'WPA е намерно поставена да им служи и на средини со висока протоколарна одговорност и на пошироки професионални целни групи.',
+    whoLabel:'За кого е WPA',whoH3:'Од протоколарни професионалци до пошироки јавни и професионални улоги.',whoP:'WPA е намерно поставена да им служи и на средини со висока протоколарна одговорност и на пошироки целни групи.',
     who1H4:'Институции и јавен сервис',who2H4:'Професионални и извршни улоги',who3H4:'Поширока публика за учење',
-    sessLabel:'Онлајн сесии',sessH3:'Meet, Zoom и Webex.',sessP:'WPA функционира преку контролирани виртуелни сесии.',
-    sess1H4:'Google Meet',sess1P:'За академски сесии и индивидуални консултации.',
-    sess2H4:'Zoom',sess2P:'За групни masterclass и вебинари.',
-    sess3H4:'Webex',sess3P:'За институционални и корпоративни средини.',
-    certLabel:'Сертификација',certH3:'Учење со доказ, прогресија и кредибилитет.',
-    certP:'WPA сертификацијата е замислена како структурирана професионална скала.',
+    sessLabel:'Онлајн средби',sessH3:'Онлајн средби и академски сесии',sessP:'За консултации, онлајн сесии, институционални состаноци и координација.',
+    sess1H4:'Google Meet',sess1P:'Академски сесии, кратки брифинзи, индивидуални консултации.',
+    sess2H4:'Zoom',sess2P:'Групни masterclass, вебинари, сертификациски часови.',
+    sess3H4:'Webex',sess3P:'Институционални и корпоративни средини, формален формат.',
+    certLabel:'Сертификација',certH3:'Учење со доказ, прогресија и кредибилитет.',certP:'WPA сертификацијата е замислена како структурирана професионална скала.',
     cert1H4:'Foundation Certificate',cert1P:'Фундаменти на протокол, етикеција, бон-тон и институционално однесување.',
     cert2H4:'Professional Certificate',cert2P:'Државен и дипломатски протокол, официјални посети и формална координација.',
     cert3H4:'Advanced Certificate',cert3P:'Протокол, безбедност, комуникација и мултилатерална подготвеност.',
     cert4H4:'Trainer / Consultant Track',cert4P:'Идни обучувачи и напредни едукатори во протокол.',
     certDisclaimer:'Идните WPA сертификати ќе вклучуваат логика на оценување, сериски броеви и дигитален модел на верификација.',
-    aiLabel:'AI протокол асистент',aiH3:'Virtual Sande — ментор, коуч и протоколарен советник.',
-    aiP:'AI слојот на WPA е создаден да поддржи учење, ревизија, протоколарни сценарија и самопроценка.',
+    aiLabel:'AI протокол асистент',aiH3:'Virtual Sande — ментор, коуч и протоколарен советник.',aiP:'AI слојот на WPA е создаден да поддржи учење, ревизија, протоколарни сценарија и самопроценка.',
     ai1Kick:'Мод 1',ai1H4:'Учи',ai1P:'Дефиниции, структурирани објаснувања и академско водење.',
     ai2Kick:'Мод 2',ai2H4:'Вежбај',ai2P:'Мини-тестови, прашања за вежбање и испитни подготовки.',
     ai3Kick:'Мод 3',ai3H4:'Советувај',ai3P:'Насоки за седење, пресеанс, посети и формално однесување.',
     ai4Kick:'Мод 4',ai4H4:'Коуч',ai4P:'Поддршка за јавно говорење, камера и институционални пораки.',
-    instLabel:'Институционална обука',instH3:'Структурирана, прилагодена и извршно подготвена.',
-    instP:'WPA е замислена не само за индивидуални учесници, туку и за министерства, амбасади, универзитети и извршни тимови.',
+    instLabel:'Институционална обука',instH3:'Структурирана, прилагодена и извршно подготвена.',instP:'WPA е замислена не само за индивидуални учесници, туку и за министерства, амбасади, универзитети и извршни тимови.',
     inst1H4:'Структурирани институционални програми',inst1P:'Подолги модуларни процеси за протоколарни тимови.',
     inst2H4:'Извршни брифинзи',inst2P:'Кратка, фокусирана и висококвалитетна подготовка.',
     inst3H4:'Годишни советодавни партнерства',inst3P:'Континуирана поддршка и прилагоден институционален развој.',
     inst4H4:'Дигитални пакети за учење',inst4P:'Прилагодени материјали, квизови и AI поддршка.',
-    pricingLabel:'Пристап и членство',pricingH3:'Изберете го нивото.',
-    pricingP:'WPA комбинира бесплатен пристап за основно учење со премиум нивоа.',
+    pricingLabel:'Пристап и членство',pricingH3:'Изберете го нивото.',pricingP:'WPA комбинира бесплатен пристап за основно учење со премиум нивоа.',
     pr1H4:'Основен пристап',pr1Text:'За основни дефиниции и вовед.',pr1Btn:'Започни бесплатно',
     pr2H4:'Професионално ниво',pr2Text:'Premium lessons и напредна подготовка.',pr2Btn:'Контактирај за Pro',
     pr3H4:'Академско ниво',pr3Text:'За студенти и истражувачи.',pr3Btn:'Контактирај за Academic',
     pr4H4:'Executive / Institutional',pr4Text:'За министерства, амбасади и тимови.',pr4Btn:'Побарај понуда',
-    paymentH4:'Достапни начини на плаќање',paymentNote:'Stripe и PayPal во подготовка.',
+    paymentH4:'Достапни платежни опции',paymentNote:'Stripe · PayPal · Visa · Mastercard',
     pubLabel:'Публикации',pubH3:'Интелектуалната основа на WPA.',pubP:'WPA е втемелена во книги, научни публикации и истражувања.',
     presenceLabel:'Поврзување и присуство',presenceH3:'Официјални канали и академско присуство.',
     pres1H4:'Следете ја World Protocol Academy',pres2Kick:'Академски профили',pres2H4:'Академски и институционален отпечаток',
     founderLabel:'Основач',founderH3:'Водена од основач. Академска по дух. Професионална по изведба.',
     founderName:'Доц. д-р Санде Смиљанов',
-    founderBio:'Основач на World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 17 научни трудови.',
+    founderBio:'Основач на World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 17 научни трудови и прилози (23 вкупно публикации).',
     founderDoc:'25+ години практично дипломатско и протоколарно искуство.',
     founderModel:'WPA е изградена врз модел воден од основач кој комбинира реално институционално искуство, академски публикации и структурирано учење.',
-    ctaH3:'Градиме светска академија — со структура, достоинство и јасна насока.',
-    ctaP:'Следните фази ќе додадат посебни страници за програми, сертификација, AI асистент и структурирани патеки за учење.',
+    ctaH3:'Градиме светска академија — со структура, достоинство и јасна насока.',ctaP:'Следните фази ќе додадат посебни страници за програми, сертификација, AI асистент и структурирани патеки за учење.',
     ctaBtn1:'Видете ја логиката на програмите',ctaBtn2:'Истражете ги трудовите',
     openLink:'Отвори →',
     ftWpaDesc:'Независна дигитална академија и професионална платформа за протокол, дипломатија, безбедност и институционална комуникација.',
@@ -1190,9 +1306,8 @@ const WPA_TRANSLATIONS = {
     eyebrow:'Independent Digital Academy · Professional Platform · Global Perspective',
     heroH2:'Where protocol meets diplomacy, security and professional dignity.',
     heroP:'World Protocol Academy is an independent digital academy and professional platform focused on protocol, diplomacy, security, institutional communication and AI-powered learning.',
-    heroBtn1:'Explore the Academy',heroBtn2:'Meet Virtual Sande',
-    heroBtn3:'Open WPAWS',heroBtn4:'Open Protocol Symbols Lab',
-    heroStudentDesk:'Open WPA Student Desk',heroBtn5:'Open WPA Diplomatic Analysis Lab',
+    heroBtn1:'Explore the Academy',heroBtn2:'Meet Virtual Sande',heroBtn3:'Open WPAWS',
+    heroBtn4:'Open Protocol Symbols Lab',heroStudentDesk:'Open WPA Student Desk',heroBtn5:'Open WPA Diplomatic Analysis Lab',
     heroCardH3:'WPA Core Architecture',
     hl1:'<strong>Academic Layer</strong>programmes, modules and structured learning levels',
     hl2:'<strong>Certification</strong>assessment, progression and verified credentials',
@@ -1200,10 +1315,10 @@ const WPA_TRANSLATIONS = {
     hl4:'<strong>Publications</strong>books, papers and research-backed authority',
     hl5:'<strong>Institutional</strong>ministries, embassies, universities',
     hl6:'<strong>Trainer Layer</strong>train-the-trainer and consultant level',
-    platformLabel:'WPA Platform',platformH3:'Central entry into the digital architecture of WPA.',platformP:'WPA remains the house and institution.',
-    aboutLabel:'About WPA',aboutH3:'A new standard in protocol education.',aboutP:'World Protocol Academy is conceived as a premium hybrid between an academy, certification centre and AI-powered learning platform.',
-    about1Kick:'Academic Weight',about1H4:'Research-backed authority',about1P:'5 monographs and handbooks, 1 doctoral dissertation, 17 scientific papers — 23 publications total, with serious academic and institutional authority.',
-    about2Kick:'Professional Relevance',about2H4:'Institutional applicability',about2P:'Designed for ministries, embassies, protocol officers and executives.',
+    platformLabel:'WPA Platform',platformH3:'Central entry into the digital architecture of WPA.',platformP:'WPA remains the house and institution. WPAWS, Protocol Symbols Lab and supporting modules operate within it.',
+    aboutLabel:'About WPA',aboutH3:'A new standard in protocol education.',aboutP:'World Protocol Academy is a premium hybrid between an academy, certification centre and AI-powered learning platform.',
+    about1Kick:'Academic Weight',about1H4:'Research-backed authority',about1P:'5 monographs and handbooks, 1 doctoral dissertation, 17 scientific papers and contributions — serious academic foundation.',
+    about2Kick:'Professional Relevance',about2H4:'Institutional applicability',about2P:'Designed for ministries, embassies, protocol officers, public institutions and executives.',
     about3Kick:'Digital Innovation',about3H4:'AI, testing and modern learning',about3P:'Virtual Sande, structured assessment and intelligent revision paths.',
     famLabel:'Programme Families',famH3:'Integrated learning pillars of WPA.',
     fam1H4:'Protocol, Diplomacy and Institutional Order',fam2H4:'Communication, Public Relations and Public Presence',
@@ -1213,19 +1328,19 @@ const WPA_TRANSLATIONS = {
     fmt2H4:'Self-Paced',fmt2P:'Independent digital modules with AI-guided revision.',
     fmt3H4:'In-Person Intensives',fmt3P:'Focused executive-style programmes.',
     fmt4H4:'Institutional Groups',fmt4P:'Tailored training for ministries, embassies and teams.',
-    whoLabel:'Who WPA Is For',whoH3:'From protocol professionals to broader professional roles.',whoP:'WPA is positioned to serve both high-protocol environments and broader professional target groups.',
+    whoLabel:'Who WPA Is For',whoH3:'From protocol professionals to broader public and professional roles.',whoP:'WPA is positioned to serve both high-protocol environments and broader professional audiences.',
     who1H4:'Institutions & Public Service',who2H4:'Professional & Executive Roles',who3H4:'Broader Learning Audience',
-    sessLabel:'Online Sessions',sessH3:'Meet, Zoom and Webex.',sessP:'WPA operates through controlled virtual sessions.',
-    sess1H4:'Google Meet',sess1P:'For academic sessions and individual consultations.',
-    sess2H4:'Zoom',sess2P:'For group masterclasses and webinars.',
-    sess3H4:'Webex',sess3P:'For institutional and corporate environments.',
-    certLabel:'Certification',certH3:'Learning with proof, progression and credibility.',certP:'WPA certification is a structured professional ladder.',
+    sessLabel:'Online Meetings',sessH3:'Online Meetings and Academic Sessions',sessP:'For consultations, online sessions, institutional meetings and coordination.',
+    sess1H4:'Google Meet',sess1P:'Academic sessions, short briefings, individual consultations.',
+    sess2H4:'Zoom',sess2P:'Group masterclasses, webinars, certification classes.',
+    sess3H4:'Webex',sess3P:'Institutional and corporate environments, formal format.',
+    certLabel:'Certification',certH3:'Learning with proof, progression and credibility.',certP:'WPA certification is designed as a structured professional ladder.',
     cert1H4:'Foundation Certificate',cert1P:'Protocol fundamentals, etiquette, bon ton and institutional behaviour.',
     cert2H4:'Professional Certificate',cert2P:'State and diplomatic protocol, official visits and formal coordination.',
     cert3H4:'Advanced Certificate',cert3P:'Protocol, security, communication and multilateral readiness.',
     cert4H4:'Trainer / Consultant Track',cert4P:'Future trainers and advanced educators in protocol.',
     certDisclaimer:'Future WPA certificates will include assessment logic, serial numbers and a digital verification model.',
-    aiLabel:'AI Protocol Assistant',aiH3:'Virtual Sande — mentor, coach and protocol advisor.',aiP:'The WPA AI layer supports learning, revision and protocol scenarios.',
+    aiLabel:'AI Protocol Assistant',aiH3:'Virtual Sande — mentor, coach and protocol advisor.',aiP:'The WPA AI layer supports learning, revision, protocol scenarios and self-assessment.',
     ai1Kick:'Mode 1',ai1H4:'Learn',ai1P:'Definitions, structured explanations and academic guidance.',
     ai2Kick:'Mode 2',ai2H4:'Practice',ai2P:'Mini-tests, practice questions and exam preparation.',
     ai3Kick:'Mode 3',ai3H4:'Advise',ai3P:'Guidance on seating, precedence, visits and formal behaviour.',
@@ -1240,17 +1355,16 @@ const WPA_TRANSLATIONS = {
     pr2H4:'Professional Level',pr2Text:'Premium lessons and advanced preparation.',pr2Btn:'Contact for Pro',
     pr3H4:'Academic Level',pr3Text:'For students and researchers.',pr3Btn:'Contact for Academic',
     pr4H4:'Executive / Institutional',pr4Text:'For ministries, embassies and teams.',pr4Btn:'Request Quote',
-    paymentH4:'Available Payment Methods',paymentNote:'Stripe and PayPal integration in preparation.',
+    paymentH4:'Available Payment Options',paymentNote:'Stripe · PayPal · Visa · Mastercard',
     pubLabel:'Publications',pubH3:'The intellectual foundation of WPA.',pubP:'WPA is grounded in books, scientific publications and protocol-focused research.',
     presenceLabel:'Connection & Presence',presenceH3:'Official channels and academic presence.',
     pres1H4:'Follow World Protocol Academy',pres2Kick:'Academic profiles',pres2H4:'Academic and institutional footprint',
     founderLabel:'Founder',founderH3:'Founder-led. Academic in spirit. Professional in execution.',
     founderName:'Assoc. Prof. Dr. Sande Smiljanov',
-    founderBio:'Founder of World Protocol Academy. Doctor of Science (Ss. Cyril and Methodius University). Associate Professor at International University Europa Prima. Author of 5 monographs and handbooks, 1 doctoral dissertation and 17 scientific papers (23 publications total).',
+    founderBio:'Founder of World Protocol Academy. Doctor of Science (Ss. Cyril and Methodius University). Associate Professor at International University Europa Prima. Author of 5 monographs and handbooks, 1 doctoral dissertation and 17 scientific papers and contributions (23 publications total).',
     founderDoc:'25+ years of practical diplomatic and protocol experience.',
     founderModel:'WPA is built on a founder-led model combining real institutional experience, academic publications and structured learning.',
-    ctaH3:'Building a world academy — with structure, dignity and clear direction.',
-    ctaP:'Upcoming phases will add dedicated pages for programmes, certification, AI assistant and structured learning paths.',
+    ctaH3:'Building a world academy — with structure, dignity and clear direction.',ctaP:'Upcoming phases will add dedicated pages for programmes, certification, AI assistant and structured learning paths.',
     ctaBtn1:'See the programme logic',ctaBtn2:'Explore the papers',
     openLink:'Open →',
     ftWpaDesc:'Independent digital academy and professional platform focused on protocol, diplomacy, security and institutional communication.',
@@ -1258,142 +1372,448 @@ const WPA_TRANSLATIONS = {
   }
 };
 
-// Other languages fall back to EN
-['de','fr','it','es','sq','tr','hr','bs','sl'].forEach(function(l){
-  WPA_TRANSLATIONS[l] = Object.assign({},WPA_TRANSLATIONS.en);
-});
-// Override specific labels
-WPA_TRANSLATIONS.de.langLabel='Sprache'; WPA_TRANSLATIONS.de.menuBtn='Menü';
-WPA_TRANSLATIONS.fr.langLabel='Langue'; WPA_TRANSLATIONS.fr.menuBtn='Menu';
-WPA_TRANSLATIONS.it.langLabel='Lingua'; WPA_TRANSLATIONS.it.menuBtn='Menu';
-WPA_TRANSLATIONS.es.langLabel='Idioma'; WPA_TRANSLATIONS.es.menuBtn='Menú';
-WPA_TRANSLATIONS.sq.langLabel='Gjuha';  WPA_TRANSLATIONS.sq.menuBtn='Meny';
-WPA_TRANSLATIONS.tr.langLabel='Dil';    WPA_TRANSLATIONS.tr.menuBtn='Menü';
-WPA_TRANSLATIONS.hr.langLabel='Jezik';  WPA_TRANSLATIONS.hr.menuBtn='Izbornik';
-WPA_TRANSLATIONS.bs.langLabel='Jezik';  WPA_TRANSLATIONS.bs.menuBtn='Izbornik';
-WPA_TRANSLATIONS.sl.langLabel='Jezik';  WPA_TRANSLATIONS.sl.menuBtn='Meni';
-
-let _lang = 'mk';
-function t(k){ const d=WPA_TRANSLATIONS[_lang]; return (d&&d[k]!==undefined)?d[k]:(WPA_TRANSLATIONS.mk[k]||''); }
-function applyLang(lang){
-  if(!WPA_TRANSLATIONS[lang])return;
-  _lang=lang;
-  const bar=document.getElementById('tbar');
-  if(bar){bar.classList.add('on');bar.style.width='70%';}
-  document.querySelectorAll('[data-t]').forEach(function(el){
-    const key=el.getAttribute('data-t');
-    const val=t(key);
-    if(val!==undefined&&val!=='')el.innerHTML=val;
+/* All other languages extend EN with UI-specific overrides */
+(function(){
+  var langOverrides = {
+    de:{langLabel:'Sprache',menuBtn:'Menü',navAbout:'Über uns',navProgrammes:'Programme',navCert:'Zertifizierung',navAI:'KI',navBooks:'Bücher',navPricing:'Mitgliedschaft',navFounder:'Gründer',eyebrow:'Unabhängige Digitale Akademie · Professionelle Plattform · Globale Perspektive',heroH2:'Wo Protokoll auf Diplomatie, Sicherheit und professionelle Würde trifft.',heroBtn1:'Akademie erkunden',heroBtn2:'Virtual Sande kennenlernen',pr1Btn:'Kostenlos starten',pr2Btn:'Kontakt für Pro',pr3Btn:'Kontakt für Academic',pr4Btn:'Angebot anfragen',ctaBtn1:'Programmlogik ansehen',ctaBtn2:'Artikel erkunden',ftKeyAreas:'Schlüsselbereiche',ftChannels:'Offizielle Kanäle',ftAcad:'Akademische Profile',ftContact:'Kontakt'},
+    fr:{langLabel:'Langue',menuBtn:'Menu',navAbout:'À propos',navProgrammes:'Programmes',navCert:'Certification',navAI:'IA',navBooks:'Livres',navPricing:'Adhésion',navFounder:'Fondateur',eyebrow:'Académie Numérique Indépendante · Plateforme Professionnelle · Perspective Mondiale',heroH2:'Là où le protocole rencontre la diplomatie, la sécurité et la dignité professionnelle.',heroBtn1:'Explorer l'Académie',heroBtn2:'Rencontrer Virtual Sande',pr1Btn:'Commencer gratuitement',pr2Btn:'Contact pour Pro',pr3Btn:'Contact pour Academic',pr4Btn:'Demander un devis',ctaBtn1:'Voir la logique des programmes',ctaBtn2:'Explorer les articles',ftKeyAreas:'Domaines clés',ftChannels:'Canaux officiels',ftAcad:'Profils académiques',ftContact:'Contact'},
+    it:{langLabel:'Lingua',menuBtn:'Menu',navAbout:'Chi siamo',navProgrammes:'Programmi',navCert:'Certificazione',navAI:'IA',navBooks:'Libri',navPricing:'Membership',navFounder:'Fondatore',heroH2:'Dove il protocollo incontra la diplomazia, la sicurezza e la dignità professionale.',heroBtn1:'Esplora l'Accademia',heroBtn2:'Incontra Virtual Sande',pr1Btn:'Inizia gratis',pr2Btn:'Contatta per Pro',pr3Btn:'Contatta per Academic',pr4Btn:'Richiedi preventivo',ctaBtn1:'Vedi la logica dei programmi',ftKeyAreas:'Aree chiave',ftChannels:'Canali ufficiali',ftAcad:'Profili accademici',ftContact:'Contatto'},
+    es:{langLabel:'Idioma',menuBtn:'Menú',navAbout:'Acerca de',navProgrammes:'Programas',navCert:'Certificación',navAI:'IA',navBooks:'Libros',navPricing:'Membresía',navFounder:'Fundador',heroH2:'Donde el protocolo se encuentra con la diplomacia, la seguridad y la dignidad profesional.',heroBtn1:'Explorar la Academia',heroBtn2:'Conocer Virtual Sande',pr1Btn:'Comenzar gratis',pr2Btn:'Contacto para Pro',pr3Btn:'Contacto para Academic',pr4Btn:'Solicitar presupuesto',ftKeyAreas:'Áreas clave',ftChannels:'Canales oficiales',ftAcad:'Perfiles académicos',ftContact:'Contacto'},
+    pt:{langLabel:'Idioma',menuBtn:'Menu',navAbout:'Sobre',navProgrammes:'Programas',navCert:'Certificação',navAI:'IA',navPricing:'Associação',navFounder:'Fundador',heroH2:'Onde o protocolo encontra a diplomacia, a segurança e a dignidade profissional.',heroBtn1:'Explorar a Academia',heroBtn2:'Conhecer Virtual Sande',pr1Btn:'Começar grátis',pr2Btn:'Contato para Pro',pr4Btn:'Solicitar cotação',ftKeyAreas:'Áreas-chave',ftChannels:'Canais oficiais',ftAcad:'Perfis académicos',ftContact:'Contato'},
+    nl:{langLabel:'Taal',menuBtn:'Menu',navAbout:'Over ons',navProgrammes:'Programma's',navCert:'Certificering',navPricing:'Lidmaatschap',navFounder:'Oprichter',heroH2:'Waar protocol ontmoet diplomatie, veiligheid en professionele waardigheid.',heroBtn1:'Ontdek de Academie',pr1Btn:'Gratis starten',ftKeyAreas:'Kerngebieden',ftChannels:'Officiële kanalen',ftContact:'Contact'},
+    pl:{langLabel:'Język',menuBtn:'Menu',navAbout:'O nas',navProgrammes:'Programy',navCert:'Certyfikacja',navPricing:'Członkostwo',navFounder:'Założyciel',heroH2:'Gdzie protokół spotyka dyplomację, bezpieczeństwo i godność zawodową.',heroBtn1:'Odkryj Akademię',pr1Btn:'Zacznij za darmo',ftKeyAreas:'Kluczowe obszary',ftContact:'Kontakt'},
+    ru:{langLabel:'Язык',menuBtn:'Меню',navAbout:'О нас',navProgrammes:'Программы',navCert:'Сертификация',navAI:'ИИ',navPricing:'Членство',navFounder:'Основатель',heroH2:'Где протокол встречается с дипломатией, безопасностью и профессиональным достоинством.',heroBtn1:'Изучить Академию',heroBtn2:'Познакомиться с Virtual Sande',pr1Btn:'Начать бесплатно',pr4Btn:'Запросить предложение',ftKeyAreas:'Ключевые области',ftChannels:'Официальные каналы',ftContact:'Контакт'},
+    uk:{langLabel:'Мова',menuBtn:'Меню',navAbout:'Про нас',navProgrammes:'Програми',navCert:'Сертифікація',navAI:'ШІ',navPricing:'Членство',navFounder:'Засновник',heroH2:'Де протокол зустрічається з дипломатією, безпекою та професійною гідністю.',heroBtn1:'Досліджуйте Академію',pr1Btn:'Почати безкоштовно',ftKeyAreas:'Ключові сфери',ftContact:'Контакт'},
+    tr:{langLabel:'Dil',menuBtn:'Menü',navAbout:'Hakkında',navProgrammes:'Programlar',navCert:'Sertifikasyon',navAI:'YZ',navPricing:'Üyelik',navFounder:'Kurucu',heroH2:'Protokolün diplomasi, güvenlik ve mesleki onurla buluştuğu yer.',heroBtn1:'Akademiyi Keşfet',heroBtn2:'Virtual Sande ile Tanış',pr1Btn:'Ücretsiz Başla',pr4Btn:'Teklif Al',ftKeyAreas:'Temel Alanlar',ftChannels:'Resmi Kanallar',ftContact:'İletişim'},
+    el:{langLabel:'Γλώσσα',menuBtn:'Μενού',navAbout:'Σχετικά',navProgrammes:'Προγράμματα',navCert:'Πιστοποίηση',navPricing:'Συνδρομή',navFounder:'Ιδρυτής',heroH2:'Όπου το πρωτόκολλο συναντά τη διπλωματία, την ασφάλεια και την επαγγελματική αξιοπρέπεια.',heroBtn1:'Εξερευνήστε την Ακαδημία',pr1Btn:'Ξεκινήστε δωρεάν',ftContact:'Επικοινωνία'},
+    sq:{langLabel:'Gjuha',menuBtn:'Meny',navAbout:'Rreth nesh',navProgrammes:'Programe',navCert:'Çertifikim',navPricing:'Anëtarësi',navFounder:'Themeluesi',heroH2:'Ku protokolli takon diplomacinë, sigurinë dhe dinjitetin profesional.',heroBtn1:'Eksploroni Akademinë',pr1Btn:'Filloni falas',ftContact:'Kontakt'},
+    sr:{langLabel:'Језик',menuBtn:'Мени',navAbout:'О нама',navProgrammes:'Програми',navCert:'Сертификација',navPricing:'Чланство',navFounder:'Оснивач',heroH2:'Где се протокол среће са дипломатијом, безбедношћу и професионалним достојанством.',heroBtn1:'Истражите Академију',pr1Btn:'Почните бесплатно',ftContact:'Контакт'},
+    bs:{langLabel:'Jezik',menuBtn:'Izbornik',navAbout:'O nama',navProgrammes:'Programi',navCert:'Certifikacija',navPricing:'Članstvo',navFounder:'Osnivač',heroH2:'Gdje protokol susreće diplomatiju, sigurnost i profesionalno dostojanstvo.',heroBtn1:'Istražite Akademiju',pr1Btn:'Počnite besplatno',ftContact:'Kontakt'},
+    hr:{langLabel:'Jezik',menuBtn:'Izbornik',navAbout:'O nama',navProgrammes:'Programi',navCert:'Certificiranje',navPricing:'Članstvo',navFounder:'Osnivač',heroH2:'Gdje protokol susreće diplomatiju, sigurnost i profesionalno dostojanstvo.',heroBtn1:'Istražite Akademiju',pr1Btn:'Počnite besplatno',ftContact:'Kontakt'},
+    bg:{langLabel:'Език',menuBtn:'Меню',navAbout:'За нас',navProgrammes:'Програми',navCert:'Сертификация',navPricing:'Членство',navFounder:'Основател',heroH2:'Където протоколът среща дипломацията, сигурността и професионалното достойнство.',heroBtn1:'Разгледайте Академията',pr1Btn:'Започнете безплатно',ftContact:'Контакт'},
+    ro:{langLabel:'Limbă',menuBtn:'Meniu',navAbout:'Despre',navProgrammes:'Programe',navCert:'Certificare',navPricing:'Abonament',navFounder:'Fondator',heroH2:'Unde protocolul întâlnește diplomația, securitatea și demnitatea profesională.',heroBtn1:'Explorați Academia',pr1Btn:'Începeți gratuit',ftContact:'Contact'},
+    hu:{langLabel:'Nyelv',menuBtn:'Menü',navAbout:'Rólunk',navProgrammes:'Programok',navCert:'Tanúsítás',navPricing:'Tagság',navFounder:'Alapító',heroH2:'Ahol a protokoll találkozik a diplomáciával, a biztonsággal és a szakmai méltósággal.',heroBtn1:'Fedezze fel az Akadémiát',pr1Btn:'Kezdje ingyen',ftContact:'Kapcsolat'},
+    cs:{langLabel:'Jazyk',menuBtn:'Menu',navAbout:'O nás',navProgrammes:'Programy',navCert:'Certifikace',navPricing:'Členství',navFounder:'Zakladatel',heroH2:'Kde protokol setkává diplomacii, bezpečnost a profesionální důstojnost.',heroBtn1:'Prozkoumejte Akademii',pr1Btn:'Začněte zdarma',ftContact:'Kontakt'},
+    sv:{langLabel:'Språk',menuBtn:'Meny',navAbout:'Om oss',navProgrammes:'Program',navCert:'Certifiering',navPricing:'Medlemskap',navFounder:'Grundare',heroH2:'Där protokoll möter diplomati, säkerhet och professionell värdighet.',heroBtn1:'Utforska Akademin',pr1Btn:'Börja gratis',ftContact:'Kontakt'},
+    da:{langLabel:'Sprog',menuBtn:'Menu',navAbout:'Om os',navProgrammes:'Programmer',navCert:'Certificering',navPricing:'Medlemskab',navFounder:'Grundlægger',heroH2:'Hvor protokol møder diplomati, sikkerhed og professionel værdighed.',heroBtn1:'Udforsk Akademiet',pr1Btn:'Start gratis',ftContact:'Kontakt'},
+    fi:{langLabel:'Kieli',menuBtn:'Valikko',navAbout:'Meistä',navProgrammes:'Ohjelmat',navCert:'Sertifiointi',navPricing:'Jäsenyys',navFounder:'Perustaja',heroH2:'Missä protokolla kohtaa diplomatian, turvallisuuden ja ammatillisen arvokkuuden.',heroBtn1:'Tutustu Akatemiaan',pr1Btn:'Aloita ilmaiseksi',ftContact:'Yhteystiedot'},
+    ar:{langLabel:'اللغة',menuBtn:'القائمة',navAbout:'عن الأكاديمية',navProgrammes:'البرامج',navCert:'الشهادات',navPricing:'العضوية',navFounder:'المؤسس',eyebrow:'أكاديمية رقمية مستقلة · منصة مهنية · منظور عالمي',heroH2:'حيث يلتقي البروتوكول بالدبلوماسية والأمن والكرامة المهنية.',heroBtn1:'استكشف الأكاديمية',pr1Btn:'ابدأ مجاناً',ftContact:'اتصل بنا'},
+    hi:{langLabel:'भाषा',menuBtn:'मेनू',navAbout:'हमारे बारे में',navProgrammes:'कार्यक्रम',navCert:'प्रमाणन',navPricing:'सदस्यता',navFounder:'संस्थापक',heroH2:'जहाँ प्रोटोकॉल कूटनीति, सुरक्षा और पेशेवर गरिमा से मिलता है।',heroBtn1:'अकादमी खोजें',pr1Btn:'मुफ़्त शुरू करें',ftContact:'संपर्क'},
+    zh:{langLabel:'语言',menuBtn:'菜单',navAbout:'关于我们',navProgrammes:'课程',navCert:'认证',navPricing:'会员',navFounder:'创始人',heroH2:'礼宾与外交、安全和职业尊严的交汇处。',heroBtn1:'探索学院',pr1Btn:'免费开始',ftContact:'联系我们'},
+    zht:{langLabel:'語言',menuBtn:'選單',navAbout:'關於我們',navProgrammes:'課程',navCert:'認證',navPricing:'會員',navFounder:'創辦人',heroH2:'禮賓與外交、安全和職業尊嚴的交匯處。',heroBtn1:'探索學院',pr1Btn:'免費開始',ftContact:'聯絡我們'},
+    ja:{langLabel:'言語',menuBtn:'メニュー',navAbout:'私たちについて',navProgrammes:'プログラム',navCert:'認定',navPricing:'会員',navFounder:'創設者',heroH2:'プロトコルが外交、安全保障、プロフェッショナルな品格と出会う場所。',heroBtn1:'アカデミーを探る',pr1Btn:'無料で始める',ftContact:'お問い合わせ'},
+    ko:{langLabel:'언어',menuBtn:'메뉴',navAbout:'소개',navProgrammes:'프로그램',navCert:'인증',navPricing:'멤버십',navFounder:'설립자',heroH2:'프로토콜이 외교, 안보, 전문적 품위를 만나는 곳.',heroBtn1:'아카데미 탐색',pr1Btn:'무료로 시작',ftContact:'연락처'},
+    sw:{langLabel:'Lugha',menuBtn:'Menyu',navAbout:'Kuhusu',navProgrammes:'Programu',navCert:'Uthibitisho',navPricing:'Uanachama',navFounder:'Mwanzilishi',heroH2:'Mahali ambapo itifaki inakutana na diplomasia, usalama na heshima ya kitaaluma.',heroBtn1:'Chunguza Chuo',pr1Btn:'Anza bila malipo',ftContact:'Wasiliana'},
+    am:{langLabel:'ቋንቋ',menuBtn:'ምናሌ',navAbout:'ስለ እኛ',navProgrammes:'ፕሮግራሞች',navCert:'የምስክር ወረቀት',heroH2:'ፕሮቶኮል ዲፕሎማሲ፣ ደህንነት እና ሙያዊ ክብር የሚገናኙበት ቦታ።',heroBtn1:'አካዳሚውን ያስሱ',pr1Btn:'ነፃ ጀምር',ftContact:'አግኙን'},
+    af:{langLabel:'Taal',menuBtn:'Kieslys',navAbout:'Oor ons',navProgrammes:'Programme',navCert:'Sertifisering',navPricing:'Lidmaatskap',navFounder:'Stigter',heroH2:'Waar protokol diplomasie, veiligheid en professionele waardigheid ontmoet.',heroBtn1:'Verken die Akademie',pr1Btn:'Begin gratis',ftContact:'Kontak'},
+    ha:{langLabel:'Harshe',menuBtn:'Shafin',navAbout:'Game da mu',navProgrammes:'Shirye-shirye',navCert:'Takaddun Shaida',heroH2:'Inda ka'ida ta haɗu da diflomasiyya, tsaro da mutuncin ƙwararru.',heroBtn1:'Bincika Kwalejin',pr1Btn:'Fara kyauta',ftContact:'Tuntuɓi'}
+  };
+  Object.keys(langOverrides).forEach(function(lang){
+    WPA_TRANSLATIONS[lang] = Object.assign({}, WPA_TRANSLATIONS.en, langOverrides[lang]);
   });
-  document.documentElement.lang=lang;
-  try{localStorage.setItem('wpa-lang',lang);}catch(e){}
+})();
+
+/* ── CORE FUNCTIONS ─────────────────────────────────────────── */
+var _wpaLang = 'mk';
+
+function t(k){
+  var d = WPA_TRANSLATIONS[_wpaLang];
+  return (d && d[k] !== undefined) ? d[k] : (WPA_TRANSLATIONS.mk[k] || '');
+}
+
+function applyLang(lang){
+  if(!WPA_TRANSLATIONS[lang]) return;
+  _wpaLang = lang;
+  var bar = document.getElementById('tbar');
+  if(bar){ bar.classList.add('on'); bar.style.width='70%'; }
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var key = el.getAttribute('data-t');
+    var val = t(key);
+    if(val) el.innerHTML = val;
+  });
+  document.documentElement.lang = lang;
+  /* RTL for Arabic */
+  document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+  try{ localStorage.setItem('wpa-lang', lang); }catch(e){}
   ['pageLang','botLang'].forEach(function(id){
-    const el=document.getElementById(id);
-    if(el)el.value=lang;
+    var el = document.getElementById(id);
+    if(el) el.value = lang;
   });
   setTimeout(function(){
-    if(bar){bar.style.width='100%';setTimeout(function(){bar.style.width='0';bar.classList.remove('on');},350);}
+    if(bar){ bar.style.width='100%'; setTimeout(function(){ bar.style.width='0'; bar.classList.remove('on'); },350); }
   },220);
 }
+
 function initLang(){
-  let saved='mk';
-  try{saved=localStorage.getItem('wpa-lang')||'mk';}catch(e){}
-  if(!WPA_TRANSLATIONS[saved])saved='mk';
-  const sel=document.getElementById('pageLang');
-  if(sel){sel.value=saved;sel.addEventListener('change',function(){applyLang(this.value);});}
-  if(saved!=='mk')applyLang(saved);
+  if(initLang._done) return;
+  initLang._done = true;
+  var saved = 'mk';
+  try{ saved = localStorage.getItem('wpa-lang') || 'mk'; }catch(e){}
+  if(!WPA_TRANSLATIONS[saved]) saved = 'mk';
+  var sel = document.getElementById('pageLang');
+  if(sel){
+    sel.value = saved;
+    sel.addEventListener('change', function(){
+      applyLang(this.value);
+      var bl = document.getElementById('botLang');
+      if(bl) bl.value = this.value;
+    });
+  }
+  if(saved !== 'mk') applyLang(saved);
 }
-document.addEventListener('DOMContentLoaded',function(){
+
+/* ── DOM READY ──────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function(){
   initLang();
-  const mt=document.getElementById('mToggle'),sn=document.getElementById('siteNav');
-  if(mt&&sn){mt.addEventListener('click',function(){const o=sn.classList.toggle('open');mt.setAttribute('aria-expanded',o);});}
-  document.getElementById('year').textContent=new Date().getFullYear();
+  var mt = document.getElementById('mToggle');
+  var sn = document.getElementById('siteNav');
+  if(mt && sn){
+    mt.addEventListener('click', function(){
+      var o = sn.classList.toggle('open');
+      mt.setAttribute('aria-expanded', o);
+    });
+  }
+  var yr = document.getElementById('year');
+  if(yr) yr.textContent = new Date().getFullYear();
 });
 </script>
 
 <script>
-const BOT_UI_TEXT={
-  mk:{welcome:'Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.',placeholder:'Напишете прашање...',send:'Испрати',clear:'Исчисти',note:'Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.',typing:'Virtual Sande пишува...',error:'Привремена грешка. Обидете се повторно.',network:'Проблем со конекцијата.',cleared:'Разговорот е исчистен.'},
-  en:{welcome:'Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.',placeholder:'Type your question...',send:'Send',clear:'Clear',note:'Ask about protocol, diplomacy, state protocol, etiquette, and international relations.',typing:'Virtual Sande is typing...',error:'Temporary error. Please try again.',network:'Network problem.',cleared:'Conversation cleared.'},
-  de:{welcome:'Willkommen. Ich bin Virtual Sande AI.',placeholder:'Schreiben Sie Ihre Frage...',send:'Senden',clear:'Löschen',note:'Fragen zu Protokoll und Diplomatie.',typing:'Virtual Sande schreibt...',error:'Vorübergehender Fehler.',network:'Netzwerkproblem.',cleared:'Gelöscht.'},
-  fr:{welcome:'Bienvenue. Je suis Virtual Sande AI.',placeholder:'Écrivez votre question...',send:'Envoyer',clear:'Effacer',note:'Questions sur le protocole et la diplomatie.',typing:'Virtual Sande écrit...',error:'Erreur temporaire.',network:'Problème réseau.',cleared:'Effacé.'},
-  it:{welcome:'Benvenuto. Sono Virtual Sande AI.',placeholder:'Scrivi la tua domanda...',send:'Invia',clear:'Pulisci',note:'Domande su protocollo e diplomazia.',typing:'Virtual Sande sta scrivendo...',error:'Errore temporaneo.',network:'Problema di rete.',cleared:'Cancellato.'},
-  es:{welcome:'Bienvenido. Soy Virtual Sande AI.',placeholder:'Escribe tu pregunta...',send:'Enviar',clear:'Borrar',note:'Preguntas sobre protocolo y diplomacia.',typing:'Virtual Sande está escribiendo...',error:'Error temporal.',network:'Problema de red.',cleared:'Borrado.'},
-  sq:{welcome:'Mirë se vini. Jam Virtual Sande AI.',placeholder:'Shkruani pyetjen tuaj...',send:'Dërgo',clear:'Pastro',note:'Pyetje mbi protokollin dhe diplomacinë.',typing:'Virtual Sande po shkruan...',error:'Gabim i përkohshëm.',network:'Problem rrjeti.',cleared:'Pastruar.'},
-  tr:{welcome:'Hoş geldiniz. Ben Virtual Sande AI.',placeholder:'Sorunuzu yazın...',send:'Gönder',clear:'Temizle',note:'Protokol ve diplomasi hakkında sorular.',typing:'Virtual Sande yazıyor...',error:'Geçici hata.',network:'Ağ sorunu.',cleared:'Temizlendi.'},
-  hr:{welcome:'Dobro došli. Ja sam Virtual Sande AI.',placeholder:'Upišite pitanje...',send:'Pošalji',clear:'Obriši',note:'Pitanja o protokolu i diplomaciji.',typing:'Virtual Sande piše...',error:'Privremena greška.',network:'Problem s mrežom.',cleared:'Obrisano.'},
-  bs:{welcome:'Dobro došli. Ja sam Virtual Sande AI.',placeholder:'Upišite pitanje...',send:'Pošalji',clear:'Obriši',note:'Pitanja o protokolu i diplomatiji.',typing:'Virtual Sande piše...',error:'Privremena greška.',network:'Problem s mrežom.',cleared:'Obrisano.'},
-  sl:{welcome:'Dobrodošli. Sem Virtual Sande AI.',placeholder:'Vpišite vprašanje...',send:'Pošlji',clear:'Počisti',note:'Vprašanja o protokolu in diplomaciji.',typing:'Virtual Sande piše...',error:'Začasna napaka.',network:'Težava z omrežjem.',cleared:'Počiščeno.'}
+const BOT_UI_TEXT = {
+  mk: {
+    welcome: 'Добредојдовте. Јас сум Virtual Sande — академскиот AI асистент на World Protocol Academy. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.',
+    placeholder: 'Напишете прашање...',
+    send: 'Испрати',
+    clear: 'Исчисти',
+    note: 'Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.',
+    typing: 'Virtual Sande пишува...',
+    error: 'Привремена грешка. Обидете се повторно.',
+    network: 'Проблем со конекцијата.',
+    cleared: 'Разговорот е исчистен.'
+  },
+  en: {
+    welcome: 'Welcome. I am Virtual Sande — the academic AI assistant of World Protocol Academy. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.',
+    placeholder: 'Type your question...',
+    send: 'Send',
+    clear: 'Clear',
+    note: 'Ask about protocol, diplomacy, state protocol, etiquette, and international relations.',
+    typing: 'Virtual Sande is typing...',
+    error: 'Temporary error. Please try again.',
+    network: 'Network problem.',
+    cleared: 'Conversation cleared.'
+  },
+  de: {
+    welcome: 'Willkommen. Ich bin Virtual Sande — der akademische KI-Assistent der World Protocol Academy. Stellen Sie eine Frage zu Protokoll, Diplomatie oder internationalen Beziehungen.',
+    placeholder: 'Schreiben Sie Ihre Frage...',
+    send: 'Senden',
+    clear: 'Löschen',
+    note: 'Fragen zu Protokoll, Diplomatie und internationalen Beziehungen.',
+    typing: 'Virtual Sande schreibt...',
+    error: 'Vorübergehender Fehler.',
+    network: 'Netzwerkproblem.',
+    cleared: 'Gelöscht.'
+  },
+  fr: {
+    welcome: 'Bienvenue. Je suis Virtual Sande — l\'assistant IA académique de la World Protocol Academy. Posez une question sur le protocole ou la diplomatie.',
+    placeholder: 'Écrivez votre question...',
+    send: 'Envoyer',
+    clear: 'Effacer',
+    note: 'Questions sur le protocole, la diplomatie et les relations internationales.',
+    typing: 'Virtual Sande écrit...',
+    error: 'Erreur temporaire.',
+    network: 'Problème réseau.',
+    cleared: 'Conversation effacée.'
+  },
+  it: {
+    welcome: 'Benvenuto. Sono Virtual Sande — l\'assistente IA accademico della World Protocol Academy. Fai una domanda su protocollo o diplomazia.',
+    placeholder: 'Scrivi la tua domanda...',
+    send: 'Invia',
+    clear: 'Pulisci',
+    note: 'Domande su protocollo, diplomazia e relazioni internazionali.',
+    typing: 'Virtual Sande sta scrivendo...',
+    error: 'Errore temporaneo.',
+    network: 'Problema di rete.',
+    cleared: 'Conversazione cancellata.'
+  },
+  es: {
+    welcome: 'Bienvenido. Soy Virtual Sande — el asistente IA académico de la World Protocol Academy. Haz una pregunta sobre protocolo o diplomacia.',
+    placeholder: 'Escribe tu pregunta...',
+    send: 'Enviar',
+    clear: 'Borrar',
+    note: 'Preguntas sobre protocolo, diplomacia y relaciones internacionales.',
+    typing: 'Virtual Sande está escribiendo...',
+    error: 'Error temporal.',
+    network: 'Problema de red.',
+    cleared: 'Conversación borrada.'
+  },
+  sq: {
+    welcome: 'Mirë se vini. Jam Virtual Sande — asistenti akademik AI i World Protocol Academy. Bëni një pyetje për protokollin ose diplomacinë.',
+    placeholder: 'Shkruani pyetjen tuaj...',
+    send: 'Dërgo',
+    clear: 'Pastro',
+    note: 'Pyetje mbi protokollin, diplomacinë dhe marrëdhëniet ndërkombëtare.',
+    typing: 'Virtual Sande po shkruan...',
+    error: 'Gabim i përkohshëm.',
+    network: 'Problem rrjeti.',
+    cleared: 'Biseda u pastrua.'
+  },
+  tr: {
+    welcome: 'Hoş geldiniz. Ben Virtual Sande — World Protocol Academy\'nin akademik AI asistanıyım. Protokol veya diplomasi hakkında soru sorun.',
+    placeholder: 'Sorunuzu yazın...',
+    send: 'Gönder',
+    clear: 'Temizle',
+    note: 'Protokol, diplomasi ve uluslararası ilişkiler hakkında sorular.',
+    typing: 'Virtual Sande yazıyor...',
+    error: 'Geçici hata.',
+    network: 'Ağ sorunu.',
+    cleared: 'Konuşma temizlendi.'
+  },
+  hr: {
+    welcome: 'Dobro došli. Ja sam Virtual Sande — akademski AI asistent World Protocol Academy. Postavite pitanje o protokolu ili diplomaciji.',
+    placeholder: 'Upišite pitanje...',
+    send: 'Pošalji',
+    clear: 'Obriši',
+    note: 'Pitanja o protokolu, diplomaciji i međunarodnim odnosima.',
+    typing: 'Virtual Sande piše...',
+    error: 'Privremena greška.',
+    network: 'Problem s mrežom.',
+    cleared: 'Razgovor obrisan.'
+  },
+  bs: {
+    welcome: 'Dobro došli. Ja sam Virtual Sande — akademski AI asistent World Protocol Academy. Postavite pitanje o protokolu ili diplomatiji.',
+    placeholder: 'Upišite pitanje...',
+    send: 'Pošalji',
+    clear: 'Obriši',
+    note: 'Pitanja o protokolu, diplomatiji i međunarodnim odnosima.',
+    typing: 'Virtual Sande piše...',
+    error: 'Privremena greška.',
+    network: 'Problem s mrežom.',
+    cleared: 'Razgovor obrisan.'
+  },
+  sl: {
+    welcome: 'Dobrodošli. Sem Virtual Sande — akademski AI asistent World Protocol Academy. Zastavite vprašanje o protokolu ali diplomaciji.',
+    placeholder: 'Vpišite vprašanje...',
+    send: 'Pošlji',
+    clear: 'Počisti',
+    note: 'Vprašanja o protokolu, diplomaciji in mednarodnih odnosih.',
+    typing: 'Virtual Sande piše...',
+    error: 'Začasna napaka.',
+    network: 'Težava z omrežjem.',
+    cleared: 'Pogovor počiščen.'
+  }
 };
+
 </script>
 
 <script>
-/* WPA HOMEPAGE BOT v33.6 */
-(function(){
-  const API='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask';
-  const MAX_H=6;
-  const UPGRADE_URL='https://worldprotocolacademy.com/pro';
-  const panel=document.getElementById('botPanel'),toggle=document.getElementById('botToggle'),closeBtn=document.getElementById('botClose'),clearBtn=document.getElementById('botClear'),msgs=document.getElementById('botMsgs'),inp=document.getElementById('botInput'),send=document.getElementById('botSend'),langSel=document.getElementById('botLang'),note=document.getElementById('botNote'),status=document.getElementById('botStatus');
-  let busy=false,conv=[];
-  function ui(){return BOT_UI_TEXT[langSel.value]||BOT_UI_TEXT.mk;}
-  function renderAnswer(raw){
-    let text=String(raw||'').replace(/\n\nSource basis:[^\n]*/gi,'').replace(/Source basis:[^\n]*/gi,'').replace(/\n\nIzvor:[^\n]*/gi,'').replace(/Izvor:[^\n]*/gi,'').replace(/\n\nИзвор:[^\n]*/gi,'').replace(/Извор:[^\n]*/gi,'').trim();
-    return text.split(/\n\n+/).map(function(p){return '<p style="margin:0 0 8px 0">'+p.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</p>';}).join('');
-  }
-  function addMsg(role,rawText,opts){
-    opts=opts||{};
-    const row=document.createElement('div');row.className='bmsg '+role;
-    const bub=document.createElement('div');bub.className='bbub';
-    if(opts.isLocked){
-      const lang=langSel.value;
-      const fallbackMap={mk:'Ги искористивте вашите 10 бесплатни влезови. За неограничен пристап отклучете го WPA Pro.',hr:'Iskoristili ste 10 besplatnih ulaza.',bs:'Iskoristili ste 10 besplatnih ulaza.',sl:'Porabili ste 10 brezplačnih vstopov.',de:'Sie haben 10 kostenlose Einträge verbraucht.',fr:'Vous avez utilisé vos 10 entrées gratuites.',it:'Hai utilizzato 10 accessi gratuiti.',es:'Has utilizado 10 entradas gratuitas.',sq:'Keni përdorur 10 hyrje falas.',tr:'10 ücretsiz girişinizi kullandınız.'};
-      const fallbackText=fallbackMap[lang]||'You have used your 10 free entries. Unlock WPA Pro for unlimited access.';
-      const btnMap={mk:'Отклучи WPA Pro →',hr:'Otključi WPA Pro →',bs:'Otključi WPA Pro →',sl:'Odkleni WPA Pro →',de:'WPA Pro freischalten →',fr:'Débloquer WPA Pro →',it:'Sblocca WPA Pro →',es:'Desbloquear WPA Pro →',sq:'Zhblloko WPA Pro →',tr:"WPA Pro'yu aç →"};
-      const btnText=btnMap[lang]||'Unlock WPA Pro →';
-      const lockBody=opts.answer?'<p style="margin:0 0 10px 0">'+renderAnswer(opts.answer)+'</p>':'<p style="margin:0 0 10px 0;font-weight:600">🔒 '+fallbackText+'</p>';
-      bub.innerHTML=lockBody+'<a href="'+UPGRADE_URL+'" target="_blank" rel="noopener" style="display:inline-block;padding:8px 16px;background:linear-gradient(135deg,#b9974d,#9a7728);color:#fff;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none">'+btnText+'</a>';
-    } else if(opts.isTyping){bub.style.opacity='0.6';bub.style.fontStyle='italic';bub.textContent=rawText;}
-    else{bub.innerHTML=renderAnswer(rawText);}
-    if(opts.remaining!==undefined&&opts.remaining!==null&&opts.remaining<=3){
-      const hint=document.createElement('div');hint.className='bmeta';hint.style.marginTop='6px';hint.style.color=opts.remaining<=1?'#b45309':'#6b7280';
-      const lang=langSel.value;const slavicLangs=['mk','hr','bs','sl'];
-      hint.textContent=slavicLangs.indexOf(lang)!==-1?'Ви остануваат '+opts.remaining+(opts.remaining===1?' бесплатен влез.',' бесплатни влезови.'):opts.remaining+' free entr'+(opts.remaining===1?'y':'ies')+' remaining.';
-      bub.appendChild(hint);
+/* WPA Virtual Sande Bot v33.8 — quality-of-answer patch */
+function initVirtualSande(){
+
+  const API = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask';
+  const MAX_H = 6;
+  const panel = document.getElementById('botPanel');
+  const toggle = document.getElementById('botToggle');
+  const closeBtn = document.getElementById('botClose');
+  const clearBtn = document.getElementById('botClear');
+  const msgs = document.getElementById('botMsgs');
+  const inp = document.getElementById('botInput');
+  const send = document.getElementById('botSend');
+  const langSel = document.getElementById('botLang');
+  const note = document.getElementById('botNote');
+  const status = document.getElementById('botStatus');
+  let busy = false, conv = [];
+
+  function ui(){ return BOT_UI_TEXT[langSel.value] || BOT_UI_TEXT.mk; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  // Used when API is unavailable. Follows the quality-of-answer patch rules:
+  // Layer A: Direct clean answer (1-3 sentences)
+  // Layer B: Short clarification paragraph
+  // Layer C: Source note
+  var DEF_KB = {
+    // DUAL: protocol AND diplomacy → define both + distinction
+    'dual_protocol_diplomacy': {
+      mk: '⚜ **Протокол:**\nПротоколот е систем на правила, норми и стандарди кои го уредуваат формалното, официјалното и церемонијалното однесување во јавниот и институционалниот живот.\n\nПротоколот го регулира редот, формата и начинот на формалното постапување — тој е задолжителен во официјален контекст.\n\n⚜ **Дипломатија:**\nДипломатијата е уметност и практика на управување со односите меѓу држави и институции преку комуникација, претставување и преговарање.\n\nДипломатијата ги регулира односите и интересите — таа е практичната реализација на надворешната политика.\n\n**Разлика:** Протоколот го уредува *начинот*, дипломатијата го уредува *односот и содржината*.\n\n*Извор: монографии и публикации на доц. д-р Санде Смиљанов, WPA.*',
+      en: '⚜ **Protocol:**\nProtocol is the system of rules, norms and standards that govern formal, official and ceremonial conduct in public and institutional life.\n\nProtocol regulates order, form and the manner of formal behaviour — it is mandatory in official contexts.\n\n⚜ **Diplomacy:**\nDiplomacy is the art and practice of managing relations between states and institutions through communication, representation and negotiation.\n\nDiplomacy regulates relations and interests — it is the practical realisation of foreign policy.\n\n**Distinction:** Protocol regulates *how*; diplomacy regulates *the relationship and content*.\n\n*Source basis: monographs and publications by Assoc. Prof. Dr. Sande Smiljanov, WPA.*'
+    },
+    // PROTOCOL standalone
+    'protocol': {
+      mk: 'Протоколот е систем на правила, норми и стандарди кои го уредуваат формалното, официјалното и церемонијалното однесување во јавниот и институционалниот живот.\n\nСо поедноставни зборови: протоколот го регулира редот, формата и начинот на формалното постапување меѓу поединци, институции и држави. Тој е задолжителен во официјален контекст — не е предмет на лична интерпретација.\n\n*Извор: монографии и публикации на доц. д-р Санде Смиљанов, WPA.*',
+      en: 'Protocol is the system of rules, norms and standards that govern formal, official and ceremonial conduct in public and institutional life.\n\nPut simply: protocol regulates order, form and the manner of formal behaviour between individuals, institutions and states. It is mandatory in official contexts — not subject to personal interpretation.\n\n*Source basis: monographs and publications by Assoc. Prof. Dr. Sande Smiljanov, WPA.*'
+    },
+    // DIPLOMACY standalone
+    'diplomacy': {
+      mk: 'Дипломатијата е уметност и практика на управување со односите меѓу држави и институции преку комуникација, претставување и преговарање.\n\nСо поедноставни зборови: дипломатијата ги регулира односите и интересите, додека протоколот го регулира редот и формата. Дипломатијата е практичната реализација на надворешната политика — преку амбасади, мисии и официјални канали.\n\n*Извор: монографии и публикации на доц. д-р Санде Смиљанов, WPA.*',
+      en: 'Diplomacy is the art and practice of managing relations between states and institutions through communication, representation and negotiation.\n\nPut simply: diplomacy regulates relations and interests, while protocol regulates order and form. Diplomacy is the practical realisation of foreign policy — conducted through embassies, missions and official channels.\n\n*Source basis: monographs and publications by Assoc. Prof. Dr. Sande Smiljanov, WPA.*'
+    },
+    // ETIQUETTE / BON TON
+    'etiquette': {
+      mk: 'Етикецијата (или „бон тон") е систем на правила за општествено прифатливо, рафинирано и достоинствено однесување во формални и неформални ситуации.\n\nДоколку протоколот го регулира официјалното и институционалното, етикецијата го регулира личното и општественото однесување. Протоколот е задолжителен во официјален контекст; бон тонот е стандард на рафинираност во секојдневниот живот.\n\n*Извор: монографии и публикации на доц. д-р Санде Смиљанов, WPA.*',
+      en: 'Etiquette (or "bon ton") is the system of rules for socially acceptable, refined and dignified conduct in formal and informal situations.\n\nIf protocol governs the official and institutional, etiquette governs the personal and social. Protocol is mandatory in official contexts; etiquette is the standard of refinement in everyday life.\n\n*Source basis: monographs and publications by Assoc. Prof. Dr. Sande Smiljanov, WPA.*'
+    },
+    // STATE PROTOCOL
+    'state_protocol': {
+      mk: 'Државниот протокол е збир на правила и норми кои го регулираат официјалното однесување на државните органи, носителите на јавни функции и државните церемонии.\n\nТој ги опфаќа редот на предимство, државните посети, дипломатската акредитација, употребата на државните симболи и организацијата на официјални настани. Виенската конвенција (1961) е клучен меѓународен референтен акт.\n\n*Извор: монографии и публикации на доц. д-р Санде Смиљанов, WPA.*',
+      en: 'State protocol is the set of rules and norms governing the official conduct of state bodies, holders of public office and state ceremonies.\n\nIt covers order of precedence, state visits, diplomatic accreditation, use of state symbols and the organisation of official events. The Vienna Convention (1961) is the key international reference instrument.\n\n*Source basis: monographs and publications by Assoc. Prof. Dr. Sande Smiljanov, WPA.*'
     }
-    row.appendChild(bub);msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;return row;
+  };
+
+  function localAIFallback(msg, lang) {
+    var m = msg.toLowerCase();
+    var L = lang || 'mk';
+
+    // DUAL CONCEPT: protocol AND diplomacy
+    var hasProt = m.includes('протокол') || m.includes('protocol');
+    var hasDipl = m.includes('дипломатија') || m.includes('diplomacy') || m.includes('diplomatie') || m.includes('diplomacia');
+    if (hasProt && hasDipl) {
+      var dual = DEF_KB['dual_protocol_diplomacy'];
+      return dual[L] || dual['en'];
+    }
+
+    // ETIQUETTE / BON TON
+    if (m.includes('етикеција') || m.includes('etiquette') || m.includes('bon ton') || m.includes('бон тон')) {
+      var et = DEF_KB['etiquette'];
+      return et[L] || et['en'];
+    }
+
+    // STATE PROTOCOL
+    if (m.includes('државен протокол') || m.includes('state protocol') || m.includes('državni protokol')) {
+      var sp = DEF_KB['state_protocol'];
+      return sp[L] || sp['en'];
+    }
+
+    // DIPLOMACY standalone
+    if (hasDipl) {
+      var dp = DEF_KB['diplomacy'];
+      return dp[L] || dp['en'];
+    }
+
+    // PROTOCOL standalone
+    if (hasProt) {
+      var pr = DEF_KB['protocol'];
+      return pr[L] || pr['en'];
+    }
+
+    return null; // No fallback match — let the network error message show
   }
-  function render(){msgs.innerHTML='';if(!conv.length){addMsg('bot',ui().welcome);return;}conv.forEach(function(x){addMsg(x.role==='user'?'user':'bot',x.content);});}
-  function setBusy(v){busy=v;inp.disabled=v;send.disabled=v;clearBtn.disabled=v;langSel.disabled=v;}
+
+  function addMsg(role, text, meta){
+    var row = document.createElement('div');
+    row.className = 'bmsg ' + role;
+    var bub = document.createElement('div');
+    bub.className = 'bbub';
+    bub.innerHTML = esc(text);
+    if (meta){ var m2 = document.createElement('div'); m2.className='bmeta'; m2.textContent=meta; bub.appendChild(m2); }
+    row.appendChild(bub);
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+    return row;
+  }
+
+  function render(){
+    msgs.innerHTML = '';
+    if (!conv.length) { addMsg('bot', ui().welcome); return; }
+    conv.forEach(function(x){ addMsg(x.role==='user'?'user':'bot', x.content); });
+  }
+
+  function setBusy(v){ busy=v; inp.disabled=v; send.disabled=v; clearBtn.disabled=v; langSel.disabled=v; }
+
   function applyBotLang(){
-    inp.placeholder=ui().placeholder;send.textContent=ui().send;clearBtn.textContent=ui().clear;note.textContent=ui().note;
-    const subEl=document.getElementById('botSub');
-    if(subEl){const subMap={mk:'World Protocol Academy · Академски протоколарен асистент',en:'World Protocol Academy · Academic protocol assistant',de:'World Protocol Academy · Akademischer Protokollassistent',fr:"World Protocol Academy · Assistant protocole académique",it:'World Protocol Academy · Assistente protocollare accademico',es:'World Protocol Academy · Asistente de protocolo académico',sq:'World Protocol Academy · Asistent akademik i protokollit',tr:'World Protocol Academy · Akademik protokol asistanı',hr:'World Protocol Academy · Akademski protokolarni asistent',bs:'World Protocol Academy · Akademski protokolarni asistent',sl:'World Protocol Academy · Akademski protokolarni asistent'};subEl.textContent=subMap[langSel.value]||subMap.mk;}
-    try{localStorage.setItem('wpa-bot-lang',langSel.value);}catch(e){}
-    if(!conv.length)render();
+    inp.placeholder = ui().placeholder;
+    send.textContent = ui().send;
+    clearBtn.textContent = ui().clear;
+    note.textContent = ui().note;
+    try{ localStorage.setItem('wpa-bot-lang', langSel.value); }catch(e){}
+    if (!conv.length) render();
   }
+
   async function ask(){
-    const msg=inp.value.trim();if(!msg||busy)return;
-    const hist=conv.slice(-MAX_H).map(function(x){return{role:x.role==='assistant'?'assistant':'user',content:x.content};});
-    addMsg('user',msg);conv.push({role:'user',content:msg});conv=conv.slice(-MAX_H);inp.value='';
-    setBusy(true);status.textContent=ui().typing;
-    const typingEl=addMsg('bot',ui().typing,{isTyping:true});
-    try{
-      const res=await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,lang:langSel.value,history:hist})});
-      const data=await res.json().catch(function(){return{};});typingEl.remove();
-      if(data.locked===true){addMsg('bot','',{isLocked:true,answer:data.answer||null});}
-      else if(data.ok&&data.answer){
-        const remaining=(data.remaining_free!==undefined)?data.remaining_free:null;
-        addMsg('bot',data.answer,{remaining:remaining});conv.push({role:'assistant',content:data.answer});conv=conv.slice(-MAX_H);
-        try{sessionStorage.setItem('wpa-bot-hist',JSON.stringify(conv));}catch(e){}
-      } else{addMsg('bot',data.answer||data.error||ui().error);}
-    }catch(e){
-      typingEl.remove();const errRow=document.createElement('div');errRow.className='bmsg bot';const b=document.createElement('div');b.className='bbub';b.style.color='#6b7280';b.style.fontStyle='italic';b.textContent=ui().network;errRow.appendChild(b);msgs.appendChild(errRow);msgs.scrollTop=msgs.scrollHeight;
+    var msg = inp.value.trim();
+    if (!msg || busy) return;
+    var hist = conv.slice(-MAX_H).map(function(x){ return {role: x.role==='assistant'?'assistant':'user', content: x.content}; });
+    addMsg('user', msg);
+    conv.push({role:'user', content:msg});
+    conv = conv.slice(-MAX_H);
+    inp.value = '';
+    setBusy(true);
+    status.textContent = ui().typing;
+    var typing = addMsg('bot', ui().typing);
+    try {
+      var res = await fetch(API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        // PATCHED: added quality hint for the Worker
+        body: JSON.stringify({message:msg, lang:langSel.value, history:hist, quality:'3layer_academic'})
+      });
+      var data = await res.json().catch(function(){ return {}; });
+      typing.remove();
+      var answer = (data.ok && data.answer) ? data.answer : (data.error || ui().error);
+      addMsg('bot', answer);
+      conv.push({role:'assistant', content:answer});
+      conv = conv.slice(-MAX_H);
+      try{ sessionStorage.setItem('wpa-bot-hist', JSON.stringify(conv)); }catch(e){}
+    } catch(e) {
+      typing.remove();
+      // PATCHED: try local fallback before showing network error
+      var fallback = localAIFallback(msg, langSel.value);
+      if (fallback) {
+        addMsg('bot', fallback);
+        conv.push({role:'assistant', content:fallback});
+      } else {
+        addMsg('bot', ui().network);
+      }
     }
-    status.textContent='';setBusy(false);inp.focus();
+    status.textContent = '';
+    setBusy(false);
+    inp.focus();
   }
-  toggle.addEventListener('click',function(){panel.classList.add('open');inp.focus();});
-  closeBtn.addEventListener('click',function(){panel.classList.remove('open');});
-  clearBtn.addEventListener('click',function(){if(busy)return;conv=[];try{sessionStorage.removeItem('wpa-bot-hist');}catch(e){}render();inp.value='';status.textContent=ui().cleared;setTimeout(function(){if(status.textContent===ui().cleared)status.textContent='';},1800);});
-  send.addEventListener('click',ask);
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter')ask();});
-  langS
+
+  toggle.addEventListener('click', function(){
+    panel.classList.add('open');
+    toggle.setAttribute('aria-expanded','true');
+    setTimeout(function(){ inp.focus(); }, 80);
+  });
+  closeBtn.addEventListener('click', function(){
+    panel.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+    toggle.focus();
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && panel.classList.contains('open')){
+      panel.classList.remove('open');
+      toggle.setAttribute('aria-expanded','false');
+    }
+  });
+  clearBtn.addEventListener('click', function(){
+    if(busy) return;
+    conv=[]; try{sessionStorage.removeItem('wpa-bot-hist');}catch(e){}
+    render(); inp.value=''; status.textContent=ui().cleared;
+    setTimeout(function(){ if(status.textContent===ui().cleared) status.textContent=''; },1800);
+  });
+  send.addEventListener('click', ask);
+  inp.addEventListener('keydown', function(e){ if(e.key==='Enter') ask(); });
+
+  langSel.addEventListener('change', function(){
+    applyBotLang();
+    // sync page lang
+    if (typeof applyLang === 'function') applyLang(this.value);
+    var pl = document.getElementById('pageLang');
+    if(pl) pl.value = this.value;
+  });
+
+  // init
+  var saved = 'mk';
+  try{ saved = localStorage.getItem('wpa-bot-lang') || localStorage.getItem('wpa-lang') || 'mk'; }catch(e){}
+  if (!BOT_UI_TEXT[saved]) saved = 'mk';
+  langSel.value = saved;
+  try{ var h = sessionStorage.getItem('wpa-bot-hist'); if(h) conv = JSON.parse(h)||[]; }catch(e){}
+  applyBotLang();
+  render();
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', initVirtualSande);
+}else{
+  initVirtualSande();
+}
+</script>
+</body>
+</html>
