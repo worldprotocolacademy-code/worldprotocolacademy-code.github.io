@@ -1,39 +1,225 @@
 <!DOCTYPE html>
 <html lang="mk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Авторски права и барања за отстранување | World Protocol Academy</title>
-  <meta name="description" content="Политика за авторски права, референци и барања за корекција или отстранување на содржина на World Protocol Academy." />
-  <style>
-body{margin:0;background:#f6f2eb;color:#223247;font-family:Inter,Arial,Helvetica,sans-serif;line-height:1.75}
-.wrap{width:min(920px,calc(100% - 32px));margin:40px auto;background:#fff;border:1px solid rgba(16,35,60,.10);border-radius:28px;box-shadow:0 18px 40px rgba(16,35,60,.08);padding:34px}
-h1,h2{color:#10233c}
-h1{margin-top:0}
-a{color:#17355b;font-weight:800;text-decoration:none}
-ul{padding-left:22px}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Авторски права, референци и барања за отстранување | World Protocol Academy</title>
+<meta name="description" content="WPA политика за авторски права, употреба на извори, атрибуција, цитирање и барања за отстранување."/>
+<link rel="icon" href="https://worldprotocolacademy-code.github.io/logo.png" type="image/png"/>
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/rights-takedown.html"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0d1f3c; --navy2:#162947; --gold:#c9a84c; --goldd:#a8873a; --goldl:#e8d49a;
+  --cream:#f8f4ee; --cream2:#f0ead8; --white:#ffffff; --text:#1a1a2e; --muted:#5a6677;
+  --line:#d8cdb8; --sh:0 4px 24px rgba(13,31,60,.10); --r:3px; --r2:8px;
+  --fd:'Cormorant Garamond',Georgia,serif; --fp:'Playfair Display',Georgia,serif; --fb:'Jost',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.container{width:min(820px,calc(100% - 40px));margin:0 auto}
+
+/* TOPBAR */
+.topbar{background:var(--navy);padding:10px 0;border-bottom:1px solid rgba(201,168,76,.18)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.back-link{display:inline-flex;align-items:center;gap:7px;color:var(--goldl);font-size:13px;font-weight:500;font-family:var(--fb);transition:opacity .18s}
+.back-link:hover{opacity:.75}
+.back-link::before{content:'←'}
+.topbar-brand{font-size:13px;color:rgba(255,255,255,.4);font-family:var(--fb)}
+
+/* HERO */
+.page-hero{background:linear-gradient(135deg,#060f1e,var(--navy));padding:56px 0 44px;position:relative;overflow:hidden}
+.page-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);background-size:80px 80px;pointer-events:none}
+.page-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--goldl);font-family:var(--fb);margin-bottom:14px;padding:5px 12px;border:1px solid rgba(201,168,76,.28);border-radius:var(--r)}
+.page-hero h1{font-family:var(--fp);font-size:clamp(24px,3.5vw,38px);font-weight:700;color:var(--white);line-height:1.1;margin-bottom:10px;position:relative;z-index:1}
+.page-hero p{font-size:14.5px;color:rgba(255,255,255,.52);font-family:var(--fb);position:relative;z-index:1}
+
+/* CONTENT */
+.page-content{padding:60px 0 80px}
+.section-block{margin-bottom:40px}
+.block-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldd);font-family:var(--fb);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.block-label::before{content:'';width:20px;height:1px;background:var(--gold);display:inline-block}
+.block-title{font-family:var(--fp);font-size:22px;font-weight:700;color:var(--navy);margin-bottom:14px;line-height:1.2}
+.prose{font-size:15px;color:var(--muted);line-height:1.8}
+.prose p{margin-bottom:12px}
+.prose p:last-child{margin-bottom:0}
+.prose strong{color:var(--text);font-weight:600}
+
+/* POLICY CARDS */
+.policy-grid{display:grid;gap:14px;margin:24px 0}
+.policy-card{padding:20px 22px;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;background:var(--white);box-shadow:var(--sh)}
+.policy-card h4{font-family:var(--fd);font-size:17px;color:var(--navy);margin-bottom:7px;line-height:1.3}
+.policy-card p{font-size:14px;color:var(--muted);line-height:1.7}
+
+/* TAKEDOWN BOX */
+.takedown-box{padding:28px 30px;background:var(--navy);border-radius:var(--r2);color:var(--white);margin-top:36px}
+.takedown-box h3{font-family:var(--fp);font-size:22px;color:var(--white);margin-bottom:8px}
+.takedown-box p{font-size:14.5px;color:rgba(255,255,255,.65);line-height:1.75;margin-bottom:14px}
+.takedown-box a{color:var(--goldl);font-weight:600}
+.takedown-box .steps{display:grid;gap:10px;margin:16px 0}
+.takedown-box .step{padding:12px 14px;background:rgba(255,255,255,.06);border-radius:var(--r2);font-size:13.5px;color:rgba(255,255,255,.78);display:flex;align-items:flex-start;gap:10px}
+.step-num{width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.3);color:var(--goldl);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-family:var(--fb)}
+
+/* DIVIDER */
+.page-divider{height:1px;background:var(--line);margin:36px 0}
+
+/* FOOTER */
+.page-footer{background:#060f1e;padding:32px 0;color:rgba(255,255,255,.4)}
+.page-footer-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.page-footer p{font-size:12.5px;font-family:var(--fb)}
+.page-footer a{color:rgba(201,168,76,.6);transition:color .18s}
+.page-footer a:hover{color:var(--goldl)}
+.btn-ghost-sm{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);color:rgba(255,255,255,.65);font-size:12px;font-weight:600;font-family:var(--fb);text-transform:uppercase;letter-spacing:.4px;transition:all .18s}
+.btn-ghost-sm:hover{border-color:rgba(201,168,76,.5);color:var(--goldl)}
+
+@media(max-width:560px){
+  .page-hero{padding:40px 0 32px}
+  .page-content{padding:40px 0 60px}
+}
 </style>
 </head>
 <body>
-  <main class="wrap">
-    <h1>Авторски права, референци и барања за отстранување</h1>
-    <p>World Protocol Academy користи сопствени и курирани образовни материјали за учење, истражување, навигација низ извори и AI-поддржана академска ориентација.</p>
-    <h2>1. Сопствени и контролирани материјали</h2>
-    <p>Во сопствениот образовен корпус на WPA спаѓаат оригинални материјали поврзани со Доц. д-р Санде Смиљанов и со World Protocol Academy, како книги, трудови, интервјуа, лекции, сценарија, презентации, прашања, тестови и поврзани WPA содржини.</p>
-    <h2>2. Материјали од трети автори</h2>
-    <p>WPA може ограничено да користи материјали од други автори како академски референци, библиографски насоки и кратки интерпретативни резимеа. Таквите материјали не се наменети да ја заменат оригиналната публикација, книга или извор.</p>
-    <h2>3. Јавно достапни интернет-извори</h2>
-    <p>Јавно достапни материјали на интернет не се автоматски слободни за неограничена употреба. WPA се стреми да користи такви извори ограничено и академски одговорно, со кратки референтни описи и без подолга репродукција на заштитени дела без дозвола.</p>
-    <h2>4. Ограничување на дословна репродукција</h2>
-    <p>WPA и Virtual Sande не се наменети за да обезбедуваат подолги дословни извадоци, целосни пасуси, реконструкции на поглавја или друг излез што би претставувал замена за оригиналното дело од трета страна без соодветна дозвола.</p>
-    <h2>5. Барања за корекција или отстранување</h2>
-    <p>Ако сте автор, издавач или носител на права и сметате дека одреден материјал, опис, цитатен обем или начин на употреба бара корекција, ограничување или отстранување, ве молиме контактирајте нè на:</p>
-    <p><strong>worldprotocolacademy@gmail.com</strong></p>
-    <h2>6. Што да содржи вашето барање</h2>
-    <ul><li>Вашето име и контакт;</li><li>Идентификација на делото или материјалот;</li><li>Опис на спорниот дел;</li><li>Линк или точна локација каде што е прикажан;</li><li>Кратко образложение за барањето.</li></ul>
-    <h2>7. Добра волја и постапување</h2>
-    <p>WPA ќе пристапува со добра волја кон вакви барања и, кога е потребно, ќе изврши корекција, ограничување или отстранување во разумен рок.</p>
-    <p style="margin-top:32px"><a href="index.html#top">← Назад на почетна</a></p>
-  </main>
+
+<div class="topbar">
+  <div class="container topbar-inner">
+    <a href="https://worldprotocolacademy-code.github.io/" class="back-link">Назад кон WPA</a>
+    <span class="topbar-brand">World Protocol Academy</span>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="page-eyebrow">◆ Правна и уредувачка политика</div>
+    <h1>Авторски права, референци и<br>барања за отстранување</h1>
+    <p>World Protocol Academy · Правила за употреба на извори, атрибуција и добра вера</p>
+  </div>
+</div>
+
+<main class="page-content">
+  <div class="container">
+
+    <!-- INTRO -->
+    <div class="section-block">
+      <div class="prose">
+        <p>World Protocol Academy ги почитува авторските и сродните права, авторството, изворите и професионалната етика на академското и јавното изразување. Оваа страница ги утврдува принципите за употреба на содржини во рамките на WPA платформата и постапката за поднесување на барање за корекција или отстранување.</p>
+      </div>
+    </div>
+
+    <div class="page-divider"></div>
+
+    <!-- 1. OWN MATERIALS -->
+    <div class="section-block">
+      <div class="block-label">01</div>
+      <h2 class="block-title">Сопствени и контролирани материјали</h2>
+      <div class="prose">
+        <p>World Protocol Academy го задржува авторството и уредувачкото право врз сопствените оригинални материјали — вклучувајќи монографии, прирачници, научни трудови, докторска дисертација, образовни програми, педагошка архитектура, programme logic, question-bank системи, AI workflow дизајн, оригинален образовен израз, платформска структура и дизајн логика.</p>
+        <p>Оваа авторска основа произлегува од реалната интелектуална работа и публикациска активност на основачот — 23 верифицирани публикации, вклучувајќи 5 монографии и прирачници, 1 докторска дисертација и 17 научни трудови и прилози.</p>
+      </div>
+    </div>
+
+    <!-- 2. PARAPHRASE STANDARD -->
+    <div class="section-block">
+      <div class="block-label">02</div>
+      <h2 class="block-title">Стандард на парафраза</h2>
+      <div class="prose">
+        <p>Парафразата е стандарден WPA режим на работа. Долгата дословна репродукција на заштитен текст не е стандардна практика на WPA и не е стандардниот режим на Virtual Sande.</p>
+        <p>WPA и Virtual Sande се дизајнирани за редакциски обработени образовни објаснувања, структурирани парафрази и академски водени одговори — не за репродукција на заштитени содржини.</p>
+      </div>
+    </div>
+
+    <!-- 3. ATTRIBUTION -->
+    <div class="section-block">
+      <div class="block-label">03</div>
+      <h2 class="block-title">Атрибуција и наведување на извори</h2>
+      <div class="prose">
+        <p>Кога WPA се потпира на препознатлива авторска формулација, специфична дефиниција или јасно препознатлива позиција на конкретен автор, се применува соодветна атрибуција. Прашањата во WPA question bank може да бидат инспирирани, тематски засновани или концепциски изведени од постојни книги, трудови и образовни извори, но се редакциски обработуваат, систематизираат и усогласуваат со WPA programme logic.</p>
+        <p>Директните цитати се користат ограничено, оправдано и во согласност со академска и правна добра практика.</p>
+      </div>
+    </div>
+
+    <!-- 4. NO FABRICATION -->
+    <div class="section-block">
+      <div class="block-label">04</div>
+      <h2 class="block-title">Без измислени цитати · Без лажно тврдење за потекло</h2>
+      <div class="prose">
+        <p>WPA не изработува измислени или фабрикувани библиографски упатувања, цитати или референци. WPA не тврди дека ги измислила дисциплините на протокол, дипломатија, етикеција или сродните области — тие области се изградени низ долг историски и академски развој од бројни автори, институции и школи.</p>
+        <p>Авторството на WPA се однесува исклучиво на нејзината редакциска обработка, педагошка систематизација, selection logic, оригинален образовен израз и платформска архитектура.</p>
+      </div>
+    </div>
+
+    <!-- 5. LIMITED THIRD-PARTY USE -->
+    <div class="section-block">
+      <div class="block-label">05</div>
+      <h2 class="block-title">Ограничена употреба на материјали од трети страни</h2>
+      <div class="prose">
+        <p>Во образовни, аналитички, критички, информативни и референтни цели, WPA може да користи кратки цитати, парафрази, фактички референци и библиографски упатувања. При тоа, авторот и изворот се наведуваат каде тоа е возможно и соодветно.</p>
+        <p>WPA не присвојува туѓо авторство. Секое преземање на заштитен текст над дозволениот и оправдан обем или секоја употреба што бара дозвола — не е дозволена без претходно обезбедена правна основа.</p>
+        <p>Материјалите достапни на интернет не се автоматски слободни за неограничена употреба. Јавна достапност не е еднаква на правна слобода за нивна репродукција.</p>
+      </div>
+    </div>
+
+    <!-- 6. PUBLIC DOMAIN CAUTION -->
+    <div class="section-block">
+      <div class="block-label">06</div>
+      <h2 class="block-title">Јавен домен · Внимание спрема јурисдикција</h2>
+      <div class="prose">
+        <p>Дури и кога даден извор изгледа да е во јавен домен, неговата употреба во WPA се врши со внимание кон точната правна состојба во конкретната јурисдикција, кон интегритетот на делото и кон коректно наведување на изворот. Правниот статус на „јавен домен" може да се разликува по земји и по вид на дело.</p>
+      </div>
+    </div>
+
+    <!-- 7. WPA OWN AUTHORSHIP SCOPE -->
+    <div class="section-block">
+      <div class="block-label">07</div>
+      <h2 class="block-title">Обем на авторството на WPA</h2>
+      <div class="prose">
+        <p>World Protocol Academy го задржува авторството врз:</p>
+      </div>
+      <div class="policy-grid" style="margin-top:14px">
+        <div class="policy-card">
+          <h4>Уредувачка и педагошка архитектура</h4>
+          <p>Selection logic, programme architecture, question-bank дизајн, assessment structure, нивоа на прогресија и педагошка систематизација.</p>
+        </div>
+        <div class="policy-card">
+          <h4>AI workflow и платформски израз</h4>
+          <p>Virtual Sande логика, AI workflow дизајн, оригинален образовен израз, платформска структура, WPA Labs архитектура и дизајн логика.</p>
+        </div>
+        <div class="policy-card">
+          <h4>Оригинални публикации</h4>
+          <p>5 монографии и прирачници, 1 докторска дисертација, 17 научни трудови и прилози — сите публикувани под авторство на Доц. д-р Санде Смиљанов.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-divider"></div>
+
+    <!-- TAKEDOWN / CORRECTION -->
+    <div class="takedown-box">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:10px">Барање за корекција или отстранување</div>
+      <h3>Контактирајте нè во добра вера</h3>
+      <p>Доколку носител на права, автор, издавач или друг овластен субјект смета дека одреден материјал на WPA платформата бара корекција, дополнителна атрибуција, ограничување или отстранување, WPA ќе постапи совесно, брзо и во добра вера по уредна нотификација.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><span>Испратете e-mail со јасен опис на материјалот и вашиот правен основ за барањето.</span></div>
+        <div class="step"><div class="step-num">2</div><span>Наведете ја конкретната URL-адреса или делот каде материјалот се наоѓа.</span></div>
+        <div class="step"><div class="step-num">3</div><span>WPA ќе ве контактира и ќе постапи во разумен рок.</span></div>
+      </div>
+      <p style="margin-bottom:6px">Контакт за барања:</p>
+      <a href="mailto:worldprotocolacademy@gmail.com" style="font-size:15px;font-weight:700;color:var(--goldl)">worldprotocolacademy@gmail.com</a>
+      <p style="margin-top:16px;font-size:13px;color:rgba(255,255,255,.4)">World Protocol Academy · Скопје, Северна Македонија</p>
+    </div>
+
+  </div>
+</main>
+
+<footer class="page-footer">
+  <div class="container page-footer-inner">
+    <p>© <span id="yr"></span> World Protocol Academy. Сите права се задржани. &nbsp;|&nbsp; <a href="https://worldprotocolacademy-code.github.io/privacy.html">Privacy Policy</a></p>
+    <a href="https://worldprotocolacademy-code.github.io/" class="btn-ghost-sm">← Назад кон WPA</a>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent=new Date().getFullYear();</script>
 </body>
 </html>
