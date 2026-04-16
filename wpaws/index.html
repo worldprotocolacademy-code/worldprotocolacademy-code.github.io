@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="mk" translate="no">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="google" content="notranslate"/>
 <title>WPAWS 9.0 Integrated — World Protocol Academy</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#07090f;--surf:#0f1520;--surf2:#151e2d;--surf3:#1c2740;--surf4:#233050;
@@ -1135,6 +1134,8 @@ a{color:inherit;text-decoration:none}
 
 </div><!-- /workspace -->
 <script>
+window.WPA_API_BASE = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev';
+
 // ═══════════════════════════════════════════
 // WPAWS 8.0 MASTER EDITION — ENGINE
 // 16 агенти • Claude API + GPT-4o • Local fallback
@@ -1179,65 +1180,20 @@ function clearKeys(){
 }
 function updateKeyStatus(){
   const ck=getCK(); const gk=getGK();
-  document.getElementById('sb-ckey').textContent = ck ? '🔵 Активен':'⚪ Нема';
-  document.getElementById('sb-gkey').textContent = gk ? '🟢 Активен':'⚪ Нема';
+  const workerOn = !!window.WPA_API_BASE;
+  document.getElementById('sb-ckey').textContent = workerOn ? '🟣 Worker' : (ck ? '🔵 Активен':'⚪ Нема');
+  document.getElementById('sb-gkey').textContent = workerOn ? '🟣 Worker' : (gk ? '🟢 Активен':'⚪ Нема');
   const kb=document.getElementById('keyBtn');
-  if(ck||gk){ kb.classList.add('key-set'); kb.textContent='🔑 API ✓'; }
-  else { kb.classList.remove('key-set'); kb.textContent='🔑 API Клуч'; }
-  document.getElementById('aiPillTxt').textContent = ck?'Claude Sonnet':gk?'GPT-4o':'Локален режим';
-}
-
-<script>
-// ═══════════════════════════════════════════
-// WPAWS 8.0 MASTER EDITION — ENGINE
-// 16 агенти • Claude API + GPT-4o • Local fallback
-// ═══════════════════════════════════════════
-
-const V = 'WPAWS-9.0-Integrated';
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const GPT_MODEL = 'gpt-4o';
-
-// State
-let curAgent = 'architect';
-let curStyle = 'sande';
-let curLang = 'mk';
-let aiModes = {}; // per-agent AI mode
-let pppSlides = [], pppIdx = 0;
-let uploadedBooks = [];
-let history = [];
-let busy = false;
-
-// ─── KEYS ───
-function getCK(){ return localStorage.getItem('wpaws_claude_key')||''; }
-function getGK(){ return localStorage.getItem('wpaws_gpt_key')||''; }
-function openModal(){
-  document.getElementById('keyModal').classList.add('open');
-  const ck=getCK(); const gk=getGK();
-  if(ck) document.getElementById('claudeIn').value=ck;
-  if(gk) document.getElementById('gptIn').value=gk;
-}
-function closeModal(){ document.getElementById('keyModal').classList.remove('open'); }
-function saveKeys(){
-  const ck=document.getElementById('claudeIn').value.trim();
-  const gk=document.getElementById('gptIn').value.trim();
-  if(ck) localStorage.setItem('wpaws_claude_key',ck);
-  if(gk) localStorage.setItem('wpaws_gpt_key',gk);
-  updateKeyStatus(); closeModal(); toast('✅','API клучевите се зачувани!');
-}
-function clearKeys(){
-  if(!confirm('Избриши ги сите API клучеви?')) return;
-  localStorage.removeItem('wpaws_claude_key'); localStorage.removeItem('wpaws_gpt_key');
-  document.getElementById('claudeIn').value=''; document.getElementById('gptIn').value='';
-  updateKeyStatus(); toast('🗑️','Клучевите се избришани');
-}
-function updateKeyStatus(){
-  const ck=getCK(); const gk=getGK();
-  document.getElementById('sb-ckey').textContent = ck ? '🔵 Активен':'⚪ Нема';
-  document.getElementById('sb-gkey').textContent = gk ? '🟢 Активен':'⚪ Нема';
-  const kb=document.getElementById('keyBtn');
-  if(ck||gk){ kb.classList.add('key-set'); kb.textContent='🔑 API ✓'; }
-  else { kb.classList.remove('key-set'); kb.textContent='🔑 API Клуч'; }
-  document.getElementById('aiPillTxt').textContent = ck?'Claude Sonnet':gk?'GPT-4o':'Локален режим';
+  if(workerOn){
+    kb.classList.add('key-set');
+    kb.textContent='🟣 Worker API';
+  }else if(ck||gk){
+    kb.classList.add('key-set');
+    kb.textContent='🔑 API ✓';
+  }else{
+    kb.classList.remove('key-set');
+    kb.textContent='🔑 API Клуч';
+  }
 }
 
 // ─── AGENT NAVIGATION ───
@@ -1286,42 +1242,47 @@ function setAI(btn, mode, agent){
 function setSt(s,btn){ curStyle=s; document.querySelectorAll('.ssb').forEach(b=>b.classList.remove('active')); if(btn)btn.classList.add('active'); }
 
 // ─── API CALLS ───
-async function callClaude(system, prompt, maxTokens=2000){
-  const key=getCK();
-  if(!key) return null;
-  // F5: Web search mode
-  if(webSearchOn){
-    try{
-      const wsResult=await callClaudeWithWebSearch(system, prompt, maxTokens);
-      if(wsResult&&wsResult.text){
-        // Store sources for display
-        window._lastWebSources=wsResult.sources||[];
-        return wsResult.text;
-      }
-    }catch(e){ console.warn('Web search failed, falling back to standard:', e); }
-  }
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:CLAUDE_MODEL,max_tokens:maxTokens,system,messages:[{role:'user',content:prompt}]})
+function getApiBase(){
+  return (window.WPA_API_BASE || '').replace(/\/$/, '');
+}
+
+async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto'){
+  const base = getApiBase();
+  if(!base) throw new Error('WPA_API_BASE не е поставен.');
+
+  const payload = {
+    message: prompt,
+    lang: curLang,
+    history: [
+      { role: 'assistant', content: system }
+    ],
+    quality: '3layer_academic',
+    engine,
+    max_tokens: maxTokens,
+    web_search: !!window.webSearchOn
+  };
+
+  const res = await fetch(`${base}/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'Claude API грешка '+res.status);}
-  const data=await res.json();
-  window._lastWebSources=[];
-  return data.content?.[0]?.text||'';
+
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok || !data.ok){
+    throw new Error(data?.error || `Worker грешка ${res.status}`);
+  }
+
+  window._lastWebSources = Array.isArray(data.sources) ? data.sources : [];
+  return data.answer || '';
+}
+
+async function callClaude(system, prompt, maxTokens=2000){
+  return await callWorkerAsk(system, prompt, maxTokens, 'claude');
 }
 
 async function callGPT(system, prompt, maxTokens=2000){
-  const key=getGK();
-  if(!key) return null;
-  const res=await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:GPT_MODEL,max_tokens:maxTokens,messages:[{role:'system',content:system},{role:'user',content:prompt}]})
-  });
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'GPT грешка');}
-  const data=await res.json();
-  return data.choices?.[0]?.message?.content||'';
+  return await callWorkerAsk(system, prompt, maxTokens, 'gpt');
 }
 
 function smartTokens(agent, action){
@@ -1534,16 +1495,16 @@ async function cc(agent, action){
     if(mode==='gpt'){
       result=await callGPT(sys,prompt,tokens);
     }
-    if(mode==='hybrid'&&result&&getCK()&&getGK()){
+    if(mode==='hybrid' && result){
       try{
         const enriched=await callGPT('Ти си академски редактор. Подобри го следниот текст: зачувај структура, засили стилот.', result, 1200);
-        if(enriched&&enriched.length>100) result=result+'\n\n---\n**⚡ GPT-4o збогатување:**\n\n'+enriched;
+        if(enriched&&enriched.length>100) result=result+'\n\n---\n**⚡ Втор пасус — полирање:**\n\n'+enriched;
       }catch(e){}
     }
 
     if(!result){
       result=localFallback(agent,action);
-      toast('ℹ️','Активиран локален режим — внеси Claude API клуч');
+      toast('ℹ️','Активиран локален режим — Worker не врати одговор');
     }
 
     if(pbEl) pbEl.style.width='100%';
@@ -1603,8 +1564,7 @@ async function runAnalyze(mode){
   const prompt=`Анализирај го следниот материјал. Режим: ${mode}. Фокус: ${q||'општа академска анализа'}\n\nМАТЕРИЈАЛ:\n${btxt.slice(0,6000)}`;
   let result=null;
   try{
-    if(getCK()) result=await callClaude(sys,prompt,2000);
-    else if(getGK()) result=await callGPT(sys,prompt,2000);
+    result = await callClaude(sys,prompt,2000);
   }catch(e){}
   if(!result){
     const words=btxt.split(/\s+/).length;
@@ -1631,7 +1591,7 @@ async function runSemantic(mode){
   const prompt=`Семантичка анализа за темата: "${topic}"\nРежим: ${mode}\n\nВовед: ${intro}\nРазвој: ${dev}\nЗаклучок: ${conc}\nКонцепти: ${concepts}\nЛогичка нишка: ${thread}`;
   let result=null;
   try{
-    if(getCK()) result=await callClaude(sys,prompt,1500);
+    result = await callClaude(sys,prompt,1500);
   }catch(e){}
   if(!result){
     const score=intro&&dev&&conc?85:intro&&dev?65:40;
@@ -1773,7 +1733,355 @@ function toast(ico, msg){
 }
 
 // ─── LANG ───
-function setLang(lang){ curLang=lang; localStorage.setItem('wpaws_lang',lang); }
+
+const UI_I18N = {
+  mk: {
+    back: '← Academy',
+    plan: 'Free',
+    web: '🌐 Web',
+    dialog: '💬 Дијалог',
+    memory: '💾 Меморија',
+    workerApi: '🟣 Worker API',
+    keyDefault: '🔑 API Клуч',
+    keyReady: '🔑 API ✓',
+    activeClaude: '🔵 Активен',
+    activeGpt: '🟢 Активен',
+    worker: '🟣 Worker',
+    none: '⚪ Нема',
+    topSub: 'World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web',
+    modalTitle: '🔑 API Клучеви',
+    modalDesc: 'Чуваат се само локално во прелистувачот. Никогаш не се испраќаат на надворешни сервери.',
+    save: 'Зачувај',
+    cancel: 'Откажи',
+    deleteKeys: 'Избриши клучеви',
+    savedDocs: '💾 Меморија',
+    sessionStatus: 'Session Status',
+    quickActions: 'Брзи акции',
+    historyTitle: 'Историја на сесијата',
+    doctrineTitle: '⚜️ WPA Доктрина',
+    memoryTitle: '💾 Зачувани документи',
+    downloadAll: '⬇️ Сите',
+    clearAll: '🗑️ Бриши',
+    chainTitle: '🔗 Автоматски синџир',
+    chainDesc: 'Избери работен тек и WPAWS автоматски ќе ги повика агентите по ред.',
+    agentArchitect: 'Архитект',
+    agentStructure: 'Структура',
+    agentBook: 'Книга',
+    agentAnalyze: 'Анализа',
+    agentSemantic: 'Семантика',
+    agentPpp: 'PPP',
+    agentProtocol: 'Протокол',
+    agentDiplomacy: 'Дипломатија',
+    agentSecurity: 'Безбедност',
+    agentStylist: 'Стилист',
+    agentCitations: 'Цитати',
+    agentEditor: 'Уредник',
+    agentReviewer: 'Рецензент',
+    agentPlagiat: 'Плагијат',
+    agentPress: 'WPA Press',
+    agentSandeai: 'Санде AI',
+    architectTitle: 'Агент Архитект — Осмислување',
+    architectTag: 'Концепт • Теза • Методологија',
+    analyzeTitle: 'Агент Анализа — Книги и Документи',
+    analyzeTag: 'PDF анализа • Екстракција • Синтеза',
+    statusLabel: 'Статус',
+    agentLabel: 'Агент',
+    aiEngineLabel: 'AI Мотор',
+    versionLabel: 'Верзија',
+    claudeApiLabel: 'Claude API',
+    gptApiLabel: 'GPT-4o API',
+    agentsLabel: 'Агенти',
+    active: 'Активен',
+    quickConcept: '🏛️ Анализа концепт',
+    quickStructure: '📐 Генерирај структура',
+    quickProtocol: '🎩 Протоколарен советувач',
+    quickCitations: '👑 Смиљанов цитати',
+    quickElevate: '🚀 Подигни текст',
+    quickReview: '🧐 Рецензирај',
+    quickPlag: '🔍 Провери плагијат',
+    quickPress: '📰 Соопштение',
+    chainNewPaper: '📄 Нов научен труд',
+    chainMonograph: '📚 Монографија',
+    chainProtocolDoc: '🎩 Протоколарен документ',
+    chainReviewPaper: '🧐 Рецензија на труд',
+    chainPressRelease: '📰 Медиумска комуникација',
+    docType: 'Тип на документ',
+    topic: 'Наслов / Тема',
+    concept: 'Главна идеја / Хипотеза / Концепт',
+    btnFullAnalysis: '🏛️ Комплетна анализа',
+    btnAnalyzeConcept: '🧠 Анализирај концепт',
+    btnGenerateThesis: '📝 Генерирај теза',
+    btnKeywords: '🔑 Клучни зборови',
+    archEmpty: '🏛️ Внеси тема и кликни Генерирај',
+    analyzeQ: 'Прашање / Фокус на анализата',
+    analyzeMode: 'Режим на анализа',
+    btnAnalyze: '🔬 Анализирај',
+    btnExtractQuotes: '📖 Извлечи цитати',
+    btnThemes: '🎯 Теми',
+    btnSummary: '📄 Резиме',
+    analyzeEmpty: '🔬 Прикачи книга/документ за анализа',
+    dropText: 'Влечи PDF/TXT/MD тука или клик за прикачување<br><small style="font-size:11px">Макс 3 фајлови · 5MB по фајл</small>',
+    phTopic: 'пр. Одбранбената дипломатија и безбедноста на РСМ',
+    phConcept: 'Опишете ја главната хипотеза, истражувачките прашања и очекуваниот придонес...',
+    phAnalyzeQ: "пр. 'Кои се главните аргументи?' или 'Извлечи цитати за Виенска конвенција'..."
+  },
+  en: {
+    back: '← Academy',
+    plan: 'Free',
+    web: '🌐 Web',
+    dialog: '💬 Dialogue',
+    memory: '💾 Memory',
+    workerApi: '🟣 Worker API',
+    keyDefault: '🔑 API Key',
+    keyReady: '🔑 API ✓',
+    activeClaude: '🔵 Active',
+    activeGpt: '🟢 Active',
+    worker: '🟣 Worker',
+    none: '⚪ None',
+    topSub: 'World Protocol Academy — 16 agents + Export + Memory + Dialogue + Chain + Web',
+    modalTitle: '🔑 API Keys',
+    modalDesc: 'Stored only locally in the browser. Never sent to external servers.',
+    save: 'Save',
+    cancel: 'Cancel',
+    deleteKeys: 'Delete keys',
+    savedDocs: '💾 Memory',
+    sessionStatus: 'Session Status',
+    quickActions: 'Quick Actions',
+    historyTitle: 'Session History',
+    doctrineTitle: '⚜️ WPA Doctrine',
+    memoryTitle: '💾 Saved Documents',
+    downloadAll: '⬇️ All',
+    clearAll: '🗑️ Clear',
+    chainTitle: '🔗 Auto Chain',
+    chainDesc: 'Choose a workflow and WPAWS will call the agents automatically in sequence.',
+    agentArchitect: 'Architect',
+    agentStructure: 'Structure',
+    agentBook: 'Book',
+    agentAnalyze: 'Analysis',
+    agentSemantic: 'Semantic',
+    agentPpp: 'PPP',
+    agentProtocol: 'Protocol',
+    agentDiplomacy: 'Diplomacy',
+    agentSecurity: 'Security',
+    agentStylist: 'Stylist',
+    agentCitations: 'Citations',
+    agentEditor: 'Editor',
+    agentReviewer: 'Reviewer',
+    agentPlagiat: 'Plagiarism',
+    agentPress: 'WPA Press',
+    agentSandeai: 'Sande AI',
+    architectTitle: 'Agent Architect — Concept Design',
+    architectTag: 'Concept • Thesis • Methodology',
+    analyzeTitle: 'Agent Analysis — Books and Documents',
+    analyzeTag: 'PDF analysis • Extraction • Synthesis',
+    statusLabel: 'Status',
+    agentLabel: 'Agent',
+    aiEngineLabel: 'AI Engine',
+    versionLabel: 'Version',
+    claudeApiLabel: 'Claude API',
+    gptApiLabel: 'GPT-4o API',
+    agentsLabel: 'Agents',
+    active: 'Active',
+    quickConcept: '🏛️ Analyze concept',
+    quickStructure: '📐 Generate structure',
+    quickProtocol: '🎩 Protocol advisor',
+    quickCitations: '👑 Smiljanov citations',
+    quickElevate: '🚀 Elevate text',
+    quickReview: '🧐 Review',
+    quickPlag: '🔍 Check plagiarism',
+    quickPress: '📰 Press release',
+    chainNewPaper: '📄 New paper',
+    chainMonograph: '📚 Monograph',
+    chainProtocolDoc: '🎩 Protocol document',
+    chainReviewPaper: '🧐 Review a paper',
+    chainPressRelease: '📰 Media communication',
+    docType: 'Document type',
+    topic: 'Title / Topic',
+    concept: 'Main idea / Hypothesis / Concept',
+    btnFullAnalysis: '🏛️ Full analysis',
+    btnAnalyzeConcept: '🧠 Analyze concept',
+    btnGenerateThesis: '📝 Generate thesis',
+    btnKeywords: '🔑 Keywords',
+    archEmpty: '🏛️ Enter a topic and click Generate',
+    analyzeQ: 'Question / Focus of the analysis',
+    analyzeMode: 'Analysis mode',
+    btnAnalyze: '🔬 Analyze',
+    btnExtractQuotes: '📖 Extract quotes',
+    btnThemes: '🎯 Themes',
+    btnSummary: '📄 Summary',
+    analyzeEmpty: '🔬 Upload a book/document for analysis',
+    dropText: 'Drop PDF/TXT/MD here or click to upload<br><small style="font-size:11px">Max 3 files · 5MB per file</small>',
+    phTopic: 'e.g. Defence diplomacy and the security of North Macedonia',
+    phConcept: 'Describe the main hypothesis, research questions and expected contribution...',
+    phAnalyzeQ: "e.g. 'What are the main arguments?' or 'Extract quotes on the Vienna Convention'..."
+  }
+};
+
+function i18nText(lang, key){
+  const pack = UI_I18N[lang] || UI_I18N.mk;
+  return pack[key] ?? key;
+}
+function i18nSet(sel, key, htmlMode=false){
+  const el = document.querySelector(sel);
+  if(!el) return;
+  if(htmlMode) el.innerHTML = i18nText(curLang, key);
+  else el.textContent = i18nText(curLang, key);
+}
+function i18nAll(sel, keys){
+  document.querySelectorAll(sel).forEach((el, idx) => {
+    const key = keys[idx];
+    if(key) el.textContent = i18nText(curLang, key);
+  });
+}
+function i18nPlaceholder(id, key){
+  const el = document.getElementById(id);
+  if(el) el.placeholder = i18nText(curLang, key);
+}
+function i18nLabelForField(id, key){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const wrap = el.closest('div');
+  const label = wrap ? wrap.querySelector('.flabel') : null;
+  if(label) label.textContent = i18nText(curLang, key);
+}
+function i18nSelectOptions(id, mapMk, mapEn){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const pack = curLang === 'en' ? mapEn : mapMk;
+  [...el.options].forEach((opt, idx) => {
+    if(pack[idx] !== undefined) opt.textContent = pack[idx];
+  });
+}
+
+function applyUiLang(lang){
+  curLang = lang === 'en' ? 'en' : 'mk';
+  document.documentElement.lang = curLang;
+  const uiLang = document.getElementById('uiLang');
+  if(uiLang) uiLang.value = curLang;
+
+  i18nSet('.tb-back','back');
+  i18nSet('#planBtn','plan');
+  i18nSet('#webToggle','web');
+  i18nSet('#globalDialog','dialog');
+  i18nSet('.tb-right .tb-btn[onclick="openMemoryPanel()"]','memory');
+  i18nSet('.tb-sub','topSub');
+  i18nSet('#keyModal h3','modalTitle');
+  i18nSet('#keyModal p','modalDesc');
+  i18nSet('#keyModal .mactions .btn.bgo','save');
+  i18nSet('#keyModal .mactions .btn.bgh','cancel');
+  i18nSet('#keyModal .mactions .btn.bgh.bsm','deleteKeys');
+
+  i18nAll('#agentNav .al', [
+    'agentArchitect','agentStructure','agentBook','agentAnalyze','agentSemantic','agentPpp',
+    'agentProtocol','agentDiplomacy','agentSecurity','agentStylist','agentCitations',
+    'agentEditor','agentReviewer','agentPlagiat','agentPress','agentSandeai'
+  ]);
+
+  i18nSet('#sp-architect .phd-title','architectTitle');
+  i18nSet('#sp-architect .phd-tag','architectTag');
+  i18nSet('#sp-analyze .phd-title','analyzeTitle');
+  i18nSet('#sp-analyze .phd-tag','analyzeTag');
+
+  i18nSet('#sp-architect .brow .btn:nth-child(1)','btnFullAnalysis');
+  i18nSet('#sp-architect .brow .btn:nth-child(2)','btnAnalyzeConcept');
+  i18nSet('#sp-architect .brow .btn:nth-child(3)','btnGenerateThesis');
+  i18nSet('#sp-architect .brow .btn:nth-child(4)','btnKeywords');
+  i18nSet('#sp-analyze .brow .btn:nth-child(1)','btnAnalyze');
+  i18nSet('#sp-analyze .brow .btn:nth-child(2)','btnExtractQuotes');
+  i18nSet('#sp-analyze .brow .btn:nth-child(3)','btnThemes');
+  i18nSet('#sp-analyze .brow .btn:nth-child(4)','btnSummary');
+
+  i18nLabelForField('docType','docType');
+  i18nLabelForField('topic','topic');
+  i18nLabelForField('concept','concept');
+  i18nLabelForField('analyzeQ','analyzeQ');
+  i18nLabelForField('analyzeMode','analyzeMode');
+
+  i18nPlaceholder('topic','phTopic');
+  i18nPlaceholder('concept','phConcept');
+  i18nPlaceholder('analyzeQ','phAnalyzeQ');
+
+  i18nSelectOptions('docType',
+    ['Научен труд','Монографија','Конференциски труд','Policy Paper','Стратешки извештај','Дисертација'],
+    ['Scientific paper','Monograph','Conference paper','Policy paper','Strategic report','Dissertation']
+  );
+  i18nSelectOptions('analyzeMode',
+    ['Општа анализа','Екстракција на цитати','Тематска анализа','Длабоко резиме','Компаративна анализа','Клучни поими'],
+    ['General analysis','Quote extraction','Thematic analysis','Deep summary','Comparative analysis','Keywords']
+  );
+  i18nSelectOptions('uiLang', ['МК','EN'], ['MK','EN']);
+
+  const archEmpty = document.querySelector('#r-architect .rbox-empty');
+  if(archEmpty) archEmpty.textContent = i18nText(curLang,'archEmpty');
+  const analyzeEmpty = document.querySelector('#r-analyze .rbox-empty');
+  if(analyzeEmpty) analyzeEmpty.textContent = i18nText(curLang,'analyzeEmpty');
+  i18nSet('#dropZone .dropzone-txt', 'dropText', true);
+
+  const sidebarCards = document.querySelectorAll('.sidebar .scard h3');
+  if(sidebarCards[0]) sidebarCards[0].textContent = i18nText(curLang,'sessionStatus');
+  if(sidebarCards[1]) sidebarCards[1].textContent = i18nText(curLang,'quickActions');
+  if(sidebarCards[3]) sidebarCards[3].textContent = i18nText(curLang,'historyTitle');
+  if(sidebarCards[4]) sidebarCards[4].textContent = i18nText(curLang,'doctrineTitle');
+  if(sidebarCards[5]) sidebarCards[5].childNodes[0].nodeValue = i18nText(curLang,'memoryTitle');
+  if(sidebarCards[6]) sidebarCards[6].textContent = i18nText(curLang,'chainTitle');
+
+  const chainDesc = document.querySelectorAll('.sidebar .scard p')[1];
+  if(chainDesc) chainDesc.textContent = i18nText(curLang,'chainDesc');
+
+  const srows = document.querySelectorAll('.sidebar .scard:first-child .srow .srow-l');
+  ['statusLabel','agentLabel','aiEngineLabel','versionLabel','claudeApiLabel','gptApiLabel','agentsLabel'].forEach((k, idx) => {
+    if(srows[idx]) srows[idx].textContent = i18nText(curLang, k);
+  });
+  const statusVal = document.querySelector('.sidebar .scard:first-child .srow .srow-v');
+  if(statusVal && statusVal.textContent.includes('Активен')) {
+    statusVal.innerHTML = '<span class="sdot"></span>' + i18nText(curLang,'active');
+  }
+
+  const qbtns = document.querySelectorAll('.qgrid .qbtn');
+  ['quickConcept','quickStructure','quickProtocol','quickCitations','quickElevate','quickReview','quickPlag','quickPress'].forEach((k, idx) => {
+    if(qbtns[idx]) qbtns[idx].textContent = i18nText(curLang, k);
+  });
+
+  const chainBtns = document.querySelectorAll('.sidebar .scard:last-child .btn');
+  ['chainNewPaper','chainMonograph','chainProtocolDoc','chainReviewPaper','chainPressRelease'].forEach((k, idx) => {
+    if(chainBtns[idx]) chainBtns[idx].textContent = i18nText(curLang, k);
+  });
+
+  const memBtns = document.querySelectorAll('#memoryCard .exp-btn');
+  if(memBtns[0]) memBtns[0].textContent = i18nText(curLang,'downloadAll');
+  if(memBtns[1]) memBtns[1].textContent = i18nText(curLang,'clearAll');
+
+  updateKeyStatus();
+}
+
+const _updateKeyStatusCore = updateKeyStatus;
+updateKeyStatus = function(){
+  _updateKeyStatusCore();
+  const ck=getCK(); const gk=getGK();
+  const workerOn = !!window.WPA_API_BASE;
+  const kb=document.getElementById('keyBtn');
+  if(kb){
+    if(workerOn) kb.textContent = i18nText(curLang,'workerApi');
+    else if(ck||gk) kb.textContent = i18nText(curLang,'keyReady');
+    else kb.textContent = i18nText(curLang,'keyDefault');
+  }
+  const sbC=document.getElementById('sb-ckey');
+  const sbG=document.getElementById('sb-gkey');
+  if(sbC) sbC.textContent = workerOn ? i18nText(curLang,'worker') : (ck ? i18nText(curLang,'activeClaude') : i18nText(curLang,'none'));
+  if(sbG) sbG.textContent = workerOn ? i18nText(curLang,'worker') : (gk ? i18nText(curLang,'activeGpt') : i18nText(curLang,'none'));
+};
+
+function setLang(lang){
+  curLang = lang;
+  localStorage.setItem('wpaws_lang', lang);
+  applyUiLang(lang);
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const savedLang = localStorage.getItem('wpaws_lang') || document.getElementById('uiLang')?.value || 'mk';
+  applyUiLang(savedLang);
+});
+
 
 // ════════════════════════════════════════════
 // FEATURE 1: EXPORT (TXT, MD, DOCX-like, PDF)
@@ -2035,9 +2343,8 @@ async function sendDialog(boxId){
 
   try{
     let result=null;
-    if(getCK()) result=await callClaude(sys,prompt,1200);
-    else if(getGK()) result=await callGPT(sys,prompt,1200);
-    else result='Внеси API клуч за дијалог режим.';
+    result = await callClaude(sys,prompt,1200);
+    if(!result) result='Worker не врати одговор во дијалог режим.';
 
     if(lastMsg) lastMsg.querySelector('.dmsg-bub').innerHTML=result.replace(/\n/g,'<br>');
     dialogHistory.push({role:'assistant',content:result});
@@ -2177,33 +2484,37 @@ function toggleWebSearch(){
 }
 
 async function callClaudeWithWebSearch(system, prompt, maxTokens=2000){
-  const key=getCK();
-  if(!key) return null;
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({
-      model:CLAUDE_MODEL,
-      max_tokens:maxTokens,
-      system,
-      tools:[{type:'web_search_20250305',name:'web_search'}],
-      messages:[{role:'user',content:prompt}]
-    })
+  const base = getApiBase();
+  if(!base) throw new Error('WPA_API_BASE не е поставен.');
+
+  const payload = {
+    message: prompt,
+    lang: curLang,
+    history: [
+      { role: 'assistant', content: system }
+    ],
+    quality: '3layer_academic',
+    engine: 'claude',
+    max_tokens: maxTokens,
+    web_search: true
+  };
+
+  const res = await fetch(`${base}/ask`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
   });
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'Claude Web Search грешка');}
-  const data=await res.json();
-  // Extract text and sources
-  let text='', sources=[];
-  for(const block of (data.content||[])){
-    if(block.type==='text') text+=block.text;
-    if(block.type==='tool_result'){
-      try{
-        const parsed=JSON.parse(block.content?.[0]?.text||'[]');
-        if(Array.isArray(parsed)) sources=parsed.slice(0,4).map(r=>r.url||r.title||'').filter(Boolean);
-      }catch(e){}
-    }
+
+  const data = await res.json().catch(() => ({}));
+  if(!res.ok || !data.ok){
+    throw new Error(data?.error || `Worker Web Search грешка ${res.status}`);
   }
-  return {text, sources};
+
+  const sources = Array.isArray(data.sources) ? data.sources : [];
+  return {
+    text: data.answer || '',
+    sources
+  };
 }
 
 function showWebSources(boxId, sources){
