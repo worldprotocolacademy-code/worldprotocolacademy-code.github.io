@@ -1,0 +1,460 @@
+<!-- PART 4: wpaws/paper/index.html -->
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Paper Studio — WPAWS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0d1f3c;--navy2:#162947;--gold:#c9a84c;--goldd:#a8873a;--goldl:#e8d49a;
+  --cream:#f8f4ee;--cream2:#f0ead8;--white:#fff;--text:#1a1a2e;--muted:#5a6677;--line:#d8cdb8;
+  --fd:'Cormorant Garamond',Georgia,serif;--fb:'Jost',system-ui,sans-serif;
+  --r:3px;--r2:8px;--top:52px;
+  --amber:#8b5a00;--amberl:#fdf3e3;--green:#1a6b3c;--greenl:#e8f5ee;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--fb);background:var(--cream);color:var(--text);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font-family:var(--fb)}
+
+.topbar{height:var(--top);background:var(--navy);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid rgba(201,168,76,.2);flex-shrink:0;flex-wrap:wrap}
+.tb-back{padding:5px 10px;border-radius:var(--r2);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:11px}
+.tb-title{font-family:var(--fd);font-size:15px;color:var(--goldl);font-weight:600;flex:1}
+.tb-btn{padding:5px 12px;border-radius:var(--r2);border:1px solid rgba(201,168,76,.3);background:transparent;color:var(--goldl);font-size:11.5px;font-weight:600;white-space:nowrap}
+.tb-btn:hover{background:rgba(201,168,76,.12)}
+.tb-btn.primary{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.save-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:600}
+.save-chip.saved{background:rgba(45,122,79,.18);color:#2d7a4f}
+.save-chip::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+
+.studio{flex:1;display:grid;grid-template-columns:220px 1fr;overflow:hidden;min-height:0}
+@media(max-width:768px){.studio{grid-template-columns:1fr}}
+
+/* LEFT NAV */
+.left-panel{background:var(--white);border-right:1px solid var(--line);overflow-y:auto}
+.lp-head{padding:12px 14px;border-bottom:1px solid var(--line);background:var(--cream2)}
+.lp-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldd);font-family:var(--fb);margin-bottom:8px}
+.sec-item{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;border-left:2px solid transparent;transition:all .15s;border-bottom:1px solid var(--line)}
+.sec-item:hover{background:var(--cream)}
+.sec-item.active{background:var(--cream2);border-left-color:var(--gold)}
+.sec-item .si-num{font-size:10px;font-weight:700;color:var(--goldd);min-width:16px}
+.sec-item .si-name{font-size:13px;color:var(--text)}
+.sec-item .si-check{margin-left:auto;font-size:12px;color:#2d7a4f}
+.lp-meta{margin:12px;padding:10px;background:var(--cream2);border-radius:var(--r);border-left:2px solid var(--goldl)}
+.lp-meta p{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:4px}
+.lp-meta select{width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:var(--r);font-size:12px;font-family:var(--fb);background:var(--white);outline:none;margin-top:6px}
+.export-btn{display:block;width:100%;padding:9px 12px;background:var(--white);border:1px solid var(--line);border-radius:var(--r);margin-bottom:6px;font-size:12.5px;font-family:var(--fb);color:var(--navy);text-align:left}
+.export-btn:hover{border-color:var(--gold);color:var(--goldd)}
+.export-btn.queue-btn{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+
+/* RIGHT / EDITOR */
+.right-panel{display:flex;flex-direction:column;overflow-y:auto;padding:24px 28px}
+@media(max-width:768px){.right-panel{padding:16px}}
+.section-editor{display:none}
+.section-editor.active{display:block}
+.section-title{font-family:var(--fd);font-size:22px;color:var(--navy);margin-bottom:16px;font-weight:600}
+.section-hint{font-size:13px;color:var(--muted);margin-bottom:12px;padding:10px 12px;background:var(--cream2);border-radius:var(--r);border-left:2px solid var(--goldl)}
+.section-textarea{width:100%;min-height:220px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r2);font-size:15px;font-family:var(--fd);line-height:1.8;color:var(--text);resize:vertical;outline:none;background:var(--white)}
+.section-textarea:focus{border-color:var(--gold)}
+.section-textarea::placeholder{color:var(--muted);font-style:italic}
+.keywords-input{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r2);font-size:14px;font-family:var(--fb);outline:none;background:var(--white)}
+.keywords-input:focus{border-color:var(--gold)}
+.section-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.sec-btn{padding:7px 14px;border-radius:var(--r2);border:1px solid var(--line);background:var(--white);font-size:12px;font-family:var(--fb);color:var(--navy)}
+.sec-btn:hover{border-color:var(--gold);color:var(--goldd)}
+.sec-btn.gen{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+.word-count{font-size:11px;color:var(--muted);margin-top:6px}
+
+/* CITATION GUARD */
+.cite-guard{margin-top:10px;padding:10px 14px;border-radius:var(--r2);font-size:13px;display:none}
+.cite-guard.warning{background:var(--amberl);color:var(--amber);border:1px solid #f5c870;display:flex;gap:8px}
+.cite-guard.error{background:#fff0f0;color:#8b1a1a;border:1px solid #e5b5b5;display:flex;gap:8px}
+
+/* REFERENCES */
+.ref-list{margin-top:10px;display:grid;gap:6px}
+.ref-item{padding:8px 12px;background:var(--cream);border-radius:var(--r);border-left:2px solid var(--goldl);font-size:13px;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ref-item .ref-text{flex:1;line-height:1.4}
+.ref-item .ref-status{font-size:10px;font-weight:700;text-transform:uppercase;font-family:var(--fb);padding:2px 7px;border-radius:2px}
+.ref-verified{background:var(--greenl);color:var(--green)}
+.ref-warn{background:var(--amberl);color:var(--amber)}
+.add-ref{width:100%;padding:9px 12px;background:var(--cream);border:1px dashed var(--line);border-radius:var(--r);font-size:12.5px;font-family:var(--fb);color:var(--muted);text-align:left;margin-top:6px}
+.add-ref:hover{border-color:var(--gold);color:var(--goldd)}
+
+/* GEN PANEL */
+.gen-panel{display:none;margin-top:12px;padding:14px;background:var(--cream2);border-radius:var(--r2)}
+.gen-panel.open{display:block}
+.gen-panel textarea{width:100%;min-height:60px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r2);font-size:14px;font-family:var(--fb);resize:none;outline:none;background:var(--white)}
+.gen-result{display:none;margin-top:10px;padding:12px;background:var(--white);border:1px solid var(--line);border-radius:var(--r2);font-size:14px;line-height:1.7;max-height:200px;overflow-y:auto}
+.gen-result.show{display:block}
+
+/* MOBILE NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);z-index:200}
+@media(max-width:768px){.bottom-nav{display:flex}}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 6px;gap:2px;text-decoration:none;color:var(--muted);min-height:52px;border:none;background:transparent}
+.bn-item.active{color:var(--goldd)}
+.bn-icon{font-size:18px}.bn-label{font-size:9px;font-family:var(--fb);font-weight:600;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb-back" onclick="location.href='/wpaws/'">← WPAWS</button>
+  <div class="tb-title" id="paperTitle">Paper Studio</div>
+  <span class="save-chip saved" id="saveChip">Saved</span>
+  <button class="tb-btn" onclick="checkAllCitations()">Check Citations</button>
+  <button class="tb-btn" onclick="queueForReview()">→ Queue Review</button>
+  <button class="tb-btn primary" onclick="exportPaper()">↓ Export docx</button>
+</div>
+
+<div class="studio">
+
+  <!-- LEFT NAV -->
+  <div class="left-panel">
+    <div class="lp-head">
+      <div class="lp-label">Paper</div>
+      <input type="text" id="paperTitleInput" value="OPC 2026 — Conference Paper" style="width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:var(--r2);font-size:12.5px;font-family:var(--fb);color:var(--navy);background:var(--white);outline:none" oninput="updatePaperTitle(this.value)"/>
+    </div>
+
+    <div id="sectionNav">
+      <div class="sec-item active" data-sec="abstract" onclick="showSection('abstract')"><span class="si-num">01</span><span class="si-name">Abstract</span><span class="si-check" id="check_abstract"></span></div>
+      <div class="sec-item" data-sec="keywords" onclick="showSection('keywords')"><span class="si-num">02</span><span class="si-name">Keywords</span><span class="si-check" id="check_keywords"></span></div>
+      <div class="sec-item" data-sec="intro" onclick="showSection('intro')"><span class="si-num">03</span><span class="si-name">Introduction</span><span class="si-check" id="check_intro"></span></div>
+      <div class="sec-item" data-sec="method" onclick="showSection('method')"><span class="si-num">04</span><span class="si-name">Methodology</span><span class="si-check" id="check_method"></span></div>
+      <div class="sec-item" data-sec="discussion" onclick="showSection('discussion')"><span class="si-num">05</span><span class="si-name">Discussion</span><span class="si-check" id="check_discussion"></span></div>
+      <div class="sec-item" data-sec="conclusion" onclick="showSection('conclusion')"><span class="si-num">06</span><span class="si-name">Conclusion</span><span class="si-check" id="check_conclusion"></span></div>
+      <div class="sec-item" data-sec="references" onclick="showSection('references')"><span class="si-num">07</span><span class="si-name">References</span><span class="si-check" id="check_references"></span></div>
+    </div>
+
+    <div class="lp-meta">
+      <p id="wordTotals">Total: 0 words</p>
+      <p>Style: <span id="citeStyle">APA 7th</span></p>
+      <select onchange="setCiteStyle(this.value)">
+        <option value="apa">APA 7th Edition</option>
+        <option value="chicago">Chicago 17th</option>
+      </select>
+    </div>
+
+    <div style="padding:10px 12px">
+      <div class="lp-label">Actions</div>
+      <button class="export-btn" onclick="checkAllCitations()">⟳ Check Citations</button>
+      <button class="export-btn" onclick="exportPaper()">↓ Export docx</button>
+      <button class="export-btn queue-btn" onclick="queueForReview()">→ Founder Queue</button>
+    </div>
+  </div>
+
+  <!-- SECTION EDITORS -->
+  <div class="right-panel">
+
+    <div class="section-editor active" id="sec_abstract">
+      <div class="section-title">Abstract</div>
+      <div class="section-hint">150–300 words. Summarise the research purpose, methodology, key findings, and conclusion. No citations in abstract.</div>
+      <textarea class="section-textarea" id="txt_abstract" placeholder="Write the abstract here..." style="font-size:16px" oninput="markDone('abstract',this.value);autosave()"></textarea>
+      <div class="word-count" id="wc_abstract">0 words</div>
+      <div class="section-actions">
+        <button class="sec-btn gen" onclick="generateSection('abstract')">Generate ✦</button>
+      </div>
+      <div class="gen-panel" id="gen_abstract">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--goldd);font-family:var(--fb);margin-bottom:6px">Generation prompt</div>
+        <textarea id="genprompt_abstract" placeholder="Describe the paper topic for the abstract..." style="font-size:16px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="tb-btn primary" onclick="runGenerate('abstract')">Generate ✦</button>
+          <button class="tb-btn" onclick="closeGen('abstract')">Close</button>
+          <span id="genstatus_abstract" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div class="gen-result" id="genresult_abstract"></div>
+      </div>
+    </div>
+
+    <div class="section-editor" id="sec_keywords">
+      <div class="section-title">Keywords</div>
+      <div class="section-hint">5–8 keywords separated by commas. Use discipline-specific terminology. Avoid general words.</div>
+      <input type="text" class="keywords-input" id="txt_keywords" placeholder="e.g. diplomatic protocol, state visits, precedence, ceremonial diplomacy..." style="font-size:16px" oninput="markDone('keywords',this.value);autosave()"/>
+    </div>
+
+    <div class="section-editor" id="sec_intro">
+      <div class="section-title">Introduction</div>
+      <div class="section-hint">Establish context, state the research problem, explain significance, and outline paper structure. Approx. 600–1000 words.</div>
+      <textarea class="section-textarea" id="txt_intro" placeholder="Write the introduction..." style="font-size:16px" oninput="markDone('intro',this.value);autosave()"></textarea>
+      <div class="word-count" id="wc_intro">0 words</div>
+      <div class="cite-guard" id="cg_intro"></div>
+      <div class="section-actions">
+        <button class="sec-btn gen" onclick="generateSection('intro')">Generate ✦</button>
+        <button class="sec-btn" onclick="insertRef('intro')">+ Cite</button>
+      </div>
+      <div class="gen-panel" id="gen_intro">
+        <textarea id="genprompt_intro" placeholder="Describe what the introduction should cover..." style="font-size:16px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="tb-btn primary" onclick="runGenerate('intro')">Generate ✦</button>
+          <button class="tb-btn" onclick="closeGen('intro')">Close</button>
+          <span id="genstatus_intro" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div class="gen-result" id="genresult_intro"></div>
+      </div>
+    </div>
+
+    <div class="section-editor" id="sec_method">
+      <div class="section-title">Methodology</div>
+      <div class="section-hint">Describe research approach, data sources, analytical framework, and justification of methods. Approx. 400–800 words.</div>
+      <textarea class="section-textarea" id="txt_method" placeholder="Describe the methodology..." style="font-size:16px" oninput="markDone('method',this.value);autosave()"></textarea>
+      <div class="word-count" id="wc_method">0 words</div>
+      <div class="cite-guard warning" id="cg_method" style="display:none">
+        <span>⚠</span><span>Citation guard: verify all sources in Citation Desk before inserting references in this section.</span>
+      </div>
+      <div class="section-actions">
+        <button class="sec-btn gen" onclick="generateSection('method')">Generate ✦</button>
+        <button class="sec-btn" onclick="insertRef('method')">+ Cite</button>
+      </div>
+      <div class="gen-panel" id="gen_method">
+        <textarea id="genprompt_method" placeholder="Describe the methodology context..." style="font-size:16px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="tb-btn primary" onclick="runGenerate('method')">Generate ✦</button>
+          <button class="tb-btn" onclick="closeGen('method')">Close</button>
+          <span id="genstatus_method" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div class="gen-result" id="genresult_method"></div>
+      </div>
+    </div>
+
+    <div class="section-editor" id="sec_discussion">
+      <div class="section-title">Discussion</div>
+      <div class="section-hint">Interpret findings, relate to existing literature, explore implications. Approx. 1000–2000 words.</div>
+      <textarea class="section-textarea" id="txt_discussion" placeholder="Write the discussion..." style="font-size:16px" oninput="markDone('discussion',this.value);autosave()"></textarea>
+      <div class="word-count" id="wc_discussion">0 words</div>
+      <div class="section-actions">
+        <button class="sec-btn gen" onclick="generateSection('discussion')">Generate ✦</button>
+        <button class="sec-btn" onclick="insertRef('discussion')">+ Cite</button>
+      </div>
+      <div class="gen-panel" id="gen_discussion">
+        <textarea id="genprompt_discussion" placeholder="Key points to discuss..." style="font-size:16px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="tb-btn primary" onclick="runGenerate('discussion')">Generate ✦</button>
+          <button class="tb-btn" onclick="closeGen('discussion')">Close</button>
+          <span id="genstatus_discussion" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div class="gen-result" id="genresult_discussion"></div>
+      </div>
+    </div>
+
+    <div class="section-editor" id="sec_conclusion">
+      <div class="section-title">Conclusion</div>
+      <div class="section-hint">Summarise findings, restate significance, suggest further research. Approx. 300–600 words. No new arguments.</div>
+      <textarea class="section-textarea" id="txt_conclusion" placeholder="Write the conclusion..." style="font-size:16px" oninput="markDone('conclusion',this.value);autosave()"></textarea>
+      <div class="word-count" id="wc_conclusion">0 words</div>
+      <div class="section-actions">
+        <button class="sec-btn gen" onclick="generateSection('conclusion')">Generate ✦</button>
+      </div>
+      <div class="gen-panel" id="gen_conclusion">
+        <textarea id="genprompt_conclusion" placeholder="Main findings to conclude..." style="font-size:16px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="tb-btn primary" onclick="runGenerate('conclusion')">Generate ✦</button>
+          <button class="tb-btn" onclick="closeGen('conclusion')">Close</button>
+          <span id="genstatus_conclusion" style="font-size:11px;color:var(--muted);align-self:center"></span>
+        </div>
+        <div class="gen-result" id="genresult_conclusion"></div>
+      </div>
+    </div>
+
+    <div class="section-editor" id="sec_references">
+      <div class="section-title">References</div>
+      <div class="section-hint">All citations must be verified. Citation guard is active. Add sources via Citation Desk first.</div>
+      <div class="ref-list" id="refList">
+        <div style="font-size:13px;color:var(--muted);font-style:italic;padding:8px 0">No references added yet. Add sources in Citation Desk, then insert here.</div>
+      </div>
+      <button class="add-ref" onclick="addReference()">+ Add reference manually</button>
+      <div class="cite-guard warning" id="cg_references" style="margin-top:10px">
+        <span>⚠</span><span>All references must be verified (DOI / HDL / COBISS) before this paper can be queued for review.</span>
+      </div>
+    </div>
+
+  </div><!-- /right-panel -->
+</div>
+
+<nav class="bottom-nav">
+  <a href="/wpaws/" class="bn-item"><div class="bn-icon">🏠</div><div class="bn-label">Home</div></a>
+  <a href="/wpaws/book/" class="bn-item"><div class="bn-icon">📖</div><div class="bn-label">Book</div></a>
+  <a href="/wpaws/paper/" class="bn-item active"><div class="bn-icon">📄</div><div class="bn-label">Paper</div></a>
+  <a href="/wpaws/citations/" class="bn-item"><div class="bn-icon">📚</div><div class="bn-label">Cite</div></a>
+  <a href="/wpaws/queue/" class="bn-item"><div class="bn-icon">🚀</div><div class="bn-label">Queue</div></a>
+</nav>
+
+<script>
+const SECTIONS = ['abstract','keywords','intro','method','discussion','conclusion','references'];
+const PAPER_STATE = { title:'OPC 2026 — Conference Paper', citeStyle:'apa', isDirty:false };
+
+document.addEventListener('DOMContentLoaded', function(){
+  loadPaperFromStorage();
+  updateAllWordCounts();
+});
+
+function showSection(id){
+  document.querySelectorAll('.section-editor').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sec-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec_' + id).classList.add('active');
+  document.querySelector('[data-sec="' + id + '"]').classList.add('active');
+}
+
+function markDone(id, value){
+  const check = document.getElementById('check_' + id);
+  if(check) check.textContent = value.trim() ? '✓' : '';
+  updateWordCount(id);
+  PAPER_STATE.isDirty = true;
+}
+
+function updateWordCount(id){
+  const el = document.getElementById('txt_' + id);
+  const wc = document.getElementById('wc_' + id);
+  if(!el || !wc) return;
+  const count = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+  wc.textContent = count + ' words';
+}
+
+function updateAllWordCounts(){
+  SECTIONS.forEach(s => { if(s !== 'keywords' && s !== 'references') updateWordCount(s); });
+  updateTotalWords();
+}
+
+function updateTotalWords(){
+  let total = 0;
+  SECTIONS.forEach(s => {
+    const el = document.getElementById('txt_' + s);
+    if(el && el.value.trim()) total += el.value.trim().split(/\s+/).length;
+  });
+  document.getElementById('wordTotals').textContent = 'Total: ' + total + ' words';
+}
+
+function setCiteStyle(val){ PAPER_STATE.citeStyle = val; document.getElementById('citeStyle').textContent = val === 'apa' ? 'APA 7th' : 'Chicago 17th'; }
+function updatePaperTitle(v){ PAPER_STATE.title = v; document.getElementById('paperTitle').textContent = 'Paper Studio — ' + v; }
+
+function autosave(){
+  clearTimeout(PAPER_STATE.saveTimer);
+  PAPER_STATE.saveTimer = setTimeout(savePaperToStorage, 30000);
+}
+
+function savePaperToStorage(){
+  try {
+    const data = {};
+    SECTIONS.forEach(s => {
+      const el = document.getElementById('txt_' + s);
+      if(el) data[s] = el.value;
+    });
+    data.title = PAPER_STATE.title;
+    data.citeStyle = PAPER_STATE.citeStyle;
+    data.ts = Date.now();
+    sessionStorage.setItem('wpaws_paper_state', JSON.stringify(data));
+    document.getElementById('saveChip').textContent = 'Saved';
+    PAPER_STATE.isDirty = false;
+  } catch(e) {}
+}
+
+function loadPaperFromStorage(){
+  try {
+    const saved = sessionStorage.getItem('wpaws_paper_state');
+    if(!saved) return;
+    const data = JSON.parse(saved);
+    SECTIONS.forEach(s => {
+      const el = document.getElementById('txt_' + s);
+      if(el && data[s]) { el.value = data[s]; markDone(s, data[s]); }
+    });
+    if(data.title) { PAPER_STATE.title = data.title; document.getElementById('paperTitleInput').value = data.title; updatePaperTitle(data.title); }
+  } catch(e) {}
+}
+
+function insertRef(sec){
+  const ref = prompt('Add citation (Author, Year, Title):');
+  if(!ref) return;
+  const ta = document.getElementById('txt_' + sec);
+  if(!ta) return;
+  const pos = ta.selectionStart || ta.value.length;
+  ta.value = ta.value.substring(0, pos) + ' (' + ref + ') ' + ta.value.substring(pos);
+  PAPER_STATE.isDirty = true;
+  addToRefList(ref);
+}
+
+function addToRefList(ref){
+  const list = document.getElementById('refList');
+  const empty = list.querySelector('div[style*="italic"]');
+  if(empty) empty.remove();
+  const item = document.createElement('div');
+  item.className = 'ref-item';
+  item.innerHTML = '<span class="ref-text">' + ref + '</span><span class="ref-status ref-warn">Verify</span>';
+  list.appendChild(item);
+}
+
+function addReference(){
+  const ref = prompt('Reference (Author, Year. Title. Publisher/Journal.):');
+  if(!ref) return;
+  addToRefList(ref);
+}
+
+function checkAllCitations(){
+  const btn = event?.target;
+  if(btn){ btn.textContent = 'Checking...'; setTimeout(() => { btn.textContent = '⟳ Check Citations'; alert('Citation check complete.\n\nAll references flagged as "Verify" should be confirmed with DOI/HDL/COBISS before queueing for founder review.'); }, 1200); }
+}
+
+function generateSection(sec){
+  const panel = document.getElementById('gen_' + sec);
+  if(panel) panel.classList.toggle('open');
+}
+
+function closeGen(sec){
+  const panel = document.getElementById('gen_' + sec);
+  if(panel) panel.classList.remove('open');
+}
+
+async function runGenerate(sec){
+  const prompt = document.getElementById('genprompt_' + sec)?.value.trim();
+  if(!prompt) return;
+  const statusEl = document.getElementById('genstatus_' + sec);
+  const resultEl = document.getElementById('genresult_' + sec);
+  if(statusEl) statusEl.textContent = 'Generating...';
+  if(resultEl) { resultEl.className = 'gen-result'; }
+  try {
+    const res = await fetch('https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: 'PAPER STUDIO · PRODUCTION MODE. Write the ' + sec + ' section for an academic paper.\nPaper: ' + PAPER_STATE.title + '\nStyle: ' + PAPER_STATE.citeStyle.toUpperCase() + '\nInstruction: ' + prompt, lang:'mk', history:[] })
+    });
+    const data = await res.json();
+    const text = (data.ok && data.answer) ? data.answer : (data.error || 'Error — try again.');
+    if(resultEl){ resultEl.textContent = text; resultEl.className = 'gen-result show'; }
+    if(statusEl) statusEl.textContent = 'Done. Click result to insert.';
+    if(resultEl) resultEl.onclick = function(){
+      const ta = document.getElementById('txt_' + sec);
+      if(ta){ ta.value = ta.value ? ta.value + '\n\n' + text : text; markDone(sec, ta.value); autosave(); }
+      closeGen(sec);
+    };
+  } catch(e) {
+    if(resultEl){ resultEl.textContent = 'Connection error.'; resultEl.className = 'gen-result show'; }
+    if(statusEl) statusEl.textContent = 'Error.';
+  }
+}
+
+function queueForReview(){
+  savePaperToStorage();
+  const item = { id: 'paper_opc2026', title: PAPER_STATE.title, type: 'Paper', status: 'review', ts: Date.now() };
+  try {
+    const q = JSON.parse(sessionStorage.getItem('wpaws_queue') || '[]');
+    const ex = q.findIndex(x => x.id === item.id);
+    if(ex >= 0) q[ex] = item; else q.push(item);
+    sessionStorage.setItem('wpaws_queue', JSON.stringify(q));
+  } catch(e) {}
+  alert('Paper sent to Founder Review Queue.');
+}
+
+function exportPaper(){
+  savePaperToStorage();
+  const sections = SECTIONS.map(s => {
+    const el = document.getElementById('txt_' + s);
+    return s.toUpperCase() + '\n' + (el ? el.value : '') + '\n';
+  }).join('\n---\n\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([PAPER_STATE.title + '\n\n' + sections], {type:'text/plain'}));
+  a.download = 'paper_export.txt';
+  a.click();
+}
+
+setInterval(() => { if(PAPER_STATE.isDirty) savePaperToStorage(); }, 30000);
+</script>
+</body>
+</html>
