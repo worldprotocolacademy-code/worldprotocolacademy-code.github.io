@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Analysis Studio — WPAWS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0d1f3c;--navy2:#162947;--gold:#c9a84c;--goldd:#a8873a;--goldl:#e8d49a;
+  --cream:#f8f4ee;--cream2:#f0ead8;--white:#fff;--text:#1a1a2e;--muted:#5a6677;--line:#d8cdb8;
+  --fd:'Cormorant Garamond',Georgia,serif;--fb:'Jost',system-ui,sans-serif;
+  --r:3px;--r2:8px;--top:52px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--fb);background:var(--cream);color:var(--text);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font-family:var(--fb)}
+
+.topbar{height:var(--top);background:var(--navy);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid rgba(201,168,76,.2);flex-shrink:0;flex-wrap:wrap}
+.tb-back{padding:5px 10px;border-radius:var(--r2);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:11px}
+.tb-title{font-family:var(--fd);font-size:15px;color:var(--goldl);font-weight:600;flex:1}
+.tb-btn{padding:5px 12px;border-radius:var(--r2);border:1px solid rgba(201,168,76,.3);background:transparent;color:var(--goldl);font-size:11.5px;font-weight:600;white-space:nowrap}
+.tb-btn:hover{background:rgba(201,168,76,.12)}
+.tb-btn.primary{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+
+.studio{flex:1;display:grid;grid-template-columns:340px 1fr;overflow:hidden;min-height:0}
+@media(max-width:860px){.studio{grid-template-columns:1fr;overflow-y:auto}}
+
+/* LEFT: FORM */
+.left-panel{background:var(--white);border-right:1px solid var(--line);overflow-y:auto;padding:20px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldd);font-family:var(--fb);margin-bottom:8px;display:block}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r2);font-size:14px;font-family:var(--fb);color:var(--text);background:var(--white);outline:none}
+.form-input:focus{border-color:var(--gold)}
+.form-textarea{width:100%;min-height:80px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r2);font-size:14px;font-family:var(--fd);color:var(--text);background:var(--white);resize:vertical;outline:none;line-height:1.65}
+.form-textarea:focus{border-color:var(--gold)}
+.form-textarea::placeholder{color:var(--muted);font-style:italic}
+.toggle-group{display:flex;flex-wrap:wrap;gap:6px}
+.tgl{padding:6px 12px;border:1px solid var(--line);border-radius:var(--r2);font-size:12px;font-weight:500;font-family:var(--fb);color:var(--muted);background:var(--white);cursor:pointer;transition:all .15s}
+.tgl:hover{border-color:var(--gold);color:var(--goldd)}
+.tgl.active{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+
+/* RIGHT: OUTPUT */
+.right-panel{display:flex;flex-direction:column;overflow:hidden}
+.output-bar{padding:10px 16px;background:var(--cream2);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.out-tab{padding:5px 12px;border-radius:var(--r2);border:1px solid var(--line);background:var(--white);font-size:12px;font-family:var(--fb);color:var(--muted);cursor:pointer}
+.out-tab.active{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+.output-area{flex:1;padding:20px 24px;overflow-y:auto;min-height:0}
+.output-placeholder{color:var(--muted);font-style:italic;font-size:15px;font-family:var(--fd);line-height:1.8;padding:20px 0}
+.output-content{font-size:15px;font-family:var(--fd);line-height:1.8;color:var(--text);white-space:pre-wrap;display:none}
+.output-content.show{display:block}
+.output-footer{padding:10px 16px;border-top:1px solid var(--line);background:var(--cream);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.out-btn{padding:7px 14px;border-radius:var(--r2);border:1px solid var(--line);background:var(--white);font-size:12px;font-family:var(--fb);color:var(--navy)}
+.out-btn:hover{border-color:var(--gold);color:var(--goldd)}
+.out-btn.queue{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+.out-btn.queue:hover{background:var(--navy2)}
+
+.loading{display:none;padding:20px 0;color:var(--muted);font-size:14px;font-family:var(--fb)}
+.loading.show{display:flex;align-items:center;gap:10px}
+.spinner{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MOBILE NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);z-index:200}
+@media(max-width:768px){.bottom-nav{display:flex}}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 6px;gap:2px;text-decoration:none;color:var(--muted);min-height:52px;border:none;background:transparent}
+.bn-item.active{color:var(--goldd)}
+.bn-icon{font-size:18px}.bn-label{font-size:9px;font-family:var(--fb);font-weight:600;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb-back" onclick="location.href='/wpaws/'">← WPAWS</button>
+  <div class="tb-title">Analysis Studio</div>
+  <button class="tb-btn" onclick="queueForReview()">→ Queue Review</button>
+  <button class="tb-btn primary" id="generateBtn" onclick="runAnalysis()">Generate Analysis ✦</button>
+</div>
+
+<div class="studio">
+
+  <!-- LEFT: BRIEF SETUP -->
+  <div class="left-panel">
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldd);font-family:var(--fb);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line)">Brief Setup</div>
+
+    <div class="form-group">
+      <label class="form-label">Topic / Subject</label>
+      <input type="text" class="form-input" id="topicInput" placeholder="Enter the topic or subject of analysis..." style="font-size:16px"/>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Brief Type</label>
+      <div class="toggle-group" id="briefType">
+        <button class="tgl active" data-val="diplomatic">Diplomatic Analysis</button>
+        <button class="tgl" data-val="policy">Policy Note</button>
+        <button class="tgl" data-val="country">Country Brief</button>
+        <button class="tgl" data-val="risk">Protocol Risk Note</button>
+        <button class="tgl" data-val="memo">Institutional Memo</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Audience</label>
+      <div class="toggle-group" id="audience">
+        <button class="tgl" data-val="internal">Internal</button>
+        <button class="tgl active" data-val="institutional">Institutional</button>
+        <button class="tgl" data-val="academic">Academic</button>
+        <button class="tgl" data-val="executive">Executive</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Key Evidence / Sources / Context</label>
+      <textarea class="form-textarea" id="evidenceInput" placeholder="Add key facts, sources, data points, or context to include in the analysis..." style="font-size:16px;min-height:100px"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Language</label>
+      <div class="toggle-group" id="analysisLang">
+        <button class="tgl active" data-val="mk">Македонски</button>
+        <button class="tgl" data-val="en">English</button>
+        <button class="tgl" data-val="both">MK + EN</button>
+      </div>
+    </div>
+
+    <button class="tb-btn primary" style="width:100%;padding:11px;font-size:13px;justify-content:center;display:flex;align-items:center;gap:8px" onclick="runAnalysis()">
+      Generate Analysis ✦
+    </button>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">All outputs enter Draft stage · Founder-supervised · Not published autonomously</p>
+  </div>
+
+  <!-- RIGHT: OUTPUT -->
+  <div class="right-panel">
+    <div class="output-bar">
+      <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-family:var(--fb)">View:</span>
+      <button class="out-tab active" id="tab_full" onclick="switchTab('full')">Full Analysis</button>
+      <button class="out-tab" id="tab_exec" onclick="switchTab('exec')">Executive Summary</button>
+      <button class="out-tab" id="tab_points" onclick="switchTab('points')">Key Points</button>
+    </div>
+
+    <div class="output-area">
+      <div class="loading" id="loadingEl">
+        <div class="spinner"></div>
+        <span>Virtual Sande is generating analysis...</span>
+      </div>
+      <div class="output-placeholder" id="outputPlaceholder">
+        Analysis output will appear here after clicking "Generate Analysis ✦".<br><br>
+        Fill in the topic, brief type, audience, and optional evidence in the setup form on the left, then generate.
+      </div>
+      <div class="output-content" id="output_full"></div>
+      <div class="output-content" id="output_exec"></div>
+      <div class="output-content" id="output_points"></div>
+    </div>
+
+    <div class="output-footer">
+      <button class="out-btn" id="exportDocxBtn" onclick="exportDocx()" disabled>↓ Export docx</button>
+      <button class="out-btn" id="exportHtmlBtn" onclick="exportHTML()" disabled>↓ Export HTML</button>
+      <button class="out-btn" id="archiveBtn" onclick="saveToArchive()" disabled>+ Add to Archive</button>
+      <button class="out-btn queue" id="queueBtn" onclick="queueForReview()" disabled>→ Founder Queue</button>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="/wpaws/" class="bn-item"><div class="bn-icon">🏠</div><div class="bn-label">Home</div></a>
+  <a href="/wpaws/book/" class="bn-item"><div class="bn-icon">📖</div><div class="bn-label">Book</div></a>
+  <a href="/wpaws/paper/" class="bn-item"><div class="bn-icon">📄</div><div class="bn-label">Paper</div></a>
+  <a href="/wpaws/analysis/" class="bn-item active"><div class="bn-icon">🔍</div><div class="bn-label">Analysis</div></a>
+  <a href="/wpaws/queue/" class="bn-item"><div class="bn-icon">🚀</div><div class="bn-label">Queue</div></a>
+</nav>
+
+<script>
+/* Toggle groups */
+document.querySelectorAll('.toggle-group').forEach(group => {
+  group.querySelectorAll('.tgl').forEach(btn => {
+    btn.addEventListener('click', function(){
+      group.querySelectorAll('.tgl').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+
+function getSelected(groupId){
+  const btn = document.querySelector('#' + groupId + ' .tgl.active');
+  return btn ? btn.getAttribute('data-val') : '';
+}
+
+let currentOutput = { full: '', exec: '', points: '' };
+
+async function runAnalysis(){
+  const topic = document.getElementById('topicInput').value.trim();
+  if(!topic){ alert('Please enter a topic.'); return; }
+
+  const briefType = getSelected('briefType');
+  const audience = getSelected('audience');
+  const evidence = document.getElementById('evidenceInput').value.trim();
+  const lang = getSelected('analysisLang');
+
+  const langLabel = lang === 'mk' ? 'Macedonian' : lang === 'en' ? 'English' : 'Macedonian and English';
+
+  const systemPrompt = `ANALYSIS STUDIO · PRODUCTION MODE.
+Generate a structured ${briefType.replace(/([A-Z])/g,' $1').trim()} for the following topic.
+Audience: ${audience}. Language: ${langLabel}.
+Format: numbered sections with clear headings.
+Sections to include:
+1. Context and Background
+2. Key Findings / Analysis
+3. Protocol / Diplomatic Implications (if applicable)
+4. Recommendations
+5. Executive Summary (brief, 3-5 sentences)
+
+Topic: ${topic}
+${evidence ? 'Key evidence / context: ' + evidence : ''}
+
+Important: This is draft content for founder review. Mark as [DRAFT]. Do not fabricate statistics or citations.`;
+
+  showLoading(true);
+  enableOutputButtons(false);
+
+  try {
+    const res = await fetch('https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: systemPrompt, lang: lang === 'both' ? 'mk' : lang, history: [] })
+    });
+    const data = await res.json();
+    const fullText = (data.ok && data.answer) ? data.answer : (data.error || 'Error — try again.');
+
+    /* Extract exec summary (last paragraph with 5. or "Summary") */
+    const execMatch = fullText.match(/5\.\s*Executive Summary[\s\S]*$/i);
+    const execText = execMatch ? execMatch[0] : fullText.substring(fullText.length - 400);
+    /* Key points = first 4 numbered items */
+    const pointsMatch = fullText.match(/^\d+\..+/gm);
+    const pointsText = pointsMatch ? pointsMatch.slice(0,4).join('\n') : fullText.substring(0, 600);
+
+    currentOutput = { full: fullText, exec: execText, points: pointsText };
+
+    document.getElementById('output_full').textContent = fullText;
+    document.getElementById('output_exec').textContent = execText;
+    document.getElementById('output_points').textContent = pointsText;
+
+    document.getElementById('outputPlaceholder').style.display = 'none';
+    switchTab('full');
+    showLoading(false);
+    enableOutputButtons(true);
+
+    /* Save to sessionStorage */
+    try {
+      sessionStorage.setItem('wpaws_analysis_last', JSON.stringify({
+        topic, briefType, audience, lang,
+        output: currentOutput,
+        ts: Date.now()
+      }));
+    } catch(e) {}
+
+  } catch(e) {
+    showLoading(false);
+    document.getElementById('outputPlaceholder').textContent = 'Connection error. Check worker endpoint.';
+    document.getElementById('outputPlaceholder').style.display = 'block';
+  }
+}
+
+function showLoading(show){
+  document.getElementById('loadingEl').className = 'loading' + (show ? ' show' : '');
+  document.getElementById('outputPlaceholder').style.display = show ? 'none' : '';
+}
+
+function enableOutputButtons(en){
+  ['exportDocxBtn','exportHtmlBtn','archiveBtn','queueBtn'].forEach(id => {
+    document.getElementById(id).disabled = !en;
+  });
+}
+
+function switchTab(tab){
+  ['full','exec','points'].forEach(t => {
+    document.getElementById('tab_' + t).className = 'out-tab' + (t === tab ? ' active' : '');
+    document.getElementById('output_' + t).className = 'output-content' + (t === tab ? ' show' : '');
+  });
+}
+
+function exportDocx(){
+  const content = currentOutput.full;
+  if(!content) return;
+  const topic = document.getElementById('topicInput').value || 'Analysis';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([topic + '\n\n' + content], {type:'text/plain'}));
+  a.download = 'analysis_export.txt';
+  a.click();
+}
+
+function exportHTML(){
+  const content = currentOutput.full;
+  if(!content) return;
+  const topic = document.getElementById('topicInput').value || 'Analysis';
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${topic}</title></head><body><h1>${topic}</h1><pre>${content}</pre></body></html>`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+  a.download = 'analysis_export.html';
+  a.click();
+}
+
+function saveToArchive(){
+  const topic = document.getElementById('topicInput').value || 'Analysis';
+  try {
+    const archive = JSON.parse(sessionStorage.getItem('wpaws_archive') || '[]');
+    archive.unshift({ id: 'analysis_' + Date.now(), title: topic, type: 'Analysis', ts: Date.now(), content: currentOutput.full });
+    sessionStorage.setItem('wpaws_archive', JSON.stringify(archive.slice(0, 50)));
+    alert('Saved to Research Archive.');
+  } catch(e) {}
+}
+
+function queueForReview(){
+  const topic = document.getElementById('topicInput').value || 'Analysis';
+  const item = { id: 'analysis_' + Date.now(), title: topic + ' — Analysis', type: 'Analysis', status: 'review', ts: Date.now() };
+  try {
+    const q = JSON.parse(sessionStorage.getItem('wpaws_queue') || '[]');
+    q.push(item);
+    sessionStorage.setItem('wpaws_queue', JSON.stringify(q));
+  } catch(e) {}
+  alert('Sent to Founder Review Queue.');
+}
+</script>
+</body>
+</html>
