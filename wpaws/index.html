@@ -1134,6 +1134,58 @@ a{color:inherit;text-decoration:none}
 </div>
 
 </div><!-- /workspace -->
+<script>
+// ═══════════════════════════════════════════
+// WPAWS 8.0 MASTER EDITION — ENGINE
+// 16 агенти • Claude API + GPT-4o • Local fallback
+// ═══════════════════════════════════════════
+
+const V = 'WPAWS-9.0-Integrated';
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const GPT_MODEL = 'gpt-4o';
+
+// State
+let curAgent = 'architect';
+let curStyle = 'sande';
+let curLang = 'mk';
+let aiModes = {}; // per-agent AI mode
+let pppSlides = [], pppIdx = 0;
+let uploadedBooks = [];
+let history = [];
+let busy = false;
+
+// ─── KEYS ───
+function getCK(){ return localStorage.getItem('wpaws_claude_key')||''; }
+function getGK(){ return localStorage.getItem('wpaws_gpt_key')||''; }
+function openModal(){
+  document.getElementById('keyModal').classList.add('open');
+  const ck=getCK(); const gk=getGK();
+  if(ck) document.getElementById('claudeIn').value=ck;
+  if(gk) document.getElementById('gptIn').value=gk;
+}
+function closeModal(){ document.getElementById('keyModal').classList.remove('open'); }
+function saveKeys(){
+  const ck=document.getElementById('claudeIn').value.trim();
+  const gk=document.getElementById('gptIn').value.trim();
+  if(ck) localStorage.setItem('wpaws_claude_key',ck);
+  if(gk) localStorage.setItem('wpaws_gpt_key',gk);
+  updateKeyStatus(); closeModal(); toast('✅','API клучевите се зачувани!');
+}
+function clearKeys(){
+  if(!confirm('Избриши ги сите API клучеви?')) return;
+  localStorage.removeItem('wpaws_claude_key'); localStorage.removeItem('wpaws_gpt_key');
+  document.getElementById('claudeIn').value=''; document.getElementById('gptIn').value='';
+  updateKeyStatus(); toast('🗑️','Клучевите се избришани');
+}
+function updateKeyStatus(){
+  const ck=getCK(); const gk=getGK();
+  document.getElementById('sb-ckey').textContent = ck ? '🔵 Активен':'⚪ Нема';
+  document.getElementById('sb-gkey').textContent = gk ? '🟢 Активен':'⚪ Нема';
+  const kb=document.getElementById('keyBtn');
+  if(ck||gk){ kb.classList.add('key-set'); kb.textContent='🔑 API ✓'; }
+  else { kb.classList.remove('key-set'); kb.textContent='🔑 API Клуч'; }
+  document.getElementById('aiPillTxt').textContent = ck?'Claude Sonnet':gk?'GPT-4o':'Локален режим';
+}
 
 <script>
 // ═══════════════════════════════════════════
