@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>Founder Review Queue — WPAWS</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --navy:#0d1f3c;--navy2:#162947;--gold:#c9a84c;--goldd:#a8873a;--goldl:#e8d49a;
+  --cream:#f8f4ee;--cream2:#f0ead8;--white:#fff;--text:#1a1a2e;--muted:#5a6677;--line:#d8cdb8;
+  --fd:'Cormorant Garamond',Georgia,serif;--fp:'Playfair Display',Georgia,serif;--fb:'Jost',system-ui,sans-serif;
+  --r:3px;--r2:8px;--top:52px;
+  --amber:#8b5a00;--amberl:#fdf3e3;--green:#1a6b3c;--greenl:#e8f5ee;
+  --red:#8b1a1a;--redl:#fff0f0;--blue:#0d3a6e;--bluel:#e8f0fb;
+  --purple:#5b21b6;--purplel:#f3e8ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--text);padding-top:var(--top);-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:var(--fb)}
+
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--top);background:var(--navy);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid rgba(201,168,76,.2);z-index:100;flex-wrap:wrap}
+.tb-back{padding:5px 10px;border-radius:var(--r2);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font-size:11px}
+.tb-title{font-family:var(--fd);font-size:16px;color:var(--goldl);font-weight:600}
+.tb-btn{padding:5px 12px;border-radius:var(--r2);border:1px solid rgba(201,168,76,.3);background:transparent;color:var(--goldl);font-size:11.5px;font-weight:600;white-space:nowrap}
+.tb-btn:hover{background:rgba(201,168,76,.12)}
+
+.main{max-width:1200px;margin:0 auto;padding:24px 20px 100px}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--white);font-size:12px;font-family:var(--fb);color:var(--muted);transition:all .15s}
+.filter-btn.active{background:var(--navy);color:var(--goldl);border-color:var(--navy)}
+.filter-btn:hover{border-color:var(--gold);color:var(--goldd)}
+.filter-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;background:rgba(201,168,76,.2);color:var(--goldd);border-radius:9px;font-size:10px;font-weight:700;padding:0 5px;margin-left:4px}
+
+/* STATUS BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;font-family:var(--fb)}
+.b-draft{background:#f0f0f0;color:#555}
+.b-validating{background:var(--bluel);color:var(--blue)}
+.b-review{background:var(--amberl);color:var(--amber)}
+.b-approved{background:var(--greenl);color:var(--green)}
+.b-queued{background:var(--purplel);color:var(--purple)}
+.b-live{background:var(--greenl);color:var(--green);border:1px solid #86efac}
+.b-rejected{background:var(--redl);color:var(--red)}
+.b-hold{background:#f0f0f0;color:#555}
+
+/* QUEUE TABLE */
+.queue-table{border:1px solid var(--line);border-radius:var(--r2);background:var(--white);overflow:hidden}
+.qt-head{display:grid;grid-template-columns:2.2fr .8fr 1fr 1.8fr;gap:10px;padding:9px 16px;background:var(--navy);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--goldl);font-family:var(--fb)}
+@media(max-width:700px){.qt-head,.q-row{grid-template-columns:1fr}.qt-head .qh-type,.qt-head .qh-status{display:none}}
+
+.q-row{display:grid;grid-template-columns:2.2fr .8fr 1fr 1.8fr;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);align-items:center;transition:background .15s}
+.q-row:last-child{border-bottom:none}
+.q-row:hover{background:var(--cream)}
+.q-row.urgent{border-left:3px solid var(--amber)}
+.q-row.approved-row{border-left:3px solid var(--green)}
+.q-row.live-row{border-left:3px solid #86efac;opacity:.7}
+
+.q-name{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:3px;line-height:1.3}
+.q-meta{font-size:11px;color:var(--muted)}
+.q-type-cell{font-size:11.5px;color:var(--muted)}
+.q-actions{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.qa-btn{padding:4px 10px;border-radius:2px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;font-family:var(--fb);border:none;transition:opacity .15s}
+.qa-btn:hover{opacity:.8}
+.qa-approve{background:var(--greenl);color:var(--green)}
+.qa-revise{background:var(--amberl);color:var(--amber)}
+.qa-hold{background:#f0f0f0;color:#555}
+.qa-reject{background:var(--redl);color:var(--red)}
+.qa-publish{background:var(--navy);color:var(--goldl)}
+.qa-view{background:var(--bluel);color:var(--blue)}
+
+/* EMPTY STATE */
+.empty-state{padding:40px 20px;text-align:center}
+.empty-state p{font-family:var(--fd);font-size:18px;color:var(--muted);margin-bottom:8px}
+.empty-state small{font-size:13px;color:var(--muted)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:860px){.stats-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+.stat-mini{padding:12px 14px;border:1px solid var(--line);border-radius:var(--r2);background:var(--white);text-align:center}
+.stat-mini .count{font-family:var(--fp);font-size:26px;font-weight:700;color:var(--navy);line-height:1}
+.stat-mini .label{font-size:10px;color:var(--muted);font-family:var(--fb);margin-top:3px}
+
+/* REVISION MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--white);border-radius:var(--r2);padding:24px;max-width:480px;width:90%;box-shadow:0 16px 48px rgba(13,31,60,.2)}
+.modal h4{font-family:var(--fd);font-size:20px;color:var(--navy);margin-bottom:12px}
+.modal textarea{width:100%;min-height:100px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r2);font-size:14px;font-family:var(--fb);resize:none;outline:none;margin-bottom:12px}
+.modal textarea:focus{border-color:var(--gold)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end}
+
+/* MOBILE NAV */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--line);z-index:200}
+@media(max-width:768px){.bottom-nav{display:flex}}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 2px 6px;gap:2px;text-decoration:none;color:var(--muted);min-height:52px;border:none;background:transparent}
+.bn-item.active{color:var(--goldd)}
+.bn-icon{font-size:18px}.bn-label{font-size:9px;font-family:var(--fb);font-weight:600;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="tb-back" onclick="location.href='/wpaws/'">← WPAWS</button>
+  <div class="tb-title">Founder Review Queue</div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="tb-btn" onclick="sortQueue('newest')">Sort: Newest</button>
+    <button class="tb-btn" onclick="refreshQueue()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- REVISION MODAL -->
+<div class="modal-overlay" id="revisionModal">
+  <div class="modal">
+    <h4>Request Revision</h4>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Describe what needs to be revised:</p>
+    <textarea id="revisionNote" placeholder="e.g. Please review the citations in section 3. The conclusion needs to be shortened. Add the 2024 publication date." style="font-size:16px"></textarea>
+    <div class="modal-actions">
+      <button class="tb-btn" onclick="closeModal()">Cancel</button>
+      <button class="tb-btn primary" style="background:var(--gold);color:var(--navy);border-color:var(--gold)" onclick="submitRevision()">Send Revision Request</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-mini"><div class="count" id="cnt_all">0</div><div class="label">Total</div></div>
+    <div class="stat-mini"><div class="count" id="cnt_review" style="color:var(--amber)">0</div><div class="label">Needs Review</div></div>
+    <div class="stat-mini"><div class="count" id="cnt_approved" style="color:var(--green)">0</div><div class="label">Approved</div></div>
+    <div class="stat-mini"><div class="count" id="cnt_validating" style="color:var(--blue)">0</div><div class="label">Validating</div></div>
+    <div class="stat-mini"><div class="count" id="cnt_live" style="color:#2d7a4f">0</div><div class="label">Live</div></div>
+    <div class="stat-mini"><div class="count" id="cnt_draft">0</div><div class="label">Draft</div></div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterQueue('all', this)">All <span class="filter-count" id="fc_all">0</span></button>
+    <button class="filter-btn" onclick="filterQueue('review', this)">Needs Review <span class="filter-count" id="fc_review">0</span></button>
+    <button class="filter-btn" onclick="filterQueue('approved', this)">Approved <span class="filter-count" id="fc_approved">0</span></button>
+    <button class="filter-btn" onclick="filterQueue('live', this)">Live <span class="filter-count" id="fc_live">0</span></button>
+    <button class="filter-btn" onclick="filterQueue('draft', this)">Draft <span class="filter-count" id="fc_draft">0</span></button>
+  </div>
+
+  <!-- QUEUE TABLE -->
+  <div class="queue-table">
+    <div class="qt-head">
+      <span>Item</span>
+      <span class="qh-type">Type</span>
+      <span class="qh-status">Status</span>
+      <span>Actions</span>
+    </div>
+    <div id="queueList">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <a href="/wpaws/" class="bn-item"><div class="bn-icon">🏠</div><div class="bn-label">Home</div></a>
+  <a href="/wpaws/book/" class="bn-item"><div class="bn-icon">📖</div><div class="bn-label">Book</div></a>
+  <a href="/wpaws/paper/" class="bn-item"><div class="bn-icon">📄</div><div class="bn-label">Paper</div></a>
+  <a href="/wpaws/citations/" class="bn-item"><div class="bn-icon">📚</div><div class="bn-label">Cite</div></a>
+  <a href="/wpaws/queue/" class="bn-item active"><div class="bn-icon">🚀</div><div class="bn-label">Queue</div></a>
+</nav>
+
+<script>
+/* DEFAULT QUEUE ITEMS */
+const DEFAULT_ITEMS = [
+  { id:'sztit_article', title:'Štit Magazine — Military Protocol Article', meta:'Article · A4 / Stobi Serif · 2,400 words', type:'Article', status:'review', ts: Date.now() - 86400000 },
+  { id:'opc_taiex', title:'OPC 2026 — TAIEX Application Amendment', meta:'Institutional doc · Partnership-sensitive', type:'Institutional', status:'review', ts: Date.now() - 172800000 },
+  { id:'wpa_pricing', title:'WPA Website — Pricing Section Update', meta:'Web copy · Public-facing', type:'Web copy', status:'approved', ts: Date.now() - 259200000 },
+  { id:'book10_ch5', title:'Book 10 — Chapter 5 Draft', meta:'Monograph chapter · Citations pending validation', type:'Book', status:'validating', ts: Date.now() - 345600000 },
+  { id:'paper_2024', title:'Protocol in Digital Diplomacy (2024)', meta:'Scientific paper · Conference submission', type:'Paper', status:'live', ts: Date.now() - 604800000 },
+];
+
+let QUEUE = [];
+let activeFilter = 'all';
+let reviseTarget = null;
+
+function loadQueue(){
+  try {
+    const stored = JSON.parse(sessionStorage.getItem('wpaws_queue') || '[]');
+    /* Merge stored with defaults (stored takes priority) */
+    const storedIds = new Set(stored.map(x => x.id));
+    QUEUE = [...stored, ...DEFAULT_ITEMS.filter(d => !storedIds.has(d.id))];
+    QUEUE.sort((a,b) => (b.ts || 0) - (a.ts || 0));
+  } catch(e) {
+    QUEUE = [...DEFAULT_ITEMS];
+  }
+}
+
+function saveQueue(){
+  try { sessionStorage.setItem('wpaws_queue', JSON.stringify(QUEUE)); } catch(e) {}
+}
+
+function refreshQueue(){ loadQueue(); renderQueue(); }
+
+function updateStats(){
+  const counts = { all:0, review:0, approved:0, validating:0, live:0, draft:0, queued:0 };
+  QUEUE.forEach(item => {
+    counts.all++;
+    counts[item.status] = (counts[item.status] || 0) + 1;
+  });
+  const map = { cnt_all:'all', cnt_review:'review', cnt_approved:'approved', cnt_validating:'validating', cnt_live:'live', cnt_draft:'draft' };
+  const fcmap = { fc_all:'all', fc_review:'review', fc_approved:'approved', fc_live:'live', fc_draft:'draft' };
+  Object.entries(map).forEach(([id,key]) => { const el = document.getElementById(id); if(el) el.textContent = counts[key] || 0; });
+  Object.entries(fcmap).forEach(([id,key]) => { const el = document.getElementById(id); if(el) el.textContent = counts[key] || 0; });
+}
+
+function getBadgeClass(status){
+  return { draft:'b-draft', validating:'b-validating', review:'b-review', approved:'b-approved', queued:'b-queued', live:'b-live', rejected:'b-rejected', hold:'b-hold' }[status] || 'b-draft';
+}
+
+function getBadgeLabel(status){
+  return { draft:'Draft', validating:'Validating', review:'Founder Review', approved:'Approved', queued:'Queued', live:'Live', rejected:'Rejected', hold:'Hold' }[status] || status;
+}
+
+function getRowActions(item){
+  if(item.status === 'live') return `<button class="qa-btn qa-view" onclick="viewItem('${item.id}')">View</button><button class="qa-btn qa-hold" onclick="archiveItem('${item.id}')">Archive</button>`;
+  if(item.status === 'approved') return `<button class="qa-btn qa-publish" onclick="publishItem('${item.id}')">Deploy →</button><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','hold')">Hold</button>`;
+  if(item.status === 'validating') return `<span style="font-size:11px;color:var(--muted)">Auto-checking citations...</span><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','review')">Mark Ready</button>`;
+  return `<button class="qa-btn qa-approve" onclick="approveItem('${item.id}')">Approve</button><button class="qa-btn qa-revise" onclick="openRevise('${item.id}')">Revise</button><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','hold')">Hold</button><button class="qa-btn qa-reject" onclick="rejectItem('${item.id}')">Reject</button>`;
+}
+
+function getRowClass(item){
+  if(item.status === 'review') return 'q-row urgent';
+  if(item.status === 'approved') return 'q-row approved-row';
+  if(item.status === 'live') return 'q-row live-row';
+  return 'q-row';
+}
+
+function renderQueue(){
+  updateStats();
+  const filtered = activeFilter === 'all' ? QUEUE : QUEUE.filter(x => x.status === activeFilter);
+  const list = document.getElementById('queueList');
+  if(!filtered.length){
+    list.innerHTML = '<div class="empty-state"><p>No items in this queue.</p><small>Items will appear here when sent from Book Studio, Paper Studio, or Analysis Studio.</small></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(item => `
+    <div class="${getRowClass(item)}" id="row_${item.id}">
+      <div>
+        <div class="q-name">${item.title}</div>
+        <div class="q-meta">${item.meta || item.type || ''}</div>
+      </div>
+      <div class="q-type-cell">${item.type || '—'}</div>
+      <div><span class="badge ${getBadgeClass(item.status)}">${getBadgeLabel(item.status)}</span></div>
+      <div class="q-actions">${getRowActions(item)}</div>
+    </div>
+  `).join('');
+}
+
+function filterQueue(filter, btn){
+  activeFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQueue();
+}
+
+function sortQueue(order){
+  if(order === 'newest') QUEUE.sort((a,b) => (b.ts||0) - (a.ts||0));
+  else QUEUE.sort((a,b) => (a.ts||0) - (b.ts||0));
+  renderQueue();
+}
+
+function setStatus(id, status){
+  const item = QUEUE.find(x => x.id === id);
+  if(!item) return;
+  item.status = status;
+  item.updatedTs = Date.now();
+  saveQueue();
+  renderQueue();
+}
+
+function approveItem(id){
+  if(!confirm('Approve this item and move to Publish Queue?')) return;
+  setStatus(id, 'approved');
+}
+
+function rejectItem(id){
+  if(!confirm('Reject this item? It will be archived as rejected.')) return;
+  setStatus(id, 'rejected');
+  setTimeout(() => {
+    QUEUE = QUEUE.filter(x => x.id !== id);
+    saveQueue();
+    renderQueue();
+  }, 800);
+}
+
+function openRevise(id){
+  reviseTarget = id;
+  document.getElementById('revisionNote').value = '';
+  document.getElementById('revisionModal').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('revisionModal').classList.remove('show');
+  reviseTarget = null;
+}
+
+function submitRevision(){
+  if(!reviseTarget) return;
+  const note = document.getElementById('revisionNote').value.trim();
+  const item = QUEUE.find(x => x.id === reviseTarget);
+  if(item){ item.status = 'draft'; item.revisionNote = note; item.updatedTs = Date.now(); }
+  saveQueue();
+  closeModal();
+  renderQueue();
+  alert('Revision request sent. Item returned to Draft with your notes.');
+}
+
+function archiveItem(id){
+  QUEUE = QUEUE.filter(x => x.id !== id);
+  saveQueue();
+  renderQueue();
+}
+
+function publishItem(id){
+  if(!confirm('Mark as Live and open Publishing Desk?')) return;
+  setStatus(id, 'live');
+  location.href = '/wpaws/publish/';
+}
+
+function viewItem(id){
+  const item = QUEUE.find(x => x.id === id);
+  if(item) alert('Item: ' + item.title + '\nStatus: ' + item.status + '\nType: ' + (item.type || '—'));
+}
+
+/* Init */
+loadQueue();
+renderQueue();
+</script>
+</body>
+</html>
