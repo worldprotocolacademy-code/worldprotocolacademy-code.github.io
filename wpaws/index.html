@@ -1441,6 +1441,28 @@ function localFallback(agent, action){
   return demos[agent]||demos.default;
 }
 
+
+function workerErrorBox(agent, action, errMsg=''){
+  const safe = (errMsg || 'Worker не врати валиден одговор.').replace(/[<>&]/g, s => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[s]));
+  return `## ⚠️ Worker проблем
+
+Агент: ${AGENT_NAMES[agent]||agent}
+Акција: ${action||'default'}
+
+Системот е во Worker режим.
+Нема потреба од API клуч во browser.
+
+Проблем:
+${safe}
+
+Пробај:
+1. Ctrl + F5
+2. повтори го барањето
+3. провери Cloudflare Worker logs
+
+Не е активиран demo/local режим.`;
+}
+
 // ─── BOX ID RESOLVER ───
 function getBoxId(agent, action){
   if(agent==='book'){
@@ -1507,8 +1529,13 @@ async function cc(agent, action){
     }
 
     if(!result){
-      result=localFallback(agent,action);
-      toast('ℹ️','Активиран локален режим — Worker не врати одговор');
+      if(window.WPA_API_BASE){
+        result=workerErrorBox(agent, action, 'Worker не врати answer payload.');
+        toast('⚠️','Worker не врати одговор');
+      }else{
+        result=localFallback(agent,action);
+        toast('ℹ️','Активиран локален режим');
+      }
     }
 
     if(pbEl) pbEl.style.width='100%';
@@ -1545,9 +1572,15 @@ async function cc(agent, action){
     }
 
   }catch(err){
-    const fallback=localFallback(agent,action);
-    rEl.innerHTML=fmt(fallback);
-    toast('⚠️',err.message.slice(0,60)||'Грешка');
+    const msg = err && err.message ? err.message : 'Непозната грешка';
+    if(window.WPA_API_BASE){
+      rEl.innerHTML=fmt(workerErrorBox(agent, action, msg));
+      toast('⚠️',msg.slice(0,60)||'Worker грешка');
+    }else{
+      const fallback=localFallback(agent,action);
+      rEl.innerHTML=fmt(fallback);
+      toast('⚠️',msg.slice(0,60)||'Грешка');
+    }
     if(pbEl) pbEl.style.width='0%';
   }finally{
     busy=false;
