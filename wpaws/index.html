@@ -1136,6 +1136,8 @@ a{color:inherit;text-decoration:none}
 <script>
 window.WPA_API_BASE = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev';
 
+const DOC_FIRST_AGENTS = new Set(['reviewer','editor','stylist','plagiat']);
+
 // ═══════════════════════════════════════════
 // WPAWS 8.0 MASTER EDITION — ENGINE
 // 16 агенти • Claude API + GPT-4o • Local fallback
@@ -1246,7 +1248,7 @@ function getApiBase(){
   return (window.WPA_API_BASE || '').replace(/\/$/, '');
 }
 
-async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto'){
+async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto', agentMode='default'){
   const base = getApiBase();
   if(!base) throw new Error('WPA_API_BASE не е поставен.');
 
@@ -1259,7 +1261,8 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto'){
     quality: '3layer_academic',
     engine,
     max_tokens: maxTokens,
-    web_search: !!window.webSearchOn
+    web_search: !!window.webSearchOn,
+    agent_mode: agentMode || 'default'
   };
 
   const res = await fetch(`${base}/ask`, {
@@ -1277,8 +1280,8 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto'){
   return data.answer || '';
 }
 
-async function callClaude(system, prompt, maxTokens=2000){
-  return await callWorkerAsk(system, prompt, maxTokens, 'claude');
+async function callClaude(system, prompt, maxTokens=2000, agentMode='default'){
+  return await callWorkerAsk(system, prompt, maxTokens, 'claude', agentMode);
 }
 
 async function callGPT(system, prompt, maxTokens=2000){
@@ -1490,7 +1493,8 @@ async function cc(agent, action){
     let result=null;
 
     if(mode==='claude'||mode==='hybrid'){
-      result=await callClaude(sys,prompt,tokens);
+      const _aMode = DOC_FIRST_AGENTS.has(agent) ? 'document_first' : 'default';
+      result=await callClaude(sys,prompt,tokens,_aMode);
     }
     if(mode==='gpt'){
       result=await callGPT(sys,prompt,tokens);
