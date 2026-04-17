@@ -1252,9 +1252,8 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto', agen
   const base = getApiBase();
   if(!base) throw new Error('WPA_API_BASE не е поставен.');
 
-  const safePrompt = String(prompt || '').length > 650 ? String(prompt || '').slice(0, 650) : String(prompt || '');
   const payload = {
-    message: safePrompt,
+    message: prompt,
     lang: curLang,
     history: [
       { role: 'assistant', content: system }
@@ -1266,6 +1265,11 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto', agen
     agent_mode: agentMode || 'default'
   };
 
+  // Guard: Worker MAX_MESSAGE_LENGTH = 700
+  if(payload.message && payload.message.length > 690){
+    payload.message = payload.message.slice(0, 690);
+    console.warn('[WPAWS] prompt truncated to 690 chars for Worker limit');
+  }
   const res = await fetch(`${base}/ask`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1320,11 +1324,11 @@ function buildSys(agent){
     protocol: 'Светски експерт за државен и дипломатски протокол. Познаваш Виенска конвенција 1961, пресеанс, официјални посети, ред на седење, знамиња. Цитираш конкретни членови.',
     diplomacy: 'Специјализиран за дипломатски анализи, одбранбена дипломатија, меѓународни односи. Познаваш ОН, НАТО, ЕУ, ОБСЕ стандарди.',
     security: 'Специјализиран за безбедносни студии, SWOT анализи, проценка на ризици и одбранбена дипломатија.',
-    stylist: `Познаваш го авторскиот глас на Доц. д-р Санде Смиљанов: авторитетен, елоквентен, дипломатски прецизен. Преработуваш текст во ${st} стил. DOCUMENT-FIRST: работиш директно на внесениот текст. Тој текст е примарен извор. Не барај WPA retrieval како предуслов. Не враќај no-context ако има текст. Врати директно преработена верзија.`,
+    stylist: `DOCUMENT-FIRST: Работиш директно на текстот кој корисникот го приложил. Тој текст е примарниот извор. Не барај WPA retrieval. Не паѓај на no-context ако има внесен текст. Ако текстот е краток, одговори корисно и наведи ограничување. Познаваш го авторскиот глас на Доц. д-р Санде Смиљанов: авторитетен, елоквентен, прецизен. Преработуваш текст во ${st} стил. Враќаш преработена верзија директно.`,
     citations: 'Специјализиран за академска библиографија. Ги познаваш сите 9 монографии, докторатот и 17 трудови на Доц. д-р Санде Смиљанов. ISBN серија: 978-608-66168-x-x.',
-    editor: 'Специјализиран за уредничка обработка на академски текстови. Работиш на структурно, јазично и стилско ниво. Предлагаш конкретни подобрувања. DOCUMENT-FIRST: работиш директно на текстот што корисникот го внел. Тој текст е примарен извор. Не барај WPA retrieval како предуслов. Не враќај no-context ако има текст. Врати директно уредена верзија.',
-    reviewer: 'Специјализиран за академска рецензија. Оценуваш теза, методологија, аргументација, библиографија и научен придонес. Даваш вердикт со препораки. DOCUMENT-FIRST: работиш директно на внесениот текст. Тој текст е примарен извор. Не барај WPA retrieval како предуслов. Не враќај no-context ако има текст. Ако текстот е краток, кажи дека оценката е ограничена со должината.',
-    plagiat: 'Специјализиран за проверка на академски интегритет. Идентификуваш текст кој бара атрибуција, потенцијален плагијат и несоодветни парафрази. DOCUMENT-FIRST: проценувај врз основа на внесениот текст. Не барај WPA retrieval како предуслов. Не враќај no-context ако има текст. Користи внимателен јазик кога нема сигурност.',
+    editor: 'DOCUMENT-FIRST: Работиш директно на текстот кој корисникот го приложил. Тој текст е примарниот извор. Не барај WPA retrieval. Не паѓај на no-context ако има внесен текст. Ако текстот е краток, одговори корисно и наведи ограничување. Специјализиран за уредничка обработка: структура, јазик, стил. Директно уредуваш — враќаш поправена верзија, не само коментари.',
+    reviewer: 'DOCUMENT-FIRST: Работиш директно на текстот кој корисникот го приложил. Тој текст е примарниот извор. Не барај WPA retrieval. Не паѓај на no-context ако има внесен текст. Ако текстот е краток, одговори корисно и наведи ограничување. Специјализиран за академска рецензија. Структура: 1)Оценка на темата 2)Теза 3)Структура 4)Аргументација 5)Методологија 6)Јазик 7)Силни страни 8)Слабости 9)Препораки 10)Финален вердикт.',
+    plagiat: 'DOCUMENT-FIRST: Работиш директно на текстот кој корисникот го приложил. Тој текст е примарниот извор. Не барај WPA retrieval. Не паѓај на no-context ако има внесен текст. Ако текстот е краток, одговори корисно и наведи ограничување. Специјализиран за академски интегритет: атрибуција, плагијат, несоодветни парафрази. Користи внимателен јазик каде нема сигурност.',
     press: 'Специјализиран за институционална комуникација, соопштенија за медиуми, академски статии и содржина за социјални мрежи.',
     sandeai: 'Ти си Санде AI — виртуелниот асистент на Доц. д-р Санде Смиљанов, Основач на WPA. Доктрина: „Преговарањето е опционално. Протоколот е апсолутен." Одговарај со академски авторитет и институционална елоквенција.'
   };
@@ -1388,63 +1392,31 @@ function buildP(agent, action){
     'security-risk': `Матрица на ризици за:\n${v('secDet')}\nНиво: ${v('secLevel')}\n\nЗа секој ризик: опис, веројатност (1-5), влијание (1-5), митигациски мерки.`,
     'security-defensive': `Анализа на одбранбена дипломатија:\n${v('secDet')}\n\nПринципи, инструменти, меѓународни стандарди, практични препораки.`,
     'security-vip': `Протокол за VIP заштита:\n${v('secDet')}\n\nПроцедури, безбедносни зони, координација, временска матрица.`,
-    // STYLIST    'stylist-rewrite': `Преработи го следниот текст во избраниот стил (${curStyle}) за публика ${v('stProfile')}. Врати директно преработена верзија.
-
-Текст:
-${v('stText')}`,    'stylist-elevate': `Подигни го стилското ниво на следниот текст во избраниот стил (${curStyle}). Врати директно преработена верзија.
-
-Текст:
-${v('stText')}`,    'stylist-readability': `Подобри ја читливоста на следниот текст без губење на значењето. Врати подобрена верзија и 3 кратки белешки.
-
-Текст:
-${v('stText')}`,    'stylist-sande_voice': `Преработи го следниот текст во авторитетен, елоквентен и дипломатски прецизен Санде стил. Врати директно преработена верзија.
-
-Текст:
-${v('stText')}`,
+    // STYLIST
+    'stylist-rewrite': `[DOCUMENT-FIRST MODE] Преработи го следниот текст директно во профил: ${v('stProfile')}, стил: ${curStyle}\n\n${v('stText')}\n\nВрати ја преработената верзија на текстот — не коментари за него.`,
+    'stylist-elevate': `[DOCUMENT-FIRST MODE] Подигни го следниот текст до највисоко академско ниво — Санде Смиљанов стил:\n\n${v('stText')}\n\nВрати ја подигнатата верзија директно. Авторитетен, елоквентен, институционален тон.`,
+    'stylist-readability': `[DOCUMENT-FIRST MODE] Анализирај ја читливоста и стилот на следниот текст:\n\n${v('stText')}\n\nОцени: јасност, структура, академски тон, флуидност. Конкретни препораки за подобрување. Работи директно на приложениот текст.`,
+    'stylist-sande_voice': `[DOCUMENT-FIRST MODE] Преработи го следниот текст ЦЕЛОСНО во гласот и стилот на Доц. д-р Санде Смиљанов:\n\n${v('stText')}\n\nАвторитетен, елоквентен, прецизен, институционален. Врати ја преработената верзија директно.`,
     // CITATIONS
     'citations-generate': `Генерирај академска библиографија во ${v('ctFmt')} за темата: "${v('ctTopic')}"\nБрој на записи: ${v('ctNum')}\n\nВклучи разновидни извори: книги, трудови, конференциски материјали, онлајн извори. Секој запис комплетен.`,
     'citations-smiljanov': `Дај ги сите публикации на Доц. д-р Санде Смиљанов во ${v('ctFmt')}:\n\n9 монографии (2018-2023):\n1. Воспоставување на единствен државен протокол (2018) ISBN 978-608-66168-0-9\n2. Прирачник за организирање на конференции (2020) ISBN 978-608-66168-1-6\n3. Воспоставување... 2. изд. (2020) ISBN 978-608-66168-2-3\n4. Дипломатијата, протоколот и безбедноста (2021) ISBN 978-608-66168-3-0\n5. Дигитална ера (2023) ISBN 978-608-66168-4-7\nДокторска дисертација: УКИМ, 2021\n17 научни и конференциски труда\n\nДај комплетни записи.`,
     'citations-verify': `Направи верификација на цитатите за темата: "${v('ctTopic')}"\n\nПровери во: COBISS, Google Scholar, ORCID. Предложи корекции за нецелосни записи.`,
     'citations-annotate': `Генерирај анотирана библиографија (${v('ctNum')} записи) во ${v('ctFmt')} за: "${v('ctTopic')}"\n\nЗа секој запис: запис + анотација 60-80 зборови.`,
-    // EDITOR (NEW)    'editor-full': `Уреди го директно следниот текст и врати подобрена верзија. Поправи структура, јазик и стил. Ако е краток, сепак врати најдобра можна верзија.
-
-Текст:
-${v('edText')}`,    'editor-track_changes': `Уреди го следниот текст и врати: 1) уредена верзија, 2) кратки забелешки за главните промени.
-
-Текст:
-${v('edText')}`,    'editor-improve_flow': `Преработи го следниот текст за подобар проток, транзиции и логика. Врати директно подобрена верзија.
-
-Текст:
-${v('edText')}`,    'editor-academic_polish': `Полирај го следниот текст во поакадемски и порафиниран стил. Врати директно подобрена верзија.
-
-Текст:
-${v('edText')}`,
-    // REVIEWER (NEW)    'reviewer-full': `Рецензирај го директно следниот текст. Ако е краток, кажи дека оценката е ограничена со должината. Врати 10 дела: Оценка на темата, Теза, Структура, Аргументација, Методологија, Јазик и стил, Силни страни, Слабости, Конкретни препораки, Финален вердикт.
-
-Текст:
-${v('revText')}`,    'reviewer-quick': `Дај брза рецензија на следниот текст. Врати: Кратка оценка, 3 слабости, 3 препораки, Вердикт. Ако текстот е краток, кажи дека оценката е ограничена со должината.
-
-Текст:
-${v('revText')}`,    'reviewer-strengths': `Наведи ги силните страни и слабостите на следниот текст. Ако е краток, кажи дека проценката е ограничена со должината.
-
-Текст:
-${v('revText')}`,    'reviewer-verdict': `Дај финален рецензентски вердикт за следниот текст: прифати, прифати со измени или одбиј, со кратко образложение. Ако е краток, кажи дека проценката е ограничена со должината.
-
-Текст:
-${v('revText')}`,
-    // PLAGIAT (NEW)    'plagiat-full': `Процени ризик од плагијат и потреба од атрибуција за следниот текст. Врати: кратка проценка, делови што бараат атрибуција, проценета оригиналност, препораки. Ако текстот е краток, кажи дека проценката е ограничена.
-
-Текст:
-${v('plagText')}`,    'plagiat-attribution': `Провери атрибуција за следниот текст. Наведи што бара цитирање и предложи како коректно да се наведе.
-
-Текст:
-${v('plagText')}`,    'plagiat-report': `Направи краток извештај за академски интегритет за следниот текст.
-
-Текст:
-${v('plagText')}`,    'plagiat-fix': `Предложи конкретни поправки за намалување на ризик од плагијат во следниот текст. Вклучи пример на коригирана верзија.
-
-Текст:
-${v('plagText')}`,
+    // EDITOR (NEW)
+    'editor-full': `[DOCUMENT-FIRST MODE] Направи КОМПЛЕТНО уредување на следниот текст (ниво: ${v('edLevel')}):\n\n${v('edText')}\n\nУредувај директно — предложи подобрена верзија на текстот. Обработи: структура, аргументација, јазик, стил, конзистентност, академски тон. Ако текстот е краток, примени ги истите принципи на она што постои.`,
+    'editor-track_changes': `[DOCUMENT-FIRST MODE] Предложи конкретни промени за следниот текст. За секоја промена наведи: ОРИГИНАЛ → ПРЕДЛОГ + образложение:\n\n${v('edText')}\n\nРаботи директно на приложениот текст. Ако е краток, примени ги принципите на она што постои.`,
+    'editor-improve_flow': `[DOCUMENT-FIRST MODE] Подобри го протокот и транзициите во следниот текст:\n\n${v('edText')}\n\nРаботи директно на текстот. Осигури плавен премин меѓу параграфите. Предложи подобрена верзија, не само коментари.`,
+    'editor-academic_polish': `[DOCUMENT-FIRST MODE] Направи финално академско полирање на следниот текст:\n\n${v('edText')}\n\nФокус: академска терминологија, прецизност, формалност, елеганција. Предложи полирана верзија на текстот директно.`,
+    // REVIEWER (NEW)
+    'reviewer-full': `[DOCUMENT-FIRST MODE] Направи целосна академска рецензија (${v('revType')}) по стандард ${v('revStandard')} на следниот текст:\n\n${v('revText')}\n\nЗАДОЛЖИТЕЛНА СТРУКТУРА (10 дела):\n1. ОЦЕНКА НА ТЕМАТА — значење, актуелност, релевантност\n2. ТЕЗА — јасност, прецизност, оригиналност (оцена 1–10)\n3. СТРУКТУРА — логика, хиерархија, кохерентност (оцена 1–10)\n4. АРГУМЕНТАЦИЈА — сила, поткрепеност, убедливост (оцена 1–10)\n5. МЕТОДОЛОГИЈА — примереност, доследност, научна строгост (оцена 1–10)\n6. ЈАЗИК И СТИЛ — академски тон, прецизност, читливост (оцена 1–10)\n7. СИЛНИ СТРАНИ — конкретни позитивни елементи\n8. СЛАБОСТИ — конкретни недостатоци\n9. КОНКРЕТНИ ПРЕПОРАКИ — акциони точки за подобрување\n10. ФИНАЛЕН ВЕРДИКТ — Прифати / Прифати со ревизија / Одбиј со отворена покана / Одбиј + образложение`,
+    'reviewer-quick': `[DOCUMENT-FIRST MODE] Брза рецензија (1 страница) за следниот текст:\n\n${v('revText')}\n\nСтруктура:\n1. КРАТКА ОЦЕНКА — 2–3 реченици за темата и нејзиниот потенцијал\n2. 3 СЛАБОСТИ — конкретни, со образложение\n3. 3 ПРЕПОРАКИ — конкретни акциони точки\n4. ВЕРДИКТ — Прифати / Прифати со ревизија / Одбиј со покана / Одбиј`,
+    'reviewer-strengths': `[DOCUMENT-FIRST MODE] Наведи ги силните страни и придонесите на следниот текст:\n\n${v('revText')}\n\nСтруктурирај по категории: теза, аргументација, стил, оригиналност, научен придонес. За секоја категорија — конкретен позитивен елемент со образложение.`,
+    'reviewer-verdict': `[DOCUMENT-FIRST MODE] Дај финален рецензентски вердикт за следниот текст:\n\n${v('revText')}\n\nВердикт (избери едно): Прифати / Прифати со ревизија / Одбиј со отворена покана / Одбиј.\nОбразложи со: главен аргумент за вердиктот, 2–3 клучни слабости или предности, услов за ревизија ако е применливо.`,
+    // PLAGIAT (NEW)
+    'plagiat-full': `[DOCUMENT-FIRST MODE] Провери го академскиот интегритет на следниот текст (тип: ${v('plagType')}):\n\n${v('plagText')}\n\nИдентификувај: делови кои бараат атрибуција, потенцијален плагијат, несоодветни парафрази. Дај проценета оригиналност (%). Работи директно на приложениот текст — не бараш WPA KB. Користи внимателен јазик каде не можеш да потврдиш со сигурност.`,
+    'plagiat-attribution': `[DOCUMENT-FIRST MODE] Провери ја атрибуцијата во следниот текст:\n\n${v('plagText')}\n\nЗа секое тврдење без изворна атрибуција предложи како да се атрибуира. Работи директно на приложениот текст.`,
+    'plagiat-report': `[DOCUMENT-FIRST MODE] Генерирај извештај за академски интегритет на следниот текст:\n\n${v('plagText')}\n\nВклучи: проценета оригиналност (%), ризични пасуси, препораки. Користи внимателен јазик каде не можеш да потврдиш со сигурност. Работи директно на приложениот текст.`,
+    'plagiat-fix': `[DOCUMENT-FIRST MODE] Предложи поправки за проблематичните делови во следниот текст:\n\n${v('plagText')}\n\nДај конкретни предлози за правилна атрибуција и парафраза. Работи директно на приложениот текст.`,
     // PRESS (NEW)
     'press-write': `Напиши ${v('prType')} на јазик ${v('prLang')}, тон ${v('prTone')}:\n\nТема/Содржина: ${v('prContent')}\n\nСледи соодветен формат и структура за типот на документ.`,
     'press-social_pack': `Напиши пакет содржина за социјални мрежи на тема:\n${v('prContent')}\n\nДај посебна содржина за:\n🔵 Facebook (200-300 зб)\n📸 Instagram (100-150 зб + хаштагови)\n🐦 X/Twitter (280 знаци)\n💼 LinkedIn (150-200 зб, професионален тон)`,
@@ -1472,28 +1444,6 @@ function localFallback(agent, action){
     default: `## ${AGENT_NAMES[agent]||agent} — Демо\n\nОвде ќе биде генерираниот материјал.\n\n*→ Внеси Claude API клуч за вистинско генерирање*`
   };
   return demos[agent]||demos.default;
-}
-
-
-function workerErrorBox(agent, action, errMsg=''){
-  const safe = (errMsg || 'Worker не врати валиден одговор.').replace(/[<>&]/g, s => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[s]));
-  return `## ⚠️ Worker проблем
-
-Агент: ${AGENT_NAMES[agent]||agent}
-Акција: ${action||'default'}
-
-Системот е во Worker режим.
-Нема потреба од API клуч во browser.
-
-Проблем:
-${safe}
-
-Пробај:
-1. Ctrl + F5
-2. повтори го барањето
-3. провери Cloudflare Worker logs
-
-Не е активиран demo/local режим.`;
 }
 
 // ─── BOX ID RESOLVER ───
@@ -1562,13 +1512,8 @@ async function cc(agent, action){
     }
 
     if(!result){
-      if(window.WPA_API_BASE){
-        result=workerErrorBox(agent, action, 'Worker не врати answer payload.');
-        toast('⚠️','Worker не врати одговор');
-      }else{
-        result=localFallback(agent,action);
-        toast('ℹ️','Активиран локален режим');
-      }
+      result=localFallback(agent,action);
+      toast('ℹ️','Активиран локален режим — Worker не врати одговор');
     }
 
     if(pbEl) pbEl.style.width='100%';
@@ -1605,15 +1550,9 @@ async function cc(agent, action){
     }
 
   }catch(err){
-    const msg = err && err.message ? err.message : 'Непозната грешка';
-    if(window.WPA_API_BASE){
-      rEl.innerHTML=fmt(workerErrorBox(agent, action, msg));
-      toast('⚠️',msg.slice(0,60)||'Worker грешка');
-    }else{
-      const fallback=localFallback(agent,action);
-      rEl.innerHTML=fmt(fallback);
-      toast('⚠️',msg.slice(0,60)||'Грешка');
-    }
+    const fallback=localFallback(agent,action);
+    rEl.innerHTML=fmt(fallback);
+    toast('⚠️',err.message.slice(0,60)||'Грешка');
     if(pbEl) pbEl.style.width='0%';
   }finally{
     busy=false;
@@ -1803,355 +1742,7 @@ function toast(ico, msg){
 }
 
 // ─── LANG ───
-
-const UI_I18N = {
-  mk: {
-    back: '← Academy',
-    plan: 'Free',
-    web: '🌐 Web',
-    dialog: '💬 Дијалог',
-    memory: '💾 Меморија',
-    workerApi: '🟣 Worker API',
-    keyDefault: '🔑 API Клуч',
-    keyReady: '🔑 API ✓',
-    activeClaude: '🔵 Активен',
-    activeGpt: '🟢 Активен',
-    worker: '🟣 Worker',
-    none: '⚪ Нема',
-    topSub: 'World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web',
-    modalTitle: '🔑 API Клучеви',
-    modalDesc: 'Чуваат се само локално во прелистувачот. Никогаш не се испраќаат на надворешни сервери.',
-    save: 'Зачувај',
-    cancel: 'Откажи',
-    deleteKeys: 'Избриши клучеви',
-    savedDocs: '💾 Меморија',
-    sessionStatus: 'Session Status',
-    quickActions: 'Брзи акции',
-    historyTitle: 'Историја на сесијата',
-    doctrineTitle: '⚜️ WPA Доктрина',
-    memoryTitle: '💾 Зачувани документи',
-    downloadAll: '⬇️ Сите',
-    clearAll: '🗑️ Бриши',
-    chainTitle: '🔗 Автоматски синџир',
-    chainDesc: 'Избери работен тек и WPAWS автоматски ќе ги повика агентите по ред.',
-    agentArchitect: 'Архитект',
-    agentStructure: 'Структура',
-    agentBook: 'Книга',
-    agentAnalyze: 'Анализа',
-    agentSemantic: 'Семантика',
-    agentPpp: 'PPP',
-    agentProtocol: 'Протокол',
-    agentDiplomacy: 'Дипломатија',
-    agentSecurity: 'Безбедност',
-    agentStylist: 'Стилист',
-    agentCitations: 'Цитати',
-    agentEditor: 'Уредник',
-    agentReviewer: 'Рецензент',
-    agentPlagiat: 'Плагијат',
-    agentPress: 'WPA Press',
-    agentSandeai: 'Санде AI',
-    architectTitle: 'Агент Архитект — Осмислување',
-    architectTag: 'Концепт • Теза • Методологија',
-    analyzeTitle: 'Агент Анализа — Книги и Документи',
-    analyzeTag: 'PDF анализа • Екстракција • Синтеза',
-    statusLabel: 'Статус',
-    agentLabel: 'Агент',
-    aiEngineLabel: 'AI Мотор',
-    versionLabel: 'Верзија',
-    claudeApiLabel: 'Claude API',
-    gptApiLabel: 'GPT-4o API',
-    agentsLabel: 'Агенти',
-    active: 'Активен',
-    quickConcept: '🏛️ Анализа концепт',
-    quickStructure: '📐 Генерирај структура',
-    quickProtocol: '🎩 Протоколарен советувач',
-    quickCitations: '👑 Смиљанов цитати',
-    quickElevate: '🚀 Подигни текст',
-    quickReview: '🧐 Рецензирај',
-    quickPlag: '🔍 Провери плагијат',
-    quickPress: '📰 Соопштение',
-    chainNewPaper: '📄 Нов научен труд',
-    chainMonograph: '📚 Монографија',
-    chainProtocolDoc: '🎩 Протоколарен документ',
-    chainReviewPaper: '🧐 Рецензија на труд',
-    chainPressRelease: '📰 Медиумска комуникација',
-    docType: 'Тип на документ',
-    topic: 'Наслов / Тема',
-    concept: 'Главна идеја / Хипотеза / Концепт',
-    btnFullAnalysis: '🏛️ Комплетна анализа',
-    btnAnalyzeConcept: '🧠 Анализирај концепт',
-    btnGenerateThesis: '📝 Генерирај теза',
-    btnKeywords: '🔑 Клучни зборови',
-    archEmpty: '🏛️ Внеси тема и кликни Генерирај',
-    analyzeQ: 'Прашање / Фокус на анализата',
-    analyzeMode: 'Режим на анализа',
-    btnAnalyze: '🔬 Анализирај',
-    btnExtractQuotes: '📖 Извлечи цитати',
-    btnThemes: '🎯 Теми',
-    btnSummary: '📄 Резиме',
-    analyzeEmpty: '🔬 Прикачи книга/документ за анализа',
-    dropText: 'Влечи PDF/TXT/MD тука или клик за прикачување<br><small style="font-size:11px">Макс 3 фајлови · 5MB по фајл</small>',
-    phTopic: 'пр. Одбранбената дипломатија и безбедноста на РСМ',
-    phConcept: 'Опишете ја главната хипотеза, истражувачките прашања и очекуваниот придонес...',
-    phAnalyzeQ: "пр. 'Кои се главните аргументи?' или 'Извлечи цитати за Виенска конвенција'..."
-  },
-  en: {
-    back: '← Academy',
-    plan: 'Free',
-    web: '🌐 Web',
-    dialog: '💬 Dialogue',
-    memory: '💾 Memory',
-    workerApi: '🟣 Worker API',
-    keyDefault: '🔑 API Key',
-    keyReady: '🔑 API ✓',
-    activeClaude: '🔵 Active',
-    activeGpt: '🟢 Active',
-    worker: '🟣 Worker',
-    none: '⚪ None',
-    topSub: 'World Protocol Academy — 16 agents + Export + Memory + Dialogue + Chain + Web',
-    modalTitle: '🔑 API Keys',
-    modalDesc: 'Stored only locally in the browser. Never sent to external servers.',
-    save: 'Save',
-    cancel: 'Cancel',
-    deleteKeys: 'Delete keys',
-    savedDocs: '💾 Memory',
-    sessionStatus: 'Session Status',
-    quickActions: 'Quick Actions',
-    historyTitle: 'Session History',
-    doctrineTitle: '⚜️ WPA Doctrine',
-    memoryTitle: '💾 Saved Documents',
-    downloadAll: '⬇️ All',
-    clearAll: '🗑️ Clear',
-    chainTitle: '🔗 Auto Chain',
-    chainDesc: 'Choose a workflow and WPAWS will call the agents automatically in sequence.',
-    agentArchitect: 'Architect',
-    agentStructure: 'Structure',
-    agentBook: 'Book',
-    agentAnalyze: 'Analysis',
-    agentSemantic: 'Semantic',
-    agentPpp: 'PPP',
-    agentProtocol: 'Protocol',
-    agentDiplomacy: 'Diplomacy',
-    agentSecurity: 'Security',
-    agentStylist: 'Stylist',
-    agentCitations: 'Citations',
-    agentEditor: 'Editor',
-    agentReviewer: 'Reviewer',
-    agentPlagiat: 'Plagiarism',
-    agentPress: 'WPA Press',
-    agentSandeai: 'Sande AI',
-    architectTitle: 'Agent Architect — Concept Design',
-    architectTag: 'Concept • Thesis • Methodology',
-    analyzeTitle: 'Agent Analysis — Books and Documents',
-    analyzeTag: 'PDF analysis • Extraction • Synthesis',
-    statusLabel: 'Status',
-    agentLabel: 'Agent',
-    aiEngineLabel: 'AI Engine',
-    versionLabel: 'Version',
-    claudeApiLabel: 'Claude API',
-    gptApiLabel: 'GPT-4o API',
-    agentsLabel: 'Agents',
-    active: 'Active',
-    quickConcept: '🏛️ Analyze concept',
-    quickStructure: '📐 Generate structure',
-    quickProtocol: '🎩 Protocol advisor',
-    quickCitations: '👑 Smiljanov citations',
-    quickElevate: '🚀 Elevate text',
-    quickReview: '🧐 Review',
-    quickPlag: '🔍 Check plagiarism',
-    quickPress: '📰 Press release',
-    chainNewPaper: '📄 New paper',
-    chainMonograph: '📚 Monograph',
-    chainProtocolDoc: '🎩 Protocol document',
-    chainReviewPaper: '🧐 Review a paper',
-    chainPressRelease: '📰 Media communication',
-    docType: 'Document type',
-    topic: 'Title / Topic',
-    concept: 'Main idea / Hypothesis / Concept',
-    btnFullAnalysis: '🏛️ Full analysis',
-    btnAnalyzeConcept: '🧠 Analyze concept',
-    btnGenerateThesis: '📝 Generate thesis',
-    btnKeywords: '🔑 Keywords',
-    archEmpty: '🏛️ Enter a topic and click Generate',
-    analyzeQ: 'Question / Focus of the analysis',
-    analyzeMode: 'Analysis mode',
-    btnAnalyze: '🔬 Analyze',
-    btnExtractQuotes: '📖 Extract quotes',
-    btnThemes: '🎯 Themes',
-    btnSummary: '📄 Summary',
-    analyzeEmpty: '🔬 Upload a book/document for analysis',
-    dropText: 'Drop PDF/TXT/MD here or click to upload<br><small style="font-size:11px">Max 3 files · 5MB per file</small>',
-    phTopic: 'e.g. Defence diplomacy and the security of North Macedonia',
-    phConcept: 'Describe the main hypothesis, research questions and expected contribution...',
-    phAnalyzeQ: "e.g. 'What are the main arguments?' or 'Extract quotes on the Vienna Convention'..."
-  }
-};
-
-function i18nText(lang, key){
-  const pack = UI_I18N[lang] || UI_I18N.mk;
-  return pack[key] ?? key;
-}
-function i18nSet(sel, key, htmlMode=false){
-  const el = document.querySelector(sel);
-  if(!el) return;
-  if(htmlMode) el.innerHTML = i18nText(curLang, key);
-  else el.textContent = i18nText(curLang, key);
-}
-function i18nAll(sel, keys){
-  document.querySelectorAll(sel).forEach((el, idx) => {
-    const key = keys[idx];
-    if(key) el.textContent = i18nText(curLang, key);
-  });
-}
-function i18nPlaceholder(id, key){
-  const el = document.getElementById(id);
-  if(el) el.placeholder = i18nText(curLang, key);
-}
-function i18nLabelForField(id, key){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const wrap = el.closest('div');
-  const label = wrap ? wrap.querySelector('.flabel') : null;
-  if(label) label.textContent = i18nText(curLang, key);
-}
-function i18nSelectOptions(id, mapMk, mapEn){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const pack = curLang === 'en' ? mapEn : mapMk;
-  [...el.options].forEach((opt, idx) => {
-    if(pack[idx] !== undefined) opt.textContent = pack[idx];
-  });
-}
-
-function applyUiLang(lang){
-  curLang = lang === 'en' ? 'en' : 'mk';
-  document.documentElement.lang = curLang;
-  const uiLang = document.getElementById('uiLang');
-  if(uiLang) uiLang.value = curLang;
-
-  i18nSet('.tb-back','back');
-  i18nSet('#planBtn','plan');
-  i18nSet('#webToggle','web');
-  i18nSet('#globalDialog','dialog');
-  i18nSet('.tb-right .tb-btn[onclick="openMemoryPanel()"]','memory');
-  i18nSet('.tb-sub','topSub');
-  i18nSet('#keyModal h3','modalTitle');
-  i18nSet('#keyModal p','modalDesc');
-  i18nSet('#keyModal .mactions .btn.bgo','save');
-  i18nSet('#keyModal .mactions .btn.bgh','cancel');
-  i18nSet('#keyModal .mactions .btn.bgh.bsm','deleteKeys');
-
-  i18nAll('#agentNav .al', [
-    'agentArchitect','agentStructure','agentBook','agentAnalyze','agentSemantic','agentPpp',
-    'agentProtocol','agentDiplomacy','agentSecurity','agentStylist','agentCitations',
-    'agentEditor','agentReviewer','agentPlagiat','agentPress','agentSandeai'
-  ]);
-
-  i18nSet('#sp-architect .phd-title','architectTitle');
-  i18nSet('#sp-architect .phd-tag','architectTag');
-  i18nSet('#sp-analyze .phd-title','analyzeTitle');
-  i18nSet('#sp-analyze .phd-tag','analyzeTag');
-
-  i18nSet('#sp-architect .brow .btn:nth-child(1)','btnFullAnalysis');
-  i18nSet('#sp-architect .brow .btn:nth-child(2)','btnAnalyzeConcept');
-  i18nSet('#sp-architect .brow .btn:nth-child(3)','btnGenerateThesis');
-  i18nSet('#sp-architect .brow .btn:nth-child(4)','btnKeywords');
-  i18nSet('#sp-analyze .brow .btn:nth-child(1)','btnAnalyze');
-  i18nSet('#sp-analyze .brow .btn:nth-child(2)','btnExtractQuotes');
-  i18nSet('#sp-analyze .brow .btn:nth-child(3)','btnThemes');
-  i18nSet('#sp-analyze .brow .btn:nth-child(4)','btnSummary');
-
-  i18nLabelForField('docType','docType');
-  i18nLabelForField('topic','topic');
-  i18nLabelForField('concept','concept');
-  i18nLabelForField('analyzeQ','analyzeQ');
-  i18nLabelForField('analyzeMode','analyzeMode');
-
-  i18nPlaceholder('topic','phTopic');
-  i18nPlaceholder('concept','phConcept');
-  i18nPlaceholder('analyzeQ','phAnalyzeQ');
-
-  i18nSelectOptions('docType',
-    ['Научен труд','Монографија','Конференциски труд','Policy Paper','Стратешки извештај','Дисертација'],
-    ['Scientific paper','Monograph','Conference paper','Policy paper','Strategic report','Dissertation']
-  );
-  i18nSelectOptions('analyzeMode',
-    ['Општа анализа','Екстракција на цитати','Тематска анализа','Длабоко резиме','Компаративна анализа','Клучни поими'],
-    ['General analysis','Quote extraction','Thematic analysis','Deep summary','Comparative analysis','Keywords']
-  );
-  i18nSelectOptions('uiLang', ['МК','EN'], ['MK','EN']);
-
-  const archEmpty = document.querySelector('#r-architect .rbox-empty');
-  if(archEmpty) archEmpty.textContent = i18nText(curLang,'archEmpty');
-  const analyzeEmpty = document.querySelector('#r-analyze .rbox-empty');
-  if(analyzeEmpty) analyzeEmpty.textContent = i18nText(curLang,'analyzeEmpty');
-  i18nSet('#dropZone .dropzone-txt', 'dropText', true);
-
-  const sidebarCards = document.querySelectorAll('.sidebar .scard h3');
-  if(sidebarCards[0]) sidebarCards[0].textContent = i18nText(curLang,'sessionStatus');
-  if(sidebarCards[1]) sidebarCards[1].textContent = i18nText(curLang,'quickActions');
-  if(sidebarCards[3]) sidebarCards[3].textContent = i18nText(curLang,'historyTitle');
-  if(sidebarCards[4]) sidebarCards[4].textContent = i18nText(curLang,'doctrineTitle');
-  if(sidebarCards[5]) sidebarCards[5].childNodes[0].nodeValue = i18nText(curLang,'memoryTitle');
-  if(sidebarCards[6]) sidebarCards[6].textContent = i18nText(curLang,'chainTitle');
-
-  const chainDesc = document.querySelectorAll('.sidebar .scard p')[1];
-  if(chainDesc) chainDesc.textContent = i18nText(curLang,'chainDesc');
-
-  const srows = document.querySelectorAll('.sidebar .scard:first-child .srow .srow-l');
-  ['statusLabel','agentLabel','aiEngineLabel','versionLabel','claudeApiLabel','gptApiLabel','agentsLabel'].forEach((k, idx) => {
-    if(srows[idx]) srows[idx].textContent = i18nText(curLang, k);
-  });
-  const statusVal = document.querySelector('.sidebar .scard:first-child .srow .srow-v');
-  if(statusVal && statusVal.textContent.includes('Активен')) {
-    statusVal.innerHTML = '<span class="sdot"></span>' + i18nText(curLang,'active');
-  }
-
-  const qbtns = document.querySelectorAll('.qgrid .qbtn');
-  ['quickConcept','quickStructure','quickProtocol','quickCitations','quickElevate','quickReview','quickPlag','quickPress'].forEach((k, idx) => {
-    if(qbtns[idx]) qbtns[idx].textContent = i18nText(curLang, k);
-  });
-
-  const chainBtns = document.querySelectorAll('.sidebar .scard:last-child .btn');
-  ['chainNewPaper','chainMonograph','chainProtocolDoc','chainReviewPaper','chainPressRelease'].forEach((k, idx) => {
-    if(chainBtns[idx]) chainBtns[idx].textContent = i18nText(curLang, k);
-  });
-
-  const memBtns = document.querySelectorAll('#memoryCard .exp-btn');
-  if(memBtns[0]) memBtns[0].textContent = i18nText(curLang,'downloadAll');
-  if(memBtns[1]) memBtns[1].textContent = i18nText(curLang,'clearAll');
-
-  updateKeyStatus();
-}
-
-const _updateKeyStatusCore = updateKeyStatus;
-updateKeyStatus = function(){
-  _updateKeyStatusCore();
-  const ck=getCK(); const gk=getGK();
-  const workerOn = !!window.WPA_API_BASE;
-  const kb=document.getElementById('keyBtn');
-  if(kb){
-    if(workerOn) kb.textContent = i18nText(curLang,'workerApi');
-    else if(ck||gk) kb.textContent = i18nText(curLang,'keyReady');
-    else kb.textContent = i18nText(curLang,'keyDefault');
-  }
-  const sbC=document.getElementById('sb-ckey');
-  const sbG=document.getElementById('sb-gkey');
-  if(sbC) sbC.textContent = workerOn ? i18nText(curLang,'worker') : (ck ? i18nText(curLang,'activeClaude') : i18nText(curLang,'none'));
-  if(sbG) sbG.textContent = workerOn ? i18nText(curLang,'worker') : (gk ? i18nText(curLang,'activeGpt') : i18nText(curLang,'none'));
-};
-
-function setLang(lang){
-  curLang = lang;
-  localStorage.setItem('wpaws_lang', lang);
-  applyUiLang(lang);
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  const savedLang = localStorage.getItem('wpaws_lang') || document.getElementById('uiLang')?.value || 'mk';
-  applyUiLang(savedLang);
-});
-
+function setLang(lang){ curLang=lang; localStorage.setItem('wpaws_lang',lang); }
 
 // ════════════════════════════════════════════
 // FEATURE 1: EXPORT (TXT, MD, DOCX-like, PDF)
@@ -2554,37 +2145,33 @@ function toggleWebSearch(){
 }
 
 async function callClaudeWithWebSearch(system, prompt, maxTokens=2000){
-  const base = getApiBase();
-  if(!base) throw new Error('WPA_API_BASE не е поставен.');
-
-  const payload = {
-    message: prompt,
-    lang: curLang,
-    history: [
-      { role: 'assistant', content: system }
-    ],
-    quality: '3layer_academic',
-    engine: 'claude',
-    max_tokens: maxTokens,
-    web_search: true
-  };
-
-  const res = await fetch(`${base}/ask`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+  const key=getCK();
+  if(!key) return null;
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01',/* direct-browser removed */},
+    body:JSON.stringify({
+      model:CLAUDE_MODEL,
+      max_tokens:maxTokens,
+      system,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
+      messages:[{role:'user',content:prompt}]
+    })
   });
-
-  const data = await res.json().catch(() => ({}));
-  if(!res.ok || !data.ok){
-    throw new Error(data?.error || `Worker Web Search грешка ${res.status}`);
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'Claude Web Search грешка');}
+  const data=await res.json();
+  // Extract text and sources
+  let text='', sources=[];
+  for(const block of (data.content||[])){
+    if(block.type==='text') text+=block.text;
+    if(block.type==='tool_result'){
+      try{
+        const parsed=JSON.parse(block.content?.[0]?.text||'[]');
+        if(Array.isArray(parsed)) sources=parsed.slice(0,4).map(r=>r.url||r.title||'').filter(Boolean);
+      }catch(e){}
+    }
   }
-
-  const sources = Array.isArray(data.sources) ? data.sources : [];
-  return {
-    text: data.answer || '',
-    sources
-  };
+  return {text, sources};
 }
 
 function showWebSources(boxId, sources){
@@ -2608,6 +2195,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   curLang=savedLang;
   const langSel=document.getElementById('uiLang');
   if(langSel) langSel.value=savedLang;
+  setLang(savedLang);
   renderMemory();
   toast('⚜️','WPAWS 9.0 Integrated — подготвен! 16 агенти + 5 нови функции активни.');
 });
