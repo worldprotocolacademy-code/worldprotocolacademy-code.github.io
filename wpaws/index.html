@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="mk" translate="no">
+<html lang="mk" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -15,9 +15,9 @@
   --r:12px;--rr:20px;
   --sh:0 4px 24px rgba(0,0,0,.5);--shl:0 12px 48px rgba(0,0,0,.6);
   --glow:0 0 30px rgba(200,168,75,.15);
-  --fd:'Cormorant Garamond',Georgia,serif;
-  --fb:'Jost',system-ui,sans-serif;
-  --fm:'JetBrains Mono',monospace;
+  --fd:'Georgia','Times New Roman',serif;
+  --fb:'Segoe UI','Helvetica Neue',Arial,sans-serif;
+  --fm:'Consolas','Courier New',monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -279,6 +279,22 @@ a{color:inherit;text-decoration:none}
 .web-src-title{font-size:10px;font-weight:800;color:#06b6d4;text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px;font-family:var(--fb)}
 .web-src-item{color:var(--muted);margin-bottom:3px;display:flex;gap:5px;align-items:flex-start}
 .web-src-item::before{content:'🔗';flex-shrink:0}
+
+/* ══ WPA RTL SUPPORT ══ */
+html.wpa-rtl,html.wpa-rtl body{direction:rtl;text-align:right}
+html.wpa-rtl .tb-inner{flex-direction:row-reverse}
+html.wpa-rtl .tb-right{margin-left:0;margin-right:auto}
+html.wpa-rtl .brow{flex-direction:row-reverse}
+html.wpa-rtl .aibar{flex-direction:row-reverse}
+html.wpa-rtl .phd{flex-direction:row-reverse}
+html.wpa-rtl .fg.c2,html.wpa-rtl .fg.c3{direction:rtl}
+html.wpa-rtl .rbox ul,html.wpa-rtl .rbox ol{margin:0 1.5em .8em 0}
+html.wpa-rtl #agentNav .anav-inner{direction:rtl}
+html.wpa-rtl .srow{flex-direction:row-reverse}
+html.wpa-rtl .mem-item-del{right:auto;left:8px}
+html.wpa-rtl .export-bar{flex-direction:row-reverse}
+html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
+
 </style>
 </head>
 <body>
@@ -330,9 +346,47 @@ a{color:inherit;text-decoration:none}
       <button class="dialog-toggle" id="globalDialog" onclick="toggleGlobalDialog()" title="Дијалог режим">💬 Дијалог</button>
       <button class="tb-btn" id="keyBtn" onclick="openModal()">🔑 API Клуч</button>
       <button class="tb-btn" onclick="openMemoryPanel()" title="Зачувани документи">💾 Меморија<span class="mem-count-badge" id="memCountBadge">0</span></button>
-      <select class="tb-sel" id="uiLang" onchange="setLang(this.value)">
-        <option value="mk">МК</option><option value="en">EN</option>
-      </select>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9px;color:var(--dim);font-weight:700;text-align:center">UI</div>
+        <select class="tb-sel" id="uiLang" onchange="setUILang(this.value)" style="min-width:78px">
+          <option value="mk">🇲🇰 MK</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="de">🇩🇪 DE</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="it">🇮🇹 IT</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="pt">🇵🇹 PT</option>
+          <option value="sq">🇦🇱 SQ</option>
+          <option value="tr">🇹🇷 TR</option>
+          <option value="hr">🇭🇷 HR</option>
+          <option value="bs">🇧🇦 BS</option>
+          <option value="sl">🇸🇮 SL</option>
+          <option value="ru">🇷🇺 RU</option>
+          <option value="ar">🇸🇦 AR</option>
+          <option value="zh">🇨🇳 ZH</option>
+          <option value="ja">🇯🇵 JA</option>
+          <option value="ko">🇰🇷 KO</option>
+          <option value="hi">🇮🇳 HI</option>
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:9px;color:var(--dim);font-weight:700;text-align:center">AI</div>
+        <select class="tb-sel" id="aiLang" onchange="setAILang(this.value)" style="min-width:78px">
+          <option value="mk">💬 МК</option>
+          <option value="en">💬 EN</option>
+          <option value="de">💬 DE</option>
+          <option value="fr">💬 FR</option>
+          <option value="it">💬 IT</option>
+          <option value="es">💬 ES</option>
+          <option value="pt">💬 PT</option>
+          <option value="sq">💬 SQ</option>
+          <option value="tr">💬 TR</option>
+          <option value="hr">💬 HR</option>
+          <option value="ar">💬 AR</option>
+          <option value="ru">💬 RU</option>
+          <option value="zh">💬 ZH</option>
+        </select>
+      </div>
     </div>
   </div>
 </div>
@@ -1134,6 +1188,588 @@ a{color:inherit;text-decoration:none}
 
 </div><!-- /workspace -->
 <script>
+/* ============================================================
+   WPAWS i18n SYSTEM v3.0 — PRODUCTION FINAL
+   World Protocol Academy — Macedonian-first multilingual
+   
+   INSERT THIS ENTIRE BLOCK before:
+   window.WPA_API_BASE = 'https://...'
+   ============================================================ */
+/* ============================================================
+   WPAWS MULTILINGUAL SYSTEM v3.0 — PRODUCTION
+   World Protocol Academy · Macedonian-first
+   Two independent states: _uiLang (UI) and _aiLang (AI output)
+   ============================================================ */
+
+/* --- LANGUAGE REGISTRY --- */
+const WPA_REGISTRY = {
+  mk:  {label:'Македонски', native:'Македонски', dir:'ltr', script:'Cyrl', tier:1, fallback:null},
+  en:  {label:'English',    native:'English',    dir:'ltr', script:'Latn', tier:1, fallback:'mk'},
+  de:  {label:'Deutsch',    native:'Deutsch',    dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  fr:  {label:'Français',   native:'Français',   dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  it:  {label:'Italiano',   native:'Italiano',   dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  es:  {label:'Español',    native:'Español',    dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  pt:  {label:'Português',  native:'Português',  dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  sq:  {label:'Shqip',      native:'Shqip',      dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  tr:  {label:'Türkçe',     native:'Türkçe',     dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  hr:  {label:'Hrvatski',   native:'Hrvatski',   dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  bs:  {label:'Bosanski',   native:'Bosanski',   dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  sl:  {label:'Slovenščina',native:'Slovenščina',dir:'ltr', script:'Latn', tier:2, fallback:'en'},
+  ru:  {label:'Русский',    native:'Русский',    dir:'ltr', script:'Cyrl', tier:2, fallback:'mk'},
+  ar:  {label:'العربية',    native:'العربية',    dir:'rtl', script:'Arab', tier:3, fallback:'en'},
+  zh:  {label:'中文',        native:'中文',        dir:'ltr', script:'Hans', tier:3, fallback:'en'},
+  ja:  {label:'日本語',      native:'日本語',      dir:'ltr', script:'Jpan', tier:3, fallback:'en'},
+  ko:  {label:'한국어',      native:'한국어',      dir:'ltr', script:'Kore', tier:3, fallback:'en'},
+  hi:  {label:'हिन्दी',     native:'हिन्दी',     dir:'ltr', script:'Deva', tier:3, fallback:'en'},
+};
+
+/* --- TERMINOLOGY PROTECTION MAP --- */
+/* WPA doctrinal terms — never loosely translated */
+const WPA_TERMS = {
+  mk:{
+    protocol:'протокол', diplomacy:'дипломатија', preseans:'пресеанс',
+    ceremonial:'церемонијал', etiquette:'етикеција', bonTon:'бон-тон',
+    agreman:'агреман', exequatur:'егзекватура',
+    stateProtocol:'државен протокол', dipProtocol:'дипломатски протокол',
+    defDiplomacy:'одбранбена дипломатија', milDiplomacy:'воена дипломатија',
+  },
+  en:{
+    protocol:'protocol', diplomacy:'diplomacy', preseans:'precedence',
+    ceremonial:'ceremonial', etiquette:'etiquette', bonTon:'bon ton',
+    agreman:'agrément', exequatur:'exequatur',
+    stateProtocol:'state protocol', dipProtocol:'diplomatic protocol',
+    defDiplomacy:'defence diplomacy', milDiplomacy:'military diplomacy',
+  },
+  de:{protocol:'Protokoll',diplomacy:'Diplomatie',preseans:'Präzedenz',
+      ceremonial:'Zeremoniell',stateProtocol:'Staatsprotokoll',
+      defDiplomacy:'Verteidigungsdiplomatie',milDiplomacy:'Militärdiplomatie'},
+  fr:{protocol:'protocole',diplomacy:'diplomatie',preseans:'préséance',
+      ceremonial:'cérémonial',stateProtocol:"protocole d'État",
+      defDiplomacy:'diplomatie de défense',milDiplomacy:'diplomatie militaire'},
+  it:{protocol:'protocollo',diplomacy:'diplomazia',preseans:'precedenza',
+      stateProtocol:'protocollo di stato',defDiplomacy:'diplomazia della difesa'},
+  es:{protocol:'protocolo',diplomacy:'diplomacia',preseans:'precedencia',
+      stateProtocol:'protocolo de estado',defDiplomacy:'diplomacia de defensa'},
+  ar:{protocol:'البروتوكول',diplomacy:'الدبلوماسية',preseans:'الأسبقية',
+      ceremonial:'المراسم',stateProtocol:'بروتوكول الدولة',
+      defDiplomacy:'الدبلوماسية الدفاعية',milDiplomacy:'الدبلوماسية العسكرية'},
+  ru:{protocol:'протокол',diplomacy:'дипломатия',preseans:'старшинство',
+      stateProtocol:'государственный протокол',defDiplomacy:'оборонная дипломатия'},
+  zh:{protocol:'礼宾',diplomacy:'外交',preseans:'礼仪顺序',
+      stateProtocol:'国家礼宾',defDiplomacy:'国防外交'},
+};
+
+/* --- UI TRANSLATIONS --- */
+/* MK is canonical — EN is full secondary — others are partial overrides */
+const WPA_UI_MK = {
+  /* Topbar */
+  tbSub:'World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web',
+  tbBack:'← Академија', tbPlan:'Бесплатен', tbWeb:'🌐 Web',
+  tbDialog:'💬 Дијалог', tbApiKey:'🔑 API Клуч', tbMemory:'💾 Меморија',
+  tbUILabel:'UI', tbAILabel:'AI',
+  /* Agent nav */
+  agArchitect:'Архитект',agStructure:'Структура',agBook:'Книга',
+  agAnalyze:'Анализа',agSemantic:'Семантика',agPPP:'PPP',
+  agProtocol:'Протокол',agDiplomacy:'Дипломатија',agSecurity:'Безбедност',
+  agStylist:'Стилист',agCitations:'Цитати',agEditor:'Уредник',
+  agReviewer:'Рецензент',agPlagiat:'Плагијат',agPress:'WPA Press',agSande:'Санде AI',
+  /* Agent titles */
+  ttArchitect:'Агент Архитект — Осмислување',
+  ttStructure:'Агент Структура — Организација',
+  ttBook:'Агент Книга — Целосна Изработка',
+  ttAnalyze:'Агент Анализа — Книги и Документи',
+  ttSemantic:'Агент Семантика — Архитектура',
+  ttPPP:'Агент PPP — Презентации',
+  ttProtocol:'Агент Протокол — Експерт',
+  ttDiplomacy:'Агент Дипломатија — Анализа',
+  ttSecurity:'Агент Безбедност — Одбрана',
+  ttStylist:'Агент Стилист — Јазик',
+  ttCitations:'Агент Цитати — Библиографија',
+  ttEditor:'Агент Уредник',ttReviewer:'Агент Рецензент',
+  ttPlagiat:'Агент Плагијат',ttPress:'WPA Press',
+  ttSande:'Санде AI — Виртуелен Асистент',
+  /* Sidebar */
+  sbStatus:'Статус сесија',sbActive:'Активен',sbAgent:'Агент',
+  sbAI:'AI Мотор',sbVersion:'Верзија',sbClaude:'Claude API',
+  sbGPT:'GPT-4o API',sbAgents:'Агенти',
+  sbQuick:'Брзи акции',sbCites:'Смиљанов — Брзи цитати',
+  sbHistory:'Историја на сесијата',sbHistEmpty:'Нема записи.',
+  sbDoctrine:'WPA Доктрина',
+  sbDoctrineText:'"Преговарањето е опционално. Протоколот е апсолутен."',
+  sbDoctrineAuthor:'— Доц. д-р Санде Смиљанов',
+  sbMemTitle:'Зачувани документи',sbMemEmpty:'Нема зачувани документи.',
+  sbChainTitle:'Автоматски синџир',
+  sbChainDesc:'Избери работен тек и WPAWS автоматски ќе ги повика агентите по ред.',
+  /* Empty states */
+  emArchitect:'🏛️ Внеси тема и кликни Генерирај',
+  emStructure:'📐 Внеси тема и генерирај структура',
+  emBook:'📚 Пополни ги деталите за книгата',
+  emAnalyze:'🔬 Прикачи книга/документ за анализа',
+  emSemantic:'🧠 Внеси ги деловите за семантичка анализа',
+  emPPP:'📊 Внеси детали и генерирај презентација',
+  emProtocol:'🎩 Внеси детали за протоколарен советувач',
+  emDiplomacy:'🌍 Внеси ситуација за дипломатска анализа',
+  emSecurity:'🛡️ Внеси ситуација за безбедносна анализа',
+  emStylist:'✨ Залепи текст за стилска преработка',
+  emCitations:'📖 Генерирај библиографија',
+  emEditor:'✍️ Залепи текст за уредување',
+  emReviewer:'🧐 Залепи труд за академска рецензија',
+  emPlagiat:'🔍 Залепи текст за проверка на интегритет',
+  emPress:'📰 Внеси тема и генерирај медиумски материјал',
+  emSande:'👑 Прашај го Санде AI — виртуелниот асистент на WPA',
+  /* Modal */
+  modalTitle:'🔑 API Клучеви',
+  modalDesc:'Чуваат се само локално во прелистувачот. Никогаш не се испраќаат на надворешни сервери.',
+  modalSave:'Зачувај',modalCancel:'Откажи',modalClear:'Избриши клучеви',
+  /* Buttons & export */
+  btnCopy:'📋 Копирај',btnExpand:'🔮 Прошири',btnSave:'💾 Зачувај',
+  expLabel:'Извези:',expWord:'📘 Word/RTF',expPDF:'🖨️ PDF',
+  expTXT:'📄 TXT',expMD:'📝 Markdown',
+  /* Chain names */
+  chainPaper:'📄 Нов научен труд',chainMono:'📚 Монографија',
+  chainProto:'🎩 Протоколарен документ',
+  chainReview:'🧐 Рецензија на труд',chainPress:'📰 Медиумска комуникација',
+  /* Toast */
+  toastReady:'WPAWS 9.0 — подготвен! 16 агенти активни.',
+  toastGenerating:'Генерирање...',toastDone:'Готово!',
+  toastCopied:'Копирано!',toastSaved:'Зачувано!',
+};
+
+const WPA_UI_EN = {
+  tbSub:'World Protocol Academy — 16 agents + Export + Memory + Dialog + Chain + Web',
+  tbBack:'← Academy',tbPlan:'Free',tbWeb:'🌐 Web',
+  tbDialog:'💬 Dialog',tbApiKey:'🔑 API Key',tbMemory:'💾 Memory',
+  agArchitect:'Architect',agStructure:'Structure',agBook:'Book',
+  agAnalyze:'Analysis',agSemantic:'Semantics',agPPP:'PPP',
+  agProtocol:'Protocol',agDiplomacy:'Diplomacy',agSecurity:'Security',
+  agStylist:'Stylist',agCitations:'Citations',agEditor:'Editor',
+  agReviewer:'Reviewer',agPlagiat:'Plagiarism',agPress:'WPA Press',agSande:'Sande AI',
+  ttArchitect:'Agent Architect — Conceptualisation',
+  ttStructure:'Agent Structure — Organisation',
+  ttBook:'Agent Book — Full Production',
+  ttAnalyze:'Agent Analysis — Books & Documents',
+  ttSemantic:'Agent Semantics — Architecture',
+  ttPPP:'Agent PPP — Presentations',
+  ttProtocol:'Agent Protocol — Expert',
+  ttDiplomacy:'Agent Diplomacy — Analysis',
+  ttSecurity:'Agent Security — Defence',
+  ttStylist:'Agent Stylist — Language',
+  ttCitations:'Agent Citations — Bibliography',
+  ttEditor:'Agent Editor',ttReviewer:'Agent Reviewer',
+  ttPlagiat:'Agent Plagiarism',ttPress:'WPA Press',
+  ttSande:'Sande AI — Virtual Assistant',
+  sbStatus:'Session Status',sbActive:'Active',sbAgent:'Agent',
+  sbAI:'AI Engine',sbVersion:'Version',sbClaude:'Claude API',
+  sbGPT:'GPT-4o API',sbAgents:'Agents',
+  sbQuick:'Quick Actions',sbCites:'Smiljanov — Quick Citations',
+  sbHistory:'Session History',sbHistEmpty:'No records.',
+  sbDoctrine:'WPA Doctrine',
+  sbDoctrineText:'"Negotiation is optional. Protocol is absolute."',
+  sbDoctrineAuthor:'— Assoc. Prof. Dr. Sande Smiljanov',
+  sbMemTitle:'Saved Documents',sbMemEmpty:'No saved documents.',
+  sbChainTitle:'Auto Chain',
+  sbChainDesc:'Select a workflow and WPAWS will automatically call agents in order.',
+  emArchitect:'🏛️ Enter topic and click Generate',
+  emStructure:'📐 Enter topic and generate structure',
+  emBook:'📚 Fill in book details',
+  emAnalyze:'🔬 Upload book/document for analysis',
+  emSemantic:'🧠 Enter sections for semantic analysis',
+  emPPP:'📊 Enter details and generate presentation',
+  emProtocol:'🎩 Enter details for protocol advisor',
+  emDiplomacy:'🌍 Enter situation for diplomatic analysis',
+  emSecurity:'🛡️ Enter situation for security analysis',
+  emStylist:'✨ Paste text for stylistic rework',
+  emCitations:'📖 Generate bibliography',
+  emEditor:'✍️ Paste text for editing',
+  emReviewer:'🧐 Paste paper for academic review',
+  emPlagiat:'🔍 Paste text for integrity check',
+  emPress:'📰 Enter topic and generate media material',
+  emSande:'👑 Ask Sande AI — the virtual assistant of WPA',
+  modalTitle:'🔑 API Keys',
+  modalDesc:'Stored locally in your browser only. Never sent to external servers.',
+  modalSave:'Save',modalCancel:'Cancel',modalClear:'Delete keys',
+  btnCopy:'📋 Copy',btnExpand:'🔮 Expand',btnSave:'💾 Save',
+  expLabel:'Export:',expWord:'📘 Word/RTF',expPDF:'🖨️ PDF',
+  expTXT:'📄 TXT',expMD:'📝 Markdown',
+  chainPaper:'📄 New research paper',chainMono:'📚 Monograph',
+  chainProto:'🎩 Protocol document',
+  chainReview:'🧐 Paper review',chainPress:'📰 Media communication',
+  toastReady:'WPAWS 9.0 — ready! 16 agents active.',
+  toastGenerating:'Generating...',toastDone:'Done!',
+  toastCopied:'Copied!',toastSaved:'Saved!',
+};
+
+/* Partial overrides for other languages — extends EN */
+const WPA_UI_OVERRIDES = {
+  de:{
+    tbBack:'← Akademie',tbPlan:'Kostenlos',
+    agArchitect:'Architekt',agStructure:'Struktur',agBook:'Buch',
+    agAnalyze:'Analyse',agSemantic:'Semantik',agProtocol:'Protokoll',
+    agDiplomacy:'Diplomatie',agSecurity:'Sicherheit',agStylist:'Stilist',
+    agCitations:'Zitate',agEditor:'Redakteur',agReviewer:'Gutachter',
+    agPlagiat:'Plagiat',agPress:'WPA Presse',agSande:'Sande KI',
+    sbDoctrineText:'"Verhandlung ist optional. Protokoll ist absolut."',
+    toastReady:'WPAWS 9.0 — bereit!',
+  },
+  fr:{
+    tbBack:'← Académie',tbPlan:'Gratuit',
+    agArchitect:'Architecte',agProtocol:'Protocole',agDiplomacy:'Diplomatie',
+    agSecurity:'Sécurité',agStylist:'Styliste',agEditor:'Rédacteur',
+    agReviewer:'Réviseur',agPress:'WPA Presse',agSande:'Sande IA',
+    sbDoctrineText:'"La négociation est optionnelle. Le protocole est absolu."',
+  },
+  it:{
+    tbBack:'← Accademia',tbPlan:'Gratuito',
+    agArchitect:'Architetto',agProtocol:'Protocollo',agDiplomacy:'Diplomazia',
+    sbDoctrineText:'"La negoziazione è opzionale. Il protocollo è assoluto."',
+  },
+  es:{
+    tbBack:'← Academia',tbPlan:'Gratis',
+    agArchitect:'Arquitecto',agProtocol:'Protocolo',agDiplomacy:'Diplomacia',
+    sbDoctrineText:'"La negociación es opcional. El protocolo es absoluto."',
+  },
+  pt:{
+    tbBack:'← Academia',tbPlan:'Gratuito',
+    agProtocol:'Protocolo',agDiplomacy:'Diplomacia',
+    sbDoctrineText:'"A negociação é opcional. O protocolo é absoluto."',
+  },
+  sq:{
+    tbBack:'← Akademia',tbPlan:'Falas',
+    agProtocol:'Protokolli',agDiplomacy:'Diplomacia',
+    sbDoctrineText:'"Negocimi është opsional. Protokolli është absolut."',
+  },
+  tr:{
+    tbBack:'← Akademi',tbPlan:'Ücretsiz',
+    agProtocol:'Protokol',agDiplomacy:'Diplomasi',
+    sbDoctrineText:'"Müzakere isteğe bağlıdır. Protokol mutlaktır."',
+  },
+  hr:{
+    tbBack:'← Akademija',tbPlan:'Besplatno',
+    agProtocol:'Protokol',agDiplomacy:'Diplomacija',
+    sbDoctrineText:'"Pregovori su opcijski. Protokol je apsolutan."',
+  },
+  bs:{
+    tbBack:'← Akademija',tbPlan:'Besplatno',
+    agProtocol:'Protokol',agDiplomacy:'Diplomatija',
+    sbDoctrineText:'"Pregovori su opcionalni. Protokol je apsolutan."',
+  },
+  sl:{
+    tbBack:'← Akademija',tbPlan:'Brezplačno',
+    agProtocol:'Protokol',agDiplomacy:'Diplomacija',
+    sbDoctrineText:'"Pogajanja so neobvezna. Protokol je absoluten."',
+  },
+  ru:{
+    tbBack:'← Академия',tbPlan:'Бесплатно',
+    agArchitect:'Архитектор',agProtocol:'Протокол',agDiplomacy:'Дипломатия',
+    agSecurity:'Безопасность',agStylist:'Стилист',agEditor:'Редактор',
+    agReviewer:'Рецензент',agPress:'WPA Пресс',agSande:'Санде ИИ',
+    sbDoctrineText:'"Переговоры необязательны. Протокол абсолютен."',
+  },
+  ar:{
+    tbBack:'← الأكاديمية',tbPlan:'مجاني',
+    agArchitect:'المهندس',agStructure:'الهيكل',agBook:'الكتاب',
+    agAnalyze:'التحليل',agProtocol:'البروتوكول',agDiplomacy:'الدبلوماسية',
+    agSecurity:'الأمن',agStylist:'الأسلوب',agEditor:'المحرر',
+    agReviewer:'المراجع',agPlagiat:'الانتحال',agPress:'صحافة WPA',agSande:'سانده AI',
+    sbDoctrineText:'"التفاوض اختياري. البروتوكول مطلق."',
+  },
+  zh:{
+    tbBack:'← 学院',tbPlan:'免费',
+    agProtocol:'礼宾',agDiplomacy:'外交',
+    sbDoctrineText:'"谈判是可选的。礼宾是绝对的。"',
+  },
+};
+
+/* --- LANGUAGE STATE --- */
+/* TWO SEPARATE STATES — never mix them */
+var _uiLang = 'mk';   /* Controls UI text language */
+var _aiLang  = 'mk';  /* Controls AI answer language — sent to Worker */
+
+/* --- UI LOOKUP FUNCTION --- */
+function ui(key) {
+  if (_uiLang === 'mk') return WPA_UI_MK[key] || '';
+  if (_uiLang === 'en') return WPA_UI_EN[key] || WPA_UI_MK[key] || '';
+  var ov = WPA_UI_OVERRIDES[_uiLang] || {};
+  if (ov[key] !== undefined) return ov[key];
+  /* Fallback: Cyrillic → MK base, others → EN base */
+  var reg = WPA_REGISTRY[_uiLang];
+  var base = (reg && reg.script === 'Cyrl') ? WPA_UI_MK : WPA_UI_EN;
+  return base[key] || WPA_UI_MK[key] || '';
+}
+
+/* WPA terminology lookup */
+function wpaTerm(termKey) {
+  var t = WPA_TERMS[_uiLang] || WPA_TERMS[_uiLang === 'mk' ? 'en' : 'mk'];
+  return (WPA_TERMS[_uiLang] && WPA_TERMS[_uiLang][termKey])
+    ? WPA_TERMS[_uiLang][termKey]
+    : WPA_TERMS.mk[termKey] || termKey;
+}
+
+/* --- SET UI LANGUAGE (independent of AI) --- */
+function setUILang(lang) {
+  var reg = WPA_REGISTRY[lang];
+  if (!reg) lang = 'mk';
+  _uiLang = lang;
+  localStorage.setItem('wpaws_ui_lang', lang);
+  /* RTL switching */
+  var isRTL = reg ? reg.dir === 'rtl' : false;
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = isRTL ? 'rtl' : 'ltr';
+  document.documentElement.classList.toggle('wpa-rtl', isRTL);
+  document.body.style.direction  = isRTL ? 'rtl' : 'ltr';
+  /* Sync selector */
+  var sel = document.getElementById('uiLang');
+  if (sel && sel.querySelector('option[value="'+lang+'"]')) sel.value = lang;
+  /* Apply all UI translations */
+  applyUITranslations();
+}
+
+/* --- SET AI LANGUAGE (independent of UI) --- */
+function setAILang(lang) {
+  if (!WPA_REGISTRY[lang]) lang = 'mk';
+  _aiLang = lang;
+  curLang  = lang;  /* keep curLang in sync for buildSys() */
+  localStorage.setItem('wpaws_ai_lang', lang);
+  var sel = document.getElementById('aiLang');
+  if (sel && sel.querySelector('option[value="'+lang+'"]')) sel.value = lang;
+  var reg = WPA_REGISTRY[lang] || {};
+  toast('💬', (reg.native || lang) + ' — AI одговор јазик');
+}
+
+/* Legacy alias — now routes to setUILang */
+function setLang(lang) { setUILang(lang); }
+
+/* --- EXTENDED applyUITranslations — full sidebar coverage --- */
+function applyUITranslations() {
+  /* 1. Agent nav labels */
+  var navAgents = [
+    ['architect','agArchitect'],['structure','agStructure'],['book','agBook'],
+    ['analyze','agAnalyze'],['semantic','agSemantic'],['ppp','agPPP'],
+    ['protocol','agProtocol'],['diplomacy','agDiplomacy'],['security','agSecurity'],
+    ['stylist','agStylist'],['citations','agCitations'],['editor','agEditor'],
+    ['reviewer','agReviewer'],['plagiat','agPlagiat'],['press','agPress'],
+    ['sandeai','agSande'],
+  ];
+  navAgents.forEach(function(pair) {
+    var btn = document.getElementById('abt-' + pair[0]);
+    if (!btn) return;
+    var lbl = btn.querySelector('.al');
+    var val = ui(pair[1]);
+    if (lbl && val) lbl.textContent = val;
+  });
+
+  /* 2. Panel titles */
+  var panelTitles = [
+    ['architect','ttArchitect'],['structure','ttStructure'],['book','ttBook'],
+    ['analyze','ttAnalyze'],['semantic','ttSemantic'],['ppp','ttPPP'],
+    ['protocol','ttProtocol'],['diplomacy','ttDiplomacy'],['security','ttSecurity'],
+    ['stylist','ttStylist'],['citations','ttCitations'],['editor','ttEditor'],
+    ['reviewer','ttReviewer'],['plagiat','ttPlagiat'],['press','ttPress'],
+    ['sandeai','ttSande'],
+  ];
+  panelTitles.forEach(function(pair) {
+    var panel = document.getElementById('sp-' + pair[0]);
+    if (!panel) return;
+    var title = panel.querySelector('.phd-title');
+    var val = ui(pair[1]);
+    if (title && val && title.firstChild) title.firstChild.textContent = val;
+  });
+
+  /* 3. Topbar */
+  var tbSub = document.querySelector('.tb-sub');
+  if (tbSub && ui('tbSub')) tbSub.textContent = ui('tbSub');
+  var tbBack = document.querySelector('.tb-back');
+  if (tbBack && ui('tbBack')) tbBack.textContent = ui('tbBack');
+  var planBtn = document.getElementById('planBtn');
+  if (planBtn && ui('tbPlan') && !planBtn.textContent.includes('Worker') && !planBtn.textContent.includes('✓'))
+    planBtn.textContent = ui('tbPlan');
+  var webBtn = document.getElementById('webToggle');
+  if (webBtn) webBtn.textContent = (window.webSearchOn ? '🌐 ' : '🌐 ') + (ui('tbWeb') || '🌐 Web').replace('🌐 ','');
+  var memBtn = document.querySelector('button[onclick="openMemoryPanel()"]');
+  if (memBtn) {
+    var badge = memBtn.querySelector('.mem-count-badge');
+    var badgeHTML = badge ? badge.outerHTML : '';
+    memBtn.innerHTML = (ui('tbMemory') || '💾 Меморија') + badgeHTML;
+  }
+
+  /* 4. Sidebar session status */
+  var srows = document.querySelectorAll('.srow-l');
+  var srowLabels = [ui('sbStatus')||'', ui('sbAgent')||'', ui('sbAI')||'',
+                    ui('sbVersion')||'', ui('sbClaude')||'', ui('sbGPT')||'', ui('sbAgents')||''];
+  srows.forEach(function(el, i) { if (srowLabels[i]) el.textContent = srowLabels[i]; });
+
+  /* 5. Sidebar section titles */
+  document.querySelectorAll('.scard h3').forEach(function(h3) {
+    var txt = h3.textContent.trim();
+    if (txt.includes('Session') || txt.includes('Статус')) { var v=ui('sbStatus'); if(v) h3.textContent=v; }
+    else if (txt.includes('Брзи') || txt.includes('Quick')) { var v=ui('sbQuick'); if(v) h3.textContent=v; }
+    else if (txt.includes('Историј') || txt.includes('History')) { var v=ui('sbHistory'); if(v) h3.textContent=v; }
+    else if (txt.includes('Синџир') || txt.includes('Chain')) { var v=ui('sbChainTitle'); if(v) h3.textContent=v; }
+    else if (txt.includes('Смиљанов') || txt.includes('Smiljanov')) { var v=ui('sbCites'); if(v) h3.textContent=v; }
+    else if (txt.includes('Зачуван') || txt.includes('Saved')) { /* preserve badge */ }
+  });
+
+  /* 6. Chain section description */
+  var chainDesc = document.querySelector('#chainStatus')
+    ? document.querySelector('#chainStatus').previousElementSibling
+    : null;
+  if (chainDesc && chainDesc.tagName === 'P' && ui('sbChainDesc'))
+    chainDesc.textContent = ui('sbChainDesc');
+  /* Chain buttons */
+  var chainBtns = document.querySelectorAll('[onclick^="startChain"]');
+  var chainKeys = ['chainPaper','chainMono','chainProto','chainReview','chainPress'];
+  chainBtns.forEach(function(btn, i) {
+    var v = ui(chainKeys[i]); if (v) btn.textContent = v;
+  });
+
+  /* 7. WPA Doctrine sidebar */
+  var docQ = document.querySelector('.scard p[style*="italic"]');
+  if (docQ && ui('sbDoctrineText')) docQ.textContent = ui('sbDoctrineText');
+  var docAuthor = document.querySelector('.scard p[style*="11px"]');
+  if (docAuthor && ui('sbDoctrineAuthor')) docAuthor.textContent = ui('sbDoctrineAuthor');
+
+  /* 8. Modal */
+  var mh = document.querySelector('.modal h3');
+  if (mh && ui('modalTitle')) mh.textContent = ui('modalTitle');
+  var mp = document.querySelector('.modal p');
+  if (mp && ui('modalDesc')) mp.textContent = ui('modalDesc');
+  document.querySelectorAll('.mactions .btn').forEach(function(btn) {
+    var oc = btn.getAttribute('onclick') || '';
+    if (oc.includes('saveKeys') && ui('modalSave')) btn.textContent = ui('modalSave');
+    else if (oc.includes('closeModal') && ui('modalCancel')) btn.textContent = ui('modalCancel');
+    else if (oc.includes('clearKeys') && ui('modalClear')) btn.textContent = ui('modalClear');
+  });
+
+  /* 9. Empty states */
+  var empties = [
+    ['r-architect','emArchitect'],['r-structure','emStructure'],
+    ['r-analyze','emAnalyze'],['r-semantic','emSemantic'],
+    ['r-protocol','emProtocol'],['r-diplomacy','emDiplomacy'],
+    ['r-security','emSecurity'],['r-stylist','emStylist'],
+    ['r-citations','emCitations'],['r-editor','emEditor'],
+    ['r-reviewer','emReviewer'],['r-plagiat','emPlagiat'],
+    ['r-press','emPress'],['r-sandeai','emSande'],
+    ['r-book-setup','emBook'],['r-book-write','emBook'],
+    ['r-ppp-create','emPPP'],['r-ppp-notes','emPPP'],
+  ];
+  empties.forEach(function(pair) {
+    var box = document.getElementById(pair[0]);
+    if (!box) return;
+    var empty = box.querySelector('.rbox-empty');
+    var val = ui(pair[1]);
+    if (empty && val) empty.textContent = val;
+  });
+
+  /* 10. Placeholders */
+  applyPlaceholders();
+
+  /* 11. Buttons */
+  applyButtons();
+}
+
+/* ============================================================
+   MISSING FUNCTIONS — appended to complete the system
+   ============================================================ */
+
+/* --- APPLY PLACEHOLDERS --- */
+function applyPlaceholders() {
+  var ph = {
+    mk: {
+      topic:'пр. Одбранбената дипломатија и безбедноста на РСМ',
+      concept:'Опишете ја главната хипотеза, истражувачките прашања и очекуваниот придонес...',
+      stopic:'пр. Дипломатскиот протокол и Виенска конвенција',
+      strtext:'Залепи постоечка структура или остави празно за генерирање...',
+      bkTitle:'пр. Дипломатијата, протоколот и безбедноста',
+      bkAbstract:'Главна теза, содржина, целна публика и научен придонес...',
+      bkBibTopic:'пр. протокол и дипломатија',
+      bkIdxTerms:'пр. протокол, пресеанс, Смиљанов...',
+      pppTitle:'пр. Дипломатски протокол при официјална државна посета',
+      pppContent:'Главните теми, аргументи и пораки на презентацијата...',
+      analyzeQ:"пр. 'Кои се главните аргументи?' или 'Извлечи цитати за Виенска конвенција'...",
+      semTopic:'пр. Пресеансот во дипломатскиот протокол',
+      semIntro:'Тезата и воведните аргументи...',
+      semDev:'Главните аргументи и анализата...',
+      semConc:'Синтезата и финалните согледувања...',
+      semConcepts:'протокол, пресеанс, дипломатија...',
+      protDet:'Опишете ја конкретната ситуација, учесниците, нивниот ранг и специфичните протоколарни прашања...',
+      dipDet:'Опишете ја дипломатската ситуација, актерите, целите и специфичните аналитички прашања...',
+      secDet:'Опишете ја безбедносната ситуација, актерите, заканите и специфичните прашања...',
+      stText:'Залепи го текстот кој треба да биде преработен...',
+      ctTopic:'пр. протокол и дипломатија',
+      edText:'Залепи го текстот кој треба да биде уреден. Агентот Уредник ќе направи структурна, јазична и стилска обработка...',
+      revText:'Залепи го трудот, поглавјето или текстот за академска рецензија...',
+      plagText:'Залепи го трудот или пасусите за проверка на академски интегритет и оригиналност...',
+      prContent:'Темата, настанот, клучните пораки или содржината за генерирање...',
+      saiq:"пр. 'Кои се основните правила на протоколот при официјална државна посета?' или 'Напиши поглавје за одбранбената дипломатија'...",
+      bkKeyPoints:'Главни аргументи, примери, цитати и точки кои мора да ги содржи поглавјето...',
+    },
+    en: {
+      topic:'e.g. Defence diplomacy and security of RSM',
+      concept:'Describe the main hypothesis, research questions and expected contribution...',
+      stopic:'e.g. Diplomatic protocol and Vienna Convention',
+      strtext:'Paste existing structure or leave blank to generate...',
+      bkTitle:'e.g. Diplomacy, Protocol and Security',
+      bkAbstract:'Main thesis, content, target audience and scientific contribution...',
+      protDet:'Describe the specific situation, participants, their rank and protocol questions...',
+      dipDet:'Describe the diplomatic situation, actors, objectives and analytical questions...',
+      secDet:'Describe the security situation, actors, threats and specific questions...',
+      stText:'Paste the text to be reworked...',
+      edText:'Paste the text to be edited...',
+      revText:'Paste the paper, chapter or text for academic review...',
+      plagText:'Paste the paper or passages for academic integrity check...',
+      saiq:"e.g. 'What are the basic rules of protocol at an official state visit?'",
+      bkKeyPoints:'Main arguments, examples, citations and points the chapter must contain...',
+    },
+  };
+  var lang = (typeof _uiLang !== 'undefined') ? _uiLang : 'mk';
+  var map = (lang === 'mk') ? ph.mk : (ph[lang] || ph.en);
+  var base = (lang === 'mk') ? ph.mk : ph.en;
+  Object.keys(base).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA')) return;
+    var val = (map && map[id]) ? map[id] : base[id];
+    if (val) el.placeholder = val;
+  });
+}
+
+/* --- APPLY BUTTONS --- */
+function applyButtons() {
+  document.querySelectorAll('.export-label').forEach(function(el) {
+    var v = ui('expLabel'); if (v) el.textContent = v;
+  });
+  document.querySelectorAll('.exp-btn.docx').forEach(function(el) {
+    var v = ui('expWord'); if (v) el.innerHTML = v;
+  });
+  document.querySelectorAll('.exp-btn.pdf').forEach(function(el) {
+    var v = ui('expPDF'); if (v) el.innerHTML = v;
+  });
+  document.querySelectorAll('.exp-btn.txt').forEach(function(el) {
+    var v = ui('expTXT'); if (v) el.innerHTML = v;
+  });
+  document.querySelectorAll('.exp-btn.md').forEach(function(el) {
+    var v = ui('expMD'); if (v) el.innerHTML = v;
+  });
+}
+
+/* --- INIT BOTH LANGUAGE STATES --- */
+function initLangs() {
+  var savedUI = '';
+  var savedAI = '';
+  try {
+    savedUI = localStorage.getItem('wpaws_ui_lang') || 'mk';
+    savedAI = localStorage.getItem('wpaws_ai_lang') || 'mk';
+  } catch(e) { savedUI = 'mk'; savedAI = 'mk'; }
+  if (!WPA_REGISTRY[savedUI]) savedUI = 'mk';
+  if (!WPA_REGISTRY[savedAI]) savedAI = 'mk';
+  /* Set AI lang first — no UI updates */
+  _aiLang = savedAI;
+  if (typeof curLang !== 'undefined') curLang = savedAI;
+  var aiSel = document.getElementById('aiLang');
+  if (aiSel && aiSel.querySelector('option[value="'+savedAI+'"]')) aiSel.value = savedAI;
+  /* Set UI lang — triggers applyUITranslations */
+  setUILang(savedUI);
+}
+
 window.WPA_API_BASE = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev';
 
 const DOC_FIRST_AGENTS = new Set(['reviewer','editor','stylist','plagiat']);
@@ -1253,8 +1889,10 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto', agen
   if(!base) throw new Error('WPA_API_BASE не е поставен.');
 
   const payload = {
-    message: prompt,
-    lang: curLang,
+    message:  prompt,
+    lang:     (typeof _aiLang !== 'undefined') ? _aiLang : curLang,
+    aiLang:   (typeof _aiLang !== 'undefined') ? _aiLang : curLang,
+    rawLang:  (typeof _aiLang !== 'undefined') ? _aiLang : curLang,
     history: [
       { role: 'assistant', content: system }
     ],
@@ -1304,7 +1942,21 @@ function smartTokens(agent, action){
 
 // ─── SYSTEM PROMPTS ───
 function buildSys(agent){
-  const lang = curLang==='mk' ? 'македонски книжевен јазик (СЕКОГАШ одговарај на македонски, освен ако корисникот не побара друг јазик)' : 'English (always respond in English unless otherwise specified)';
+  const _eff = (typeof _aiLang !== 'undefined') ? _aiLang : curLang;
+  const lang = _eff==='mk'
+    ? 'македонски книжевен јазик (СЕКОГАШ одговарај на македонски, освен ако корисникот не побара друг јазик)'
+    : _eff==='ar' ? 'العربية (أجب دائماً بالعربية)'
+    : _eff==='zh' ? '中文简体 (请始终用中文回答)'
+    : _eff==='ru' ? 'русский язык (всегда отвечай на русском)'
+    : _eff==='de' ? 'Deutsch (antworten Sie immer auf Deutsch)'
+    : _eff==='fr' ? 'français (répondez toujours en français)'
+    : _eff==='tr' ? 'Türkçe (her zaman Türkçe yanıt verin)'
+    : _eff==='es' ? 'español (responda siempre en español)'
+    : _eff==='it' ? 'italiano (rispondere sempre in italiano)'
+    : _eff==='sq' ? 'shqip (gjithmonë përgjigjuni në shqip)'
+    : _eff==='pt' ? 'português (responda sempre em português)'
+    : _eff==='hr' ? 'hrvatski (uvijek odgovarajte na hrvatskom)'
+    : 'English (always respond in English unless otherwise specified)';
   const styles={
     sande:'авторитетен, елоквентен, дипломатски прецизен — Санде Смиљанов стил',
     academic:'строго академски, формален, методолошки систематичен',
@@ -1741,8 +2393,7 @@ function toast(ico, msg){
   setTimeout(()=>el.remove(),3500);
 }
 
-// ─── LANG ───
-function setLang(lang){ curLang=lang; localStorage.setItem('wpaws_lang',lang); }
+// ─── LANG: setUILang/setAILang/setLang defined in WPA_MULTILINGUAL_SYSTEM above ───
 
 // ════════════════════════════════════════════
 // FEATURE 1: EXPORT (TXT, MD, DOCX-like, PDF)
@@ -2191,13 +2842,9 @@ function showWebSources(boxId, sources){
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded',()=>{
   updateKeyStatus();
-  const savedLang=localStorage.getItem('wpaws_lang')||'mk';
-  curLang=savedLang;
-  const langSel=document.getElementById('uiLang');
-  if(langSel) langSel.value=savedLang;
-  setLang(savedLang);
+  initLangs();
   renderMemory();
-  toast('⚜️','WPAWS 9.0 Integrated — подготвен! 16 агенти + 5 нови функции активни.');
+  toast('⚜️',(typeof ui==='function'?ui('toastReady'):null)||'WPAWS 9.0 — подготвен!');
 });
 </script>
 </body>
