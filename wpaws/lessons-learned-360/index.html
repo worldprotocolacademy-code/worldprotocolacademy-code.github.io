@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="description" content="WPAWS Lessons Learned 360 Final v1.1 Package. World Protocol Academy."/>
+<title>WPAWS Lessons Learned 360 — Final v1.1 Package · World Protocol Academy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
+<style>
+/* ================================================================
+   WPAWS Lessons Learned 360 — Final v1.1 Package
+   Production-polished CSS · World Protocol Academy · April 2026
+   ================================================================ */
+
+/* ── DESIGN TOKENS ── */
+:root {
+  /* Font stack — premium first, dignified fallback if Google Fonts fail */
+  --fd: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+  --fs: 'Cormorant Garamond', 'Georgia', 'Palatino Linotype', serif;
+  --fb: 'Jost', 'Helvetica Neue', 'Segoe UI', Arial, system-ui, sans-serif;
+  --fm: 'Courier New', Courier, monospace;
+
+  /* Institutional palette */
+  --navy:   #0d1f3c;
+  --navy2:  #162947;
+  --gold:   #c9a84c;
+  --goldd:  #a8873a;
+  --goldl:  #e8d49a;
+  --cream:  #f8f4ee;
+  --cream2: #f0ead8;
+  --white:  #ffffff;
+  --text:   #1a1a2e;
+  --muted:  #5a6677;
+  --line:   #d8cdb8;
+
+  /* Semantic case colours */
+  --red:    #8b1a1a;  --redl:    #fff0f0;
+  --amber:  #8b5a00;  --amberl:  #fdf3e3;
+  --green:  #1a6b3c;  --greenl:  #e8f5ee;
+  --blue:   #0d3a6e;  --bluel:   #e8f0fb;
+
+  /* Geometry */
+  --r:  3px;
+  --r2: 8px;
+}
+
+/* ── BASE RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--fb);
+  background: #e8e3da;
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: var(--goldd); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
+
+/* ── SIDE NAVIGATION ── */
+.sidenav {
+  position: fixed; top: 0; left: 0;
+  width: 220px; height: 100vh;
+  background: var(--navy);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 200; padding-bottom: 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201,168,76,.25) transparent;
+}
+.sidenav::-webkit-scrollbar { width: 4px; }
+.sidenav::-webkit-scrollbar-thumb { background: rgba(201,168,76,.25); border-radius: 2px; }
+.sidenav-title {
+  padding: 15px 18px 12px;
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--goldl); font-family: var(--fb);
+  border-bottom: 1px solid rgba(201,168,76,.15);
+  position: sticky; top: 0; background: var(--navy); z-index: 1;
+}
+.sidenav-section {
+  padding: 9px 18px 3px;
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.1px;
+  color: var(--gold); font-family: var(--fb);
+  margin-top: 6px;
+}
+.sidenav a {
+  display: block; padding: 5px 18px 5px 20px;
+  font-size: 11.5px; color: rgba(255,255,255,.52);
+  font-family: var(--fb);
+  transition: color .14s, background .14s;
+  border-left: 2px solid transparent;
+}
+.sidenav a:hover { color: var(--goldl); background: rgba(201,168,76,.07); text-decoration: none; }
+.sidenav a.active { color: var(--goldl); border-left-color: var(--gold); background: rgba(201,168,76,.06); }
+
+/* ── MAIN CONTENT WRAP ── */
+.main-wrap { margin-left: 220px; padding: 32px 36px 80px; }
+
+/* ── PART DIVIDER ── */
+.part-divider {
+  background: var(--navy); border-radius: var(--r2);
+  padding: 36px 40px; margin-bottom: 32px;
+  position: relative; overflow: hidden;
+}
+.part-divider::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,.05) 1px, transparent 1px);
+  background-size: 52px 52px; pointer-events: none;
+}
+.part-divider-inner { position: relative; z-index: 1; }
+.part-eye {
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--goldl); font-family: var(--fb);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.part-eye::before { content: '◆'; color: var(--gold); font-size: 7px; }
+.part-divider h2 {
+  font-family: var(--fd);
+  font-size: clamp(22px, 2.8vw, 34px);
+  font-weight: 700; color: var(--white);
+  line-height: 1.1; margin-bottom: 8px;
+}
+.part-divider h2 em { color: var(--goldl); font-style: italic; }
+.part-divider p {
+  color: rgba(255,255,255,.52); font-size: 13.5px;
+  font-weight: 300; max-width: 640px; line-height: 1.7;
+}
+
+/* ── PAGE BLOCK ── */
+.page-block {
+  background: var(--white); border-radius: var(--r2);
+  border: 1px solid var(--line); margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: 0 1px 12px rgba(13,31,60,.06), 0 0 0 0 transparent;
+}
+.page-block-header {
+  background: var(--navy2); padding: 10px 24px;
+  display: flex; align-items: baseline; gap: 14px;
+  border-bottom: 2px solid var(--gold);
+}
+.pb-num {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--goldl);
+  font-family: var(--fb); min-width: 66px; flex-shrink: 0;
+}
+.pb-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.75); font-family: var(--fb); }
+.page-content { padding: 28px 32px; }
+
+/* ── COVER ── */
+.cover-page {
+  background: var(--navy); padding: 52px 40px;
+  position: relative; overflow: hidden; min-height: 280px;
+}
+.cover-page::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,.06) 1px, transparent 1px);
+  background-size: 50px 50px; pointer-events: none;
+}
+.cover-page::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 4px; background: var(--gold);
+}
+.cover-inner { position: relative; z-index: 1; }
+.cover-eye {
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--goldl); font-family: var(--fb);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 7px;
+}
+.cover-eye::before { content: '◆'; color: var(--gold); font-size: 7px; }
+.cover-h1 { font-family: var(--fd); font-size: clamp(28px, 4vw, 46px); font-weight: 700; color: var(--white); line-height: 1.06; margin-bottom: 3px; }
+.cover-gold { font-family: var(--fd); font-size: clamp(28px, 4vw, 46px); font-weight: 700; color: var(--gold); line-height: 1.06; margin-bottom: 6px; }
+.cover-ed { font-family: var(--fd); font-size: clamp(14px, 2vw, 20px); color: var(--goldl); margin-bottom: 18px; }
+.cover-rule { border: none; border-top: 1px solid rgba(201,168,76,.3); margin: 14px 0; }
+.cover-sub { font-size: 14px; font-weight: 300; color: var(--goldl); font-style: italic; margin-bottom: 16px; line-height: 1.6; }
+.cover-meta { font-size: 11px; color: rgba(255,255,255,.35); margin-bottom: 3px; }
+.cover-doctrine { font-family: var(--fs); font-style: italic; font-size: 11.5px; color: var(--gold); margin-top: 18px; }
+
+/* ── PAGE TYPOGRAPHY ── */
+.lbl {
+  font-size: 8.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.3px;
+  color: var(--goldd); font-family: var(--fb);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 7px;
+}
+.lbl::before { content: ''; width: 16px; height: 1px; background: var(--gold); flex-shrink: 0; }
+.pg-h {
+  font-family: var(--fd); font-weight: 700;
+  font-size: clamp(20px, 2.4vw, 28px);
+  color: var(--navy); line-height: 1.12; margin-bottom: 10px;
+}
+.gold-rule { border: none; border-top: 1.5px solid var(--gold); margin-bottom: 16px; }
+.body-p {
+  font-size: 14px; color: var(--text);
+  line-height: 1.72; margin-bottom: 10px;
+  text-align: justify; hyphens: auto;
+}
+.body-p:last-child { margin-bottom: 0; }
+
+/* ── CALLOUT ── */
+.callout {
+  padding: 15px 20px; margin: 14px 0;
+  border-left: 4px solid var(--gold);
+  background: var(--cream2);
+  border-radius: 0 var(--r2) var(--r2) 0;
+}
+.callout p { font-family: var(--fs); font-style: italic; font-size: 15px; color: var(--navy); line-height: 1.55; margin: 0; }
+
+/* ── STRUCTURED TWO-COLUMN TABLE ── */
+.str-table { border: 1px solid var(--line); border-radius: var(--r2); overflow: hidden; margin: 14px 0; }
+.str-row { display: grid; grid-template-columns: 155px 1fr; border-bottom: 1px solid var(--line); }
+.str-row:last-child { border-bottom: none; }
+.str-label { padding: 12px 14px; background: var(--cream2); font-size: 12.5px; font-weight: 600; color: var(--navy); font-family: var(--fb); border-right: 1px solid var(--line); }
+.str-body { padding: 12px 14px; font-size: 13.5px; color: var(--muted); line-height: 1.65; }
+
+/* ── BULLETS ── */
+.bul-list { margin: 10px 0; display: grid; gap: 6px; }
+.bul { font-size: 13.5px; color: var(--text); padding-left: 18px; position: relative; line-height: 1.65; }
+.bul::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 7.5px; top: 5px; }
+
+/* ── METHOD STEPS ── */
+.steps { display: grid; gap: 4px; margin: 12px 0; }
+.step { display: grid; grid-template-columns: 30px 1fr; overflow: hidden; border-radius: var(--r); }
+.step-num { background: var(--navy); color: var(--goldl); font-size: 10.5px; font-weight: 700; font-family: var(--fb); display: flex; align-items: flex-start; justify-content: center; padding: 9px 4px; }
+.step-body { background: var(--white); border: 1px solid var(--line); border-left: none; padding: 8px 12px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.step-body b { color: var(--navy); }
+
+/* ── CLASSIFICATION CARDS ── */
+.cls-cards { display: grid; gap: 7px; margin: 12px 0; }
+.cls-card { display: flex; overflow: hidden; border-radius: var(--r); border: 1px solid var(--line); }
+.cls-code { width: 32px; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; font-family: var(--fb); flex-shrink: 0; }
+.cls-body { padding: 10px 14px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.cls-body b { display: block; margin-bottom: 3px; color: var(--navy); }
+.cls-a .cls-code { background: var(--greenl); color: var(--green); }
+.cls-b .cls-code { background: var(--redl);   color: var(--red);   }
+.cls-c .cls-code { background: var(--amberl); color: var(--amber); }
+
+/* ── SCENARIO DEPTH TABLE ── */
+.depth-table { border: 1px solid var(--line); border-radius: var(--r2); overflow: hidden; margin: 12px 0; }
+.dt-row { display: grid; grid-template-columns: 28px 105px 1fr; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+.dt-row:last-child { border-bottom: none; }
+.dt-row:nth-child(even) { background: var(--cream); }
+.dt-cell { padding: 8px 12px; color: var(--text); }
+.dt-cell:first-child { font-weight: 700; color: var(--navy); background: rgba(13,31,60,.04); border-right: 1px solid var(--line); display: flex; align-items: center; justify-content: center; }
+.dt-cell:nth-child(2) { font-weight: 600; color: var(--navy); border-right: 1px solid var(--line); }
+.dt-cell:last-child { color: var(--muted); }
+
+/* ── EVALUATION CRITERIA ── */
+.criteria { display: grid; gap: 5px; margin: 12px 0; }
+.crit { display: grid; grid-template-columns: 28px 1fr; overflow: hidden; border-radius: var(--r); }
+.crit-num { background: var(--navy); color: var(--gold); font-size: 11px; font-weight: 700; font-family: var(--fb); display: flex; align-items: flex-start; justify-content: center; padding: 9px 4px; }
+.crit-body { background: var(--white); border: 1px solid var(--line); border-left: 2px solid var(--gold); padding: 8px 12px; font-size: 13px; color: var(--text); line-height: 1.6; }
+.crit-body b { color: var(--navy); }
+
+/* ── CASE CARD ── */
+.case-card { border-radius: var(--r2); overflow: hidden; border: 1px solid var(--line); }
+.cc-header { background: var(--navy); padding: 14px 18px 12px; border-left: 5px solid var(--gold); display: grid; grid-template-columns: 72px 1fr; }
+.cc-id { font-family: var(--fd); font-size: 22px; font-weight: 700; color: var(--goldl); line-height: 1.1; }
+.cc-title { font-size: 14.5px; font-weight: 700; color: var(--white); align-self: center; line-height: 1.3; }
+.cc-pills { padding: 7px 18px; background: var(--cream2); border-bottom: 1.5px solid var(--gold); font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cc-pills .sep { color: var(--line); }
+.pill-a { font-weight: 700; color: var(--green); }
+.pill-b { font-weight: 700; color: var(--red); }
+.pill-c { font-weight: 700; color: var(--amber); }
+.cc-sections { display: flex; flex-direction: column; }
+.cc-box { padding: 11px 18px; border-bottom: 1px solid var(--line); }
+.cc-box:last-child { border-bottom: none; }
+.cc-box-lbl { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; font-family: var(--fb); margin-bottom: 5px; }
+.cc-box p { font-size: 13px; line-height: 1.65; }
+/* Semantic box colours */
+.cc-box.context    { background: var(--white);  } .cc-box.context    .cc-box-lbl { color: var(--goldd); }
+.cc-box.wrong      { background: var(--redl);   } .cc-box.wrong      .cc-box-lbl { color: var(--red);   } .cc-box.wrong      p { color: var(--text); }
+.cc-box.why        { background: var(--amberl); } .cc-box.why        .cc-box-lbl { color: var(--amber); } .cc-box.why        p { color: var(--text); }
+.cc-box.immediate  { background: var(--white);  } .cc-box.immediate  .cc-box-lbl { color: var(--goldd); }
+.cc-box.institutional { background: var(--white); } .cc-box.institutional .cc-box-lbl { color: var(--goldd); }
+.cc-box.corrective { background: var(--greenl); } .cc-box.corrective .cc-box-lbl { color: var(--green); } .cc-box.corrective p { color: var(--text); }
+.cc-box.message    { background: var(--bluel);  } .cc-box.message    .cc-box-lbl { color: var(--blue);  } .cc-box.message    p { color: var(--text); }
+.cc-box.lessons    { background: var(--navy);   } .cc-box.lessons    .cc-box-lbl { color: var(--goldl); }
+.cc-box.prevention { background: var(--cream2); } .cc-box.prevention .cc-box-lbl { color: var(--navy);  }
+/* Two-column case box layout */
+.cc-two { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+.cc-two .cc-box { border-bottom: none; }
+.cc-two .cc-box:first-child { border-right: 1px solid var(--line); }
+/* Lessons list */
+.lesson-list { list-style: none; display: grid; gap: 5px; margin-top: 6px; }
+.lesson-list li { font-size: 12.5px; color: rgba(255,255,255,.86); padding-left: 15px; position: relative; line-height: 1.6; }
+.lesson-list li::before { content: '◆'; position: absolute; left: 0; color: var(--gold); font-size: 7px; top: 5px; }
+/* Prevention list */
+.prev-list { list-style: none; display: grid; gap: 5px; margin-top: 6px; counter-reset: pc; }
+.prev-list li { font-size: 12.5px; color: var(--navy); padding-left: 18px; position: relative; line-height: 1.6; counter-increment: pc; }
+.prev-list li::before { content: counter(pc) '.'; position: absolute; left: 0; color: var(--goldd); font-weight: 700; font-size: 12px; top: 1px; }
+
+/* ── CTA BLOCK ── */
+.cta-block { background: var(--navy); border-radius: var(--r2); padding: 28px 32px; margin: 14px 0; }
+.cta-eye { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--goldl); font-family: var(--fb); margin-bottom: 10px; }
+.cta-h { font-family: var(--fd); font-size: clamp(16px, 2vw, 20px); font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.cta-rule { border: none; border-top: 1px solid rgba(201,168,76,.22); margin-bottom: 14px; }
+.cta-intro { font-size: 13px; color: rgba(255,255,255,.6); line-height: 1.65; margin-bottom: 16px; }
+.cta-rows { display: grid; }
+.cta-row { display: grid; grid-template-columns: 160px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+.cta-row:last-child { border-bottom: none; }
+.cta-t { font-size: 12.5px; font-weight: 700; color: var(--goldl); font-family: var(--fb); align-self: start; }
+.cta-d { font-size: 12.5px; color: rgba(255,255,255,.6); line-height: 1.6; }
+.cta-contact { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(201,168,76,.18); }
+.cta-note { margin-top: 12px; font-size: 11px; color: rgba(255,255,255,.3); font-style: italic; font-family: var(--fs); }
+/* Clickable contact links */
+a.cta-email { font-size: 13.5px; font-weight: 700; color: var(--gold); display: block; margin-bottom: 4px; text-decoration: none; }
+a.cta-email:hover { color: var(--goldl); text-decoration: underline; text-underline-offset: 2px; }
+a.cta-url { font-size: 12px; color: rgba(255,255,255,.42); text-decoration: none; }
+a.cta-url:hover { color: rgba(255,255,255,.7); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── WHY MATTERS GRID ── */
+.why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0; }
+.why-card { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r2); background: var(--white); border-top: 3px solid var(--gold); }
+.why-card h4 { font-family: var(--fs); font-size: 16px; color: var(--navy); margin-bottom: 6px; }
+.why-card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+/* ── CLOSING DOCTRINE ── */
+.closing-doctrine { text-align: center; padding: 20px 0; font-family: var(--fs); font-style: italic; font-size: 14px; color: var(--muted); line-height: 1.7; }
+.rule-gold { border: none; border-top: 1.5px solid var(--gold); margin: 18px 0; }
+
+/* ── DESIGN GUIDANCE ── */
+.dg-section { padding: 24px 28px; border-bottom: 1px solid var(--line); }
+.dg-section:last-child { border-bottom: none; }
+.dg-num { font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.1px; color: var(--goldd); font-family: var(--fb); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+.dg-num::before { content: ''; width: 14px; height: 1px; background: var(--gold); flex-shrink: 0; }
+.dg-h { font-family: var(--fs); font-size: 19px; color: var(--navy); margin-bottom: 10px; }
+.dg-body { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-bottom: 8px; }
+.dg-body b { color: var(--text); }
+.spec-table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 10px 0; }
+.spec-table th { background: var(--navy); color: var(--goldl); padding: 7px 12px; text-align: left; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; font-family: var(--fb); }
+.spec-table td { padding: 7px 12px; border-bottom: 1px solid var(--line); color: var(--text); vertical-align: top; }
+.spec-table tr:nth-child(even) td { background: var(--cream); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border: 1px solid var(--line); border-radius: var(--r); background: var(--cream); font-size: 11.5px; font-family: var(--fm); margin: 2px; }
+.chip-swatch { width: 12px; height: 12px; border-radius: 2px; border: 1px solid rgba(0,0,0,.1); flex-shrink: 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  .sidenav { display: none; }
+  .main-wrap { margin-left: 0; padding: 24px 24px 60px; }
+}
+@media (max-width: 860px) {
+  .main-wrap { padding: 18px 16px 56px; }
+  .part-divider { padding: 26px 22px; }
+  .page-content { padding: 20px 18px; }
+  .why-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  .str-row { grid-template-columns: 1fr; }
+  .str-label { border-right: none; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+  .cc-two { grid-template-columns: 1fr; }
+  .cc-two .cc-box:first-child { border-right: none; border-bottom: 1px solid var(--line); }
+  .cta-row { grid-template-columns: 1fr; gap: 4px; }
+  .cta-t { margin-bottom: 2px; }
+  .cover-page { padding: 36px 22px; }
+  .dt-row { grid-template-columns: 26px 90px 1fr; }
+  .page-content { padding: 16px 14px; }
+}
+@media (max-width: 480px) {
+  .cc-header { grid-template-columns: 58px 1fr; }
+  .cc-id { font-size: 18px; }
+  .cta-block { padding: 20px 16px; }
+  .part-divider { padding: 20px 16px; }
+}
+
+/* ── PRINT / PDF EXPORT ── */
+@media print {
+  /* Hide interactive chrome */
+  .sidenav { display: none !important; }
+  .main-wrap { margin-left: 0 !important; padding: 0 !important; }
+
+  /* A4 page setup */
+  @page { size: A4; margin: 20mm 18mm 22mm 18mm; }
+
+  /* Colour preservation — REQUIRES browser "Background graphics" enabled */
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  /* Section page breaks */
+  .part-divider { page-break-before: always; break-before: page; margin-top: 0; }
+
+  /* Case cards: keep together */
+  .page-block { break-inside: avoid; margin-bottom: 10px; box-shadow: none !important; }
+  .case-card  { break-inside: avoid; }
+  .cc-two     { break-inside: avoid; }
+  .callout    { break-inside: avoid; }
+  .str-table  { break-inside: avoid; }
+  .cta-block  { break-inside: avoid; }
+  .why-card   { break-inside: avoid; }
+  .cls-card   { break-inside: avoid; }
+
+  /* Cover integrity */
+  .cover-page { min-height: 220pt; page-break-after: always; break-after: page; }
+
+  /* Short Edition and Design Guidance start on fresh pages */
+  #s1-cover   { page-break-before: always; break-before: page; }
+  #dg1        { page-break-before: always; break-before: page; }
+
+  /* Suppress URL printing after links (cleaner institutional look) */
+  a[href]::after { content: none; }
+
+  /* Reduce page-block border noise in print */
+  .page-block-header { padding: 7px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDE NAV -->
+<nav class="sidenav">
+  <div class="sidenav-title">WPAWS LL360 · v1.1</div>
+  <div class="sidenav-section">Part 1 — Full Master</div>
+  <a href="#p1-cover">P1 Cover</a>
+  <a href="#p2-exec">P2 Executive Summary</a>
+  <a href="#p3-shows">P3 What This Shows</a>
+  <a href="#p4-method">P4 The Method</a>
+  <a href="#p5-class">P5 Classification</a>
+  <a href="#p6-eval">P6 Evaluation Logic</a>
+  <a href="#p7-sc016">P7 SC-016</a>
+  <a href="#p8-sc017">P8 SC-017</a>
+  <a href="#p9-sc018">P9 SC-018</a>
+  <a href="#p10-sc019">P10 SC-019</a>
+  <a href="#p11-sc020">P11 SC-020</a>
+  <a href="#p12-why">P12 Why This Matters</a>
+  <a href="#p13-cta">P13 Applications</a>
+  <a href="#p14-close">P14 Closing Note</a>
+  <div class="sidenav-section">Part 2 — Short Edition</div>
+  <a href="#s1-cover">S1 Cover</a>
+  <a href="#s2-exec">S2 Executive Summary</a>
+  <a href="#s3-method">S3 Method + Classification</a>
+  <a href="#s4-016">S4 SC-016</a>
+  <a href="#s5-017">S5 SC-017</a>
+  <a href="#s6-018">S6 SC-018</a>
+  <a href="#s7-019">S7 SC-019</a>
+  <a href="#s8-020">S8 SC-020</a>
+  <a href="#s9-why">S9 Why This Matters</a>
+  <a href="#s10-cta">S10 Final CTA</a>
+  <div class="sidenav-section">Part 3 — Design Guidance</div>
+  <a href="#dg1">1 Visual Identity</a>
+  <a href="#dg2">2 Cover</a>
+  <a href="#dg3">3 Exec Summary</a>
+  <a href="#dg4">4 Page Rhythm</a>
+  <a href="#dg5">5 Case Card</a>
+  <a href="#dg6">6 Pills</a>
+  <a href="#dg7">7 Lessons Box</a>
+  <a href="#dg8">8 Prevention Box</a>
+  <a href="#dg9">9 CTA Page</a>
+  <a href="#dg10">10 Short Edition</a>
+</nav>
+
+<div class="main-wrap">
+
+<!-- ════════════════════════════════════════════
+     PART 1 — FULL MASTER EDITION v1.1
+════════════════════════════════════════════ -->
+<div class="part-divider">
+  <div class="part-divider-inner">
+    <div class="part-eye">Part 1</div>
+    <h2>Full Master Edition <em>v1.1</em></h2>
+    <p>WPAWS Lessons Learned 360 · Demo Edition v1.1 · Pages 1–14 · Complete analytical master edition</p>
+  </div>
+</div>
+
+<!-- PAGE 1 — COVER -->
+<div id="p1-cover" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 1</span><span class="pb-title">Cover</span></div>
+  <div class="cover-page">
+    <div class="cover-inner">
+      <div class="cover-eye">WPAWS · Lessons Learned 360 · Demonstration Document</div>
+      <div class="cover-h1">WPAWS</div>
+      <div class="cover-gold">Lessons Learned 360</div>
+      <div class="cover-ed">Demo Edition v1.1 — Polished</div>
+      <hr class="cover-rule"/>
+      <div class="cover-sub">How WPAWS reads, corrects and explains protocol-sensitive cases</div>
+      <div class="cover-meta">World Protocol Academy · WPAWS Production Engine</div>
+      <div class="cover-meta">Founder-supervised demonstration edition</div>
+      <div class="cover-meta">Assoc. Prof. Dr. Sande Smiljanov · Skopje, 2026</div>
+      <div class="cover-doctrine">WPA = institution.  WPAWS = motor.  Protocol = discipline.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2 — EXECUTIVE SUMMARY -->
+<div id="p2-exec" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 2</span><span class="pb-title">Executive Summary</span></div>
+  <div class="page-content">
+    <div class="lbl">Executive Summary</div>
+    <h2 class="pg-h">What This Document Is and Why It Matters</h2>
+    <hr class="gold-rule"/>
+    <div class="callout">
+      <p>WPAWS does not identify protocol errors. It reads them — through a structured eleven-stage professional method that converts each incident into diagnosis, classification, consequence analysis, institutional response, corrective standard, and prevention logic. This document demonstrates that capability across five representative cases.</p>
+    </div>
+    <div style="height:12px"></div>
+    <div class="str-table">
+      <div class="str-row"><div class="str-label">What this document is</div><div class="str-body">A structured demonstration of WPAWS analytical capability applied to five protocol-sensitive cases from the WPA Scenario Exercise library. Each case is processed through the complete Lessons Learned 360 method across eleven defined analytical stages — from case context to prevention framework.</div></div>
+      <div class="str-row"><div class="str-label">What WPAWS demonstrates</div><div class="str-body">The ability to move from a scenario description to a full structured professional reading: classifying the case, analysing its consequences, defining the correct immediate and institutional response, establishing the corrective standard, reading the symbolic message sent, and extracting sharp lessons and systemic prevention logic. This is analytical depth, not answer generation.</div></div>
+      <div class="str-row"><div class="str-label">Why it matters</div><div class="str-body">Protocol errors carry professional, symbolic, and institutional weight. A visibly disrupted signing ceremony, a transposed flag, an outdated institutional name in an official communiqué — each communicates something to every party present. Reading that communication accurately, and knowing how to correct it, is the difference between professional preparation and institutional exposure.</div></div>
+      <div class="str-row"><div class="str-label">Where it can be used</div><div class="str-body">
+        <div class="bul-list">
+          <div class="bul"><strong>Internal teaching:</strong> case units for Foundation through Train-the-Trainer programmes</div>
+          <div class="bul"><strong>Executive briefing:</strong> pre-event and pre-visit preparation for senior officials</div>
+          <div class="bul"><strong>Institutional training:</strong> structured case instruction for protocol units and diplomatic missions</div>
+          <div class="bul"><strong>Public showcase:</strong> demonstration of WPA analytical depth for prospective partners</div>
+          <div class="bul"><strong>Partner presentation:</strong> structured proof asset for institutional engagement conversations</div>
+        </div>
+      </div></div>
+      <div class="str-row"><div class="str-label">Who it is written for</div><div class="str-body">Protocol directors, heads of delegation, institutional partners, academic collaborators, and decision-makers who need to understand what serious protocol analysis looks like — and what WPAWS is capable of producing.</div></div>
+    </div>
+    <div class="closing-doctrine">WPA = institution.  WPAWS = motor.  Protocol = discipline.</div>
+  </div>
+</div>
+
+<!-- PAGE 3 — WHAT THIS DEMO SHOWS -->
+<div id="p3-shows" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 3</span><span class="pb-title">What This Demo Shows</span></div>
+  <div class="page-content">
+    <div class="lbl">Purpose and Scope</div>
+    <h2 class="pg-h">What This Demo Shows</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">This document is a demonstration of WPAWS capability in professional protocol reading, case classification, corrective analysis, and institutional judgement. WPAWS does not treat protocol-sensitive incidents as anecdotes. It reads them as structured professional cases — events with symbolic weight, representational consequences, institutional implications, and clear educational value.</p>
+    <p class="body-p"><strong>This demo demonstrates that WPAWS:</strong></p>
+    <div class="bul-list">
+      <div class="bul">Performs a full structured reading of each scenario — not a superficial correction.</div>
+      <div class="bul">Diagnoses, classifies, and evaluates each case according to clear protocol principles and professional standards.</div>
+      <div class="bul">Identifies not only what went wrong, but why it matters at the representational, symbolic, diplomatic, or institutional level.</div>
+      <div class="bul">Generates a professional immediate response, an institutional response, and a corrective protocol path.</div>
+      <div class="bul">Extracts Lessons Learned 360 — sharp, practically useful professional insights from each case.</div>
+      <div class="bul">Defines a Prevention Framework: systemic measures, not merely a reminder to be more careful.</div>
+      <div class="bul">Produces output suitable for internal teaching, executive briefing, institutional training, and public demonstration of WPA capability.</div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="callout"><p>Each of the five cases in this document has been processed through the complete eleven-stage WPAWS Lessons Learned 360 method, producing an analytical, institutionally grounded analysis that reflects the depth WPA brings to protocol education.</p></div>
+  </div>
+</div>
+
+<!-- PAGE 4 — THE METHOD -->
+<div id="p4-method" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 4</span><span class="pb-title">The WPAWS Lessons Learned 360 Method</span></div>
+  <div class="page-content">
+    <div class="lbl">The Method</div>
+    <h2 class="pg-h">The WPAWS Lessons Learned 360 Method</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">The Lessons Learned 360 method is the analytical framework through which WPAWS reads, processes, and converts protocol-sensitive cases into professional knowledge. It is not an error-detection routine. It is a structured reading discipline that moves through eleven sequential stages.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div class="step-body"><b>Case Context</b> — Establishes the setting, formal register, and the protocol standard against which the case is evaluated. Context is not background — it defines the applicable norm.</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-body"><b>Error Detected</b> — Names the specific action, omission, or symbolic error precisely — without minimising or overstating its significance.</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-body"><b>Rule or Principle Broken</b> — Identifies the protocol rule, diplomatic convention, or institutional standard violated. References applicable frameworks where relevant.</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-body"><b>Classification</b> — Assigns A (accidental), B (intentional/symbolic signal), or C (ambiguous). Classification shapes the nature and calibration of the response.</div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-body"><b>Consequences</b> — Reads real or potential consequences: representational, diplomatic, symbolic, media-related, relational, or institutional.</div></div>
+      <div class="step"><div class="step-num">06</div><div class="step-body"><b>Immediate Professional Response</b> — Defines the correct on-the-spot response available to the protocol officer or delegation head.</div></div>
+      <div class="step"><div class="step-num">07</div><div class="step-body"><b>Institutional Response</b> — Defines the response required at the institutional level — post-incident, formal, and structured.</div></div>
+      <div class="step"><div class="step-num">08</div><div class="step-body"><b>Corrective Protocol</b> — Establishes the full, properly executed professional standard — not simply the inverse of what went wrong.</div></div>
+      <div class="step"><div class="step-num">09</div><div class="step-body"><b>Message Sent</b> — Reads the symbolic or relational message the error communicates. In protocol, what is not said clearly is often heard loudly.</div></div>
+      <div class="step"><div class="step-num">10</div><div class="step-body"><b>Lessons Learned 360</b> — Extracts five to seven sharp, professionally useful lessons framed for direct application and institutional maturity.</div></div>
+      <div class="step"><div class="step-num">11</div><div class="step-body"><b>Prevention Framework</b> — Defines three to five systemic preventive measures involving checks, rehearsals, briefings, verification, and institutional discipline — not merely attitudinal guidance.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5 — CLASSIFICATION LOGIC -->
+<div id="p5-class" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 5</span><span class="pb-title">Classification Logic</span></div>
+  <div class="page-content">
+    <div class="lbl">Classification Logic</div>
+    <h2 class="pg-h">How WPAWS Classifies Protocol-Sensitive Cases</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">Classification precedes analysis. Not all protocol errors carry the same weight or call for the same response. WPAWS assigns every case one of three classifications before determining the appropriate professional and institutional reading.</p>
+    <div class="cls-cards">
+      <div class="cls-card cls-a"><div class="cls-code">A</div><div class="cls-body"><b>Accidental Mistake</b>A genuine, unintentional breach caused by oversight, inadequate preparation, or unfamiliarity with applicable rules. Classification A calls for correction, professional learning, and systemic improvement. The response is measured, constructive, and forward-looking.</div></div>
+      <div class="cls-card cls-b"><div class="cls-code">B</div><div class="cls-body"><b>Intentional or Symbolic Signal</b>A violation — or apparent violation — carrying intentional weight. Deviations from precedence, flag order, title usage, or seating convention can be deliberate signals of position, displeasure, or relational distance. Classification B requires careful diplomatic reading before any response. Reactive responses risk misreading and escalation.</div></div>
+      <div class="cls-card cls-c"><div class="cls-code">C</div><div class="cls-body"><b>Ambiguous Case</b>A case where intent is not immediately clear. Ambiguity carries consequences: it creates uncertainty, invites speculation, and can damage institutional reputation if handled poorly. Classification C calls for a restrained initial response, careful observation, and graduated institutional reaction.</div></div>
+    </div>
+    <div style="height:10px"></div>
+    <p class="body-p"><strong>Scenario Depth Levels:</strong></p>
+    <div class="depth-table">
+      <div class="dt-row"><div class="dt-cell">S1</div><div class="dt-cell">Basic Diagnostic</div><div class="dt-cell">Error identification and the broken rule. Suitable for introductory teaching and self-assessment.</div></div>
+      <div class="dt-row"><div class="dt-cell">S2</div><div class="dt-cell">Applied Response</div><div class="dt-cell">Diagnosis plus professional response and corrective protocol. Suitable for practitioner training.</div></div>
+      <div class="dt-row"><div class="dt-cell">S3</div><div class="dt-cell">Full 360 Case</div><div class="dt-cell">Complete eleven-stage analysis. This document is built in S3 throughout.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 6 — EVALUATION LOGIC -->
+<div id="p6-eval" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 6</span><span class="pb-title">Evaluation Logic — How to Read Each Case</span></div>
+  <div class="page-content">
+    <div class="lbl">Evaluation Logic</div>
+    <h2 class="pg-h">How to Read Each Case in This Document</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">Each case is structured as a case card. Reading it correctly means understanding how WPA evaluates a protocol-sensitive scenario — not as a test of memory, but as an exercise in professional judgement.</p>
+    <p class="body-p"><strong>The Five Evaluation Criteria:</strong></p>
+    <div class="criteria">
+      <div class="crit"><div class="crit-num">01</div><div class="crit-body"><b>Correct Diagnosis</b> — Has the error been precisely identified? Vague diagnosis produces vague correction. Protocol analysis requires specificity.</div></div>
+      <div class="crit"><div class="crit-num">02</div><div class="crit-body"><b>Correct Rule or Principle</b> — Has the relevant rule or institutional standard been correctly invoked and precisely applied to this context?</div></div>
+      <div class="crit"><div class="crit-num">03</div><div class="crit-body"><b>Quality of Professional Response</b> — Is the proposed response realistic, proportionate, and professionally executed? A good protocol response is timely and preserves institutional dignity for all parties.</div></div>
+      <div class="crit"><div class="crit-num">04</div><div class="crit-body"><b>Correct Corrective Solution</b> — Does the corrective protocol restore the full proper standard, not merely invert the error?</div></div>
+      <div class="crit"><div class="crit-num">05</div><div class="crit-body"><b>Clarity of Lessons and Prevention Logic</b> — Are lessons sharp, practical, and professionally transferable? Does prevention address systemic cause rather than surface symptom?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MACRO: FULL CASE CARD ─────────────────────────── -->
+<!-- PAGE 7 — SC-016 -->
+<div id="p7-sc016" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 7</span><span class="pb-title">SC-016 — Wrong Flag Order at a Multilateral Event</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-016</div><div class="cc-title">Wrong Flag Order at a Multilateral Event</div></div>
+      <div class="cc-pills"><span>Symbolic · Flags &amp; Precedence</span><span class="sep">·</span><span>State / Multilateral</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Scenario Context</div><p>A multilateral conference with twelve delegations, two with an active bilateral strain. The host protocol team, operating under time pressure with temporary support staff, assembles flag stands from an unverified list — transposing two flags, one belonging to a state with a known protocol sensitivity regarding its positioning relative to a specific peer.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>Flags arranged without adherence to established alphabetical precedence. A temporary staff member used a printed list not verified against the confirmed participant registry. Two flags were transposed at a symbolically sensitive position.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Flag order is a formal institutional statement of equality and recognised standing. Among sovereign states with unresolved tensions, any deviation — however unintentional — can be read as a signal of preference, demotion, or failure of host neutrality. The host carries full responsibility for the symbolic environment it creates.</p></div>
+        <div class="cc-two">
+          <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Professional Response</div><p>Conduct a final flag-order inspection at least forty-five minutes before the opening. If detected before the event, reposition immediately and without announcement. If detected after delegates have entered, correct discreetly during the pre-session interval. Never draw public attention to the correction.</p></div>
+          <div class="cc-box institutional"><div class="cc-box-lbl">Institutional Response</div><p>If a delegation notices the error, acknowledge it through direct, personal, and quiet communication to their protocol contact — not a formal written apology, which would amplify the incident. Initiate an internal review of flag-preparation procedure immediately following the event.</p></div>
+        </div>
+        <div class="cc-box corrective"><div class="cc-box-lbl">Corrective Protocol</div><p>Strict alphabetical ordering by the state's official name in the working language of the event, unless a specific convention applies. The placement list must be prepared by a senior protocol officer, independently verified, and locked no later than twenty-four hours before the event. Physical placement must be confirmed on the morning of the event by a named responsible officer.</p></div>
+        <div class="cc-box message"><div class="cc-box-lbl">Message Sent</div><p>An accidental flag error communicates institutional carelessness. In bilateral tension contexts, it can be read as implicit preference — a failure of host neutrality that is not easily corrected after the fact.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Lessons Learned 360</div>
+          <ul class="lesson-list">
+            <li>Flag order is a protocol discipline requiring qualified oversight — not support-staff delegation.</li>
+            <li>A verified, locked placement list is mandatory. An unverified list is a protocol liability.</li>
+            <li>Events involving states with active bilateral sensitivities require a targeted symbolic audit.</li>
+            <li>The pre-event inspection window is the critical intervention moment. Delay compounds institutional cost.</li>
+            <li>The visual register of an event communicates before any speaker addresses the room. Protocol begins before the first word.</li>
+            <li>Correcting an error quietly is a form of institutional dignity. Announcing a correction is itself a protocol error.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention Framework</div>
+          <ol class="prev-list">
+            <li>Mandate two-person verification for all flag and seating arrangements at multilateral events.</li>
+            <li>Lock the placement list with senior protocol officer sign-off at least twenty-four hours before the event.</li>
+            <li>Conduct a symbolic audit for any event involving states with known bilateral sensitivities.</li>
+            <li>Never assign final placement confirmation to temporary staff without a qualified supervisor present.</li>
+            <li>Require a pre-event physical walkthrough on the event morning as a standing procedural rule.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 8 — SC-017 -->
+<div id="p8-sc017" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 8</span><span class="pb-title">SC-017 — Gaffe During Agreement-Signing Ceremony</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-017</div><div class="cc-title">Gaffe During Agreement-Signing Ceremony</div></div>
+      <div class="cc-pills"><span>Ceremonial · State Protocol</span><span class="sep">·</span><span>Bilateral · High-Level</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Scenario Context</div><p>A formal agreement-signing ceremony between two heads of state, in the presence of delegations and accredited media. A defined sequence governs the signing, exchange of copies, and official photograph. The ceremony is the formal conclusion of a bilateral summit.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>One signatory accidentally signed both copies before the protocol officer could intervene. The document intended for State B had been placed in the wrong position, causing the signatory from State A to sign the wrong copy first. The disruption was visible to media, reported as "confusion at the signing table."</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>A signing ceremony is one of the most formally choreographed events in bilateral diplomacy. Each physical action carries institutional significance. Visible disruption shifts the media narrative from the substance of the agreement to the competence of the host — a reputational cost entirely disproportionate to the procedural error.</p></div>
+        <div class="cc-two">
+          <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Professional Response</div><p>Intervene quietly by repositioning documents and guiding the next step without commentary. If the signatories notice the error, provide a calm, confident correction and continue. Media presence does not alter the correction protocol — composed continuity is paramount.</p></div>
+          <div class="cc-box institutional"><div class="cc-box-lbl">Institutional Response</div><p>Confirm with both delegations' administrative staff that signed documents are valid and correctly attributed. If the irregularity affects legal integrity, arrange a quiet bilateral correction. No public statement should acknowledge the disruption unless it constitutes a formal legal concern.</p></div>
+        </div>
+        <div class="cc-box corrective"><div class="cc-box-lbl">Corrective Protocol</div><p>A dedicated protocol officer at the table throughout; documents pre-positioned with discrete orientation markers; the signing sequence rehearsed with both delegations' advance teams; a physical walkthrough conducted on the morning of the ceremony. Document labelling and pre-positioning is a senior protocol responsibility — never delegated to support staff or translators.</p></div>
+        <div class="cc-box message"><div class="cc-box-lbl">Message Sent</div><p>A visibly disrupted signing ceremony signals inadequate preparation. In bilateral diplomacy, preparation communicates respect for the partner state. When the physical mechanics of a ceremony fail, the media narrative shifts to the competence of the host.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Lessons Learned 360</div>
+          <ul class="lesson-list">
+            <li>A signing ceremony is a choreography, not an improvisation. Every element must be rehearsed.</li>
+            <li>Physical orientation of documents is a protocol responsibility. Ambiguity at the signing table is a preparation failure.</li>
+            <li>The protocol officer's role is active supervision and silent intervention — not passive observation.</li>
+            <li>Media presence amplifies every visible deviation. Preparation must account for the observed environment.</li>
+            <li>A composed, quiet correction protects institutional dignity. Hesitation or visible confusion does not.</li>
+            <li>Advance team coordination must include a physical walkthrough with actual documents and positions used on the day.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention Framework</div>
+          <ol class="prev-list">
+            <li>Conduct a mandatory physical rehearsal of the signing sequence with actual documents on the ceremony morning.</li>
+            <li>Pre-position signed copies with internal orientation markers verified by the senior protocol officer.</li>
+            <li>Assign a dedicated protocol officer exclusively to the signing table with authority to intervene.</li>
+            <li>Brief both delegations' advance teams on the signing sequence at least twenty-four hours before the ceremony.</li>
+            <li>Build a standard quiet-correction procedure into the event protocol with a defined script for the officer on duty.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 9 — SC-018 -->
+<div id="p9-sc018" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 9</span><span class="pb-title">SC-018 — Mistranslation of Title and Institution Name</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-018</div><div class="cc-title">Mistranslation of Title and Institution Name</div></div>
+      <div class="cc-pills"><span>Communication · Institutional Language</span><span class="sep">·</span><span>Official · Public Communication</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Scenario Context</div><p>A state visit generates a joint communiqué issued simultaneously in both states' official languages and in English. Prepared under time pressure with limited advance-team coordination. Distributed to accredited media before the error is identified.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>The communiqué incorrectly renders the visiting head of state's constitutional title, using a generic construction. A key ministry is identified by a name superseded by institutional reform three years prior. The visiting delegation notices at the press conference.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Official titles and institutional names are fixed formal designations — not translation variables. An outdated name signals that the host's knowledge of its partner's internal structure is not current — a diplomatically sensitive message in the context of a visit intended to reinforce bilateral relations. Once distributed to media, the error enters the permanent record.</p></div>
+        <div class="cc-two">
+          <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Professional Response</div><p>Withdraw the communiqué from media distribution immediately. Prepare a corrected version and distribute it with a brief, factual supersession notice — no elaboration on the nature of the error. Inform the visiting delegation's protocol contact before redistribution.</p></div>
+          <div class="cc-box institutional"><div class="cc-box-lbl">Institutional Response</div><p>Review translation and verification procedures for all official visit documentation. Address the failures — reliance on outdated terminology, insufficient advance-team coordination — as systemic gaps. If the erroneous communiqué has entered official records, arrange a bilateral correction at the appropriate level.</p></div>
+        </div>
+        <div class="cc-box corrective"><div class="cc-box-lbl">Corrective Protocol</div><p>All official visit documents must be verified by a native-speaker specialist in the visiting state's institutional language. Official titles and names must be drawn from the visiting state's own official sources, not translated from the host's working language. A final document review with the visiting delegation's advance team must take place at least forty-eight hours before the visit.</p></div>
+        <div class="cc-box message"><div class="cc-box-lbl">Message Sent</div><p>A mistranslated title or outdated institutional name communicates that the host has not taken the trouble to know its partner accurately. In diplomacy, knowing your counterpart's correct designation is a baseline professional courtesy. Its absence is not merely a technical error — it is a signal of insufficient regard.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Lessons Learned 360</div>
+          <ul class="lesson-list">
+            <li>Official titles and institutional names are protocol elements, not translation variables. Precision is non-negotiable.</li>
+            <li>Institutional structures in partner states change. Verification against current official sources is essential, not optional.</li>
+            <li>Time pressure on translation is a known risk. It must be anticipated and managed — not used as post-hoc justification.</li>
+            <li>Advance team coordination is the final quality gate before distribution. It must not be skipped under schedule pressure.</li>
+            <li>A distributed error enters the permanent record. Correction is possible; erasure is not. Prevention is the only fully effective strategy.</li>
+            <li>The visiting delegation's reaction to a naming error, however politely expressed, is a diplomatic moment requiring a composed and immediate response.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention Framework</div>
+          <ol class="prev-list">
+            <li>Verify all official titles and institutional names against the visiting state's own official-language sources.</li>
+            <li>Conduct a final document review with the visiting delegation's advance team at least forty-eight hours before the visit.</li>
+            <li>Maintain a current reference file per partner state containing constitutional titles and institutional designations.</li>
+            <li>Assign a specialist proofreader with knowledge of the visiting state's institutional language for all official communications.</li>
+            <li>Build a version-control and retraction procedure so errors distributed to media can be corrected with minimal reputational damage.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 10 — SC-019 -->
+<div id="p10-sc019" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 10</span><span class="pb-title">SC-019 — Breach of Dress Logic at a Formal State Event</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-019</div><div class="cc-title">Breach of Dress Logic at a Formal State Event</div></div>
+      <div class="cc-pills"><span>Symbolic · Dress Protocol</span><span class="sep">·</span><span>State · Formal Ceremony</span><span class="sep">·</span><span class="pill-c">Class C — Ambiguous Case</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Scenario Context</div><p>A formal state dinner specified as formal attire or black tie. A senior visiting delegation member — seated at the principal table — attends in a business suit. No exception communicated in advance. Media are present for the reception phase.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>A senior delegation member deviated significantly from the stated dress register, visibly and without advance notice to the host protocol team.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Dress protocol at a formal state event is a component of institutional respect for the host's formal context. Classification C applies because the deviation could reflect oversight, personal choice, or a deliberate signal of distance. All three readings carry consequences. The ambiguity itself is the complication — and one the host's preparation should have prevented.</p></div>
+        <div class="cc-two">
+          <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Professional Response</div><p>Do not address the deviation publicly or directly to the individual. The event continues without comment. The officer may quietly note the matter to the delegation's protocol contact only to prevent recurrence at a subsequent event on the programme.</p></div>
+          <div class="cc-box institutional"><div class="cc-box-lbl">Institutional Response</div><p>Record the incident as an internal protocol note. If the delegation is a recurring partner, inform future briefing practice: dress requirements should be communicated more explicitly, with written confirmation requested. No formal communication to the delegation is warranted unless the deviation is assessed — after careful reading — as intentional.</p></div>
+        </div>
+        <div class="cc-box corrective"><div class="cc-box-lbl">Corrective Protocol</div><p>When a formal dress register is specified, all delegates observe it. The host protocol team has an obligation to communicate the requirement explicitly at least forty-eight hours in advance, with written confirmation from each delegation's protocol contact. Genuine exceptions — national dress, medical circumstances — must be communicated and acknowledged in advance.</p></div>
+        <div class="cc-box message"><div class="cc-box-lbl">Message Sent</div><p>If accidental: inadequate briefing — a gap in host preparation or the delegation's internal communication. If intentional: calculated informality — a signal that the individual does not regard the occasion as requiring full formal engagement. In neither case is the message neutral. The ambiguity is itself the problem.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Lessons Learned 360</div>
+          <ul class="lesson-list">
+            <li>Dress requirements for formal state events must be communicated explicitly, not assumed. Written confirmation must be sought.</li>
+            <li>Classification C ambiguity is itself a protocol complication. Prevention removes the need for interpretive reading entirely.</li>
+            <li>The host bears professional responsibility for ensuring visiting delegations are fully briefed. This is an obligation, not a courtesy.</li>
+            <li>A senior delegation member's visible deviation creates a media narrative. Prevention is the only fully effective protection.</li>
+            <li>The host's composed conduct of the programme during an incident is itself a form of institutional dignity. Visible reaction compounds the situation.</li>
+            <li>Internal notation of protocol deviations by visiting delegations informs and improves future event management.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention Framework</div>
+          <ol class="prev-list">
+            <li>Communicate dress requirements in writing to all delegation protocol contacts, including specific register and national dress provisions.</li>
+            <li>Request written confirmation from delegation contacts at least forty-eight hours before the event.</li>
+            <li>Brief the personal staff of principal-table members directly — these individuals are most visible.</li>
+            <li>Include dress requirement confirmation as a standing item in advance-team coordination.</li>
+            <li>Establish a discreet point of contact for dress-related queries from visiting delegations before the event day.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 11 — SC-020 -->
+<div id="p11-sc020" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 11</span><span class="pb-title">SC-020 — Protocol Lapse Escalating into a Media Crisis</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-020</div><div class="cc-title">Protocol Lapse Escalating into a Media Crisis</div></div>
+      <div class="cc-pills"><span>Communication · Institutional Reputation</span><span class="sep">·</span><span>State · Multi-party · Public</span><span class="sep">·</span><span class="pill-b">Class B — Intentional Signal</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Scenario Context</div><p>A group photography session at a high-level regional summit. Precedence order is confirmed and signed off by the protocol committee. One delegation, formally refused a last-minute repositioning, arrives late — timing the arrival to force a physical reorganisation under media pressure and schedule constraints.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>A deliberate tactical manoeuvre disrupted the agreed precedence order. The protocol committee reversed a formal decision under situational pressure. Distributed images reflect an order inconsistent with the agreed arrangement. Several participating delegations note the discrepancy in post-summit communications.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Group photography precedence is a formal institutional statement about the standing and relationships of states present. A deliberate disruption represents a calculated transgression. When the protocol committee reverses its position under pressure, it signals that established order is negotiable. The media record is permanent; the discrepancy between agreed and photographed order becomes a documented institutional failure.</p></div>
+        <div class="cc-two">
+          <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Professional Response</div><p>Delay the session and restore the established arrangement. If time pressure is acute, the senior protocol officer takes visible control and places all participants in the agreed order without accommodation. The session does not begin until the correct order is in place.</p></div>
+          <div class="cc-box institutional"><div class="cc-box-lbl">Institutional Response</div><p>Communicate directly and personally to each affected delegation that the photographed arrangement did not reflect the established protocol order and that the agreed order remains the host's institutional position. Formally review the committee's decision under pressure. Prepare a protocol note for institutional records. Note the acting delegation's tactic for future summit planning.</p></div>
+        </div>
+        <div class="cc-box corrective"><div class="cc-box-lbl">Corrective Protocol</div><p>A signed-off precedence order at least seventy-two hours before the session; physical position markers on the photography platform; briefing of each delegation's advance team; a standing instruction that the session does not commence until all participants are in the established order regardless of time pressure. The protocol committee must be formally empowered to enforce the order and must not reverse decisions under situational pressure.</p></div>
+        <div class="cc-box message"><div class="cc-box-lbl">Message Sent</div><p>A successful deliberate precedence disruption sends three simultaneous messages: that established order is negotiable under pressure; that the host's protocol authority is not absolute; and that the tactic worked. All three represent institutional losses that compound across time and future engagements.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Lessons Learned 360</div>
+          <ul class="lesson-list">
+            <li>Classification B incidents require a fundamentally different response to accidental errors. They must be recognised and named as intentional.</li>
+            <li>A committee that reverses a formal decision under situational pressure loses institutional authority. The reversal is itself the more damaging protocol failure.</li>
+            <li>Time pressure and media presence are the execution conditions for deliberate transgressions — not justifications for accommodation.</li>
+            <li>The permanent media record of a disrupted precedence order is an institutional document requiring formal post-summit response to affected delegations.</li>
+            <li>A protocol authority that can be bypassed by tactical behaviour is not a protocol authority. The enforcement mandate must be clear, empowered, and exercised.</li>
+            <li>Post-summit communication to affected delegations is not an apology — it is a formal clarification of position, and it must be direct, factual, and prompt.</li>
+            <li>Deliberate protocol disruptions must be documented. Pattern recognition across events is part of institutional protocol intelligence.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention Framework</div>
+          <ol class="prev-list">
+            <li>Lock all summit photography positions with signed acknowledgement from each advance team at least seventy-two hours before the session.</li>
+            <li>Formally empower the protocol committee to enforce the established order, including authority to delay or restart the session without further authorisation.</li>
+            <li>Conduct a protocol briefing with each delegation on the consequences of late arrival, in writing.</li>
+            <li>Prepare a visible delay protocol: a defined procedure for the officer on duty when a participant arrives late, communicated to all delegations in advance.</li>
+            <li>Document deliberate disruptions and share with relevant diplomatic representations for pattern awareness in future engagements.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 12 — WHY THIS MATTERS -->
+<div id="p12-why" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 12</span><span class="pb-title">Why This Matters for WPA</span></div>
+  <div class="page-content">
+    <div class="lbl">Why This Matters</div>
+    <h2 class="pg-h">The Value of WPAWS Analytical Capability for WPA</h2>
+    <hr class="gold-rule"/>
+    <div class="callout"><p>Protocol errors are not anecdotes. They are professional, symbolic, institutional, and diplomatic cases — each with a structure, a reading, and a set of lessons that can be extracted, taught, and applied.</p></div>
+    <div style="height:12px"></div>
+    <div class="why-grid">
+      <div class="why-card"><h4>For Protocol Education and Teaching</h4><p>The Lessons Learned 360 method transforms individual cases into teachable units for use in WPA Certificate Programmes, workshops, and Train-the-Trainer pathways. The analytical depth exceeds conventional protocol manuals, because it reads the case rather than merely cataloguing the rule.</p></div>
+      <div class="why-card"><h4>For Executive and Institutional Briefing</h4><p>The structured case card format — with classification, consequence reading, and prevention logic — is directly usable for institutional briefings and executive preparation. Decision-makers extract professional value without requiring specialist background.</p></div>
+      <div class="why-card"><h4>For Institutional Preparedness</h4><p>WPAWS operates on the understanding that the most professionally costly protocol errors are preventable. The Prevention Frameworks are systemic recommendations designed to build institutional resilience — not advisory notes, but operational standards.</p></div>
+      <div class="why-card"><h4>As Proof of WPA Analytical Capability</h4><p>This document demonstrates that WPAWS functions as a structured professional reading engine — moving from scenario to full eleven-stage analysis. This is a capability differentiator for WPA in the protocol education and institutional training market.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 13 — APPLICATIONS AND NEXT USE -->
+<div id="p13-cta" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 13</span><span class="pb-title">Applications and Next Use</span></div>
+  <div class="page-content">
+    <div class="lbl">Applications and Next Use</div>
+    <h2 class="pg-h">Applications and Next Use</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">World Protocol Academy is an independent academy and professional platform for protocol, diplomacy, security, and institutional communication. The following pathways are available to institutions, partners, and professionals whose work requires the analytical and educational depth that WPA provides.</p>
+    <p class="body-p">Engagement with WPA is selective, structured, and outcome-oriented.</p>
+    <div class="cta-block">
+      <div class="cta-eye">Engagement Pathways · World Protocol Academy</div>
+      <div class="cta-h">How to Work with World Protocol Academy</div>
+      <hr class="cta-rule"/>
+      <div class="cta-intro">The following entry points are available to institutions, professional partners, and individuals whose work requires the analytical and educational depth that WPA provides.</div>
+      <div class="cta-rows">
+        <div class="cta-row"><div class="cta-t">Institutional Protocol Training</div><div class="cta-d">Structured, tailored training for ministries, embassies, protocol units, and institutional teams. Custom format, confirmed schedule, measurable professional outcomes.</div></div>
+        <div class="cta-row"><div class="cta-t">WPA Certificate Programmes</div><div class="cta-d">Foundation, Professional, Advanced, and Train-the-Trainer Certificate Programmes for individuals and cohorts. Structured learning, professional assessment, verified completion.</div></div>
+        <div class="cta-row"><div class="cta-t">WPAWS Demonstration</div><div class="cta-d">A demonstration of WPAWS production-engine capability for institutional partners, academic collaborators, and decision-makers evaluating protocol intelligence and analytical capacity.</div></div>
+        <div class="cta-row"><div class="cta-t">Executive Preparation</div><div class="cta-d">Targeted briefing for heads of delegation, senior officials, and executives before high-level visits, state events, and multilateral engagements.</div></div>
+        <div class="cta-row"><div class="cta-t">Academic Collaboration</div><div class="cta-d">Partnerships with universities, research institutions, and diplomatic academies for joint publication, curriculum development, and protocol research.</div></div>
+        <div class="cta-row"><div class="cta-t">Teaching Integration</div><div class="cta-d">Integration of WPA case materials, WPAWS analytical outputs, and Lessons Learned 360 into existing training programmes, executive curricula, and institutional learning frameworks.</div></div>
+      </div>
+      <div class="cta-contact">
+        <a href="mailto:worldprotocolacademy@gmail.com" class="cta-email">worldprotocolacademy@gmail.com</a>
+        <a href="https://worldprotocolacademy-code.github.io" target="_blank" rel="noopener" class="cta-url">worldprotocolacademy-code.github.io</a>
+      </div>
+      <div class="cta-note">WPA engagements are confirmed by direct communication with the founder. Enquiries are handled personally.</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 14 — CLOSING NOTE -->
+<div id="p14-close" class="page-block">
+  <div class="page-block-header"><span class="pb-num">PAGE 14</span><span class="pb-title">Closing Note</span></div>
+  <div class="page-content">
+    <div class="lbl">Closing Note</div>
+    <h2 class="pg-h">Demo Edition v1.1 — Scope and Future Development</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">WPAWS Lessons Learned 360 — Demo Edition v1.1 is the polished demonstration of WPAWS case-analysis capability applied to five protocol-sensitive scenarios. It contains the complete eleven-stage analytical processing of each case and is presented in a format suitable for internal use, institutional demonstration, executive briefing, and public capability showcase.</p>
+    <p class="body-p"><strong>Development directions:</strong></p>
+    <div class="str-table">
+      <div class="str-row"><div class="str-label">Internal Teaching Pack</div><div class="str-body">An expanded edition with additional cases, assessment questions from the WPA Question Bank, and guided reading tasks for use across Certificate Programmes.</div></div>
+      <div class="str-row"><div class="str-label">Public Demo PDF</div><div class="str-body">A streamlined, design-polished version for distribution to institutional partners, prospective students, and professional networks.</div></div>
+      <div class="str-row"><div class="str-label">Website Showcase</div><div class="str-body">A web-native version of selected case analyses presented through the WPAWS platform or the WPA public website.</div></div>
+      <div class="str-row"><div class="str-label">Training Support Material</div><div class="str-body">Case cards formatted for live training sessions, executive briefings, and scenario exercise facilitation.</div></div>
+      <div class="str-row"><div class="str-label">Extended Case Library</div><div class="str-body">Additional scenario cases covering multilateral summit protocol, digital diplomacy incidents, hybrid event management, and institutional communication crises.</div></div>
+    </div>
+    <div style="height:20px"></div>
+    <hr class="rule-gold"/>
+    <div class="closing-doctrine">
+      WPA = institution.  WPAWS = motor.  Protocol = discipline.<br/>
+      <span style="font-size:12px;color:var(--muted)">World Protocol Academy · Skopje, 2026 · Assoc. Prof. Dr. Sande Smiljanov · Founder and Director</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PART 2 — PUBLIC SHORT EDITION
+════════════════════════════════════════════ -->
+<div class="part-divider" style="margin-top:48px">
+  <div class="part-divider-inner">
+    <div class="part-eye">Part 2</div>
+    <h2>Public <em>Short Edition</em></h2>
+    <p>WPAWS Lessons Learned 360 · Public Short Edition · Pages 1–10 · Partner-facing companion</p>
+  </div>
+</div>
+
+<!-- S1 — COVER -->
+<div id="s1-cover" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P1</span><span class="pb-title">Cover</span></div>
+  <div class="cover-page">
+    <div class="cover-inner">
+      <div class="cover-eye">WPAWS · Lessons Learned 360 · Public Short Edition</div>
+      <div class="cover-h1">WPAWS</div>
+      <div class="cover-gold">Lessons Learned 360</div>
+      <div class="cover-ed">Public Short Edition</div>
+      <hr class="cover-rule"/>
+      <div class="cover-sub">A concise overview of how WPAWS reads, corrects and explains protocol-sensitive cases</div>
+      <div class="cover-meta">World Protocol Academy · WPAWS Production Engine · Founder-supervised · Skopje, 2026</div>
+      <div class="cover-doctrine">WPA = institution.  WPAWS = motor.  Protocol = discipline.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 — EXECUTIVE SUMMARY -->
+<div id="s2-exec" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P2</span><span class="pb-title">Executive Summary</span></div>
+  <div class="page-content">
+    <div class="lbl">Executive Summary</div>
+    <h2 class="pg-h">What WPAWS Does and Why It Matters</h2>
+    <hr class="gold-rule"/>
+    <div class="callout"><p>WPAWS performs a structured eleven-stage professional reading of protocol-sensitive cases: from diagnosis and classification through institutional response, corrective standard, and prevention logic. Five representative cases are presented in compressed form.</p></div>
+    <div style="height:10px"></div>
+    <p class="body-p"><strong>Where it can be used:</strong></p>
+    <div class="bul-list">
+      <div class="bul"><strong>Internal teaching and coaching</strong> — case units across Foundation through Train-the-Trainer programmes</div>
+      <div class="bul"><strong>Executive briefing</strong> — pre-event institutional preparation for senior officials</div>
+      <div class="bul"><strong>Institutional demonstration</strong> — showcase of WPA analytical capability for partners</div>
+      <div class="bul"><strong>Public showcase</strong> — evidence of WPAWS depth for academic and institutional audiences</div>
+      <div class="bul"><strong>Partner presentation</strong> — structured proof asset for institutional engagement conversations</div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 — METHOD + CLASSIFICATION -->
+<div id="s3-method" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P3</span><span class="pb-title">Method + Classification</span></div>
+  <div class="page-content">
+    <div class="lbl">Method and Classification</div>
+    <h2 class="pg-h">The WPAWS Lessons Learned 360 Method</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">Each case is processed through eleven sequential analytical stages:</p>
+    <div class="steps" style="margin-bottom:18px">
+      <div class="step"><div class="step-num">01</div><div class="step-body"><b>Case Context</b> — establishes the formal register and applicable protocol standard</div></div>
+      <div class="step"><div class="step-num">02</div><div class="step-body"><b>Error Detected</b> — names the specific breach precisely</div></div>
+      <div class="step"><div class="step-num">03</div><div class="step-body"><b>Rule or Principle Broken</b> — identifies the violated standard</div></div>
+      <div class="step"><div class="step-num">04</div><div class="step-body"><b>Classification</b> — A (accidental) · B (intentional signal) · C (ambiguous)</div></div>
+      <div class="step"><div class="step-num">05</div><div class="step-body"><b>Consequences</b> — representational, diplomatic, symbolic, or institutional impact</div></div>
+      <div class="step"><div class="step-num">06</div><div class="step-body"><b>Immediate Response</b> — the correct on-the-spot action</div></div>
+      <div class="step"><div class="step-num">07</div><div class="step-body"><b>Institutional Response</b> — the post-incident formal response</div></div>
+      <div class="step"><div class="step-num">08</div><div class="step-body"><b>Corrective Protocol</b> — the full proper standard, correctly executed</div></div>
+      <div class="step"><div class="step-num">09</div><div class="step-body"><b>Message Sent</b> — the symbolic or relational communication of the error</div></div>
+      <div class="step"><div class="step-num">10</div><div class="step-body"><b>Lessons Learned 360</b> — five to seven sharp professional insights</div></div>
+      <div class="step"><div class="step-num">11</div><div class="step-body"><b>Prevention Framework</b> — three to five systemic preventive measures</div></div>
+    </div>
+    <p class="body-p"><strong>Classification:</strong></p>
+    <div class="cls-cards">
+      <div class="cls-card cls-a"><div class="cls-code">A</div><div class="cls-body"><b>Accidental Mistake</b>Unintentional breach. Calls for correction, learning, and systemic improvement. Response is measured and forward-looking.</div></div>
+      <div class="cls-card cls-b"><div class="cls-code">B</div><div class="cls-body"><b>Intentional or Symbolic Signal</b>Calculated violation. Requires careful diplomatic reading before any response. Reactive responses risk misreading and escalation.</div></div>
+      <div class="cls-card cls-c"><div class="cls-code">C</div><div class="cls-body"><b>Ambiguous Case</b>Intent unclear. Ambiguity carries consequences. Restrained initial response and careful observation required.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SHORT CASE CARDS — helper macro -->
+<!-- S4 — SC-016 -->
+<div id="s4-016" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P4</span><span class="pb-title">SC-016 — Wrong Flag Order</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-016</div><div class="cc-title">Wrong Flag Order at a Multilateral Event</div></div>
+      <div class="cc-pills"><span>Symbolic · Flags &amp; Precedence</span><span class="sep">·</span><span>State / Multilateral</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Context</div><p>Multilateral conference with twelve delegations, two with an active bilateral strain. Host team under time pressure uses an unverified list, transposing two flags at a symbolically sensitive position.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>Flags arranged without adherence to established alphabetical precedence. Unverified list used. Two flags transposed at a position sensitive to an active bilateral relationship.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Flag order is a formal statement of equality and recognised standing. Any deviation, however unintentional, can be read as a signal of preference, demotion, or failure of host neutrality.</p></div>
+        <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Response</div><p>Reposition discreetly without announcement. If after entry, correct during the pre-session interval. Never draw public attention to the correction.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Key Lessons</div>
+          <ul class="lesson-list">
+            <li>Flag order is a protocol discipline requiring qualified oversight — not support-staff delegation.</li>
+            <li>A verified, locked placement list is mandatory. An unverified list is a protocol liability.</li>
+            <li>The visual register communicates before any speaker addresses the room. Protocol begins before the first word.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention — Key Measures</div>
+          <ol class="prev-list">
+            <li>Mandate two-person verification for all flag arrangements at multilateral events.</li>
+            <li>Lock the placement list with senior sign-off at least twenty-four hours before the event.</li>
+            <li>Require a pre-event physical walkthrough on the event morning as a standing procedural rule.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 — SC-017 -->
+<div id="s5-017" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P5</span><span class="pb-title">SC-017 — Gaffe During Signing Ceremony</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-017</div><div class="cc-title">Gaffe During Agreement-Signing Ceremony</div></div>
+      <div class="cc-pills"><span>Ceremonial · State Protocol</span><span class="sep">·</span><span>Bilateral · High-Level</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Context</div><p>Formal agreement-signing ceremony between two heads of state in the presence of delegations and accredited media. A defined sequence governs the signing, exchange of copies, and official photograph.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>One signatory signed both copies before intervention. The document for State B was placed in the wrong position. The disruption was visible to media, reported as "confusion at the signing table."</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>A signing ceremony is among the most formally choreographed events in bilateral diplomacy. Visible disruption shifts the media narrative from the substance of the agreement to the competence of the host.</p></div>
+        <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Response</div><p>Intervene quietly by repositioning documents and guiding continuation without commentary. Composed continuity is paramount — media presence does not alter the correction protocol.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Key Lessons</div>
+          <ul class="lesson-list">
+            <li>A signing ceremony is a choreography, not an improvisation. Every element must be rehearsed and confirmed in advance.</li>
+            <li>Physical orientation of documents is a protocol responsibility. Ambiguity at the signing table is a preparation failure.</li>
+            <li>The protocol officer's role is active supervision and silent intervention — not passive observation.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention — Key Measures</div>
+          <ol class="prev-list">
+            <li>Conduct a mandatory physical rehearsal with actual documents on the ceremony morning.</li>
+            <li>Pre-position signed copies with discrete orientation markers verified by the senior protocol officer.</li>
+            <li>Brief both delegations' advance teams on the signing sequence at least twenty-four hours in advance.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 — SC-018 -->
+<div id="s6-018" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P6</span><span class="pb-title">SC-018 — Mistranslation of Title</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-018</div><div class="cc-title">Mistranslation of Title and Institution Name</div></div>
+      <div class="cc-pills"><span>Communication · Institutional Language</span><span class="sep">·</span><span>Official · Public Communication</span><span class="sep">·</span><span class="pill-a">Class A — Accidental Mistake</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Context</div><p>State visit joint communiqué prepared under time pressure with limited advance-team coordination. Distributed to media before the error is identified.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>The communiqué incorrectly renders the visiting head of state's constitutional title and identifies a key ministry by a name superseded by institutional reform three years prior.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Official titles and institutional names are fixed formal designations. An outdated name signals the host's knowledge of its partner is not current. Once distributed to media, the error enters the permanent record.</p></div>
+        <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Response</div><p>Withdraw the communiqué immediately. Distribute a corrected version with a brief supersession notice — no elaboration on the error. Inform the visiting delegation's protocol contact before redistribution.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Key Lessons</div>
+          <ul class="lesson-list">
+            <li>Official titles and institutional names are protocol elements, not translation variables. Precision is non-negotiable.</li>
+            <li>Institutional structures in partner states change. Verification against current official sources is essential, not optional.</li>
+            <li>A distributed error enters the permanent record. Prevention is the only fully effective strategy.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention — Key Measures</div>
+          <ol class="prev-list">
+            <li>Verify all official titles and names against the visiting state's own official-language sources.</li>
+            <li>Conduct a final document review with the visiting delegation's advance team at least forty-eight hours before the visit.</li>
+            <li>Maintain a current reference file per partner state with constitutional titles and institutional designations.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 — SC-019 -->
+<div id="s7-019" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P7</span><span class="pb-title">SC-019 — Breach of Dress Logic</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-019</div><div class="cc-title">Breach of Dress Logic at a Formal State Event</div></div>
+      <div class="cc-pills"><span>Symbolic · Dress Protocol</span><span class="sep">·</span><span>State · Formal Ceremony</span><span class="sep">·</span><span class="pill-c">Class C — Ambiguous Case</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Context</div><p>Formal state dinner (formal attire or black tie). A senior visiting delegation member, seated at the principal table, attends in a business suit. No exception communicated in advance. Media present.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>Senior delegation member deviated significantly from the stated dress register, visibly and without advance notice to the host protocol team.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>Classification C: the deviation could reflect oversight, personal choice, or a deliberate signal of distance. All three readings carry consequences. The ambiguity itself is the complication — and one the host's preparation should have prevented.</p></div>
+        <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Response</div><p>Do not address the deviation publicly or directly. The event continues without comment. Note the matter quietly to the delegation's protocol contact only to prevent recurrence at a subsequent event.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Key Lessons</div>
+          <ul class="lesson-list">
+            <li>Dress requirements must be communicated explicitly, not assumed. Written confirmation must be sought from each delegation.</li>
+            <li>Classification C ambiguity is itself a protocol complication. Prevention removes the need for interpretive reading entirely.</li>
+            <li>The host's composed conduct during an incident is itself a form of institutional dignity. Visible reaction compounds the situation.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention — Key Measures</div>
+          <ol class="prev-list">
+            <li>Communicate dress requirements in writing to all delegation protocol contacts with written confirmation requested.</li>
+            <li>Seek written confirmation from delegation contacts at least forty-eight hours before the event.</li>
+            <li>Brief personal staff of principal-table members directly — these individuals are most visible.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 — SC-020 -->
+<div id="s8-020" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P8</span><span class="pb-title">SC-020 — Protocol Lapse / Media Crisis</span></div>
+  <div class="page-content" style="padding:16px 18px">
+    <div class="case-card">
+      <div class="cc-header"><div class="cc-id">SC-020</div><div class="cc-title">Protocol Lapse Escalating into a Media Crisis</div></div>
+      <div class="cc-pills"><span>Communication · Institutional Reputation</span><span class="sep">·</span><span>State · Multi-party · Public</span><span class="sep">·</span><span class="pill-b">Class B — Intentional Signal</span></div>
+      <div class="cc-sections">
+        <div class="cc-two">
+          <div class="cc-box context"><div class="cc-box-lbl">Context</div><p>Group photography at a high-level regional summit. Precedence order confirmed by the protocol committee. One delegation, formally refused a last-minute repositioning, arrives late — timing the arrival to force a reorganisation under media pressure.</p></div>
+          <div class="cc-box wrong"><div class="cc-box-lbl">What Went Wrong</div><p>Deliberate tactical manoeuvre disrupted the agreed order. The protocol committee reversed a formal decision under pressure. Distributed images reflect an order inconsistent with the agreed arrangement.</p></div>
+        </div>
+        <div class="cc-box why"><div class="cc-box-lbl">Why It Matters</div><p>A successful deliberate precedence disruption sends three simultaneous messages: that established order is negotiable under pressure; that the host's authority is not absolute; and that the tactic worked. All three represent institutional losses that compound across future engagements.</p></div>
+        <div class="cc-box immediate"><div class="cc-box-lbl">Immediate Response</div><p>Delay the session and restore the established arrangement. The senior protocol officer takes visible control. The session does not begin until the correct order is in place. No accommodation of the disruption.</p></div>
+        <div class="cc-box lessons"><div class="cc-box-lbl">Key Lessons</div>
+          <ul class="lesson-list">
+            <li>Classification B incidents must be recognised and named as intentional — they require a fundamentally different response to accidental errors.</li>
+            <li>A committee that reverses a formal decision under situational pressure loses institutional authority. The reversal is itself the more damaging failure.</li>
+            <li>Time pressure and media presence are the execution conditions for deliberate transgressions — not justifications for accommodation.</li>
+          </ul>
+        </div>
+        <div class="cc-box prevention"><div class="cc-box-lbl">Prevention — Key Measures</div>
+          <ol class="prev-list">
+            <li>Lock all photography positions with signed acknowledgement from each advance team at least seventy-two hours before the session.</li>
+            <li>Formally empower the protocol committee to enforce the established order, including the authority to delay or restart without further authorisation.</li>
+            <li>Document deliberate disruptions and share with relevant diplomatic representations for pattern awareness in future engagements.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S9 — WHY THIS MATTERS -->
+<div id="s9-why" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P9</span><span class="pb-title">Why This Matters</span></div>
+  <div class="page-content">
+    <div class="lbl">Why This Matters</div>
+    <h2 class="pg-h">Protocol Errors as Professional Cases</h2>
+    <hr class="gold-rule"/>
+    <div class="callout"><p>Protocol errors are not anecdotes. They are professional, symbolic, institutional, and diplomatic cases — each with a structure, a reading, and a set of lessons that can be extracted, taught, and applied.</p></div>
+    <div style="height:12px"></div>
+    <div class="bul-list">
+      <div class="bul"><strong>For protocol education:</strong> teachable case units for WPA Certificate Programmes and Train-the-Trainer pathways — analytical depth beyond conventional protocol manuals, because each case is read rather than merely catalogued.</div>
+      <div class="bul"><strong>For institutional briefing:</strong> the structured case card format is directly usable for executive preparation and pre-event protocol reviews. Decision-makers extract professional value without requiring specialist background.</div>
+      <div class="bul"><strong>For institutional preparedness:</strong> the Prevention Frameworks are systemic recommendations designed to build institutional resilience — not advisory notes, but operational standards.</div>
+      <div class="bul"><strong>As proof of WPA capability:</strong> WPAWS moves from scenario to full eleven-stage analysis. This is a capability differentiator for WPA in the protocol education and institutional training market.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S10 — FINAL CTA -->
+<div id="s10-cta" class="page-block">
+  <div class="page-block-header"><span class="pb-num">SHORT · P10</span><span class="pb-title">Final CTA</span></div>
+  <div class="page-content">
+    <div class="lbl">Applications and Next Use</div>
+    <h2 class="pg-h">Applications and Next Use</h2>
+    <hr class="gold-rule"/>
+    <p class="body-p">World Protocol Academy is an independent academy and professional platform for protocol, diplomacy, security, and institutional communication.</p>
+    <div class="cta-block">
+      <div class="cta-eye">Engagement Pathways · World Protocol Academy</div>
+      <div class="cta-h">Work with WPA</div>
+      <hr class="cta-rule"/>
+      <div class="cta-rows">
+        <div class="cta-row"><div class="cta-t">Protocol Training</div><div class="cta-d">Institutional and executive training for ministries, embassies, and professional cohorts.</div></div>
+        <div class="cta-row"><div class="cta-t">Certificate Programmes</div><div class="cta-d">Foundation through Train-the-Trainer — structured, assessed, verified.</div></div>
+        <div class="cta-row"><div class="cta-t">WPAWS Demonstration</div><div class="cta-d">Live demonstration of the WPAWS analytical engine for institutional partners and decision-makers.</div></div>
+        <div class="cta-row"><div class="cta-t">Executive Preparation</div><div class="cta-d">Targeted briefing before high-level visits, state events, and multilateral engagements.</div></div>
+        <div class="cta-row"><div class="cta-t">Partnership</div><div class="cta-d">Academic, research, and institutional collaboration enquiries welcome.</div></div>
+      </div>
+      <div class="cta-contact">
+        <a href="mailto:worldprotocolacademy@gmail.com" class="cta-email">worldprotocolacademy@gmail.com</a>
+        <a href="https://worldprotocolacademy-code.github.io" target="_blank" rel="noopener" class="cta-url">worldprotocolacademy-code.github.io</a>
+      </div>
+      <div class="cta-note">WPA = institution.  WPAWS = motor.  Protocol = discipline.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PART 3 — DESIGN / LAYOUT GUIDANCE PACK
+════════════════════════════════════════════ -->
+<div class="part-divider" style="margin-top:48px">
+  <div class="part-divider-inner">
+    <div class="part-eye">Part 3</div>
+    <h2>Design / Layout <em>Guidance Pack</em></h2>
+    <p>Formatter and designer reference · 10 sections · Production-ready specifications</p>
+  </div>
+</div>
+
+<div class="page-block">
+  <div class="page-block-header"><span class="pb-num">DESIGN</span><span class="pb-title">Design and Layout Guidance — 10 Sections</span></div>
+  <div class="page-content" style="padding:0">
+
+    <!-- 1 -->
+    <div id="dg1" class="dg-section">
+      <div class="dg-num">Section 1</div>
+      <h3 class="dg-h">Visual Identity</h3>
+      <p class="dg-body">The document operates within the WPA institutional identity: deep navy and warm gold. Every design decision reinforces the institutional register — premium professional publication, not brochure or digital report.</p>
+      <table class="spec-table">
+        <thead><tr><th>Role</th><th>Colour</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td>Primary background</td><td><span class="chip"><span class="chip-swatch" style="background:#0d1f3c"></span>#0d1f3c</span></td><td>Cover, dark headers, Lessons box, CTA page</td></tr>
+          <tr><td>Secondary navy</td><td><span class="chip"><span class="chip-swatch" style="background:#162947"></span>#162947</span></td><td>Case header, nav backgrounds</td></tr>
+          <tr><td>Gold accent</td><td><span class="chip"><span class="chip-swatch" style="background:#c9a84c"></span>#c9a84c</span></td><td>Rules, left borders, step accents, CTA email</td></tr>
+          <tr><td>Gold light</td><td><span class="chip"><span class="chip-swatch" style="background:#e8d49a"></span>#e8d49a</span></td><td>Text on dark, eyebrow labels, case ID</td></tr>
+          <tr><td>Cream</td><td><span class="chip"><span class="chip-swatch" style="background:#f8f4ee"></span>#f8f4ee</span></td><td>Page background, neutral boxes</td></tr>
+          <tr><td>Cream2</td><td><span class="chip"><span class="chip-swatch" style="background:#f0ead8"></span>#f0ead8</span></td><td>Prevention box, callouts, pill rows</td></tr>
+          <tr><td>Error — Red</td><td><span class="chip"><span class="chip-swatch" style="background:#fff0f0"></span>#fff0f0 / #8b1a1a</span></td><td>"What Went Wrong", Class B classification</td></tr>
+          <tr><td>Warning — Amber</td><td><span class="chip"><span class="chip-swatch" style="background:#fdf3e3"></span>#fdf3e3 / #8b5a00</span></td><td>"Why It Matters", Class C classification</td></tr>
+          <tr><td>Correct — Green</td><td><span class="chip"><span class="chip-swatch" style="background:#e8f5ee"></span>#e8f5ee / #1a6b3c</span></td><td>Corrective Protocol, Class A classification</td></tr>
+          <tr><td>Info — Blue</td><td><span class="chip"><span class="chip-swatch" style="background:#e8f0fb"></span>#e8f0fb / #0d3a6e</span></td><td>"Message Sent"</td></tr>
+        </tbody>
+      </table>
+      <p class="dg-body" style="margin-top:10px"><strong>Typography:</strong> Playfair Display Bold for headings. Jost or Aktiv Grotesk for labels, pills, UI elements. Freight Text or Garamond for body. Never use condensed or ultra-light weights. No system fonts (Arial, Times, Calibri) in final output.</p>
+    </div>
+
+    <!-- 2 -->
+    <div id="dg2" class="dg-section">
+      <div class="dg-num">Section 2</div>
+      <h3 class="dg-h">Cover Treatment</h3>
+      <p class="dg-body">Full navy background (#0d1f3c). Geometric grid overlay: 45–60pt spacing, colour #1a2d4a, weight 0.35pt — creates depth without visual noise. Gold accents: 4pt top rule · 3pt bottom rule · 4pt left rule · none on right.</p>
+      <p class="dg-body"><strong>Typography hierarchy:</strong></p>
+      <div class="bul-list">
+        <div class="bul">Eyebrow: 8–9pt uppercase tracked gold-light, "◆ WPAWS · LESSONS LEARNED 360 · DEMO EDITION v1.1"</div>
+        <div class="bul">"WPAWS": 32–36pt Playfair Bold, white — first line</div>
+        <div class="bul">"Lessons Learned 360": same size and weight, gold #c9a84c — two-tone heading effect</div>
+        <div class="bul">Edition line: 14–16pt, gold-light</div>
+        <div class="bul">1pt gold full-width rule before subtitle</div>
+        <div class="bul">Subtitle: 14–15pt italic gold-light</div>
+        <div class="bul">Metadata block: 10pt, rgba(255,255,255,.38)</div>
+        <div class="bul">Doctrine line at foot: 10pt italic gold</div>
+      </div>
+      <p class="dg-body">No photographs, illustrations, or decorative imagery on the cover. The grid and gold accents are the only decoration.</p>
+    </div>
+
+    <!-- 3 -->
+    <div id="dg3" class="dg-section">
+      <div class="dg-num">Section 3</div>
+      <h3 class="dg-h">Executive Summary Layout</h3>
+      <p class="dg-body">Target density: 40–50%. Decision-maker readable in under 60 seconds.</p>
+      <div class="bul-list">
+        <div class="bul"><strong>Top callout box:</strong> cream2 background, 5pt gold left border, 0.5pt full box rule. Contains the core thesis in 12–13pt italic serif — the single most important sentence on the page.</div>
+        <div class="bul"><strong>Structured table:</strong> left column (140–155pt) = bold label with gold micro-border; right column = body text. 0.3pt row dividers. 7pt top/bottom padding minimum per row.</div>
+        <div class="bul"><strong>Foot:</strong> doctrine line centred, 12.5pt italic muted.</div>
+      </div>
+      <p class="dg-body">Do not use bullet-heavy layouts on this page. The two-column table structure communicates authority without visual clutter.</p>
+    </div>
+
+    <!-- 4 -->
+    <div id="dg4" class="dg-section">
+      <div class="dg-num">Section 4</div>
+      <h3 class="dg-h">Page Rhythm</h3>
+      <p class="dg-body">Every non-cover page uses the same consistent structure:</p>
+      <div class="bul-list">
+        <div class="bul"><strong>Header band:</strong> 28pt navy at top. Left: eyebrow in gold-light 7.5pt. Right: "World Protocol Academy · Skopje, 2026" in 7.5pt muted. 2pt gold rule below band.</div>
+        <div class="bul"><strong>Gold left stripe:</strong> 3pt vertical gold rule, full page height on left margin. This is the WPA signature mark — never omit on body pages.</div>
+        <div class="bul"><strong>Footer:</strong> 0.7pt rule · doctrine line left 7.5pt muted · page number right 7.5pt muted.</div>
+        <div class="bul"><strong>Page margins:</strong> 22mm left/right · 36mm top · 26mm bottom.</div>
+        <div class="bul"><strong>Section opener:</strong> small page-type label (7.5pt uppercase tracked gold) → heading (20–22pt Playfair) → 1.5pt gold full-width rule → body. Consistent across all pages.</div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div id="dg5" class="dg-section">
+      <div class="dg-num">Section 5</div>
+      <h3 class="dg-h">Case Card Formatting</h3>
+      <p class="dg-body">Each case occupies one full page (both editions). The case card is a self-contained unit.</p>
+      <p class="dg-body"><strong>Case header:</strong> full-width navy background. Left: Case ID in 20–22pt Playfair Bold gold-light. Right: Case title in 14–15pt bold white. Left border: 5pt gold rule. The heaviest visual element on the case page.</p>
+      <p class="dg-body"><strong>Pill row:</strong> cream2 band immediately below header. Layer · Tier · Classification on one line, 8.5pt. Classification in bold, coloured by class. Bottom border: 1.5pt gold rule.</p>
+      <p class="dg-body"><strong>Full edition — two-column combinations:</strong></p>
+      <div class="bul-list">
+        <div class="bul">Scenario Context (white, left) + What Went Wrong (red, right) — sets context and error together</div>
+        <div class="bul">Immediate Response (white, left) + Institutional Response (white, right) — shows response spectrum</div>
+      </div>
+      <p class="dg-body"><strong>Single-column in sequence:</strong> Why It Matters (amber) · Corrective Protocol (green) · Message Sent (blue) · Lessons Learned (navy) · Prevention Framework (cream2).</p>
+      <p class="dg-body">Section label: 7.5–8pt uppercase tracked, coloured to match semantic colour. Always above content. Left border weight: 3pt on all sections except Lessons and Prevention which use 4pt.</p>
+    </div>
+
+    <!-- 6 -->
+    <div id="dg6" class="dg-section">
+      <div class="dg-num">Section 6</div>
+      <h3 class="dg-h">Classification Pill Treatment</h3>
+      <p class="dg-body">Precision instrument, not decorative badge. Restrained pill format:</p>
+      <table class="spec-table">
+        <thead><tr><th>Class</th><th>Text colour</th><th>Background</th><th>Border</th></tr></thead>
+        <tbody>
+          <tr><td><strong>A — Accidental</strong></td><td>#1a6b3c</td><td>#e8f5ee</td><td>#86efac 1px</td></tr>
+          <tr><td><strong>B — Intentional</strong></td><td>#8b1a1a</td><td>#fff0f0</td><td>#e5b5b5 1px</td></tr>
+          <tr><td><strong>C — Ambiguous</strong></td><td>#8b5a00</td><td>#fdf3e3</td><td>#f5c870 1px</td></tr>
+        </tbody>
+      </table>
+      <p class="dg-body">Font: 8–8.5pt · Jost Bold · uppercase · letter-spacing 0.4–0.6px. Padding: 3px vertical · 8–10px horizontal. Border-radius: 2px — never fully rounded. In the pill row, render as coloured bold text for cleaner appearance in a dense information line.</p>
+    </div>
+
+    <!-- 7 -->
+    <div id="dg7" class="dg-section">
+      <div class="dg-num">Section 7</div>
+      <h3 class="dg-h">Lessons Learned Box Treatment</h3>
+      <p class="dg-body">The analytical core of each case card. Must be visually the most substantial and deliberate element.</p>
+      <div class="bul-list">
+        <div class="bul"><strong>Background:</strong> navy #0d1f3c — the darkest element. Never cream or tinted.</div>
+        <div class="bul"><strong>Left border:</strong> 4pt gold — heavier than all other section borders (3pt). This weight difference is intentional and must be preserved.</div>
+        <div class="bul"><strong>Label:</strong> "LESSONS LEARNED 360" — 7.5pt uppercase tracked gold-light.</div>
+        <div class="bul"><strong>Bullets:</strong> ◆ diamond symbol, never round bullets. 9.5pt white text. 3pt spacing between items.</div>
+        <div class="bul"><strong>Items:</strong> 5–7 in full edition · 3 in short edition (labelled "KEY LESSONS"). Each item: maximum 2 lines if possible.</div>
+        <div class="bul"><strong>Contrast:</strong> white text on navy must pass WCAG AA at every font size used.</div>
+      </div>
+      <p class="dg-body">The Lessons box and Prevention box are a deliberate editorial pair: dark/analytical and light/operational. This contrast must be preserved.</p>
+    </div>
+
+    <!-- 8 -->
+    <div id="dg8" class="dg-section">
+      <div class="dg-num">Section 8</div>
+      <h3 class="dg-h">Prevention Framework Box Treatment</h3>
+      <p class="dg-body">The operational counterpart to the Lessons box. Actionable, structured, clean.</p>
+      <div class="bul-list">
+        <div class="bul"><strong>Background:</strong> cream2 #f0ead8 — lightest framed box on the case page, direct contrast to the dark Lessons box above.</div>
+        <div class="bul"><strong>Left border:</strong> 4pt gold — same weight as Lessons box (visual pair).</div>
+        <div class="bul"><strong>Full box border:</strong> 0.5pt line rule on all sides — distinguishes it from open-left-border sections above.</div>
+        <div class="bul"><strong>Label:</strong> "PREVENTION FRAMEWORK" — 7.5pt uppercase tracked, navy (not gold — reinforces the operational register).</div>
+        <div class="bul"><strong>Items:</strong> numbered (1. 2. 3.) — signals procedural nature. 9.5pt navy text.</div>
+        <div class="bul"><strong>Text colour:</strong> navy #0d1f3c, not muted. These are action items — they read with authority.</div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div id="dg9" class="dg-section">
+      <div class="dg-num">Section 9</div>
+      <h3 class="dg-h">CTA Page Tone and Layout</h3>
+      <p class="dg-body">Institutional engagement gateway. Visual register must match the document's premium identity — authoritative, selective, serious.</p>
+      <p class="dg-body"><strong>Tone rules — absolute:</strong></p>
+      <div class="bul-list">
+        <div class="bul" style="color:var(--red)">Never: "buy now" · "sign up" · "limited offer" · "act fast" · urgency language · scarcity signals</div>
+        <div class="bul">Always: "engagement is available through" · "pathways" · "confirmed by direct communication"</div>
+        <div class="bul">The enquiry is always treated as a professional, bilateral conversation</div>
+      </div>
+      <p class="dg-body"><strong>Layout:</strong> full-width navy background. Eyebrow (9pt uppercase tracked gold-light) → heading (18–20pt Playfair Bold white) → 1pt gold rule → intro paragraph (13–14pt, rgba(255,255,255,.65), 2–3 sentences) → engagement rows (left column 130–148pt gold-light bold title; right column cream-coloured description; thin dark row separators #1a2d4a 0.3pt) → contact block (gold rule → email in gold bold → URL in muted) → optional italic closing note.</p>
+    </div>
+
+    <!-- 10 -->
+    <div id="dg10" class="dg-section">
+      <div class="dg-num">Section 10</div>
+      <h3 class="dg-h">Public Short Edition Differences</h3>
+      <table class="spec-table">
+        <thead><tr><th>Element</th><th>Full Master Edition (14 pages)</th><th>Public Short Edition (10 pages)</th></tr></thead>
+        <tbody>
+          <tr><td>Cover subtitle</td><td>"Demo Edition v1.1 — Polished"</td><td>"Public Short Edition"</td></tr>
+          <tr><td>Method page</td><td>Step table (page 4) + Classification (page 5)</td><td>Combined on one page (page 3)</td></tr>
+          <tr><td>Case depth</td><td>All 11 sections, full text, two-column layout</td><td>Context · Error · Why · 1 Response · 3 Lessons · 3 Prevention</td></tr>
+          <tr><td>Case layout</td><td>Two-column combinations for paired sections</td><td>Single-column stacked boxes (fits one page per case)</td></tr>
+          <tr><td>Lessons label</td><td>"LESSONS LEARNED 360" (5–7 items)</td><td>"KEY LESSONS" (3 items)</td></tr>
+          <tr><td>Prevention label</td><td>"PREVENTION FRAMEWORK" (3–5 items)</td><td>"PREVENTION — KEY MEASURES" (3 items)</td></tr>
+          <tr><td>Why This Matters</td><td>Four prose sections with headings</td><td>Four compact bullet points</td></tr>
+          <tr><td>CTA</td><td>6 engagement rows, full descriptions</td><td>5 rows, abbreviated descriptions</td></tr>
+          <tr><td>Target audience</td><td>Internal, academic, institutional deep-dive</td><td>Partner-facing, public showcase</td></tr>
+        </tbody>
+      </table>
+      <div style="height:12px"></div>
+      <div class="callout"><p>What must never change between editions: the five approved cases, the classification system, the doctrine line, the analytical seriousness, the WPA visual identity, the gold/navy palette, and the institutional register. The short edition compresses depth — it does not reduce register.</p></div>
+      <hr class="rule-gold"/>
+      <div class="closing-doctrine">
+        WPA = institution.  WPAWS = motor.  Protocol = discipline.<br/>
+        <span style="font-size:12px">World Protocol Academy · Skopje, 2026 · Assoc. Prof. Dr. Sande Smiljanov · Founder and Director</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main-wrap -->
+
+<!-- ================================================================
+     PRODUCTION NOTE — WPAWS LL360 Final v1.1 Package
+     World Protocol Academy · April 2026
+     ================================================================
+
+     RECOMMENDED EXPORT WORKFLOW
+     ─────────────────────────────
+     1. Open this file in Chrome 114+ or Edge (best print fidelity).
+     2. File → Print → Destination: Save as PDF.
+     3. Paper size: A4. Margins: None (CSS @page handles margins).
+     4. REQUIRED: enable "Background graphics" — colours are lost without it.
+     5. Scale: 100% (default).
+
+     To export editions separately:
+     - Open file, use Ctrl+P, check print preview for page ranges.
+     - Full Master Edition ends before the "Part 2" divider.
+     - Public Short Edition: SHORT·P1 through SHORT·P10.
+     - Design Guidance: final section from "Part 3" divider.
+
+     PRINT CAVEATS
+     ──────────────
+     - Chrome/Edge recommended. Firefox: enable "Print Background Colours."
+     - Long case cards use break-inside:avoid — verify in print preview
+       before finalising; very long cards may still break on narrow margins.
+     - Cover uses a CSS grid overlay; if backgrounds are suppressed by the
+       printer, the navy base colour remains and the document stays dignified.
+     - The sidenav is hidden automatically in print mode.
+
+     FONT CAVEATS
+     ─────────────
+     - Primary fonts: Playfair Display, Cormorant Garamond, Jost (Google Fonts).
+     - Fallback if Google Fonts are unavailable:
+         Display headings → Georgia → Times New Roman (serif, dignified)
+         Body text        → Helvetica Neue → Arial → system-ui (clean)
+         Monospace        → Courier New (design guidance chips)
+     - For guaranteed font fidelity in exported PDF: load the file in a
+       browser with an active internet connection before printing.
+     - For server-side PDF generation: use Puppeteer with --wait-for-fonts.
+
+     CLICKABLE LINKS
+     ────────────────
+     - worldprotocolacademy@gmail.com  → mailto: link (all occurrences)
+     - worldprotocolacademy-code.github.io → https: link, opens in new tab
+     - All internal section anchors preserved for in-browser navigation.
+     - In PDF output, mailto: and https: links remain clickable in Acrobat.
+
+     COLOUR ACCURACY
+     ────────────────
+     - Navy #0d1f3c · Gold #c9a84c · Gold Light #e8d49a
+     - Semantic: Green #1a6b3c · Amber #8b5a00 · Red #8b1a1a · Blue #0d3a6e
+     - print-color-adjust:exact is declared — requires Background Graphics on.
+
+     ================================================================ -->
+</body>
+</html>
