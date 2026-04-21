@@ -339,7 +339,7 @@ section{padding:88px 0}
 
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalOrganization","name":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална академија и платформа за протокол, дипломатија, безбедност и институционална комуникација.","founder":{"@type":"Person","name":"Sande Smiljanov"}}</script>
 </head>
-<body id="top">
+<body id="top" data-page="index">
 <div id="tbar"></div>
 
 <!-- ANNOUNCE BAR -->
@@ -1888,5 +1888,70 @@ if(document.readyState==='loading'){
   initVirtualSande();
 }
 </script>
+
+<script>
+/* ============================================================
+   WPA TRANSLATOR BRIDGE — root index phase-1 merge
+   Keeps legacy data-t multilingual logic intact while syncing
+   with the new locale-based translator-loader-v1.js system.
+   ============================================================ */
+(function(){
+  function toNewCode(lang){
+    if(!lang) return 'mk';
+    if(lang === 'zh') return 'zh-Hans';
+    if(lang === 'zht') return 'zh-Hant';
+    return lang;
+  }
+  function toLegacyCode(lang){
+    if(!lang) return 'mk';
+    if(lang === 'zh-Hans') return 'zh';
+    if(lang === 'zh-Hant') return 'zht';
+    return lang;
+  }
+  function syncDocumentState(lang){
+    var normalized = toNewCode(lang);
+    document.documentElement.setAttribute('lang', normalized);
+    document.documentElement.setAttribute('dir', normalized === 'ar' ? 'rtl' : 'ltr');
+    if(document.body){
+      document.body.setAttribute('data-current-language', normalized);
+    }
+    try{ localStorage.setItem('wpa_language', normalized); }catch(e){}
+  }
+
+  try{
+    var legacySaved = localStorage.getItem('wpa-lang');
+    var loaderSaved = localStorage.getItem('wpa_language');
+    if(legacySaved && !loaderSaved){
+      localStorage.setItem('wpa_language', toNewCode(legacySaved));
+    }else if(loaderSaved && !legacySaved){
+      localStorage.setItem('wpa-lang', toLegacyCode(loaderSaved));
+    }
+  }catch(e){}
+
+  var current = 'mk';
+  try{
+    current = localStorage.getItem('wpa-lang') || localStorage.getItem('wpa_language') || 'mk';
+  }catch(e){}
+  syncDocumentState(current);
+
+  if(typeof window.applyLang === 'function' && !window.__wpaApplyLangPatched){
+    var originalApplyLang = window.applyLang;
+    window.applyLang = function(lang){
+      var result = originalApplyLang.apply(this, arguments);
+      syncDocumentState(lang);
+      return result;
+    };
+    window.__wpaApplyLangPatched = true;
+  }
+
+  document.addEventListener('wpa:i18n:loaded', function(ev){
+    var lang = (ev.detail && ev.detail.language) ? ev.detail.language : 'mk';
+    var legacy = toLegacyCode(lang);
+    try{ localStorage.setItem('wpa-lang', legacy); }catch(e){}
+  });
+})();
+</script>
+<script src="translator-loader-v1.js" defer></script>
+
 </body>
 </html>
