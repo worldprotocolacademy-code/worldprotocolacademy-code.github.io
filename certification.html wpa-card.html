@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сертификација | World Protocol Academy</title>
+  <meta name="description" content="Четири јасни WPA сертификати, структурирано оценување, прагови на успех и идната логика за сериски и QR verification во World Protocol Academy." />
+  <meta name="keywords" content="WPA certification, World Protocol Academy сертификати, protocol certificate, diplomatic certificate, professional certificate, QR verification" />
+  <meta name="author" content="Assoc. Prof. Dr. Sande Smiljanov" />
+  <meta property="og:title" content="Сертификација | World Protocol Academy" />
+  <meta property="og:description" content="Четири јасни WPA сертификати, јасни прагови на успех и структурирана verification логика." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://worldprotocolacademy-code.github.io/certification.html" />
+  <meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png" />
+  <link rel="icon" href="logo.png" type="image/png" />
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/certification.html" />
+
+  <style>
+    :root{
+      --bg:#f6f2eb;
+      --surface:#ffffff;
+      --surface-2:#fbf8f3;
+      --surface-3:#f2ecdf;
+      --text:#1d2430;
+      --muted:#5a6577;
+      --line:#ddd3c3;
+      --gold:#9a7728;
+      --gold-dark:#7b5f1f;
+      --navy:#162947;
+      --navy-2:#22385c;
+      --navy-3:#0f1b30;
+      --shadow:0 10px 30px rgba(20,31,52,.08);
+      --shadow-soft:0 8px 22px rgba(20,31,52,.06);
+      --radius:18px;
+      --max:1240px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.65;
+    }
+
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .container{width:min(var(--max), calc(100% - 32px)); margin:0 auto}
+
+    .topbar{
+      background:var(--navy);
+      color:#eef3fb;
+      font-size:14px;
+      padding:10px 0;
+    }
+
+    .topbar-inner{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .topbar strong{color:#f4d697}
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:1000;
+      background:rgba(255,255,255,.95);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+
+    .nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:24px;
+      padding:14px 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .brand img{
+      width:56px;
+      height:56px;
+      object-fit:contain;
+      padding:6px;
+      border-radius:12px;
+      background:#fff;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .brand-text h1{
+      margin:0;
+      font-size:20px;
+      line-height:1.1;
+      color:var(--navy);
+    }
+
+    .brand-text p{
+      margin:4px 0 0;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    nav ul{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+      align-items:center;
+      justify-content:flex-end;
+    }
+
+    nav a{
+      color:var(--navy);
+      font-size:14px;
+      font-weight:700;
+      transition:.18s ease;
+    }
+
+    nav a:hover{color:var(--gold-dark)}
+
+    .hero{
+      background:
+        linear-gradient(135deg, rgba(22,41,71,.97), rgba(34,56,92,.92)),
+        radial-gradient(circle at top right, rgba(255,255,255,.08), transparent 38%);
+      color:#fff;
+      padding:84px 0 74px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .eyebrow{
+      display:inline-block;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.16);
+      color:#f7dca8;
+      font-size:13px;
+      letter-spacing:.3px;
+      margin-bottom:18px;
+    }
+
+    .hero h2{
+      margin:0 0 16px;
+      font-size:clamp(34px, 4vw, 56px);
+      line-height:1.05;
+      letter-spacing:-.9px;
+      max-width:1020px;
+    }
+
+    .hero p{
+      margin:0;
+      color:rgba(255,255,255,.9);
+      font-size:18px;
+      max-width:940px;
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:13px 22px;
+      border-radius:999px;
+      font-weight:800;
+      font-size:14px;
+      transition:.18s ease;
+    }
+
+    .btn-primary{
+      background:#f4d697;
+      color:var(--navy);
+      box-shadow:0 8px 20px rgba(0,0,0,.15);
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(0,0,0,.18);
+    }
+
+    .btn-secondary{
+      border:1px solid rgba(255,255,255,.22);
+      color:#fff;
+      background:rgba(255,255,255,.05);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.09);
+      transform:translateY(-2px);
+    }
+
+    section{padding:78px 0}
+    .accent-section{
+      background:var(--surface-2);
+      border-top:1px solid rgba(0,0,0,.04);
+      border-bottom:1px solid rgba(0,0,0,.04);
+    }
+
+    .section-header{
+      max-width:980px;
+      margin-bottom:34px;
+    }
+
+    .label{
+      display:inline-block;
+      color:var(--gold-dark);
+      font-weight:800;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.35px;
+      margin-bottom:10px;
+    }
+
+    .section-header h3{
+      margin:0 0 12px;
+      color:var(--navy);
+      font-size:clamp(28px, 3vw, 40px);
+      line-height:1.12;
+    }
+
+    .section-header p{
+      margin:0;
+      color:var(--muted);
+      font-size:17px;
+    }
+
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+
+    .card{
+      background:var(--surface);
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:var(--shadow-soft);
+      height:100%;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
+    }
+
+    .card h4{
+      margin:0 0 10px;
+      color:var(--navy);
+      font-size:21px;
+      line-height:1.18;
+    }
+
+    .card p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .cert-card{
+      background:linear-gradient(180deg,#fff,#fbfaf7);
+      border:1px solid rgba(0,0,0,.06);
+      border-top:5px solid var(--gold);
+      border-radius:22px;
+      padding:26px;
+      box-shadow:var(--shadow-soft);
+      height:100%;
+      position:relative;
+      overflow:hidden;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .cert-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
+    }
+
+    .cert-card::after{
+      content:"";
+      position:absolute;
+      inset:auto -30px -30px auto;
+      width:120px;
+      height:120px;
+      background:radial-gradient(circle, rgba(154,119,40,.12), transparent 70%);
+      pointer-events:none;
+    }
+
+    .cert-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:16px;
+    }
+
+    .cert-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:84px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--surface-3);
+      color:var(--gold-dark);
+      border:1px solid var(--line);
+      font-size:12px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+    }
+
+    .cert-card h4{
+      margin:0 0 10px;
+      color:var(--navy);
+      font-size:22px;
+      line-height:1.16;
+    }
+
+    .cert-card p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .cert-details{
+      margin-top:16px;
+      display:grid;
+      gap:10px;
+    }
+
+    .cert-detail{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 14px;
+    }
+
+    .cert-detail strong{
+      display:block;
+      color:var(--navy);
+      font-size:13px;
+      margin-bottom:4px;
+    }
+
+    .cert-detail span{
+      display:block;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .clarity-box{
+      background:linear-gradient(180deg,#fff,#fbfaf7);
+      border:1px solid var(--line);
+      border-left:5px solid var(--gold);
+      border-radius:18px;
+      padding:24px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .clarity-box h4{
+      margin:0 0 10px;
+      color:var(--navy);
+      font-size:22px;
+    }
+
+    .clarity-box p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+    }
+
+    .feature-list{
+      margin:14px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+    }
+
+    .feature-list li{margin-bottom:10px}
+
+    .faq-list{
+      display:grid;
+      gap:14px;
+    }
+
+    .faq-item{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:18px 20px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .faq-item h4{
+      margin:0 0 8px;
+      color:var(--navy);
+      font-size:18px;
+    }
+
+    .faq-item p{
+      margin:0;
+      color:var(--muted);
+    }
+
+    .cta-box{
+      background:linear-gradient(135deg,var(--gold),#b78a2a);
+      color:#fff;
+      border-radius:24px;
+      padding:30px;
+      box-shadow:var(--shadow);
+    }
+
+    .cta-box h3{
+      margin:0 0 12px;
+      font-size:30px;
+      line-height:1.08;
+    }
+
+    .cta-box p{
+      margin:0;
+      color:rgba(255,255,255,.92);
+      max-width:860px;
+    }
+
+    .cta-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:20px;
+    }
+
+    .cta-links a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border:1px solid rgba(255,255,255,.28);
+      border-radius:999px;
+      padding:12px 18px;
+      font-weight:700;
+      font-size:14px;
+      color:#fff;
+      background:rgba(255,255,255,.08);
+      transition:.18s ease;
+    }
+
+    .cta-links a:hover{
+      background:rgba(255,255,255,.16);
+      transform:translateY(-2px);
+    }
+
+    .footer{
+      background:var(--navy-3);
+      color:#d7ddeb;
+      padding:48px 0 28px;
+      margin-top:40px;
+    }
+
+    .footer-grid{
+      display:grid;
+      grid-template-columns:1.2fr .9fr .9fr;
+      gap:24px;
+      margin-bottom:24px;
+    }
+
+    .footer h4{
+      margin:0 0 12px;
+      color:#fff;
+      font-size:18px;
+    }
+
+    .footer p,.footer li,.footer a{
+      color:#d7ddeb;
+      font-size:14px;
+    }
+
+    .footer ul{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:grid;
+      gap:8px;
+    }
+
+    .footer-bottom{
+      border-top:1px solid rgba(255,255,255,.1);
+      padding-top:18px;
+      font-size:13px;
+      color:#b9c3d6;
+      line-height:1.7;
+    }
+
+    .disclaimer{
+      margin-top:10px;
+      color:#aeb8ca;
+      font-size:13px;
+    }
+
+    @media (max-width:1180px){
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3,.grid-2,.footer-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width:760px){
+      .nav{flex-direction:column;align-items:flex-start}
+      nav ul{justify-content:flex-start;gap:12px 16px}
+      .hero{padding:62px 0 52px}
+      .grid-4{grid-template-columns:1fr}
+      .cert-top{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div><strong>World Protocol Academy</strong> — јасна сертификација, структурирана проценка и професионална verification логика.</div>
+      <div>Сериозно • јасно • проверливо</div>
+    </div>
+  </div>
+
+  <header>
+    <div class="container nav">
+      <a href="index.html" class="brand">
+        <img src="logo.png" alt="World Protocol Academy logo" />
+        <div class="brand-text">
+          <h1>World Protocol Academy</h1>
+          <p>Certification Architecture</p>
+        </div>
+      </a>
+
+      <nav aria-label="Primary Navigation">
+        <ul>
+          <li><a href="index.html">Почетна</a></li>
+          <li><a href="programmes.html">Програми</a></li>
+          <li><a href="#certificates">4 сертификати</a></li>
+          <li><a href="#logic">Логика</a></li>
+          <li><a href="#verification">Verification</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="wpaws/">WPAWS</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <div class="container">
+        <span class="eyebrow">Сертификација • Проценка • Прагови • Verification • WPA Card</span>
+        <h2>Четири јасни WPA сертификати. Една сериозна логика на проценка, изведба и професионална проверливост.</h2>
+        <p>World Protocol Academy ја гради сертификацијата како структуриран професионален систем. Сертификатот не е награда за присуство, туку потврда за завршена програма, положена проценка, сценарио-изведба и јасно ниво на професионална подготвеност.</p>
+
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#certificates">Истражи ги 4-те сертификати</a>
+          <a class="btn btn-secondary" href="programmes.html">Отвори програми</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="logic">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Certification Logic</span>
+          <h3>Сертификатот во WPA е јасен, скалест и професионално одбранлив.</h3>
+          <p>WPA сертификацијата ја спојува теоријата со практиката. Таа не се темели само на читање, туку на структурирани модули, квизови, mid-tests, final tests, сценарија, practical tasks и јасни прагови на успех.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h4>Јасно ниво</h4>
+            <p>Секој сертификат припаѓа на едно јасно WPA ниво: Foundation, Professional, Advanced или Train-the-Trainer / Consultant.</p>
+          </article>
+
+          <article class="card">
+            <h4>Јасна проценка</h4>
+            <p>Секој сертификат е врзан со конкретна логика на проценка: квизови, тестови, сценарија и practical tasks.</p>
+          </article>
+
+          <article class="card">
+            <h4>Јасна иднина за verification</h4>
+            <p>Секој сертификат треба да биде подготвен за serial ID, QR verification и future digital traceability.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Централна формула</h4>
+          <p>Во WPA, сертификатот означува структурирано завршување, праг на знаење, сценарио-изведба и професионална подготвеност — не само присуство.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="certificates" class="accent-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Четирите WPA сертификати</span>
+          <h3>Четири стадиуми. Четири јасни професионални идентитети.</h3>
+          <p>Овие четири сертификати се јадрото на WPA certification ladder и основата за идниот public verification модел.</p>
+        </div>
+
+        <div class="grid-2">
+          <article class="cert-card">
+            <div class="cert-top">
+              <div>
+                <h4>Foundation Certificate in Protocol and Professional Conduct</h4>
+                <p>Влезен сертификат за основна подготвеност во протокол, етикеција, бонтон и формален јавен впечаток.</p>
+              </div>
+              <span class="cert-badge">Ниво 1</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-detail">
+                <strong>Core outcome</strong>
+                <span>Основна протоколарна писменост, професионална учтивост, basic formal readiness и сигурност во прв впечаток.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Assessment</strong>
+                <span>8 квизови, 1 mid-test, 1 final test и 1 кратко сценарио.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Best for</strong>
+                <span>Почетници, сериозни учесници, јавни и професионални улоги што бараат стабилен formal baseline.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-top">
+              <div>
+                <h4>Professional Certificate in State and Diplomatic Protocol</h4>
+                <p>Применет сертификат за протоколарни професионалци, институционални средини, официјални посети и церемонии.</p>
+              </div>
+              <span class="cert-badge">Ниво 2</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-detail">
+                <strong>Core outcome</strong>
+                <span>Способност за државен и дипломатски протокол, официјални настани, церемонијална координација и формална комуникација.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Assessment</strong>
+                <span>10 квизови, 1 mid-test, 1 final test, 2 сценарија и 1 correction task.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Best for</strong>
+                <span>Протоколарни служби, институционални тимови, дипломатски и cabinet-facing улоги.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-top">
+              <div>
+                <h4>Advanced Certificate in Protocol, Security and Institutional Readiness</h4>
+                <p>Напреден сертификат за сложени институционални и безбедносно-свесни средини, мултилатерална подготвеност и високо ниво расудување.</p>
+              </div>
+              <span class="cert-badge">Ниво 3</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-detail">
+                <strong>Core outcome</strong>
+                <span>Стратешка подготвеност, сигурно однесување, multilateral awareness и чувствителна formal judgement.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Assessment</strong>
+                <span>10 квизови, 1 mid-test, 1 final test, 3 сценарија и 1 briefing task.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Best for</strong>
+                <span>Напредни професионалци, high-responsibility средини, security-aware и executive-facing контексти.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="cert-card">
+            <div class="cert-top">
+              <div>
+                <h4>Train-the-Trainer / Consultant Certificate</h4>
+                <p>Специјализиран сертификат за идни обучувачи, фасилитатори, советници и носители на структурирано WPA знаење.</p>
+              </div>
+              <span class="cert-badge">Ниво 4</span>
+            </div>
+            <div class="cert-details">
+              <div class="cert-detail">
+                <strong>Core outcome</strong>
+                <span>Способност за професионално предавање, етичка испорака, сценарио-фасилитација и assessment design.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Assessment</strong>
+                <span>8 квизови, 1 final theory test, 2 teaching scenarios, 1 micro-teaching и 1 design task.</span>
+              </div>
+              <div class="cert-detail">
+                <strong>Best for</strong>
+                <span>Идни обучувачи, консултанти, programme designers и институционални носители на знаење.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="thresholds">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Прагови и score bands</span>
+          <h3>Јасни прагови на успех за јасна професионална тежина.</h3>
+          <p>WPA не ја разводнува сертификацијата. Праговите мора да бидат јасни, видливи и доследни.</p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card">
+            <h4>Pass</h4>
+            <p><strong>70%+</strong><br />Минимален праг за успешно завршување и издавање сертификат.</p>
+          </article>
+
+          <article class="card">
+            <h4>Distinction</h4>
+            <p><strong>85%+</strong><br />Силен резултат што покажува надпросечна подготвеност и дисциплинирано разбирање.</p>
+          </article>
+
+          <article class="card">
+            <h4>High Distinction</h4>
+            <p><strong>92%+</strong><br />Висок степен на mastery, сигурност и стабилна scenario / application performance.</p>
+          </article>
+
+          <article class="card">
+            <h4>Completion rule</h4>
+            <p>Сертификатот се врзува со успешно завршување, не само со крај на програмата.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Што носи тежина</h4>
+          <p>Во WPA тежината ја носат не само тестовите, туку комбинацијата од: модулска дисциплина, праг на успех, сценарија, practical tasks и финална проценка.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="verification" class="accent-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Serial и QR verification</span>
+          <h3>Идниот verification модел мора да биде едноставен, чист и доверлив.</h3>
+          <p>WPA certification layer треба да може јавно и професионално да се проверува без хаос, без лажна комплексност и без губење на сериозноста.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h4>Serial ID</h4>
+            <p>Секој сертификат треба да има единствен serial / certificate ID поврзан со programme level, completion status и date logic.</p>
+          </article>
+
+          <article class="card">
+            <h4>QR verification</h4>
+            <p>QR кодот треба да води кон verification page со статус, programme title, level и потврда дека сертификатот е валиден.</p>
+          </article>
+
+          <article class="card">
+            <h4>Member link</h4>
+            <p>Во следна фаза, verification може да се врзе и со WPA Card / member status слојот.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Што треба да се прикаже на verification page</h4>
+          <p>Име на сертификатот, programme level, completion status, score band, issue date, serial ID и public validity status — без непотребно откривање на чувствителни податоци.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Certification FAQ</span>
+          <h3>Кратки и јасни одговори за WPA сертификацијата.</h3>
+          <p>FAQ логиката треба да биде правно чиста, професионално мирна и недефанзивна.</p>
+        </div>
+
+        <div class="faq-list">
+          <article class="faq-item">
+            <h4>Дали WPA сертификатите се универзитетски степени?</h4>
+            <p>Не. WPA нуди structured non-degree професионална сертификација и институционална обука, не универзитетски степени.</p>
+          </article>
+
+          <article class="faq-item">
+            <h4>Дали сертификатот се добива само со присуство?</h4>
+            <p>Не. Сертификатот е врзан со завршување на програмата, праг на успех и предвидената проценка.</p>
+          </article>
+
+          <article class="faq-item">
+            <h4>Дали ќе има QR verification?</h4>
+            <p>Да, тоа е планиран развоен слој за идните сертификати и WPA Card поврзување.</p>
+          </article>
+
+          <article class="faq-item">
+            <h4>Дали сите програми имаат ист сертификат?</h4>
+            <p>Не. Секој сертификат припаѓа на одредено WPA ниво и има своја посебна тежина, логика и проценка.</p>
+          </article>
+
+          <article class="faq-item">
+            <h4>Дали институционални групи можат да добијат сертификација?</h4>
+            <p>Да, кога форматот и проценката се поставени така што овозможуваат јасно и фер оценување.</p>
+          </article>
+
+          <article class="faq-item">
+            <h4>Што е следно по сертификатот?</h4>
+            <p>Следно може да биде повисоко ниво, WPA Card, institutional pathway, trainer path или advanced specialization.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="accent-section">
+      <div class="container">
+        <div class="cta-box">
+          <h3>Сертификатот е потврда. Патеката продолжува.</h3>
+          <p>Во WPA, сертификацијата е дел од поголем систем: програма, проценка, verification, WPA Card и следно професионално ниво.</p>
+
+          <div class="cta-links">
+            <a href="programmes.html">Отвори програми</a>
+            <a href="wpa-card.html">Отвори WPA Card</a>
+            <a href="ai/student-desk.html">Прашај го WPA Student Desk</a>
+            <a href="wpaws/">Отвори WPAWS</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>World Protocol Academy</h4>
+          <p>Независна дигитална академија и професионална платформа за протокол, дипломатија, институционална комуникација, Professional English, безбедносно-свесна подготвеност и јавна репрезентација.</p>
+          <p class="disclaimer">WPA нуди структурирано non-degree професионално образование, certificate pathways и институционална обука. Не тврди дека доделува универзитетски степени.</p>
+        </div>
+
+        <div>
+          <h4>Сертификација</h4>
+          <ul>
+            <li><a href="#certificates">4 сертификати</a></li>
+            <li><a href="#thresholds">Прагови на успех</a></li>
+            <li><a href="#verification">Verification</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Навигација</h4>
+          <ul>
+            <li><a href="index.html">Почетна</a></li>
+            <li><a href="programmes.html">Програми</a></li>
+            <li><a href="wpa-card.html">WPA Card</a></li>
+            <li><a href="wpaws/">WPAWS</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        © <span id="year"></span> World Protocol Academy. All rights reserved.<br />
+        Skopje, 1000, Republic of North Macedonia<br />
+        <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
