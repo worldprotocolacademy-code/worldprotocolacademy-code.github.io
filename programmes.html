@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Programmes | World Protocol Academy</title>
-  <meta name="description" content="Structured professional programmes for protocol, diplomacy, communication, security awareness and executive readiness at World Protocol Academy." />
-  <meta name="keywords" content="World Protocol Academy programmes, protocol training, diplomacy programmes, certificate programmes, protocol courses, institutional training, executive readiness" />
+  <title>Програми | World Protocol Academy</title>
+  <meta name="description" content="Структурирани професионални програми за протокол, дипломатија, институционална комуникација, Professional English, безбедносна подготвеност и извршна јавна појава во World Protocol Academy." />
+  <meta name="keywords" content="World Protocol Academy програми, протокол, дипломатија, сертификати, Professional English, институционална обука, WPA" />
   <meta name="author" content="Assoc. Prof. Dr. Sande Smiljanov" />
-  <meta property="og:title" content="Programmes | World Protocol Academy" />
-  <meta property="og:description" content="Professional programmes for protocol, diplomacy, institutional communication, security awareness and executive readiness." />
+  <meta property="og:title" content="Програми | World Protocol Academy" />
+  <meta property="og:description" content="Структурирани професионални програми за протокол, дипломатија, институционална комуникација, Professional English и извршна подготвеност." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://worldprotocolacademy-code.github.io/programmes.html" />
   <meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png" />
@@ -32,6 +32,7 @@
       --navy-3:#0f1b30;
       --success:#1f6a45;
       --shadow:0 10px 30px rgba(20,31,52,.08);
+      --shadow-soft:0 8px 22px rgba(20,31,52,.06);
       --radius:18px;
       --max:1240px;
     }
@@ -43,10 +44,11 @@
       font-family:Arial, Helvetica, sans-serif;
       background:var(--bg);
       color:var(--text);
-      line-height:1.62;
+      line-height:1.65;
     }
 
     a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
     .container{width:min(var(--max), calc(100% - 32px)); margin:0 auto}
 
     .topbar{
@@ -97,7 +99,7 @@
       padding:6px;
       border-radius:12px;
       background:#fff;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
     .brand-text h1{
@@ -128,6 +130,7 @@
       color:var(--navy);
       font-size:14px;
       font-weight:700;
+      transition:.18s ease;
     }
 
     nav a:hover{color:var(--gold-dark)}
@@ -138,6 +141,7 @@
         radial-gradient(circle at top right, rgba(255,255,255,.08), transparent 38%);
       color:#fff;
       padding:84px 0 74px;
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
 
     .eyebrow{
@@ -157,14 +161,14 @@
       font-size:clamp(34px, 4vw, 56px);
       line-height:1.05;
       letter-spacing:-.9px;
-      max-width:980px;
+      max-width:1020px;
     }
 
     .hero p{
       margin:0;
       color:rgba(255,255,255,.9);
       font-size:18px;
-      max-width:920px;
+      max-width:960px;
     }
 
     .hero-actions{
@@ -192,7 +196,10 @@
       box-shadow:0 8px 20px rgba(0,0,0,.15);
     }
 
-    .btn-primary:hover{transform:translateY(-1px)}
+    .btn-primary:hover{
+      transform:translateY(-2px);
+      box-shadow:0 12px 24px rgba(0,0,0,.18);
+    }
 
     .btn-secondary{
       border:1px solid rgba(255,255,255,.22);
@@ -202,7 +209,7 @@
 
     .btn-secondary:hover{
       background:rgba(255,255,255,.09);
-      transform:translateY(-1px);
+      transform:translateY(-2px);
     }
 
     section{padding:78px 0}
@@ -213,7 +220,7 @@
     }
 
     .section-header{
-      max-width:940px;
+      max-width:980px;
       margin-bottom:34px;
     }
 
@@ -250,8 +257,14 @@
       border:1px solid rgba(0,0,0,.06);
       border-radius:var(--radius);
       padding:24px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
       height:100%;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
     }
 
     .card h4{
@@ -349,11 +362,17 @@
       border:1px solid rgba(0,0,0,.06);
       border-radius:18px;
       padding:22px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
       display:grid;
       grid-template-columns:56px 1fr;
       gap:16px;
       align-items:start;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .doctrine-item:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
     }
 
     .doctrine-num{
@@ -413,6 +432,13 @@
       border-radius:18px;
       padding:22px;
       height:100%;
+      box-shadow:var(--shadow-soft);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .module-box:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
     }
 
     .module-box h4{
@@ -421,13 +447,10 @@
       font-size:20px;
     }
 
-    .module-box ol{
-      margin:12px 0 0;
-      padding-left:18px;
+    .module-box p{
+      margin:0;
       color:var(--muted);
     }
-
-    .module-box li{margin-bottom:9px}
 
     .assessment-card{
       border-top:4px solid var(--gold);
@@ -455,7 +478,7 @@
       border:1px solid var(--line);
       border-radius:16px;
       padding:16px 18px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
     .schedule-time{
@@ -473,10 +496,16 @@
       border-top:5px solid var(--gold);
       border-radius:22px;
       padding:26px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
       height:100%;
       position:relative;
       overflow:hidden;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+
+    .cert-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow);
     }
 
     .cert-card::after{
@@ -558,7 +587,7 @@
       border-left:5px solid var(--gold);
       border-radius:18px;
       padding:24px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--shadow-soft);
     }
 
     .clarity-box h4{
@@ -612,9 +641,13 @@
       font-size:14px;
       color:#fff;
       background:rgba(255,255,255,.08);
+      transition:.18s ease;
     }
 
-    .cta-links a:hover{background:rgba(255,255,255,.14)}
+    .cta-links a:hover{
+      background:rgba(255,255,255,.16);
+      transform:translateY(-2px);
+    }
 
     .footer{
       background:var(--navy-3);
@@ -654,6 +687,7 @@
       padding-top:18px;
       font-size:13px;
       color:#b9c3d6;
+      line-height:1.7;
     }
 
     .disclaimer{
@@ -676,6 +710,7 @@
       .grid-4,.grid-5{grid-template-columns:1fr}
       .stats{grid-template-columns:1fr}
       .schedule-row{grid-template-columns:1fr;gap:8px}
+      .cert-top{flex-direction:column}
     }
   </style>
 </head>
@@ -683,8 +718,8 @@
 
   <div class="topbar">
     <div class="container topbar-inner">
-      <div><strong>World Protocol Academy</strong> — structured professional programmes for protocol, diplomacy, institutional communication and executive readiness.</div>
-      <div>Clear • Serious • Global-facing</div>
+      <div><strong>World Protocol Academy</strong> — структурирани професионални програми за протокол, дипломатија, институционална комуникација, Professional English и извршна подготвеност.</div>
+      <div>Јасно • сериозно • глобално ориентирано</div>
     </div>
   </div>
 
@@ -700,127 +735,207 @@
 
       <nav aria-label="Primary Navigation">
         <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="#doctrine">Doctrine</a></li>
-          <li><a href="#levels">Levels</a></li>
-          <li><a href="#assessment">Assessment</a></li>
-          <li><a href="#certificates">Certificates</a></li>
-          <li><a href="#tracks">Tracks</a></li>
-          <li><a href="#formats">Formats</a></li>
-          <li><a href="papers.html">Papers</a></li>
+          <li><a href="index.html">Почетна</a></li>
+          <li><a href="#logic">Програмска логика</a></li>
+          <li><a href="#levels">Нивоа</a></li>
+          <li><a href="#audience">За кого е WPA</a></li>
+          <li><a href="#certificates">Сертификација</a></li>
+          <li><a href="#tracks">Патеки</a></li>
+          <li><a href="#formats">Формати</a></li>
+          <li><a href="papers.html">Трудови</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
   <main>
+
     <section class="hero">
       <div class="container">
-        <span class="eyebrow">Programmes • Certificate Pathways • Institutional Training • Executive Readiness</span>
-        <h2>Professional programmes for protocol, diplomacy, institutional communication, security awareness and executive readiness.</h2>
-        <p>World Protocol Academy delivers structured learning pathways for professionals, institutions and serious learners who need applied competence, disciplined standards and credible preparation. The WPA programme model is built as one coherent architecture: Foundation, Professional, Advanced and Train-the-Trainer — supported by masterclasses, scenarios, assessment logic and future AI-assisted learning support.</p>
+        <span class="eyebrow">Програми • Сертификати • Членство • Институционална обука • WPA Card</span>
+        <h2>Структурирани професионални програми за протокол, дипломатија, институционална комуникација, Professional English и извршна подготвеност.</h2>
+        <p>World Protocol Academy нуди структурирано non-degree професионално образование за поединци, институции, дипломатски и протоколарни средини, јавни и извршни улоги и сериозни учесници кои бараат повеќе од краток курс. WPA програмите се изградени како една кохерентна академска и професионална скала: Foundation, Professional, Advanced и Train-the-Trainer / Consultant.</p>
 
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#levels">Explore Programme Levels</a>
-          <a class="btn btn-secondary" href="ai/student-desk.html">Ask the WPA Student Desk</a>
+          <a class="btn btn-primary" href="#levels">Истражи ги нивоата</a>
+          <a class="btn btn-secondary" href="ai/student-desk.html">Прашај го WPA Student Desk</a>
         </div>
 
         <div class="stats">
-          <div class="stat"><strong>4</strong><span>Programme levels</span></div>
-          <div class="stat"><strong>10</strong><span>Doctrine layers</span></div>
-          <div class="stat"><strong>4</strong><span>Certificate types</span></div>
-          <div class="stat"><strong>1</strong><span>Coherent WPA ladder</span></div>
+          <div class="stat"><strong>4</strong><span>Нивоа на програми</span></div>
+          <div class="stat"><strong>5</strong><span>Програмски семејства</span></div>
+          <div class="stat"><strong>4</strong><span>Основни сертификати</span></div>
+          <div class="stat"><strong>1</strong><span>Кохерентна WPA скала</span></div>
         </div>
       </div>
     </section>
 
-    <section id="doctrine">
+    <section id="logic">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">WPA Programme Logic</span>
+          <h3>Една академија. Четири нивоа. Повеќе програмски семејства. Јасна професионална насока.</h3>
+          <p>WPA не е збир од случајни курсеви. Таа работи со четири поврзани слоја на програмска логика: нивоа, програмски семејства, практични патеки и формати на испорака.</p>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <h4>Нивоа</h4>
+            <p>Нивоата ја покажуваат прогресијата на учење: од основна професионална подготвеност до напредна институционална зрелост и обучувачка способност.</p>
+          </article>
+
+          <article class="card">
+            <h4>Програмски семејства</h4>
+            <p>Семејствата ги покажуваат главните тематски столбови: протокол, дипломатија, комуникација, бонтон, Professional English и безбедносно-свесна подготвеност.</p>
+          </article>
+
+          <article class="card">
+            <h4>Патеки / Tracks</h4>
+            <p>Tracks се практични патеки за одредена публика: протоколарци, институции, дипломатија, PR, јавен настап, безбедност и обучувачи.</p>
+          </article>
+
+          <article class="card">
+            <h4>Формати</h4>
+            <p>Форматите го покажуваат начинот на испорака: самостојно темпо, live online, интензиви во живо и институционални групи.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Централна WPA формула</h4>
+          <p>World Protocol Academy ја спојува теоријата со практиката — академското знаење со применетата институционална подготвеност, професионалната дисциплина со реалната јавна и дипломатска изведба.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="doctrine" class="accent-section">
       <div class="container">
         <div class="section-header">
           <span class="label">WPA Programme Doctrine</span>
-          <h3>A ten-layer model for serious programme design.</h3>
-          <p>WPA programmes are not random course lists. They are built on a defined doctrine covering identity, audience, outcomes, modules, exercises, testing, scenarios, certification, delivery and operational logic.</p>
+          <h3>Десетслоен модел за сериозна програмска архитектура.</h3>
+          <p>Секоја WPA програма се гради според јасна доктрина. Програмата не е само тема, туку позиционирање, публика, исходи, модули, вежби, тестирање, сценарија, сертификација и оперативна логика.</p>
         </div>
 
         <div class="doctrine-grid">
           <article class="doctrine-item">
             <div class="doctrine-num">01</div>
             <div>
-              <h4>Programme Identity</h4>
-              <p>Every programme must have a clear title, level, track, audience, purpose and outcome. No vague naming, no diluted positioning.</p>
+              <h4>Програмски идентитет</h4>
+              <p>Секоја програма има јасен наслов, ниво, цел, публика и професионален исход.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">02</div>
             <div>
-              <h4>Audience Logic</h4>
-              <p>Each programme is built for a defined public: institutions, protocol staff, PR roles, executive teams, students, serious learners or future trainers.</p>
+              <h4>Audience logic</h4>
+              <p>Секоја програма е создадена за конкретна публика: институции, амбасади, протоколарни служби, PR професионалци, раководни лица, студенти или идни обучувачи.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">03</div>
             <div>
-              <h4>Learning Outcomes</h4>
-              <p>Every pathway must produce knowledge, application, judgement and professional conduct — not passive attendance.</p>
+              <h4>Learning outcomes</h4>
+              <p>WPA програмите не водат само до знаење, туку до примена, проценка, професионално однесување и извршна сигурност.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">04</div>
             <div>
-              <h4>Module Architecture</h4>
-              <p>Each programme is divided into clearly structured modules with core themes, subtopics and practical progression.</p>
+              <h4>Модулска архитектура</h4>
+              <p>Секоја програма е поделена на модули со јасен редослед, тежина и раст на сложеноста.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">05</div>
             <div>
-              <h4>Lesson Design</h4>
-              <p>Every module includes core lesson, applied explanation, case or scenario, practice task and mini assessment.</p>
+              <h4>Lesson design</h4>
+              <p>Секој модул содржи основна лекција, применето објаснување, случај или сценарио, практична задача и мини проценка.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">06</div>
             <div>
-              <h4>Exercise Logic</h4>
-              <p>WPA uses knowledge drills, scenario exercises, protocol correction tasks and communication-response exercises.</p>
+              <h4>Exercise logic</h4>
+              <p>WPA користи знаењски вежби, сценарија, correction tasks, protocol response logic и communication drills.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">07</div>
             <div>
-              <h4>Testing Structure</h4>
-              <p>Programme testing is structured by module quizzes, mid-tests, final tests and practical assessment where needed.</p>
+              <h4>Testing structure</h4>
+              <p>Оценувањето е вградено во програмата: модулски квизови, mid-tests, final tests, practical tasks и scenario assessment.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">08</div>
             <div>
-              <h4>Scenario Depth</h4>
-              <p>Scenario work grows by level: basic scenarios, applied scenarios, full institutional scenarios and trainer-level teaching analysis.</p>
+              <h4>Scenario depth</h4>
+              <p>Сценаријата растат по ниво: од базични до целосни институционални и trainer-level анализи.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">09</div>
             <div>
-              <h4>Certification Logic</h4>
-              <p>Certificates are tied to completion, score thresholds, scenario performance, progression and future verification standards.</p>
+              <h4>Certification logic</h4>
+              <p>Сертификатите се врзани со завршување, праг на успех, сценарио изведба и идно serial / digital verification.</p>
             </div>
           </article>
 
           <article class="doctrine-item">
             <div class="doctrine-num">10</div>
             <div>
-              <h4>Delivery and Operational Logic</h4>
-              <p>Every programme is designed for self-paced, live online, in-person and institutional delivery — without losing structure.</p>
+              <h4>Delivery and operational logic</h4>
+              <p>Секоја WPA програма е дизајнирана да работи во повеќе формати без да ја изгуби дисциплината на содржината.</p>
             </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">За кого е WPA</span>
+          <h3>Програми за реални професионални и институционални улоги.</h3>
+          <p>WPA е изградена за луѓе и тимови кои работат или сакаат да работат во формални, јавни, дипломатски, институционални и репрезентативни средини.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <h4>Министерства и јавни институции</h4>
+            <p>За службеници, раководители, секторски тимови и кабинети што работат со официјална комуникација, настани, посети и јавна репрезентација.</p>
+          </article>
+
+          <article class="card">
+            <h4>Амбасади и дипломатски мисии</h4>
+            <p>За дипломатски и административни средини што имаат потреба од протоколарна, комуникациска и претставничка дисциплина.</p>
+          </article>
+
+          <article class="card">
+            <h4>Протоколарни и кабинетски тимови</h4>
+            <p>За лица што координираат приеми, седење, редослед, посети, церемонии, говорници и високопротоколарни средини.</p>
+          </article>
+
+          <article class="card">
+            <h4>PR и комуникациски професионалци</h4>
+            <p>За луѓе што работат со пораки, настап, институционален тон, јавен говор, медиуми и службено претставување.</p>
+          </article>
+
+          <article class="card">
+            <h4>Раководни и јавни улоги</h4>
+            <p>За извршни лица, функционери, јавни говорници, домаќини, модератори и front-facing професионалци.</p>
+          </article>
+
+          <article class="card">
+            <h4>Студенти и идни обучувачи</h4>
+            <p>За сериозни учесници што сакаат систематски да се развиваат и постепено да влезат во WPA скалата, вклучително и Train-the-Trainer патеката.</p>
           </article>
         </div>
       </div>
@@ -829,98 +944,98 @@
     <section id="levels" class="accent-section">
       <div class="container">
         <div class="section-header">
-          <span class="label">Programme Levels</span>
-          <h3>Four programme levels. One coherent WPA learning ladder.</h3>
-          <p>WPA programmes are structured to move learners from foundational readiness to professional application, advanced responsibility and future teaching or consulting capacity.</p>
+          <span class="label">Четири нивоа</span>
+          <h3>Една јасна професионална скала: Foundation → Professional → Advanced → Train-the-Trainer</h3>
+          <p>WPA нивоата не се универзитетски степени. Тие се структурирани професионални certificate programmes со постепена прогресија на знаење, одговорност, сценарио длабочина и професионална зрелост.</p>
         </div>
 
         <div class="grid-2">
           <article class="card level-card">
-            <span class="small-kicker">Level 1</span>
-            <h4>Foundation Certificate</h4>
-            <p>Entry-level professional preparation in protocol, etiquette, bon ton, personal conduct, introductions, first impressions and basic institutional readiness.</p>
+            <span class="small-kicker">Ниво 1</span>
+            <h4>Foundation Certificate Programme</h4>
+            <p>Основно ниво за протокол, етикеција, бонтон, прв впечаток, формално однесување, професионална учтивост и темелна институционална ориентација.</p>
             <div class="level-meta">
               <div class="meta-row">
-                <span class="meta-pill">Duration: 6 weeks</span>
-                <span class="meta-pill">Contact hours: 24</span>
-                <span class="meta-pill">Modules: 8</span>
+                <span class="meta-pill">Траење: 6 недели</span>
+                <span class="meta-pill">Контакт часови: 24</span>
+                <span class="meta-pill">Модули: 8</span>
               </div>
               <div class="meta-row">
-                <span class="meta-pill">Module quizzes: 8 × 15</span>
+                <span class="meta-pill">Квизови: 8 × 15</span>
                 <span class="meta-pill">Mid-test: 30</span>
                 <span class="meta-pill">Final test: 50</span>
               </div>
               <div class="meta-row">
                 <span class="meta-pill">Scenario depth: S1</span>
-                <span class="meta-pill">Short scenario: 1</span>
+                <span class="meta-pill">Кратко сценарио: 1</span>
               </div>
             </div>
           </article>
 
           <article class="card level-card">
-            <span class="small-kicker">Level 2</span>
-            <h4>Professional Certificate</h4>
-            <p>Applied professional training in state protocol, diplomatic protocol, official visits, ceremonies, representation, communication and executive-facing practice.</p>
+            <span class="small-kicker">Ниво 2</span>
+            <h4>Professional Certificate Programme</h4>
+            <p>Средно професионално ниво за државен и дипломатски протокол, официјални посети, церемонии, претставување, комуникација и протоколарна примена во реални средини.</p>
             <div class="level-meta">
               <div class="meta-row">
-                <span class="meta-pill">Duration: 8 weeks</span>
-                <span class="meta-pill">Contact hours: 36</span>
-                <span class="meta-pill">Modules: 10</span>
+                <span class="meta-pill">Траење: 8 недели</span>
+                <span class="meta-pill">Контакт часови: 36</span>
+                <span class="meta-pill">Модули: 10</span>
               </div>
               <div class="meta-row">
-                <span class="meta-pill">Module quizzes: 10 × 20</span>
+                <span class="meta-pill">Квизови: 10 × 20</span>
                 <span class="meta-pill">Mid-test: 40</span>
                 <span class="meta-pill">Final test: 60</span>
               </div>
               <div class="meta-row">
                 <span class="meta-pill">Scenario depth: S2</span>
-                <span class="meta-pill">Scenarios: 2</span>
-                <span class="meta-pill">Practical task: 1</span>
+                <span class="meta-pill">Сценарија: 2</span>
+                <span class="meta-pill">Correction task: 1</span>
               </div>
             </div>
           </article>
 
           <article class="card level-card">
-            <span class="small-kicker">Level 3</span>
-            <h4>Advanced Certificate</h4>
-            <p>Higher-level preparation in protocol and security coordination, multilateral environments, strategic institutional conduct and high-responsibility readiness.</p>
+            <span class="small-kicker">Ниво 3</span>
+            <h4>Advanced Certificate Programme</h4>
+            <p>Напредно ниво за безбедносно-свесна протоколарна работа, мултилатерални средини, сложени институционални ситуации, координација и напредно професионално расудување.</p>
             <div class="level-meta">
               <div class="meta-row">
-                <span class="meta-pill">Duration: 10 weeks</span>
-                <span class="meta-pill">Contact hours: 44–48</span>
-                <span class="meta-pill">Modules: 10</span>
+                <span class="meta-pill">Траење: 10 недели</span>
+                <span class="meta-pill">Контакт часови: 44–48</span>
+                <span class="meta-pill">Модули: 10</span>
               </div>
               <div class="meta-row">
-                <span class="meta-pill">Module quizzes: 10 × 20–25</span>
+                <span class="meta-pill">Квизови: 10 × 20–25</span>
                 <span class="meta-pill">Mid-test: 50</span>
                 <span class="meta-pill">Final test: 80</span>
               </div>
               <div class="meta-row">
                 <span class="meta-pill">Scenario depth: S3</span>
-                <span class="meta-pill">Scenarios: 3</span>
-                <span class="meta-pill">Institutional task: 1</span>
+                <span class="meta-pill">Сценарија: 3</span>
+                <span class="meta-pill">Briefing task: 1</span>
               </div>
             </div>
           </article>
 
           <article class="card level-card">
-            <span class="small-kicker">Level 4</span>
-            <h4>Train-the-Trainer Certificate</h4>
-            <p>Instructor methodology, structured delivery, ethical teaching, case-based instruction and protocol pedagogy for future trainers and consultants.</p>
+            <span class="small-kicker">Ниво 4</span>
+            <h4>Train-the-Trainer / Consultant Programme</h4>
+            <p>Специјализирано ниво за идни обучувачи, фасилитатори, советници и носители на знаење во протокол, комуникација и институционална обука.</p>
             <div class="level-meta">
               <div class="meta-row">
-                <span class="meta-pill">Duration: 8 weeks</span>
-                <span class="meta-pill">Contact hours: 32–36</span>
-                <span class="meta-pill">Modules: 8</span>
+                <span class="meta-pill">Траење: 8 недели</span>
+                <span class="meta-pill">Контакт часови: 32–36</span>
+                <span class="meta-pill">Модули: 8</span>
               </div>
               <div class="meta-row">
-                <span class="meta-pill">Module quizzes: 8 × 15</span>
-                <span class="meta-pill">Final theory test: 50</span>
+                <span class="meta-pill">Квизови: 8 × 15</span>
+                <span class="meta-pill">Final theory: 50</span>
               </div>
               <div class="meta-row">
                 <span class="meta-pill">Teaching scenarios: 2</span>
                 <span class="meta-pill">Micro-teaching: 1</span>
-                <span class="meta-pill">Assessment design task: 1</span>
+                <span class="meta-pill">Design task: 1</span>
               </div>
             </div>
           </article>
@@ -928,88 +1043,214 @@
       </div>
     </section>
 
-    <section>
+    <section id="module-logic">
       <div class="container">
         <div class="section-header">
-          <span class="label">Module Design</span>
-          <h3>Every WPA module follows the same professional logic.</h3>
-          <p>WPA modules are designed as repeatable units of serious learning: concept, application, case, exercise and assessment.</p>
+          <span class="label">Модулска логика</span>
+          <h3>Секој WPA модул следи една иста сериозна образовна структура.</h3>
+          <p>Секој модул е repeatable learning unit: поим, примена, случај, практична задача и мини проценка.</p>
         </div>
 
         <div class="grid-5">
           <article class="module-box">
-            <h4>1. Core Lesson</h4>
-            <p>The main doctrinal lesson, concept or professional standard.</p>
+            <h4>1. Основна лекција</h4>
+            <p>Клучниот поим, правило, стандард или професионална рамка.</p>
           </article>
           <article class="module-box">
-            <h4>2. Applied Explanation</h4>
-            <p>How the rule or principle works in real professional settings.</p>
+            <h4>2. Применето објаснување</h4>
+            <p>Како тој поим функционира во реален професионален контекст.</p>
           </article>
           <article class="module-box">
-            <h4>3. Case or Scenario</h4>
-            <p>A structured professional situation used for reading and judgement.</p>
+            <h4>3. Случај или сценарио</h4>
+            <p>Конкретна ситуација за читање, анализа и расудување.</p>
           </article>
           <article class="module-box">
-            <h4>4. Practice Task</h4>
-            <p>A concrete exercise: correction, response, briefing, speaking or protocol logic.</p>
+            <h4>4. Практична задача</h4>
+            <p>Correction, briefing, response, speaking, writing или protocol logic вежба.</p>
           </article>
           <article class="module-box">
-            <h4>5. Mini Assessment</h4>
-            <p>A short quiz or evaluated task that checks real comprehension and readiness.</p>
+            <h4>5. Мини проценка</h4>
+            <p>Краток квиз или евалуација што ја проверува реалната подготвеност.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="assessment" class="accent-section">
+    <section id="families">
       <div class="container">
         <div class="section-header">
-          <span class="label">Assessment and Testing</span>
-          <h3>Assessment is built into the programme architecture.</h3>
-          <p>WPA does not treat certification as attendance. Each level is tied to a defined assessment model, scenario logic and score threshold.</p>
+          <span class="label">Програмски семејства</span>
+          <h3>Главните столбови на учење во World Protocol Academy.</h3>
+          <p>WPA не е изградена околу еден предмет, туку околу поврзани професионални столбови што заедно создаваат сериозна формална и институционална подготвеност.</p>
+        </div>
+
+        <div class="grid-2">
+          <article class="card">
+            <h4>Протокол, дипломатија и институционален поредок</h4>
+            <ul class="feature-list">
+              <li>Основи на протокол</li>
+              <li>Државен и дипломатски протокол</li>
+              <li>Официјални посети и церемонии</li>
+              <li>Ред на предимство, седење, знамиња и симболи</li>
+              <li>Мултилатерална логика и меѓународни институции</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Комуникација, PR и јавна појава</h4>
+            <ul class="feature-list">
+              <li>Официјално обраќање</li>
+              <li>Институционални пораки</li>
+              <li>PR дисциплина и медиумско однесување</li>
+              <li>Камера-подготвеност и јавен настап</li>
+              <li>Извршна комуникациска сигурност</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Бонтон, етикеција и професионално однесување</h4>
+            <ul class="feature-list">
+              <li>Прв впечаток и учтивост</li>
+              <li>Поздравување и претставување</li>
+              <li>Трпезариска култура и социјална формалност</li>
+              <li>Работно и деловно однесување</li>
+              <li>Everyday professionalism</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Безбедносно-свесна подготвеност</h4>
+            <ul class="feature-list">
+              <li>Протокол и безбедносна координација</li>
+              <li>Подготовка за посети на високо ниво</li>
+              <li>Чувствителни ситуации и дискретност</li>
+              <li>Summits и executive readiness</li>
+              <li>Институционална зрелост</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Professional English</h4>
+            <ul class="feature-list">
+              <li>Protocol English</li>
+              <li>Diplomatic English</li>
+              <li>Institutional Email English</li>
+              <li>Conference and Moderation English</li>
+              <li>Executive response phrases</li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h4>Train-the-Trainer методологија</h4>
+            <ul class="feature-list">
+              <li>Структурирана испорака</li>
+              <li>Teaching ethics</li>
+              <li>Scenario facilitation</li>
+              <li>Assessment design</li>
+              <li>Консултантска зрелост</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="tracks" class="accent-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Патеки / Flagship Tracks</span>
+          <h3>Јасни патеки за различни професионални публики.</h3>
+          <p>Нивоата покажуваат колку далеку си стигнал, а tracks покажуваат во која професионална насока се движиш.</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <span class="small-kicker">Track 1</span>
+            <h4>Protocol Professional Track</h4>
+            <p>За протоколарни единици, јавни институции, извршни канцеларии и професионалци што работат со формални обврски и репрезентација.</p>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">Track 2</span>
+            <h4>Communication and Presence Track</h4>
+            <p>За PR професионалци, говорници, јавни личности и луѓе што мораат да комуницираат јасно, контролирано и кредибилно.</p>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">Track 3</span>
+            <h4>Etiquette and Bon Ton Track</h4>
+            <p>За поширока публика што сака личен polish, социјална интелигенција, деловна учтивост и стабилен јавен впечаток.</p>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">Track 4</span>
+            <h4>Institutional and Diplomatic Track</h4>
+            <p>За министерства, амбасади, канцеларии за меѓународна соработка и дипломатски или мултилатерални средини.</p>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">Track 5</span>
+            <h4>Advanced Security-Aware Track</h4>
+            <p>За луѓе што работат таму каде протоколот се среќава со движење, чувствителност, дискретност и високопротоколарна координација.</p>
+          </article>
+
+          <article class="card">
+            <span class="small-kicker">Track 6</span>
+            <h4>Trainer and Consultant Track</h4>
+            <p>За идни обучувачи, едукатори, фасилитатори и советници што сакаат да испорачуваат WPA стандард.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="assessment">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Оценување и сертификација</span>
+          <h3>Сертификатот не се добива со присуство, туку со структурирана изведба.</h3>
+          <p>WPA сертификацијата е изградена врз логика на знаење, примена, сценарија и праг на успех.</p>
         </div>
 
         <div class="grid-4">
           <article class="card assessment-card">
             <h4>Foundation Assessment</h4>
             <ul class="assessment-list">
-              <li>8 module quizzes × 15 questions</li>
-              <li>1 mid-test × 30 questions</li>
-              <li>1 final test × 50 questions</li>
-              <li>1 short scenario</li>
-              <li>Focus: correctness, conduct, basic readiness</li>
+              <li>8 модулски квизови × 15</li>
+              <li>1 mid-test × 30</li>
+              <li>1 final test × 50</li>
+              <li>1 кратко сценарио</li>
+              <li>Фокус: основна подготвеност и професионално однесување</li>
             </ul>
           </article>
 
           <article class="card assessment-card">
             <h4>Professional Assessment</h4>
             <ul class="assessment-list">
-              <li>10 module quizzes × 20 questions</li>
-              <li>1 mid-test × 40 questions</li>
-              <li>1 final test × 60 questions</li>
-              <li>2 applied scenarios</li>
-              <li>1 practical correction task</li>
+              <li>10 модулски квизови × 20</li>
+              <li>1 mid-test × 40</li>
+              <li>1 final test × 60</li>
+              <li>2 сценарија</li>
+              <li>1 correction task</li>
             </ul>
           </article>
 
           <article class="card assessment-card">
             <h4>Advanced Assessment</h4>
             <ul class="assessment-list">
-              <li>10 module quizzes × 20–25 questions</li>
-              <li>1 mid-test × 50 questions</li>
-              <li>1 final test × 80 questions</li>
-              <li>3 institutional scenarios</li>
-              <li>1 briefing or memo task</li>
+              <li>10 модулски квизови × 20–25</li>
+              <li>1 mid-test × 50</li>
+              <li>1 final test × 80</li>
+              <li>3 институционални сценарија</li>
+              <li>1 briefing / memo task</li>
             </ul>
           </article>
 
           <article class="card assessment-card">
             <h4>Trainer Assessment</h4>
             <ul class="assessment-list">
-              <li>8 module quizzes × 15 questions</li>
-              <li>1 final theory test × 50 questions</li>
+              <li>8 модулски квизови × 15</li>
+              <li>1 final theory test × 50</li>
               <li>2 teaching scenarios</li>
-              <li>1 micro-teaching delivery</li>
+              <li>1 micro-teaching</li>
               <li>1 assessment design task</li>
             </ul>
           </article>
@@ -1017,187 +1258,7 @@
 
         <div class="clarity-box" style="margin-top:26px">
           <h4>Threshold logic</h4>
-          <p>Recommended pass line: <strong>70%</strong>. Distinction: <strong>85%+</strong>. High distinction: <strong>92%+</strong>. Certification should be linked to score, completion, scenario performance and future serial verification standards.</p>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container">
-        <div class="section-header">
-          <span class="label">Standard WPA Training Day</span>
-          <h3>How one live working day is structured.</h3>
-          <p>WPA live delivery is designed to be disciplined, practical and cognitively clean: concept, application, case, exercise and debrief.</p>
-        </div>
-
-        <div class="schedule">
-          <div class="schedule-row">
-            <div class="schedule-time">09:00–09:20</div>
-            <div class="schedule-body"><strong>Opening and review</strong> — learning focus, objectives, recap of prior session and professional framing.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">09:20–10:20</div>
-            <div class="schedule-body"><strong>Core lesson</strong> — doctrine, rules, concepts and structured explanation.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">10:20–10:35</div>
-            <div class="schedule-body"><strong>Short break</strong> — reset and preparation for applied work.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">10:35–11:20</div>
-            <div class="schedule-body"><strong>Applied explanation</strong> — demonstrations, worked examples and practical interpretation.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">11:20–12:10</div>
-            <div class="schedule-body"><strong>Case or scenario work</strong> — guided scenario reading, professional diagnosis and response logic.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">12:10–12:40</div>
-            <div class="schedule-body"><strong>Exercise or correction task</strong> — seating logic, wording correction, protocol response, briefing or communication task.</div>
-          </div>
-          <div class="schedule-row">
-            <div class="schedule-time">12:40–13:00</div>
-            <div class="schedule-body"><strong>Quiz, reflection and debrief</strong> — assessment, synthesis and next-step instruction.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="families" class="accent-section">
-      <div class="container">
-        <div class="section-header">
-          <span class="label">Programme Families</span>
-          <h3>The core learning pillars of World Protocol Academy.</h3>
-          <p>Each family represents a serious field of professional preparation: protocol, diplomacy, communication, etiquette, security awareness and institutional readiness.</p>
-        </div>
-
-        <div class="grid-2">
-          <article class="card">
-            <h4>Protocol, Diplomacy and Institutional Order</h4>
-            <ul class="feature-list">
-              <li>Foundations of Protocol</li>
-              <li>State Protocol</li>
-              <li>Diplomatic Protocol</li>
-              <li>Official Visits, Events and Ceremonies</li>
-              <li>Precedence, Seating, Flags and Symbols</li>
-              <li>Multilateral Protocol and International Institutions</li>
-              <li>Military and Ceremonial Protocol</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h4>Communication, PR and Public Presence</h4>
-            <ul class="feature-list">
-              <li>Official Speaking and Formal Address</li>
-              <li>Protocol Communication and Institutional Messaging</li>
-              <li>PR and Media-Facing Conduct</li>
-              <li>Camera Presence and On-Record Behaviour</li>
-              <li>Interpersonal and Diplomatic Communication</li>
-              <li>Executive Presence and Professional Confidence</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h4>Bon Ton, Etiquette and Professional Conduct</h4>
-            <ul class="feature-list">
-              <li>Personal Conduct and First Impressions</li>
-              <li>Introductions, Greetings and Courtesy</li>
-              <li>Conversation, Presence and Respectful Behaviour</li>
-              <li>Dining, Table Manners and Social Etiquette</li>
-              <li>Business Bon Ton and Workplace Conduct</li>
-              <li>Public Behaviour and Everyday Formality</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h4>Security, Readiness and Advanced Professionalism</h4>
-            <ul class="feature-list">
-              <li>Protocol and Security Coordination</li>
-              <li>High-Level Visit Readiness</li>
-              <li>Institutional Sensitivity and Discretion</li>
-              <li>Crisis-Sensitive Communication</li>
-              <li>Conference and Summit Protocol</li>
-              <li>Train-the-Trainer Methodology</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="tracks">
-      <div class="container">
-        <div class="section-header">
-          <span class="label">Flagship Tracks</span>
-          <h3>Clear pathways for distinct professional audiences.</h3>
-          <p>WPA is built around structured tracks, not a random course catalogue. Each track is designed for a specific professional context, level of responsibility and learning outcome.</p>
-        </div>
-
-        <div class="grid-3">
-          <article class="card">
-            <span class="small-kicker">Track 1</span>
-            <h4>Protocol Professional Track</h4>
-            <p>For protocol units, public institutions, executive offices and individuals preparing for formal professional responsibilities.</p>
-            <div class="tag-row">
-              <span class="tag">Protocol</span>
-              <span class="tag">Representation</span>
-              <span class="tag">Ceremonies</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <span class="small-kicker">Track 2</span>
-            <h4>Communication and Presence Track</h4>
-            <p>For speakers, PR professionals, public-facing staff, executive personnel and those requiring structured official presence.</p>
-            <div class="tag-row">
-              <span class="tag">Speaking</span>
-              <span class="tag">PR</span>
-              <span class="tag">Camera</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <span class="small-kicker">Track 3</span>
-            <h4>Etiquette and Bon Ton Track</h4>
-            <p>For broader audiences seeking stronger professionalism, social conduct, personal polish and public-facing confidence.</p>
-            <div class="tag-row">
-              <span class="tag">Etiquette</span>
-              <span class="tag">Bon Ton</span>
-              <span class="tag">Conduct</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <span class="small-kicker">Track 4</span>
-            <h4>Institutional and Diplomatic Track</h4>
-            <p>For ministries, embassies, international cooperation staff, cabinet offices and diplomatic or multilateral environments.</p>
-            <div class="tag-row">
-              <span class="tag">State</span>
-              <span class="tag">Diplomatic</span>
-              <span class="tag">Multilateral</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <span class="small-kicker">Track 5</span>
-            <h4>Advanced Security-Aware Track</h4>
-            <p>For professionals working where protocol intersects with discretion, movement, sensitivity and institutional readiness.</p>
-            <div class="tag-row">
-              <span class="tag">Security</span>
-              <span class="tag">Readiness</span>
-              <span class="tag">High-Level</span>
-            </div>
-          </article>
-
-          <article class="card">
-            <span class="small-kicker">Track 6</span>
-            <h4>Trainer and Consultant Track</h4>
-            <p>For those preparing to teach, facilitate, advise or build protocol and communication programmes in a serious structured format.</p>
-            <div class="tag-row">
-              <span class="tag">Trainer</span>
-              <span class="tag">Consultant</span>
-              <span class="tag">Instructor</span>
-            </div>
-          </article>
+          <p>Препорачан праг за положување: <strong>70%</strong>. Distinction: <strong>85%+</strong>. High distinction: <strong>92%+</strong>. Во идната WPA архитектура секој сертификат треба да носи programme title, level, score band, serial number и digital verification path.</p>
         </div>
       </div>
     </section>
@@ -1205,9 +1266,9 @@
     <section id="certificates" class="accent-section">
       <div class="container">
         <div class="section-header">
-          <span class="label">Certificates and Recognition</span>
-          <h3>Four certificates. Four clear professional stages.</h3>
-          <p>These are the four core WPA certificate cards to anchor the public platform, future verification logic and programme identity.</p>
+          <span class="label">4 WPA сертификати</span>
+          <h3>Четири јасни професионални стадиуми. Четири јасни јавни идентитети.</h3>
+          <p>Овие сертификати се јадрото на WPA ladder, јавниот кредибилитет и идниот verification модел.</p>
         </div>
 
         <div class="grid-2">
@@ -1215,23 +1276,22 @@
             <div class="cert-top">
               <div>
                 <h4>Foundation Certificate in Protocol and Professional Conduct</h4>
-                <p>Entry certificate for foundational readiness in protocol, etiquette, bon ton and basic institutional behaviour.</p>
+                <p>Влезен сертификат за основна подготвеност во протокол, етикеција, бонтон и формален јавен впечаток.</p>
               </div>
-              <span class="cert-badge">Level 1</span>
+              <span class="cert-badge">Ниво 1</span>
             </div>
-
             <div class="cert-details">
               <div class="cert-detail">
                 <strong>Core outcome</strong>
-                <span>Basic protocol literacy, social and professional conduct, first-impression discipline and elementary formal readiness.</span>
+                <span>Основна протоколарна писменост, професионална учтивост и почетна институционална сигурност.</span>
               </div>
               <div class="cert-detail">
                 <strong>Assessment</strong>
-                <span>8 module quizzes, 1 mid-test, 1 final test and 1 short scenario.</span>
+                <span>8 квизови, 1 mid-test, 1 final test и 1 кратко сценарио.</span>
               </div>
               <div class="cert-detail">
                 <strong>Format</strong>
-                <span>Self-paced, live online, in-person or institutional cohort.</span>
+                <span>Самостојно темпо, live online, во живо или институционална група.</span>
               </div>
             </div>
           </article>
@@ -1240,23 +1300,22 @@
             <div class="cert-top">
               <div>
                 <h4>Professional Certificate in State and Diplomatic Protocol</h4>
-                <p>Applied certificate for protocol professionals, institutional staff and those handling visits, ceremonies and formal representation.</p>
+                <p>Применет сертификат за протоколарни професионалци, институционални средини, официјални посети и церемонии.</p>
               </div>
-              <span class="cert-badge">Level 2</span>
+              <span class="cert-badge">Ниво 2</span>
             </div>
-
             <div class="cert-details">
               <div class="cert-detail">
                 <strong>Core outcome</strong>
-                <span>Applied competence in state protocol, diplomatic protocol, official visits, ceremonies and formal communication.</span>
+                <span>Способност за државен и дипломатски протокол, официјални настани, церемонијална координација и формална комуникација.</span>
               </div>
               <div class="cert-detail">
                 <strong>Assessment</strong>
-                <span>10 module quizzes, 1 mid-test, 1 final test, 2 scenarios and 1 practical correction task.</span>
+                <span>10 квизови, 1 mid-test, 1 final test, 2 сценарија и 1 correction task.</span>
               </div>
               <div class="cert-detail">
                 <strong>Format</strong>
-                <span>Professional cohort, institutional group or guided digital pathway.</span>
+                <span>Професионална група, институционален формат или водена дигитална патека.</span>
               </div>
             </div>
           </article>
@@ -1265,23 +1324,22 @@
             <div class="cert-top">
               <div>
                 <h4>Advanced Certificate in Protocol, Security and Institutional Readiness</h4>
-                <p>Higher-level certificate for multilateral settings, sensitive environments, security-aware coordination and advanced professional judgement.</p>
+                <p>Напреден сертификат за сложени институционални и безбедносно-свесни средини, мултилатерална подготвеност и високо ниво расудување.</p>
               </div>
-              <span class="cert-badge">Level 3</span>
+              <span class="cert-badge">Ниво 3</span>
             </div>
-
             <div class="cert-details">
               <div class="cert-detail">
                 <strong>Core outcome</strong>
-                <span>Strategic conduct, institutional judgement, multilateral readiness and protocol-security coordination.</span>
+                <span>Стратешка подготвеност, сигурно однесување, coordination awareness и чувствителна formal judgement.</span>
               </div>
               <div class="cert-detail">
                 <strong>Assessment</strong>
-                <span>10 module quizzes, 1 mid-test, 1 final test, 3 scenarios and 1 institutional briefing task.</span>
+                <span>10 квизови, 1 mid-test, 1 final test, 3 сценарија и 1 briefing task.</span>
               </div>
               <div class="cert-detail">
                 <strong>Format</strong>
-                <span>Advanced cohort, executive format or institutional delivery.</span>
+                <span>Напредна група, executive delivery или институционален формат.</span>
               </div>
             </div>
           </article>
@@ -1289,53 +1347,146 @@
           <article class="cert-card">
             <div class="cert-top">
               <div>
-                <h4>Train-the-Trainer Certificate in Protocol Education and Delivery</h4>
-                <p>Specialist certificate for future trainers, facilitators and consultants delivering protocol, communication and readiness programmes.</p>
+                <h4>Train-the-Trainer / Consultant Certificate</h4>
+                <p>Специјализиран сертификат за идни обучувачи, фасилитатори, советници и носители на структурирано WPA знаење.</p>
               </div>
-              <span class="cert-badge">Level 4</span>
+              <span class="cert-badge">Ниво 4</span>
             </div>
-
             <div class="cert-details">
               <div class="cert-detail">
                 <strong>Core outcome</strong>
-                <span>Structured lesson delivery, teaching ethics, scenario facilitation, assessment design and trainer-level professional credibility.</span>
+                <span>Способност за професионално предавање, етичка испорака, сценарио-фасилитација и assessment design.</span>
               </div>
               <div class="cert-detail">
                 <strong>Assessment</strong>
-                <span>8 module quizzes, 1 final theory test, 2 teaching scenarios, 1 micro-teaching and 1 evaluation design task.</span>
+                <span>8 квизови, 1 final theory test, 2 teaching scenarios, 1 micro-teaching и 1 design task.</span>
               </div>
               <div class="cert-detail">
                 <strong>Format</strong>
-                <span>Trainer cohort, consultancy pathway or institutional instructor preparation.</span>
+                <span>Trainer cohort, consultancy pathway или institutional instructor preparation.</span>
               </div>
             </div>
           </article>
         </div>
 
         <div class="clarity-box" style="margin-top:26px">
-          <h4>Future certificate model</h4>
-          <p>Each certificate should eventually include programme title, level, serial ID, completion date, score band and digital verification logic. The public platform should show them as structured professional certificates, not as vague attendance slips.</p>
+          <h4>Certificate + QR + verification logic</h4>
+          <p>Во идната WPA структура секој сертификат треба да биде врзан со serial verification, QR verification, programme traceability и јасен статус во WPA Card екосистемот.</p>
         </div>
       </div>
     </section>
 
-    <section id="masterclasses">
+    <section id="membership">
       <div class="container">
         <div class="section-header">
-          <span class="label">Single-Subject Masterclasses</span>
-          <h3>Focused topics with immediate practical value.</h3>
-          <p>WPA masterclasses are short, premium and directly applicable learning units for professionals, teams and institutional environments.</p>
+          <span class="label">Пристап и членство</span>
+          <h3>WPA не е само programme page. Таа е цел систем на пристап, учење и напредување.</h3>
+          <p>WPA програмите треба да се читаат заедно со membership logic, certificate logic, WPAWS access и идниот WPA Card слој.</p>
         </div>
 
         <div class="grid-4">
-          <article class="card"><h4>Order of Precedence</h4><p>Formal hierarchy, sequencing and practical application in institutional environments.</p></article>
-          <article class="card"><h4>Seating Arrangements</h4><p>Professional seating logic for meetings, delegations, dinners and ceremonies.</p></article>
-          <article class="card"><h4>Official Visits</h4><p>Arrivals, reception flow, delegation coordination and host readiness.</p></article>
-          <article class="card"><h4>Flags and Symbols</h4><p>State symbols, display order, institutional correctness and visual protocol.</p></article>
-          <article class="card"><h4>Official Speaking</h4><p>Formal address, tone discipline, greeting logic and official verbal structure.</p></article>
-          <article class="card"><h4>Camera Presence</h4><p>On-camera conduct, public appearance, message control and visual confidence.</p></article>
-          <article class="card"><h4>Business Bon Ton</h4><p>Introductions, courtesy, professional behaviour and socially intelligent conduct.</p></article>
-          <article class="card"><h4>Protocol and Security</h4><p>Coordination, discretion, movement awareness and readiness in sensitive formal situations.</p></article>
+          <article class="card">
+            <h4>Free</h4>
+            <p>Основен пристап до воведни содржини, preview на learning paths, кратки bot одговори и основна ориентација.</p>
+          </article>
+
+          <article class="card">
+            <h4>WPA Pro</h4>
+            <p>Подлабоки одговори, premium lessons, сценарија за вежбање и појасна професионална насока.</p>
+          </article>
+
+          <article class="card">
+            <h4>Academic Pro</h4>
+            <p>За студенти, истражувачи и сериозна академска подготовка со понапредна WPAWS логика и certificate preparation support.</p>
+          </article>
+
+          <article class="card">
+            <h4>Institutional / Executive</h4>
+            <p>За министерства, амбасади, универзитети, организации и извршни тимови со custom delivery и групни формати.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Идеален WPA пат</h4>
+          <p><strong>Free → Pro / Academic Pro → Certificate Programme → WPA Card → следно ниво → Institutional or Trainer pathway</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="card" class="accent-section">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">WPA Card</span>
+          <h3>Идниот WPA Card ќе биде идентификациски, пристапен и verification слој.</h3>
+          <p>WPA Card треба да стане слој на идентитет, членство, сертификација и пристап до бенефити.</p>
+        </div>
+
+        <div class="grid-4">
+          <article class="card">
+            <h4>WPA Free Card</h4>
+            <p>Основен дигитален идентификациски слој за бесплатен корисник и прв влез во WPA екосистемот.</p>
+          </article>
+
+          <article class="card">
+            <h4>WPA Pro Card</h4>
+            <p>За активни членови што користат premium content, подлабоки одговори и structured access.</p>
+          </article>
+
+          <article class="card">
+            <h4>WPA Academic Pro Card</h4>
+            <p>За студенти, истражувачи и сериозни академски корисници со понапредна verification и learning path логика.</p>
+          </article>
+
+          <article class="card">
+            <h4>WPA Institutional / Executive Card</h4>
+            <p>За институции, тимови, обучувачи, извршни и партнерски слоеви.</p>
+          </article>
+        </div>
+
+        <div class="clarity-box" style="margin-top:26px">
+          <h4>Card logic</h4>
+          <p>Во втора фаза WPA Card треба да се врзе со QR identification, certificate verification, member status, future partner benefits и institutional access control. QR е првиот и најрационален чекор.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="training-day">
+      <div class="container">
+        <div class="section-header">
+          <span class="label">Стандардна обука</span>
+          <h3>Како изгледа една чисто структурирана WPA работна сесија.</h3>
+          <p>WPA обуката е дисциплинирана, но не крута. Таа е дизајнирана да биде јасна, применлива и когнитивно чиста.</p>
+        </div>
+
+        <div class="schedule">
+          <div class="schedule-row">
+            <div class="schedule-time">09:00–09:20</div>
+            <div class="schedule-body"><strong>Отворање и преглед</strong> — цели, краток контекст и преглед на претходната сесија.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">09:20–10:20</div>
+            <div class="schedule-body"><strong>Основна лекција</strong> — доктрина, правила, поими и структурирано објаснување.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">10:20–10:35</div>
+            <div class="schedule-body"><strong>Кратка пауза</strong> — reset и подготовка за применета работа.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">10:35–11:20</div>
+            <div class="schedule-body"><strong>Применето објаснување</strong> — worked examples, демонстрации и практична интерпретација.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">11:20–12:10</div>
+            <div class="schedule-body"><strong>Случај или сценарио</strong> — читање, професионална дијагноза и response logic.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">12:10–12:40</div>
+            <div class="schedule-body"><strong>Практична задача</strong> — correction, briefing, response, writing или protocol logic task.</div>
+          </div>
+          <div class="schedule-row">
+            <div class="schedule-time">12:40–13:00</div>
+            <div class="schedule-body"><strong>Квиз, рефлексија и debrief</strong> — кратка проценка, синтеза и следни чекори.</div>
+          </div>
         </div>
       </div>
     </section>
@@ -1343,46 +1494,46 @@
     <section id="formats" class="accent-section">
       <div class="container">
         <div class="section-header">
-          <span class="label">Training Formats</span>
-          <h3>Flexible delivery. Serious standards.</h3>
-          <p>WPA programmes are designed to work across different formats without losing structure, quality or institutional seriousness.</p>
+          <span class="label">Формати на обука</span>
+          <h3>Флексибилна испорака, сериозен стандард.</h3>
+          <p>WPA програмите се дизајнирани да работат низ повеќе формати без да ја изгубат структурата, квалитетот и институционалната сериозност.</p>
         </div>
 
         <div class="grid-4">
           <article class="card">
-            <h4>Self-Paced Digital</h4>
-            <p>Independent learning supported by reading structure, quizzes, scenarios, guided progression and future AI-supported revision.</p>
+            <h4>Самостојно темпо</h4>
+            <p>Независно учење со јасна структура, квизови, сценарија, reading logic и идно AI-поддржано повторување.</p>
           </article>
 
           <article class="card">
             <h4>Live Online</h4>
-            <p>Real-time sessions, guided interaction, cohort rhythm, live feedback and structured instructor delivery.</p>
+            <p>Структурирани онлајн сесии, cohort rhythm, feedback и реално водена наставна интеракција.</p>
           </article>
 
           <article class="card">
-            <h4>In-Person Intensives</h4>
-            <p>Premium short-format classroom delivery with high practical density, briefings, simulations and formal exercises.</p>
+            <h4>Интензиви во живо</h4>
+            <p>Кратки, густи, премиум програми со практична работа, симулации, formal drills и executive-style обука.</p>
           </article>
 
           <article class="card">
-            <h4>Institutional Cohorts</h4>
-            <p>Closed, tailored learning for ministries, universities, embassies, public institutions, protocol teams and executive groups.</p>
+            <h4>Институционални групи</h4>
+            <p>Прилагодени формати за министерства, амбасади, универзитети, јавни институции, компании и професионални тимови.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section>
+    <section id="clarification">
       <div class="container">
         <div class="section-header">
-          <span class="label">Institutional Clarification</span>
-          <h3>Professional education with clear positioning.</h3>
-          <p>World Protocol Academy offers structured non-degree professional education, certificate programmes, masterclasses, executive preparation and institutional training. WPA operates as an independent premium academy and professional platform for serious applied learning.</p>
+          <span class="label">Институционална јасност</span>
+          <h3>Професионално образование со јасно позиционирање.</h3>
+          <p>World Protocol Academy нуди структурирано non-degree професионално образование, certificate programmes, masterclasses, executive preparation и институционални обуки.</p>
         </div>
 
         <div class="clarity-box">
-          <h4>What this means in practice</h4>
-          <p>WPA develops structured competence in protocol, diplomacy, institutional communication, etiquette, public presence and security-aware readiness. Where legal clarification is needed, WPA states it clearly and once — without weakening its professional identity.</p>
+          <h4>Што значи ова во пракса</h4>
+          <p>WPA не се претставува како државна дипломатска академија и не тврди дека издава универзитетски степени. Нејзината сила е во структурата, примената, сертификацијата, изворите, професионалната релевантност и дигиталната архитектура.</p>
         </div>
       </div>
     </section>
@@ -1390,18 +1541,21 @@
     <section class="accent-section">
       <div class="container">
         <div class="cta-box">
-          <h3>Next public programme pages to build</h3>
-          <p>Foundation Programme • Professional Programme • Advanced Programme • Train-the-Trainer • Certification and Assessment • Institutional Training • Professional English • AI Learning Support</p>
+          <h3>Избери ја својата WPA патека</h3>
+          <p>Без разлика дали започнуваш самостојно, се подготвуваш за јавна или институционална улога, работиш во протоколарна или дипломатска средина или градиш обучувачка патека — WPA има јасна влезна точка и јасен следен чекор.</p>
 
           <div class="cta-links">
-            <a href="protocol-professional-track.html">Open Protocol Track</a>
-            <a href="communication-presence-track.html">Open Communication Track</a>
-            <a href="institutional-diplomatic-track.html">Open Institutional Track</a>
-            <a href="ai/student-desk.html">Ask the WPA Student Desk</a>
+            <a href="#levels">Истражи Foundation</a>
+            <a href="#levels">Истражи Professional</a>
+            <a href="#levels">Истражи Advanced</a>
+            <a href="#certificates">Истражи Trainer / Consultant</a>
+            <a href="ai/student-desk.html">Прашај го WPA Student Desk</a>
+            <a href="partnerships/">Побарај институционален формат</a>
           </div>
         </div>
       </div>
     </section>
+
   </main>
 
   <footer class="footer">
@@ -1409,35 +1563,37 @@
       <div class="footer-grid">
         <div>
           <h4>World Protocol Academy</h4>
-          <p>Structured professional learning in protocol, diplomacy, security awareness, communication, etiquette, bon ton and institutional readiness.</p>
-          <p class="disclaimer">WPA offers structured non-degree professional education, certificate pathways and institutional training. It does not claim to award university degrees.</p>
+          <p>Независна дигитална академија и професионална платформа за протокол, дипломатија, институционална комуникација, Professional English, безбедносно-свесна подготвеност и јавна репрезентација.</p>
+          <p class="disclaimer">WPA нуди структурирано non-degree професионално образование, certificate pathways и институционална обука. Не тврди дека доделува универзитетски степени.</p>
         </div>
 
         <div>
-          <h4>Programme Areas</h4>
+          <h4>Програми и сертификација</h4>
           <ul>
-            <li><a href="#doctrine">Doctrine</a></li>
-            <li><a href="#levels">Levels</a></li>
-            <li><a href="#assessment">Assessment</a></li>
-            <li><a href="#certificates">Certificates</a></li>
-            <li><a href="#formats">Formats</a></li>
+            <li><a href="#logic">Програмска логика</a></li>
+            <li><a href="#levels">Нивоа</a></li>
+            <li><a href="#audience">За кого е WPA</a></li>
+            <li><a href="#certificates">Сертификација</a></li>
+            <li><a href="#formats">Формати</a></li>
           </ul>
         </div>
 
         <div>
-          <h4>Navigation</h4>
+          <h4>Навигација</h4>
           <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="papers.html">Papers</a></li>
+            <li><a href="index.html">Почетна</a></li>
+            <li><a href="papers.html">Трудови</a></li>
             <li><a href="privacy.html">Privacy</a></li>
             <li><a href="analytics-guide.html">Analytics Guide</a></li>
-            <li><a href="promotion-playbook.html">Promotion Playbook</a></li>
+            <li><a href="wpaws/">WPAWS</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        © <span id="year"></span> World Protocol Academy. All rights reserved.
+        © <span id="year"></span> World Protocol Academy. All rights reserved.<br />
+        Skopje, 1000, Republic of North Macedonia<br />
+        <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
       </div>
     </div>
   </footer>
