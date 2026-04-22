@@ -30,19 +30,20 @@
     if (lang === 'zh-Hant') return 'zht';
     return lang;
   }
-function readSavedLanguage(){
-  var forced = getUrlLanguage();
-  if (forced) return forced;
 
-  for (var i = 0; i < STORAGE_KEYS.length; i++) {
+  function getUrlLanguage(){
     try {
-      var value = localStorage.getItem(STORAGE_KEYS[i]);
-      if (value) return normalizeLanguage(value);
-    } catch (e) {}
+      var urlLang = new URLSearchParams(window.location.search).get('lang');
+      return urlLang ? normalizeLanguage(urlLang) : null;
+    } catch (e) {
+      return null;
+    }
   }
-  return DEFAULT_LANGUAGE;
-}
+
   function readSavedLanguage(){
+    var forced = getUrlLanguage();
+    if (forced) return forced;
+
     for (var i = 0; i < STORAGE_KEYS.length; i++) {
       try {
         var value = localStorage.getItem(STORAGE_KEYS[i]);
