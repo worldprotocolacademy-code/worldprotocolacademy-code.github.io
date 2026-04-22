@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WPA Audio Media Engine v1.3</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --bg2:#101a2e;
+      --panel:#15233c;
+      --panel2:#1b2d4b;
+      --panel3:#21365b;
+      --line:rgba(255,255,255,.08);
+      --text:#edf3fb;
+      --muted:#aab8cf;
+      --gold:#d8b76f;
+      --gold2:#b8892c;
+      --green:#2fa86f;
+      --blue:#4d8be8;
+      --red:#d15d5d;
+      --purple:#8e72db;
+      --radius:18px;
+      --shadow:0 20px 44px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,#09111d,#101b2f 48%,#0d1628);color:var(--text);font-family:Inter,Arial,Helvetica,sans-serif}
+    button,input,select,textarea{font:inherit}
+    a{text-decoration:none;color:inherit}
+    .app{min-height:100vh;display:grid;grid-template-columns:280px 1fr 340px;grid-template-rows:78px 1fr;grid-template-areas:"sidebar top utility" "sidebar main utility"}
+    .sidebar{grid-area:sidebar;background:rgba(9,15,26,.93);border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+    .topbar{grid-area:top;background:rgba(12,20,34,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:16px 22px;display:flex;justify-content:space-between;gap:12px;align-items:center;position:sticky;top:0;z-index:20}
+    .main{grid-area:main;padding:24px;overflow:auto}
+    .utility{grid-area:utility;background:rgba(12,20,34,.93);border-left:1px solid var(--line);padding:18px;position:sticky;top:0;height:100vh;overflow:auto}
+    .brand{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:16px;margin-bottom:18px}
+    .brand-logo{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--gold),#8d6822);display:flex;align-items:center;justify-content:center;font-weight:900;color:#111;box-shadow:var(--shadow)}
+    .brand h1{margin:0;font-size:16px;line-height:1.15}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:12px}
+    .label{margin:16px 8px 8px;color:var(--gold);text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.4px}
+    .nav{display:grid;gap:8px}
+    .nav-btn{width:100%;padding:12px 14px;border-radius:14px;border:1px solid transparent;background:transparent;color:var(--text);text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
+    .nav-btn:hover{background:rgba(255,255,255,.05);border-color:var(--line)}
+    .nav-btn.active{background:linear-gradient(135deg,rgba(216,183,111,.18),rgba(216,183,111,.08));border-color:rgba(216,183,111,.34)}
+    .nav-btn small{color:var(--muted)}
+    .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero{padding:24px;margin-bottom:18px;background:radial-gradient(circle at top right, rgba(216,183,111,.16), transparent 35%),linear-gradient(180deg,var(--panel2),var(--panel))}
+    .eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid rgba(216,183,111,.28);font-size:12px;font-weight:800;letter-spacing:.35px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+    .hero h2{margin:0 0 10px;font-size:30px;line-height:1.08}
+    .hero p{margin:0;max-width:860px;color:var(--muted);line-height:1.62}
+    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .btn{border:none;border-radius:12px;padding:10px 14px;min-height:42px;font-weight:700;cursor:pointer;transition:.16s ease}
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#101726}
+    .btn-secondary{background:var(--panel);border:1px solid var(--line);color:var(--text)}
+    .btn-blue{background:rgba(77,139,232,.16);border:1px solid rgba(77,139,232,.3);color:#dce9ff}
+    .btn-danger{background:rgba(209,93,93,.14);border:1px solid rgba(209,93,93,.28);color:#ffd9d9}
+    .btn-purple{background:rgba(142,114,219,.16);border:1px solid rgba(142,114,219,.28);color:#eadfff}
+    .search,.control{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:10px 12px;min-height:42px}
+    .search{min-width:220px}
+    .top-left h2{margin:0;font-size:20px}
+    .top-left p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .top-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .module{display:none}
+    .module.active{display:block}
+    .grid{display:grid;gap:16px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .card{padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01))}
+    .card h3,.card h4{margin:0 0 8px}
+    .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.58}
+    .meta{margin-top:10px;color:var(--muted);font-size:12px}
+    .kpi{padding:18px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(216,183,111,.12),rgba(255,255,255,.02))}
+    .kpi strong{display:block;font-size:29px;margin-bottom:6px}
+    .kpi span{font-size:13px;color:var(--muted)}
+    .section-title{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 0 12px}
+    .section-title h3{margin:0;font-size:20px}
+    .section-title p{margin:0;color:var(--muted);font-size:13px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field{display:grid;gap:8px}
+    .field.full{grid-column:1 / -1}
+    .field label{font-size:12px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.3px}
+    .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:12px 14px}
+    .field textarea{min-height:120px;resize:vertical}
+    .split{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .preview{white-space:pre-wrap;line-height:1.6;font-size:14px;color:#eef4fc;min-height:220px}
+    .list{display:grid;gap:10px;padding-left:18px;color:var(--muted)}
+    .mini-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .project-list{display:grid;gap:10px}
+    .project-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);cursor:pointer}
+    .project-item.active{background:rgba(216,183,111,.08);border-color:rgba(216,183,111,.3)}
+    .project-item strong{display:block;margin-bottom:4px}
+    .project-item span{font-size:12px;color:var(--muted)}
+    .tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;font-weight:800;background:rgba(255,255,255,.03)}
+    .tag.gold{color:var(--gold)} .tag.green{color:#84ddb1} .tag.blue{color:#bfd8ff} .tag.red{color:#ffadad} .tag.purple{color:#eadfff}
+    .table-like{display:grid;gap:8px}
+    .row{display:grid;grid-template-columns:1.45fr .85fr .85fr .7fr auto;gap:10px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);align-items:center}
+    .row.header{font-weight:800;background:rgba(255,255,255,.05)}
+    .status-select{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);border-radius:10px;padding:6px 8px}
+    .utility-card{padding:16px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel),rgba(255,255,255,.02));margin-bottom:14px}
+    .utility-card h4{margin:0 0 10px;font-size:15px}
+    .utility-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+    .note-area{width:100%;min-height:120px;border:1px solid var(--line);background:#0d1524;color:var(--text);border-radius:14px;padding:12px;resize:vertical}
+    .results{display:grid;gap:10px}
+    .result-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+    .empty{padding:18px;border:1px dashed rgba(255,255,255,.14);border-radius:16px;color:var(--muted);text-align:center;background:rgba(255,255,255,.02)}
+    .history{display:grid;gap:10px}
+    .history-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+    .progress-band{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+    .step{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}
+    .step strong{display:block;margin-bottom:4px}
+    .filters{display:flex;gap:10px;flex-wrap:wrap}
+    .output-toolbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+    .output-card{position:relative}
+    .output-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .flash{position:fixed;right:24px;bottom:24px;z-index:100;min-width:260px;max-width:420px;padding:14px 16px;border-radius:16px;border:1px solid rgba(216,183,111,.25);background:linear-gradient(180deg,rgba(23,39,66,.98),rgba(17,28,48,.98));box-shadow:var(--shadow);opacity:0;transform:translateY(10px);pointer-events:none;transition:.22s ease}
+    .flash.show{opacity:1;transform:translateY(0)}
+    .modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.56);display:none;align-items:center;justify-content:center;z-index:120;padding:20px}
+    .modal-wrap.show{display:flex}
+    .modal{width:min(760px,100%);max-height:88vh;overflow:auto;padding:22px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+    .modal h3{margin:0 0 8px}
+    .modal p{margin:0 0 14px;color:var(--muted);line-height:1.6}
+    .pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    @media (max-width:1360px){.app{grid-template-columns:250px 1fr;grid-template-rows:78px auto auto;grid-template-areas:"sidebar top" "sidebar main" "sidebar utility"}.utility{height:auto;position:static;border-left:none;border-top:1px solid var(--line)}}
+    @media (max-width:980px){.app{grid-template-columns:1fr;grid-template-rows:auto auto auto auto;grid-template-areas:"top" "sidebar" "main" "utility"}.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}.topbar{position:static}.grid-4,.grid-3,.grid-2,.form-grid,.split,.progress-band{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="flash" id="flashMessage"></div>
+
+<div class="modal-wrap show" id="welcomeModal">
+  <div class="modal">
+    <h3>WPA Audio Media Engine v1.3</h3>
+    <p>Ова е production polish pass. Вклучува onboarding, import/export state, output filtering, premium gating, shortcuts, guide mode, demo mode и посилен dashboard workflow.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h4>Fast Start</h4>
+        <p>1. Избери проект. 2. Отвори модул. 3. Генерирај preview. 4. Create Output Card. 5. Провери Delivery Center.</p>
+      </div>
+      <div class="card">
+        <h4>Power Tools</h4>
+        <p>Ctrl/Cmd+S за Save. Import state JSON. Demo 360 за guided flow. Guide module за обука и onboarding.</p>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-primary" id="closeWelcomeBtn">Start Engine</button>
+      <button class="btn btn-secondary" id="openGuideFromWelcome">Open Guide</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo">WPA</div>
+      <div>
+        <h1 id="brandTitle">WPA Audio Media Engine v1.3</h1>
+        <p id="brandSubtitle">Production polish pass with onboarding and command workflow.</p>
+      </div>
+    </div>
+
+    <div class="label">Modules</div>
+    <div class="nav">
+      <button class="nav-btn active" data-module="dashboard"><span>Dashboard</span><small>Overview</small></button>
+      <button class="nav-btn" data-module="audiobooks"><span>Audiobook Studio</span><small>Books</small></button>
+      <button class="nav-btn" data-module="voice"><span>Sande Voice Engine</span><small>Persona</small></button>
+      <button class="nav-btn" data-module="generator"><span>Content Generator</span><small>Scripts</small></button>
+      <button class="nav-btn" data-module="viral"><span>Viral Media Studio</span><small>Short-form</small></button>
+      <button class="nav-btn" data-module="protocol"><span>Protocol Scenario Lab</span><small>WPA core</small></button>
+      <button class="nav-btn" data-module="production"><span>Audio Production Lab</span><small>TTS flow</small></button>
+      <button class="nav-btn" data-module="delivery"><span>Delivery Center</span><small>Outputs</small></button>
+      <button class="nav-btn" data-module="monetization"><span>Monetization Engine</span><small>Revenue</small></button>
+      <button class="nav-btn" data-module="demo"><span>Demo 360</span><small>Walkthrough</small></button>
+      <button class="nav-btn" data-module="guide"><span>Guide</span><small>How to use</small></button>
+    </div>
+
+    <div class="label">Project Control</div>
+    <div class="mini-actions">
+      <button class="btn btn-primary" id="newProjectBtn">New</button>
+      <button class="btn btn-secondary" id="duplicateProjectBtn">Duplicate</button>
+    </div>
+    <div class="project-list" id="projectList" style="margin-top:12px"></div>
+  </aside>
+
+  <header class="topbar">
+    <div class="top-left">
+      <h2 id="topbarTitle">Dashboard</h2>
+      <p id="topbarSubtitle">Operational WPA command center for audio, voice, protocol and delivery workflows.</p>
+    </div>
+    <div class="top-right">
+      <input class="search" id="globalSearch" placeholder="Search project, book, scenario, output..." />
+      <select class="control" id="languageSelect">
+        <option value="mk">MK</option>
+        <option value="en">EN</option>
+      </select>
+      <select class="control" id="modeSelect">
+        <option value="academic">Academic</option>
+        <option value="formal">Formal</option>
+        <option value="viral">Viral</option>
+        <option value="executive">Executive</option>
+      </select>
+      <select class="control" id="planSelect">
+        <option value="free">Free</option>
+        <option value="pro">Pro</option>
+        <option value="premium">Premium</option>
+        <option value="institutional">Institutional</option>
+      </select>
+      <button class="btn btn-secondary" id="saveBtn">Save</button>
+      <button class="btn btn-blue" id="renameBtn">Rename</button>
+      <button class="btn btn-purple" id="importBtn">Import</button>
+      <button class="btn btn-primary" id="exportBtn">Export</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" />
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="module active" id="module-dashboard">
+      <div class="hero panel">
+        <div class="eyebrow">WPA engine production polish</div>
+        <h2>From knowledge to audiobooks, voice outputs, protocol packs and monetized delivery.</h2>
+        <p>v1.3 додава onboarding modal, import/export, output filters, plan gates, shortcuts, cleaner dashboard wiring и поблиско production feel.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-jump="audiobooks">Open Audiobooks</button>
+          <button class="btn btn-secondary" data-jump="protocol">Open Protocol Lab</button>
+          <button class="btn btn-secondary" data-jump="demo">Open Demo 360</button>
+          <button class="btn btn-secondary" data-jump="guide">Open Guide</button>
+        </div>
+        <div class="progress-band">
+          <div class="step"><strong>1. Create / Select Project</strong><span class="meta">Everything binds to the active project.</span></div>
+          <div class="step"><strong>2. Generate Preview</strong><span class="meta">Voice, content, protocol or audio preparation.</span></div>
+          <div class="step"><strong>3. Create Output Card</strong><span class="meta">Cards flow to dashboard and delivery.</span></div>
+          <div class="step"><strong>4. Deliver + Monetize</strong><span class="meta">Status and product logic close the loop.</span></div>
+        </div>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="kpi"><strong id="kpiProjects">0</strong><span>Projects</span></div>
+        <div class="kpi"><strong id="kpiOutputs">0</strong><span>Output Cards</span></div>
+        <div class="kpi"><strong id="kpiDelivery">0</strong><span>Delivery Items</span></div>
+        <div class="kpi"><strong id="kpiRevenue">EUR 0</strong><span>Revenue Snapshot</span></div>
+      </div>
+
+      <div class="section-title">
+        <h3>Output Cards</h3>
+        <p>Filter and export from one place.</p>
+      </div>
+      <div class="output-toolbar">
+        <div class="filters">
+          <select class="control" id="outputFilter">
+            <option value="all">All Modules</option>
+            <option value="Audiobook Studio">Audiobook Studio</option>
+            <option value="Sande Voice Engine">Sande Voice Engine</option>
+            <option value="Content Generator">Content Generator</option>
+            <option value="Viral Media Studio">Viral Media Studio</option>
+            <option value="Protocol Scenario Lab">Protocol Scenario Lab</option>
+            <option value="Audio Production Lab">Audio Production Lab</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-3" id="outputCards"></div>
+
+      <div class="section-title">
+        <h3>Project History</h3>
+        <p>What happened inside the active project.</p>
+      </div>
+      <div class="panel" style="padding:18px">
+        <div class="history" id="historyList"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-audiobooks">
+      <div class="section-title"><h3>Audiobook Studio</h3><p>Books, chapters and production handoff.</p></div>
+      <div class="split">
+        <div class="panel" style="padding:18px">
+          <div class="form-grid">
+            <div class="field"><label>Book</label><select id="bookSelect"></select></div>
+            <div class="field"><label>Chapter</label><select id="chapterSelect"></select></div>
+          </div>
+          <div class="section-title"><h3>Transcript</h3><p>Starter content preview.</p></div>
+          <div class="card preview" id="chapterPreview"></div>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="playBtn">Play</button>
+            <button class="btn btn-secondary" id="pauseBtn">Pause</button>
+            <button class="btn btn-secondary" id="toProductionBtn">Send to Production</button>
+            <button class="btn btn-blue" id="chapterOutputBtn">Create Output Card</button>
+          </div>
+        </div>
+        <div class="panel" style="padding:18px">
+          <div class="card"><h4>Narration Profile</h4><p id="chapterEstimate">Estimated duration: 9 min</p><div class="meta" id="bookMeta">Source metadata</div></div>
+          <div class="card" style="margin-top:14px"><h4>Module Memory</h4><p>Selected chapter can move directly to Production and Delivery without re-copying.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="module" id="module-voice">
+      <div class="section-title"><h3>Sande Voice Engine</h3><p>Persona, topic and controlled WPA voice output.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="form-grid">
+          <div class="field"><label>Voice Profile</label><select id="voiceProfileSelect"></select></div>
+          <div class="field"><label>Voice Mode</label><select id="voiceModeSelect"><option>Academic</option><option>Formal</option><option>Executive</option><option>Viral</option></select></div>
+          <div class="field full"><label>Topic</label><input id="voiceTopic" placeholder="Protocol, diplomacy, public presence..." /></div>
+          <div class="field full"><label>Context</label><textarea id="voiceContext" placeholder="Enter context for the voice output..."></textarea></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="voiceGenerateBtn">Generate</button>
+          <button class="btn btn-secondary" id="voiceCopyBtn">Copy</button>
+          <button class="btn btn-blue" id="voiceOutputBtn">Create Output Card</button>
+        </div>
+        <div class="card preview" id="voicePreview" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-generator">
+      <div class="section-title"><h3>Content Generator</h3><p>Lessons, summaries, speeches, captions and formal outputs.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="form-grid">
+          <div class="field"><label>Content Type</label><select id="contentType"><option>Lesson</option><option>Summary</option><option>Protocol Speech</option><option>Executive Message</option><option>Social Caption</option><option>Article Intro</option></select></div>
+          <div class="field"><label>Tone</label><select id="contentTone"><option>Formal</option><option>Academic</option><option>Warm</option><option>Authoritative</option></select></div>
+          <div class="field full"><label>Topic</label><input id="contentTopic" placeholder="Enter topic..." /></div>
+          <div class="field full"><label>Source Notes</label><textarea id="contentNotes" placeholder="Paste source notes or outline..."></textarea></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="contentGenerateBtn">Generate</button>
+          <button class="btn btn-secondary" id="contentCopyBtn">Copy</button>
+          <button class="btn btn-blue" id="contentOutputBtn">Create Output Card</button>
+        </div>
+        <div class="card preview" id="contentPreview" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-viral">
+      <div class="section-title"><h3>Viral Media Studio</h3><p>Hooks, scenes and CTA logic.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="form-grid">
+          <div class="field"><label>Platform</label><select id="platformSelect"><option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option><option>Facebook</option><option>LinkedIn</option></select></div>
+          <div class="field"><label>Video Tone</label><select id="viralTone"><option>Sharp</option><option>Prestige</option><option>Curious</option><option>Authority</option></select></div>
+          <div class="field full"><label>Theme</label><input id="viralTheme" placeholder="Enter viral theme..." /></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="viralGenerateBtn">Generate Viral Script</button>
+          <button class="btn btn-blue" id="viralOutputBtn">Create Output Card</button>
+        </div>
+        <div class="grid grid-2" style="margin-top:16px">
+          <div class="card"><h4>Hook</h4><p id="viralHook">A protocol mistake can destroy authority before a word is spoken.</p></div>
+          <div class="card"><h4>Viral Score</h4><p id="viralScore">82 / 100</p></div>
+        </div>
+        <div class="card preview" id="viralPreview" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-protocol">
+      <div class="section-title"><h3>Protocol Scenario Lab</h3><p>Scenario, checklist, timeline and risk pack.</p></div>
+      <div class="split">
+        <div class="panel" style="padding:18px">
+          <div class="field"><label>Scenario</label><select id="scenarioSelect"></select></div>
+          <div class="card" style="margin-top:16px"><h4 id="scenarioTitle">Official Visit</h4><p id="scenarioSummary">Structured preparation for official arrival, reception line, seating, press moment and departure logic.</p></div>
+          <div class="section-title"><h3>Checklist</h3><p>Operational order.</p></div>
+          <div class="card"><ul class="list" id="scenarioChecklist"></ul></div>
+        </div>
+        <div class="panel" style="padding:18px">
+          <div class="section-title"><h3>Timeline</h3><p>Event flow.</p></div>
+          <div class="card"><ul class="list" id="scenarioTimeline"></ul></div>
+          <div class="section-title"><h3>Risk Notes</h3><p>Sensitive points.</p></div>
+          <div class="card preview" id="scenarioRisks"></div>
+          <div class="hero-actions" style="margin-top:16px">
+            <button class="btn btn-primary" id="protocolPackBtn">Build Protocol Pack</button>
+            <button class="btn btn-blue" id="protocolOutputBtn">Create Output Card</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="module" id="module-production">
+      <div class="section-title"><h3>Audio Production Lab</h3><p>TTS structure, pacing and production queue.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="form-grid">
+          <div class="field"><label>Production Mode</label><select id="productionMode"><option>Audiobook</option><option>Podcast</option><option>Lecture</option><option>Formal Speech</option></select></div>
+          <div class="field"><label>Pacing</label><select id="productionPacing"><option>Calm</option><option>Measured</option><option>Dynamic</option></select></div>
+          <div class="field full"><label>Narration Script</label><textarea id="productionText" placeholder="Narration-ready text..."></textarea></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="productionPrepareBtn">Prepare Audio Structure</button>
+          <button class="btn btn-blue" id="productionOutputBtn">Create Output Card</button>
+        </div>
+        <div class="card preview" id="productionPreview" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-delivery">
+      <div class="section-title"><h3>Delivery Center</h3><p>Status, versions and handoff readiness.</p></div>
+      <div class="hero-actions" style="margin-bottom:14px">
+        <button class="btn btn-secondary" id="markAllReadyBtn">Mark all ready</button>
+        <button class="btn btn-danger" id="clearDeliveryBtn">Clear delivery list</button>
+      </div>
+      <div class="panel" style="padding:18px">
+        <div class="table-like" id="deliveryTable"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-monetization">
+      <div class="section-title"><h3>Monetization Engine</h3><p>Revenue logic and premium packaging.</p></div>
+      <div class="grid grid-3">
+        <div class="card"><h4>Free</h4><p>Preview access, light usage and starter flows.</p></div>
+        <div class="card"><h4>Pro</h4><p>Richer voice and viral workflows.</p></div>
+        <div class="card"><h4>Institutional</h4><p>Pack logic, licensing and executive delivery.</p></div>
+      </div>
+      <div class="panel" style="padding:18px;margin-top:16px">
+        <div class="form-grid">
+          <div class="field"><label>Product Type</label><select id="productType"><option>Audiobook Pack</option><option>Voice Pack</option><option>Protocol Scenario Pack</option><option>Viral Script Pack</option></select></div>
+          <div class="field"><label>Estimated Units</label><input id="estimatedUnits" type="number" value="100" /></div>
+          <div class="field"><label>Price Per Unit</label><input id="pricePerUnit" type="number" value="29" /></div>
+          <div class="field"><label>Conversion %</label><input id="conversionRate" type="number" value="8" /></div>
+        </div>
+        <div class="hero-actions"><button class="btn btn-primary" id="revenueCalcBtn">Calculate</button></div>
+        <div class="card preview" id="revenuePreview" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <section class="module" id="module-demo">
+      <div class="section-title"><h3>Demo 360</h3><p>Guided walkthrough like the other 360 flow.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="card">
+          <h4>360 Demo Flow</h4>
+          <ol class="list" style="padding-left:20px">
+            <li>Open Audiobook Studio and select a chapter.</li>
+            <li>Send the chapter to Audio Production.</li>
+            <li>Generate a Sande-style voice output.</li>
+            <li>Build a protocol pack.</li>
+            <li>Create output cards and verify delivery.</li>
+            <li>Calculate a monetization path.</li>
+          </ol>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="demoRunBtn">Run Demo 360</button>
+          <button class="btn btn-secondary" id="demoResetBtn">Reset Demo</button>
+        </div>
+        <div class="card preview" id="demoPreview" style="margin-top:16px">Click "Run Demo 360" to see the integrated workflow simulation.</div>
+      </div>
+    </section>
+
+    <section class="module" id="module-guide">
+      <div class="section-title"><h3>Guide</h3><p>How to use the engine efficiently.</p></div>
+      <div class="panel" style="padding:18px">
+        <div class="grid grid-2">
+          <div class="card"><h4>1. Select or Create Project</h4><p>Everything attaches to the active project: history, notes, outputs and delivery.</p></div>
+          <div class="card"><h4>2. Work in Modules</h4><p>Audiobooks, Voice, Content, Viral, Protocol and Production are the creative cores. Delivery and Monetization close the loop.</p></div>
+          <div class="card"><h4>3. Create Output Cards</h4><p>Each major module can push polished snippets to the dashboard and delivery center.</p></div>
+          <div class="card"><h4>4. Save, Import, Export</h4><p>The engine uses local storage. You can export the full state or import a prior JSON state.</p></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h4>Shortcuts</h4>
+          <p>Ctrl/Cmd+S = Save. Search bar scans projects, books, chapters and scenarios. Import restores prior engine state. Guide and Demo are always available from the left menu.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="utility">
+    <div class="utility-card"><h4>Current Project</h4><p id="utilityProjectTitle">Protocol Authority Audio Pack</p></div>
+    <div class="utility-card"><h4>Metadata</h4><p id="utilityMeta">Language: mk | Mode: academic | Plan: free</p></div>
+    <div class="utility-card">
+      <h4>Notes</h4>
+      <textarea class="note-area" id="projectNotes" placeholder="Project notes..."></textarea>
+      <div class="mini-actions">
+        <button class="btn btn-secondary" id="saveNotesBtn">Save Notes</button>
+        <button class="btn btn-danger" id="deleteProjectBtn">Delete Project</button>
+      </div>
+    </div>
+    <div class="utility-card"><h4>Output Preview</h4><p id="utilityPreview">Module previews and generated snippets appear here.</p></div>
+    <div class="utility-card"><h4>Search Results</h4><div class="results" id="searchResults"><div class="empty">Type in the search bar to scan projects, books, chapters and scenarios.</div></div></div>
+  </aside>
+</div>
+
+<script>
+const STORAGE_KEY='wpa_audio_media_engine_v13';
+const defaultApp={
+ state:{module:'dashboard',language:'mk',mode:'academic',plan:'free',projectId:'p1'},
+ books:[
+  {id:'book1',title:'State Protocol Foundations',author:'Doc. Dr. Sande Smiljanov',chapters:[{id:'b1c1',title:'Chapter 1: The Meaning of Protocol',duration:'9 min',text:'Protocol is not mere ceremony. It is order, clarity, institutional dignity and visible preparedness in public life.'},{id:'b1c2',title:'Chapter 2: Public Representation',duration:'11 min',text:'Representation requires discipline, hierarchy awareness, verbal control and respect for institutional symbolism.'}]},
+  {id:'book2',title:'Diplomatic Communication',author:'Doc. Dr. Sande Smiljanov',chapters:[{id:'b2c1',title:'Chapter 1: Diplomatic Tone',duration:'8 min',text:'Diplomatic speech balances restraint, precision, timing and credibility.'}]},
+  {id:'book3',title:'Conference and Ceremony Guide',author:'WPA Internal',chapters:[{id:'b3c1',title:'Chapter 1: Event Sequence',duration:'7 min',text:'A strong conference sequence depends on reception logic, speaking order, timing, symbolism and transition control.'}]}
+ ],
+ voices:[{id:'vp1',name:'Sande Academic',plan:'free'},{id:'vp2',name:'Sande Formal',plan:'pro'},{id:'vp3',name:'Sande Executive',plan:'premium'}],
+ scenarios:[
+  {id:'sc1',title:'Official Visit',summary:'Structured reception, greeting line, seating, media moment and departure logic.',checklist:['Confirm precedence order','Prepare reception line','Validate flags and seating','Set media zone'],timeline:['Arrival','Greeting line','Introductory remarks','Meeting','Press moment','Departure'],risks:'Common risks include precedence confusion, weak transitions, late arrivals and symbolic placement errors.'},
+  {id:'sc2',title:'Diplomatic Dinner',summary:'Dining protocol, guest sequencing, toasts, table logic and host visibility.',checklist:['Finalize table plan','Check dietary list','Prepare toast order','Confirm host/guest precedence'],timeline:['Reception','Seating','Opening course','Toast','Main segment','Closing'],risks:'Toast confusion, wrong seating, weak introductions and service timing gaps can damage authority.'},
+  {id:'sc3',title:'Conference Opening',summary:'Stage order, introductions, flags, anthem logic and public message framing.',checklist:['Validate stage lineup','Check microphones','Confirm script order','Prepare opening protocol'],timeline:['Guest arrival','Opening line','Introductions','Main speech','Photo moment'],risks:'Wrong stage hierarchy, script drift, audio issues and identity mismatch.'}
+ ],
+ projects:[
+  {id:'p1',title:'Protocol Authority Audio Pack',module:'Audiobook Studio',status:'Draft',updated:'Today',notes:'Core flagship audiobook pack for WPA.',history:['Project created','Audiobook flow started']},
+  {id:'p2',title:'Sande Executive Voice Notes',module:'Sande Voice Engine',status:'Ready',updated:'Today',notes:'Executive voice outputs for premium users.',history:['Voice preview generated','Delivery item marked ready']},
+  {id:'p3',title:'Official Visit Checklist',module:'Protocol Scenario Lab',status:'Revision',updated:'Yesterday',notes:'Formal scenario package for institutional training.',history:['Scenario selected','Checklist validated']}
+ ],
+ delivery:[
+  {id:'d1',title:'Protocol Authority Audio Pack',type:'Audiobook',status:'Draft',version:'v1'},
+  {id:'d2',title:'Official Visit Checklist',type:'Protocol Package',status:'Revision',version:'v2'}
+ ],
+ outputs:[
+  {id:'o1',title:'Audiobook Chapter Output',module:'Audiobook Studio',excerpt:'Protocol is not mere ceremony. It is order, clarity and visible preparedness.'},
+  {id:'o2',title:'Protocol Scenario Pack',module:'Protocol Scenario Lab',excerpt:'Official Visit scenario compiled with checklist, timeline and risk notes.'}
+ ]
+};
+let app=structuredClone(defaultApp);
+
+const moduleMeta={
+ dashboard:['Dashboard','Operational WPA command center for audio, voice, protocol and delivery workflows.'],
+ audiobooks:['Audiobook Studio','Books, chapters and production handoff.'],
+ voice:['Sande Voice Engine','Persona, topic and controlled WPA voice output.'],
+ generator:['Content Generator','Lessons, summaries, speeches and formal outputs.'],
+ viral:['Viral Media Studio','Hooks, scenes and CTA logic.'],
+ protocol:['Protocol Scenario Lab','Scenario, checklist, timeline and protocol pack logic.'],
+ production:['Audio Production Lab','TTS structure, pacing and production queue.'],
+ delivery:['Delivery Center','Status, versions and handoff readiness.'],
+ monetization:['Monetization Engine','Revenue logic and premium packaging.'],
+ demo:['Demo 360','Guided 360 walkthrough of the engine.'],
+ guide:['Guide','How to use the engine efficiently.']
+};
+
+function flash(msg){
+ const el=document.getElementById('flashMessage');
+ el.textContent=msg; el.classList.add('show');
+ clearTimeout(window.__flashTimer);
+ window.__flashTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+function saveLocal(){localStorage.setItem(STORAGE_KEY, JSON.stringify(app));}
+function loadLocal(){
+ const raw=localStorage.getItem(STORAGE_KEY);
+ if(!raw) return;
+ try{
+   const parsed=JSON.parse(raw);
+   if(parsed && parsed.state && parsed.projects) app=parsed;
+ }catch(e){}
+}
+function currentProject(){return app.projects.find(p=>p.id===app.state.projectId)||app.projects[0];}
+function addHistory(text){
+ const p=currentProject(); if(!p) return;
+ p.history = p.history || [];
+ p.history.unshift(text);
+ p.updated='Now';
+ saveLocal(); renderProjects(); renderHistory(); renderDashboard();
+}
+function enforcePlan(required){
+ const rank={free:0,pro:1,premium:2,institutional:3};
+ if(rank[app.state.plan] < rank[required]){flash(`This action requires ${required.toUpperCase()} plan.`); return false;}
+ return true;
+}
+function setModule(name){
+ app.state.module=name;
+ document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+ document.getElementById('module-'+name).classList.add('active');
+ document.querySelector('.nav-btn[data-module="'+name+'"]').classList.add('active');
+ document.getElementById('topbarTitle').textContent=moduleMeta[name][0];
+ document.getElementById('topbarSubtitle').textContent=moduleMeta[name][1];
+ refreshUtility();
+ saveLocal();
+}
+function refreshUtility(text){
+ const p=currentProject();
+ document.getElementById('utilityProjectTitle').textContent=p ? p.title : 'No project';
+ document.getElementById('utilityMeta').textContent=`Language: ${app.state.language} | Mode: ${app.state.mode} | Plan: ${app.state.plan}`;
+ if(p) document.getElementById('projectNotes').value=p.notes||'';
+ if(text) document.getElementById('utilityPreview').textContent=text;
+}
+function renderProjects(){
+ const wrap=document.getElementById('projectList');
+ wrap.innerHTML=app.projects.map(p=>`<div class="project-item ${p.id===app.state.projectId?'active':''}" data-project="${p.id}"><strong>${p.title}</strong><span>${p.module} | ${p.status} | ${p.updated}</span></div>`).join('');
+ wrap.querySelectorAll('[data-project]').forEach(el=>el.addEventListener('click',()=>{
+   app.state.projectId=el.dataset.project;
+   renderProjects(); renderHistory(); refreshUtility('Active project changed.'); saveLocal();
+ }));
+}
+function renderDashboard(){
+ document.getElementById('kpiProjects').textContent=app.projects.length;
+ document.getElementById('kpiOutputs').textContent=app.outputs.length;
+ document.getElementById('kpiDelivery').textContent=app.delivery.length;
+ updateRevenueKpi();
+ renderOutputCards();
+}
+function renderOutputCards(){
+ const filter=document.getElementById('outputFilter')?.value || 'all';
+ const wrap=document.getElementById('outputCards');
+ const data = filter === 'all' ? app.outputs : app.outputs.filter(o=>o.module===filter);
+ if(!data.length){wrap.innerHTML='<div class="empty">No output cards for this filter.</div>'; return;}
+ wrap.innerHTML=data.slice(0,9).map(o=>`
+   <div class="card output-card">
+     <h4>${o.title}</h4>
+     <p>${o.excerpt}</p>
+     <div class="meta">${o.module}</div>
+     <div class="output-actions">
+       <button class="btn btn-secondary" data-copy-output="${o.id}">Copy</button>
+       <button class="btn btn-blue" data-export-output="${o.id}">Export</button>
+     </div>
+   </div>
+ `).join('');
+ wrap.querySelectorAll('[data-copy-output]').forEach(btn=>btn.addEventListener('click',()=>{
+   const item=app.outputs.find(o=>o.id===btn.dataset.copyOutput);
+   navigator.clipboard.writeText(item ? item.excerpt : '').then(()=>flash('Output copied.'));
+ }));
+ wrap.querySelectorAll('[data-export-output]').forEach(btn=>btn.addEventListener('click',()=>{
+   const item=app.outputs.find(o=>o.id===btn.dataset.exportOutput);
+   if(!item) return;
+   const blob=new Blob([JSON.stringify(item,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   a.href=url; a.download=item.title.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.json'; a.click();
+   URL.revokeObjectURL(url);
+   flash('Output exported.');
+ }));
+}
+function renderHistory(){
+ const list=document.getElementById('historyList');
+ const p=currentProject();
+ const history=(p&&p.history)||[];
+ if(!history.length){list.innerHTML='<div class="empty">No project history entries.</div>'; return;}
+ list.innerHTML=history.slice(0,12).map(h=>`<div class="history-item">${h}</div>`).join('');
+}
+function renderBooks(){
+ const bs=document.getElementById('bookSelect');
+ bs.innerHTML=app.books.map(b=>`<option value="${b.id}">${b.title}</option>`).join('');
+ renderChapters();
+}
+function renderChapters(){
+ const book=app.books.find(b=>b.id===document.getElementById('bookSelect').value)||app.books[0];
+ document.getElementById('chapterSelect').innerHTML=book.chapters.map(c=>`<option value="${c.id}">${c.title}</option>`).join('');
+ updateChapter();
+}
+function updateChapter(){
+ const book=app.books.find(b=>b.id===document.getElementById('bookSelect').value)||app.books[0];
+ const chapter=book.chapters.find(c=>c.id===document.getElementById('chapterSelect').value)||book.chapters[0];
+ document.getElementById('chapterPreview').textContent=chapter.text;
+ document.getElementById('chapterEstimate').textContent=`Estimated duration: ${chapter.duration}`;
+ document.getElementById('bookMeta').textContent=`Book: ${book.title} | Author: ${book.author}`;
+ refreshUtility(`Active chapter: ${chapter.title}`);
+}
+function renderVoices(){
+ document.getElementById('voiceProfileSelect').innerHTML=app.voices.map(v=>`<option value="${v.id}">${v.name}</option>`).join('');
+}
+function renderScenarios(){
+ document.getElementById('scenarioSelect').innerHTML=app.scenarios.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');
+ updateScenario();
+}
+function updateScenario(){
+ const s=app.scenarios.find(x=>x.id===document.getElementById('scenarioSelect').value)||app.scenarios[0];
+ document.getElementById('scenarioTitle').textContent=s.title;
+ document.getElementById('scenarioSummary').textContent=s.summary;
+ document.getElementById('scenarioChecklist').innerHTML=s.checklist.map(i=>`<li>${i}</li>`).join('');
+ document.getElementById('scenarioTimeline').innerHTML=s.timeline.map(i=>`<li>${i}</li>`).join('');
+ document.getElementById('scenarioRisks').textContent=s.risks;
+}
+function renderDelivery(){
+ const wrap=document.getElementById('deliveryTable');
+ if(!app.delivery.length){wrap.innerHTML='<div class="empty">No delivery items.</div>'; return;}
+ wrap.innerHTML=['<div class="row header"><div>Output</div><div>Type</div><div>Status</div><div>Version</div><div>Action</div></div>',
+   ...app.delivery.map(d=>`<div class="row"><div>${d.title}</div><div>${d.type}</div><div><select class="status-select" data-status="${d.id}"><option ${d.status==='Draft'?'selected':''}>Draft</option><option ${d.status==='Revision'?'selected':''}>Revision</option><option ${d.status==='Ready'?'selected':''}>Ready</option></select></div><div>${d.version}</div><div><button class="btn btn-danger" data-remove="${d.id}">Remove</button></div></div>`)].join('');
+ wrap.querySelectorAll('[data-status]').forEach(el=>el.addEventListener('change',()=>{
+   const item=app.delivery.find(d=>d.id===el.dataset.status);
+   if(item){item.status=el.value; saveLocal(); flash('Delivery status updated.');}
+ }));
+ wrap.querySelectorAll('[data-remove]').forEach(el=>el.addEventListener('click',()=>{
+   app.delivery=app.delivery.filter(d=>d.id!==el.dataset.remove);
+   renderDelivery(); saveLocal(); flash('Delivery item removed.');
+ }));
+}
+function createOutput(title,module,excerpt,type='Output'){
+ app.outputs.unshift({id:'o'+Date.now(),title,module,excerpt});
+ app.delivery.unshift({id:'d'+Date.now(),title,type,status:'Draft',version:'v1'});
+ addHistory(`New output created: ${title}`);
+ renderDashboard(); renderDelivery(); saveLocal();
+ flash(`Output created: ${title}`);
+}
+function runSearch(q){
+ const wrap=document.getElementById('searchResults');
+ const term=q.trim().toLowerCase();
+ if(!term){wrap.innerHTML='<div class="empty">Type in the search bar to scan projects, books, chapters and scenarios.</div>'; return;}
+ const results=[];
+ app.projects.forEach(p=>{if((p.title+' '+p.module+' '+p.notes).toLowerCase().includes(term)) results.push({type:'Project',title:p.title,meta:p.module});});
+ app.books.forEach(b=>{
+   if((b.title+' '+b.author).toLowerCase().includes(term)) results.push({type:'Book',title:b.title,meta:b.author});
+   b.chapters.forEach(c=>{if((c.title+' '+c.text).toLowerCase().includes(term)) results.push({type:'Chapter',title:c.title,meta:b.title});});
+ });
+ app.scenarios.forEach(s=>{if((s.title+' '+s.summary+' '+s.risks).toLowerCase().includes(term)) results.push({type:'Scenario',title:s.title,meta:'Protocol Lab'});});
+ wrap.innerHTML = results.length ? results.slice(0,8).map(r=>`<div class="result-item"><strong>${r.title}</strong><div class="meta">${r.type} | ${r.meta}</div></div>`).join('') : `<div class="empty">No results for "${q}".</div>`;
+}
+function updateRevenueKpi(){
+ const units=Number(document.getElementById('estimatedUnits')?.value||100);
+ const price=Number(document.getElementById('pricePerUnit')?.value||29);
+ const conv=Number(document.getElementById('conversionRate')?.value||8)/100;
+ document.getElementById('kpiRevenue').textContent=`EUR ${(Math.round(units*conv)*price).toFixed(0)}`;
+}
+function exportState(){
+ const payload={app,exported_at:new Date().toISOString()};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url; a.download='wpa-audio-media-engine-v1-3-state.json'; a.click();
+ URL.revokeObjectURL(url);
+ flash('State exported.');
+}
+function importState(file){
+ const reader=new FileReader();
+ reader.onload=()=>{
+   try{
+     const parsed=JSON.parse(reader.result);
+     if(parsed.app && parsed.app.projects && parsed.app.state){
+       app=parsed.app;
+     }else if(parsed.projects && parsed.state){
+       app=parsed;
+     }else{
+       throw new Error('Invalid state');
+     }
+     renderProjects(); renderDashboard(); renderHistory(); renderBooks(); renderVoices(); renderScenarios(); renderDelivery();
+     document.getElementById('languageSelect').value=app.state.language||'mk';
+     document.getElementById('modeSelect').value=app.state.mode||'academic';
+     document.getElementById('planSelect').value=app.state.plan||'free';
+     setModule(app.state.module||'dashboard');
+     refreshUtility('Imported state loaded.');
+     saveLocal();
+     flash('State imported.');
+   }catch(e){
+     flash('Import failed.');
+   }
+ };
+ reader.readAsText(file);
+}
+function createProject(){
+ const title=prompt('Enter new project title:');
+ if(!title) return;
+ const p={id:'p'+Date.now(),title,module:moduleMeta[app.state.module][0],status:'Draft',updated:'Now',notes:'',history:['Project created']};
+ app.projects.unshift(p); app.state.projectId=p.id;
+ renderProjects(); renderHistory(); renderDashboard(); refreshUtility('New project created.'); saveLocal(); flash('New project created.');
+}
+function duplicateProject(){
+ const p=currentProject(); if(!p) return;
+ const copy=JSON.parse(JSON.stringify(p));
+ copy.id='p'+Date.now(); copy.title=p.title+' Copy'; copy.updated='Now';
+ copy.history=(copy.history||[]); copy.history.unshift('Project duplicated');
+ app.projects.unshift(copy); app.state.projectId=copy.id;
+ renderProjects(); renderHistory(); renderDashboard(); refreshUtility('Project duplicated.'); saveLocal(); flash('Project duplicated.');
+}
+function renameProject(){
+ const p=currentProject(); if(!p) return;
+ const title=prompt('Rename project:',p.title); if(!title) return;
+ p.title=title; p.updated='Now'; addHistory('Project renamed'); renderProjects(); refreshUtility('Project renamed.'); saveLocal();
+}
+function deleteProject(){
+ if(app.projects.length===1){flash('At least one project must remain.'); return;}
+ const p=currentProject(); if(!confirm(`Delete project "${p.title}"?`)) return;
+ app.projects=app.projects.filter(x=>x.id!==p.id); app.state.projectId=app.projects[0].id;
+ renderProjects(); renderHistory(); renderDashboard(); refreshUtility('Project deleted.'); saveLocal(); flash('Project deleted.');
+}
+function runDemo(){
+ setModule('demo');
+ document.getElementById('bookSelect').value=app.books[0].id; renderChapters();
+ document.getElementById('productionText').value=app.books[0].chapters[0].text;
+ document.getElementById('voiceTopic').value='protocol authority';
+ document.getElementById('voiceContext').value='high-level institutional training';
+ document.getElementById('demoPreview').textContent=`Demo 360 executed.
+
+1. Audiobook chapter loaded from State Protocol Foundations.
+2. Chapter pushed into Audio Production.
+3. Voice topic prefilled for Sande-style mentor output.
+4. Protocol scenario remains ready for pack creation.
+5. Delivery and monetization can continue from prepared data.
+
+Recommended next clicks:
+- Open Audio Production Lab
+- Click Prepare Audio Structure
+- Return to Protocol Lab
+- Build Protocol Pack
+- Open Delivery Center`;
+ addHistory('Demo 360 executed');
+ flash('Demo 360 executed.');
+}
+function resetDemo(){
+ document.getElementById('demoPreview').textContent='Click "Run Demo 360" to see the integrated workflow simulation.';
+ flash('Demo reset.');
+}
+function bind(){
+ document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.module)));
+ document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.jump)));
+ document.getElementById('languageSelect').addEventListener('change',e=>{app.state.language=e.target.value; refreshUtility('Language updated.'); saveLocal();});
+ document.getElementById('modeSelect').addEventListener('change',e=>{app.state.mode=e.target.value; refreshUtility('Mode updated.'); saveLocal();});
+ document.getElementById('planSelect').addEventListener('change',e=>{app.state.plan=e.target.value; refreshUtility('Plan updated.'); saveLocal();});
+ document.getElementById('saveBtn').addEventListener('click',()=>{saveLocal(); addHistory('Manual save executed'); flash('Project saved.');});
+ document.getElementById('renameBtn').addEventListener('click',renameProject);
+ document.getElementById('exportBtn').addEventListener('click',exportState);
+ document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+ document.getElementById('importFile').addEventListener('change',e=>{if(e.target.files[0]) importState(e.target.files[0]);});
+ document.getElementById('newProjectBtn').addEventListener('click',createProject);
+ document.getElementById('duplicateProjectBtn').addEventListener('click',duplicateProject);
+ document.getElementById('deleteProjectBtn').addEventListener('click',deleteProject);
+ document.getElementById('saveNotesBtn').addEventListener('click',()=>{const p=currentProject(); if(p){p.notes=document.getElementById('projectNotes').value; addHistory('Notes saved'); saveLocal(); flash('Notes saved.');}});
+ document.getElementById('projectNotes').addEventListener('input',()=>{const p=currentProject(); if(p){p.notes=document.getElementById('projectNotes').value; saveLocal();}});
+ document.getElementById('globalSearch').addEventListener('input',e=>runSearch(e.target.value));
+ document.getElementById('outputFilter').addEventListener('change',renderOutputCards);
+ document.getElementById('bookSelect').addEventListener('change',renderChapters);
+ document.getElementById('chapterSelect').addEventListener('change',updateChapter);
+ document.getElementById('scenarioSelect').addEventListener('change',updateScenario);
+
+ document.getElementById('playBtn').addEventListener('click',()=>flash('Demo playback started.'));
+ document.getElementById('pauseBtn').addEventListener('click',()=>flash('Demo playback paused.'));
+ document.getElementById('toProductionBtn').addEventListener('click',()=>{
+   const txt=document.getElementById('chapterPreview').textContent;
+   document.getElementById('productionText').value=txt;
+   setModule('production');
+   addHistory('Chapter sent to Audio Production');
+   refreshUtility('Chapter sent to Audio Production.');
+ });
+ document.getElementById('chapterOutputBtn').addEventListener('click',()=>{
+   const excerpt=(document.getElementById('chapterPreview').textContent||'').slice(0,120)+'...';
+   createOutput('Audiobook Chapter Output','Audiobook Studio',excerpt,'Audiobook');
+ });
+
+ document.getElementById('voiceGenerateBtn').addEventListener('click',()=>{
+   const profile=document.getElementById('voiceProfileSelect').selectedOptions[0].textContent;
+   const topic=document.getElementById('voiceTopic').value||'protocol authority';
+   const ctx=document.getElementById('voiceContext').value||'institutional communication context';
+   const txt=`Voice Preview
+
+Profile: ${profile}
+Topic: ${topic}
+
+In a disciplined WPA tone, this output should sound clear, controlled and institutionally credible.
+Context: ${ctx}
+
+Suggested opening:
+"Authority is not improvised. It is prepared, structured and visibly embodied before the public."`;
+   document.getElementById('voicePreview').textContent=txt;
+   addHistory('Voice preview generated');
+   refreshUtility(txt);
+ });
+ document.getElementById('voiceCopyBtn').addEventListener('click',()=>navigator.clipboard.writeText(document.getElementById('voicePreview').textContent||'').then(()=>flash('Copied.')));
+ document.getElementById('voiceOutputBtn').addEventListener('click',()=>{
+   if(!enforcePlan('pro')) return;
+   createOutput('Sande Voice Preview','Sande Voice Engine',(document.getElementById('voicePreview').textContent||'Generated voice preview').slice(0,120)+'...','Voice');
+ });
+
+ document.getElementById('contentGenerateBtn').addEventListener('click',()=>{
+   const type=document.getElementById('contentType').value;
+   const tone=document.getElementById('contentTone').value;
+   const topic=document.getElementById('contentTopic').value||'protocol culture';
+   const notes=document.getElementById('contentNotes').value||'No notes provided.';
+   const txt=`${type}
+
+Tone: ${tone}
+Topic: ${topic}
+
+Core idea:
+Protocol is not decoration. It is a language of order, dignity and readiness.
+
+Source notes:
+${notes}`;
+   document.getElementById('contentPreview').textContent=txt;
+   addHistory(`Content generated: ${type}`);
+   refreshUtility(txt);
+ });
+ document.getElementById('contentCopyBtn').addEventListener('click',()=>navigator.clipboard.writeText(document.getElementById('contentPreview').textContent||'').then(()=>flash('Copied.')));
+ document.getElementById('contentOutputBtn').addEventListener('click',()=>{
+   createOutput(document.getElementById('contentType').value+' Output','Content Generator',(document.getElementById('contentPreview').textContent||'Generated output').slice(0,120)+'...','Content');
+ });
+
+ document.getElementById('viralGenerateBtn').addEventListener('click',()=>{
+   const platform=document.getElementById('platformSelect').value;
+   const theme=document.getElementById('viralTheme').value||'protocol mistake';
+   const tone=document.getElementById('viralTone').value;
+   const hook=`Nobody teaches you this: one ${theme} can silently destroy authority.`;
+   const txt=`Platform: ${platform}
+Tone: ${tone}
+
+Hook:
+${hook}
+
+Scene 1: Cold open.
+Scene 2: Explain the protocol mistake.
+Scene 3: Show the corrected behavior.
+Scene 4: Prestige CTA.
+
+CTA:
+Follow WPA for protocol, diplomacy and executive presence.`;
+   document.getElementById('viralHook').textContent=hook;
+   document.getElementById('viralScore').textContent='86 / 100';
+   document.getElementById('viralPreview').textContent=txt;
+   addHistory('Viral script generated');
+   refreshUtility(txt);
+ });
+ document.getElementById('viralOutputBtn').addEventListener('click',()=>{
+   if(!enforcePlan('pro')) return;
+   createOutput('Viral Media Script','Viral Media Studio',(document.getElementById('viralPreview').textContent||'Generated viral script').slice(0,120)+'...','Viral');
+ });
+
+ document.getElementById('protocolPackBtn').addEventListener('click',()=>{
+   const title=document.getElementById('scenarioTitle').textContent;
+   const summary=document.getElementById('scenarioSummary').textContent;
+   const risks=document.getElementById('scenarioRisks').textContent;
+   const txt=`Protocol Pack: ${title}
+
+Summary:
+${summary}
+
+Checklist:
+- ${[...document.querySelectorAll('#scenarioChecklist li')].map(li=>li.textContent).join('\n- ')}
+
+Timeline:
+- ${[...document.querySelectorAll('#scenarioTimeline li')].map(li=>li.textContent).join('\n- ')}
+
+Risks:
+${risks}`;
+   document.getElementById('scenarioRisks').textContent=txt;
+   addHistory('Protocol pack built');
+   refreshUtility(txt);
+ });
+ document.getElementById('protocolOutputBtn').addEventListener('click',()=>{
+   createOutput('Protocol Scenario Pack','Protocol Scenario Lab',(document.getElementById('scenarioRisks').textContent||'Scenario output').slice(0,120)+'...','Protocol Package');
+ });
+
+ document.getElementById('productionPrepareBtn').addEventListener('click',()=>{
+   if(!enforcePlan('premium')) return;
+   const mode=document.getElementById('productionMode').value;
+   const pacing=document.getElementById('productionPacing').value;
+   const txt=document.getElementById('productionText').value||'No narration text yet.';
+   const out=`Audio Structure Ready
+
+Mode: ${mode}
+Pacing: ${pacing}
+
+Structure:
+- Intro cue
+- Controlled opening pause
+- Main narration body
+- Emphasis markers
+- Closing fade
+
+Source text:
+${txt}`;
+   document.getElementById('productionPreview').textContent=out;
+   addHistory('Audio structure prepared');
+   refreshUtility(out);
+ });
+ document.getElementById('productionOutputBtn').addEventListener('click',()=>{
+   if(!enforcePlan('premium')) return;
+   createOutput('Audio Production Package','Audio Production Lab',(document.getElementById('productionPreview').textContent||'Audio structure ready').slice(0,120)+'...','Audio');
+ });
+
+ document.getElementById('markAllReadyBtn').addEventListener('click',()=>{app.delivery.forEach(d=>d.status='Ready'); renderDelivery(); saveLocal(); flash('All delivery items marked ready.');});
+ document.getElementById('clearDeliveryBtn').addEventListener('click',()=>{if(!confirm('Clear all delivery items?')) return; app.delivery=[]; renderDelivery(); saveLocal(); flash('Delivery cleared.');});
+ document.getElementById('revenueCalcBtn').addEventListener('click',()=>{
+   const product=document.getElementById('productType').value;
+   const units=Number(document.getElementById('estimatedUnits').value||0);
+   const price=Number(document.getElementById('pricePerUnit').value||0);
+   const conv=Number(document.getElementById('conversionRate').value||0)/100;
+   const buyers=Math.round(units*conv);
+   const revenue=buyers*price;
+   const txt=`Revenue Projection
+
+Product: ${product}
+Projected buyers: ${buyers}
+Estimated revenue: EUR ${revenue.toFixed(2)}
+
+Current plan: ${app.state.plan.toUpperCase()}`;
+   document.getElementById('revenuePreview').textContent=txt;
+   updateRevenueKpi();
+   refreshUtility(txt);
+ });
+
+ document.getElementById('demoRunBtn').addEventListener('click',runDemo);
+ document.getElementById('demoResetBtn').addEventListener('click',resetDemo);
+ document.getElementById('estimatedUnits').addEventListener('input',updateRevenueKpi);
+ document.getElementById('pricePerUnit').addEventListener('input',updateRevenueKpi);
+ document.getElementById('conversionRate').addEventListener('input',updateRevenueKpi);
+ document.getElementById('closeWelcomeBtn').addEventListener('click',()=>document.getElementById('welcomeModal').classList.remove('show'));
+ document.getElementById('openGuideFromWelcome').addEventListener('click',()=>{document.getElementById('welcomeModal').classList.remove('show'); setModule('guide');});
+ window.addEventListener('keydown',e=>{
+   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault(); document.getElementById('saveBtn').click();}
+   if(e.key==='?'){setModule('guide');}
+ });
+}
+function boot(){
+ loadLocal();
+ document.getElementById('languageSelect').value=app.state.language||'mk';
+ document.getElementById('modeSelect').value=app.state.mode||'academic';
+ document.getElementById('planSelect').value=app.state.plan||'free';
+ renderProjects(); renderDashboard(); renderHistory(); renderBooks(); renderVoices(); renderScenarios(); renderDelivery(); bind();
+ setModule(app.state.module||'dashboard');
+ refreshUtility('WPA Audio Media Engine v1.3 is ready.');
+ updateRevenueKpi();
+}
+boot();
+</script>
+
+<script>
+  window.WPAAudioMediaIntegrationConfig = {
+    manifestUrl: "./wpa-audio-content-manifest.json",
+    fallbackLanguage: "mk",
+    autoSyncLanguageSelector: true,
+    debug: true
+  };
+</script>
+<script src="translator-loader-v1.js" defer></script>
+<script src="wpa-audio-media-integration-bridge.js" defer></script>
+
+</body>
+</html>
