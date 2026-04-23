@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang='mk'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<title>WPA Audio Media Engine v1 - Production Polish Pass</title>
+<style>
+:root{
+  --bg:#09111d;--bg2:#0d1727;--panel:#101c31;--panel2:#162540;--line:rgba(255,255,255,.08);
+  --gold:#d4b168;--gold2:#a67a24;--text:#eef4fb;--muted:#a9b7ce;--green:#39b37a;--red:#d86464;--blue:#6aaeff;
+  --shadow:0 18px 40px rgba(0,0,0,.32);--sidebar:284px;--utility:334px;
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0;font-family:Inter,Arial,Helvetica,sans-serif;color:var(--text);min-height:100%;
+background:radial-gradient(circle at top right, rgba(212,177,104,.10), transparent 18%),linear-gradient(180deg,var(--bg),var(--bg2) 55%, #0a1220)}
+body{overflow:hidden} button,input,select,textarea{font:inherit}
+.app{display:grid;grid-template-columns:var(--sidebar) 1fr var(--utility);grid-template-rows:76px 1fr;grid-template-areas:'sidebar topbar utility' 'sidebar main utility';min-height:100vh}
+.sidebar{grid-area:sidebar;background:rgba(8,15,26,.94);border-right:1px solid var(--line);padding:18px 16px;overflow:auto;position:sticky;top:0;height:100vh}
+.topbar{grid-area:topbar;background:rgba(10,18,31,.9);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 20px;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px)}
+.main{grid-area:main;overflow:auto;padding:22px}
+.utility{grid-area:utility;background:rgba(8,15,26,.94);border-left:1px solid var(--line);padding:18px;overflow:auto;position:sticky;top:0;height:100vh}
+.brand,.card,.panel,.mini-card,.utility-card{border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.brand{display:flex;gap:14px;align-items:center;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));margin-bottom:16px}
+.brand-logo{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#111;font-weight:900;font-size:20px}
+.brand h1{margin:0;font-size:16px;line-height:1.15}.brand p{margin:6px 0 0;font-size:12px;color:var(--muted);line-height:1.45}
+.sidebar-label{margin:18px 8px 10px;color:var(--gold);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.45px}
+.nav{display:grid;gap:8px}
+.nav-btn{width:100%;border:1px solid transparent;background:transparent;color:var(--text);border-radius:14px;padding:12px 14px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;gap:12px;transition:.18s}
+.nav-btn:hover{background:rgba(255,255,255,.04);border-color:var(--line)} .nav-btn.active{background:linear-gradient(135deg,rgba(212,177,104,.18),rgba(212,177,104,.06));border-color:rgba(212,177,104,.28)}
+.nav-btn strong{display:block;font-size:14px}.nav-btn small{color:var(--muted);font-size:11px}
+.mini-card,.utility-card,.card{padding:16px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01))}
+.mini-card h4,.utility-card h4,.card h4{margin:0 0 8px}.mini-card p,.utility-card p,.card p{margin:0;color:var(--muted);line-height:1.55}
+.topbar-left h2{margin:0;font-size:20px}.topbar-left p{margin:4px 0 0;color:var(--muted);font-size:13px}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search,.control{min-height:42px;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:12px;padding:10px 12px;outline:none}.search{min-width:230px}
+.btn{min-height:42px;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;border:none;transition:.18s}.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0e1521}.btn-secondary{background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2))}.panel-pad{padding:18px}
+.module{display:none}.module.active{display:block}
+.hero{padding:24px;margin-bottom:18px;background:radial-gradient(circle at top right, rgba(212,177,104,.16), transparent 28%),linear-gradient(180deg,var(--panel2),var(--panel))}
+.eyebrow{display:inline-flex;padding:8px 12px;border-radius:999px;border:1px solid rgba(212,177,104,.28);color:var(--gold);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:12px}
+.hero h3{margin:0 0 10px;font-size:30px;line-height:1.08;max-width:980px}.hero p{margin:0;max-width:920px;color:var(--muted);line-height:1.65}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.grid{display:grid;gap:16px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{padding:18px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(212,177,104,.10),rgba(255,255,255,.02))}
+.kpi strong{display:block;font-size:28px;line-height:1;margin-bottom:6px}.kpi span{color:var(--muted);font-size:13px}
+.sub{color:var(--gold);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:10px}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:14px;margin:22px 0 12px}.section-title h4{margin:0;font-size:20px}.section-title p{margin:0;color:var(--muted);font-size:13px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:8px}.field.full{grid-column:1 / -1}
+.field label{color:var(--gold);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.35px}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:14px;padding:12px 14px;outline:none}.field textarea{min-height:120px;resize:vertical}
+.split{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.split-alt{display:grid;grid-template-columns:.95fr 1.05fr;gap:16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab-btn{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:8px 12px;cursor:pointer;font-size:12px;font-weight:800}.tab-btn.active{background:rgba(212,177,104,.14);border-color:rgba(212,177,104,.28)}
+.submodule{display:none}.submodule.active{display:block}
+.preview{white-space:pre-wrap;color:#eef4fb;line-height:1.66;font-size:14px;min-height:170px}
+.list{margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted);font-size:14px;line-height:1.55}
+.table-like{display:grid;gap:8px}.row{display:grid;gap:10px;grid-template-columns:1.4fr .8fr .8fr .8fr;padding:12px 14px;border:1px solid var(--line);background:rgba(255,255,255,.02);border-radius:14px;align-items:center}.row.header{background:rgba(255,255,255,.04);font-weight:800;color:#fff}
+.tag{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid var(--line);background:rgba(255,255,255,.03)} .tag.gold{color:var(--gold)} .tag.green{color:#8ce6b7} .tag.red{color:#ffacac} .tag.blue{color:#acd1ff}
+.library,.scenario-grid,.room-grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.book-card,.scenario-card,.room-rule-card{cursor:pointer;transition:.18s}.book-card.active,.book-card:hover,.scenario-card.active,.scenario-card:hover,.room-rule-card.active,.room-rule-card:hover{border-color:rgba(212,177,104,.28);background:linear-gradient(180deg,rgba(212,177,104,.10),rgba(255,255,255,.02));transform:translateY(-1px)}
+.chapter-list{display:grid;gap:8px}.chapter-btn{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--text);padding:12px 14px;border-radius:14px;text-align:left;cursor:pointer}.chapter-btn.active{border-color:rgba(212,177,104,.28);background:rgba(212,177,104,.12)}
+.scenario-filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.filter-chip{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:999px;padding:8px 10px;font-size:12px;font-weight:800;cursor:pointer}.filter-chip.active{background:rgba(212,177,104,.14);border-color:rgba(212,177,104,.28)}
+.metric-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.note-area{width:100%;min-height:110px;border:1px solid var(--line);background:#0d1524;color:var(--text);border-radius:14px;padding:12px;resize:vertical;outline:none}
+.tiny{font-size:12px;color:var(--muted)} .divider{height:1px;background:var(--line);margin:14px 0}
+@media (max-width:1400px){:root{--utility:320px}.grid-4,.metric-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1180px){.app{grid-template-columns:256px 1fr;grid-template-rows:76px auto auto;grid-template-areas:'sidebar topbar' 'sidebar main' 'sidebar utility'}.utility{height:auto;position:static;border-left:none;border-top:1px solid var(--line)}}
+@media (max-width:980px){body{overflow:auto}.app{grid-template-columns:1fr;grid-template-rows:auto auto auto auto;grid-template-areas:'topbar' 'sidebar' 'main' 'utility'}.sidebar,.utility,.topbar{position:static;height:auto}.sidebar{border-right:none;border-bottom:1px solid var(--line)}.grid-4,.grid-3,.grid-2,.form-grid,.split,.split-alt,.library,.scenario-grid,.room-grid,.metric-row{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class='app'>
+  <aside class='sidebar'>
+    <div class='brand'>
+      <div class='brand-logo'>WPA</div>
+      <div><h1>WPA Audio Media Engine v1</h1><p>Production polish pass with live video room governance, audiobook workflows, protocol, voice and monetization.</p></div>
+    </div>
+    <div class='sidebar-label'>Core Modules</div>
+    <div class='nav'>
+      <button class='nav-btn active' data-module='dashboard'><span><strong>Dashboard</strong><small>Команден мост</small></span><small>01</small></button>
+      <button class='nav-btn' data-module='audiobooks'><span><strong>Audiobook Studio</strong><small>Книги и chapters</small></span><small>02</small></button>
+      <button class='nav-btn' data-module='voice'><span><strong>Sande Voice Engine</strong><small>Persona + clone logic</small></span><small>03</small></button>
+      <button class='nav-btn' data-module='generator'><span><strong>Content Generator</strong><small>Lessons, captions, speeches</small></span><small>04</small></button>
+      <button class='nav-btn' data-module='viral'><span><strong>Viral Media Studio</strong><small>Hooks, scenes, scripts</small></span><small>05</small></button>
+      <button class='nav-btn' data-module='protocol'><span><strong>Protocol Scenario Lab</strong><small>WPA core scenarios</small></span><small>06</small></button>
+      <button class='nav-btn' data-module='production'><span><strong>Audio Production Lab</strong><small>Package and queue</small></span><small>07</small></button>
+      <button class='nav-btn' data-module='rooms'><span><strong>Live Video Rooms</strong><small>Rules, floor control, caps</small></span><small>08</small></button>
+      <button class='nav-btn' data-module='delivery'><span><strong>Delivery Center</strong><small>Outputs and status</small></span><small>09</small></button>
+      <button class='nav-btn' data-module='monetization'><span><strong>Monetization Engine</strong><small>Plans and revenue</small></span><small>10</small></button>
+    </div>
+    <div class='sidebar-label'>Room Doctrine</div>
+    <div class='mini-card'><h4>Admin Floor Control</h4><p>Администраторот му дава збор на еден студент или учесник во даден момент. Others stay muted unless approved.</p></div>
+    <div class='mini-card'><h4>Anti-Chaos Rule</h4><p>No overlapping voices. Raise hand queue, host approval, mute-all and one active speaker policy.</p></div>
+    <div class='mini-card'><h4>Phase 2 Direction</h4><p>Extract the structural heart of ElevenLabs, Google Colab, YouTube, Rumble, Google Meet, Zoom and Webex into WPA.</p></div>
+  </aside>
+
+  <header class='topbar'>
+    <div class='topbar-left'>
+      <h2 id='pageTitle'>Dashboard</h2>
+      <p id='pageSubtitle'>Central command center for the whole WPA media workflow.</p>
+    </div>
+    <div class='topbar-right'>
+      <input class='search' id='globalSearch' placeholder='Search books, scenarios, rooms, outputs...'>
+      <select class='control' id='languageSelect'><option value='mk'>MK</option><option value='en'>EN</option><option value='sq'>SQ</option></select>
+      <select class='control' id='modeSelect'><option value='academic'>Academic</option><option value='formal'>Formal</option><option value='executive'>Executive</option><option value='viral'>Viral</option></select>
+      <button class='btn btn-secondary' id='saveBtn'>Save</button>
+      <button class='btn btn-primary' id='exportBtn'>Export State</button>
+    </div>
+  </header>
+
+  <main class='main'>
+    <section class='module active' id='module-dashboard'>
+      <div class='panel hero'>
+        <div class='eyebrow'>Production polish pass</div>
+        <h3>Сега моторот има и прецизни Live Video Room правила: администратор му дава збор на студентот, нема фонија, нема преклопување и има јасна room governance дисциплина.</h3>
+        <p>Оваа верзија ја подига алатката од integrated UI во пофункционален WPA engine: audiobook work, Sande persona, protocol packages, viral media, production queue, delivery center, monetization and live class, workshop, webinar and institutional room modes.</p>
+        <div class='hero-actions'>
+          <button class='btn btn-primary' data-jump='rooms'>Open Live Video Rooms</button>
+          <button class='btn btn-secondary' data-jump='audiobooks'>Open Audiobooks</button>
+          <button class='btn btn-secondary' data-jump='protocol'>Open Protocol Lab</button>
+        </div>
+      </div>
+      <div class='grid grid-4'>
+        <div class='kpi'><strong id='kpiProjects'>10</strong><span>Active demo projects</span></div>
+        <div class='kpi'><strong id='kpiBooks'>4</strong><span>Books in audiobook library</span></div>
+        <div class='kpi'><strong id='kpiScenarios'>12</strong><span>Protocol scenarios</span></div>
+        <div class='kpi'><strong id='kpiRevenue'>EUR 4,820</strong><span>Projected value snapshot</span></div>
+      </div>
+      <div class='section-title'><h4>Live Room Rules Snapshot</h4><p>Room policy embedded in the engine.</p></div>
+      <div class='grid grid-2'>
+        <div class='card'><div class='sub'>Class Mode</div><h4>90 minutes · 100 attendees</h4><p>1 host + 2 co-hosts. Audience enters muted. The administrator gives the floor to students one by one. No parallel speaking.</p></div>
+        <div class='card'><div class='sub'>Workshop Mode</div><h4>120 minutes · 150 attendees</h4><p>1 host + 4 co-hosts. Moderated interaction is allowed, but still with host-controlled speaking rights and anti-overlap rules.</p></div>
+      </div>
+      <div class='section-title'><h4>Recent Projects</h4><p>Starter project table.</p></div>
+      <div class='table-like' id='recentProjectsTable'></div>
+    </section>
+
+    <section class='module' id='module-audiobooks'>
+      <div class='section-title'><h4>Audiobook Studio</h4><p>Books, chapters, narration controls and audiobook queue.</p></div>
+      <div class='tabs'>
+        <button class='tab-btn active' data-tab-group='audio' data-tab='audio-library'>Library</button>
+        <button class='tab-btn' data-tab-group='audio' data-tab='audio-reader'>Reader</button>
+        <button class='tab-btn' data-tab-group='audio' data-tab='audio-queue'>Queue</button>
+      </div>
+      <div class='submodule active' id='audio-library'><div class='library' id='bookGrid'></div></div>
+      <div class='submodule' id='audio-reader'>
+        <div class='split'>
+          <div class='panel panel-pad'>
+            <div class='section-title' style='margin-top:0'><h4 id='bookTitle'>State Protocol Foundations</h4><p id='bookMeta'>2 chapters · mk/en route</p></div>
+            <div class='chapter-list' id='chapterList'></div>
+          </div>
+          <div class='panel panel-pad'>
+            <div class='form-grid'>
+              <div class='field'><label>Language</label><select id='audioLanguage'><option value='mk'>Македонски</option><option value='en'>English</option></select></div>
+              <div class='field'><label>Voice Preset</label><select id='audioVoicePreset'><option>Sande Academic</option><option>Sande Formal</option><option>Virtual Sande</option></select></div>
+            </div>
+            <div class='divider'></div>
+            <div class='card preview' id='chapterPreview'></div>
+            <div class='hero-actions'>
+              <button class='btn btn-primary' id='audioPlayBtn'>Play Demo</button>
+              <button class='btn btn-secondary' id='audioPauseBtn'>Pause</button>
+              <button class='btn btn-secondary' id='audioQueueBtn'>Queue for Production</button>
+            </div>
+            <div class='mini-card' style='margin-top:14px'><h4>Output Estimate</h4><p id='chapterEstimate'>Duration estimate: 9 min</p></div>
+          </div>
+        </div>
+      </div>
+      <div class='submodule' id='audio-queue'><div class='panel panel-pad'><div class='table-like' id='audioQueueTable'></div></div></div>
+    </section>
+
+    <section class='module' id='module-voice'>
+      <div class='section-title'><h4>Sande Voice Engine</h4><p>Persona control, style logic and prestige messaging.</p></div>
+      <div class='panel panel-pad'>
+        <div class='form-grid'>
+          <div class='field'><label>Voice Profile</label><select id='voiceProfileSelect'></select></div>
+          <div class='field'><label>Persona Mode</label><select id='voiceModeSelect'><option>Academic</option><option>Formal</option><option>Executive</option><option>Viral</option><option>Warm Public Address</option></select></div>
+          <div class='field'><label>Content Type</label><select id='voiceContentType'><option>Statement</option><option>Lesson</option><option>Speech</option><option>Short Caption</option></select></div>
+          <div class='field'><label>Audience</label><select id='voiceAudience'><option>Students</option><option>Diplomats</option><option>Institutional teams</option><option>General public</option></select></div>
+          <div class='field full'><label>Topic</label><input id='voiceTopic' placeholder='Внеси тема...'></div>
+          <div class='field full'><label>Context</label><textarea id='voiceContext' placeholder='Контекст, намера, рамка на говор...'></textarea></div>
+        </div>
+        <div class='hero-actions'>
+          <button class='btn btn-primary' id='generateVoiceBtn'>Generate as Sande</button>
+          <button class='btn btn-secondary' id='copyVoiceBtn'>Copy</button>
+          <button class='btn btn-secondary' id='queueVoiceBtn'>Add to Delivery</button>
+        </div>
+        <div class='card preview' id='voicePreview' style='margin-top:16px'></div>
+      </div>
+    </section>
+
+    <section class='module' id='module-generator'>
+      <div class='section-title'><h4>Content Generator</h4><p>Lessons, summaries, speeches, captions and formal outputs.</p></div>
+      <div class='panel panel-pad'>
+        <div class='form-grid'>
+          <div class='field'><label>Content Type</label><select id='contentType'><option>Lesson</option><option>Summary</option><option>Protocol Speech</option><option>Institutional Brief</option><option>Caption</option></select></div>
+          <div class='field'><label>Tone</label><select id='contentTone'><option>Formal</option><option>Academic</option><option>Prestige</option><option>Warm</option></select></div>
+          <div class='field full'><label>Topic</label><input id='contentTopic' placeholder='Тема на содржината...'></div>
+          <div class='field full'><label>Source Notes</label><textarea id='contentNotes' placeholder='Белешки, rough thesis, reference points...'></textarea></div>
+        </div>
+        <div class='hero-actions'>
+          <button class='btn btn-primary' id='generateContentBtn'>Generate Output</button>
+          <button class='btn btn-secondary' id='contentToViralBtn'>Send to Viral Studio</button>
+          <button class='btn btn-secondary' id='contentToDeliveryBtn'>Add to Delivery</button>
+        </div>
+        <div class='card preview' id='contentPreview' style='margin-top:16px'></div>
+      </div>
+    </section>
+
+    <section class='module' id='module-viral'>
+      <div class='section-title'><h4>Viral Media Studio</h4><p>Hooks, angles, captions and prestige short-form scripts.</p></div>
+      <div class='tabs'>
+        <button class='tab-btn active' data-tab-group='viral' data-tab='viral-generator'>Generator</button>
+        <button class='tab-btn' data-tab-group='viral' data-tab='viral-shots'>Best Shots</button>
+      </div>
+      <div class='submodule active' id='viral-generator'>
+        <div class='panel panel-pad'>
+          <div class='form-grid'>
+            <div class='field'><label>Platform</label><select id='platformSelect'><option>TikTok</option><option>Instagram Reels</option><option>YouTube Shorts</option><option>Facebook</option><option>LinkedIn</option></select></div>
+            <div class='field'><label>Tone</label><select id='viralTone'><option>Sharp Authority</option><option>Prestige</option><option>Educational</option><option>Curiosity Hook</option></select></div>
+            <div class='field'><label>Output Mode</label><select id='viralMode'><option>Short Script</option><option>Voiceover</option><option>Caption Stack</option><option>Scene Breakdown</option></select></div>
+            <div class='field'><label>Persona Layer</label><select id='viralPersona'><option>AI Sande</option><option>Formal WPA</option><option>Executive Coach</option></select></div>
+            <div class='field full'><label>Theme</label><input id='viralTheme' placeholder='Протоколарна грешка, дипломатска лекција, executive presence...'></div>
+          </div>
+          <div class='grid grid-3' style='margin-top:16px'>
+            <div class='card'><h4>Hook</h4><p id='viralHook'>Една протоколарна грешка може тивко да ја уништи авторитетноста пред јавноста.</p></div>
+            <div class='card'><h4>Best Angle</h4><p id='viralAngle'>Prestige education meets institutional reality.</p></div>
+            <div class='card'><h4>Viral Score</h4><p id='viralScore'>82 / 100</p></div>
+          </div>
+          <div class='hero-actions'>
+            <button class='btn btn-primary' id='generateViralBtn'>Generate Viral Script</button>
+            <button class='btn btn-secondary' id='viralToDeliveryBtn'>Add to Delivery</button>
+          </div>
+          <div class='card preview' id='viralPreview' style='margin-top:16px'></div>
+        </div>
+      </div>
+      <div class='submodule' id='viral-shots'><div class='grid grid-3' id='bestShotsGrid'></div></div>
+    </section>
+
+    <section class='module' id='module-protocol'>
+      <div class='section-title'><h4>Protocol Scenario Lab</h4><p>Scenario selection, checklist generation, timeline logic and risk discipline.</p></div>
+      <div class='tabs'>
+        <button class='tab-btn active' data-tab-group='protocol' data-tab='protocol-library'>Scenario Library</button>
+        <button class='tab-btn' data-tab-group='protocol' data-tab='protocol-builder'>Builder</button>
+      </div>
+      <div class='submodule active' id='protocol-library'><div class='panel panel-pad'><div class='scenario-filter' id='scenarioFilters'></div><div class='scenario-grid' id='scenarioGrid'></div></div></div>
+      <div class='submodule' id='protocol-builder'>
+        <div class='split-alt'>
+          <div class='panel panel-pad'>
+            <div class='card'><div class='sub' id='scenarioCategory'>State Protocol</div><h4 id='scenarioTitle'>Official Visit</h4><p id='scenarioSummary'>Structured arrival, greeting line, meeting, media moment and departure.</p></div>
+            <div class='section-title'><h4>Checklist</h4><p>Operational steps</p></div>
+            <div class='card'><ul class='list' id='scenarioChecklist'></ul></div>
+            <div class='hero-actions' style='margin-top:14px'>
+              <button class='btn btn-primary' id='scenarioToDeliveryBtn'>Add Package to Delivery</button>
+              <button class='btn btn-secondary' id='scenarioToRoomBtn'>Use for Live Room</button>
+            </div>
+          </div>
+          <div class='panel panel-pad'>
+            <div class='section-title'><h4>Timeline</h4><p>Flow sequence</p></div>
+            <div class='card'><ul class='list' id='scenarioTimeline'></ul></div>
+            <div class='section-title'><h4>Risk Notes</h4><p>Protocol sensitivity</p></div>
+            <div class='card preview' id='scenarioRisks'></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class='module' id='module-production'>
+      <div class='section-title'><h4>Audio Production Lab</h4><p>Packaging, pacing, segmentation and production queue.</p></div>
+      <div class='panel panel-pad'>
+        <div class='form-grid'>
+          <div class='field'><label>Mode</label><select id='productionMode'><option>Audiobook</option><option>Podcast</option><option>Lecture</option><option>Formal Speech</option></select></div>
+          <div class='field'><label>Pacing</label><select id='productionPacing'><option>Calm</option><option>Measured</option><option>Dynamic</option></select></div>
+          <div class='field'><label>Intro Block</label><input id='productionIntro' value='World Protocol Academy presents'></div>
+          <div class='field'><label>Outro Block</label><input id='productionOutro' value='Prepared by WPA Audio Media Engine'></div>
+          <div class='field full'><label>Narration Script</label><textarea id='productionText' placeholder='Текстот за продукција се појавува тука...'></textarea></div>
+        </div>
+        <div class='hero-actions'>
+          <button class='btn btn-primary' id='prepareProductionBtn'>Prepare Audio Package</button>
+          <button class='btn btn-secondary' id='productionToDeliveryBtn'>Queue for Delivery</button>
+        </div>
+        <div class='card preview' id='productionPreview' style='margin-top:16px'></div>
+        <div class='section-title'><h4>Production Queue</h4><p>Ready packages</p></div>
+        <div class='table-like' id='productionQueueTable'></div>
+      </div>
+    </section>
+
+    <section class='module' id='module-rooms'>
+      <div class='section-title'><h4>Live Video Rooms</h4><p>Точни rules, floor control, participant caps, session length and role governance.</p></div>
+      <div class='tabs'>
+        <button class='tab-btn active' data-tab-group='rooms' data-tab='room-rules'>Rules</button>
+        <button class='tab-btn' data-tab-group='rooms' data-tab='room-builder'>Builder</button>
+        <button class='tab-btn' data-tab-group='rooms' data-tab='room-sessions'>Sessions</button>
+      </div>
+      <div class='submodule active' id='room-rules'><div class='room-grid' id='roomRulesGrid'></div></div>
+      <div class='submodule' id='room-builder'>
+        <div class='split'>
+          <div class='panel panel-pad'>
+            <div class='form-grid'>
+              <div class='field'><label>Room Mode</label><select id='roomModeSelect'></select></div>
+              <div class='field'><label>Room Title</label><input id='roomTitle' placeholder='WPA Class Session...'></div>
+              <div class='field'><label>Host</label><input id='roomHost' value='World Protocol Academy'></div>
+              <div class='field'><label>Expected Attendees</label><input id='roomAttendees' type='number' value='80'></div>
+              <div class='field'><label>Co-hosts Needed</label><input id='roomCohosts' type='number' value='2'></div>
+              <div class='field'><label>Scenario Link</label><select id='roomScenarioSelect'></select></div>
+              <div class='field full'><label>Session Notes</label><textarea id='roomNotes' placeholder='Notes, speaker flow, moderation guidance...'></textarea></div>
+            </div>
+            <div class='hero-actions'>
+              <button class='btn btn-primary' id='buildRoomBtn'>Build Room Policy</button>
+              <button class='btn btn-secondary' id='roomToDeliveryBtn'>Add Room to Delivery</button>
+            </div>
+            <div class='card preview' id='roomBuilderPreview' style='margin-top:16px'></div>
+          </div>
+          <div class='panel panel-pad'>
+            <div class='section-title' style='margin-top:0'><h4>Room Policy Summary</h4><p>Live operational rules</p></div>
+            <div class='metric-row'>
+              <div class='card'><h4>Duration</h4><p id='roomDurationView'>90 min</p></div>
+              <div class='card'><h4>Cap</h4><p id='roomCapView'>100 attendees</p></div>
+              <div class='card'><h4>Roles</h4><p id='roomRolesView'>1 host + 2 co-hosts</p></div>
+            </div>
+            <div class='section-title'><h4>Permissions</h4><p>Inside-room behavior</p></div>
+            <div class='card'><ul class='list' id='roomPermissionsList'></ul></div>
+            <div class='section-title'><h4>Floor Control Rules</h4><p>Anti-chaos and anti-overlap logic</p></div>
+            <div class='card'><ul class='list' id='floorRulesList'></ul></div>
+            <div class='section-title'><h4>Compliance Status</h4><p>Rule check</p></div>
+            <div class='card'><p id='roomComplianceText'>Choose a room mode to evaluate the rules.</p></div>
+          </div>
+        </div>
+      </div>
+      <div class='submodule' id='room-sessions'><div class='panel panel-pad'><div class='table-like' id='roomSessionsTable'></div></div></div>
+    </section>
+
+    <section class='module' id='module-delivery'>
+      <div class='section-title'><h4>Delivery Center</h4><p>Outputs, statuses, versions and handoff control.</p></div>
+      <div class='panel panel-pad'><div class='table-like' id='deliveryTable'></div></div>
+    </section>
+
+    <section class='module' id='module-monetization'>
+      <div class='section-title'><h4>Monetization Engine</h4><p>Premium plans, products and projected value of WPA outputs and live sessions.</p></div>
+      <div class='grid grid-3' id='planGrid'></div>
+      <div class='panel panel-pad' style='margin-top:16px'>
+        <div class='form-grid'>
+          <div class='field'><label>Product</label><select id='productType'><option>Audiobook Pack</option><option>Sande Voice Pack</option><option>Protocol Scenario Pack</option><option>Viral Script Pack</option><option>Institutional Media Pack</option><option>Live Training Room Package</option></select></div>
+          <div class='field'><label>Estimated Reach</label><input type='number' id='estimatedUnits' value='1000'></div>
+          <div class='field'><label>Price Per Buyer</label><input type='number' id='pricePerUnit' value='29'></div>
+          <div class='field'><label>Conversion %</label><input type='number' id='conversionRate' value='8'></div>
+        </div>
+        <div class='hero-actions'><button class='btn btn-primary' id='calcRevenueBtn'>Calculate Revenue</button></div>
+        <div class='card preview' id='revenuePreview' style='margin-top:16px'></div>
+        <div class='section-title'><h4>Phase 2 Connector Doctrine</h4><p>Future extraction heart</p></div>
+        <div class='grid grid-3'>
+          <div class='card'><h4>Voice and TTS Layer</h4><p>Extract the heart of ElevenLabs patterns for premium narration and voice workflows.</p></div>
+          <div class='card'><h4>AI Studio Layer</h4><p>Extract the heart of Google Colab style experimentation for advanced generation pipelines.</p></div>
+          <div class='card'><h4>Distribution Layer</h4><p>Extract the heart of YouTube and Rumble publishing flow for content reach and monetization.</p></div>
+          <div class='card'><h4>Meeting Layer</h4><p>Extract the heart of Google Meet, Zoom and Webex for host controls, moderation and room discipline.</p></div>
+          <div class='card'><h4>Commercial WPA Layer</h4><p>Turn room packages, voice products and protocol outputs into premium student and institutional offers.</p></div>
+          <div class='card'><h4>Doctrine</h4><p>We do not copy platforms. We extract their strongest structural heart and rebuild it inside WPA.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class='utility'>
+    <h3>Utility Panel</h3>
+    <div class='utility-card'><h4>Current Project</h4><p id='utilityProjectTitle'>WPA Media Engine Master Project</p></div>
+    <div class='utility-card'><h4>Project Metadata</h4><p id='utilityMeta'>Language: mk | Mode: academic | Status: draft</p></div>
+    <div class='utility-card'><h4>Live Room Policy</h4><p id='utilityRoomPolicy'>Class mode active: 90 min, 100 attendees, 1 host + 2 co-hosts.</p></div>
+    <div class='utility-card'><h4>Notes</h4><textarea class='note-area' id='projectNotes' placeholder='Проектни белешки, инструкции, следни чекори...'></textarea></div>
+    <div class='utility-card'><h4>Live Preview</h4><p id='utilityPreview'>Module previews and generated snippets appear here.</p></div>
+    <div class='utility-card'><h4>Quick Actions</h4><div class='hero-actions' style='margin-top:0'><button class='btn btn-secondary' data-jump='delivery'>Open Delivery</button><button class='btn btn-secondary' data-jump='rooms'>Open Live Rooms</button></div></div>
+  </aside>
+</div>
+
+<script>
+const WPA = {
+state:{module:'dashboard',language:'mk',mode:'academic',projectTitle:'WPA Media Engine Master Project',status:'draft',currentBookId:'book1',currentChapterId:'book1c1',currentScenarioId:'sc1',scenarioFilter:'all',currentRoomMode:'class'},
+books:[
+{id:'book1',title:'State Protocol Foundations',subtitle:'Book 1',description:'Core principles of order, representation and institutional dignity.',chapters:[{id:'book1c1',title:'The Meaning of Protocol',duration:'9 min',text:'Protocol is not mere ceremony. It is order, clarity, institutional dignity and visible preparedness in public life.'},{id:'book1c2',title:'Representation and Public Authority',duration:'11 min',text:'Representation requires discipline, hierarchy awareness, verbal control and respect for institutional symbolism.'}]},
+{id:'book2',title:'Conference and Ceremony Architecture',subtitle:'Book 2',description:'Formal sequence, flow, timing and symbolic control.',chapters:[{id:'book2c1',title:'Opening Logic',duration:'8 min',text:'A conference opening must establish legitimacy, sequence, clarity and symbolic order from the first seconds.'},{id:'book2c2',title:'Ceremonial Timing',duration:'10 min',text:'Ceremony fails when transitions are weak. Timing is protocol in motion.'}]},
+{id:'book3',title:'Diplomacy and Institutional Communication',subtitle:'Book 3',description:'Message discipline, diplomatic tone and executive expression.',chapters:[{id:'book3c1',title:'Diplomatic Tone',duration:'7 min',text:'Diplomatic language balances restraint, precision, timing and credibility.'}]},
+{id:'book4',title:'Digital Era and Public Presence',subtitle:'Book 4',description:'Prestige, visibility and authority in digital communication.',chapters:[{id:'book4c1',title:'Digital Public Presence',duration:'8 min',text:'Authority in the digital era must be visible, disciplined and aligned with institutional identity.'}]}
+],
+voiceProfiles:[{id:'vp1',name:'Sande Academic'},{id:'vp2',name:'Sande Formal'},{id:'vp3',name:'Sande Executive'},{id:'vp4',name:'Virtual Sande'}],
+bestShots:[{title:'MRT 2018',note:'Ideal public tone, stable pacing and high authority.'},{title:'Makedonsko Radio 2012',note:'Warmth with control and explanation rhythm.'},{title:'Jadi Burek 2018',note:'Relaxed humanity without losing structure.'},{title:'Book Promotion 2018',note:'Authorial confidence and ceremonial framing.'},{title:'Public Lecture Frame',note:'Best for educational short-form cuts.'},{title:'Prestige TV Presence',note:'Strong visual authority for formal clips.'}],
+scenarios:[
+{id:'sc1',category:'State Protocol',title:'Official Visit',summary:'Structured arrival, greeting line, meeting, media moment and departure.',checklist:['Confirm precedence order','Prepare reception line','Validate flags and symbols','Confirm speaking order'],timeline:['Arrival','Greeting line','Meeting','Press moment','Departure'],risks:'Common risks: precedence confusion, weak transitions, wrong symbolic placement.'},
+{id:'sc2',category:'Seating',title:'Diplomatic Dinner',summary:'Host visibility, toast logic, seating hierarchy and service flow.',checklist:['Finalize table plan','Check dietary protocol','Prepare toast order','Confirm seating hierarchy'],timeline:['Reception','Seating','Toast','Main segment','Closing'],risks:'Toast confusion and seating mistakes can weaken authority.'},
+{id:'sc3',category:'Ceremony',title:'Conference Opening',summary:'Flags, stage order, introductions and microphone discipline.',checklist:['Validate stage lineup','Check scripts','Confirm anthem and flags','Brief moderators'],timeline:['Arrival','Opening line','Introductions','Speech','Photo moment'],risks:'Wrong stage hierarchy and poor transitions damage ceremonial clarity.'},
+{id:'sc4',category:'Checklist',title:'Delegation Reception',summary:'Controlled escorting, briefing and movement discipline.',checklist:['Assign escort roles','Walk room sequence','Validate access flow','Confirm gift protocol'],timeline:['Arrival','Escort','Briefing','Meeting','Close'],risks:'Unclear roles create visible disorder.'},
+{id:'sc5',category:'Crisis Protocol',title:'Crisis Briefing',summary:'Fast institutional communication under pressure.',checklist:['Define spokesperson','Set message line','Validate facts','Control sequence'],timeline:['Briefing prep','Press holding line','Statement','Questions','Follow-up'],risks:'Speculation and inconsistent wording are the biggest threats.'},
+{id:'sc6',category:'Diplomatic',title:'Bilateral Meeting',summary:'Formal order, introductions, seating and message framing.',checklist:['Confirm delegations','Set seating','Prepare opening line','Align interpreters'],timeline:['Arrival','Introductions','Meeting','Summary','Close'],risks:'Weak preparation reduces seriousness.'},
+{id:'sc7',category:'State Protocol',title:'State Dinner',summary:'Prestige dinner with ceremonial hierarchy.',checklist:['Guest ranking','Menu coordination','Toast sequence','Table symbols'],timeline:['Reception','Seating','Dinner','Toast','Departure'],risks:'Any symbolic mismatch becomes visible.'},
+{id:'sc8',category:'Seating',title:'Roundtable Seating',summary:'Negotiation-sensitive table arrangement.',checklist:['Rank participants','Check nameplates','Map cameras','Validate protocol sides'],timeline:['Preparation','Arrival','Seating','Discussion'],risks:'Wrong placement changes perceived balance.'},
+{id:'sc9',category:'Ceremony',title:'Award Ceremony',summary:'Ceremonial order, symbolism and stage flow.',checklist:['Order awardees','Check stage sequence','Prepare citations','Confirm media angle'],timeline:['Opening','Award handout','Photos','Closing'],risks:'Naming or sequencing mistakes are high-risk.'},
+{id:'sc10',category:'Checklist',title:'Airport Reception',summary:'Tight reception choreography and security-aware protocol.',checklist:['Arrival route','Vehicle sequence','Greeting team','Media boundary'],timeline:['Touchdown','Escort','Greeting','Departure'],risks:'Late coordination exposes weakness.'},
+{id:'sc11',category:'Crisis Protocol',title:'Post-Conflict Visit',summary:'Sensitive movement, messaging and symbolic restraint.',checklist:['Risk brief','Route check','Talking points','Security sync'],timeline:['Arrival','Brief','Visit','Statement','Exit'],risks:'Overexposure and symbolic insensitivity.'},
+{id:'sc12',category:'Diplomatic',title:'Ambassador Credential Flow',summary:'Formal process and symbolic discipline for credentials.',checklist:['Document order','Escort timing','Address forms','Photo protocol'],timeline:['Arrival','Escort','Presentation','Photo','Departure'],risks:'Protocol wording and movement sequence matter greatly.'}
+],
+roomModes:{
+class:{title:'Class Mode',duration:90,cap:100,cohosts:2,summary:'90 min, 100 attendees, 1 host + 2 co-hosts.',permissions:['Audience enters muted by default','Speaking allowed only by host approval','Chat enabled and moderated','One active student speaker at a time','Best for structured teaching and Q and A']},
+workshop:{title:'Workshop Mode',duration:120,cap:150,cohosts:4,summary:'120 min, 150 attendees, 1 host + 4 co-hosts.',permissions:['Moderated interaction allowed','Speaking is still host-controlled','Chat and reactions enabled','Practice can be co-host moderated','Best for guided practice and exercises']},
+webinar:{title:'Webinar Mode',duration:180,cap:300,cohosts:5,summary:'180 min, 300 attendees, 1 host + 5 speakers or co-hosts.',permissions:['Audience view-first mode','Speakers defined by host','Q and A through moderated chat','Low disruption, high control','Best for lectures and launches']},
+institutional:{title:'Institutional Mode',duration:180,cap:500,cohosts:8,summary:'180 min, up to 500 attendees, custom governance.',permissions:['Custom role mapping','Observer and panelist structure','Strict entry control recommended','Recording by agreement','Best for premium institutional use']}
+},
+floorRules:['Administrator or host gives the floor to the student or participant.','Only one active non-host speaker at a time.','Mute-all remains available throughout the session.','Raise hand queue is the default speaking request path.','If noise starts, host can instantly return room to lecture mode.','No overlapping systems or parallel side speaking.','Co-hosts help moderate chat, hands and speaking order.','For large rooms, speaking is approval-only and not open-mic.'],
+plans:[{name:'Free',sub:'Preview access',text:'Short previews, basic scripts, limited queue and reduced engine access.'},{name:'Pro',sub:'Creator layer',text:'Longer outputs, premium voice routes, better delivery flow and live room planning.'},{name:'Institutional',sub:'Executive layer',text:'Custom scenario packs, room licensing and advanced delivery structure.'}],
+recentProjects:[{title:'Protocol Authority Audio Pack',module:'Audiobook Studio',status:'Draft',updated:'Today'},{title:'Sande Executive Intro',module:'Voice Engine',status:'Ready',updated:'Today'},{title:'Official Visit Package',module:'Protocol Lab',status:'Revision',updated:'Yesterday'},{title:'Viral Clip - Protocol Myth',module:'Viral Studio',status:'Draft',updated:'Yesterday'},{title:'Class Room Policy - Protocol 101',module:'Live Rooms',status:'Ready',updated:'Yesterday'},{title:'Executive Presence Workshop',module:'Live Rooms',status:'Draft',updated:'2 days ago'},{title:'Audiobook Chapter Export',module:'Production',status:'Draft',updated:'2 days ago'},{title:'Institutional Product Map',module:'Monetization',status:'Draft',updated:'2 days ago'},{title:'Diplomatic Dinner Pack',module:'Protocol Lab',status:'Ready',updated:'3 days ago'},{title:'Voiceover Prestige Pack',module:'Voice Engine',status:'Draft',updated:'3 days ago'}],
+deliveryItems:[{title:'Protocol Authority Audio Pack',type:'Audiobook',status:'Draft',version:'v1'},{title:'Sande Executive Intro',type:'Voice Output',status:'Ready',version:'v2'},{title:'Official Visit Package',type:'Protocol Package',status:'Revision',version:'v3'},{title:'Viral Clip - Protocol Myth',type:'Short Script',status:'Draft',version:'v1'},{title:'Class Room Policy - Protocol 101',type:'Live Session',status:'Ready',version:'v1'}],
+audioQueue:[],productionQueue:[],roomSessions:[{title:'Protocol 101 Class',mode:'Class',attendees:82,status:'Ready'},{title:'Executive Presence Workshop',mode:'Workshop',attendees:124,status:'Draft'}]
+};
+
+const meta={dashboard:['Dashboard','Central command center for the whole WPA media workflow.'],audiobooks:['Audiobook Studio','Books, chapters, narration and audiobook queue logic.'],voice:['Sande Voice Engine','Persona behavior, clone logic and controlled WPA expression.'],generator:['Content Generator','Lessons, summaries, speeches, captions and formal outputs.'],viral:['Viral Media Studio','Hooks, scenes, captions and short-form media logic.'],protocol:['Protocol Scenario Lab','Scenario planning, checklists, timelines and risk control.'],production:['Audio Production Lab','Ready-to-deliver packaging, pacing and production queue.'],rooms:['Live Video Rooms','Video room rules, participant caps, floor control and session builder.'],delivery:['Delivery Center','Outputs, statuses, versions and handoff control.'],monetization:['Monetization Engine','Plans, products, revenue and premium packaging.']};
+
+function $(id){return document.getElementById(id)}
+function setModule(name){WPA.state.module=name;document.querySelectorAll('.module').forEach(el=>el.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));document.getElementById('module-'+name).classList.add('active');document.querySelector(`.nav-btn[data-module="${name}"]`).classList.add('active');$('pageTitle').textContent=meta[name][0];$('pageSubtitle').textContent=meta[name][1];refreshUtility()}
+function setTab(group,id){document.querySelectorAll(`.tab-btn[data-tab-group="${group}"]`).forEach(el=>el.classList.remove('active'));document.querySelectorAll(`#module-${WPA.state.module} .submodule`).forEach(el=>el.classList.remove('active'));document.querySelector(`.tab-btn[data-tab-group="${group}"][data-tab="${id}"]`).classList.add('active');document.getElementById(id).classList.add('active')}
+function refreshUtility(text){$('utilityProjectTitle').textContent=WPA.state.projectTitle;$('utilityMeta').textContent=`Language: ${WPA.state.language} | Mode: ${WPA.state.mode} | Status: ${WPA.state.status}`;$('utilityRoomPolicy').textContent=WPA.roomModes[WPA.state.currentRoomMode].summary;if(text)$('utilityPreview').textContent=text}
+function renderRecentProjects(){const rows=['<div class="row header"><div>Project</div><div>Module</div><div>Status</div><div>Updated</div></div>'];WPA.recentProjects.forEach(i=>rows.push(`<div class="row"><div>${i.title}</div><div>${i.module}</div><div><span class="tag gold">${i.status}</span></div><div>${i.updated}</div></div>`));$('recentProjectsTable').innerHTML=rows.join('');$('kpiProjects').textContent=WPA.recentProjects.length;$('kpiBooks').textContent=WPA.books.length;$('kpiScenarios').textContent=WPA.scenarios.length}
+function renderBookGrid(){$('bookGrid').innerHTML=WPA.books.map(b=>`<div class="card book-card ${b.id===WPA.state.currentBookId?'active':''}" data-book-id="${b.id}"><div class="sub">${b.subtitle}</div><h4>${b.title}</h4><p>${b.description}</p><p class="tiny" style="margin-top:10px">${b.chapters.length} chapters</p></div>`).join('');document.querySelectorAll('.book-card').forEach(el=>el.onclick=()=>{WPA.state.currentBookId=el.dataset.bookId;renderBookGrid();renderBookReader();setTab('audio','audio-reader')})}
+function currentBook(){return WPA.books.find(b=>b.id===WPA.state.currentBookId)||WPA.books[0]}
+function currentChapter(){const b=currentBook();return b.chapters.find(c=>c.id===WPA.state.currentChapterId)||b.chapters[0]}
+function renderBookReader(){const b=currentBook();if(!b.chapters.some(c=>c.id===WPA.state.currentChapterId))WPA.state.currentChapterId=b.chapters[0].id;const c=currentChapter();$('bookTitle').textContent=b.title;$('bookMeta').textContent=`${b.chapters.length} chapters · audiobook route ready`;$('chapterList').innerHTML=b.chapters.map(ch=>`<button class="chapter-btn ${ch.id===c.id?'active':''}" data-chapter-id="${ch.id}"><strong>${ch.title}</strong><br><span class="tiny">Estimated ${ch.duration}</span></button>`).join('');$('chapterPreview').textContent=c.text;$('chapterEstimate').textContent=`Duration estimate: ${c.duration}`;document.querySelectorAll('.chapter-btn').forEach(el=>el.onclick=()=>{WPA.state.currentChapterId=el.dataset.chapterId;renderBookReader();refreshUtility(`Loaded chapter: ${currentChapter().title}`)})}
+function renderAudioQueue(){const rows=['<div class="row header"><div>Title</div><div>Voice</div><div>Language</div><div>Status</div></div>'];if(WPA.audioQueue.length===0)rows.push('<div class="row"><div>No queued items yet.</div><div>-</div><div>-</div><div><span class="tag blue">Empty</span></div></div>');else WPA.audioQueue.forEach(i=>rows.push(`<div class="row"><div>${i.title}</div><div>${i.voice}</div><div>${i.language}</div><div><span class="tag green">${i.status}</span></div></div>`));$('audioQueueTable').innerHTML=rows.join('')}
+function renderVoiceProfiles(){$('voiceProfileSelect').innerHTML=WPA.voiceProfiles.map(v=>`<option value="${v.id}">${v.name}</option>`).join('')}
+function renderBestShots(){$('bestShotsGrid').innerHTML=WPA.bestShots.map(i=>`<div class="card"><div class="sub">Best Shot</div><h4>${i.title}</h4><p>${i.note}</p></div>`).join('')}
+function renderScenarioFilters(){const cats=['all',...new Set(WPA.scenarios.map(s=>s.category))];$('scenarioFilters').innerHTML=cats.map(cat=>`<button class="filter-chip ${cat===WPA.state.scenarioFilter?'active':''}" data-scat="${cat}">${cat==='all'?'All ('+WPA.scenarios.length+')':cat}</button>`).join('');document.querySelectorAll('.filter-chip').forEach(el=>el.onclick=()=>{WPA.state.scenarioFilter=el.dataset.scat;renderScenarioFilters();renderScenarioGrid()})}
+function filteredScenarios(){return WPA.state.scenarioFilter==='all'?WPA.scenarios:WPA.scenarios.filter(s=>s.category===WPA.state.scenarioFilter)}
+function renderScenarioGrid(){$('scenarioGrid').innerHTML=filteredScenarios().map(s=>`<div class="card scenario-card ${s.id===WPA.state.currentScenarioId?'active':''}" data-scenario-id="${s.id}"><div class="sub">${s.category}</div><h4>${s.title}</h4><p>${s.summary}</p></div>`).join('');document.querySelectorAll('.scenario-card').forEach(el=>el.onclick=()=>{WPA.state.currentScenarioId=el.dataset.scenarioId;renderScenarioGrid();renderScenarioBuilder();setTab('protocol','protocol-builder')})}
+function currentScenario(){return WPA.scenarios.find(s=>s.id===WPA.state.currentScenarioId)||WPA.scenarios[0]}
+function renderScenarioBuilder(){const s=currentScenario();$('scenarioCategory').textContent=s.category;$('scenarioTitle').textContent=s.title;$('scenarioSummary').textContent=s.summary;$('scenarioChecklist').innerHTML=s.checklist.map(x=>`<li>${x}</li>`).join('');$('scenarioTimeline').innerHTML=s.timeline.map(x=>`<li>${x}</li>`).join('');$('scenarioRisks').textContent=s.risks}
+function renderDelivery(){const rows=['<div class="row header"><div>Output</div><div>Type</div><div>Status</div><div>Version</div></div>'];WPA.deliveryItems.forEach(i=>{const c=i.status==='Ready'?'green':i.status==='Revision'?'red':'gold';rows.push(`<div class="row"><div>${i.title}</div><div>${i.type}</div><div><span class="tag ${c}">${i.status}</span></div><div>${i.version}</div></div>`) });$('deliveryTable').innerHTML=rows.join('')}
+function renderProductionQueue(){const rows=['<div class="row header"><div>Item</div><div>Mode</div><div>Pacing</div><div>Status</div></div>'];if(WPA.productionQueue.length===0)rows.push('<div class="row"><div>No production packages yet.</div><div>-</div><div>-</div><div><span class="tag blue">Empty</span></div></div>');else WPA.productionQueue.forEach(i=>rows.push(`<div class="row"><div>${i.title}</div><div>${i.mode}</div><div>${i.pacing}</div><div><span class="tag green">${i.status}</span></div></div>`));$('productionQueueTable').innerHTML=rows.join('')}
+function renderPlans(){$('planGrid').innerHTML=WPA.plans.map(p=>`<div class="card"><div class="sub">${p.sub}</div><h4>${p.name}</h4><p>${p.text}</p></div>`).join('')}
+function renderRoomRules(){$('roomRulesGrid').innerHTML=Object.entries(WPA.roomModes).map(([key,r])=>`<div class="card room-rule-card ${key===WPA.state.currentRoomMode?'active':''}" data-room-mode="${key}"><div class="sub">${r.title}</div><h4>${r.duration} minutes · ${r.cap} attendees</h4><p>${r.summary}</p><ul class="list" style="margin-top:12px">${r.permissions.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('');document.querySelectorAll('.room-rule-card').forEach(el=>el.onclick=()=>{WPA.state.currentRoomMode=el.dataset.roomMode;renderRoomRules();populateRoomBuilder();setTab('rooms','room-builder')})}
+function populateRoomBuilder(){$('roomModeSelect').innerHTML=Object.entries(WPA.roomModes).map(([k,r])=>`<option value="${k}">${r.title}</option>`).join('');$('roomModeSelect').value=WPA.state.currentRoomMode;$('roomScenarioSelect').innerHTML=WPA.scenarios.map(s=>`<option value="${s.id}">${s.title}</option>`).join('');$('floorRulesList').innerHTML=WPA.floorRules.map(x=>`<li>${x}</li>`).join('');updateRoomPolicyPreview()}
+function updateRoomPolicyPreview(){const r=WPA.roomModes[$('roomModeSelect').value];WPA.state.currentRoomMode=$('roomModeSelect').value;const expected=Number($('roomAttendees').value||0);const co=Number($('roomCohosts').value||0);$('roomDurationView').textContent=`${r.duration} min`;$('roomCapView').textContent=`${r.cap} attendees`;$('roomRolesView').textContent=r.title==='Institutional Mode'?`1 host + custom support up to ${r.cohosts}`:`1 host + ${r.cohosts} co-hosts`;$('roomPermissionsList').innerHTML=r.permissions.map(x=>`<li>${x}</li>`).join('');const issues=[];if(expected>r.cap)issues.push(`Expected attendees (${expected}) exceed cap (${r.cap}).`);if(r.title!=='Institutional Mode'&&co>r.cohosts)issues.push(`Requested co-hosts (${co}) exceed suggested limit (${r.cohosts}).`);if(expected<=0)issues.push('Expected attendees must be above zero.');$('roomComplianceText').innerHTML=issues.length?`<span class="tag red">Needs adjustment</span><div class="divider"></div>${issues.join('<br>')}`:`<span class="tag green">Compliant</span><div class="divider"></div>This room plan is within WPA policy for ${r.title}.`;refreshUtility(`Active room policy: ${r.summary}`)}
+function renderRoomSessions(){const rows=['<div class="row header"><div>Session</div><div>Mode</div><div>Attendees</div><div>Status</div></div>'];WPA.roomSessions.forEach(i=>rows.push(`<div class="row"><div>${i.title}</div><div>${i.mode}</div><div>${i.attendees}</div><div><span class="tag ${i.status==='Ready'?'green':'gold'}">${i.status}</span></div></div>`));$('roomSessionsTable').innerHTML=rows.join('')}
+function saveState(){const payload={state:WPA.state,notes:$('projectNotes').value,audioQueue:WPA.audioQueue,productionQueue:WPA.productionQueue,deliveryItems:WPA.deliveryItems,roomSessions:WPA.roomSessions,saved_at:new Date().toISOString()};localStorage.setItem('wpa_audio_media_engine_v1_polish',JSON.stringify(payload));refreshUtility('Project state saved locally.');alert('Project state saved locally.')}
+function exportState(){const payload={state:WPA.state,notes:$('projectNotes').value,audioQueue:WPA.audioQueue,productionQueue:WPA.productionQueue,deliveryItems:WPA.deliveryItems,roomSessions:WPA.roomSessions,exported_at:new Date().toISOString()};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='wpa-audio-media-engine-v1-production-polish-state.json';a.click();URL.revokeObjectURL(url);refreshUtility('Project state exported as JSON.')}
+function copyText(t){navigator.clipboard.writeText(t).then(()=>alert('Copied.'))}
+
+function init(){
+ document.querySelectorAll('.nav-btn').forEach(el=>el.onclick=()=>setModule(el.dataset.module));
+ document.querySelectorAll('[data-jump]').forEach(el=>el.onclick=()=>setModule(el.dataset.jump));
+ document.querySelectorAll('.tab-btn').forEach(el=>el.onclick=()=>setTab(el.dataset.tabGroup, el.dataset.tab));
+ $('saveBtn').onclick=saveState; $('exportBtn').onclick=exportState;
+ $('languageSelect').onchange=e=>{WPA.state.language=e.target.value;refreshUtility('Language changed: '+e.target.value)}
+ $('modeSelect').onchange=e=>{WPA.state.mode=e.target.value;refreshUtility('Mode changed: '+e.target.value)}
+ $('audioPlayBtn').onclick=()=>refreshUtility('Demo audio playback started.');
+ $('audioPauseBtn').onclick=()=>refreshUtility('Demo audio playback paused.');
+ $('audioQueueBtn').onclick=()=>{const c=currentChapter();WPA.audioQueue.unshift({title:c.title,voice:$('audioVoicePreset').value,language:$('audioLanguage').value,status:'Queued'});renderAudioQueue();refreshUtility(`Queued for production: ${c.title}`);setTab('audio','audio-queue')}
+ $('generateVoiceBtn').onclick=()=>{const profile=WPA.voiceProfiles.find(v=>v.id===$('voiceProfileSelect').value)||WPA.voiceProfiles[0];const out=`${$('voiceContentType').value}
+
+Profile: ${profile.name}
+Mode: ${$('voiceModeSelect').value}
+Audience: ${$('voiceAudience').value}
+Topic: ${$('voiceTopic').value||'protocol authority'}
+
+Opening line:
+"Авторитетот не се импровизира. Тој се подготвува, се гради и се гледа уште пред првата реченица."
+
+Context:
+${$('voiceContext').value||'public institutional context'}`;$('voicePreview').textContent=out;refreshUtility(out)}
+ $('copyVoiceBtn').onclick=()=>copyText($('voicePreview').textContent||'');
+ $('queueVoiceBtn').onclick=()=>{WPA.deliveryItems.unshift({title:'Sande Voice Output',type:'Voice Output',status:'Draft',version:'v1'});renderDelivery();refreshUtility('Voice output added to Delivery Center.')}
+ $('generateContentBtn').onclick=()=>{const out=`${$('contentType').value}
+
+Tone: ${$('contentTone').value}
+Topic: ${$('contentTopic').value||'protocol culture'}
+
+Protocol is not decoration. It is a language of order, dignity and readiness.
+
+Core notes:
+${$('contentNotes').value||'No notes provided.'}`;$('contentPreview').textContent=out;refreshUtility(out)}
+ $('contentToViralBtn').onclick=()=>{$('viralTheme').value=$('contentTopic').value||'protocol culture';setModule('viral');refreshUtility('Content topic sent to Viral Media Studio.')}
+ $('contentToDeliveryBtn').onclick=()=>{WPA.deliveryItems.unshift({title:$('contentTopic').value||'Generated Content',type:'Text Output',status:'Draft',version:'v1'});renderDelivery();refreshUtility('Generated content added to Delivery Center.')}
+ $('generateViralBtn').onclick=()=>{const theme=$('viralTheme').value||'protocol mistake';const hook=`Една ${theme} грешка може тивко да ја уништи авторитетноста пред јавноста.`;const angle=`${$('viralPersona').value} + ${$('viralTone').value} + ${$('platformSelect').value}`;const out=`${$('viralMode').value}
+
+Platform: ${$('platformSelect').value}
+Angle: ${angle}
+
+Hook:
+${hook}
+
+Scene flow:
+1. Cold open
+2. Expose the mistake
+3. Show the professional correction
+4. Close with prestige CTA
+
+CTA:
+Следи WPA за протокол, дипломатија и јавна подготвеност.`;$('viralHook').textContent=hook;$('viralAngle').textContent=angle;$('viralScore').textContent='86 / 100';$('viralPreview').textContent=out;refreshUtility(out)}
+ $('viralToDeliveryBtn').onclick=()=>{WPA.deliveryItems.unshift({title:$('viralTheme').value||'Viral Script',type:'Short Script',status:'Draft',version:'v1'});renderDelivery();refreshUtility('Viral output added to Delivery Center.')}
+ $('scenarioToDeliveryBtn').onclick=()=>{const s=currentScenario();WPA.deliveryItems.unshift({title:s.title+' Package',type:'Protocol Package',status:'Draft',version:'v1'});renderDelivery();refreshUtility(`${s.title} package added to Delivery Center.`)}
+ $('scenarioToRoomBtn').onclick=()=>{const s=currentScenario();$('roomTitle').value=s.title+' Live Session';$('roomNotes').value='Scenario-linked live session based on: '+s.title;setModule('rooms');setTab('rooms','room-builder');refreshUtility(`Scenario sent to Live Video Rooms: ${s.title}`)}
+ $('prepareProductionBtn').onclick=()=>{const out=`Audio Package Ready
+
+Mode: ${$('productionMode').value}
+Pacing: ${$('productionPacing').value}
+
+Intro:
+${$('productionIntro').value}
+
+Body:
+${$('productionText').value||'No script loaded.'}
+
+Outro:
+${$('productionOutro').value}
+
+Structure:
+- Intro cue
+- Opening pause
+- Main narration body
+- Emphasis markers
+- Closing cue`;$('productionPreview').textContent=out;WPA.productionQueue.unshift({title:'Audio Package',mode:$('productionMode').value,pacing:$('productionPacing').value,status:'Prepared'});renderProductionQueue();refreshUtility(out)}
+ $('productionToDeliveryBtn').onclick=()=>{WPA.deliveryItems.unshift({title:'Audio Package',type:'Audio Output',status:'Draft',version:'v1'});renderDelivery();refreshUtility('Audio package added to Delivery Center.')}
+ $('roomModeSelect').onchange=updateRoomPolicyPreview; $('roomAttendees').oninput=updateRoomPolicyPreview; $('roomCohosts').oninput=updateRoomPolicyPreview;
+ $('buildRoomBtn').onclick=()=>{updateRoomPolicyPreview();const r=WPA.roomModes[$('roomModeSelect').value];const sc=WPA.scenarios.find(s=>s.id===$('roomScenarioSelect').value);const out=`Room Policy Built
+
+Room: ${$('roomTitle').value||r.title}
+Mode: ${r.title}
+Host: ${$('roomHost').value}
+Expected attendees: ${$('roomAttendees').value}
+Scenario link: ${sc?sc.title:'No scenario'}
+
+Rules:
+- ${WPA.floorRules.join('\n- ')}
+
+Operational note:
+${$('roomNotes').value||'No additional notes.'}`;$('roomBuilderPreview').textContent=out;refreshUtility(out)}
+ $('roomToDeliveryBtn').onclick=()=>{const r=WPA.roomModes[$('roomModeSelect').value];const title=$('roomTitle').value||r.title;WPA.roomSessions.unshift({title,mode:r.title.replace(' Mode',''),attendees:Number($('roomAttendees').value||0),status:'Draft'});WPA.deliveryItems.unshift({title,type:'Live Session',status:'Draft',version:'v1'});renderRoomSessions();renderDelivery();refreshUtility('Room session added to Delivery and Sessions.')}
+ $('calcRevenueBtn').onclick=()=>{const reach=Number($('estimatedUnits').value||0);const price=Number($('pricePerUnit').value||0);const conv=Number($('conversionRate').value||0)/100;const buyers=Math.round(reach*conv);const revenue=buyers*price;const out=`Revenue Projection
+
+Product: ${$('productType').value}
+Estimated reach: ${reach}
+Projected buyers: ${buyers}
+Projected revenue: EUR ${revenue.toFixed(2)}
+
+Interpretation:
+This is a starter model for WPA premium and institutional monetization.`;$('revenuePreview').textContent=out;$('kpiRevenue').textContent=`EUR ${revenue.toFixed(0)}`;refreshUtility(out)}
+ $('globalSearch').oninput=()=>{const q=$('globalSearch').value.trim().toLowerCase();if(!q){refreshUtility('Search cleared.');return;}const hits=[];WPA.books.forEach(b=>{if(b.title.toLowerCase().includes(q))hits.push('Book: '+b.title);b.chapters.forEach(c=>{if(c.title.toLowerCase().includes(q))hits.push('Chapter: '+c.title)})});WPA.scenarios.forEach(s=>{if((s.title+' '+s.category+' '+s.summary).toLowerCase().includes(q))hits.push('Scenario: '+s.title)});Object.values(WPA.roomModes).forEach(r=>{if((r.title+' '+r.summary).toLowerCase().includes(q))hits.push('Room mode: '+r.title)});WPA.deliveryItems.forEach(d=>{if(d.title.toLowerCase().includes(q))hits.push('Delivery: '+d.title)});refreshUtility(hits.length?hits.slice(0,8).join(' | '):'No matches found.')}
+ $('projectNotes').oninput=()=>refreshUtility('Project notes updated.');
+}
+
+renderRecentProjects();renderBookGrid();renderBookReader();renderAudioQueue();renderVoiceProfiles();renderBestShots();renderScenarioFilters();renderScenarioGrid();renderScenarioBuilder();renderDelivery();renderProductionQueue();renderPlans();renderRoomRules();populateRoomBuilder();renderRoomSessions();init();refreshUtility('WPA Audio Media Engine Production Polish Pass is ready.');
+</script>
+</body>
+</html>
