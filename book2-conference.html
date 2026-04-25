@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Конференциски прирачник на МБА Спец. Санде Смиљанов за организирање конференции, настани, протоколарна подготовка, агенда, координација и професионална комуникација."/>
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/book2-conference.html"/>
 <title>Прирачник за организирање конференции · МБА Санде Смиљанов</title>
 <style>
   .ch{
@@ -729,9 +731,32 @@ body {
   .cpanel { padding: 28px 20px; }
   .sf { display: none; }
 }
+
+/* WPA READABILITY PATCH — MK-first book reader */
+.lmk{display:inline;}
+.len{display:none;}
+body.wpa-en .lmk{display:none!important;}
+body.wpa-en .len{display:inline!important;}
+body.wpa-mk .lmk{display:inline!important;}
+body.wpa-mk .len{display:none!important;}
+.b{font-size:16px;line-height:1.95;color:rgba(240,246,255,.92);}
+.sh{color:var(--goldlt);}
+.cht{line-height:1.25;}
+.ch{scroll-margin-top:24px;}
+
+
+/* WPA EMERGENCY READER PATCH — if JavaScript fails, content remains visible */
+.ch{display:block!important;}
+body.wpa-js-ready .ch{display:none!important;}
+body.wpa-js-ready .ch.active{display:block!important;}
+body.wpa-mk .lmk{display:inline!important;}
+body.wpa-mk .len{display:none!important;}
+body.wpa-en .lmk{display:none!important;}
+body.wpa-en .len{display:inline!important;}
+
 </style>
 </head>
-<body>
+<body class="wpa-mk">
 
 <div class="progress-bar" id="prog"></div>
 
@@ -796,9 +821,9 @@ body {
       <div class="srch-count" id="srch-count"></div>
       <div class="srch-results" id="srch-results"></div>
     </div>
-    <div class="nav-title lmk">Содржина · Книга 4</div>
-    <div class="nav-title len" style="display:none">Contents · Book 4</div>
-    <div class="ni" onclick="SC('ch1')">
+    <div class="nav-title lmk">Содржина · Книга 2</div>
+    <div class="nav-title len" style="display:none">Contents · Book 2</div>
+    <div class="ni" onclick="SC('recenzii')">
       <span class="ni-icon">📋</span>
       <span class="lmk">Рецензии</span>
       <span class="len" style="display:none">Reviews</span>
@@ -4118,98 +4143,241 @@ konferencijata-na-ministrite-za-odbrana-na-sad-a5&lang=mk
   </div>
 </div>
 
+
+
 <script>
-function GL(url){try{var w=window.open(url,'_blank');if(!w||w.closed||typeof w.closed=='undefined'){window.location.href=url;}}catch(e){window.location.href=url;}}
+/* WPA Book 2 Reader — stable MK-first version */
+(function(){
+  "use strict";
 
-// Progress bar
-window.addEventListener('scroll',()=>{
-  const d=document.documentElement;
-  const pct=d.scrollTop/(d.scrollHeight-d.clientHeight)*100;
-  document.getElementById('prog').style.width=pct+'%';
-});
+  function $(id){ return document.getElementById(id); }
 
-// Lang switch
-function SL(lang,btn){
-  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  if(lang==='en'){
-    document.querySelectorAll('.lmk').forEach(el=>el.style.display='none');
-    document.querySelectorAll('.len').forEach(el=>el.style.display='block');
-  }else{
-    document.querySelectorAll('.lmk').forEach(el=>el.style.display='block');
-    document.querySelectorAll('.len').forEach(el=>el.style.display='none');
+  function GL(url){
+    try{
+      const w = window.open(url, "_blank");
+      if(!w || w.closed || typeof w.closed === "undefined") window.location.href = url;
+    }catch(e){
+      window.location.href = url;
+    }
   }
-}
 
-// Chapter nav
-function SC(id){
-  document.querySelectorAll('.ch').forEach(c=>c.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  const el=document.getElementById(id);
-  if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'start'});}
-  document.querySelectorAll('.ni').forEach(n=>{
-    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');
-  });
-}
-// Show first chapter by default
-document.addEventListener('DOMContentLoaded',()=>SC('ch1');
+  function setInlineOrBlock(el, show){
+    if(!el) return;
+    if(!show){
+      el.style.display = "none";
+      return;
+    }
+    const tag = (el.tagName || "").toLowerCase();
+    el.style.display = (tag === "span" || tag === "a" || tag === "strong" || tag === "em") ? "inline" : "block";
+  }
 
-// Search
-const searchIndex=[];
-document.querySelectorAll('.ch').forEach(ch=>{
-  const id=ch.id;
-  ch.querySelectorAll('p.b,.sh').forEach(p=>{
-    const txt=p.textContent.trim();
-    if(txt.length>20)searchIndex.push({id,txt:txt.substring(0,180),full:txt});
-  });
-});
+  function SL(lang, btn){
+    const selected = (lang === "en") ? "en" : "mk";
 
-function doSearch(q){
-  const res=document.getElementById('srch-results');
-  const cnt=document.getElementById('srch-count');
-  q=q.trim();
-  if(q.length<2){res.innerHTML='';cnt.textContent='';return;}
-  const matches=searchIndex.filter(item=>item.full.toLowerCase().includes(q.toLowerCase())).slice(0,10);
-  cnt.textContent=matches.length+' резултати';
-  if(!matches.length){res.innerHTML='<div class="sr-item">Нема резултати</div>';return;}
-  res.innerHTML=matches.map(m=>{
-    const re=new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-    const hi=m.txt.replace(re,'<span class="sr-hl">$1</span>');
-    return '<div class="sr-item" onclick="SC(''+m.id+'')">'+hi+'...</div>';
-  }).join('');
-}
+    document.body.classList.toggle("wpa-en", selected === "en");
+    document.body.classList.toggle("wpa-mk", selected === "mk");
+    document.documentElement.lang = selected;
 
-// Blockchain
-let hashCount=0;
-async function genHash(){
-  const txt=document.getElementById('bc-inp').value;
-  if(!txt)return;
-  const enc=new TextEncoder();
-  const data=enc.encode(txt);
-  const buf=await crypto.subtle.digest('SHA-256',data);
-  const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-  document.getElementById('bc-out').textContent=hex;
-  hashCount++;
-  document.getElementById('bc-cnt').textContent=hashCount;
-}
+    document.querySelectorAll(".lb").forEach(function(b){ b.classList.remove("active"); });
+    if(btn) btn.classList.add("active");
+    else{
+      const fallbackBtn = Array.from(document.querySelectorAll(".lb")).find(function(b){
+        const t = (b.textContent || "").toLowerCase();
+        return selected === "mk" ? (t.includes("мк") || t.includes("mk")) : (t.includes("en") || t.includes("gb"));
+      });
+      if(fallbackBtn) fallbackBtn.classList.add("active");
+    }
 
-// Payment modal
-function openPay(plan){document.getElementById('modal-plan').textContent=plan;document.getElementById('pay-modal').classList.add('open');}
-function closePay(){document.getElementById('pay-modal').classList.remove('open');}
-function SP(el){document.querySelectorAll('.pm-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
-function confirmPay(){
-  const email=document.getElementById('pay-email').value;
-  const name=document.getElementById('pay-name').value;
-  const plan=document.getElementById('modal-plan').textContent;
-  if(!email||!name){alert('Внесете email и ime / Enter email and name');return;}
-  closePay();
-  const subject=encodeURIComponent('ORDER: '+plan+' | '+name);
-  const body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\nPlan: '+plan);
-  GL('mailto:worldprotocolacademy@gmail.com?subject='+subject+'&body='+body);
-}
+    document.querySelectorAll(".lmk").forEach(function(el){ setInlineOrBlock(el, selected === "mk"); });
+    document.querySelectorAll(".len").forEach(function(el){ setInlineOrBlock(el, selected === "en"); });
 
-// AI modal
-function shareAI(){document.getElementById('ai-modal').classList.add('open');}
+    try{ localStorage.setItem("wpa_book2_lang", selected); }catch(e){}
+  }
+
+  function getInitialLanguage(){
+    // MK must always be the default for WPA public book pages.
+    // The user may still click EN manually.
+    try{ localStorage.setItem("wpa_book2_lang", "mk"); }catch(e){}
+    return "mk";
+  }
+
+  function SC(id){
+    const targetId = id || "recenzii";
+    document.body.classList.add("wpa-js-ready");
+
+    document.querySelectorAll(".ch").forEach(function(c){ c.classList.remove("active"); });
+    document.querySelectorAll(".ni").forEach(function(n){ n.classList.remove("active"); });
+
+    let el = $(targetId);
+    if(!el) el = $("recenzii") || $("voved") || $("ch1") || document.querySelector(".ch");
+
+    if(el){
+      el.classList.add("active");
+      try{ el.scrollIntoView({behavior:"smooth", block:"start"}); }catch(e){ el.scrollIntoView(); }
+    }
+
+    const activeId = el ? el.id : targetId;
+    document.querySelectorAll(".ni").forEach(function(n){
+      const oc = n.getAttribute("onclick") || "";
+      if(activeId && oc.indexOf("'" + activeId + "'") !== -1) n.classList.add("active");
+    });
+  }
+
+  let searchIndex = [];
+
+  function buildSearchIndex(){
+    searchIndex = [];
+    document.querySelectorAll(".ch").forEach(function(ch){
+      const id = ch.id;
+      ch.querySelectorAll("p.b, .sh, .cht").forEach(function(p){
+        const txt = (p.textContent || "").trim();
+        if(txt.length > 20) searchIndex.push({id:id, txt:txt.substring(0,180), full:txt});
+      });
+    });
+  }
+
+  function escapeHtml(value){
+    return String(value).replace(/[&<>"']/g, function(ch){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch];
+    });
+  }
+
+  function doSearch(q){
+    const res = $("srch-results");
+    const cnt = $("srch-count");
+    if(!res || !cnt) return;
+
+    q = String(q || "").trim();
+    if(q.length < 2){
+      res.innerHTML = "";
+      cnt.textContent = "";
+      return;
+    }
+
+    const ql = q.toLowerCase();
+    const matches = searchIndex.filter(function(item){
+      return item.full.toLowerCase().indexOf(ql) !== -1;
+    }).slice(0,10);
+
+    cnt.textContent = matches.length + " резултати";
+
+    if(!matches.length){
+      res.innerHTML = '<div class="sr-item">Нема резултати</div>';
+      return;
+    }
+
+    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const rx = new RegExp("(" + esc + ")", "gi");
+
+    res.innerHTML = matches.map(function(m){
+      const hi = escapeHtml(m.txt).replace(rx, '<span class="sr-hl">$1</span>');
+      return '<div class="sr-item" data-target="' + escapeHtml(m.id) + '">' + hi + "...</div>";
+    }).join("");
+
+    res.querySelectorAll(".sr-item[data-target]").forEach(function(item){
+      item.addEventListener("click", function(){ SC(item.getAttribute("data-target")); });
+    });
+  }
+
+  function bindProgress(){
+    window.addEventListener("scroll", function(){
+      const d = document.documentElement;
+      const max = Math.max(1, d.scrollHeight - d.clientHeight);
+      const pct = d.scrollTop / max * 100;
+      const prog = $("prog");
+      if(prog) prog.style.width = pct + "%";
+    }, {passive:true});
+  }
+
+  let hashCount = 0;
+  async function genHash(){
+    const inp = $("bc-inp");
+    const out = $("bc-out");
+    const cnt = $("bc-cnt");
+    const txt = inp ? inp.value : "";
+    if(!txt || !window.crypto || !crypto.subtle) return;
+
+    const enc = new TextEncoder();
+    const data = enc.encode(txt);
+    const buf = await crypto.subtle.digest("SHA-256", data);
+    const hex = Array.from(new Uint8Array(buf)).map(function(b){
+      return b.toString(16).padStart(2, "0");
+    }).join("");
+
+    if(out) out.textContent = hex;
+    hashCount++;
+    if(cnt) cnt.textContent = hashCount;
+  }
+
+  function openPay(plan){
+    const modalPlan = $("modal-plan");
+    const modal = $("pay-modal");
+    if(modalPlan) modalPlan.textContent = plan || "";
+    if(modal) modal.classList.add("open");
+  }
+
+  function closePay(){
+    const modal = $("pay-modal");
+    if(modal) modal.classList.remove("open");
+  }
+
+  function SP(el){
+    document.querySelectorAll(".pm-btn").forEach(function(b){ b.classList.remove("sel"); });
+    if(el) el.classList.add("sel");
+  }
+
+  function confirmPay(){
+    const email = $("pay-email") ? $("pay-email").value : "";
+    const name = $("pay-name") ? $("pay-name").value : "";
+    const plan = $("modal-plan") ? $("modal-plan").textContent : "";
+    if(!email || !name){
+      alert("Внесете email и име / Enter email and name");
+      return;
+    }
+    closePay();
+    const subject = encodeURIComponent("ORDER: " + plan + " | " + name);
+    const body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\nPlan: " + plan);
+    GL("mailto:worldprotocolacademy@gmail.com?subject=" + subject + "&body=" + body);
+  }
+
+  function shareAI(){
+    const modal = $("ai-modal");
+    if(modal) modal.classList.add("open");
+  }
+
+  function init(){
+    document.body.classList.add("wpa-js-ready");
+    bindProgress();
+    buildSearchIndex();
+
+    const lang = getInitialLanguage();
+    const mkBtn = Array.from(document.querySelectorAll(".lb")).find(function(b){
+      const t = (b.textContent || "").toLowerCase();
+      return t.includes("мк") || t.includes("mk");
+    });
+    SL(lang, mkBtn);
+
+    SC("recenzii");
+  }
+
+  window.GL = GL;
+  window.SL = SL;
+  window.SC = SC;
+  window.doSearch = doSearch;
+  window.genHash = genHash;
+  window.openPay = openPay;
+  window.closePay = closePay;
+  window.SP = SP;
+  window.confirmPay = confirmPay;
+  window.shareAI = shareAI;
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init, {once:true});
+  }else{
+    init();
+  }
+})();
 </script>
+
 </body>
 </html>
