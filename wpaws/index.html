@@ -4,7 +4,24 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <meta name="google" content="notranslate"/>
-<title>WPAWS 9.0 Integrated — World Protocol Academy</title>
+
+<!-- WPAWS is a working tool surface, not a public SEO landing page. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex"/>
+<meta name="description" content="WPAWS е работна околина на World Protocol Academy за академско пишување, анализа, протоколарни документи и специјализирани AI-алатки."/>
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpaws/"/>
+
+<meta property="og:title" content="WPAWS | World Protocol Academy"/>
+<meta property="og:description" content="Академска работна околина и специјализиран алатник на World Protocol Academy."/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://worldprotocolacademy-code.github.io/wpaws/"/>
+<meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png"/>
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="WPAWS | World Protocol Academy"/>
+<meta name="twitter:description" content="Академска работна околина и специјализиран WPA алатник."/>
+<meta name="twitter:image" content="https://worldprotocolacademy-code.github.io/logo.png"/>
+
+<title>WPAWS Workspace | World Protocol Academy</title>
 <style>
 :root{
   --bg:#07090f;--surf:#0f1520;--surf2:#151e2d;--surf3:#1c2740;--surf4:#233050;
@@ -298,34 +315,6 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
 </style>
 </head>
 <body>
-
-<!-- MODAL -->
-<div class="mbg" id="keyModal">
-  <div class="modal">
-    <button class="mclose" onclick="closeModal()">×</button>
-    <h3>🔑 API Клучеви</h3>
-    <p>Чуваат се само локално во прелистувачот. Никогаш не се испраќаат на надворешни сервери.</p>
-    <div class="fg" style="margin-bottom:12px">
-      <div>
-        <label class="flabel">🔵 Claude API Key (Anthropic)</label>
-        <input type="password" class="fi" id="claudeIn" placeholder="sk-ant-api03-..."/>
-        <p class="key-note">anthropic.com/console → API Keys</p>
-      </div>
-      <div>
-        <label class="flabel">🟢 OpenAI API Key (GPT-4o)</label>
-        <input type="password" class="fi" id="gptIn" placeholder="sk-proj-..."/>
-        <p class="key-note">platform.openai.com → API Keys</p>
-      </div>
-    </div>
-    <div class="mactions">
-      <button class="btn bgo" onclick="saveKeys()">Зачувај</button>
-      <button class="btn bgh" onclick="closeModal()">Откажи</button>
-      <button class="btn bgh bsm" onclick="clearKeys()" style="margin-left:auto;color:var(--red)">Избриши клучеви</button>
-    </div>
-  </div>
-</div>
-
-<div id="toasts"></div>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -1188,6 +1177,35 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
 </div>
 
 </div><!-- /workspace -->
+
+<!-- MODAL — moved below main workspace to prevent API-key text dominating public snippets. -->
+<div class="mbg" id="keyModal" data-nosnippet aria-hidden="true">
+  <div class="modal">
+    <button class="mclose" onclick="closeModal()">×</button>
+    <h3>🔑 API Клучеви</h3>
+    <p>Чуваат се само локално во прелистувачот. Никогаш не се испраќаат на надворешни сервери.</p>
+    <div class="fg" style="margin-bottom:12px">
+      <div>
+        <label class="flabel">🔵 Claude API Key (Anthropic)</label>
+        <input type="password" class="fi" id="claudeIn" placeholder="sk-ant-api03-..."/>
+        <p class="key-note">anthropic.com/console → API Keys</p>
+      </div>
+      <div>
+        <label class="flabel">🟢 OpenAI API Key (GPT-4o)</label>
+        <input type="password" class="fi" id="gptIn" placeholder="sk-proj-..."/>
+        <p class="key-note">platform.openai.com → API Keys</p>
+      </div>
+    </div>
+    <div class="mactions">
+      <button class="btn bgo" onclick="saveKeys()">Зачувај</button>
+      <button class="btn bgh" onclick="closeModal()">Откажи</button>
+      <button class="btn bgh bsm" onclick="clearKeys()" style="margin-left:auto;color:var(--red)">Избриши клучеви</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
 <script>
 /* ============================================================
    WPAWS i18n SYSTEM v3.0 — PRODUCTION FINAL
@@ -1798,12 +1816,13 @@ let busy = false;
 function getCK(){ return localStorage.getItem('wpaws_claude_key')||''; }
 function getGK(){ return localStorage.getItem('wpaws_gpt_key')||''; }
 function openModal(){
-  document.getElementById('keyModal').classList.add('open');
+  const keyModal=document.getElementById('keyModal');
+  if(keyModal){ keyModal.classList.add('open'); keyModal.setAttribute('aria-hidden','false'); }
   const ck=getCK(); const gk=getGK();
   if(ck) document.getElementById('claudeIn').value=ck;
   if(gk) document.getElementById('gptIn').value=gk;
 }
-function closeModal(){ document.getElementById('keyModal').classList.remove('open'); }
+function closeModal(){ const keyModal=document.getElementById('keyModal'); if(keyModal){ keyModal.classList.remove('open'); keyModal.setAttribute('aria-hidden','true'); } }
 function saveKeys(){
   const ck=document.getElementById('claudeIn').value.trim();
   const gk=document.getElementById('gptIn').value.trim();
