@@ -1,766 +1,386 @@
 <!DOCTYPE html>
-<html lang="mk">
+<html lang="mk" translate="no" class="notranslate">
 <head>
   <meta charset="UTF-8" />
+  <meta name="google" content="notranslate" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WPA Card | World Protocol Academy</title>
-  <meta name="description" content="WPA Card како идентификациски, membership, verification и access слој за World Protocol Academy." />
-  <meta name="keywords" content="WPA Card, World Protocol Academy card, QR verification, membership card, academic pro card, institutional card" />
-  <meta name="author" content="Assoc. Prof. Dr. Sande Smiljanov" />
-  <meta property="og:title" content="WPA Card | World Protocol Academy" />
-  <meta property="og:description" content="WPA Card како идентификациски, membership и verification слој за World Protocol Academy." />
+  <title>WPA Card | Светска Академија за Протокол</title>
+  <meta name="description" content="WPA Card е идниот членски, пристапен и верификациски слој на Светската Академија за Протокол — за програми, сертификати, трудови, книги и premium learning experience." />
+  <meta name="keywords" content="WPA Card, World Protocol Academy, Светска Академија за Протокол, membership, certificate verification, protocol academy, diplomacy" />
+  <meta name="author" content="Доц. д-р Санде Смиљанов" />
+  <meta property="og:title" content="WPA Card | Светска Академија за Протокол" />
+  <meta property="og:description" content="Членски, пристапен и верификациски слој на WPA — отворена содржина, premium надградба и институционална вредност." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://worldprotocolacademy-code.github.io/wpa-card.html" />
   <meta property="og:image" content="https://worldprotocolacademy-code.github.io/logo.png" />
   <link rel="icon" href="logo.png" type="image/png" />
   <link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpa-card.html" />
-
+  <link rel="manifest" href="manifest.json" />
   <style>
     :root{
-      --bg:#f6f2eb;
-      --surface:#ffffff;
-      --surface-2:#fbf8f3;
-      --surface-3:#f2ecdf;
-      --text:#1d2430;
-      --muted:#5a6577;
-      --line:#ddd3c3;
-      --gold:#9a7728;
-      --gold-dark:#7b5f1f;
-      --navy:#162947;
-      --navy-2:#22385c;
-      --navy-3:#0f1b30;
-      --shadow:0 10px 30px rgba(20,31,52,.08);
-      --shadow-soft:0 8px 22px rgba(20,31,52,.06);
-      --radius:18px;
-      --max:1240px;
+      --navy:#0d1f3c; --navy2:#162947; --navy3:#22385c;
+      --gold:#c9a84c; --gold2:#9a7728; --goldLight:#f2dda3;
+      --cream:#f8f4ee; --cream2:#f0ead8; --white:#fff;
+      --text:#1d2430; --muted:#5a6577; --line:#ddd3c3;
+      --shadow:0 10px 32px rgba(13,31,60,.10);
+      --shadow2:0 18px 58px rgba(13,31,60,.18);
+      --radius:18px; --max:1220px;
+      --serif:Georgia,"Times New Roman",serif;
+      --sans:Arial,Helvetica,sans-serif;
     }
-
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:Arial, Helvetica, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      line-height:1.65;
-    }
-
+    body{margin:0;font-family:var(--sans);background:var(--cream);color:var(--text);line-height:1.65}
     a{text-decoration:none;color:inherit}
     img{max-width:100%;display:block}
-    .container{width:min(var(--max), calc(100% - 32px)); margin:0 auto}
-
-    .topbar{
-      background:var(--navy);
-      color:#eef3fb;
-      font-size:14px;
-      padding:10px 0;
-    }
-
-    .topbar-inner{
-      display:flex;
-      justify-content:space-between;
-      gap:18px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .topbar strong{color:#f4d697}
-
-    header{
-      position:sticky;
-      top:0;
-      z-index:1000;
-      background:rgba(255,255,255,.95);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid rgba(0,0,0,.06);
-    }
-
-    .nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:24px;
-      padding:14px 0;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width:0;
-    }
-
-    .brand img{
-      width:56px;
-      height:56px;
-      object-fit:contain;
-      padding:6px;
-      border-radius:12px;
-      background:#fff;
-      box-shadow:var(--shadow-soft);
-    }
-
-    .brand-text h1{
-      margin:0;
-      font-size:20px;
-      line-height:1.1;
-      color:var(--navy);
-    }
-
-    .brand-text p{
-      margin:4px 0 0;
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    nav ul{
-      list-style:none;
-      margin:0;
-      padding:0;
-      display:flex;
-      flex-wrap:wrap;
-      gap:16px;
-      align-items:center;
-      justify-content:flex-end;
-    }
-
-    nav a{
-      color:var(--navy);
-      font-size:14px;
-      font-weight:700;
-      transition:.18s ease;
-    }
-
-    nav a:hover{color:var(--gold-dark)}
-
-    .hero{
-      background:
-        linear-gradient(135deg, rgba(22,41,71,.97), rgba(34,56,92,.92)),
-        radial-gradient(circle at top right, rgba(255,255,255,.08), transparent 38%);
-      color:#fff;
-      padding:84px 0 74px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-
-    .eyebrow{
-      display:inline-block;
-      padding:8px 14px;
-      border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.16);
-      color:#f7dca8;
-      font-size:13px;
-      letter-spacing:.3px;
-      margin-bottom:18px;
-    }
-
-    .hero h2{
-      margin:0 0 16px;
-      font-size:clamp(34px, 4vw, 56px);
-      line-height:1.05;
-      letter-spacing:-.9px;
-      max-width:1020px;
-    }
-
-    .hero p{
-      margin:0;
-      color:rgba(255,255,255,.9);
-      font-size:18px;
-      max-width:940px;
-    }
-
-    .hero-actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
-      margin-top:28px;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:13px 22px;
-      border-radius:999px;
-      font-weight:800;
-      font-size:14px;
-      transition:.18s ease;
-    }
-
-    .btn-primary{
-      background:#f4d697;
-      color:var(--navy);
-      box-shadow:0 8px 20px rgba(0,0,0,.15);
-    }
-
-    .btn-primary:hover{
-      transform:translateY(-2px);
-      box-shadow:0 12px 24px rgba(0,0,0,.18);
-    }
-
-    .btn-secondary{
-      border:1px solid rgba(255,255,255,.22);
-      color:#fff;
-      background:rgba(255,255,255,.05);
-    }
-
-    .btn-secondary:hover{
-      background:rgba(255,255,255,.09);
-      transform:translateY(-2px);
-    }
-
-    section{padding:78px 0}
-    .accent-section{
-      background:var(--surface-2);
-      border-top:1px solid rgba(0,0,0,.04);
-      border-bottom:1px solid rgba(0,0,0,.04);
-    }
-
-    .section-header{
-      max-width:980px;
-      margin-bottom:34px;
-    }
-
-    .label{
-      display:inline-block;
-      color:var(--gold-dark);
-      font-weight:800;
-      font-size:13px;
-      text-transform:uppercase;
-      letter-spacing:.35px;
-      margin-bottom:10px;
-    }
-
-    .section-header h3{
-      margin:0 0 12px;
-      color:var(--navy);
-      font-size:clamp(28px, 3vw, 40px);
-      line-height:1.12;
-    }
-
-    .section-header p{
-      margin:0;
-      color:var(--muted);
-      font-size:17px;
-    }
-
-    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    .container{width:min(var(--max),calc(100% - 32px));margin:0 auto}
+    .topbar{background:var(--navy);color:#eef3fb;padding:10px 0;font-size:14px;border-bottom:1px solid rgba(201,168,76,.28)}
+    .topbar-inner{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
+    .topbar strong{color:var(--goldLight)}
+    header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,.07)}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:14px;min-width:0}
+    .brand img{width:56px;height:56px;object-fit:contain;padding:6px;border-radius:12px;background:#fff;box-shadow:var(--shadow)}
+    .brand-text h1{margin:0;font-family:var(--serif);font-size:20px;color:var(--navy);line-height:1.1}
+    .brand-text p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:flex-end}
+    nav a{color:var(--navy);font-size:14px;font-weight:800}
+    nav a:hover{color:var(--gold2)}
+    .lang-box{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#fff;box-shadow:var(--shadow);color:var(--navy);font-size:13px;font-weight:800}
+    .lang-box select{border:none;background:transparent;color:var(--navy);font-weight:800;outline:none;cursor:pointer}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;border-radius:999px;border:1px solid transparent;font-size:14px;font-weight:900;transition:.2s ease;cursor:pointer;text-align:center}
+    .btn-primary{background:var(--gold2);color:#fff;box-shadow:var(--shadow)}
+    .btn-primary:hover{background:#7b5f1f;transform:translateY(-1px)}
+    .btn-secondary{background:#fff;color:var(--navy);border-color:var(--line)}
+    .btn-secondary:hover{border-color:var(--gold2);color:var(--gold2)}
+    .hero{background:linear-gradient(135deg,rgba(13,31,60,.98),rgba(34,56,92,.94)),radial-gradient(circle at top right,rgba(201,168,76,.24),transparent 38%);color:#fff;padding:92px 0 78px;overflow:hidden;position:relative}
+    .hero:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.05) 1px,transparent 1px);background-size:72px 72px;pointer-events:none}
+    .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center;position:relative;z-index:1}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.06);color:var(--goldLight);border-radius:999px;font-size:13px;font-weight:900;margin-bottom:18px}
+    .hero h2{margin:0 0 18px;font-family:var(--serif);font-size:clamp(36px,4.6vw,66px);line-height:1.05;letter-spacing:-.8px}
+    .hero p{margin:0 0 28px;max-width:790px;color:rgba(255,255,255,.88);font-size:18px}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px}
+    .hero-note{color:rgba(255,255,255,.74);font-size:14px;max-width:790px}
+    .card-visual{border:1px solid rgba(255,255,255,.16);border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.04));padding:24px;box-shadow:0 24px 80px rgba(0,0,0,.28);transform:rotate(-1.4deg)}
+    .wpa-card{min-height:260px;border-radius:24px;background:radial-gradient(circle at 15% 20%,rgba(242,221,163,.24),transparent 28%),linear-gradient(135deg,#061022,#13284a 55%,#9a7728);padding:26px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.30)}
+    .wpa-card:after{content:"";position:absolute;width:220px;height:220px;border:1px solid rgba(242,221,163,.28);border-radius:50%;right:-70px;bottom:-70px}
+    .card-top,.card-mid,.card-bottom{position:relative;z-index:1}
+    .card-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .card-mark{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--goldLight);letter-spacing:.5px}
+    .card-status{padding:7px 11px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:12px;font-weight:900}
+    .card-mid h3{margin:0 0 8px;font-family:var(--serif);font-size:28px;line-height:1.1}
+    .card-mid p{margin:0;color:rgba(255,255,255,.78);font-size:14px}
+    .card-bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;font-size:12px;color:rgba(255,255,255,.72);text-transform:uppercase;letter-spacing:.7px}
+    section{padding:82px 0}
+    .accent{background:var(--cream2);border-top:1px solid rgba(0,0,0,.05);border-bottom:1px solid rgba(0,0,0,.05)}
+    .section-header{max-width:880px;margin-bottom:34px}
+    .label{display:inline-block;color:var(--gold2);font-weight:900;text-transform:uppercase;letter-spacing:.35px;font-size:13px;margin-bottom:10px}
+    .section-header h3{margin:0 0 12px;color:var(--navy);font-family:var(--serif);font-size:clamp(28px,3vw,44px);line-height:1.12}
+    .section-header p{margin:0;color:var(--muted);font-size:17px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
     .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-
-    .card{
-      background:var(--surface);
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:var(--radius);
-      padding:24px;
-      box-shadow:var(--shadow-soft);
-      height:100%;
-      transition:transform .18s ease, box-shadow .18s ease;
-    }
-
-    .card:hover{
-      transform:translateY(-4px);
-      box-shadow:var(--shadow);
-    }
-
-    .card h4{
-      margin:0 0 10px;
-      color:var(--navy);
-      font-size:21px;
-      line-height:1.18;
-    }
-
-    .card p{
-      margin:0;
-      color:var(--muted);
-      font-size:15px;
-    }
-
-    .card-badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:88px;
-      padding:8px 12px;
-      border-radius:999px;
-      background:var(--surface-3);
-      color:var(--gold-dark);
-      border:1px solid var(--line);
-      font-size:12px;
-      font-weight:800;
-      text-transform:uppercase;
-      letter-spacing:.3px;
-      margin-bottom:12px;
-    }
-
-    .clarity-box{
-      background:linear-gradient(180deg,#fff,#fbfaf7);
-      border:1px solid var(--line);
-      border-left:5px solid var(--gold);
-      border-radius:18px;
-      padding:24px;
-      box-shadow:var(--shadow-soft);
-    }
-
-    .clarity-box h4{
-      margin:0 0 10px;
-      color:var(--navy);
-      font-size:22px;
-    }
-
-    .clarity-box p{
-      margin:0;
-      color:var(--muted);
-      font-size:15px;
-    }
-
-    .feature-list{
-      margin:14px 0 0;
-      padding-left:18px;
-      color:var(--muted);
-    }
-
-    .feature-list li{margin-bottom:10px}
-
-    .cta-box{
-      background:linear-gradient(135deg,var(--gold),#b78a2a);
-      color:#fff;
-      border-radius:24px;
-      padding:30px;
-      box-shadow:var(--shadow);
-    }
-
-    .cta-box h3{
-      margin:0 0 12px;
-      font-size:30px;
-      line-height:1.08;
-    }
-
-    .cta-box p{
-      margin:0;
-      color:rgba(255,255,255,.92);
-      max-width:860px;
-    }
-
-    .cta-links{
-      display:flex;
-      flex-wrap:wrap;
-      gap:14px;
-      margin-top:20px;
-    }
-
-    .cta-links a{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      border:1px solid rgba(255,255,255,.28);
-      border-radius:999px;
-      padding:12px 18px;
-      font-weight:700;
-      font-size:14px;
-      color:#fff;
-      background:rgba(255,255,255,.08);
-      transition:.18s ease;
-    }
-
-    .cta-links a:hover{
-      background:rgba(255,255,255,.16);
-      transform:translateY(-2px);
-    }
-
-    .footer{
-      background:var(--navy-3);
-      color:#d7ddeb;
-      padding:48px 0 28px;
-      margin-top:40px;
-    }
-
-    .footer-grid{
-      display:grid;
-      grid-template-columns:1.2fr .9fr .9fr;
-      gap:24px;
-      margin-bottom:24px;
-    }
-
-    .footer h4{
-      margin:0 0 12px;
-      color:#fff;
-      font-size:18px;
-    }
-
-    .footer p,.footer li,.footer a{
-      color:#d7ddeb;
-      font-size:14px;
-    }
-
-    .footer ul{
-      list-style:none;
-      margin:0;
-      padding:0;
-      display:grid;
-      gap:8px;
-    }
-
-    .footer-bottom{
-      border-top:1px solid rgba(255,255,255,.1);
-      padding-top:18px;
-      font-size:13px;
-      color:#b9c3d6;
-      line-height:1.7;
-    }
-
-    .disclaimer{
-      margin-top:10px;
-      color:#aeb8ca;
-      font-size:13px;
-    }
-
-    @media (max-width:1180px){
-      .grid-4{grid-template-columns:repeat(2,1fr)}
-      .grid-3,.grid-2,.footer-grid{grid-template-columns:1fr}
-    }
-
-    @media (max-width:760px){
-      .nav{flex-direction:column;align-items:flex-start}
-      nav ul{justify-content:flex-start;gap:12px 16px}
-      .hero{padding:62px 0 52px}
-      .grid-4{grid-template-columns:1fr}
-    }
+    .info-card{background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);height:100%;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+    .info-card:hover{transform:translateY(-3px);box-shadow:var(--shadow2);border-color:rgba(154,119,40,.35)}
+    .kicker{display:block;color:var(--gold2);font-size:12px;text-transform:uppercase;letter-spacing:.3px;font-weight:900;margin-bottom:10px}
+    .info-card h4{margin:0 0 10px;color:var(--navy);font-family:var(--serif);font-size:22px;line-height:1.18}
+    .info-card p{margin:0;color:var(--muted);font-size:15px}
+    .list{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:9px}
+    .list li{padding:10px 12px;border-left:3px solid var(--gold);background:var(--cream);border-radius:0 12px 12px 0;color:var(--muted);font-size:14px}
+    .tier{position:relative;overflow:hidden}
+    .tier:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--gold2),var(--goldLight))}
+    .tier-name{font-family:var(--serif);font-size:24px;color:var(--navy);margin:0 0 8px}
+    .tier-price{font-size:14px;color:var(--muted);margin-bottom:14px}
+    .tier-price strong{display:block;font-size:30px;color:var(--navy);line-height:1.1;margin-bottom:2px}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:#fff7df;border:1px solid rgba(201,168,76,.45);color:#6f5418;font-size:12px;font-weight:900;margin-bottom:12px}
+    .flow{display:grid;gap:16px}
+    .flow-item{display:grid;grid-template-columns:54px 1fr;gap:16px;align-items:start;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
+    .flow-num{width:54px;height:54px;border-radius:50%;background:var(--navy);color:var(--goldLight);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900}
+    .flow-item h4{margin:0 0 6px;color:var(--navy);font-family:var(--serif);font-size:20px}
+    .flow-item p{margin:0;color:var(--muted);font-size:15px}
+    .notice{background:#fff9e7;border-left:5px solid var(--gold);border-radius:18px;padding:24px;box-shadow:var(--shadow)}
+    .notice h4{margin:0 0 10px;color:var(--navy);font-family:var(--serif);font-size:24px}
+    .notice p{margin:0 0 10px;color:var(--muted)}
+    .dark-band{background:linear-gradient(135deg,var(--navy),var(--navy3));color:#fff;border-radius:28px;padding:36px;box-shadow:var(--shadow2);position:relative;overflow:hidden}
+    .dark-band h3{margin:0 0 12px;font-family:var(--serif);font-size:clamp(26px,3vw,40px);line-height:1.1}
+    .dark-band p{margin:0 0 18px;max-width:860px;color:rgba(255,255,255,.82)}
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow)}
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    th,td{text-align:left;vertical-align:top;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-size:14px}
+    th{background:#fff8df;color:var(--navy);font-weight:900}
+    tr:last-child td{border-bottom:none}
+    .footer{background:#0f1b30;color:#d7ddeb;padding:48px 0 28px;margin-top:40px}
+    .footer-grid{display:grid;grid-template-columns:1.2fr .9fr .9fr;gap:24px;margin-bottom:24px}
+    .footer h4{margin:0 0 12px;color:#fff;font-family:var(--serif);font-size:18px}
+    .footer p,.footer li,.footer a{color:#d7ddeb;font-size:14px}
+    .footer ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+    .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:18px;font-size:13px;color:#b9c3d6;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .legal-small{color:#b9c3d6;font-size:13px;margin-top:10px}
+    @media(max-width:1100px){.hero-grid,.grid-4,.footer-grid{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:760px){.nav{flex-direction:column;align-items:flex-start}nav ul{justify-content:flex-start;gap:12px 16px}.hero{padding:64px 0 56px}.hero-grid,.grid-3,.grid-4,.footer-grid{grid-template-columns:1fr}.card-visual{transform:none}.dark-band{padding:26px}.lang-box{width:100%;justify-content:space-between}.flow-item{grid-template-columns:44px 1fr}.flow-num{width:44px;height:44px;font-size:15px}}
   </style>
 </head>
-<body>
 
+<body data-page="wpa-card">
   <div class="topbar">
     <div class="container topbar-inner">
-      <div><strong>World Protocol Academy</strong> — WPA Card како membership, identity и verification слој.</div>
-      <div>Чисто • проверливо • скалабилно</div>
+      <div><strong>Светска Академија за Протокол</strong> — open authority + premium learning layer.</div>
+      <div>WPA Card • Membership • Access • Verification • Future benefits</div>
     </div>
   </div>
 
   <header>
     <div class="container nav">
-      <a href="index.html" class="brand">
-        <img src="logo.png" alt="World Protocol Academy logo" />
+      <a href="index.html#top" class="brand">
+        <img src="logo.png" alt="World Protocol Academy logo" onerror="this.style.display='none';" />
         <div class="brand-text">
-          <h1>World Protocol Academy</h1>
-          <p>WPA Card Architecture</p>
+          <h1>Светска Академија за Протокол</h1>
+          <p>World Protocol Academy — WPA</p>
         </div>
       </a>
-
-      <nav aria-label="Primary Navigation">
+      <nav aria-label="Главна навигација">
         <ul>
           <li><a href="index.html">Почетна</a></li>
           <li><a href="programmes.html">Програми</a></li>
           <li><a href="certification.html">Сертификација</a></li>
-          <li><a href="#types">Card Types</a></li>
-          <li><a href="#logic">Card Logic</a></li>
-          <li><a href="#benefits">Benefits</a></li>
-          <li><a href="#security">Security</a></li>
+          <li><a href="papers.html">Трудови</a></li>
+          <li><a href="index.html#publications">Публикации</a></li>
+          <li><a href="passive-revenue.html">Passive Revenue</a></li>
         </ul>
       </nav>
+      <div class="lang-box">
+        <label for="pageLang">Јазик</label>
+        <select id="pageLang" data-language-switcher aria-label="Избор на јазик">
+          <option value="mk">MK — Македонски</option>
+          <option value="en">EN — English</option>
+        </select>
+      </div>
     </div>
   </header>
 
-  <main>
-
+  <main id="top">
     <section class="hero">
-      <div class="container">
-        <span class="eyebrow">Identity • Membership • QR • Verification • Access</span>
-        <h2>WPA Card не е обична картичка. Таа е слој на идентитет, пристап, членство и verification во WPA екосистемот.</h2>
-        <p>WPA Card е замислена како чист и скалабилен систем што го поврзува корисникот со неговото ниво, membership статус, certification layer, QR verification и идните партнерски бенефити. Прво QR, потоа поширок access и benefit logic.</p>
-
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#types">Истражи ги Card типовите</a>
-          <a class="btn btn-secondary" href="certification.html">Отвори сертификација</a>
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">WPA Card • Членство • Пристап • Верификација</span>
+          <h2>Не затвораме знаење. Градиме премиум слој околу него.</h2>
+          <p>WPA Card е идниот членски, пристапен и верификациски слој на Светската Академија за Протокол. Основната академска содржина останува јавна за авторитет, доверба и Google visibility, а WPA Card додава premium искуство, сертификатска трага, членски статус и идни бенефити.</p>
+          <div class="hero-actions">
+            <a href="#tiers" class="btn btn-primary">Разгледајте ги нивоата</a>
+            <a href="#access-model" class="btn btn-secondary">Како функционира</a>
+            <a href="certification.html" class="btn btn-secondary">Сертификација</a>
+          </div>
+          <div class="hero-note">Стратешки принцип: отворена содржина за градење авторитет + премиум членски систем за додадена вредност.</div>
         </div>
+
+        <aside class="card-visual" aria-label="WPA Card visual preview">
+          <div class="wpa-card">
+            <div class="card-top">
+              <div class="card-mark">WPA</div>
+              <div class="card-status">FOUNDING LAYER</div>
+            </div>
+            <div class="card-mid">
+              <h3>WPA Card</h3>
+              <p>Membership • Access • Verification • Learning Identity</p>
+            </div>
+            <div class="card-bottom">
+              <div>World Protocol Academy</div>
+              <div>QR-ready</div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section id="logic">
+    <section id="access-model">
       <div class="container">
         <div class="section-header">
-          <span class="label">Card Logic</span>
-          <h3>WPA Card ја врзува membership логиката со certification и access логиката.</h3>
-          <p>WPA Card не треба да биде gimmick. Таа треба да стане practical layer што поврзува кој си, што користиш, што си положил и до што имаш пристап.</p>
+          <span class="label">Стратегија на пристап</span>
+          <h3>Open authority + premium upgrade.</h3>
+          <p>WPA не треба да изгледа како затворен сајт. Треба да изгледа како сериозна институција со јавно знаење, а потоа да понуди членство, сертификати, верификација и дополнителни алатки за оние што сакаат повеќе.</p>
         </div>
 
         <div class="grid-3">
-          <article class="card">
-            <h4>Identity layer</h4>
-            <p>Покажува на кое WPA ниво на пристап и членство припаѓаш: Free, Pro, Academic Pro или Institutional / Executive.</p>
+          <article class="info-card">
+            <span class="kicker">1. Отворен авторитет</span>
+            <h4>Книги и трудови како јавна доверба</h4>
+            <p>Публикациите и научните трудови ја градат академската тежина на WPA. Тие привлекуваат Google, институции, студенти и партнери.</p>
+            <ul class="list">
+              <li>Јавна видливост и доверба.</li>
+              <li>Истражувачка основа за WPA.</li>
+              <li>SEO и академски кредибилитет.</li>
+            </ul>
           </article>
 
-          <article class="card">
-            <h4>Verification layer</h4>
-            <p>Во следна фаза QR кодот и certificate status треба да се поврзат со verification logic.</p>
+          <article class="info-card">
+            <span class="kicker">2. Premium слој</span>
+            <h4>WPA Card додава вредност</h4>
+            <p>WPA Card не е груба блокада. Таа е надградба: членски статус, контролиран пристап, premium материјали, запис на учење и идни бенефити.</p>
+            <ul class="list">
+              <li>Членски статус и learning identity.</li>
+              <li>Додатни ресурси и future benefits.</li>
+              <li>Подготовка за партнерски екосистем.</li>
+            </ul>
           </article>
 
-          <article class="card">
-            <h4>Access layer</h4>
-            <p>Card статусот треба да управува со пристап до содржини, патеки, идни бенефити и институционални формати.</p>
+          <article class="info-card">
+            <span class="kicker">3. Верификација</span>
+            <h4>Подготвено за QR и сертификати</h4>
+            <p>Идниот систем може да поврзе членство, сертификати, програми и проверливи записи преку QR/serial verification модел.</p>
+            <ul class="list">
+              <li>Проверливи сертификати.</li>
+              <li>Сериски број и digital trace.</li>
+              <li>Јасна професионална патека.</li>
+            </ul>
           </article>
-        </div>
-
-        <div class="clarity-box" style="margin-top:26px">
-          <h4>Основен принцип</h4>
-          <p>WPA Card прво треба да биде едноставна и доверлива: QR-first, clean membership logic, јасна verification дисциплина и постепено додавање на benefits.</p>
         </div>
       </div>
     </section>
 
-    <section id="types" class="accent-section">
+    <section id="tiers" class="accent">
       <div class="container">
         <div class="section-header">
-          <span class="label">Card Types</span>
-          <h3>Четири јасни WPA Card типови.</h3>
-          <p>WPA Card треба да ја следи истата membership скала што веќе ја користиме во платформата.</p>
+          <span class="label">WPA Card нивоа</span>
+          <h3>Четири практични членски нивоа за раст.</h3>
+          <p>Овие нивоа се поставени како институционален модел. Цените, условите и техничката активација може да се дефинираат подоцна, кога ќе се постави payment, login и verification инфраструктура.</p>
         </div>
 
         <div class="grid-4">
-          <article class="card">
-            <span class="card-badge">Card 1</span>
-            <h4>WPA Free Card</h4>
-            <p>Основен дигитален идентификациски слој за бесплатен корисник и прв влез во WPA екосистемот.</p>
-            <ul class="feature-list">
-              <li>Basic member identity</li>
-              <li>Preview level access</li>
-              <li>Introductory QR logic</li>
-            </ul>
+          <article class="info-card tier">
+            <span class="badge">Open Entry</span>
+            <h4 class="tier-name">WPA Free</h4>
+            <div class="tier-price"><strong>0 €</strong><span>јавен пристап</span></div>
+            <p>Основен јавен пристап до отворени страници, публикации, трудови, воведни информации и јавни WPA ресурси.</p>
+            <ul class="list"><li>Јавни страници.</li><li>Отворени трудови и публикации.</li><li>Основна WPA ориентација.</li></ul>
           </article>
 
-          <article class="card">
-            <span class="card-badge">Card 2</span>
-            <h4>WPA Pro Card</h4>
-            <p>За активни корисници што користат premium содржини, подлабоки одговори и посериозна programme path логика.</p>
-            <ul class="feature-list">
-              <li>Premium status marker</li>
-              <li>Expanded access layer</li>
-              <li>Future benefit eligibility</li>
-            </ul>
+          <article class="info-card tier">
+            <span class="badge">Individual</span>
+            <h4 class="tier-name">WPA Pro</h4>
+            <div class="tier-price"><strong>Future</strong><span>индивидуално членство</span></div>
+            <p>За професионалци, студенти и корисници кои сакаат структурирано учење, premium ресурси и идни WPA Card бенефити.</p>
+            <ul class="list"><li>Premium learning layer.</li><li>Напредни материјали и templates.</li><li>Патека кон сертификати.</li></ul>
           </article>
 
-          <article class="card">
-            <span class="card-badge">Card 3</span>
-            <h4>WPA Academic Pro Card</h4>
-            <p>За студенти, истражувачи и сериозни академски корисници што влегуваат подлабоко во WPA learning и certificate preparation слојот.</p>
-            <ul class="feature-list">
-              <li>Academic status logic</li>
-              <li>Learning path alignment</li>
-              <li>Future certificate linkage</li>
-            </ul>
+          <article class="info-card tier">
+            <span class="badge">Academic</span>
+            <h4 class="tier-name">Academic Pro</h4>
+            <div class="tier-price"><strong>Future</strong><span>академска употреба</span></div>
+            <p>За наставници, истражувачи, библиотеки, студенти и академски соработници што користат WPA како истражувачка и наставна основа.</p>
+            <ul class="list"><li>Истражувачки пакети.</li><li>Citation support.</li><li>Academic learning resources.</li></ul>
           </article>
 
-          <article class="card">
-            <span class="card-badge">Card 4</span>
-            <h4>WPA Institutional / Executive Card</h4>
-            <p>За институции, тимови, обучувачи, партнери и executive / organisational слоеви на WPA.</p>
-            <ul class="feature-list">
-              <li>Institutional status</li>
-              <li>Group / cohort logic</li>
-              <li>Future partner benefit layer</li>
-            </ul>
+          <article class="info-card tier">
+            <span class="badge">Institutional</span>
+            <h4 class="tier-name">Institutional</h4>
+            <div class="tier-price"><strong>Custom</strong><span>тимови и институции</span></div>
+            <p>За институции, организации, тимови, амбасади, центри за обука, јавни служби и корпоративни протоколарни средини.</p>
+            <ul class="list"><li>Team access.</li><li>Institutional training layer.</li><li>Custom programmes и reporting.</li></ul>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="what-it-is">
+    <section>
       <div class="container">
         <div class="section-header">
-          <span class="label">What WPA Card is</span>
-          <h3>Што е, а што не е WPA Card.</h3>
-          <p>Јасната дефиниција е клучна. Card слојот мора да биде доверлив и професионално разбирлив.</p>
+          <span class="label">Како ќе се поврзе со WPA</span>
+          <h3>WPA Card како централен connective layer.</h3>
+          <p>Наместо да ги затвораме книгите и трудовите, ги користиме како академски доказ, а WPA Card станува слој за надградба.</p>
         </div>
 
-        <div class="grid-2">
-          <article class="card">
-            <h4>Што е</h4>
-            <ul class="feature-list">
-              <li>Membership identifier</li>
-              <li>Access layer</li>
-              <li>QR verification carrier</li>
-              <li>Certificate-linked status layer</li>
-              <li>Future benefit gateway</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h4>Што не е</h4>
-            <ul class="feature-list">
-              <li>Не е банкарска картичка</li>
-              <li>Не е државна легитимација</li>
-              <li>Не е автоматски доказ за степен или титула</li>
-              <li>Не е маскенбалски gimmick</li>
-              <li>Не е замена за сериозна verification page</li>
-            </ul>
-          </article>
+        <div class="flow">
+          <div class="flow-item"><div class="flow-num">01</div><div><h4>Публикациите остануваат јавен авторитет</h4><p>Книгите, монографиите и трудовите продолжуваат да ја градат академската тежина и довербата во WPA.</p></div></div>
+          <div class="flow-item"><div class="flow-num">02</div><div><h4>Се додава CTA за WPA Card</h4><p>На страниците со книги и трудови се додава ненаметлив premium повик: „надградете го искуството преку WPA Card“.</p></div></div>
+          <div class="flow-item"><div class="flow-num">03</div><div><h4>Сертификатите се врзуваат со верификација</h4><p>Кога системот ќе биде подготвен, WPA Card може да носи QR/serial verification за certificate programmes.</p></div></div>
+          <div class="flow-item"><div class="flow-num">04</div><div><h4>Партнерски и пасивен приходен слој</h4><p>Во следната фаза WPA Card може да се поврзе со partner benefits, institutional packages и future recurring value.</p></div></div>
         </div>
       </div>
     </section>
 
-    <section id="benefits" class="accent-section">
+    <section class="accent">
       <div class="container">
         <div class="section-header">
-          <span class="label">Benefits Layer</span>
-          <h3>Card логиката прво е verification и access. Потоа доаѓа benefit layer.</h3>
-          <p>Не ја почнуваме WPA Card од попусти. Прво градиме доверба, verification и membership дисциплина. Benefit layer доаѓа врз стабилна основа.</p>
+          <span class="label">Open vs Premium</span>
+          <h3>Што останува отворено, а што станува premium.</h3>
         </div>
 
-        <div class="grid-3">
-          <article class="card">
-            <h4>Фаза 1</h4>
-            <p>Identity + QR + member status + clean access logic.</p>
-          </article>
-
-          <article class="card">
-            <h4>Фаза 2</h4>
-            <p>Certificate linkage + verification page + programme traceability.</p>
-          </article>
-
-          <article class="card">
-            <h4>Фаза 3</h4>
-            <p>Selected partner benefits, institutional perks и controlled benefit expansion.</p>
-          </article>
-        </div>
-
-        <div class="clarity-box" style="margin-top:26px">
-          <h4>Мојата препорака</h4>
-          <p>QR-first е правилен пат. Магнетна лента, NFC или подлабок card hardware layer може да дојде подоцна, само ако core системот веќе е стабилен.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Слој</th><th>Статус сега</th><th>Идна WPA Card вредност</th></tr></thead>
+            <tbody>
+              <tr><td>Јавни страници</td><td>Отворени</td><td>Навигација кон членство и програми</td></tr>
+              <tr><td>Книги и монографии</td><td>Отворени како авторитет/preview</td><td>Premium notes, study guides, lecture packs, templates</td></tr>
+              <tr><td>Научни трудови</td><td>Отворен PDF пристап</td><td>Citation support, abstract packs, thematic collections</td></tr>
+              <tr><td>Програми</td><td>Јавен опис</td><td>Enrolment, progress, access and certificate pathway</td></tr>
+              <tr><td>Сертификати</td><td>Јавна структура</td><td>Serial/QR verification and learning identity</td></tr>
+              <tr><td>Партнерства</td><td>Јавен институционален слој</td><td>Member benefits and institutional access</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
 
-    <section id="use-cases">
+    <section>
       <div class="container">
-        <div class="section-header">
-          <span class="label">Use Cases</span>
-          <h3>Како WPA Card реално би се користела.</h3>
-          <p>Card логиката мора да има практични use cases, не само симболичка вредност.</p>
-        </div>
-
-        <div class="grid-4">
-          <article class="card">
-            <h4>Member identity</h4>
-            <p>Јасно покажува на кое WPA membership ниво припаѓа корисникот.</p>
-          </article>
-
-          <article class="card">
-            <h4>Certificate linkage</h4>
-            <p>Во подоцнежна фаза card статусот може да покаже дали постои активен или verified certificate record.</p>
-          </article>
-
-          <article class="card">
-            <h4>Event / cohort access</h4>
-            <p>Card или QR може да помогне при пристап до WPA настани, затворени групи или institutional cohorts.</p>
-          </article>
-
-          <article class="card">
-            <h4>Partner perks</h4>
-            <p>Во контролирана и подоцнежна фаза може да отвора selected benefit logic за WPA members.</p>
-          </article>
+        <div class="notice">
+          <h4>Важна правна и институционална напомена</h4>
+          <p>WPA Card е концепт за членски, пристапен и верификациски слој на World Protocol Academy. Таа не претставува државна лиценца, универзитетски степен, јавна исправа или автоматски призната професионална лиценца.</p>
+          <p>Вредноста на WPA Card произлегува од јасна програма, членски статус, структурирана академска содржина, сертификатска логика, идни бенефити и транспарентна верификација во рамките на WPA системот.</p>
         </div>
       </div>
     </section>
 
-    <section id="security" class="accent-section">
+    <section>
       <div class="container">
-        <div class="section-header">
-          <span class="label">Security and trust</span>
-          <h3>WPA Card мора да биде безбедна, проверлива и тешко злоупотреблива.</h3>
-          <p>Картичка без verification и anti-abuse логика брзо станува слабост. Затоа security е составен дел од дизајнот.</p>
-        </div>
-
-        <div class="grid-2">
-          <article class="card">
-            <h4>Што мора да има</h4>
-            <ul class="feature-list">
-              <li>Јасен member status</li>
-              <li>QR verification route</li>
-              <li>Certificate status discipline</li>
-              <li>Controlled public visibility</li>
-              <li>Fake-card prevention logic</li>
-            </ul>
-          </article>
-
-          <article class="card">
-            <h4>Што мора да избегнеме</h4>
-            <ul class="feature-list">
-              <li>Лажни картички</li>
-              <li>Лажни verification страници</li>
-              <li>Премногу чувствителни податоци на јавен приказ</li>
-              <li>Нејасна врска меѓу card и certification</li>
-              <li>Прерано натрупување со benefits</li>
-            </ul>
-          </article>
-        </div>
-
-        <div class="clarity-box" style="margin-top:26px">
-          <h4>Security principle</h4>
-          <p>WPA Card треба да биде доволно едноставна за да работи, и доволно јасна за да биде доверлива. Не правиме псевдо-премиум gadget. Правиме serious access and verification layer.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="accent-section">
-      <div class="container">
-        <div class="cta-box">
-          <h3>WPA Card е мост меѓу програмите, сертификатите и идниот benefit layer.</h3>
-          <p>Card логиката не стои сама. Таа работи само кога е поврзана со programmes, certification, QR verification и јасна membership структура.</p>
-
-          <div class="cta-links">
-            <a href="programmes.html">Отвори програми</a>
-            <a href="certification.html">Отвори сертификација</a>
-            <a href="ai/student-desk.html">Прашај го WPA Student Desk</a>
-            <a href="wpaws/">Отвори WPAWS</a>
+        <div class="dark-band">
+          <h3>Следниот потег: CTA слој за книгите и трудовите.</h3>
+          <p>Отворените публикации ја градат довербата. WPA Card ја претвора таа доверба во членство, учење, верификација и future premium value. Следно ќе додадеме внимателни CTA блокови на страниците за трудови и публикации — без да го уништиме SEO и без груб paywall.</p>
+          <div class="hero-actions">
+            <a href="papers.html" class="btn btn-secondary">Отвори трудови</a>
+            <a href="index.html#publications" class="btn btn-secondary">Отвори публикации</a>
+            <a href="certification.html" class="btn btn-secondary">Отвори сертификација</a>
           </div>
         </div>
       </div>
     </section>
-
   </main>
 
   <footer class="footer">
     <div class="container">
       <div class="footer-grid">
         <div>
-          <h4>World Protocol Academy</h4>
-          <p>Независна дигитална академија и професионална платформа за протокол, дипломатија, институционална комуникација, Professional English, безбедносно-свесна подготвеност и јавна репрезентација.</p>
-          <p class="disclaimer">WPA Card е membership, access и verification слој — не банкарска, државна или универзитетска легитимација.</p>
+          <h4>Светска Академија за Протокол</h4>
+          <p>Независна дигитална академија и професионална платформа фокусирана на протокол, дипломатија, јавна комуникација и безбедносни студии.</p>
+          <p class="legal-small">World Protocol Academy е независна академија и дигитална платформа. Не се претставува како државна дипломатска академија или универзитетска институција што доделува академски степени.</p>
         </div>
-
         <div>
-          <h4>WPA Card</h4>
+          <h4>WPA систем</h4>
           <ul>
-            <li><a href="#types">Card Types</a></li>
-            <li><a href="#logic">Card Logic</a></li>
-            <li><a href="#benefits">Benefits</a></li>
-            <li><a href="#security">Security</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4>Навигација</h4>
-          <ul>
-            <li><a href="index.html">Почетна</a></li>
             <li><a href="programmes.html">Програми</a></li>
             <li><a href="certification.html">Сертификација</a></li>
-            <li><a href="wpaws/">WPAWS</a></li>
+            <li><a href="wpa-card.html">WPA Card</a></li>
+            <li><a href="passive-revenue.html">Passive Revenue</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Публикации</h4>
+          <ul>
+            <li><a href="index.html#publications">Книги и монографии</a></li>
+            <li><a href="papers.html">Научни трудови</a></li>
+            <li><a href="rights-takedown.html">Права и исправки</a></li>
+            <li><a href="privacy.html">Политика за приватност</a></li>
           </ul>
         </div>
       </div>
-
       <div class="footer-bottom">
-        © <span id="year"></span> World Protocol Academy. All rights reserved.<br />
-        Skopje, 1000, Republic of North Macedonia<br />
-        <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+        <div>worldprotocolacademy@gmail.com</div>
+        <div>© <span id="year"></span> World Protocol Academy. Сите права се задржани.</div>
       </div>
     </div>
   </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+  <script src="wpa-mk-proofreader.js"></script>
+  <script src="translator-loader-v2.js"></script>
 </body>
 </html>
