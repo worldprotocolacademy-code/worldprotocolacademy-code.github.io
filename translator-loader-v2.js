@@ -34,6 +34,7 @@
     selectorIds: ['pageLang', 'botLang', 'uiLang', 'aiLang'],
     storageKeys: ['wpa_language', 'wpa-lang'],
     enableMacedonianProofreader: true,
+    requireCompleteLocale: false,
     debug: false
   };
 
@@ -181,6 +182,12 @@
     if (language !== CONFIG.fallbackLanguage) {
       const common = await tryLoadNamespace(language, CONFIG.commonNamespace);
       const pageLocale = await tryLoadNamespace(language, page);
+
+      if (CONFIG.requireCompleteLocale && (!common || !pageLocale)) {
+        log('incomplete locale, using full fallback', language, page);
+        return result;
+      }
+
       mergeDeep(result, common || {});
       mergeDeep(result, pageLocale || {});
     }
