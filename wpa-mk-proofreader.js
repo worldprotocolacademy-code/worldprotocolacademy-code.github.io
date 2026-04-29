@@ -55,6 +55,10 @@
       .replace(/\s{2,}/g, ' ');
   }
 
+  const SETTINGS = {
+    normalizePunctuation: true
+  };
+
   function fixText(input) {
     if (input === null || input === undefined) return input;
     let output = String(input);
@@ -63,7 +67,15 @@
       output = output.replace(rule.pattern, rule.replacement);
     });
 
-    return normalizePunctuation(output);
+    return SETTINGS.normalizePunctuation ? normalizePunctuation(output) : output;
+  }
+
+
+  function setSettings(next) {
+    if (!next || typeof next !== 'object') return;
+    if (Object.prototype.hasOwnProperty.call(next, 'normalizePunctuation')) {
+      SETTINGS.normalizePunctuation = Boolean(next.normalizePunctuation);
+    }
   }
 
   function checkText(input) {
@@ -111,6 +123,8 @@
     protectedTerms: PROTECTED_TERMS.slice(),
     fixText: fixText,
     checkText: checkText,
-    applyToDom: applyToDom
+    applyToDom: applyToDom,
+    setSettings: setSettings,
+    settings: SETTINGS
   };
 })();
