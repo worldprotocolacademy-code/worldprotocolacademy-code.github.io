@@ -1,6 +1,6 @@
 /*!
- * WPA Macedonian Proofreader v1
- * Rule-based safety layer for common WPA Macedonian wording issues.
+ * WPA Macedonian Proofreader v2
+ * Rule-based safety layer aligned with Macedonian Orthography (Правопис, 2017).
  *
  * It is intentionally conservative:
  * - It does not rewrite whole grammar.
@@ -13,10 +13,18 @@
   'use strict';
 
   const RULES = [
+    // Latin transliteration or typo slips → standard Macedonian Cyrillic
     { pattern: /\bmakeodnskiot\b/gi, replacement: 'македонскиот', note: 'Latin typo to Macedonian Cyrillic' },
     { pattern: /\bmakeodnski\b/gi, replacement: 'македонски', note: 'Latin typo to Macedonian Cyrillic' },
     { pattern: /\bmakedonskiot\b/gi, replacement: 'македонскиот', note: 'Latin to Macedonian Cyrillic' },
     { pattern: /\bmakedonski\b/gi, replacement: 'македонски', note: 'Latin to Macedonian Cyrillic' },
+
+    { pattern: /\bkje\b/gi, replacement: 'ќе', note: 'Latin transliteration to Macedonian Cyrillic future particle' },
+    { pattern: /\bsekoj\b/gi, replacement: 'секој', note: 'Latin transliteration to Macedonian Cyrillic' },
+    { pattern: /\bsekogas\b/gi, replacement: 'секогаш', note: 'Latin transliteration to Macedonian Cyrillic' },
+    { pattern: /\bnajdobar\b/gi, replacement: 'најдобар', note: 'Latin transliteration to Macedonian Cyrillic' },
+    { pattern: /\bprevod\b/gi, replacement: 'превод', note: 'Latin transliteration to Macedonian Cyrillic' },
+    { pattern: /\bprevodot\b/gi, replacement: 'преводот', note: 'Latin transliteration to Macedonian Cyrillic' },
     { pattern: /превдувач/g, replacement: 'преведувач', note: 'Macedonian typo' },
     { pattern: /преведуач/g, replacement: 'преведувач', note: 'Macedonian typo' },
     { pattern: /инстументалн/g, replacement: 'инструменталн', note: 'Macedonian typo' },
@@ -38,6 +46,15 @@
     'Diplomatic Analysis Lab'
   ];
 
+  function normalizePunctuation(text) {
+    // Prefer Macedonian/typographic punctuation conventions for generated copy.
+    return text
+      .replace(/\s+([,.;!?])/g, '$1')
+      .replace(/\(\s+/g, '(')
+      .replace(/\s+\)/g, ')')
+      .replace(/\s{2,}/g, ' ');
+  }
+
   function fixText(input) {
     if (input === null || input === undefined) return input;
     let output = String(input);
@@ -46,7 +63,7 @@
       output = output.replace(rule.pattern, rule.replacement);
     });
 
-    return output;
+    return normalizePunctuation(output);
   }
 
   function checkText(input) {
