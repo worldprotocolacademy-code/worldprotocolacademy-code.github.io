@@ -35,10 +35,15 @@
     storageKeys: ['wpa_language', 'wpa-lang'],
     enableMacedonianProofreader: true,
     requireCompleteLocale: false,
+    lockToLanguage: null,
     debug: false
   };
 
   const CONFIG = Object.assign({}, DEFAULT_CONFIG, window.WPATranslatorConfig || {});
+
+  function getLockedLanguage() {
+    return CONFIG.lockToLanguage ? normalizeLanguageCode(CONFIG.lockToLanguage) : null;
+  }
   let manifest = null;
   let registry = [];
   let registryMap = new Map();
@@ -117,6 +122,9 @@
   }
 
   function getPreferredLanguage() {
+    const locked = getLockedLanguage();
+    if (locked) return locked;
+
     const stored = getStoredLanguage();
     if (stored) return stored;
 
@@ -298,12 +306,16 @@
   }
 
   function populateLanguageControls(language) {
+    const locked = getLockedLanguage();
     document.querySelectorAll('select[data-language-switcher]').forEach(function (select) {
       populateSelect(select, language);
+      if (locked) select.disabled = true;
     });
 
     CONFIG.selectorIds.forEach(function (id) {
-      populateSelect(document.getElementById(id), language);
+      const select = document.getElementById(id);
+      populateSelect(select, language);
+      if (select && locked) select.disabled = true;
     });
 
     document.querySelectorAll('[data-language-buttons]').forEach(function (container) {
@@ -319,6 +331,7 @@
           button.addEventListener('click', function () {
             window.WPAI18n.setLanguage(lang.code);
           });
+          if (locked) button.disabled = true;
           container.appendChild(button);
         });
         container.dataset.wpaTranslatorBuilt = 'true';
@@ -368,7 +381,8 @@
     },
 
     async setLanguage(languageCode) {
-      const language = normalizeLanguageCode(languageCode);
+      const locked = getLockedLanguage();
+      const language = locked || normalizeLanguageCode(languageCode);
       currentPage = currentPage || getPageName();
 
       try {
