@@ -1,0 +1,34 @@
+name: WPA AI Translate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ai-translate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run audit first
+        run: python scripts/wpa_i18n_audit.py --core-only
+
+      - name: Run AI translation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/wpa_ai_translate_missing.py --core-only
+
+      - name: Commit changes
+        run: |
+          git config user.name "wpa-bot"
+          git config user.email "bot@wpa"
+          git add locales/
+          git diff --quiet && echo "No changes" || git commit -m "AI translation update"
+          git push
