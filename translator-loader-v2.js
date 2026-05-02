@@ -1,23 +1,25 @@
 /*!
- * WPA Translator Loader v2
+ * WPA Translator Loader v2.1
  * World Protocol Academy
+ * Global multilingual engine
  *
  * Macedonian-first controlled i18n loader.
- * No API keys. No machine translation in the frontend.
+ * No API keys. No uncontrolled frontend machine translation.
  * Locale JSON only:
  *   /locales/<lang>/common.json
  *   /locales/<lang>/<page>.json
  *
- * Supported:
+ * Supports:
  *   data-i18n
  *   data-i18n-html
  *   data-i18n-placeholder
  *   data-i18n-title
  *   data-i18n-aria-label
  *   data-i18n-value
+ *   data-i18n-alt
  *   title[data-i18n-title-tag]
  *
- * Anti-break rule:
+ * Safety rule:
  *   Missing locale or missing key keeps the original visible HTML.
  */
 (function () {
@@ -44,10 +46,17 @@
   let currentLanguage = CONFIG.defaultLanguage;
   let currentLocale = {};
   let currentPage = null;
+  let missingKeys = [];
 
   function log() {
     if (CONFIG.debug && console && console.log) {
       console.log.apply(console, ['[WPA Translator]'].concat(Array.from(arguments)));
+    }
+  }
+
+  function warn() {
+    if (CONFIG.debug && console && console.warn) {
+      console.warn.apply(console, ['[WPA Translator]'].concat(Array.from(arguments)));
     }
   }
 
@@ -73,6 +82,26 @@
     return last.replace(/\.html$/i, '') || 'index';
   }
 
+  function normalizeRegistryItem(item) {
+    if (!item || !item.code) return null;
+    const rtlList = manifest && Array.isArray(manifest.rtl_languages) ? manifest.rtl_languages : ['ar', 'he', 'fa', 'ur'];
+    return {
+      code: String(item.code),
+      label: item.label || String(item.code),
+      dir: item.dir || (rtlList.includes(String(item.code)) ? 'rtl' : 'ltr'),
+      enabled: item.enabled !== false
+    };
+  }
+
+  function getLanguagesFromManifest(data) {
+    if (!data || typeof data !== 'object') return [];
+    const source = Array.isArray(data.languages)
+      ? data.languages
+      : (Array.isArray(data.supported_languages) ? data.supported_languages : []);
+
+    return source.map(normalizeRegistryItem).filter(Boolean);
+  }
+
   function buildRegistryMap(langs) {
     const map = new Map();
     langs.forEach(function (lang) { map.set(lang.code, lang); });
@@ -94,7 +123,8 @@
       'zh-hk': 'zh-Hant',
       'zh-mo': 'zh-Hant',
       'zh-hant': 'zh-Hant',
-      'iw': 'he'
+      'iw': 'he',
+      'zht': 'zh-Hant'
     };
 
     if (aliases[lower] && registryMap.has(aliases[lower])) return aliases[lower];
@@ -107,7 +137,19 @@
     return CONFIG.defaultLanguage;
   }
 
+  function getUrlLanguage() {
+    try {
+      const value = new URLSearchParams(window.location.search).get('lang');
+      return value ? normalizeLanguageCode(value) : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function getStoredLanguage() {
+    const urlLanguage = getUrlLanguage();
+    if (urlLanguage) return urlLanguage;
+
     for (const key of CONFIG.storageKeys) {
       const value = safeGet(key);
       if (value) return normalizeLanguageCode(value);
@@ -152,7 +194,7 @@
     Object.keys(source).forEach(function (key) {
       const value = source[key];
       if (value && typeof value === 'object' && !Array.isArray(value)) {
-        if (!target[key] || typeof target[key] !== 'object') target[key] = {};
+        if (!target[key] || typeof target[key] !== 'object' || Array.isArray(target[key])) target[key] = {};
         mergeDeep(target[key], value);
       } else {
         target[key] = value;
@@ -172,13 +214,14 @@
 
   async function loadLocale(language, page) {
     const result = {};
+    const fallbackLanguage = CONFIG.fallbackLanguage || CONFIG.canonicalLanguage || CONFIG.defaultLanguage;
 
-    const fallbackCommon = await tryLoadNamespace(CONFIG.fallbackLanguage, CONFIG.commonNamespace);
-    const fallbackPage = await tryLoadNamespace(CONFIG.fallbackLanguage, page);
+    const fallbackCommon = await tryLoadNamespace(fallbackLanguage, CONFIG.commonNamespace);
+    const fallbackPage = await tryLoadNamespace(fallbackLanguage, page);
     mergeDeep(result, fallbackCommon || {});
     mergeDeep(result, fallbackPage || {});
 
-    if (language !== CONFIG.fallbackLanguage) {
+    if (language !== fallbackLanguage) {
       const common = await tryLoadNamespace(language, CONFIG.commonNamespace);
       const pageLocale = await tryLoadNamespace(language, page);
       mergeDeep(result, common || {});
@@ -196,8 +239,16 @@
     }, obj);
   }
 
-  function setIfValue(element, setter, value) {
-    if (value === undefined || value === null) return;
+  function recordMissing(type, key, element) {
+    missingKeys.push({ type: type, key: key, tag: element ? element.tagName : null });
+    warn('missing ' + type, key, element || '');
+  }
+
+  function setIfValue(element, type, key, setter, value) {
+    if (value === undefined || value === null) {
+      recordMissing(type, key, element);
+      return;
+    }
     setter(element, String(value));
   }
 
@@ -209,40 +260,56 @@
   }
 
   function applyLocaleToDom(locale) {
+    missingKeys = [];
+
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n'));
-      setIfValue(el, function (node, text) { node.textContent = applyProofreading(text); }, value);
+      const key = el.getAttribute('data-i18n');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'text', key, function (node, text) { node.textContent = applyProofreading(text); }, value);
     });
 
     document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n-html'));
-      setIfValue(el, function (node, text) { node.innerHTML = applyProofreading(text); }, value);
+      const key = el.getAttribute('data-i18n-html');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'html', key, function (node, text) { node.innerHTML = applyProofreading(text); }, value);
     });
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n-placeholder'));
-      setIfValue(el, function (node, text) { node.setAttribute('placeholder', applyProofreading(text)); }, value);
+      const key = el.getAttribute('data-i18n-placeholder');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'placeholder', key, function (node, text) { node.setAttribute('placeholder', applyProofreading(text)); }, value);
     });
 
     document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n-title'));
-      setIfValue(el, function (node, text) { node.setAttribute('title', applyProofreading(text)); }, value);
+      const key = el.getAttribute('data-i18n-title');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'title', key, function (node, text) { node.setAttribute('title', applyProofreading(text)); }, value);
     });
 
     document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n-aria-label'));
-      setIfValue(el, function (node, text) { node.setAttribute('aria-label', applyProofreading(text)); }, value);
+      const key = el.getAttribute('data-i18n-aria-label');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'aria-label', key, function (node, text) { node.setAttribute('aria-label', applyProofreading(text)); }, value);
     });
 
     document.querySelectorAll('[data-i18n-value]').forEach(function (el) {
-      const value = resolvePath(locale, el.getAttribute('data-i18n-value'));
-      setIfValue(el, function (node, text) { node.value = applyProofreading(text); }, value);
+      const key = el.getAttribute('data-i18n-value');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'value', key, function (node, text) { node.value = applyProofreading(text); }, value);
+    });
+
+    document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
+      const key = el.getAttribute('data-i18n-alt');
+      const value = resolvePath(locale, key);
+      setIfValue(el, 'alt', key, function (node, text) { node.setAttribute('alt', applyProofreading(text)); }, value);
     });
 
     const title = document.querySelector('title[data-i18n-title-tag]');
     if (title) {
-      const value = resolvePath(locale, title.getAttribute('data-i18n-title-tag'));
+      const key = title.getAttribute('data-i18n-title-tag');
+      const value = resolvePath(locale, key);
       if (value !== undefined && value !== null) document.title = applyProofreading(String(value));
+      else recordMissing('title-tag', key, title);
     }
   }
 
@@ -336,7 +403,12 @@
   async function loadManifest() {
     try {
       manifest = await fetchJson(CONFIG.manifestPath);
-      registry = Array.isArray(manifest.languages) ? manifest.languages : [];
+      if (manifest.default_language) CONFIG.defaultLanguage = manifest.default_language;
+      if (manifest.canonical_language) CONFIG.canonicalLanguage = manifest.canonical_language;
+      CONFIG.fallbackLanguage = manifest.canonical_language || manifest.default_language || CONFIG.fallbackLanguage;
+      CONFIG.mirrorLanguage = manifest.mirror_language || CONFIG.mirrorLanguage;
+
+      registry = getLanguagesFromManifest(manifest);
       registryMap = buildRegistryMap(registry);
       if (!registryMap.has(CONFIG.defaultLanguage)) {
         registry.unshift({ code: CONFIG.defaultLanguage, label: 'Македонски', dir: 'ltr', enabled: true });
@@ -372,7 +444,7 @@
         setDocumentLanguage(language);
         populateLanguageControls(language);
         applyLocaleToDom(locale);
-        emit('wpa:i18n:loaded', { language: language, page: currentPage, locale: locale });
+        emit('wpa:i18n:loaded', { language: language, page: currentPage, locale: locale, missingKeys: missingKeys.slice() });
         return locale;
       } catch (error) {
         console.error('[WPA Translator] failed:', error);
@@ -399,6 +471,10 @@
 
     getRegistry() {
       return registry.slice();
+    },
+
+    getMissingKeys() {
+      return missingKeys.slice();
     },
 
     t(path, fallbackValue) {
