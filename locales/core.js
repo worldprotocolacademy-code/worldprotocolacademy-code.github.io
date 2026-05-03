@@ -1,7 +1,5 @@
 /*
   WPA Locales Core Compatibility Module
-  Purpose: prevents /locales/core.js 404 and exposes a safe shared namespace for multilingual pages.
-  This file does not replace translator-loader-v1.js or translator-loader-v2.js.
 */
 (function () {
   'use strict';
@@ -20,6 +18,17 @@
       return value || 'mk';
     }
   };
+
+  function loadCleaner(){
+    try{
+      var s=document.createElement('script');
+      s.src='/scripts/i18n-bilingual-cleaner.js?v=1';
+      s.defer=true;
+      document.head.appendChild(s);
+    }catch(e){}
+  }
+
+  document.addEventListener('DOMContentLoaded', loadCleaner);
 
   document.dispatchEvent(new CustomEvent('wpa:locales-core-ready', {
     detail: window.WPALocalesCore
