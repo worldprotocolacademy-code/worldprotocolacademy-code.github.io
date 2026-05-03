@@ -388,7 +388,7 @@
     if (!p) return false;
     var tag = p.tagName;
     if (/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|CODE|PRE|OPTION)$/i.test(tag)) return false;
-    if (p.closest('[data-i18n-root-lock="off"], [data-no-i18n-root-lock], .notranslate')) return false;
+    if (p.closest('.notranslate') && p !== document.documentElement) return false;
     return true;
   }
 
