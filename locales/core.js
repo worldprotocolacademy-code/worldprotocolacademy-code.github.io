@@ -1,13 +1,13 @@
 /*
   WPA Locales Core Compatibility Module
-  Version: 1.0.1
-  Purpose: load the latest WPA bilingual cleaner with cache-busting v3.
+  Version: 1.0.4
+  Purpose: load the latest WPA bilingual cleaner with cache-busting v41.
 */
 (function () {
   'use strict';
 
   window.WPALocalesCore = window.WPALocalesCore || {
-    version: '1.0.1',
+    version: '1.0.4',
     ready: true,
     defaultLanguage: 'mk',
     fallbackLanguage: 'mk',
@@ -23,9 +23,13 @@
 
   function loadCleaner() {
     try {
+      var existing = document.querySelector('script[data-wpa-bilingual-cleaner-script="true"]');
+      if (existing) return;
+
       var s = document.createElement('script');
-      s.src = '/scripts/i18n-bilingual-cleaner.js?v=31';
+      s.src = '/scripts/i18n-bilingual-cleaner.js?v=41';
       s.defer = true;
+      s.setAttribute('data-wpa-bilingual-cleaner-script', 'true');
       document.head.appendChild(s);
     } catch (e) {}
   }
