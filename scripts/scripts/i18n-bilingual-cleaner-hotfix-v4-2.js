@@ -50,6 +50,7 @@
     // Final safe fixes after removing repeated Diplomatic Analysis expansion
     ['Отвори WPA Diplomatic Analysis Lab', 'Отвори WPA Diplomatic Analysis Lab'],
     ['Protocol Symbols · Diplomatic Analysis · WPAWS', 'Protocol Symbols Lab · WPA Diplomatic Analysis Lab · WPAWS'],
+    ['Protocol Symbols Lab · WPA Diplomatic Analysis Lab · WPAWS', 'Protocol Symbols Lab · WPA Diplomatic Analysis Lab · WPAWS'],
     ['Protocol · Diplomatic · Институционално · Conference', 'Протокол · Дипломатија · Институционално · Конференција'],
     ['Doctrine, Research, Protocol, Diplomacy, Teaching, Press', 'Доктрина, истражување, протокол, дипломатија, настава, печат'],
     ['Research, Protocol, Diplomacy, Teaching, Press', 'истражување, протокол, дипломатија, настава, печат'],
