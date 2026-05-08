@@ -94,7 +94,6 @@
     ['Open WPA Audio Media Engine', 'Отвори WPA Аудио-медиумски мотор'],
 
     // Extra safe normalizations often created by prior replacement passes
-    ['Diplomatic Analysis', 'WPA Diplomatic Analysis Lab'],
     ['Verified database', 'Верифицирана база'],
     ['verified database', 'верифицирана база'],
     ['Page', 'страница'],
