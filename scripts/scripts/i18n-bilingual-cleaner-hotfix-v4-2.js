@@ -4,10 +4,10 @@
    Purpose:
    - Runs after scripts/i18n-bilingual-cleaner.js v4.1.
    - Fixes the final MK audit leftovers without replacing the large v4.1 cleaner.
-   - Protects brand names such as Protocol Symbols Lab, WPA AI LAB and WPA Audio Media Engine.
+   - Protects brand names such as Protocol Symbols Lab, WPA Diplomatic Analysis Lab, WPA AI LAB and WPA Audio Media Engine.
 
    Upload target:
-   scripts/i18n-bilingual-cleaner-hotfix-v4-2.js
+   scripts/scripts/i18n-bilingual-cleaner-hotfix-v4-2.js
 */
 (function () {
   'use strict';
@@ -17,6 +17,7 @@
   var PROTECTED_TERMS = [
     'World Protocol Academy',
     'World Protocol Academic Writing System',
+    'WPA Diplomatic Analysis Lab',
     'Protocol Symbols Lab',
     'WPA Audio Media Engine',
     'WPA AI LAB',
@@ -46,6 +47,14 @@
   ];
 
   var FIXES = [
+    // Final safe fixes after removing repeated Diplomatic Analysis expansion
+    ['Отвори WPA Diplomatic Analysis Lab', 'Отвори WPA Diplomatic Analysis Lab'],
+    ['Protocol Symbols · Diplomatic Analysis · WPAWS', 'Protocol Symbols Lab · WPA Diplomatic Analysis Lab · WPAWS'],
+    ['Protocol · Diplomatic · Институционално · Conference', 'Протокол · Дипломатија · Институционално · Конференција'],
+    ['Doctrine, Research, Protocol, Diplomacy, Teaching, Press', 'Доктрина, истражување, протокол, дипломатија, настава, печат'],
+    ['Research, Protocol, Diplomacy, Teaching, Press', 'истражување, протокол, дипломатија, настава, печат'],
+    ['Обука Structure', 'Структура на обуката'],
+
     // Final audit leftovers from v4.1
     ['Отвори Protocol Симболи Lab →', 'Отвори Protocol Symbols Lab →'],
     ['Отвори Protocol Симболи Lab', 'Отвори Protocol Symbols Lab'],
@@ -105,15 +114,19 @@
     var select = document.getElementById('pageLang') || document.querySelector('[data-language-switcher]');
     var fromSelect = select && select.value ? select.value : '';
     var stored = '';
+
     try {
       stored = localStorage.getItem('wpa_language') || localStorage.getItem('wpa-lang') || localStorage.getItem('selectedLanguage') || '';
     } catch (e) {}
+
     var htmlLang = document.documentElement.getAttribute('lang') || '';
     var bodyLang = document.body && (document.body.getAttribute('data-current-language') || document.body.getAttribute('data-lang')) || '';
     var queryLang = '';
+
     try {
       queryLang = new URLSearchParams(location.search).get('lang') || '';
     } catch (e) {}
+
     return String(fromSelect || stored || bodyLang || queryLang || htmlLang || 'mk').trim() || 'mk';
   }
 
@@ -128,33 +141,43 @@
 
   function stripProtectedSubstrings(value) {
     var output = String(value || '');
+
     PROTECTED_TERMS
       .slice()
       .sort(function (a, b) { return b.length - a.length; })
       .forEach(function (term) {
         if (term) output = output.split(term).join('');
       });
+
     return output;
   }
 
   function skipTextNode(node) {
     if (!node || node.nodeType !== 3 || !node.nodeValue || !node.nodeValue.trim()) return true;
+
     var parent = node.parentElement;
     if (!parent) return true;
+
     if (/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|CODE|PRE|OPTION)$/i.test(parent.tagName)) return true;
+
     if (parent.closest('[data-i18n-cleaner="off"],[data-no-i18n-cleaner],[data-brand-locked]')) return true;
+
     if (isProtectedFullValue(node.nodeValue)) return true;
+
     return false;
   }
 
   function cleanValue(value) {
     if (!isMacedonianMode() || isProtectedFullValue(value)) return value;
+
     var output = String(value);
+
     FIXES.forEach(function (pair) {
       if (output.indexOf(pair[0]) !== -1) {
         output = output.split(pair[0]).join(pair[1]);
       }
     });
+
     return output;
   }
 
@@ -162,6 +185,7 @@
     if (!document.body || !isMacedonianMode()) return;
 
     var originalApply = window.WPABilingualCleaner && window.WPABilingualCleaner.__v42OriginalApply;
+
     if (typeof originalApply === 'function' && !window.__wpaV42CallingOriginal) {
       try {
         window.__wpaV42CallingOriginal = true;
@@ -183,6 +207,7 @@
     );
 
     var node;
+
     while ((node = walker.nextNode())) {
       var cleaned = cleanValue(node.nodeValue);
       if (cleaned !== node.nodeValue) node.nodeValue = cleaned;
@@ -191,8 +216,10 @@
     ['placeholder', 'title', 'aria-label', 'alt'].forEach(function (attr) {
       document.querySelectorAll('[' + attr + ']').forEach(function (element) {
         if (element.closest('[data-i18n-cleaner="off"],[data-no-i18n-cleaner],[data-brand-locked]')) return;
+
         var value = element.getAttribute(attr);
         if (!value || isProtectedFullValue(value)) return;
+
         var cleaned = cleanValue(value);
         if (cleaned !== value) element.setAttribute(attr, cleaned);
       });
@@ -203,10 +230,12 @@
 
   function audit() {
     if (!document.body) return [];
+
     apply();
 
     var issues = [];
-    var englishInMk = /\b(Open|NEW|New|Verification|verification|ready|first|logic|Question|Bank|Custom|training|packages|General|definitions|wording|Academic|Page|passive|revenue|certification|structure|Protocol|Symbols|Lab|Digital|Official|Assessment|Track|Programme|Program|Membership|identity|access|benefits|serial|learning|checkout)\b/i;
+
+    var englishInMk = /\b(Open|NEW|New|Verification|verification|ready|first|logic|Question|Bank|Custom|training|packages|General|definitions|wording|Academic|Page|passive|revenue|certification|structure|Protocol|Symbols|Lab|Digital|Official|Assessment|Track|Programme|Program|Membership|identity|access|benefits|serial|learning|checkout|Doctrine|Research|Diplomacy|Teaching|Press|Conference|Structure)\b/i;
 
     var walker = document.createTreeWalker(
       document.body,
@@ -219,16 +248,26 @@
     );
 
     var node;
+
     while ((node = walker.nextNode())) {
       var text = node.nodeValue.trim();
       if (!text || isProtectedFullValue(text)) continue;
-      var searchable = stripProtectedSubstrings(text).replace(/WPA/g, '').replace(/QR/g, '').replace(/AI/g, '').replace(/PR/g, '');
-      if (isMacedonianMode() && englishInMk.test(searchable)) issues.push(text.slice(0, 220));
+
+      var searchable = stripProtectedSubstrings(text)
+        .replace(/WPA/g, '')
+        .replace(/QR/g, '')
+        .replace(/AI/g, '')
+        .replace(/PR/g, '');
+
+      if (isMacedonianMode() && englishInMk.test(searchable)) {
+        issues.push(text.slice(0, 220));
+      }
     }
 
     if (window.console && typeof console.table === 'function') {
       console.table(issues.slice(0, 150));
     }
+
     return issues;
   }
 
@@ -242,6 +281,7 @@
     }
 
     window.WPABilingualAudit = audit;
+
     window.WPABilingualCleanerHotfix42 = {
       version: VERSION,
       apply: apply,
@@ -265,6 +305,7 @@
   document.addEventListener('DOMContentLoaded', schedule);
   document.addEventListener('wpa:i18n:loaded', schedule);
   document.addEventListener('wpa:locales-core-ready', schedule);
+
   document.addEventListener('change', function (event) {
     if (event.target && event.target.matches('select,#pageLang,[data-language-switcher]')) schedule();
   });
