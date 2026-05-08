@@ -656,3 +656,38 @@
 
   schedule();
 })();
+
+/* WPA v4.2 hotfix bridge
+   Loads the existing hotfix from /scripts/scripts/
+   This avoids editing locales/core.js when GitHub web editor blocks the commit.
+*/
+(function () {
+  'use strict';
+
+  var HOTFIX_SRC = '/scripts/scripts/i18n-bilingual-cleaner-hotfix-v4-2.js?v=42';
+  var HOTFIX_MARKER = 'data-wpa-bilingual-cleaner-hotfix-v42-script';
+
+  function loadHotfix() {
+    try {
+      if (document.querySelector('script[' + HOTFIX_MARKER + '="true"]')) return;
+
+      var script = document.createElement('script');
+      script.src = HOTFIX_SRC;
+      script.defer = true;
+      script.async = false;
+      script.setAttribute(HOTFIX_MARKER, 'true');
+      document.head.appendChild(script);
+    } catch (e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadHotfix);
+  } else {
+    loadHotfix();
+  }
+
+  setTimeout(loadHotfix, 900);
+  setTimeout(loadHotfix, 2500);
+  document.addEventListener('wpa:i18n:loaded', loadHotfix);
+  document.addEventListener('wpa:locales-core-ready', loadHotfix);
+})();
