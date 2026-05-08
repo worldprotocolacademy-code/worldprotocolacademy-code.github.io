@@ -24,7 +24,7 @@
   function loadCleaner() {
     try {
       var s = document.createElement('script');
-      s.src = '/scripts/i18n-bilingual-cleaner.js?v=3';
+      s.src = '/scripts/i18n-bilingual-cleaner.js?v=31';
       s.defer = true;
       document.head.appendChild(s);
     } catch (e) {}
