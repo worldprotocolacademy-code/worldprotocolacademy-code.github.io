@@ -1,10 +1,10 @@
-/* WPA Bilingual I18N Cleaner v2.0 - Pravopis 2017 pass
+/* WPA Bilingual I18N Cleaner v3.0 - Pravopis 2017 pass
    World Protocol Academy
 
    Purpose:
    - Last-mile cleanup for mixed Macedonian / English UI text.
    - Conservative rule-based layer for the Macedonian public version.
-   - Keeps protected WPA brand terms unchanged.
+   - Keeps protected WPA brand terms and external proper names unchanged.
    - Skips scripts, styles, code, pre, textarea, option and explicit opt-out blocks.
 
    Upload target:
@@ -13,34 +13,93 @@
 (function () {
   'use strict';
 
-  var VERSION = '2.0-pravopis-2017';
+  var VERSION = '3.0-pravopis-2017';
 
   var PROTECTED_TERMS = [
     'World Protocol Academy',
+    'World Protocol Academic Writing System',
     'WPA',
     'WPAWS',
     'WPA Card',
-    'Virtual Sande',
+    'WPA Institute',
     'WPA Student Desk',
+    'Virtual Sande',
     'Protocol Symbols Lab',
     'WPA Diplomatic Analysis Lab',
+    'AD Scientific Index',
     'Google Meet',
+    'Meet',
     'Zoom',
     'Webex',
     'ORCID',
     'DOI',
     'QR',
     'AI',
-    'PR'
+    'PR',
+    'WPA Free',
+    'WPA Pro',
+    'Academic Pro'
   ];
 
   /*
     MK rule policy:
-    - Brand/platform names remain protected.
+    - Brand/platform/product names remain protected.
     - Terms that are not brand names are normalized into Macedonian.
-    - International abbreviations may remain Latin when this is clearer: AI, PR, QR.
+    - International abbreviations may remain Latin where clearer: AI, PR, QR.
   */
   var EN_TO_MK = [
+    // Audit v3 direct fixes from WPABilingualAudit()
+    ['🏛️ Open WPA Institute', '🏛️ Отвори WPA Institute'],
+    ['Open WPA Institute', 'Отвори WPA Institute'],
+    ['Programme families и носечки насоки', 'Програмски семејства и носечки насоки'],
+    ['Programme families', 'Програмски семејства'],
+    ['Assessment, certification and formats', 'Оценување, сертификација и формати'],
+    ['WPA Free · Pro · Academic Pro · Институционално', 'WPA Free · WPA Pro · Academic Pro · Институционално'],
+    ['WPAWS (World Protocol Academic Writing System) is', 'WPAWS (World Protocol Academic Writing System) е'],
+    ['Academic writing and research tools', 'Академски алатки за пишување и истражување'],
+    ['Virtual Sande in Academic mode', 'Virtual Sande во академски режим'],
+    ['Банка на прашања и Assessment engine', 'Банка на прашања и механизам за оценување'],
+    ['Assessment engine', 'механизам за оценување'],
+    ['Open Партнерства', 'Отвори Партнерства'],
+    ['Official titles and verification: which anthems are officially instrumental.', 'Официјални наслови и верификација: кои химни се официјално инструментални.'],
+    ['Official titles and verification', 'Официјални наслови и верификација'],
+    ['which anthems are officially instrumental', 'кои химни се официјално инструментални'],
+    ['53 verified records · Official WPA verified protocol database', '53 верифицирани записи · Официјална WPA верифицирана протоколарна база'],
+    ['Official WPA verified protocol database', 'Официјална WPA верифицирана протоколарна база'],
+    ['verified records', 'верифицирани записи'],
+    ['Certificate Програми', 'Сертификациски програми'],
+    ['Official address and formal speech', 'Официјално обраќање и формален говор'],
+    ['Институционално Email English', 'Институционален англиски за електронска пошта'],
+    ['Academic sessions, short briefings and individual consultations', 'Академски сесии, кратки брифинзи и индивидуални консултации'],
+    ['Обучувач / советник Track', 'Патека за обучувач / советник'],
+    ['Protocol Track', 'Протоколарна насока'],
+    ['Communication Track', 'Комуникациска насока'],
+    ['Институционално Track', 'Институционална насока'],
+    ['Open full Сертификација Page', 'Отвори целосна страница за сертификација'],
+    ['Question 01', 'Прашање 01'],
+    ['Question 02', 'Прашање 02'],
+    ['Question 03', 'Прашање 03'],
+    ['Question 04', 'Прашање 04'],
+    ['Question 05', 'Прашање 05'],
+    ['Question 06', 'Прашање 06'],
+    ['Certificate preparation', 'Подготовка за сертификат'],
+    ['Academic Virtual Sande', 'Академски Virtual Sande'],
+    ['Контактирај за Academic', 'Контактирај за Academic Pro'],
+    ['Open official bibliography →', 'Отвори ја официјалната библиографија →'],
+    ['Official WPA channels', 'Официјални WPA канали'],
+    ['Virtual Sande — Source & Attribution Logic', 'Virtual Sande — логика на извори и атрибуција'],
+    ['Source & Attribution Logic', 'Логика на извори и атрибуција'],
+    ['Open WPA Аудио-медиумски мотор', 'Отвори WPA Аудио-медиумски мотор'],
+
+    // WPAWS / academic wording fragments
+    ['research, Protocol, Diplomacy, Teaching and Press', 'истражување, протокол, дипломатија, настава и печат'],
+    ['Research, Protocol, Diplomacy, Teaching and Press', 'Истражување, протокол, дипломатија, настава и печат'],
+    ['Academic writing', 'Академско пишување'],
+    ['research tools', 'алатки за истражување'],
+    ['Academic mode', 'академски режим'],
+    ['Source logic', 'Логика на извори'],
+    ['Attribution Logic', 'Логика на атрибуција'],
+
     // High-risk mixed phrases first
     ['Programmes, Certification, WPA Card and Passive Revenue', 'Програми, Сертификација, WPA Card и Пасивен приход'],
     ['Programmes, Certification, WPA Card и Passive Revenue', 'Програми, Сертификација, WPA Card и Пасивен приход'],
@@ -202,6 +261,7 @@
     ['Outcomes', 'Исходи'],
     ['Format', 'Формат'],
     ['Tracks', 'Насоки'],
+    ['Track', 'Насока'],
     ['flagship tracks', 'носечки насоки'],
     ['Flagship tracks', 'Носечки насоки'],
     ['front-facing professionals', 'професионалци со јавна и услужна улога'],
@@ -210,7 +270,9 @@
     ['executive-style', 'извршно-ориентирани'],
     ['Executive-style', 'Извршно-ориентирани'],
     ['masterclasses', 'мастер-класи'],
+    ['Masterclasses', 'Мастер-класи'],
     ['webinars', 'вебинари'],
+    ['Webinars', 'Вебинари'],
     ['moderation', 'модерирање'],
     ['Moderation', 'Модерирање'],
     ['Online', 'Онлајн'],
@@ -242,17 +304,10 @@
     ['онлајн средби', 'онлајн-средби'],
     ['Онлајн средби', 'Онлајн-средби'],
     ['QR verification', 'QR-верификација'],
-    ['QR-верификација', 'QR-верификација'],
     ['QR идентификација', 'QR-идентификација'],
-    ['QR-идентификација', 'QR-идентификација'],
     ['AI поддржано', 'AI-поддржано'],
-    ['AI-поддржана', 'AI-поддржана'],
+    ['AI поддржана', 'AI-поддржана'],
     ['AI водена', 'AI-водена'],
-    ['AI-водена', 'AI-водена'],
-    ['сериска и QR-верификација', 'сериска и QR-верификација'],
-    ['сериска верификација', 'сериска верификација'],
-    ['дигитална патека за верификација', 'дигитална патека за верификација'],
-    ['ЧПП логика', 'логика на ЧПП'],
     ['еmail', 'електронска пошта'],
     ['email', 'електронска пошта'],
     ['E-mail', 'Електронска пошта'],
@@ -296,6 +351,14 @@
     ['Контакт', 'Contact']
   ];
 
+  function normalizeLanguage(lang) {
+    var value = String(lang || '').trim();
+    if (!value) return 'mk';
+    if (value === 'zh') return 'zh-Hans';
+    if (value === 'zht') return 'zh-Hant';
+    return value;
+  }
+
   function currentLang() {
     var select = document.getElementById('pageLang') || document.querySelector('[data-language-switcher]');
     var fromSelect = select && select.value ? select.value : '';
@@ -310,8 +373,15 @@
       queryLang = new URLSearchParams(location.search).get('lang') || '';
     } catch (e) {}
 
-    var lang = String(fromSelect || stored || bodyLang || queryLang || htmlLang || 'mk').toLowerCase();
-    return lang.indexOf('en') === 0 ? 'en' : 'mk';
+    return normalizeLanguage(fromSelect || stored || bodyLang || queryLang || htmlLang || 'mk');
+  }
+
+  function isMacedonianMode(lang) {
+    return normalizeLanguage(lang).toLowerCase() === 'mk';
+  }
+
+  function isEnglishMode(lang) {
+    return normalizeLanguage(lang).toLowerCase().indexOf('en') === 0;
   }
 
   function isProtectedFullValue(value) {
@@ -319,11 +389,23 @@
     return PROTECTED_TERMS.indexOf(trimmed) !== -1;
   }
 
+  function stripProtectedSubstrings(value) {
+    var output = String(value || '');
+    PROTECTED_TERMS
+      .slice()
+      .sort(function (a, b) { return b.length - a.length; })
+      .forEach(function (term) {
+        if (!term) return;
+        output = output.split(term).join('');
+      });
+    return output;
+  }
+
   function buildMap(lang) {
     var map = [];
-    if (lang === 'mk') {
+    if (isMacedonianMode(lang)) {
       map = map.concat(EN_TO_MK, MK_STYLE_FIXES, MK_TYPO_FIXES);
-    } else {
+    } else if (isEnglishMode(lang)) {
       map = map.concat(MK_TO_EN_SAFE);
     }
 
@@ -369,6 +451,7 @@
     if (!document.body) return;
     var lang = currentLang();
     var dict = buildMap(lang);
+    if (!dict.length) return;
 
     var walker = document.createTreeWalker(
       document.body,
@@ -404,7 +487,7 @@
     var lang = currentLang();
     var issues = [];
     var cyrillic = /[А-Яа-яЃѓЌќЉљЊњЏџЅѕ]/;
-    var englishInMk = /\b(About|Programmes|Programs|Certification|Publications|Founder|Training|Professional|Institutional|Open|Explore|Contact|Privacy|Sources|Books|Papers|Scientific|Foundation|Advanced|Question|Official|Academic|Membership|Revenue|Layer|Logic|Page|Certificate|Programme|Program|Track|Tracks|Assessment|Digital|Credentials|Editorial|Attribution|Pass|Distinction|Benefits|Recurring|Value|Growth|Access|Format|Template|Rescue|Email|Online|Masterclass|Webinar)\b/;
+    var englishInMk = /\b(About|Programmes|Programs|Certification|Publications|Founder|Training|Professional|Institutional|Open|Explore|Contact|Privacy|Sources|Books|Papers|Scientific|Foundation|Advanced|Question|Official|Academic|Membership|Revenue|Layer|Logic|Page|Certificate|Programme|Program|Track|Tracks|Assessment|Digital|Credentials|Editorial|Attribution|Pass|Distinction|Benefits|Recurring|Value|Growth|Access|Format|Template|Rescue|Email|Online|Masterclass|Webinar|Institute|Research|Teaching|Press)\b/;
 
     var walker = document.createTreeWalker(
       document.body || document.documentElement,
@@ -420,8 +503,9 @@
     while ((node = walker.nextNode())) {
       var text = node.nodeValue.trim();
       if (!text || isProtectedFullValue(text)) continue;
-      if (lang === 'mk' && englishInMk.test(text)) issues.push(text.slice(0, 220));
-      if (lang === 'en' && cyrillic.test(text)) issues.push(text.slice(0, 220));
+      var auditText = stripProtectedSubstrings(text);
+      if (isMacedonianMode(lang) && englishInMk.test(auditText)) issues.push(text.slice(0, 220));
+      if (isEnglishMode(lang) && cyrillic.test(auditText)) issues.push(text.slice(0, 220));
     }
 
     if (window.console && typeof console.table === 'function') {
