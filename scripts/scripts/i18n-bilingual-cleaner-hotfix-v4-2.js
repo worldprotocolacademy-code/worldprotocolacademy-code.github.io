@@ -17,7 +17,6 @@
   var PROTECTED_TERMS = [
     'World Protocol Academy',
     'World Protocol Academic Writing System',
-    'WPA Diplomatic Analysis Lab',
     'Protocol Symbols Lab',
     'WPA Audio Media Engine',
     'WPA AI LAB',
