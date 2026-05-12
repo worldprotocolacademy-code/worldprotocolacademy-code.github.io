@@ -277,9 +277,25 @@
     .wpa-header { padding: 14px 16px 11px; }
     .form-section, .quiz-container, .sop-panel, .dashboard { padding: 16px; }
   }
+
+
+  /* ── WPA PHASE 2 PREVIEW: SEMANTIC / ETHICAL / APPROVAL CARDS ── */
+  .wpa-phase2-note {
+    margin-top: 10px;
+    padding: 9px 11px;
+    border: 0.5px solid var(--gold);
+    border-radius: var(--radius);
+    background: rgba(184,134,11,0.08);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .wpa-phase2-note strong { color: var(--gold); }
+
 </style>
 </head>
 <body>
+<!-- WPA PHASE 2 PREVIEW BUILD 2026-05-09: parallel preview only; production/main unchanged. -->
 <!-- PRIVACY HOTFIX 2026-04-25: This public fallback page is noindex/nofollow and contains no public student names, cities, assessment scores or activity logs. Prefer Cloudflare Access or a private subdomain for production student records. -->
 
 <div class="wpa-agent">
@@ -553,8 +569,8 @@ const SOP_DATA = {
   exam:{
     title:{en:"Examinations — SOP",mk:"Поlagање тестови — СОП",fr:"Examens — SOP",de:"Pruefungen — SOV",es:"Examenes — SOP",it:"Esami — SOP",ar:"الاختبارات",zh:"考试",ru:"Ekzameny",tr:"Sinavlar",pt:"Exames",ja:"試験",sq:"Provimet",sr:"Ispiti",bs:"Ispiti"},
     steps:{
-      en:["Candidate enters the assessment stage via WPA portal.","Candidate completes 10 structured knowledge questions (7 points each = 70 points).","Candidate completes 1 scenario-analysis task (30 points — applies protocol logic to a practical situation).","Results are scored against the WPA assessment model (total: 100 points).","Passing threshold: 70/100 points. If successful — certificate process initiated.","The assessment may be attempted up to 3 times within the same active WPA pathway. After each unsuccessful attempt, WPA provides revision guidance. After the third unsuccessful attempt, guided review / next-step policy applies.","Upon successful completion — WPA Foundation Certificate issued (digital, serial-numbered)."],
-      mk:["Кандидатот влегува во оценувачката фаза преку WPA порталот.","Кандидатот одговара на 10 структурирани прашања (7 поени секое = 70 поени вкупно).","Кандидатот ја изработува 1 сценарио-анализа задача (30 поени — примена на протоколарна логика).","Резултатите се оценуваат според WPA оценувачкиот модел (вкупно: 100 поени).","Праг за поминување: 70/100 поени. Ако е успешно — се иницира процесот за сертификат.","Тестот може да се повтори до 3 пати во рамки на истата активна WPA патека. По секој неуспешен обид, WPA обезбедува насоки за повторување. По третиот неуспешен обид, следниот чекор се уредува согласно WPA policy и guided review.","По успешно завршување — издавање на WPA Foundation Certificate (дигитален, со сериски број)."]
+      en:["Candidate enters the assessment stage via WPA portal.","Candidate completes 10 structured knowledge questions (7 points each = 70 points).","Candidate completes 1 scenario-analysis task (30 points — applies protocol logic to a practical situation).","Results are scored against the WPA assessment model (total: 100 points).","Passing threshold: 70/100 points. If successful — certificate process initiated.","Retake conditions are governed by the applicable WPA retake policy. After each unsuccessful attempt, WPA provides revision guidance and additional preparation direction. The number of allowed attempts, timing and conditions are confirmed by WPA.","Upon successful completion — WPA Foundation Certificate issued (digital, serial-numbered)."],
+      mk:["Кандидатот влегува во оценувачката фаза преку WPA порталот.","Кандидатот одговара на 10 структурирани прашања (7 поени секое = 70 поени вкупно).","Кандидатот ја изработува 1 сценарио-анализа задача (30 поени — примена на протоколарна логика).","Резултатите се оценуваат според WPA оценувачкиот модел (вкупно: 100 поени).","Праг за поминување: 70/100 поени. Ако е успешно — се иницира процесот за сертификат.","Повторното полагање се уредува согласно важечката WPA retake policy. По секој неуспешен обид, WPA обезбедува насоки за повторување и дополнителна подготовка. Бројот на дозволени обиди, роковите и условите ги потврдува WPA.","По успешно завршување — издавање на WPA Foundation Certificate (дигитален, со сериски број)."]
     }
   },
   cert:{
@@ -2004,6 +2020,270 @@ function showSOP(key) {
     }).join('');
 }
 
+
+
+// ══════════════════════════════════════════════════════════════════
+//  WPA PHASE 2 PREVIEW CORE — DESK AGENT
+//  Added 2026-05-09. Preview-only logic. No production migration.
+//  Purpose: integrate all agreed features from 2026-05-08 and 2026-05-09
+//  into the parallel Desk Agent preview without replacing the stable source.
+// ══════════════════════════════════════════════════════════════════
+const WPA_PHASE2_DESK_AGENT = {
+  version: 'v34-phase2-preview',
+  role: 'operational-workflow-brain',
+  finalControl: 'WPA / founder approval',
+  principles: [
+    'Semantic first', 'Ethical always', 'Evidence before confidence',
+    'Approval before finalization', 'WPA dignity before speed',
+    'Parallel preview before production'
+  ],
+  capabilities: [
+    'Predictor', 'Analyzer', 'Workflow Manager', 'Question Bank / Assessment Engine',
+    'Approval Gates', 'Handoff to Bot-Sande', 'Semantic Core', 'Ethical Core',
+    'Empathic Communication Layer', 'GPT-style reasoning core',
+    'Claude-style instruction discipline', 'Marvis-style proactive issue detection',
+    'Agentforce-style trusted operational context', 'Google-style security awareness',
+    'Copilot-style summaries and checklists', 'Top chatbot benchmark flows',
+    'Translation awareness', 'Multimodal future support', '360-degree feedback',
+    'Learned lessons loop'
+  ]
+};
+
+function wpaPhase2Lower(msg) { return String(msg || '').toLowerCase(); }
+function wpaPhase2HasAny(q, arr) { return arr.some(function(k){ return q.includes(k); }); }
+
+function wpaDeskClassifyIntent(message) {
+  var q = wpaPhase2Lower(message);
+  var academic = wpaPhase2HasAny(q, [
+    'што е','дефинирај','објасни','протокол','дипломатија','пресеанс','церемонијал','етикеција','бон-тон','агреман','егзекватура','цитат','извор','книга','труд','докторска','interview','citation','source','doctrine','protocol','diplomacy','precedence','exequatur','agrément'
+  ]);
+  var assessment = wpaPhase2HasAny(q, ['тест','квиз','прашања','assessment','readiness','испит','сертификац','certificate','certification','question bank','5000','2000','полагање','положи','положување','повторно полагање','retake','retry','exam procedure']);
+  var admissions = wpaPhase2HasAny(q, ['запиш','прием','апликац','admission','enroll','application','programme','program','обука','курс']);
+  var fullPathPricing = wpaPhase2HasAny(q, ['сите четири','4 обуки','четири обуки','цела патека','целосна патека','all four','four trainings','full pathway']);
+  var trainingDescription = wpaPhase2HasAny(q, ['опишете ми ја целосно','целосно опиш','како изгледа','целовременото траење','времетраење на една обука','describe fully','full description','training duration']);
+  var testProcedure = wpaPhase2HasAny(q, ['процедурата за полагање','процедура за полагање','како се полага','полагање на тестот','exam procedure','testing procedure']);
+  var retake = wpaPhase2HasAny(q, ['второ полагање','повторно полагање','не се помине','не го положи','не положи','retake','second attempt','failed first attempt']);
+  var pricing = wpaPhase2HasAny(q, ['цена','цени','попуст','стипендија','price','pricing','discount','scholarship','cost','fee']);
+  var schedule = wpaPhase2HasAny(q, [
+    'присуство','присуств','часови','настава','видео','видеоконференција','видео конференција',
+    'zoom','teams','online','онлајн','распоред','почнува','започнува','завршува','траење',
+    'студентски ден','student day','attendance','classes','lesson','lessons','schedule',
+    'video conference','videoconference','starts','ends','duration'
+  ]);
+  var approval = wpaPhase2HasAny(q, ['одобри','потврди','финално','издај сертификат','approve','confirm','final','issue certificate','official status','верификац']);
+  var support = wpaPhase2HasAny(q, ['не работи','грешка','проблем','error','bug','help','support','помош']);
+  var translation = wpaPhase2HasAny(q, ['преведи','превод','translation','translate','јазик','language']);
+  return { academic: academic, assessment: assessment, admissions: admissions, fullPathPricing: fullPathPricing, trainingDescription: trainingDescription, testProcedure: testProcedure, retake: retake, pricing: pricing, schedule: schedule, approval: approval, support: support, translation: translation };
+}
+
+function wpaDeskNeedsBotSande(intent) {
+  return intent.academic && !(intent.admissions || intent.assessment || intent.pricing || intent.approval);
+}
+
+function wpaDeskApprovalNeeded(intent) {
+  return intent.approval || intent.pricing || /сертификат|certificate|запиш|enroll|статус|status|партнер|partner/i.test(JSON.stringify(intent));
+}
+
+function wpaDeskNextStep(intent, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (wpaDeskNeedsBotSande(intent)) return mk ? 'Следен чекор: прашањето треба да се насочи кон Bot-Sande за академски, изворно заснован одговор.' : 'Next step: route this to Bot-Sande for a source-grounded academic answer.';
+  if (intent.assessment) return mk ? 'Следен чекор: направете readiness проверка преку прашања/квиз, па подгответе approval пакет ако резултатот е доволен.' : 'Next step: run a readiness check through questions/quiz, then prepare an approval package if results are sufficient.';
+  if (intent.admissions) return mk ? 'Следен чекор: утврдете програма, статус на кандидатот и кои податоци недостигаат — без финално запишување пред WPA одобрување.' : 'Next step: identify programme, candidate stage and missing data — no final enrollment before WPA approval.';
+  if (intent.schedule) return mk ? 'Следен чекор: објасни ја наставната организација, присуството, видео-следењето и распоредот без да ветуваш фиксен термин без WPA потврда.' : 'Next step: explain teaching organisation, attendance, video delivery and schedule without promising a fixed time without WPA confirmation.';
+  if (intent.pricing) return mk ? 'Следен чекор: дај контролирана ценовна насока, но попуст/исклучок бара WPA одобрување.' : 'Next step: provide controlled pricing guidance, but any discount/exception requires WPA approval.';
+  if (intent.translation) return mk ? 'Следен чекор: зачувај македонска кирилица како master и насочи чувствителен текст кон Bot-Sande/WPA review.' : 'Next step: preserve Macedonian Cyrillic as master and route sensitive language to Bot-Sande/WPA review.';
+  if (intent.support) return mk ? 'Следен чекор: намали комплексност, собери точен проблем и предложи една безбедна проверка.' : 'Next step: reduce complexity, capture the exact issue and suggest one safe check.';
+  return mk ? 'Следен чекор: води го корисникот чекор по чекор и не носи финална институционална одлука.' : 'Next step: guide step by step and do not make a final institutional decision.';
+}
+
+function wpaDeskBuildPhase2Note(message, lang) {
+  var intent = wpaDeskClassifyIntent(message);
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  var labels = [];
+  if (intent.academic) labels.push(mk ? 'академско' : 'academic');
+  if (intent.admissions) labels.push(mk ? 'прием/патека' : 'admissions/pathway');
+  if (intent.assessment) labels.push(mk ? 'assessment' : 'assessment');
+  if (intent.fullPathPricing) labels.push(mk ? 'целосна цена / 4 обуки' : 'full pathway pricing');
+  if (intent.trainingDescription) labels.push(mk ? 'опис на обука / времетраење' : 'training description / duration');
+  if (intent.testProcedure) labels.push(mk ? 'процедура за тест' : 'testing procedure');
+  if (intent.retake) labels.push(mk ? 'повторно полагање' : 'retake procedure');
+  if (intent.schedule) labels.push(mk ? 'настава/присуство/распоред' : 'teaching/attendance/schedule');
+  if (intent.pricing) labels.push(mk ? 'цена' : 'pricing');
+  if (intent.approval) labels.push(mk ? 'одобрување' : 'approval');
+  if (intent.translation) labels.push(mk ? 'превод' : 'translation');
+  if (!labels.length) labels.push(mk ? 'општа оперативна насока' : 'general operational guidance');
+
+  var approval = wpaDeskApprovalNeeded(intent);
+  var handoff = wpaDeskNeedsBotSande(intent);
+  var next = wpaDeskNextStep(intent, lang);
+  if (mk) {
+    return '\n\n<div class="wpa-phase2-note"><strong>WPA Desk Agent · Phase 2 Preview</strong><br>' +
+      'Семантичка класификација: ' + labels.join(', ') + '.<br>' +
+      'Handoff: ' + (handoff ? 'Bot-Sande е потребен за академски/изворен одговор.' : 'Desk Agent може да продолжи оперативно.') + '<br>' +
+      'Approval gate: ' + (approval ? 'Потребна е WPA / основачка потврда пред финална одлука.' : 'Нема финална одлука без WPA контрола ако се појави критичен чекор.') + '<br>' +
+      next + '</div>';
+  }
+  return '\n\n<div class="wpa-phase2-note"><strong>WPA Desk Agent · Phase 2 Preview</strong><br>' +
+    'Semantic classification: ' + labels.join(', ') + '.<br>' +
+    'Handoff: ' + (handoff ? 'Bot-Sande is needed for academic/source-grounded answer.' : 'Desk Agent can continue operationally.') + '<br>' +
+    'Approval gate: ' + (approval ? 'WPA / founder confirmation is required before final decision.' : 'No final decision without WPA control if a critical step appears.') + '<br>' +
+    next + '</div>';
+}
+
+
+function wpaDeskBuildScheduleAttendanceReply(message, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (mk) {
+    return 'Организацијата на наставата во WPA зависи од избраната програма и од тоа дали обуката се следи индивидуално, во група или како институционална обука.\n\n' +
+      '1. Дали присуството е задолжително?\n' +
+      'Присуството на закажаните наставни/менторски сесии е важно, особено ако програмата се реализира во воден формат. Ако програмата има самостојно темпо, дел од материјалите може да се следат асинхроно, но тестирањето, readiness проверките и сертификатската постапка остануваат под WPA контрола.\n\n' +
+      '2. Како се следи наставата преку видео-конференција?\n' +
+      'Наставата може да се следи преку одобрена видео-платформа или преку WPA назначен канал. Учесникот добива насоки за пристап, термин, тема на сесијата и очекувана подготовка. За чувствителни или институционални сесии може да важат дополнителни правила за приватност и присуство.\n\n' +
+      '3. Во колку часот започнува и завршува студентскиот ден?\n' +
+      'Фиксниот почеток и крај не треба да се ветуваат однапред од AI асистентот. Распоредот зависи од програмата, групата, временската зона, форматот и WPA организациската потврда. Вообичаено, WPA треба да го потврди точниот термин пред почетокот на обуката.\n\n' +
+      '4. Што е најбезбедниот следен чекор?\n' +
+      'Изберете ја програмата што ве интересира, наведете дали сакате индивидуално, групно или институционално следење, и WPA ќе го потврди точниот распоред, начинот на присуство и техничките инструкции.\n\n' +
+      'Важно: AI асистентот може да даде организациска насока, но финалниот распоред, задолжителноста на присуството и официјалниот формат ги потврдува WPA.';
+  }
+  return 'Teaching organisation at WPA depends on the selected programme and whether the training is individual, group-based or institutional.\n\n' +
+    '1. Is attendance mandatory?\n' +
+    'Attendance at scheduled teaching/mentoring sessions is important, especially in guided formats. If the programme is self-paced, some materials may be followed asynchronously, but testing, readiness checks and certification remain under WPA control.\n\n' +
+    '2. How is teaching followed by video conference?\n' +
+    'Teaching may be followed through an approved video platform or WPA-designated channel. The participant receives access instructions, session time, topic and preparation notes. Sensitive or institutional sessions may require additional privacy and attendance rules.\n\n' +
+    '3. When does a student day start and end?\n' +
+    'The AI assistant should not promise fixed start/end times in advance. The schedule depends on the programme, group, time zone, delivery format and WPA confirmation.\n\n' +
+    '4. Next safe step:\n' +
+    'Choose the programme, state whether you prefer individual, group or institutional delivery, and WPA will confirm the exact schedule, attendance rules and technical instructions.\n\n' +
+    'Important: The AI assistant may provide organisational guidance, but the official schedule and format are confirmed by WPA.';
+}
+
+
+function wpaDeskBuildFullPathPricingReply(message, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (mk) {
+    return 'За целата WPA 4-нивоска патека, launch цените се:\n\n' +
+      '1. Foundation Certificate Programme — 499 EUR\n' +
+      '2. Professional Certificate Programme — 649 EUR\n' +
+      '3. Advanced Certificate Programme — 799 EUR\n' +
+      '4. Train-the-Trainer Certificate Programme — 990 EUR\n\n' +
+      'Вкупно за сите четири обуки: 2.937 EUR.\n\n' +
+      'Финалната потврда за цена, пакет-услови, попуст или посебен договор ја дава WPA.';
+  }
+  return 'For the full WPA four-level pathway, the launch prices are:\n\n' +
+    '1. Foundation Certificate Programme — 499 EUR\n' +
+    '2. Professional Certificate Programme — 649 EUR\n' +
+    '3. Advanced Certificate Programme — 799 EUR\n' +
+    '4. Train-the-Trainer Certificate Programme — 990 EUR\n\n' +
+    'Total for all four trainings: 2,937 EUR.\n\n' +
+    'Final confirmation of price, package terms, discount or special arrangement is provided by WPA.';
+}
+
+function wpaDeskBuildTrainingDescriptionReply(message, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (mk) {
+    return 'Една WPA обука обично се одвива како структурирана сертификатска патека, а не како еднократно предавање.\n\n' +
+      '1. Воведна ориентација\n' +
+      'Кандидатот се запознава со програмата, целите, начинот на работа и очекуваните резултати.\n\n' +
+      '2. Наставни модули\n' +
+      'Содржината е поделена во тематски целини: протокол, етикеција, институционално однесување, дипломатски протокол, комуникација или друга област — зависно од избраната програма.\n\n' +
+      '3. Самостојно учење / водена поддршка\n' +
+      'Учесникот може да напредува со свое темпо или со водена WPA поддршка, зависно од форматот.\n\n' +
+      '4. Практични задачи и примери\n' +
+      'Се работи на ситуации, сценарија, протоколарни постапки, комуникациски примери и проверка на разбирањето.\n\n' +
+      '5. Тестирање / readiness проверка\n' +
+      'Desk Agent може да помогне со квизови, прашања и подготовка, но финалната оценка и сертификатската потврда остануваат под WPA контрола.\n\n' +
+      '6. Завршна проверка и сертификатска постапка\n' +
+      'По исполнување на условите, WPA ја проверува подготвеноста и го води сертификатскиот процес.\n\n' +
+      'Точното времетраење, распоредот и форматот зависат од избраната програма, темпото на учење и дали се работи за индивидуална или институционална обука. За финална потврда на распоред и услови, потребна е WPA потврда.';
+  }
+  return 'A WPA training is normally structured as a certificate pathway, not as a single lecture.\n\n' +
+    '1. Orientation — the candidate is introduced to programme goals, work format and expected outcomes.\n' +
+    '2. Teaching modules — content is divided into protocol, etiquette, institutional conduct, diplomatic protocol, communication or other areas depending on the programme.\n' +
+    '3. Self-paced study or guided support — depending on the delivery format.\n' +
+    '4. Practical tasks and examples — scenarios, protocol procedures and applied communication tasks.\n' +
+    '5. Testing / readiness check — quizzes, questions and preparation may be used, but final assessment remains under WPA control.\n' +
+    '6. Final review and certificate procedure — WPA confirms readiness and manages the certificate process.\n\n' +
+    'Exact duration, schedule and format depend on the chosen programme, learning pace and delivery model. WPA confirms final schedule and conditions.';
+}
+
+function wpaDeskBuildTestingProcedureReply(message, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (mk) {
+    return 'Процедурата за полагање на WPA тестот обично оди вака:\n\n' +
+      '1. Избор на програма\n' +
+      'Прво се утврдува за која сертификатска програма се подготвувате.\n\n' +
+      '2. Подготовка и readiness проверка\n' +
+      'Пред финалното тестирање може да се направи проверка преку прашања, квизови и кратки задачи за да се види дали сте подготвени.\n\n' +
+      '3. Финален тест\n' +
+      'За Foundation моделот, тестот може да вклучи: 10 структурирани прашања × 7 поени = 70 поени и 1 сценарио-анализа задача = 30 поени. Вкупно: 100 поени.\n\n' +
+      '4. Праг за положување\n' +
+      'Минимумот за добивање сертификат е 70/100 поени, односно 70%.\n\n' +
+      '5. Проверка од WPA\n' +
+      'Резултатот и сертификатската постапка не се финализираат автоматски од AI асистентот. WPA ја прави финалната проверка и потврда.\n\n' +
+      '6. Сертификатска постапка\n' +
+      'Ако условите се исполнети и WPA ја потврди подготвеноста, се продолжува кон издавање сертификат.\n\n' +
+      'Важно: тестот не ја проверува само меморијата, туку и примената на протоколарните принципи во практична ситуација.';
+  }
+  return 'The WPA testing procedure usually follows these steps:\n\n' +
+    '1. Programme selection — identify the certificate programme.\n' +
+    '2. Preparation and readiness check — questions, quizzes and short tasks may be used before the final test.\n' +
+    '3. Final test — for Foundation, this may include 10 structured questions × 7 points = 70 points and one scenario-analysis task = 30 points. Total: 100 points.\n' +
+    '4. Passing threshold — minimum 70/100 points, or 70%.\n' +
+    '5. WPA review — the AI assistant does not finalize results or certification; WPA confirms the result.\n' +
+    '6. Certificate procedure — if requirements are met and WPA confirms readiness, the certificate process continues.\n\n' +
+    'The test checks not only memory, but also practical application of protocol principles.';
+}
+
+function wpaDeskBuildRetakeReply(message, lang) {
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (mk) {
+    return 'Доколку кандидатот не го положи тестот од прв обид, тоа не значи автоматски крај на патеката.\n\n' +
+      'Процедурата обично оди вака:\n\n' +
+      '1. WPA го разгледува резултатот и слабите точки.\n' +
+      '2. Кандидатот добива насоки за дополнителна подготовка.\n' +
+      '3. Може да се направи readiness проверка преку прашања, квиз или кратка задача.\n' +
+      '4. Потоа се закажува повторно полагање согласно важечката WPA retake policy.\n' +
+      '5. Бројот на дозволени обиди, роковите и условите ги потврдува WPA.\n' +
+      '6. Ако кандидатот повторно не го положи тестот, следи guided review и препорака за дополнителна подготовка.\n\n' +
+      'Повторното полагање не значи автоматски ново целосно запишување, но конечните услови ги потврдува WPA.';
+  }
+  return 'If a candidate does not pass the test on the first attempt, that does not automatically end the pathway.\n\n' +
+    'The procedure normally works like this:\n\n' +
+    '1. WPA reviews the result and weak points.\n' +
+    '2. The candidate receives guidance for additional preparation.\n' +
+    '3. A readiness check may be done through questions, a quiz or a short task.\n' +
+    '4. A retake may then be scheduled according to the applicable WPA retake policy.\n' +
+    '5. The number of allowed attempts, timing and conditions are confirmed by WPA.\n' +
+    '6. If the candidate still does not pass, a guided review and additional preparation recommendation follows.\n\n' +
+    'A retake does not automatically mean full re-enrollment, but final conditions are confirmed by WPA.';
+}
+
+function wpaDeskAgentPhase2Reply(message, lang, baseReply) {
+  var intent = wpaDeskClassifyIntent(message);
+  var mk = (lang === 'mk' || lang === 'sr' || lang === 'bs');
+  if (intent.fullPathPricing) {
+    return wpaDeskBuildFullPathPricingReply(message, lang) + wpaDeskBuildPhase2Note(message, lang);
+  }
+  if (intent.trainingDescription) {
+    return wpaDeskBuildTrainingDescriptionReply(message, lang) + wpaDeskBuildPhase2Note(message, lang);
+  }
+  if (intent.testProcedure) {
+    return wpaDeskBuildTestingProcedureReply(message, lang) + wpaDeskBuildPhase2Note(message, lang);
+  }
+  if (intent.retake) {
+    return wpaDeskBuildRetakeReply(message, lang) + wpaDeskBuildPhase2Note(message, lang);
+  }
+  if (intent.schedule) {
+    return wpaDeskBuildScheduleAttendanceReply(message, lang) + wpaDeskBuildPhase2Note(message, lang);
+  }
+  if (wpaDeskNeedsBotSande(intent)) {
+    return mk
+      ? 'Ова е академско / знаењско прашање. За најточен одговор според книгите, докторската дисертација, трудовите, интервјуата и WPA базата, прашањето треба да го обработи Bot-Sande.\n\nHandoff summary:\n- Корисникот бара академско објаснување / изворна поткрепа.\n- Desk Agent не треба да ја преземе доктрината.\n- Следен чекор: Bot-Sande да даде source-grounded одговор.' + wpaDeskBuildPhase2Note(message, lang)
+      : 'This is an academic / knowledge question. For the most accurate answer based on books, dissertation, papers, interviews and WPA knowledge, Bot-Sande should handle it.\n\nHandoff summary:\n- The user needs academic explanation / source support.\n- Desk Agent should not replace doctrine authority.\n- Next step: Bot-Sande should provide a source-grounded answer.' + wpaDeskBuildPhase2Note(message, lang);
+  }
+  return String(baseReply || '') + wpaDeskBuildPhase2Note(message, lang);
+}
+
 // ══════════════════════════════════════════════════════════════════
 //  CHAT ENGINE
 // ══════════════════════════════════════════════════════════════════
@@ -2033,6 +2313,7 @@ async function sendChat() {
       removeTyping(typingId);
       var reply = data.content && data.content[0] && data.content[0].text;
       if (reply) {
+        reply = wpaDeskAgentPhase2Reply(msg, currentLang, reply);
         conversationHistory.push({role:'assistant', content:reply});
         addMsg(reply, 'agent');
         return;
@@ -2043,7 +2324,7 @@ async function sendChat() {
   // Local AI — works always, no API key needed
   await new Promise(function(r) { setTimeout(r, 500 + Math.random() * 700); });
   removeTyping(typingId);
-  var reply = localAI(msg, currentLang);
+  var reply = wpaDeskAgentPhase2Reply(msg, currentLang, localAI(msg, currentLang));
   conversationHistory.push({role:'assistant', content:reply});
   addMsg(reply, 'agent');
 }
