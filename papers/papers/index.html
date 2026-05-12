@@ -877,7 +877,7 @@
 
           <article class="card">
             <span class="small-kicker">P14</span>
-            <h4 class="paper-title">Corona Virus Handling — "Namaste"</h4>
+            <h4 class="paper-title">Corona Virus Handling — “Namaste”</h4>
             <p class="paper-summary">A timely paper on conduct, communication and etiquette adaptation in pandemic conditions.</p>
             <div class="paper-tags"><span class="tag">Pandemic</span><span class="tag">Etiquette</span><span class="tag">Communication</span></div>
             <div class="paper-actions"><a class="btn btn-secondary" href="papers/p14-corona-namaste-full.pdf" target="_blank" rel="noopener">Open PDF</a></div>
@@ -914,7 +914,6 @@
             <div class="paper-tags"><span class="tag">Protocol</span><span class="tag">Public Relations</span><span class="tag">Organisation</span></div>
             <div class="paper-actions"><a class="btn btn-secondary" href="papers/p18-protocol-public-relations.pdf" target="_blank" rel="noopener">Open PDF</a></div>
           </article>
-
         </div>
       </div>
     </section>
@@ -1064,56 +1063,291 @@
       let conversation = [];
 
       const UI_TEXT = {
-        mk: { welcome: "Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.", placeholder: "Напишете прашање...", send: "Испрати", clear: "Исчисти", note: "Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.", typing: "Virtual Sande пишува...", error: "Привремена грешка. Обидете се повторно.", network: "Проблем со конекцијата.", cleared: "Разговорот е исчистен." },
-        en: { welcome: "Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.", placeholder: "Type your question...", send: "Send", clear: "Clear", note: "Ask about protocol, diplomacy, state protocol, etiquette, and international relations.", typing: "Virtual Sande is typing...", error: "Temporary error. Please try again.", network: "Network problem.", cleared: "The conversation has been cleared." },
-        de: { welcome: "Willkommen. Ich bin Virtual Sande AI. Stellen Sie eine Frage zu Protokoll, Diplomatie, Staatsprotokoll, Etikette oder internationalen Beziehungen.", placeholder: "Schreiben Sie Ihre Frage...", send: "Senden", clear: "Löschen", note: "Fragen Sie zu Protokoll, Diplomatie, Staatsprotokoll, Etikette und internationalen Beziehungen.", typing: "Virtual Sande schreibt...", error: "Vorübergehender Fehler. Bitte versuchen Sie es erneut.", network: "Netzwerkproblem.", cleared: "Das Gespräch wurde gelöscht." },
-        fr: { welcome: "Bienvenue. Je suis Virtual Sande AI. Posez une question sur le protocole, la diplomatie, le protocole d'État, l'étiquette ou les relations internationales.", placeholder: "Écrivez votre question...", send: "Envoyer", clear: "Effacer", note: "Posez des questions sur le protocole, la diplomatie, le protocole d'État, l'étiquette et les relations internationales.", typing: "Virtual Sande écrit...", error: "Erreur temporaire. Veuillez réessayer.", network: "Problème réseau.", cleared: "La conversation a été effacée." },
-        it: { welcome: "Benvenuto. Sono Virtual Sande AI. Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta o relazioni internazionali.", placeholder: "Scrivi la tua domanda...", send: "Invia", clear: "Pulisci", note: "Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta e relazioni internazionali.", typing: "Virtual Sande sta scrivendo...", error: "Errore temporaneo. Riprova.", network: "Problema di rete.", cleared: "La conversazione è stata cancellata." },
-        es: { welcome: "Bienvenido. Soy Virtual Sande AI. Haz una pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta o relaciones internacionales.", placeholder: "Escribe tu pregunta...", send: "Enviar", clear: "Borrar", note: "Pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta y relaciones internacionales.", typing: "Virtual Sande está escribiendo...", error: "Error temporal. Inténtalo de nuevo.", network: "Problema de red.", cleared: "La conversación ha sido borrada." },
-        sq: { welcome: "Mirë se vini. Unë jam Virtual Sande AI. Bëni një pyetje për protokollin, diplomacinë, protokollin shtetëror, etikën ose marrëdhëniet ndërkombëtare.", placeholder: "Shkruani pyetjen tuaj...", send: "Dërgo", clear: "Pastro", note: "Pyesni për protokollin, diplomacinë, protokollin shtetëror, etikën dhe marrëdhëniet ndërkombëtare.", typing: "Virtual Sande po shkruan...", error: "Gabim i përkohshëm. Provoni përsëri.", network: "Problem rrjeti.", cleared: "Biseda u pastrua." },
-        tr: { welcome: "Hoş geldiniz. Ben Virtual Sande AI. Protokol, diplomasi, devlet protokolü, görgü veya uluslararası ilişkiler hakkında soru sorun.", placeholder: "Sorunuzu yazın...", send: "Gönder", clear: "Temizle", note: "Protokol, diplomasi, devlet protokolü, görgü ve uluslararası ilişkiler hakkında sorun.", typing: "Virtual Sande yazıyor...", error: "Geçici hata. Lütfen tekrar deneyin.", network: "Ağ sorunu.", cleared: "Konuşma temizlendi." },
-        hr: { welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomaciji, državnom protokolu, bontonu ili međunarodnim odnosima.", placeholder: "Upišite svoje pitanje...", send: "Pošalji", clear: "Obriši", note: "Pitajte o protokolu, diplomaciji, državnom protokolu, bontonu i međunarodnim odnosima.", typing: "Virtual Sande piše...", error: "Privremena greška. Pokušajte ponovno.", network: "Problem s mrežom.", cleared: "Razgovor je obrisan." },
-        bs: { welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomatiji, državnom protokolu, bontonu ili međunarodnim odnosima.", placeholder: "Upišite svoje pitanje...", send: "Pošalji", clear: "Obriši", note: "Pitajte o protokolu, diplomatiji, državnom protokolu, bontonu i međunarodnim odnosima.", typing: "Virtual Sande piše...", error: "Privremena greška. Pokušajte ponovo.", network: "Problem s mrežom.", cleared: "Razgovor je obrisan." },
-        sl: { welcome: "Dobrodošli. Sem Virtual Sande AI. Zastavite vprašanje o protokolu, diplomaciji, državnem protokolu, bontonu ali mednarodnih odnosih.", placeholder: "Vpišite svoje vprašanje...", send: "Pošlji", clear: "Počisti", note: "Vprašajte o protokolu, diplomaciji, državnem protokolu, bontonu in mednarodnih odnosih.", typing: "Virtual Sande piše...", error: "Začasna napaka. Poskusite znova.", network: "Težava z omrežjem.", cleared: "Pogovor je bil počiščen." }
+        mk: {
+          welcome: "Добредојдовте. Јас сум Virtual Sande AI. Поставете прашање за протокол, дипломатија, државен протокол, етикеција или меѓународни односи.",
+          placeholder: "Напишете прашање...",
+          send: "Испрати",
+          clear: "Исчисти",
+          note: "Прашајте за протокол, дипломатија, државен протокол, етикеција и меѓународни односи.",
+          typing: "Virtual Sande пишува...",
+          error: "Привремена грешка. Обидете се повторно.",
+          network: "Проблем со конекцијата.",
+          cleared: "Разговорот е исчистен."
+        },
+        en: {
+          welcome: "Welcome. I am Virtual Sande AI. Ask a question about protocol, diplomacy, state protocol, etiquette, or international relations.",
+          placeholder: "Type your question...",
+          send: "Send",
+          clear: "Clear",
+          note: "Ask about protocol, diplomacy, state protocol, etiquette, and international relations.",
+          typing: "Virtual Sande is typing...",
+          error: "Temporary error. Please try again.",
+          network: "Network problem.",
+          cleared: "The conversation has been cleared."
+        },
+        de: {
+          welcome: "Willkommen. Ich bin Virtual Sande AI. Stellen Sie eine Frage zu Protokoll, Diplomatie, Staatsprotokoll, Etikette oder internationalen Beziehungen.",
+          placeholder: "Schreiben Sie Ihre Frage...",
+          send: "Senden",
+          clear: "Löschen",
+          note: "Fragen Sie zu Protokoll, Diplomatie, Staatsprotokoll, Etikette und internationalen Beziehungen.",
+          typing: "Virtual Sande schreibt...",
+          error: "Vorübergehender Fehler. Bitte versuchen Sie es erneut.",
+          network: "Netzwerkproblem.",
+          cleared: "Das Gespräch wurde gelöscht."
+        },
+        fr: {
+          welcome: "Bienvenue. Je suis Virtual Sande AI. Posez une question sur le protocole, la diplomatie, le protocole d'État, l'étiquette ou les relations internationales.",
+          placeholder: "Écrivez votre question...",
+          send: "Envoyer",
+          clear: "Effacer",
+          note: "Posez des questions sur le protocole, la diplomatie, le protocole d'État, l'étiquette et les relations internationales.",
+          typing: "Virtual Sande écrit...",
+          error: "Erreur temporaire. Veuillez réessayer.",
+          network: "Problème réseau.",
+          cleared: "La conversation a été effacée."
+        },
+        it: {
+          welcome: "Benvenuto. Sono Virtual Sande AI. Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta o relazioni internazionali.",
+          placeholder: "Scrivi la tua domanda...",
+          send: "Invia",
+          clear: "Pulisci",
+          note: "Fai una domanda su protocollo, diplomazia, protocollo di Stato, etichetta e relazioni internazionali.",
+          typing: "Virtual Sande sta scrivendo...",
+          error: "Errore temporaneo. Riprova.",
+          network: "Problema di rete.",
+          cleared: "La conversazione è stata cancellata."
+        },
+        es: {
+          welcome: "Bienvenido. Soy Virtual Sande AI. Haz una pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta o relaciones internacionales.",
+          placeholder: "Escribe tu pregunta...",
+          send: "Enviar",
+          clear: "Borrar",
+          note: "Pregunta sobre protocolo, diplomacia, protocolo de Estado, etiqueta y relaciones internacionales.",
+          typing: "Virtual Sande está escribiendo...",
+          error: "Error temporal. Inténtalo de nuevo.",
+          network: "Problema de red.",
+          cleared: "La conversación ha sido borrada."
+        },
+        sq: {
+          welcome: "Mirë se vini. Unë jam Virtual Sande AI. Bëni një pyetje për protokollin, diplomacinë, protokollin shtetëror, etikën ose marrëdhëniet ndërkombëtare.",
+          placeholder: "Shkruani pyetjen tuaj...",
+          send: "Dërgo",
+          clear: "Pastro",
+          note: "Pyesni për protokollin, diplomacinë, protokollin shtetëror, etikën dhe marrëdhëniet ndërkombëtare.",
+          typing: "Virtual Sande po shkruan...",
+          error: "Gabim i përkohshëm. Provoni përsëri.",
+          network: "Problem rrjeti.",
+          cleared: "Biseda u pastrua."
+        },
+        tr: {
+          welcome: "Hoş geldiniz. Ben Virtual Sande AI. Protokol, diplomasi, devlet protokolü, görgü veya uluslararası ilişkiler hakkında soru sorun.",
+          placeholder: "Sorunuzu yazın...",
+          send: "Gönder",
+          clear: "Temizle",
+          note: "Protokol, diplomasi, devlet protokolü, görgü ve uluslararası ilişkiler hakkında sorun.",
+          typing: "Virtual Sande yazıyor...",
+          error: "Geçici hata. Lütfen tekrar deneyin.",
+          network: "Ağ sorunu.",
+          cleared: "Konuşma temizlendi."
+        },
+        hr: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomaciji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomaciji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovno.",
+          network: "Problem s mrežom.",
+          cleared: "Razgovor je obrisan."
+        },
+        bs: {
+          welcome: "Dobro došli. Ja sam Virtual Sande AI. Postavite pitanje o protokolu, diplomatiji, državnom protokolu, bontonu ili međunarodnim odnosima.",
+          placeholder: "Upišite svoje pitanje...",
+          send: "Pošalji",
+          clear: "Obriši",
+          note: "Pitajte o protokolu, diplomatiji, državnom protokolu, bontonu i međunarodnim odnosima.",
+          typing: "Virtual Sande piše...",
+          error: "Privremena greška. Pokušajte ponovo.",
+          network: "Problem s mrežom.",
+          cleared: "Razgovor je obrisan."
+        },
+        sl: {
+          welcome: "Dobrodošli. Sem Virtual Sande AI. Zastavite vprašanje o protokolu, diplomaciji, državnem protokolu, bontonu ali mednarodnih odnosih.",
+          placeholder: "Vpišite svoje vprašanje...",
+          send: "Pošlji",
+          clear: "Počisti",
+          note: "Vprašajte o protokolu, diplomaciji, državnem protokolu, bontonu in mednarodnih odnosih.",
+          typing: "Virtual Sande piše...",
+          error: "Začasna napaka. Poskusite znova.",
+          network: "Težava z omrežjem.",
+          cleared: "Pogovor je bil počiščen."
+        }
       };
 
       function currentLang() { return langEl.value || "mk"; }
       function ui() { return UI_TEXT[currentLang()] || UI_TEXT.mk; }
-      function escapeHtml(str) { return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
-      function saveConversation() { try { sessionStorage.setItem(STORAGE_CHAT, JSON.stringify(conversation.slice(-MAX_HISTORY_ITEMS))); } catch (_) {} }
-      function loadConversation() { try { const raw = sessionStorage.getItem(STORAGE_CHAT); const parsed = raw ? JSON.parse(raw) : []; if (!Array.isArray(parsed)) return []; return parsed.filter(item => item && typeof item === "object").map(item => ({ role: item.role === "assistant" ? "assistant" : "user", content: String(item.content || "").trim() })).filter(item => item.content).slice(-MAX_HISTORY_ITEMS); } catch (_) { return []; } }
-      function setBusy(state) { isBusy = state; inputEl.disabled = state; sendBtn.disabled = state; clearBtn.disabled = state; langEl.disabled = state; }
+      function escapeHtml(str) {
+        return String(str).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      }
+
+      function saveConversation() {
+        try { sessionStorage.setItem(STORAGE_CHAT, JSON.stringify(conversation.slice(-MAX_HISTORY_ITEMS))); } catch (_) {}
+      }
+
+      function loadConversation() {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_CHAT);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .filter(item => item && typeof item === "object")
+            .map(item => ({
+              role: item.role === "assistant" ? "assistant" : "user",
+              content: String(item.content || "").trim()
+            }))
+            .filter(item => item.content)
+            .slice(-MAX_HISTORY_ITEMS);
+        } catch (_) { return []; }
+      }
+
+      function setBusy(state) {
+        isBusy = state;
+        inputEl.disabled = state;
+        sendBtn.disabled = state;
+        clearBtn.disabled = state;
+        langEl.disabled = state;
+      }
+
       function setStatus(text) { statusEl.textContent = text || ""; }
-      function createMessageNode(role, text, metaText) { const row = document.createElement("div"); row.className = "wpa2-bot-msg " + role; const bubble = document.createElement("div"); bubble.className = "wpa2-bot-bubble"; bubble.innerHTML = escapeHtml(text); if (metaText) { const meta = document.createElement("div"); meta.className = "wpa2-bot-meta"; meta.innerHTML = escapeHtml(metaText); bubble.appendChild(meta); } row.appendChild(bubble); return row; }
-      function appendMessage(role, text, metaText) { const node = createMessageNode(role, text, metaText); messagesEl.appendChild(node); messagesEl.scrollTop = messagesEl.scrollHeight; return node; }
-      function renderConversation() { messagesEl.innerHTML = ""; if (!conversation.length) { appendMessage("bot", ui().welcome); return; } for (const item of conversation) appendMessage(item.role === "user" ? "user" : "bot", item.content); }
-      function applyLanguageTexts() { inputEl.placeholder = ui().placeholder; sendBtn.textContent = ui().send; clearBtn.textContent = ui().clear; noteEl.textContent = ui().note; localStorage.setItem(STORAGE_LANG, currentLang()); if (!conversation.length) renderConversation(); }
+
+      function createMessageNode(role, text, metaText) {
+        const row = document.createElement("div");
+        row.className = "wpa2-bot-msg " + role;
+        const bubble = document.createElement("div");
+        bubble.className = "wpa2-bot-bubble";
+        bubble.innerHTML = escapeHtml(text);
+        if (metaText) {
+          const meta = document.createElement("div");
+          meta.className = "wpa2-bot-meta";
+          meta.innerHTML = escapeHtml(metaText);
+          bubble.appendChild(meta);
+        }
+        row.appendChild(bubble);
+        return row;
+      }
+
+      function appendMessage(role, text, metaText) {
+        const node = createMessageNode(role, text, metaText);
+        messagesEl.appendChild(node);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+        return node;
+      }
+
+      function renderConversation() {
+        messagesEl.innerHTML = "";
+        if (!conversation.length) {
+          appendMessage("bot", ui().welcome);
+          return;
+        }
+        for (const item of conversation) appendMessage(item.role === "user" ? "user" : "bot", item.content);
+      }
+
+      function applyLanguageTexts() {
+        inputEl.placeholder = ui().placeholder;
+        sendBtn.textContent = ui().send;
+        clearBtn.textContent = ui().clear;
+        noteEl.textContent = ui().note;
+        localStorage.setItem(STORAGE_LANG, currentLang());
+        if (!conversation.length) renderConversation();
+      }
+
       function openBot() { panel.classList.add("open"); inputEl.focus(); }
       function closeBot() { panel.classList.remove("open"); }
-      function clearChat() { if (isBusy) return; conversation = []; saveConversation(); renderConversation(); inputEl.value = ""; setStatus(ui().cleared); setTimeout(() => { if (statusEl.textContent === ui().cleared) setStatus(""); }, 1800); }
-      function buildHistoryPayload() { return conversation.slice(-MAX_HISTORY_ITEMS).map(item => ({ role: item.role === "assistant" ? "assistant" : "user", content: item.content })); }
-      function pushConversation(role, content) { conversation.push({ role, content: String(content || "").trim() }); conversation = conversation.filter(x => x.content).slice(-MAX_HISTORY_ITEMS); saveConversation(); }
-      function buildMetaFromResponse(data) { if (!data || typeof data !== "object") return ""; const parts = []; if (data.mode === "author") parts.push("author mode"); if (data.mode === "fallback") parts.push("fallback mode"); if (data.mode === "boundary") parts.push("boundary"); if (data.followUpUsed) parts.push("follow-up"); if (data.servedBy) parts.push("served by: " + data.servedBy); if (Array.isArray(data.sources) && data.sources.length) parts.push("sources: " + data.sources.join("; ")); return parts.join(" • "); }
+      function clearChat() {
+        if (isBusy) return;
+        conversation = [];
+        saveConversation();
+        renderConversation();
+        inputEl.value = "";
+        setStatus(ui().cleared);
+        setTimeout(() => {
+          if (statusEl.textContent === ui().cleared) setStatus("");
+        }, 1800);
+      }
+
+      function buildHistoryPayload() {
+        return conversation.slice(-MAX_HISTORY_ITEMS).map(item => ({ role: item.role === "assistant" ? "assistant" : "user", content: item.content }));
+      }
+
+      function pushConversation(role, content) {
+        conversation.push({ role, content: String(content || "").trim() });
+        conversation = conversation.filter(x => x.content).slice(-MAX_HISTORY_ITEMS);
+        saveConversation();
+      }
+
+      function buildMetaFromResponse(data) {
+        if (!data || typeof data !== "object") return "";
+        const parts = [];
+        if (data.mode === "author") parts.push("author mode");
+        if (data.mode === "fallback") parts.push("fallback mode");
+        if (data.mode === "boundary") parts.push("boundary");
+        if (data.followUpUsed) parts.push("follow-up");
+        if (data.servedBy) parts.push("served by: " + data.servedBy);
+        if (Array.isArray(data.sources) && data.sources.length) parts.push("sources: " + data.sources.join("; "));
+        return parts.join(" • ");
+      }
 
       async function askBot() {
         const message = inputEl.value.trim();
         if (!message || isBusy) return;
+
         appendMessage("user", message);
         pushConversation("user", message);
         inputEl.value = "";
         setBusy(true);
         setStatus(ui().typing);
         const typingNode = appendMessage("bot", ui().typing);
+
         try {
-          const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, lang: currentLang(), history: buildHistoryPayload() }) });
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message,
+              lang: currentLang(),
+              history: buildHistoryPayload()
+            })
+          });
+
           let data = null;
           try { data = await res.json(); } catch (_) {}
           typingNode.remove();
-          if (data && data.ok && data.answer) { const metaText = buildMetaFromResponse(data); appendMessage("bot", data.answer, metaText); pushConversation("assistant", data.answer); setStatus(""); }
-          else if (data && data.error) { appendMessage("bot", data.error); pushConversation("assistant", data.error); setStatus(""); }
-          else { appendMessage("bot", ui().error); pushConversation("assistant", ui().error); setStatus(""); }
-        } catch (_) { typingNode.remove(); appendMessage("bot", ui().network); pushConversation("assistant", ui().network); setStatus(""); }
-        finally { setBusy(false); inputEl.focus(); }
+
+          if (data && data.ok && data.answer) {
+            const metaText = buildMetaFromResponse(data);
+            appendMessage("bot", data.answer, metaText);
+            pushConversation("assistant", data.answer);
+            setStatus("");
+          } else if (data && data.error) {
+            appendMessage("bot", data.error);
+            pushConversation("assistant", data.error);
+            setStatus("");
+          } else {
+            appendMessage("bot", ui().error);
+            pushConversation("assistant", ui().error);
+            setStatus("");
+          }
+        } catch (_) {
+          typingNode.remove();
+          appendMessage("bot", ui().network);
+          pushConversation("assistant", ui().network);
+          setStatus("");
+        } finally {
+          setBusy(false);
+          inputEl.focus();
+        }
       }
 
       toggle.addEventListener("click", openBot);
