@@ -2115,7 +2115,42 @@ if(document.readyState==='loading'){
 </script>
 <script type="module" src="/locales/core.js"></script>
 <script src="translator-loader-v1.js" defer></script>
-  <script src="scripts/pricing-loader.js"></script>
-   <script src="/scripts/i18n-root-lock.js"></script>
+<script src="scripts/pricing-loader.js"></script>
+<script src="/scripts/i18n-root-lock.js"></script>
+
+<script>
+/* WPA HOMEPAGE TEXT REPEAT HOTFIX — 2026-05-15
+   Purpose: remove accidental i18n/translator repetition artefacts after page render.
+   Safe scope: only fixes known repeated strings on the public homepage.
+*/
+(function () {
+  function cleanWpaRepeatedText() {
+    document.querySelectorAll("body *").forEach(function (el) {
+      if (!el || !el.childNodes || el.children.length > 0) return;
+
+      var text = el.textContent || "";
+      var fixed = text
+        .replace(/екосистем(?:косистем){2,}/g, "екосистем")
+        .replace(/Academic Pro(?: Pro){2,}/g, "Academic Pro");
+
+      if (fixed !== text) {
+        el.textContent = fixed;
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", cleanWpaRepeatedText);
+  } else {
+    cleanWpaRepeatedText();
+  }
+
+  window.addEventListener("load", function () {
+    cleanWpaRepeatedText();
+    setTimeout(cleanWpaRepeatedText, 300);
+    setTimeout(cleanWpaRepeatedText, 1000);
+  });
+})();
+</script>
 </body>
 </html>
