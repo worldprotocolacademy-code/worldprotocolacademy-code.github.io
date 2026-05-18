@@ -322,8 +322,8 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
     <div class="tb-brand">
       <div class="tb-gem">⚜️</div>
       <div>
-        <div class="tb-name">WPAWS 9.0 <span style="color:var(--gold);font-size:13px">Integrated</span></div>
-        <div class="tb-sub">World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web</div>
+        <div class="tb-name">WPAWS 9.1.5 <span style="color:var(--gold);font-size:13px">Real Actions</span></div>
+        <div class="tb-sub">World Protocol Academy — 17 проактивни агенти + Real Export + Save + Import + Меморија + Дијалог + Синџир + Web</div>
       </div>
     </div>
     <div class="tb-sep"></div>
@@ -1099,10 +1099,10 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
     <div class="srow"><span class="srow-l">Статус</span><span class="srow-v"><span class="sdot"></span>Активен</span></div>
     <div class="srow"><span class="srow-l">Агент</span><span class="srow-v" id="sb-agent">🏛️ Архитект</span></div>
     <div class="srow"><span class="srow-l">AI Мотор</span><span class="srow-v" id="sb-ai">🔵 Claude</span></div>
-    <div class="srow"><span class="srow-l">Верзија</span><span class="srow-v">WPAWS 9.0</span></div>
+    <div class="srow"><span class="srow-l">Верзија</span><span class="srow-v">WPAWS 9.1.5</span></div>
     <div class="srow"><span class="srow-l">Claude API</span><span class="srow-v" id="sb-ckey">⚪ Нема</span></div>
     <div class="srow"><span class="srow-l">GPT-4o API</span><span class="srow-v" id="sb-gkey">⚪ Нема</span></div>
-    <div class="srow"><span class="srow-l">Агенти</span><span class="srow-v">16 / 16 активни</span></div>
+    <div class="srow"><span class="srow-l">Агенти</span><span class="srow-v">17 / 17 активни</span></div>
   </div>
 
   <div class="scard">
@@ -1282,7 +1282,7 @@ const WPA_TERMS = {
 /* MK is canonical — EN is full secondary — others are partial overrides */
 const WPA_UI_MK = {
   /* Topbar */
-  tbSub:'World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web',
+  tbSub:'World Protocol Academy — 17 проактивни агенти + Real Export + Save + Import + Меморија + Дијалог + Синџир + Web',
   tbBack:'← Академија', tbPlan:'Бесплатен', tbWeb:'🌐 Web',
   tbDialog:'💬 Дијалог', tbApiKey:'🔑 API Клуч', tbMemory:'💾 Меморија',
   tbUILabel:'UI', tbAILabel:'AI',
@@ -2465,7 +2465,68 @@ function exportAs(format){
     <h1>${title}</h1>
     <div class="meta">World Protocol Academy | Доц. д-р Санде Смиљанов | ${date}</div>
     ${out.el.innerHTML}
-    </body></html>`);
+    
+<!-- =========================================================
+WPAWS 9.1.5 REAL ACTIONS HOTFIX
+Purpose:
+- Real bottom Save / Import / Export buttons
+- Export presentation HTML and TXT
+- Presenter Notes visible only in Presenter Mode
+- Audience Mode hides presenter notes and Q&A package
+========================================================= -->
+<style id="wpaws-real-actions-style">
+  body.wpaws-has-bottom-actions{padding-bottom:96px!important}
+  .wpaws-real-actions-bar{position:fixed;left:0;right:0;bottom:0;z-index:999999;background:linear-gradient(180deg,rgba(13,31,60,.96),rgba(7,18,36,.985));border-top:1px solid rgba(200,168,75,.45);box-shadow:0 -14px 34px rgba(0,0,0,.32);padding:10px 14px;font-family:var(--fb,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)}
+  .wpaws-real-actions-inner{max-width:1320px;margin:0 auto;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+  .wpaws-real-actions-bar button,.wpaws-real-actions-bar label{appearance:none;border:1px solid rgba(200,168,75,.58);background:rgba(255,255,255,.075);color:#fff;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:800;line-height:1;cursor:pointer;transition:transform .12s ease,background .12s ease,border-color .12s ease;user-select:none;white-space:nowrap}
+  .wpaws-real-actions-bar button:hover,.wpaws-real-actions-bar label:hover{transform:translateY(-1px);background:rgba(200,168,75,.18);border-color:rgba(200,168,75,.95)}
+  .wpaws-real-actions-bar .wpaws-primary{background:linear-gradient(135deg,var(--gold,#c8a84b),var(--goldd,#9e7e30));color:#071224;border-color:var(--gold,#c8a84b)}
+  .wpaws-real-actions-bar .wpaws-danger{border-color:rgba(244,63,94,.65);color:#ffd4dd}
+  .wpaws-real-actions-status{color:rgba(255,255,255,.72);font-size:12px;min-width:175px;text-align:center;font-weight:700}
+  .wpaws-real-actions-input{display:none!important}
+  .wpaws-mode-badge{position:fixed;right:14px;bottom:72px;z-index:999998;background:rgba(13,31,60,.94);color:#f0d080;border:1px solid rgba(200,168,75,.48);border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900;letter-spacing:.02em;box-shadow:0 10px 22px rgba(0,0,0,.25);font-family:var(--fb,system-ui)}
+  body.wpaws-audience-mode .wpaws-presenter-private,body.wpaws-audience-mode [data-wpaws-presenter-notes="true"]{display:none!important}
+  body.wpaws-presenter-mode .wpaws-presenter-private,body.wpaws-presenter-mode [data-wpaws-presenter-notes="true"]{display:block}
+  @media print{.wpaws-real-actions-bar,.wpaws-mode-badge{display:none!important}body.wpaws-audience-mode .wpaws-presenter-private,body.wpaws-audience-mode [data-wpaws-presenter-notes="true"]{display:none!important}}
+</style>
+<script id="wpaws-real-actions-script">
+(function(){
+  'use strict';
+  var STORAGE_KEY='WPAWS_9_1_5_REAL_STATE';
+  var MODE_KEY='WPAWS_9_1_5_MODE';
+  var NOTE_MARKERS=['Белешки за презентер','не се прикажуваат пред публика','Speaker Notes','Speaker Notes / Q&A','Q&A пакет','Можни прашања:','Speaker cue','Говорни белешки','Q&A подготовка'];
+  function qs(s,r){return (r||document).querySelector(s)}
+  function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function clean(t){return String(t||'').replace(/\s+/g,' ').trim()}
+  function hasMarker(t){t=String(t||'');return NOTE_MARKERS.some(function(m){return t.indexOf(m)!==-1})}
+  function status(msg){var el=qs('#wpawsRealActionsStatus'); if(el) el.textContent=msg}
+  function toastSafe(icon,msg){try{if(typeof window.toast==='function') window.toast(icon,msg)}catch(e){}}
+  function download(name,content,mime){var blob=new Blob([content],{type:mime||'text/plain;charset=utf-8'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(url);a.remove()},300)}
+  function escSel(s){try{return CSS.escape(s)}catch(e){return String(s).replace(/[^a-zA-Z0-9_-]/g,'\\$&')}}
+  function fieldState(){var out=[];qsa('input,textarea,select').forEach(function(el){if(!el||el.type==='file')return;var key=el.id?('#'+escSel(el.id)):(el.name?('[name="'+String(el.name).replace(/"/g,'\\"')+'"]'):null);if(!key)return;out.push({selector:key,type:el.type||'',value:(el.type==='checkbox'||el.type==='radio')?!!el.checked:el.value})});return out}
+  function applyFields(fields){(fields||[]).forEach(function(it){try{var el=qs(it.selector);if(!el)return;if(el.type==='checkbox'||el.type==='radio')el.checked=!!it.value;else el.value=it.value||'';el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))}catch(e){}})}
+  function bestOutput(){var sels=['#r-ppp-create','#r-ppp-notes','#r-architect','#r-structure','#r-book-setup','#r-book-write','#r-analyze','#r-semantic','#r-protocol','#r-diplomacy','#r-security','#r-stylist','#r-citations','#r-editor','#r-reviewer','#r-plagiat','#r-press','#r-sandeai','.rbox','main','.workspace'];var best=null,bestLen=0;sels.forEach(function(s){qsa(s).forEach(function(el){var len=clean(el.innerText).length;if(len>bestLen){best=el;bestLen=len}})});return best||document.body}
+  function removePrivate(root){qsa('script,.wpaws-real-actions-bar,.wpaws-mode-badge',root).forEach(function(el){el.remove()});qsa('.wpaws-presenter-private,[data-wpaws-presenter-notes="true"]',root).forEach(function(el){el.remove()})}
+  function outputText(){var clone=bestOutput().cloneNode(true);if(document.body.classList.contains('wpaws-audience-mode'))removePrivate(clone);qsa('script,style',clone).forEach(function(el){el.remove()});return clean(clone.innerText||clone.textContent||'')}
+  function state(){return{app:'WPAWS',version:'9.1.5-real-actions',savedAt:new Date().toISOString(),mode:document.body.classList.contains('wpaws-presenter-mode')?'presenter':'audience',fields:fieldState(),outputHTML:bestOutput().innerHTML}}
+  function saveLocal(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state()));status('✅ Зачувано локално');toastSafe('💾','WPAWS зачувано локално')}catch(e){status('⚠️ Save грешка');alert('Неуспешно зачувување: '+e.message)}}
+  function exportState(){download('WPAWS-state-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(state(),null,2),'application/json;charset=utf-8');status('📦 Export State')} 
+  function importState(file){if(!file)return;var rd=new FileReader();rd.onload=function(){try{var st=JSON.parse(String(rd.result||'{}'));applyFields(st.fields||[]);var target=bestOutput();if(st.outputHTML&&target)target.innerHTML=st.outputHTML;if(st.mode==='presenter')setPresenter();else setAudience();markNotes();status('📥 Увезено успешно');toastSafe('📥','WPAWS state увезен')}catch(e){status('⚠️ Import грешка');alert('Неуспешен import: '+e.message)}};rd.readAsText(file,'utf-8')}
+  function exportHTML(){markNotes();var clone=document.documentElement.cloneNode(true);qsa('script,.wpaws-real-actions-bar,.wpaws-mode-badge',clone).forEach(function(el){el.remove()});if(document.body.classList.contains('wpaws-audience-mode'))qsa('.wpaws-presenter-private,[data-wpaws-presenter-notes="true"]',clone).forEach(function(el){el.remove()});var mode=document.body.classList.contains('wpaws-presenter-mode')?'presenter-notes':'audience';download('WPAWS-PPP-'+mode+'-'+new Date().toISOString().slice(0,10)+'.html','<!doctype html>\n'+clone.outerHTML,'text/html;charset=utf-8');status('📤 HTML презентација извезена')}
+  function exportTXT(){download('WPAWS-output-'+new Date().toISOString().slice(0,10)+'.txt',outputText(),'text/plain;charset=utf-8');status('📄 TXT извезен')}
+  function updateBadge(){var b=qs('#wpawsModeBadge');if(!b){b=document.createElement('div');b.id='wpawsModeBadge';b.className='wpaws-mode-badge';document.body.appendChild(b)}b.textContent=document.body.classList.contains('wpaws-presenter-mode')?'🎤 Presenter Mode — notes visible':'👥 Audience Mode — notes hidden'}
+  function setAudience(){document.body.classList.remove('wpaws-presenter-mode');document.body.classList.add('wpaws-audience-mode');localStorage.setItem(MODE_KEY,'audience');updateBadge();status('👥 Audience Mode')}
+  function setPresenter(){document.body.classList.remove('wpaws-audience-mode');document.body.classList.add('wpaws-presenter-mode');localStorage.setItem(MODE_KEY,'presenter');updateBadge();status('🎤 Presenter Mode')}
+  function clearLocal(){if(!confirm('Да се избрише локално зачуваната WPAWS состојба?'))return;localStorage.removeItem(STORAGE_KEY);status('🗑️ Save избришан')}
+  function markNotes(){qsa('*').forEach(function(el){if(!el||el===document.body||el===document.documentElement)return;var txt=clean(el.textContent);if(!txt||!hasMarker(txt))return;var block=el,p=el.parentElement;while(p&&p!==document.body){var pt=clean(p.textContent);if(hasMarker(pt)&&pt.length<2200){block=p;p=p.parentElement}else break}block.classList.add('wpaws-presenter-private');block.setAttribute('data-wpaws-presenter-notes','true')})}
+  function normalizeVisibleVersion(){try{document.title=document.title.replace('WPAWS Workspace','WPAWS 9.1.5 Workspace');qsa('.tb-name,.tb-sub,.srow-v,.phd-title').forEach(function(el){el.innerHTML=el.innerHTML.replace(/WPAWS 9\.0/g,'WPAWS 9.1.5').replace(/16 агенти/g,'17 проактивни агенти').replace(/16 \/ 16 активни/g,'17 / 17 активни')})}catch(e){}}
+  function buildBar(){var old=qs('.wpaws-real-actions-bar');if(old)old.remove();document.body.classList.add('wpaws-has-bottom-actions');var bar=document.createElement('div');bar.className='wpaws-real-actions-bar';bar.innerHTML='<div class="wpaws-real-actions-inner"><button type="button" class="wpaws-primary" id="wpawsExportPresentationBtn">📤 Извези презентација</button><button type="button" id="wpawsSaveBtn">💾 Зачувај</button><button type="button" id="wpawsExportStateBtn">📦 Export State</button><label for="wpawsImportStateInput">📥 Увези</label><input class="wpaws-real-actions-input" id="wpawsImportStateInput" type="file" accept=".json,application/json"><button type="button" id="wpawsExportTxtBtn">📄 TXT</button><button type="button" id="wpawsPresenterBtn">🎤 Presenter Notes</button><button type="button" id="wpawsAudienceBtn">👥 Audience</button><button type="button" class="wpaws-danger" id="wpawsClearBtn">🗑️ Clear Save</button><span class="wpaws-real-actions-status" id="wpawsRealActionsStatus">WPAWS ready</span></div>';document.body.appendChild(bar);qs('#wpawsExportPresentationBtn').addEventListener('click',exportHTML);qs('#wpawsSaveBtn').addEventListener('click',saveLocal);qs('#wpawsExportStateBtn').addEventListener('click',exportState);qs('#wpawsExportTxtBtn').addEventListener('click',exportTXT);qs('#wpawsPresenterBtn').addEventListener('click',function(){markNotes();setPresenter()});qs('#wpawsAudienceBtn').addEventListener('click',function(){markNotes();setAudience()});qs('#wpawsClearBtn').addEventListener('click',clearLocal);qs('#wpawsImportStateInput').addEventListener('change',function(e){importState(e.target.files&&e.target.files[0]);e.target.value=''})}
+  function boot(){buildBar();normalizeVisibleVersion();markNotes();var savedMode=localStorage.getItem(MODE_KEY)||'audience';if(savedMode==='presenter')setPresenter();else setAudience();[300,1000,2000].forEach(function(ms){setTimeout(function(){normalizeVisibleVersion();markNotes()},ms)});try{new MutationObserver(function(){markNotes()}).observe(document.body,{childList:true,subtree:true})}catch(e){}status('✅ WPAWS 9.1.5 actions active')}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+</body></html>`);
     win.document.close();
     setTimeout(()=>{ win.print(); },500);
     toast('🖨️','Отвори → Print → Save as PDF!');
