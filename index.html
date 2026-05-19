@@ -3005,6 +3005,430 @@ if(document.readyState==='loading'){
 -->
 
 <script src="scripts/pricing-loader.js"></script>
+<!-- =========================================================
+     WPA Responsive Mobile Navigation + Bot Visibility Patch v1.0
+     Works for mobile, tablet, laptop and PC
+     Insert before final </body>
+     ========================================================= -->
 
+<style id="wpa-responsive-mobile-patch">
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: hidden !important;
+  }
+
+  img,
+  video,
+  iframe,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  section,
+  header,
+  main,
+  footer,
+  .container,
+  .wrap,
+  .wrapper,
+  .grid,
+  .cards,
+  .card,
+  .hero,
+  .panel {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Prevent wide cards / grids from breaking mobile layout */
+  @media (max-width: 900px) {
+    body {
+      width: 100%;
+      min-width: 0 !important;
+    }
+
+    h1 {
+      font-size: clamp(30px, 8vw, 48px) !important;
+      line-height: 1.08 !important;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+
+    h2 {
+      font-size: clamp(25px, 6.5vw, 38px) !important;
+      line-height: 1.14 !important;
+      overflow-wrap: anywhere;
+    }
+
+    h3 {
+      font-size: clamp(20px, 5.2vw, 28px) !important;
+      line-height: 1.18 !important;
+    }
+
+    p,
+    li {
+      font-size: 15.5px;
+      line-height: 1.65;
+    }
+
+    .grid,
+    .cards,
+    .wpa-cultural-grid,
+    .wpa-scenario-grid,
+    .wpa-scenario-steps {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .wpa-cultural-diplomacy-module,
+    .wpa-scenario-film-lab {
+      margin: 42px auto !important;
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+    }
+
+    .wpa-cultural-diplomacy-wrap,
+    .wpa-scenario-film-wrap {
+      padding: 26px 18px !important;
+      border-radius: 22px !important;
+    }
+
+    a,
+    button {
+      min-height: 42px;
+    }
+  }
+
+  /* Universal WPA mobile menu button */
+  .wpa-mobile-menu-button {
+    display: none;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 999999;
+    border: 1px solid rgba(200, 168, 75, 0.62);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #c8a84b, #9e7e30);
+    color: #071224;
+    font-weight: 900;
+    font-size: 15px;
+    padding: 10px 14px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+  }
+
+  .wpa-mobile-menu-button span {
+    display: inline-block;
+    margin-left: 6px;
+  }
+
+  @media (max-width: 860px) {
+    .wpa-mobile-menu-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body {
+      padding-top: 0;
+    }
+
+    /* Main navigation becomes closed by default on mobile */
+    body.wpa-mobile-ready .wpa-mobile-nav-target {
+      display: none !important;
+      position: fixed !important;
+      top: 62px !important;
+      left: 10px !important;
+      right: 10px !important;
+      bottom: auto !important;
+      z-index: 999998 !important;
+      max-height: calc(100vh - 82px) !important;
+      overflow-y: auto !important;
+      padding: 14px !important;
+      border: 1px solid rgba(200, 168, 75, 0.42) !important;
+      border-radius: 18px !important;
+      background: rgba(7, 18, 36, 0.98) !important;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45) !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body.wpa-mobile-ready.wpa-menu-open .wpa-mobile-nav-target {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      align-items: stretch !important;
+    }
+
+    body.wpa-mobile-ready .wpa-mobile-nav-target a,
+    body.wpa-mobile-ready .wpa-mobile-nav-target button {
+      display: block !important;
+      width: 100% !important;
+      text-align: left !important;
+      padding: 11px 13px !important;
+      border-radius: 12px !important;
+      color: #dde4f4 !important;
+      background: rgba(255, 255, 255, 0.045) !important;
+      border: 1px solid rgba(255, 255, 255, 0.07) !important;
+      text-decoration: none !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+    }
+
+    body.wpa-mobile-ready .wpa-mobile-nav-target a:hover,
+    body.wpa-mobile-ready .wpa-mobile-nav-target button:hover {
+      border-color: rgba(200, 168, 75, 0.65) !important;
+      color: #f0d080 !important;
+      background: rgba(200, 168, 75, 0.09) !important;
+    }
+  }
+
+  /* Floating bot / assistant visibility */
+  @media (max-width: 860px) {
+    iframe[src*="bot"],
+    iframe[src*="chat"],
+    iframe[src*="assistant"],
+    iframe[src*="virtual"],
+    div[id*="bot" i],
+    div[class*="bot" i],
+    div[id*="chat" i],
+    div[class*="chat" i],
+    div[id*="assistant" i],
+    div[class*="assistant" i],
+    button[id*="bot" i],
+    button[class*="bot" i],
+    button[id*="chat" i],
+    button[class*="chat" i] {
+      max-width: calc(100vw - 22px) !important;
+    }
+
+    .wpa-mobile-bot-safe,
+    #virtual-sande,
+    #virtualSande,
+    #wpa-bot,
+    #wpaBot,
+    #chatbot,
+    #chatBot,
+    .chatbot,
+    .wpa-chatbot,
+    .virtual-sande {
+      position: fixed !important;
+      right: 12px !important;
+      bottom: 76px !important;
+      z-index: 999997 !important;
+      transform: none !important;
+      max-width: calc(100vw - 24px) !important;
+    }
+
+    .wpa-mobile-floating-home {
+      position: fixed;
+      left: 12px;
+      bottom: 14px;
+      z-index: 999996;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(200, 168, 75, 0.58);
+      background: rgba(7, 18, 36, 0.96);
+      color: #f0d080;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
+    }
+
+    .wpa-mobile-floating-bot {
+      position: fixed;
+      right: 12px;
+      bottom: 14px;
+      z-index: 999996;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(200, 168, 75, 0.58);
+      background: linear-gradient(135deg, #c8a84b, #9e7e30);
+      color: #071224;
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: none;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.38);
+    }
+  }
+
+  @media (min-width: 861px) {
+    .wpa-mobile-floating-home,
+    .wpa-mobile-floating-bot {
+      display: none !important;
+    }
+  }
+</style>
+
+<script id="wpa-responsive-mobile-script">
+  (function () {
+    "use strict";
+
+    function qs(selector, root) {
+      return (root || document).querySelector(selector);
+    }
+
+    function qsa(selector, root) {
+      return Array.prototype.slice.call((root || document).querySelectorAll(selector));
+    }
+
+    function findMainNavigation() {
+      var direct =
+        qs("nav") ||
+        qs(".nav") ||
+        qs(".navbar") ||
+        qs(".site-nav") ||
+        qs(".main-nav") ||
+        qs(".top-nav") ||
+        qs(".menu") ||
+        qs(".links");
+
+      if (direct && direct.querySelectorAll("a").length >= 4) {
+        return direct;
+      }
+
+      var candidates = qsa("header, .header, .topbar, .top-bar, .navbar, .nav-wrap, body > div");
+      var best = null;
+      var bestCount = 0;
+
+      candidates.forEach(function (el) {
+        var count = el.querySelectorAll("a").length;
+        if (count > bestCount && count >= 6) {
+          best = el;
+          bestCount = count;
+        }
+      });
+
+      return best;
+    }
+
+    function installMobileMenu() {
+      if (document.getElementById("wpaMobileMenuButton")) return;
+
+      var nav = findMainNavigation();
+      if (!nav) return;
+
+      nav.classList.add("wpa-mobile-nav-target");
+      document.body.classList.add("wpa-mobile-ready");
+
+      var btn = document.createElement("button");
+      btn.id = "wpaMobileMenuButton";
+      btn.className = "wpa-mobile-menu-button";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Open navigation menu");
+      btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = "☰ <span>Мени</span>";
+
+      btn.addEventListener("click", function () {
+        var open = document.body.classList.toggle("wpa-menu-open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.innerHTML = open ? "✕ <span>Затвори</span>" : "☰ <span>Мени</span>";
+      });
+
+      document.body.appendChild(btn);
+
+      nav.addEventListener("click", function (e) {
+        var link = e.target.closest("a");
+        if (!link) return;
+        document.body.classList.remove("wpa-menu-open");
+        btn.setAttribute("aria-expanded", "false");
+        btn.innerHTML = "☰ <span>Мени</span>";
+      });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          document.body.classList.remove("wpa-menu-open");
+          btn.setAttribute("aria-expanded", "false");
+          btn.innerHTML = "☰ <span>Мени</span>";
+        }
+      });
+    }
+
+    function markBotCandidates() {
+      var candidates = qsa(
+        '#virtual-sande, #virtualSande, #wpa-bot, #wpaBot, #chatbot, #chatBot, .chatbot, .wpa-chatbot, .virtual-sande, iframe[src*="bot"], iframe[src*="chat"], iframe[src*="assistant"], iframe[src*="virtual"]'
+      );
+
+      candidates.forEach(function (el) {
+        el.classList.add("wpa-mobile-bot-safe");
+      });
+    }
+
+    function installFloatingMobileButtons() {
+      if (!document.getElementById("wpaMobileHome")) {
+        var home = document.createElement("a");
+        home.id = "wpaMobileHome";
+        home.className = "wpa-mobile-floating-home";
+        home.href = "#top";
+        home.textContent = "↑ Почеток";
+        document.body.appendChild(home);
+      }
+
+      if (!document.getElementById("wpaMobileBot")) {
+        var bot = document.createElement("a");
+        bot.id = "wpaMobileBot";
+        bot.className = "wpa-mobile-floating-bot";
+        bot.href = "#ai";
+        bot.textContent = "🤖 Bot";
+        bot.addEventListener("click", function () {
+          var target =
+            document.getElementById("ai") ||
+            document.getElementById("virtual-sande") ||
+            document.getElementById("virtualSande") ||
+            document.getElementById("wpa-bot") ||
+            document.getElementById("wpaBot") ||
+            document.querySelector('[id*="bot" i], [class*="bot" i], [id*="chat" i], [class*="chat" i]');
+
+          if (target && target.scrollIntoView) {
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        });
+        document.body.appendChild(bot);
+      }
+    }
+
+    function ensureTopAnchor() {
+      if (!document.getElementById("top")) {
+        var top = document.createElement("div");
+        top.id = "top";
+        document.body.insertBefore(top, document.body.firstChild);
+      }
+    }
+
+    function boot() {
+      ensureTopAnchor();
+      installMobileMenu();
+      markBotCandidates();
+      installFloatingMobileButtons();
+
+      setTimeout(function () {
+        installMobileMenu();
+        markBotCandidates();
+      }, 800);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+  })();
+</script>
 </body>
 </html>
