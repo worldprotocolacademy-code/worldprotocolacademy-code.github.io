@@ -322,8 +322,8 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
     <div class="tb-brand">
       <div class="tb-gem">⚜️</div>
       <div>
-        <div class="tb-name">WPAWS 9.0 <span style="color:var(--gold);font-size:13px">Integrated</span></div>
-        <div class="tb-sub">World Protocol Academy — 16 агенти + Export + Меморија + Дијалог + Синџир + Web</div>
+        <div class="tb-name">WPAWS 11.1.3 <span style="color:var(--gold);font-size:13px">PPP Local</span></div>
+        <div class="tb-sub">World Protocol Academy — WPAWS 11.1.3 · 17 агенти + PPP Local Engine + Export + Меморија + Дијалог + Синџир + Web</div>
       </div>
     </div>
     <div class="tb-sep"></div>
@@ -1349,7 +1349,7 @@ const WPA_UI_MK = {
   chainProto:'🎩 Протоколарен документ',
   chainReview:'🧐 Рецензија на труд',chainPress:'📰 Медиумска комуникација',
   /* Toast */
-  toastReady:'WPAWS 9.0 — подготвен! 16 агенти активни.',
+    toastReady:'WPAWS 11.1.3 — PPP Local Engine подготвен! 16 агенти активни.',
   toastGenerating:'Генерирање...',toastDone:'Готово!',
   toastCopied:'Копирано!',toastSaved:'Зачувано!',
 };
@@ -3335,6 +3335,234 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener("DOMContentLoaded", function(){
     ensurePPPOptions();
   });
+
+})();
+</script>
+  <!-- =========================================================
+     WPAWS PPP Preview Bridge v11.1.6
+     Fixes: PPP says 50 slides, but preview remains 0/0
+     Safe to paste before final </body>
+     ========================================================= -->
+
+<script id="wpaws-ppp-preview-bridge-v1116">
+(function(){
+  "use strict";
+
+  function $(id){
+    return document.getElementById(id);
+  }
+
+  function esc(s){
+    return String(s || "").replace(/[&<>"']/g, function(c){
+      return {
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[c];
+    });
+  }
+
+  function getSlides(){
+    if(Array.isArray(window.pppSlides) && window.pppSlides.length){
+      return window.pppSlides;
+    }
+
+    try{
+      if(Array.isArray(pppSlides) && pppSlides.length){
+        return pppSlides;
+      }
+    }catch(e){}
+
+    return [];
+  }
+
+  function syncSlides(slides){
+    if(!Array.isArray(slides)) slides = [];
+
+    window.pppSlides = slides;
+
+    try{
+      pppSlides = slides;
+    }catch(e){}
+
+    if(typeof window.pppIdx !== "number"){
+      window.pppIdx = 0;
+    }
+
+    try{
+      if(typeof pppIdx !== "number") pppIdx = 0;
+    }catch(e){}
+  }
+
+  function getIndex(){
+    if(typeof window.pppIdx === "number") return window.pppIdx;
+
+    try{
+      if(typeof pppIdx === "number") return pppIdx;
+    }catch(e){}
+
+    return 0;
+  }
+
+  function setIndex(i){
+    var slides = getSlides();
+
+    if(!slides.length) i = 0;
+    if(i < 0) i = 0;
+    if(slides.length && i >= slides.length) i = slides.length - 1;
+
+    window.pppIdx = i;
+
+    try{
+      pppIdx = i;
+    }catch(e){}
+  }
+
+  function renderPPPPreview(){
+    var slides = getSlides();
+
+    var display = $("slideDisplay");
+    var counter = $("slideCtr");
+    var list = $("slideList");
+    var sideSlides = $("sideSlides");
+
+    if(!slides.length){
+      if(display){
+        display.innerHTML = "<h2>Нема слајдови</h2><ul><li>Генерирај PPP.</li></ul>";
+      }
+      if(counter) counter.textContent = "0/0";
+      if(list) list.innerHTML = "";
+      if(sideSlides) sideSlides.textContent = "0";
+      return;
+    }
+
+    syncSlides(slides);
+
+    var idx = getIndex();
+    if(idx < 0 || idx >= slides.length) idx = 0;
+    setIndex(idx);
+
+    var slide = slides[idx] || {};
+    var body = slide.body || slide.bullets || ["Содржина..."];
+
+    if(display){
+      display.innerHTML =
+        "<h2>" + esc(slide.title || ("Слајд " + (idx + 1))) + "</h2>" +
+        "<ul>" +
+        body.map(function(b){
+          return "<li>" + esc(b) + "</li>";
+        }).join("") +
+        "</ul>";
+    }
+
+    if(counter){
+      counter.textContent = (idx + 1) + "/" + slides.length;
+    }
+
+    if(list){
+      list.innerHTML = slides.map(function(s, i){
+        return '<div class="slide-pill ' + (i === idx ? "active" : "") + '" data-wpaws-slide="' + i + '">' +
+          (i + 1) + ". " + esc(s.title || ("Слајд " + (i + 1))) +
+        "</div>";
+      }).join("");
+    }
+
+    if(sideSlides){
+      sideSlides.textContent = String(slides.length);
+    }
+  }
+
+  window.renderSlide = renderPPPPreview;
+
+  window.navSlide = function(dir){
+    var slides = getSlides();
+
+    if(!slides.length){
+      renderPPPPreview();
+      return;
+    }
+
+    setIndex(getIndex() + Number(dir || 0));
+    renderPPPPreview();
+  };
+
+  window.goSlide = function(i){
+    setIndex(Number(i || 0));
+    renderPPPPreview();
+  };
+
+  var oldGeneratePPP = window.generatePPP;
+
+  window.generatePPP = function(){
+    var result;
+
+    if(typeof oldGeneratePPP === "function"){
+      result = oldGeneratePPP.apply(this, arguments);
+    }
+
+    setTimeout(function(){
+      var slides = getSlides();
+
+      if(slides.length){
+        syncSlides(slides);
+        setIndex(0);
+        renderPPPPreview();
+
+        if(typeof window.showTab === "function"){
+          window.showTab("preview");
+        }
+
+        if(typeof window.setStatus === "function"){
+          window.setStatus("PPP preview готово: " + slides.length + " слајдови");
+        }
+
+        if(typeof window.toast === "function"){
+          window.toast("✅ PPP preview прикажан: " + slides.length + " слајдови");
+        }
+      }
+    }, 120);
+
+    return result;
+  };
+
+  document.addEventListener("click", function(e){
+    var pill = e.target.closest && e.target.closest("[data-wpaws-slide]");
+    if(pill){
+      e.preventDefault();
+      setIndex(parseInt(pill.getAttribute("data-wpaws-slide"), 10));
+      renderPPPPreview();
+    }
+  });
+
+  function fixLabels(){
+    var title = document.querySelector(".title");
+    if(title){
+      title.innerHTML = 'WPAWS 11.1.6 <span style="color:var(--gold);font-size:13px">Mentor + PPP Preview Fixed</span>';
+    }
+
+    document.querySelectorAll(".srow").forEach(function(row){
+      var txt = row.textContent || "";
+      var spans = row.querySelectorAll("span");
+      if(spans.length < 2) return;
+
+      if(txt.indexOf("Верзија") !== -1){
+        spans[1].textContent = "WPAWS 11.1.6";
+      }
+    });
+  }
+
+  function boot(){
+    fixLabels();
+    renderPPPPreview();
+  }
+
+  document.addEventListener("DOMContentLoaded", boot);
+
+  if(document.readyState !== "loading"){
+    boot();
+  }
 
 })();
 </script>
