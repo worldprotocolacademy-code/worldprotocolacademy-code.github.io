@@ -3431,13 +3431,14 @@ if(document.readyState==='loading'){
   })();
 </script>
    <!-- =========================================================
-     WPA Mobile Drawer Patch v1.3
+     WPA Mobile Drawer Patch v1.4
      Uses existing mobile button: #mToggle
+     Adds internal ✕ Затвори button
      No yellow floating button
      Insert before final </body>
      ========================================================= -->
 
-<style id="wpa-mobile-drawer-v13">
+<style id="wpa-mobile-drawer-v14">
   html,
   body {
     width: 100% !important;
@@ -3499,10 +3500,14 @@ if(document.readyState==='loading'){
     }
   }
 
-  /* Hide old floating mobile buttons */
   #wpaMobileMenuButton,
   #wpaMobileMenuButtonV12,
   #wpaMobileMenuButtonV13,
+  #wpaMobileMenuButtonV14,
+  #wpaMobileOverlayV12,
+  #wpaMobileDrawerV12,
+  #wpaMobileOverlayV13,
+  #wpaMobileDrawerV13,
   #wpaMobileHome,
   #wpaMobileBot,
   .wpa-mobile-floating-home,
@@ -3513,7 +3518,6 @@ if(document.readyState==='loading'){
     pointer-events: none !important;
   }
 
-  /* Existing menu button becomes the drawer trigger */
   @media (max-width: 860px) {
     #mToggle {
       display: inline-flex !important;
@@ -3543,7 +3547,7 @@ if(document.readyState==='loading'){
     }
   }
 
-  #wpaMobileOverlayV13 {
+  #wpaMobileOverlayV14 {
     position: fixed !important;
     inset: 0 !important;
     z-index: 2147483645 !important;
@@ -3552,7 +3556,7 @@ if(document.readyState==='loading'){
     backdrop-filter: blur(5px);
   }
 
-  #wpaMobileDrawerV13 {
+  #wpaMobileDrawerV14 {
     position: fixed !important;
     top: 84px !important;
     left: 10px !important;
@@ -3569,23 +3573,55 @@ if(document.readyState==='loading'){
     box-shadow: 0 22px 58px rgba(0, 0, 0, 0.52) !important;
   }
 
-  #wpaMobileDrawerV13 .wpa-mobile-drawer-title {
-    color: #f0d080 !important;
-    font-family: Georgia, "Times New Roman", serif !important;
-    font-size: 18px !important;
-    font-weight: 800 !important;
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-head {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
     margin: 2px 2px 12px !important;
     padding-bottom: 10px !important;
     border-bottom: 1px solid rgba(200, 168, 75, 0.26) !important;
   }
 
-  #wpaMobileDrawerV13 .wpa-mobile-drawer-links {
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-title {
+    color: #f0d080 !important;
+    font-family: Georgia, "Times New Roman", serif !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-close {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 36px !important;
+    padding: 7px 11px !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(200, 168, 75, 0.45) !important;
+    background: rgba(200, 168, 75, 0.12) !important;
+    color: #f0d080 !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    cursor: pointer !important;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important;
+    touch-action: manipulation !important;
+  }
+
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-close:hover,
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-close:focus {
+    background: rgba(200, 168, 75, 0.20) !important;
+    outline: none !important;
+  }
+
+  #wpaMobileDrawerV14 .wpa-mobile-drawer-links {
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 8px !important;
   }
 
-  #wpaMobileDrawerV13 a {
+  #wpaMobileDrawerV14 a {
     display: block !important;
     width: 100% !important;
     padding: 12px 13px !important;
@@ -3600,15 +3636,15 @@ if(document.readyState==='loading'){
     white-space: normal !important;
   }
 
-  #wpaMobileDrawerV13 a:hover,
-  #wpaMobileDrawerV13 a:focus {
+  #wpaMobileDrawerV14 a:hover,
+  #wpaMobileDrawerV14 a:focus {
     color: #f0d080 !important;
     border-color: rgba(200, 168, 75, 0.45) !important;
     outline: none !important;
   }
 
-  body.wpa-mobile-drawer-open #wpaMobileOverlayV13,
-  body.wpa-mobile-drawer-open #wpaMobileDrawerV13 {
+  body.wpa-mobile-drawer-open #wpaMobileOverlayV14,
+  body.wpa-mobile-drawer-open #wpaMobileDrawerV14 {
     display: block !important;
   }
 
@@ -3639,8 +3675,8 @@ if(document.readyState==='loading'){
   }
 
   @media (min-width: 861px) {
-    #wpaMobileOverlayV13,
-    #wpaMobileDrawerV13 {
+    #wpaMobileOverlayV14,
+    #wpaMobileDrawerV14 {
       display: none !important;
     }
 
@@ -3650,7 +3686,7 @@ if(document.readyState==='loading'){
   }
 </style>
 
-<script id="wpa-mobile-drawer-script-v13">
+<script id="wpa-mobile-drawer-script-v14">
   (function () {
     "use strict";
 
@@ -3666,7 +3702,7 @@ if(document.readyState==='loading'){
 
     function removeOldMobilePatchArtifacts() {
       qsa(
-        "#wpaMobileMenuButton, #wpaMobileMenuButtonV12, #wpaMobileMenuButtonV13, #wpaMobileOverlayV12, #wpaMobileDrawerV12, #wpaMobileHome, #wpaMobileBot, .wpa-mobile-floating-home, .wpa-mobile-floating-bot, .wpa-mobile-menu-button"
+        "#wpaMobileMenuButton, #wpaMobileMenuButtonV12, #wpaMobileMenuButtonV13, #wpaMobileMenuButtonV14, #wpaMobileOverlayV12, #wpaMobileDrawerV12, #wpaMobileOverlayV13, #wpaMobileDrawerV13, #wpaMobileHome, #wpaMobileBot, .wpa-mobile-floating-home, .wpa-mobile-floating-bot, .wpa-mobile-menu-button"
       ).forEach(function (el) {
         if (el) el.remove();
       });
@@ -3729,8 +3765,8 @@ if(document.readyState==='loading'){
 
     function buildDrawer() {
       var btn = document.getElementById("mToggle");
-      var overlay = document.getElementById("wpaMobileOverlayV13");
-      var drawer = document.getElementById("wpaMobileDrawerV13");
+      var overlay = document.getElementById("wpaMobileOverlayV14");
+      var drawer = document.getElementById("wpaMobileDrawerV14");
 
       if (!btn) return null;
 
@@ -3740,14 +3776,14 @@ if(document.readyState==='loading'){
 
       if (!overlay) {
         overlay = document.createElement("div");
-        overlay.id = "wpaMobileOverlayV13";
+        overlay.id = "wpaMobileOverlayV14";
         overlay.setAttribute("aria-hidden", "true");
         document.body.appendChild(overlay);
       }
 
       if (!drawer) {
         drawer = document.createElement("aside");
-        drawer.id = "wpaMobileDrawerV13";
+        drawer.id = "wpaMobileDrawerV14";
         drawer.setAttribute("aria-label", "Mobile navigation");
         drawer.setAttribute("role", "navigation");
         document.body.appendChild(drawer);
@@ -3756,7 +3792,10 @@ if(document.readyState==='loading'){
       var links = collectMenuLinks();
 
       drawer.innerHTML =
+        '<div class="wpa-mobile-drawer-head">' +
         '<div class="wpa-mobile-drawer-title">World Protocol Academy</div>' +
+        '<button type="button" class="wpa-mobile-drawer-close" aria-label="Close menu">✕ Затвори</button>' +
+        '</div>' +
         '<div class="wpa-mobile-drawer-links">' +
         links.map(function (link) {
           return '<a href="' + link.href + '" target="_self">' + link.label + "</a>";
@@ -3813,6 +3852,14 @@ if(document.readyState==='loading'){
       });
 
       parts.drawer.addEventListener("click", function (e) {
+        var closeBtn = e.target.closest && e.target.closest(".wpa-mobile-drawer-close");
+
+        if (closeBtn) {
+          e.preventDefault();
+          setOpen(false, parts);
+          return;
+        }
+
         var link = e.target.closest && e.target.closest("a");
         if (link) setOpen(false, parts);
       });
@@ -3839,7 +3886,6 @@ if(document.readyState==='loading'){
       bootMobileDrawer();
     }
   })();
-</script>
 </script>
 </body>
 </html>
