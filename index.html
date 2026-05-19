@@ -3430,5 +3430,368 @@ if(document.readyState==='loading'){
     }
   })();
 </script>
+   <!-- =========================================================
+     WPA Mobile Cleanup Patch v1.1
+     Fixes duplicated menu/bot + horizontal overflow
+     Insert before final </body>
+     ========================================================= -->
+
+<style id="wpa-mobile-cleanup-v11">
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  img,
+  video,
+  iframe,
+  canvas,
+  svg,
+  table,
+  pre,
+  code {
+    max-width: 100% !important;
+  }
+
+  body > * {
+    max-width: 100vw;
+  }
+
+  /* Hide duplicate floating buttons created by older patch */
+  #wpaMobileHome,
+  #wpaMobileBot,
+  .wpa-mobile-floating-home,
+  .wpa-mobile-floating-bot {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* Keep only one mobile menu button */
+  .wpa-mobile-menu-button:not(:first-of-type),
+  #wpaMobileMenuButton ~ #wpaMobileMenuButton {
+    display: none !important;
+  }
+
+  /* Mobile layout protection */
+  @media (max-width: 900px) {
+    section,
+    header,
+    main,
+    footer,
+    div,
+    article,
+    aside {
+      max-width: 100% !important;
+    }
+
+    .container,
+    .wrap,
+    .wrapper,
+    .grid,
+    .cards,
+    .card,
+    .hero,
+    .panel,
+    .wpa-cultural-diplomacy-module,
+    .wpa-scenario-film-lab,
+    .wpa-humanism-partner-module {
+      max-width: 100% !important;
+      width: 100% !important;
+      overflow-x: hidden !important;
+    }
+
+    .grid,
+    .cards,
+    .wpa-cultural-grid,
+    .wpa-scenario-grid,
+    .wpa-scenario-steps,
+    .wpa-humanism-grid {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .wpa-cultural-diplomacy-module,
+    .wpa-scenario-film-lab,
+    .wpa-humanism-partner-module {
+      margin: 42px auto !important;
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+    }
+
+    .wpa-cultural-diplomacy-wrap,
+    .wpa-scenario-film-wrap,
+    .wpa-humanism-wrap {
+      width: 100% !important;
+      padding: 24px 16px !important;
+      border-radius: 20px !important;
+    }
+
+    h1 {
+      font-size: clamp(30px, 8vw, 48px) !important;
+      line-height: 1.08 !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    h2 {
+      font-size: clamp(25px, 6.5vw, 38px) !important;
+      line-height: 1.14 !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    h3 {
+      font-size: clamp(20px, 5.2vw, 28px) !important;
+      line-height: 1.18 !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    p,
+    li,
+    a,
+    button {
+      overflow-wrap: anywhere !important;
+    }
+  }
+
+  /* Use one clean hamburger on mobile */
+  #wpaMobileMenuButton {
+    position: fixed !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 999999 !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid rgba(200, 168, 75, 0.62) !important;
+    border-radius: 999px !important;
+    background: linear-gradient(135deg, #c8a84b, #9e7e30) !important;
+    color: #071224 !important;
+    font-weight: 900 !important;
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35) !important;
+    cursor: pointer !important;
+  }
+
+  @media (max-width: 860px) {
+    #wpaMobileMenuButton {
+      display: inline-flex !important;
+    }
+
+    body.wpa-mobile-ready .wpa-mobile-nav-target {
+      display: none !important;
+      position: fixed !important;
+      top: 62px !important;
+      left: 10px !important;
+      right: 10px !important;
+      z-index: 999998 !important;
+      max-height: calc(100vh - 82px) !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 14px !important;
+      border: 1px solid rgba(200, 168, 75, 0.42) !important;
+      border-radius: 18px !important;
+      background: rgba(7, 18, 36, 0.98) !important;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45) !important;
+      backdrop-filter: blur(10px);
+    }
+
+    body.wpa-mobile-ready.wpa-menu-open .wpa-mobile-nav-target {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      align-items: stretch !important;
+    }
+
+    body.wpa-mobile-ready .wpa-mobile-nav-target a,
+    body.wpa-mobile-ready .wpa-mobile-nav-target button {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      text-align: left !important;
+      padding: 11px 13px !important;
+      border-radius: 12px !important;
+      color: #dde4f4 !important;
+      background: rgba(255, 255, 255, 0.045) !important;
+      border: 1px solid rgba(255, 255, 255, 0.07) !important;
+      text-decoration: none !important;
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      white-space: normal !important;
+    }
+  }
+
+  /* Bot: keep real bot visible, but do not add duplicate fake bot */
+  @media (max-width: 860px) {
+    #virtual-sande,
+    #virtualSande,
+    #wpa-bot,
+    #wpaBot,
+    #chatbot,
+    #chatBot,
+    .chatbot,
+    .wpa-chatbot,
+    .virtual-sande,
+    .wpa-mobile-bot-safe {
+      position: fixed !important;
+      right: 12px !important;
+      bottom: 18px !important;
+      z-index: 999997 !important;
+      max-width: calc(100vw - 24px) !important;
+      transform: none !important;
+    }
+
+    iframe[src*="bot"],
+    iframe[src*="chat"],
+    iframe[src*="assistant"],
+    iframe[src*="virtual"] {
+      max-width: calc(100vw - 24px) !important;
+    }
+  }
+</style>
+
+<script id="wpa-mobile-cleanup-script-v11">
+  (function () {
+    "use strict";
+
+    function qs(selector, root) {
+      return (root || document).querySelector(selector);
+    }
+
+    function qsa(selector, root) {
+      return Array.prototype.slice.call((root || document).querySelectorAll(selector));
+    }
+
+    function removeDuplicateFloatingButtons() {
+      qsa("#wpaMobileHome, #wpaMobileBot, .wpa-mobile-floating-home, .wpa-mobile-floating-bot").forEach(function (el) {
+        el.remove();
+      });
+
+      var menuButtons = qsa("#wpaMobileMenuButton, .wpa-mobile-menu-button");
+      menuButtons.forEach(function (btn, index) {
+        if (index > 0) btn.remove();
+      });
+    }
+
+    function findRealNavigation() {
+      var navs = qsa("nav, .nav, .navbar, .site-nav, .main-nav, .top-nav, .menu, .links, header");
+      var best = null;
+      var bestCount = 0;
+
+      navs.forEach(function (el) {
+        var count = el.querySelectorAll("a").length;
+        if (count > bestCount && count >= 5) {
+          best = el;
+          bestCount = count;
+        }
+      });
+
+      return best;
+    }
+
+    function installSingleMenu() {
+      var nav = findRealNavigation();
+      if (!nav) return;
+
+      qsa(".wpa-mobile-nav-target").forEach(function (el) {
+        el.classList.remove("wpa-mobile-nav-target");
+      });
+
+      nav.classList.add("wpa-mobile-nav-target");
+      document.body.classList.add("wpa-mobile-ready");
+
+      var btn = qs("#wpaMobileMenuButton");
+      if (!btn) {
+        btn = document.createElement("button");
+        btn.id = "wpaMobileMenuButton";
+        btn.className = "wpa-mobile-menu-button";
+        btn.type = "button";
+        document.body.appendChild(btn);
+      }
+
+      btn.setAttribute("aria-label", "Open navigation menu");
+      btn.setAttribute("aria-expanded", "false");
+      btn.innerHTML = "☰ <span>Мени</span>";
+
+      btn.onclick = function () {
+        var open = document.body.classList.toggle("wpa-menu-open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+        btn.innerHTML = open ? "✕ <span>Затвори</span>" : "☰ <span>Мени</span>";
+      };
+
+      nav.onclick = function (e) {
+        var link = e.target.closest && e.target.closest("a");
+        if (!link) return;
+        document.body.classList.remove("wpa-menu-open");
+        btn.setAttribute("aria-expanded", "false");
+        btn.innerHTML = "☰ <span>Мени</span>";
+      };
+    }
+
+    function markRealBotOnly() {
+      qsa(
+        '#virtual-sande, #virtualSande, #wpa-bot, #wpaBot, #chatbot, #chatBot, .chatbot, .wpa-chatbot, .virtual-sande, iframe[src*="bot"], iframe[src*="chat"], iframe[src*="assistant"], iframe[src*="virtual"]'
+      ).forEach(function (el) {
+        el.classList.add("wpa-mobile-bot-safe");
+      });
+    }
+
+    function fixHorizontalOverflow() {
+      document.documentElement.style.overflowX = "hidden";
+      document.body.style.overflowX = "hidden";
+
+      qsa("body *").forEach(function (el) {
+        var rect;
+        try {
+          rect = el.getBoundingClientRect();
+        } catch (e) {
+          return;
+        }
+
+        if (rect.width > window.innerWidth + 12) {
+          el.style.maxWidth = "100%";
+          el.style.boxSizing = "border-box";
+          el.style.overflowX = "hidden";
+        }
+      });
+    }
+
+    function boot() {
+      removeDuplicateFloatingButtons();
+      installSingleMenu();
+      markRealBotOnly();
+      fixHorizontalOverflow();
+
+      setTimeout(function () {
+        removeDuplicateFloatingButtons();
+        installSingleMenu();
+        markRealBotOnly();
+        fixHorizontalOverflow();
+      }, 700);
+
+      setTimeout(fixHorizontalOverflow, 1800);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", boot);
+    } else {
+      boot();
+    }
+
+    window.addEventListener("resize", function () {
+      document.body.classList.remove("wpa-menu-open");
+      fixHorizontalOverflow();
+    });
+  })();
+</script>
 </body>
 </html>
