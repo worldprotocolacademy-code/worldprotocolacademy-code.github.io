@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="mk" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Translator v4 Test · Safe Page</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{
+  --navy:#0d1f3c;
+  --gold:#c9a84c;
+  --cream:#f8f4ee;
+  --white:#fff;
+  --text:#1a1a2e;
+  --muted:#5a6677;
+  --line:#d8cdb8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  line-height:1.65;
+}
+.header{
+  background:var(--navy);
+  color:var(--white);
+  padding:28px 20px;
+  border-bottom:4px solid var(--gold);
+}
+.wrap{max-width:1100px;margin:0 auto}
+.brand{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.brand h1{margin:0;font-size:24px;line-height:1.15}
+.brand p{margin:6px 0 0;color:rgba(255,255,255,.74)}
+.selector-box{
+  padding:10px 12px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;
+}
+main{padding:32px 20px}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.card{
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(13,31,60,.08);
+}
+.card h2,.card h3{margin-top:0;color:var(--navy)}
+.notice{
+  border-left:4px solid var(--gold);
+  background:#fffdf6;
+}
+.status{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#ecfdf3;
+  color:#166534;
+  font-weight:800;
+  font-size:12px;
+}
+.code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+  background:#f2eee4;
+  padding:2px 6px;
+  border-radius:6px;
+}
+ul{padding-left:20px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="wrap brand">
+    <div>
+      <h1 data-i18n="wpa.brand.full">World Protocol Academy</h1>
+      <p data-i18n="wpa.institute.title">World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies</p>
+    </div>
+    <div class="selector-box" data-wpa-language-select></div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <section class="card notice">
+      <span class="status">SAFE TEST PAGE</span>
+      <h2>Translator v4 безбедносен тест</h2>
+      <p>
+        Оваа страница е само за тестирање. Не го менува главниот <span class="code">index.html</span>.
+        Ако language selector работи тука, потоа ќе одиме чекор по чекор кон чистење на главната страница.
+      </p>
+    </section>
+
+    <div class="grid" style="margin-top:18px">
+      <section class="card">
+        <h2 data-i18n="wpa.translator.notice">Преводите се под WPA јазична контрола. Македонскиот текст е канонска основа.</h2>
+        <p data-i18n="wpa.security.public_wording">
+          WPA гради систем за информациска безбедност усогласен со принципите на ISO/IEC 27001, како дел од pre-certification readiness процес.
+        </p>
+
+        <h3>Што проверуваме?</h3>
+        <ul>
+          <li>Дали се вчитува <span class="code">translator-root-governance-v4.json</span>.</li>
+          <li>Дали се вчитуваат <span class="code">locales/mk/core.json</span> и <span class="code">locales/en/core.json</span>.</li>
+          <li>Дали language selector се појавува и менува текст.</li>
+          <li>Дали RTL јазиците поставуваат <span class="code">dir="rtl"</span>.</li>
+        </ul>
+      </section>
+
+      <aside class="card">
+        <h3>Мини навигација</h3>
+        <p><strong data-i18n="wpa.nav.home">Почетна</strong></p>
+        <p><strong data-i18n="wpa.nav.institute">Институт</strong></p>
+        <p><strong data-i18n="wpa.nav.programmes">Програми</strong></p>
+        <p><strong data-i18n="wpa.nav.journal">WPA Journal</strong></p>
+        <p><strong data-i18n="wpa.nav.wpaws">WPAWS</strong></p>
+        <hr>
+        <p><em data-i18n="wpa.doctrine.protocol_absolute">Преговарањето е опционално. Протоколот е апсолутен.</em></p>
+      </aside>
+    </div>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Следно по успешен тест</h3>
+      <p>
+        Не го активираме v4 директно на главната страница додека не направиме чист македонски master
+        за header, navigation и hero. Ова е коренскиот лек против „шарена боранија“.
+      </p>
+    </section>
+  </div>
+</main>
+
+<script src="/wpa-mk-proofreader-v2.js"></script>
+<script src="/translator-loader-v4.js"></script>
+</body>
+</html>
