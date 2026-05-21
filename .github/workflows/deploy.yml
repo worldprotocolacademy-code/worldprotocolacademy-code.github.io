@@ -33,19 +33,29 @@ jobs:
           shopt -s nullglob
 
           cp .nojekyll dist/ 2>/dev/null || true
-          cp -a *.html *.json *.txt *.xml *.png *.jpg *.jpeg *.webp *.pdf dist/ 2>/dev/null || true
-          cp -a assets papers partnerships bibliography dist/ 2>/dev/null || true
+
+          # Root public assets
+          # IMPORTANT FIX: include root JavaScript files such as translator-loader-v4.js
+          # and wpa-mk-proofreader-v2.js.
+          cp -a *.html *.json *.txt *.xml *.png *.jpg *.jpeg *.webp *.pdf *.js *.css *.svg *.ico dist/ 2>/dev/null || true
+
+          # Public site folders
+          # IMPORTANT FIX: include locales so /locales/mk/core.json and /locales/en/core.json exist on the live site.
+          cp -a assets locales scripts papers partnerships bibliography journal institute wpaws mk en data forms ai dist/ 2>/dev/null || true
 
           echo "Deployed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" > dist/version.txt
 
           echo "=== DIST CONTENTS ==="
-          find dist -maxdepth 3 -type f | sort
+          find dist -maxdepth 4 -type f | sort
 
       - name: Валидација
         run: |
           test -f dist/index.html
-          test -f dist/papers.html
-          echo "OK: index.html и papers.html постојат"
+          test -f dist/translator-loader-v4.js
+          test -f dist/wpa-mk-proofreader-v2.js
+          test -f dist/locales/mk/core.json
+          test -f dist/locales/en/core.json
+          echo "OK: WPA Translator v4 deployment files exist"
 
       - name: Конфигурирај GitHub Pages
         uses: actions/configure-pages@v4
