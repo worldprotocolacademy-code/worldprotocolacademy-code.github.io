@@ -3,142 +3,175 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WPA Translator v4 Test · Safe Page</title>
+<title>WPA Translator v4 Diagnostic Test</title>
 <meta name="robots" content="noindex,nofollow">
 <style>
 :root{
-  --navy:#0d1f3c;
-  --gold:#c9a84c;
-  --cream:#f8f4ee;
-  --white:#fff;
-  --text:#1a1a2e;
-  --muted:#5a6677;
-  --line:#d8cdb8;
+  --navy:#0d1f3c; --navy2:#162947; --gold:#c9a84c; --cream:#f8f4ee;
+  --white:#fff; --text:#1a1a2e; --muted:#5a6677; --line:#d8cdb8;
+  --green:#166534; --red:#991b1b; --amber:#92400e;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-  background:var(--cream);
-  color:var(--text);
-  line-height:1.65;
-}
-.header{
-  background:var(--navy);
-  color:var(--white);
-  padding:28px 20px;
-  border-bottom:4px solid var(--gold);
-}
-.wrap{max-width:1100px;margin:0 auto}
-.brand{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-  flex-wrap:wrap;
-}
-.brand h1{margin:0;font-size:24px;line-height:1.15}
-.brand p{margin:6px 0 0;color:rgba(255,255,255,.74)}
-.selector-box{
-  padding:10px 12px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:12px;
-}
-main{padding:32px 20px}
-.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
-.card{
-  background:var(--white);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 10px 30px rgba(13,31,60,.08);
-}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--cream);color:var(--text);line-height:1.65}
+.header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:var(--white);padding:28px 20px;border-bottom:4px solid var(--gold)}
+.wrap{max-width:1120px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+h1,h2,h3{line-height:1.15}
+h1{margin:0;font-size:26px}
+.header p{margin:7px 0 0;color:rgba(255,255,255,.76)}
+main{padding:28px 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(13,31,60,.08)}
 .card h2,.card h3{margin-top:0;color:var(--navy)}
-.notice{
-  border-left:4px solid var(--gold);
-  background:#fffdf6;
-}
-.status{
-  display:inline-flex;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#ecfdf3;
-  color:#166534;
-  font-weight:800;
-  font-size:12px;
-}
-.code{
-  font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
-  background:#f2eee4;
-  padding:2px 6px;
-  border-radius:6px;
-}
-ul{padding-left:20px}
+.status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+.pill{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px;border:1px solid transparent}
+.ok{background:#ecfdf3;color:var(--green);border-color:#bbf7d0}
+.bad{background:#fef2f2;color:var(--red);border-color:#fecaca}
+.warn{background:#fffbeb;color:var(--amber);border-color:#fde68a}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+button{border:0;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer;background:var(--navy);color:#fff}
+button.secondary{background:#fff;color:var(--navy);border:1px solid var(--line)}
+select{min-height:40px;border-radius:10px;border:1px solid var(--line);padding:8px 10px}
+pre{white-space:pre-wrap;background:#0d1f3c;color:#f8f4ee;border-radius:12px;padding:14px;max-height:240px;overflow:auto;font-size:12px}
+.demo-box{border-left:4px solid var(--gold);background:#fffdf6}
+.big-demo{font-size:22px;font-weight:800;color:var(--navy);margin:0 0 10px}
+.small{font-size:13px;color:var(--muted)}
+.list{display:grid;gap:8px;margin:0;padding-left:18px}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:#f2eee4;padding:2px 6px;border-radius:6px}
 @media(max-width:800px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <header class="header">
-  <div class="wrap brand">
+  <div class="wrap top">
     <div>
-      <h1 data-i18n="wpa.brand.full">World Protocol Academy</h1>
-      <p data-i18n="wpa.institute.title">World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies</p>
+      <h1 id="brandTitle">World Protocol Academy</h1>
+      <p id="brandSub">Translator v4 diagnostic page · isolated from the live homepage</p>
     </div>
-    <div class="selector-box" data-wpa-language-select></div>
+    <div>
+      <div data-wpa-language-select></div>
+    </div>
   </div>
 </header>
 
 <main>
   <div class="wrap">
-    <section class="card notice">
-      <span class="status">SAFE TEST PAGE</span>
-      <h2>Translator v4 безбедносен тест</h2>
-      <p>
-        Оваа страница е само за тестирање. Не го менува главниот <span class="code">index.html</span>.
-        Ако language selector работи тука, потоа ќе одиме чекор по чекор кон чистење на главната страница.
-      </p>
+    <section class="card demo-box">
+      <div class="status">
+        <span class="pill ok">DIAGNOSTIC TEST</span>
+        <span class="pill warn">НЕ ГО ДОПИРА INDEX.HTML</span>
+      </div>
+      <h2>Ова е поправен тест: сега јасно покажува дали преведувачот работи.</h2>
+      <p>Прво пробај ги копчињата подолу: <strong>Force MK</strong> и <strong>Force EN</strong>. Ако тие работат, моторот е исправен, а проблемот е што главната страница треба да се исчисти од hardcoded мешан текст.</p>
+      <div class="btns">
+        <button id="forceMk" type="button">Force MK</button>
+        <button id="forceEn" type="button">Force EN</button>
+        <button id="runDiag" type="button" class="secondary">Run diagnostics</button>
+      </div>
     </section>
 
     <div class="grid" style="margin-top:18px">
       <section class="card">
-        <h2 data-i18n="wpa.translator.notice">Преводите се под WPA јазична контрола. Македонскиот текст е канонска основа.</h2>
-        <p data-i18n="wpa.security.public_wording">
-          WPA гради систем за информациска безбедност усогласен со принципите на ISO/IEC 27001, како дел од pre-certification readiness процес.
-        </p>
-
-        <h3>Што проверуваме?</h3>
-        <ul>
-          <li>Дали се вчитува <span class="code">translator-root-governance-v4.json</span>.</li>
-          <li>Дали се вчитуваат <span class="code">locales/mk/core.json</span> и <span class="code">locales/en/core.json</span>.</li>
-          <li>Дали language selector се појавува и менува текст.</li>
-          <li>Дали RTL јазиците поставуваат <span class="code">dir="rtl"</span>.</li>
-        </ul>
+        <h3>Live translation proof</h3>
+        <p class="big-demo" data-i18n="wpa.nav.home">Почетна</p>
+        <p class="big-demo" data-i18n="wpa.nav.institute">Институт</p>
+        <p class="big-demo" data-i18n="wpa.nav.programmes">Програми</p>
+        <p class="big-demo" data-i18n="wpa.common.learn_more">Дознај повеќе</p>
+        <p class="small">Овие 4 линии мора да се сменат кога ќе избереш EN.</p>
       </section>
 
-      <aside class="card">
-        <h3>Мини навигација</h3>
-        <p><strong data-i18n="wpa.nav.home">Почетна</strong></p>
-        <p><strong data-i18n="wpa.nav.institute">Институт</strong></p>
-        <p><strong data-i18n="wpa.nav.programmes">Програми</strong></p>
-        <p><strong data-i18n="wpa.nav.journal">WPA Journal</strong></p>
-        <p><strong data-i18n="wpa.nav.wpaws">WPAWS</strong></p>
-        <hr>
+      <section class="card">
+        <h3>Core doctrine proof</h3>
+        <p data-i18n="wpa.translator.notice">Преводите се под WPA јазична контрола. Македонскиот текст е канонска основа.</p>
+        <p data-i18n="wpa.security.public_wording">WPA гради систем за информациска безбедност усогласен со принципите на ISO/IEC 27001, како дел од pre-certification readiness процес.</p>
         <p><em data-i18n="wpa.doctrine.protocol_absolute">Преговарањето е опционално. Протоколот е апсолутен.</em></p>
-      </aside>
+      </section>
     </div>
 
     <section class="card" style="margin-top:18px">
-      <h3>Следно по успешен тест</h3>
-      <p>
-        Не го активираме v4 директно на главната страница додека не направиме чист македонски master
-        за header, navigation и hero. Ова е коренскиот лек против „шарена боранија“.
-      </p>
+      <h3>Diagnostics</h3>
+      <div id="diagStatus" class="status">
+        <span class="pill warn">WAITING</span>
+        <span>Click “Run diagnostics”.</span>
+      </div>
+      <pre id="diagLog">Diagnostics not run yet.</pre>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h3>Interpretation</h3>
+      <ul class="list">
+        <li>Ако <span class="code">Force EN</span> ги менува зборовите „Почетна / Институт / Програми“ во „Home / Institute / Programmes“, v4 работи.</li>
+        <li>Ако не се менува ништо, проблемот е во вчитување на <span class="code">translator-loader-v4.js</span> или <span class="code">locales/en/core.json</span>.</li>
+        <li>Ако тестот работи, не го активираме веднаш на главната страница. Прво ја чистиме главната навигација и hero.</li>
+      </ul>
     </section>
   </div>
 </main>
 
-<script src="/wpa-mk-proofreader-v2.js"></script>
-<script src="/translator-loader-v4.js"></script>
+<script src="/wpa-mk-proofreader-v2.js?v=4.0.2"></script>
+<script src="/translator-loader-v4.js?v=4.0.2"></script>
+<script>
+(function(){
+  const log = document.getElementById('diagLog');
+  const status = document.getElementById('diagStatus');
+
+  function line(s){ log.textContent += "\\n" + s; }
+  function setStatus(kind, text){
+    status.innerHTML = '<span class="pill '+kind+'">'+(kind==='ok'?'OK':kind==='bad'?'ERROR':'CHECK')+'</span><span>'+text+'</span>';
+  }
+
+  async function testFetch(path){
+    try{
+      const r = await fetch(path + '?diag=' + Date.now(), {cache:'no-store'});
+      return {path, ok:r.ok, status:r.status, text:r.ok ? 'loaded' : 'failed'};
+    }catch(e){
+      return {path, ok:false, status:'ERR', text:e.message};
+    }
+  }
+
+  async function runDiagnostics(){
+    log.textContent = 'Running WPA Translator v4 diagnostics...';
+    const files = [
+      '/translator-root-governance-v4.json',
+      '/translator-loader-v4.js',
+      '/wpa-mk-proofreader-v2.js',
+      '/locales/mk/core.json',
+      '/locales/en/core.json'
+    ];
+    let allOk = true;
+    for(const f of files){
+      const res = await testFetch(f);
+      line((res.ok ? 'OK   ' : 'FAIL ') + f + ' -> ' + res.status + ' ' + res.text);
+      if(!res.ok) allOk = false;
+    }
+    line('WPATranslatorV4 object: ' + (window.WPATranslatorV4 ? 'present' : 'missing'));
+    line('Current HTML lang: ' + document.documentElement.getAttribute('lang'));
+    line('Current HTML dir: ' + document.documentElement.getAttribute('dir'));
+    const home = document.querySelector('[data-i18n="wpa.nav.home"]');
+    line('Current wpa.nav.home text: ' + (home ? home.textContent : 'missing element'));
+    setStatus(allOk && window.WPATranslatorV4 ? 'ok' : 'bad', allOk && window.WPATranslatorV4 ? 'All required files loaded.' : 'One or more files failed to load.');
+  }
+
+  document.getElementById('runDiag').addEventListener('click', runDiagnostics);
+  document.getElementById('forceMk').addEventListener('click', async function(){
+    if(window.WPATranslatorV4 && window.WPATranslatorV4.setLanguage){
+      await window.WPATranslatorV4.setLanguage('mk');
+      runDiagnostics();
+    } else {
+      setStatus('bad','WPATranslatorV4 is not loaded.');
+    }
+  });
+  document.getElementById('forceEn').addEventListener('click', async function(){
+    if(window.WPATranslatorV4 && window.WPATranslatorV4.setLanguage){
+      await window.WPATranslatorV4.setLanguage('en');
+      runDiagnostics();
+    } else {
+      setStatus('bad','WPATranslatorV4 is not loaded.');
+    }
+  });
+
+  setTimeout(runDiagnostics, 900);
+})();
+</script>
 </body>
 </html>
