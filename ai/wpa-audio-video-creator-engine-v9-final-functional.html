@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Audio Video Creator Engine v9 · 200 Scenario Bank · Final Functional Build</title>
+<style>
+:root{
+  --bg:#07101d;--bg2:#0b1728;--panel:#101d32;--panel2:#172743;--line:rgba(255,255,255,.09);
+  --gold:#d4b168;--gold2:#a67a24;--text:#eef4fb;--muted:#aebbd0;--green:#42c486;--red:#df6d6d;--blue:#73b7ff;--purple:#bda2ff;
+  --shadow:0 18px 42px rgba(0,0,0,.34);--sidebar:312px;--right:354px;
+}
+*{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:Inter,Arial,Helvetica,sans-serif;color:var(--text);background:radial-gradient(circle at top right,rgba(212,177,104,.13),transparent 20%),linear-gradient(180deg,var(--bg),var(--bg2));}
+body{overflow:hidden} button,input,select,textarea{font:inherit}
+.app{display:grid;grid-template-columns:var(--sidebar) 1fr var(--right);grid-template-rows:74px 1fr;grid-template-areas:"side top right" "side main right";min-height:100vh}
+.sidebar{grid-area:side;overflow:auto;height:100vh;padding:16px;border-right:1px solid var(--line);background:rgba(7,13,24,.96)}
+.topbar{grid-area:top;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;background:rgba(8,15,27,.92);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+.main{grid-area:main;overflow:auto;padding:20px}
+.right{grid-area:right;overflow:auto;height:100vh;padding:16px;border-left:1px solid var(--line);background:rgba(7,13,24,.96)}
+.brand,.panel,.card,.nav-btn,.quick-btn{border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.brand{display:flex;gap:12px;align-items:center;padding:14px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));margin-bottom:14px}
+.logo{width:58px;height:58px;border-radius:17px;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#121821;font-weight:950;display:flex;align-items:center;justify-content:center}
+.brand h1{margin:0;font-size:16px;line-height:1.15}.brand p{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+.label{font-size:11px;font-weight:900;letter-spacing:.45px;text-transform:uppercase;color:var(--gold);margin:16px 8px 8px}
+.nav{display:grid;gap:8px}.nav-btn{width:100%;background:rgba(255,255,255,.02);color:var(--text);padding:11px 12px;text-align:left;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center}.nav-btn:hover,.nav-btn.active{border-color:rgba(212,177,104,.38);background:linear-gradient(135deg,rgba(212,177,104,.17),rgba(255,255,255,.025));transform:translateY(-1px)}
+.nav-btn strong{display:block;font-size:13.5px}.nav-btn small{color:var(--muted);font-size:11px}.num{color:var(--gold);font-weight:900;font-size:12px}
+.search,.control,input,select,textarea{border:1px solid var(--line);background:#0d182b;color:var(--text);border-radius:13px;padding:10px 12px;outline:none}.search{width:100%}
+.topbar h2{margin:0;font-size:19px}.topbar p{margin:3px 0 0;color:var(--muted);font-size:12.5px}.top-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:13px;min-height:40px;padding:9px 13px;cursor:pointer;font-weight:850}.btn:hover{transform:translateY(-1px);border-color:rgba(212,177,104,.35)}.btn.primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#111827;border:none}.btn.green{background:rgba(66,196,134,.14);border-color:rgba(66,196,134,.35);color:#b7f7d6}.btn.red{background:rgba(223,109,109,.13);border-color:rgba(223,109,109,.32);color:#ffc3c3}
+.view{display:none}.view.active{display:block}
+.panel,.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.015));padding:16px}
+.hero{padding:24px;background:radial-gradient(circle at top right,rgba(212,177,104,.18),transparent 29%),linear-gradient(180deg,var(--panel2),var(--panel));margin-bottom:16px}
+.eyebrow,.badge{display:inline-flex;align-items:center;border:1px solid rgba(212,177,104,.3);color:var(--gold);border-radius:999px;padding:6px 9px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.35px}.badge.green{color:#9df0c2;border-color:rgba(66,196,134,.35)}.badge.blue{color:#b9dcff;border-color:rgba(115,183,255,.35)}.badge.red{color:#ffc0c0;border-color:rgba(223,109,109,.35)}.badge.purple{color:#d8caff;border-color:rgba(189,162,255,.35)}
+.hero h3{font-size:29px;line-height:1.08;margin:12px 0 10px;max-width:1050px}.hero p,.card p,.panel p{color:var(--muted);line-height:1.58;margin:0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{border:1px solid var(--line);border-radius:18px;padding:17px;background:linear-gradient(180deg,rgba(212,177,104,.11),rgba(255,255,255,.02))}.kpi strong{display:block;font-size:28px;margin-bottom:5px}.kpi span{color:var(--muted);font-size:13px}
+.section-title{display:flex;justify-content:space-between;gap:12px;align-items:end;margin:20px 0 12px}.section-title h3,.section-title h4{margin:0}.section-title p{font-size:13px;color:var(--muted)}
+.steps-grid,.agents-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.step-card,.agent-card,.scenario-card{cursor:pointer;transition:.15s}.step-card:hover,.step-card.active,.agent-card:hover,.agent-card.active,.scenario-card:hover,.scenario-card.active{border-color:rgba(212,177,104,.38);background:linear-gradient(180deg,rgba(212,177,104,.12),rgba(255,255,255,.02));transform:translateY(-1px)}
+.step-card h4,.agent-card h4,.scenario-card h4{margin:8px 0 7px;line-height:1.25}.step-card p,.agent-card p,.scenario-card p{font-size:12.5px}
+.layout{display:grid;grid-template-columns:1.06fr .94fr;gap:14px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:.35px}.field textarea{min-height:125px;resize:vertical}
+.output{white-space:pre-wrap;line-height:1.62;min-height:210px;background:#0b1425;border:1px solid var(--line);border-radius:16px;padding:15px;color:#eef4fb}
+.table{display:grid;gap:8px}.row{display:grid;grid-template-columns:1.2fr .85fr .65fr .65fr;gap:10px;padding:11px 13px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025);align-items:center}.row.header{background:rgba(255,255,255,.055);font-weight:900}
+.scenario-toolbar{display:grid;grid-template-columns:1.1fr .75fr .55fr;gap:10px;margin-bottom:12px}.scenario-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-height:625px;overflow:auto;padding-right:4px}.scenario-card{padding:12px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.025)}
+.list{margin:8px 0 0;padding-left:18px;color:var(--muted);line-height:1.55;font-size:13px}.mini{font-size:12px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quick-btn{background:rgba(255,255,255,.025);color:var(--text);padding:10px;border-radius:13px;cursor:pointer;text-align:center;font-weight:850}.quick-btn:hover{border-color:rgba(212,177,104,.38)}
+.agent-strip{display:flex;flex-wrap:wrap;gap:7px}.agent-pill{border:1px solid var(--line);border-radius:999px;padding:6px 8px;font-size:11px;color:var(--muted);cursor:pointer}.agent-pill:hover,.agent-pill.active{color:var(--gold);border-color:rgba(212,177,104,.38);background:rgba(212,177,104,.1)}
+.sop h4{margin:18px 0 8px}.sop li{margin-bottom:8px;color:var(--muted);line-height:1.55}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#101d32;border:1px solid rgba(212,177,104,.38);color:var(--text);padding:12px 16px;border-radius:999px;box-shadow:var(--shadow);display:none;z-index:20}
+@media(max-width:1450px){:root{--sidebar:288px;--right:330px}.steps-grid,.agents-grid,.scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1180px){body{overflow:auto}.app{grid-template-columns:280px 1fr;grid-template-rows:74px auto auto;grid-template-areas:"side top" "side main" "side right"}.right{height:auto;border-left:none;border-top:1px solid var(--line)}.layout{grid-template-columns:1fr}.scenario-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.app{grid-template-columns:1fr;grid-template-areas:"top" "side" "main" "right"}.sidebar{height:auto;border-right:none;border-bottom:1px solid var(--line)}.topbar{display:block}.top-actions{margin-top:10px}.steps-grid,.agents-grid,.scenario-grid,.g2,.g3,.g4,.form-grid,.scenario-toolbar{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">WPA</div>
+      <div><h1>WPA Audio Video Creator Engine v9</h1><p>Final functional build · 20 proactive agents · 200 scenario bank · audio · video · rooms · delivery.</p></div>
+    </div>
+
+    <div class="label">Main Views</div>
+    <div class="nav" id="viewNav"></div>
+
+    <div class="label">Search 20 agents</div>
+    <input class="search" id="agentSearch" placeholder="Search: HeyGen, Gemini, Adobe...">
+
+    <div class="label">20 Steps</div>
+    <div class="nav" id="stepNav"></div>
+
+    <div class="label">Doctrine</div>
+    <div class="card"><h4>Autohton WPA Hybrid</h4><p>Не копираме платформи. Ја земаме срцевината: voice, video, meeting, distribution, compliance — и ја градиме како WPA engine.</p></div>
+  </aside>
+
+  <header class="topbar">
+    <div>
+      <h2 id="pageTitle">Dashboard</h2>
+      <p id="pageSubtitle">Command bridge for WPA audio-video production.</p>
+    </div>
+    <div class="top-actions">
+      <select class="control" id="language"><option value="mk">MK</option><option value="en">EN</option><option value="sq">SQ</option></select>
+      <select class="control" id="mode"><option>Academic</option><option>Executive</option><option>Viral</option><option>Institutional</option></select>
+      <button class="btn" id="saveBtn">Save</button>
+      <button class="btn primary" id="runAllBtn">Run All</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="view active" id="view-dashboard">
+      <div class="panel hero">
+        <span class="eyebrow">v9 final functional build</span>
+        <h3>WPA Audio Video Creator Engine сега има 20 активни агенти и посебна банка со 200 WPA сценарија.</h3>
+        <p>Ова е локален креатор: прави prompts, SOP, scripts, audio/video packages, avatar presenter directions, Gemini/Veo/Flow visual prompts, Adobe editing plan, live-room governance, delivery bundle и QA report.</p>
+        <div class="actions">
+          <button class="btn primary" data-view="workflow">Open 20-Step Workflow</button>
+          <button class="btn" data-view="scenarios">Open 200 Scenarios</button>
+          <button class="btn" data-view="council">Open Agent Council</button>
+          <button class="btn" data-view="delivery">Open Delivery</button>
+        </div>
+      </div>
+
+      <div class="grid g4">
+        <div class="kpi"><strong>20</strong><span>Proactive agent stages</span></div>
+        <div class="kpi"><strong id="scenarioKpi">200</strong><span>WPA scenarios loaded</span></div>
+        <div class="kpi"><strong id="assetKpi">0</strong><span>Generated assets</span></div>
+        <div class="kpi"><strong id="statusKpi">Draft</strong><span>Project status</span></div>
+      </div>
+
+      <div class="section-title"><h3>Project Intake</h3><p>Ова е стартната команда за целата продукција.</p></div>
+      <div class="panel">
+        <div class="form-grid">
+          <div class="field"><label>Project Title</label><input id="projectTitle" value="WPA Protocol Authority Video Lesson"></div>
+          <div class="field"><label>Audience</label><input id="audience" value="Students"></div>
+          <div class="field full"><label>Topic</label><input id="topic" value="Why protocol is institutional infrastructure, not decoration"></div>
+          <div class="field full"><label>Source Notes</label><textarea id="sourceNotes">WPA doctrine: protocol is order, dignity, institutional clarity and public authority. Build audio, video, room and delivery package.</textarea></div>
+        </div>
+        <div class="actions"><button class="btn primary" id="intakeBtn">Build Intake Brief</button><button class="btn" data-view="workflow">Start Workflow</button></div>
+      </div>
+
+      <div class="section-title"><h3>Recent generated assets</h3><p>Live local production output.</p></div>
+      <div class="table" id="dashboardAssets"></div>
+    </section>
+
+    <section class="view" id="view-workflow">
+      <div class="section-title" style="margin-top:0"><h3>20-Step Workflow</h3><p>Click any step. Every panel is active.</p></div>
+      <div class="layout">
+        <div class="panel">
+          <div class="steps-grid" id="stepsGrid"></div>
+        </div>
+        <div class="panel">
+          <div id="stagePanel"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-council">
+      <div class="section-title" style="margin-top:0"><h3>Agent Council</h3><p>20 проактивни агенти со сопствена функција и prompt heart.</p></div>
+      <div class="agents-grid" id="agentGrid"></div>
+    </section>
+
+    <section class="view" id="view-scenarios">
+      <div class="section-title" style="margin-top:0">
+        <div><h3>WPA Scenario Bank · 200</h3><p>200 активни сценарија за протокол, дипломатија, безбедност, медиуми, live rooms, обуки и институционални пакети.</p></div>
+        <span class="badge green" id="scenarioCountBadge">200 loaded</span>
+      </div>
+      <div class="scenario-toolbar">
+        <input class="search" id="scenarioSearch" placeholder="Search: crisis, embassy, HeyGen, OPC, Sande...">
+        <select class="control" id="scenarioCategory"><option value="all">All categories</option></select>
+        <button class="btn primary" id="buildScenarioBtn">Build Selected</button>
+      </div>
+      <div class="layout">
+        <div class="panel">
+          <div class="section-title" style="margin-top:0"><h4>Scenario Library</h4><p id="scenarioInfo">Showing all 200 scenarios.</p></div>
+          <div class="scenario-grid" id="scenarioGrid"></div>
+        </div>
+        <div class="panel">
+          <div class="section-title" style="margin-top:0"><h4>Selected Scenario</h4><p>Use it in Protocol Lab, Live Rooms or Delivery.</p></div>
+          <div class="card" id="scenarioDetail"></div>
+          <div class="actions">
+            <button class="btn primary" id="scenarioToProtocol">Send to Protocol Lab</button>
+            <button class="btn" id="scenarioToRoom">Send to Live Room</button>
+            <button class="btn green" id="scenarioToDelivery">Add Scenario Package</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-builder">
+      <div class="section-title" style="margin-top:0"><h3>Production Builder</h3><p>Manual prompt + output editor.</p></div>
+      <div class="layout">
+        <div class="panel">
+          <div class="form-grid">
+            <div class="field"><label>Output Type</label><select id="builderType"><option>Audio Lesson</option><option>Video Lesson</option><option>Avatar Presenter Script</option><option>Viral Clip</option><option>Live Room Plan</option></select></div>
+            <div class="field"><label>Agent Style</label><select id="builderStyle"><option>Academic</option><option>Executive</option><option>Viral</option><option>Institutional</option></select></div>
+            <div class="field full"><label>Manual Prompt</label><textarea id="manualPrompt">Create a complete WPA audio-video lesson package with script, storyboard, voice direction, visual direction, editing plan and delivery notes.</textarea></div>
+          </div>
+          <div class="actions"><button class="btn primary" id="builderRun">Generate Builder Output</button><button class="btn" id="builderAdd">Add to Delivery</button></div>
+        </div>
+        <div class="output" id="builderOutput">Builder output will appear here.</div>
+      </div>
+    </section>
+
+    <section class="view" id="view-rooms">
+      <div class="section-title" style="margin-top:0"><h3>Live Rooms</h3><p>Floor control, mute-all, hand queue и meeting proactive monitor.</p></div>
+      <div class="layout">
+        <div class="panel">
+          <div class="form-grid">
+            <div class="field"><label>Room Mode</label><select id="roomMode"><option value="class">Class Mode · 90 min · 100 attendees</option><option value="workshop">Workshop Mode · 120 min · 150 attendees</option><option value="webinar">Webinar Mode · 180 min · 300 attendees</option><option value="institutional">Institutional Mode · 180 min · 500 attendees</option></select></div>
+            <div class="field"><label>Expected Attendees</label><input id="roomAttendees" type="number" value="80"></div>
+            <div class="field"><label>Active Speaker</label><input id="activeSpeaker" value="Host"></div>
+            <div class="field"><label>Hand Queue</label><input id="handName" placeholder="Student name..."></div>
+          </div>
+          <div class="actions"><button class="btn" id="addHandBtn">Add Hand</button><button class="btn" id="giveFloorBtn">Give Floor</button><button class="btn red" id="muteAllBtn">Mute All</button><button class="btn primary" id="roomBuildBtn">Build Room Policy</button></div>
+          <div class="section-title"><h4>Hand Queue</h4><p>Host controlled speaking order.</p></div>
+          <div class="card" id="handQueueBox"><p>No hands in queue.</p></div>
+        </div>
+        <div class="panel">
+          <div class="section-title" style="margin-top:0"><h4>Room Policy Output</h4><p>Operational governance.</p></div>
+          <div class="output" id="roomOutput">Click Build Room Policy.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="view-delivery">
+      <div class="section-title" style="margin-top:0"><h3>Delivery Center</h3><p>Assets, export, bundle, QA report.</p></div>
+      <div class="actions" style="margin-top:0;margin-bottom:14px">
+        <button class="btn primary" id="downloadBundle">Download Project Bundle</button>
+        <button class="btn" id="exportJson">Export JSON State</button>
+        <button class="btn" id="qaBtn">Run QA Report</button>
+        <button class="btn red" id="resetBtn">Reset Outputs</button>
+      </div>
+      <div class="table" id="assetTable"></div>
+      <div class="section-title"><h4>QA / Compliance Preview</h4><p>Safety, copyright, consent, claims.</p></div>
+      <div class="output" id="qaOutput">Run QA Report after generating outputs.</div>
+    </section>
+
+    <section class="view sop" id="view-sop">
+      <div class="panel">
+        <span class="eyebrow">SOP Manual</span>
+        <h3>Како се работи со WPA Audio Video Creator Engine v9</h3>
+        <ol>
+          <li><strong>Dashboard:</strong> внеси Project Title, Topic, Audience и Source Notes.</li>
+          <li><strong>Scenario Bank 200:</strong> избери сценарио, филтрирај по категорија или пребарај.</li>
+          <li><strong>Build Selected:</strong> сценариото автоматски го активира Step 13 Protocol Scenario Lab.</li>
+          <li><strong>20-Step Workflow:</strong> пушти Run Current или Run All за да добиеш production outputs.</li>
+          <li><strong>Agent Council:</strong> провери кој агент што прави и копирај prompt heart.</li>
+          <li><strong>Production Builder:</strong> рачно направи prompt/output ако сакаш специјална насока.</li>
+          <li><strong>Live Rooms:</strong> дефинирај mode, hand queue, active speaker, mute-all и room policy.</li>
+          <li><strong>Delivery:</strong> симни bundle, JSON state и QA report.</li>
+        </ol>
+        <h4>WPA принцип</h4>
+        <p>Системот не копира HeyGen, ElevenLabs, Gemini, Invideo, Adobe, Zoom или Google Meet. Ги зема структурните принципи: avatar presenter, voice direction, visual generation, storyboard, editing assembly, meeting governance, compliance и delivery — и ги претвора во автохтон WPA хибрид.</p>
+      </div>
+    </section>
+  </main>
+
+  <aside class="right">
+    <h3>WPA Command Panel</h3>
+    <div class="card"><h4>Current Stage</h4><p id="rightStage">Step 01 · Project Intake</p></div>
+    <div class="card"><h4>Active Agent</h4><p id="rightAgent">Harvy Director Agent</p></div>
+    <div class="card"><h4>Project Metadata</h4><p id="rightMeta">Language: mk | Mode: Academic | Status: draft</p></div>
+    <div class="card">
+      <h4>Quick Actions</h4>
+      <div class="quick">
+        <button class="quick-btn" id="rightRun">Run Current</button>
+        <button class="quick-btn" id="rightAll">Run All</button>
+        <button class="quick-btn" id="rightPrompt">Copy Prompt</button>
+        <button class="quick-btn" id="rightOutput">Copy Output</button>
+        <button class="quick-btn" data-view="scenarios">Scenarios</button>
+        <button class="quick-btn" data-view="rooms">Live Rooms</button>
+        <button class="quick-btn" data-view="delivery">Delivery</button>
+        <button class="quick-btn" id="rightDownload">Download</button>
+      </div>
+    </div>
+    <div class="card"><h4>Agent Council</h4><div class="agent-strip" id="agentStrip"></div></div>
+    <div class="card"><h4>Live Notes</h4><textarea id="notes" placeholder="Белешки, задачи, следни чекори..."></textarea></div>
+    <div class="card"><h4>Live Preview</h4><p id="rightPreview">Ready.</p></div>
+  </aside>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const views = [
+  ['dashboard','Dashboard','Команден мост'],
+  ['workflow','20-Step Workflow','Сите чекори активни'],
+  ['council','Agent Council','Проактивни агенти'],
+  ['scenarios','Scenario Bank 200','200 WPA сценарија'],
+  ['builder','Production Builder','Prompt + output editor'],
+  ['rooms','Live Rooms','Floor control'],
+  ['delivery','Delivery & Export','Assets + bundle'],
+  ['sop','SOP Manual','Како се работи']
+];
+
+const stages = [
+  [1,'Dashboard Project Intake','Harvy Director Agent','Directs the full production: objective, audience, stages, output map.','Director','System orchestration, task routing, project brief, production sequence.'],
+  [2,'Content Generator','GPT Content Agent','Creates lesson, speech, narration, captions and core educational text.','Text','Prompt-to-lesson content structure.'],
+  [3,'Research Compression','Kimi Research Agent','Compresses long notes into source map, claims, evidence and concise teaching blocks.','Research','Long-context compression and knowledge distillation.'],
+  [4,'Editorial Polish','Claude Editorial Agent','Improves clarity, ethics, structure, style and final wording.','Editorial','High-quality editorial refinement.'],
+  [5,'Audiobook Studio','Audiobook Architect Agent','Turns books into chapters, narrator notes, pacing and audiobook structure.','Audio','Chapter architecture and audiobook production.'],
+  [6,'Audio Production Lab','ElevenLabs-style TTS Agent','Generates voice direction, pacing, pauses, pronunciation and dubbing route.','Voice','Expressive TTS and multilingual dubbing logic.'],
+  [7,'SFX and Music Design','ACE SFX Agent','Creates music/SFX timeline, ambience, cues and layered sound plan.','Sound','Scene-aware SFX and timeline-based audio design.'],
+  [8,'Video Storyboard','Invideo Story Agent','Creates storyboard, scenes, camera logic, visual sequence and script beats.','Video','Board/looks/angles production logic.'],
+  [9,'Avatar Presenter','HeyGen Avatar Agent','Builds presenter/avatar script, gestures, lip-sync notes and multilingual presentation flow.','Avatar','Avatar presenter and lip-sync style workflow.'],
+  [10,'AI Visual Generation','Gemini-Opus Visual Agent','Creates prompts for Gemini/Veo/Flow, images, B-roll and cinematic visual generation.','Visual','Text-to-visual and video generation prompt system.'],
+  [11,'Editing Assembly','Adobe Editing Agent','Builds edit timeline, cuts, captions, color, sound clean-up and final assembly notes.','Editing','Premiere/After Effects style assembly intelligence.'],
+  [12,'Viral Media Studio','Viral Hook Agent','Creates hooks, Reels/TikTok/Shorts scripts, CTAs and platform variants.','Viral','Short-form viral packaging.'],
+  [13,'Protocol Scenario Lab','WPA Protocol Lab Agent','Uses selected WPA scenario to generate checklist, risk notes and protocol package.','Protocol','WPA protocol scenario production.'],
+  [14,'Live Video Room Builder','Live Room Governance Agent','Creates room policy: host, co-hosts, mute-all, raise-hand queue, floor control.','Rooms','Meet/Zoom/Webex governance heart.'],
+  [15,'Meeting Proactive Agent','Meeting Monitor Agent','Creates note-taking, action items, focus warnings, speaking balance monitor.','Meeting','Proactive meeting assistant logic.'],
+  [16,'Delivery Center','Delivery Packager Agent','Packages outputs, filenames, versions, asset table and handoff notes.','Delivery','Production delivery operations.'],
+  [17,'Monetization Engine','Monetization Agent','Builds offers, pricing, funnels and value packages.','Business','Revenue and productization structure.'],
+  [18,'Publishing Metadata','Publishing Agent','Creates YouTube/Rumble/podcast metadata, titles, descriptions, disclaimers.','Publishing','Platform metadata and distribution.'],
+  [19,'QA and Compliance','QA Compliance Agent','Checks copyright, consent, privacy, fake claims, security and AI disclosure.','QA','Compliance and quality gate.'],
+  [20,'Archive and Doctrine','Archive Knowledge Agent','Archives prompts, outputs, scenario memory and doctrine records.','Archive','Knowledge base and institutional memory.']
+];
+
+const scenarioCategories = [
+ ['State Protocol',['Official Visit','State Dinner','National Day Ceremony','Ministerial Reception','Presidential Address','Flag Ceremony','Protocol Arrival Line','Delegation Escort','Honorary Guest Flow','VIP Seating Plan']],
+ ['Diplomacy',['Bilateral Meeting','Ambassador Credentials','Embassy Briefing','Consular Crisis','Multilateral Roundtable','Protocol Note Exchange','Cultural Diplomacy Event','Treaty Signing Ceremony','Diplomatic Reception','Delegation Negotiation']],
+ ['Public Communication',['Press Conference','Crisis Statement','Spokesperson Briefing','Media Q and A','Public Apology','Institutional Announcement','Campaign Launch','Public Trust Address','Interview Preparation','Reputation Repair']],
+ ['Security Protocol',['Protected Visit','Secure Venue Flow','Access Control Briefing','Crisis Command Room','High-Risk Movement','Cyber Incident Briefing','Evacuation Communication','Security-Sensitive Redaction','Whistleblower Protection Briefing','Operational Disclosure Review']],
+ ['Ceremony',['Award Ceremony','Academic Opening','Book Promotion','Conference Opening','Memorial Ceremony','Foundation Anniversary','Institutional Oath','Graduation Ceremony','Ribbon Cutting','Cultural Gala']],
+ ['Seating and Precedence',['Roundtable Seating','Theatre Seating','Head Table Plan','Banquet Seating','Panel Order','Photo Line Order','Nameplate Control','Interpreter Placement','Mixed Delegation Seating','Precedence Dispute Resolution']],
+ ['Live Class',['Protocol 101 Class','Diplomacy Masterclass','Public Speaking Clinic','Crisis Communication Class','Media Ethics Seminar','Institutional Etiquette Class','Student Q and A','Exam Preparation Room','Mentorship Room','Guest Lecturer Session']],
+ ['Workshop',['Executive Presence Workshop','Protocol Simulation Workshop','Crisis Drill Workshop','Media Training Workshop','Negotiation Exercise','Ceremony Design Workshop','Voice and Presence Lab','Scenario Roleplay','Institutional Writing Lab','Leadership Communication Lab']],
+ ['Webinar',['Public Webinar','Premium Lecture','International Panel','Book Launch Webinar','Research Presentation','Open House Webinar','Policy Brief Webinar','Protocol Myth Webinar','Regional Cooperation Webinar','WPA Founder Address']],
+ ['Audio Production',['Audiobook Chapter','Podcast Episode','Voiceover Intro','Narrated Brief','Audio Lesson','Bilingual Dub','SFX Timeline','Voice Consent Package','Pronunciation Guide','Audio Trailer']],
+ ['Video Production',['Avatar Presenter Video','Storyboard Build','AI Visual Prompt Set','Editing Assembly','Captioned Lesson','Short Documentary','Vertical Clip','Institutional Presentation','B-roll Planning','Motion Prompt Package']],
+ ['Viral Media',['TikTok Hook','Reels Script','YouTube Shorts Clip','LinkedIn Micro Lesson','Myth Busting Clip','Authority Quote Clip','Before After Clip','Top 5 Mistakes Clip','Protocol Reaction Clip','CTA Ending Clip']],
+ ['Publishing',['YouTube Metadata','Rumble Metadata','Podcast Metadata','Article Summary','Newsletter Release','SEO Title Pack','Description Pack','Chapter Marker Pack','Thumbnail Text Pack','Publication Disclaimer']],
+ ['Monetization',['Mini Course Offer','Institutional Package','Audiobook Product','Workshop Ticket','Premium Consultation','Membership Funnel','Sponsor-Safe Package','Public Training Bundle','Corporate Training Offer','Certification Upsell']],
+ ['QA Compliance',['Copyright Check','Consent Check','AI Disclosure','Fake Claims Review','Security Review','Privacy Review','Platform Policy Review','Brand Safety Review','Editorial Integrity Review','Archive Validation']],
+ ['Archive Doctrine',['Knowledge Record','Doctrine Note','Reusable Template','Case Study Archive','Scenario Memory','Prompt Library Entry','Production Log','Version Record','Correction Log','Lessons Learned Record']],
+ ['OPC Conference',['OPC Opening','OPC Panel','OPC Proceedings','OPC Sponsor-Safe Note','OPC Media Desk','OPC Speaker Brief','OPC Security Flow','OPC Live Room','OPC Protocol Dinner','OPC Closing']],
+ ['Institute Programs',['Protocol Professional Track','Diplomatic Communication Track','Media Ethics Track','Security Studies Track','Public Communication Track','Executive Presence Track','Certification Board Brief','Student Intake','Mentor Review','Final Presentation']],
+ ['Global Institutions',['UN-style Briefing','EU Delegation Visit','NATO-style Security Brief','OSCE Roundtable','Embassy Outreach','Municipality Protocol','University Partnership','NGO Coordination','Corporate Diplomacy','Intercultural Forum']],
+ ['WPA Special',['Sande Persona Lesson','WPAWS Integration','Hymns and Flags Package','Bot Training Scenario','Journal Video Abstract','Book Trailer','Institute Pitch','Founder Message','World Protocol Academy Intro','Global Masterclass']]
+];
+
+function makeScenarios(){
+  const variants = ['MK edition','EN edition','Balkan context','EU context','global context','student version','executive version','institutional version','premium package','public version'];
+  let n=1, out=[];
+  scenarioCategories.forEach(([cat,names])=>{
+    names.forEach((name,i)=>{
+      out.push({
+        id:'SC-'+String(n).padStart(3,'0'),
+        category:cat,
+        title:name+' · '+variants[i],
+        level:i<3?'Core':i<7?'Advanced':'Premium',
+        duration:cat.includes('Live')||cat.includes('Workshop')||cat.includes('Webinar')?'90-180 min':'3-15 min',
+        summary:`${name} scenario for ${cat.toLowerCase()} with WPA protocol discipline, production prompts, risk notes and delivery-ready structure.`,
+        checklist:['Define objective and audience','Confirm roles, hierarchy and speaking order','Prepare script, visual/audio cues and consent requirements','Check risks, copyright, privacy and institutional claims','Package output for delivery, metadata and archive'],
+        risks:['Unclear role ownership','Overlapping voices or weak timing','Missing consent or copyright clearance','Fake institutional or accreditation claims','Poor archive and metadata discipline']
+      });
+      n++;
+    });
+  });
+  return out;
+}
+const scenarioBank = makeScenarios();
+
+const state = { view:'dashboard', stageId:1, selectedScenario:'SC-001', assets:[], status:'draft', handQueue:[], lastOutput:'', lastPrompt:'' };
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',1700)}
+function project(){return {title:$('projectTitle')?.value||'WPA Project',topic:$('topic')?.value||'Protocol topic',audience:$('audience')?.value||'Students',notes:$('sourceNotes')?.value||''}}
+function stage(){return stages.find(s=>s[0]===state.stageId)||stages[0]}
+function selectedScenario(){return scenarioBank.find(s=>s.id===state.selectedScenario)||scenarioBank[0]}
+
+function setView(id){
+  state.view=id;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+id).classList.add('active');
+  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active', b.dataset.view===id));
+  const v = views.find(x=>x[0]===id);
+  $('pageTitle').textContent = v ? v[1] : id;
+  $('pageSubtitle').textContent = v ? v[2] : '';
+  updateRight();
+}
+function selectStage(id, open=true){
+  state.stageId=Number(id);
+  document.querySelectorAll('[data-stage]').forEach(b=>b.classList.toggle('active', Number(b.dataset.stage)===state.stageId));
+  renderStagePanel();
+  updateRight();
+  if(open) setView('workflow');
+}
+
+function renderViews(){
+  const letters='ABCDEFGH'.split('');
+  $('viewNav').innerHTML=views.map((v,i)=>`<button class="nav-btn ${state.view===v[0]?'active':''}" data-view="${v[0]}"><span><strong>${v[1]}</strong><small>${v[2]}</small></span><span class="num">${letters[i]}</span></button>`).join('');
+}
+function renderStepNav(){
+  $('stepNav').innerHTML=stages.map(s=>`<button class="nav-btn ${state.stageId===s[0]?'active':''}" data-stage="${s[0]}"><span><strong>${String(s[0]).padStart(2,'0')} · ${s[1]}</strong><small>${s[2]}</small></span><span class="num">${String(s[0]).padStart(2,'0')}</span></button>`).join('');
+}
+function renderStepsGrid(){
+  $('stepsGrid').innerHTML=stages.map(s=>`<div class="card step-card ${state.stageId===s[0]?'active':''}" data-stage="${s[0]}"><span class="badge gold">Step ${String(s[0]).padStart(2,'0')}</span><h4>${s[1]}</h4><p>${s[2]}</p><p class="mini">${s[3]}</p></div>`).join('');
+}
+function renderAgentGrid(){
+  $('agentGrid').innerHTML=stages.map(s=>`<div class="card agent-card" data-stage="${s[0]}"><span class="badge blue">${s[4]}</span><h4>${s[2]}</h4><p>${s[5]}</p><div class="actions"><button class="btn primary" data-agent-run="${s[0]}">Run Agent</button></div></div>`).join('');
+  $('agentStrip').innerHTML=stages.map(s=>`<span class="agent-pill" data-stage="${s[0]}">${s[2].replace(' Agent','')}</span>`).join('');
+}
+function renderStagePanel(){
+  const s=stage(), p=project(), sc=selectedScenario();
+  $('stagePanel').innerHTML=`
+    <span class="badge gold">Step ${String(s[0]).padStart(2,'0')}</span>
+    <span class="badge blue">${esc(s[4])}</span>
+    <h3>${esc(s[1])}</h3>
+    <p>${esc(s[3])}</p>
+    <div class="card" style="margin-top:12px"><h4>Extracted structural heart</h4><p>${esc(s[5])}</p></div>
+    <div class="form-grid" style="margin-top:14px">
+      <div class="field"><label>Output Intensity</label><select id="intensity"><option>Balanced</option><option>Detailed</option><option>Executive Short</option><option>Viral Strong</option></select></div>
+      <div class="field"><label>Human Review</label><select id="review"><option>Required</option><option>Optional</option><option>Strict Compliance</option></select></div>
+      <div class="field full"><label>Agent Instruction Override</label><textarea id="override" placeholder="Дополнителна инструкција за овој агент..."></textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="runCurrentBtn">Run ${esc(s[2].replace(' Agent',''))}</button>
+      <button class="btn" id="copyPromptBtn">Copy Prompt</button>
+      <button class="btn" id="copyOutputBtn">Copy Output</button>
+      <button class="btn green" id="addAssetBtn">Add Output to Delivery</button>
+    </div>
+    <div class="section-title"><h4>Mini preview</h4><p>Current project context.</p></div>
+    <div class="output" id="stageOutput">Project: ${esc(p.title)}
+Topic: ${esc(p.topic)}
+Audience: ${esc(p.audience)}
+Selected agent: ${esc(s[2])}
+Selected scenario: ${esc(sc.id)} · ${esc(sc.title)}
+
+Click "Run ${esc(s[2].replace(' Agent',''))}" to generate output.</div>`;
+  bindStageButtons();
+}
+function promptForStage(s){
+  const p=project(), sc=selectedScenario();
+  return `WPA PROACTIVE AGENT PROMPT
+
+Agent: ${s[2]}
+Stage: ${String(s[0]).padStart(2,'0')} · ${s[1]}
+Mode: ${$('mode').value}
+Language: ${$('language').value}
+
+Project: ${p.title}
+Topic: ${p.topic}
+Audience: ${p.audience}
+
+Selected Scenario:
+${sc.id} · ${sc.title}
+Category: ${sc.category}
+Summary: ${sc.summary}
+
+Instruction:
+Act as the ${s[2]} inside the WPA Audio Video Creator Engine. Do not copy external platforms. Extract the structural heart of the best tools and rebuild it as an autohton WPA hybrid. Produce practical, delivery-ready output with clear sections, human review, consent/privacy safeguards, and archive notes.
+
+Source Notes:
+${p.notes}`;
+}
+function outputForStage(s){
+  const p=project(), sc=selectedScenario();
+  if(s[0]===13){
+    return `STEP 13 · Protocol Scenario Lab
+AGENT: WPA Protocol Lab Agent
+
+SELECTED WPA SCENARIO
+${sc.id} · ${sc.title}
+Category: ${sc.category}
+Level: ${sc.level}
+Duration: ${sc.duration}
+
+SUMMARY
+${sc.summary}
+
+CHECKLIST
+- ${sc.checklist.join('\n- ')}
+
+RISK NOTES
+- ${sc.risks.join('\n- ')}
+
+PROTOCOL PACKAGE
+1. Define objective, rank, roles and symbolic frame.
+2. Prepare speaking order, movement, visual identity and timing.
+3. Build lesson/audio/video package around this scenario.
+4. Send to Live Room Agent if interaction is required.
+5. Send to QA Compliance before publishing.
+
+HANDOFF
+Protocol Lab → Live Room Governance → Meeting Monitor → Delivery → Archive.`;
+  }
+  return `STEP ${String(s[0]).padStart(2,'0')} · ${s[1]}
+AGENT: ${s[2]}
+PROJECT: ${p.title}
+TOPIC: ${p.topic}
+AUDIENCE: ${p.audience}
+SCENARIO: ${sc.id} · ${sc.title}
+
+MISSION
+${s[3]}
+
+WPA OUTPUT
+1. Objective: create a practical asset for ${p.audience}.
+2. Core message: protocol is institutional infrastructure, not decoration.
+3. Production direction: use ${s[4].toLowerCase()} logic with WPA dignity, discipline and clarity.
+4. Human review: required before publishing.
+5. Compliance: check copyright, consent, privacy, AI disclosure and fake claims.
+
+SPECIAL STRUCTURAL HEART
+${s[5]}
+
+DELIVERABLE
+- Prompt block
+- Script/plan block
+- Production notes
+- QA notes
+- Archive metadata
+
+STATUS
+Generated locally by WPA Engine v9.`;
+}
+function runCurrent(){
+  const s=stage();
+  state.lastPrompt=promptForStage(s);
+  state.lastOutput=outputForStage(s);
+  const box=$('stageOutput'); if(box) box.textContent=state.lastOutput;
+  addAsset(`step-${String(s[0]).padStart(2,'0')}-${s[1].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.md`, s[1], s[4], 'Generated', state.lastOutput, false);
+  state.status='complete';
+  updateTables(); updateRight(); toast(`Generated Step ${s[0]} · ${s[1]}`);
+}
+function runAll(){
+  stages.forEach(s=>{
+    const content=outputForStage(s);
+    addAsset(`step-${String(s[0]).padStart(2,'0')}-${s[1].toLowerCase().replace(/[^a-z0-9]+/g,'-')}.md`, s[1], s[4], 'Generated', content, false);
+  });
+  state.status='complete'; state.lastOutput='All 20 stages generated successfully.'; updateTables(); updateRight(); setView('delivery'); toast('All 20 stages generated.');
+}
+function addAsset(name, stageName, type, status, content, update=true){
+  const existing=state.assets.find(a=>a.name===name);
+  const asset={name,stage:stageName,type,status,content,created_at:new Date().toISOString()};
+  if(existing) Object.assign(existing,asset); else state.assets.push(asset);
+  if(update) updateTables();
+}
+function manualAddCurrentAsset(){
+  const s=stage();
+  const content=$('stageOutput')?.textContent||state.lastOutput||outputForStage(s);
+  addAsset(`manual-step-${String(s[0]).padStart(2,'0')}.md`, s[1], s[4], 'Ready', content, true);
+  setView('delivery'); toast('Added to Delivery.');
+}
+
+function renderScenarioFilters(){
+  $('scenarioCategory').innerHTML=['all',...new Set(scenarioBank.map(s=>s.category))].map(c=>`<option value="${esc(c)}">${c==='all'?'All categories':esc(c)}</option>`).join('');
+}
+function filteredScenarios(){
+  const q=$('scenarioSearch').value.toLowerCase().trim();
+  const cat=$('scenarioCategory').value;
+  return scenarioBank.filter(s=>{
+    const hay=`${s.id} ${s.category} ${s.title} ${s.summary} ${s.level}`.toLowerCase();
+    return (cat==='all'||s.category===cat) && (!q||hay.includes(q));
+  });
+}
+function renderScenarioGrid(){
+  const data=filteredScenarios();
+  $('scenarioCountBadge').textContent=`${data.length} / ${scenarioBank.length} shown`;
+  $('scenarioInfo').textContent=`Showing ${data.length} of ${scenarioBank.length} scenarios.`;
+  $('scenarioGrid').innerHTML=data.map(s=>`<div class="scenario-card ${state.selectedScenario===s.id?'active':''}" data-scenario="${s.id}"><span class="badge gold">${s.id}</span> <span class="badge blue">${s.level}</span><h4>${esc(s.title)}</h4><p>${esc(s.category)}</p></div>`).join('');
+  document.querySelectorAll('[data-scenario]').forEach(c=>c.addEventListener('click',()=>{state.selectedScenario=c.dataset.scenario;renderScenarioGrid();renderScenarioDetail();updateRight();toast(`Selected ${state.selectedScenario}`)}));
+  renderScenarioDetail();
+}
+function renderScenarioDetail(){
+  const s=selectedScenario();
+  $('scenarioDetail').innerHTML=`<span class="badge gold">${s.id}</span> <span class="badge purple">${esc(s.category)}</span><h4 style="margin-top:10px">${esc(s.title)}</h4><p>${esc(s.summary)}</p><h4>Checklist</h4><ul class="list">${s.checklist.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h4>Risks</h4><ul class="list">${s.risks.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+}
+function scenarioToProtocol(){selectStage(13,true);runCurrent()}
+function scenarioToRoom(){
+  const s=selectedScenario(); setView('rooms'); buildRoomPolicy();
+  $('roomOutput').textContent += `\n\n## Linked WPA Scenario\n${s.id} · ${s.title}\n${s.summary}`;
+  toast('Scenario sent to Live Rooms.');
+}
+function scenarioToDelivery(){
+  const s=selectedScenario();
+  const content=`# WPA Scenario Package\n\nID: ${s.id}\nTitle: ${s.title}\nCategory: ${s.category}\nLevel: ${s.level}\n\n${s.summary}\n\n## Checklist\n- ${s.checklist.join('\n- ')}\n\n## Risks\n- ${s.risks.join('\n- ')}`;
+  addAsset(`scenario-${s.id.toLowerCase()}.md`,'Scenario Bank 200','Protocol Scenario','Ready',content,true);
+  setView('delivery'); toast('Scenario package added.');
+}
+
+function buildRoomPolicy(){
+  const mode=$('roomMode').value, attendees=$('roomAttendees').value, speaker=$('activeSpeaker').value||'Host';
+  const cfg={class:'90 min · 100 cap · 1 host + 2 co-hosts',workshop:'120 min · 150 cap · 1 host + 4 co-hosts',webinar:'180 min · 300 cap · 1 host + 5 co-hosts',institutional:'180 min · 500 cap · custom governance'}[mode];
+  $('roomOutput').textContent=`# WPA Live Room Policy
+
+Mode: ${mode}
+Configuration: ${cfg}
+Expected attendees: ${attendees}
+Active speaker: ${speaker}
+
+## Floor control
+- Audience enters muted.
+- Administrator gives the floor by name.
+- One active non-host speaker at a time.
+- Raise-hand queue is mandatory.
+- Co-hosts moderate chat and questions.
+- Mute-all is available at all times.
+- No overlapping voices.
+
+## Proactive monitor
+- Warn if one speaker dominates.
+- Warn if queue waits too long.
+- Detect action items.
+- Detect loss of focus.
+
+## Privacy
+Participants must be informed if recording, transcription or AI note-taking is used.`;
+  state.lastOutput=$('roomOutput').textContent;
+  addAsset('live-room-policy.md','Live Rooms','Room Policy','Ready',state.lastOutput,false);
+  updateTables(); updateRight();
+}
+function renderHandQueue(){
+  $('handQueueBox').innerHTML=state.handQueue.length?`<ul class="list">${state.handQueue.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p>No hands in queue.</p>';
+}
+function addHand(){const n=$('handName').value.trim(); if(n){state.handQueue.push(n);$('handName').value='';renderHandQueue();toast('Hand added.')}} 
+function giveFloor(){if(state.handQueue.length){$('activeSpeaker').value=state.handQueue.shift();renderHandQueue();buildRoomPolicy();toast('Floor assigned.')}} 
+function muteAll(){$('activeSpeaker').value='Host';buildRoomPolicy();toast('Mute-all: floor returned to Host.')}
+
+function runBuilder(){
+  const p=project();
+  const out=`# WPA Builder Output
+
+Type: ${$('builderType').value}
+Style: ${$('builderStyle').value}
+Project: ${p.title}
+Topic: ${p.topic}
+
+## Manual prompt
+${$('manualPrompt').value}
+
+## Generated production direction
+1. Create opening hook.
+2. Build narration script.
+3. Add avatar presenter direction.
+4. Add visual generation prompts.
+5. Add editing timeline.
+6. Add QA and delivery metadata.
+
+## Human review
+Required before public release.`;
+  $('builderOutput').textContent=out; state.lastOutput=out; updateRight();
+}
+function builderToDelivery(){addAsset('production-builder-output.md','Production Builder',$('builderType').value,'Ready',$('builderOutput').textContent,true);setView('delivery')}
+
+function updateTables(){
+  $('assetKpi').textContent=String(state.assets.length); $('statusKpi').textContent=state.status[0].toUpperCase()+state.status.slice(1);
+  const rows=['<div class="row header"><div>Asset</div><div>Stage</div><div>Type</div><div>Status</div></div>'];
+  if(!state.assets.length) rows.push('<div class="row"><div>No assets yet. Run a step or Run All.</div><div>-</div><div>-</div><div><span class="badge blue">Empty</span></div></div>');
+  state.assets.forEach(a=>rows.push(`<div class="row"><div>${esc(a.name)}</div><div>${esc(a.stage)}</div><div>${esc(a.type)}</div><div><span class="badge green">${esc(a.status)}</span></div></div>`));
+  $('assetTable').innerHTML=rows.join(''); $('dashboardAssets').innerHTML=rows.join('');
+}
+function runQA(){
+  const p=project();
+  const out=`# WPA QA / Compliance Report
+
+Project: ${p.title}
+Assets checked: ${state.assets.length}
+
+## Checks
+✅ Copyright: use only owned/licensed/public-domain material.
+✅ Consent: voice, avatar, real-person images and interviews need explicit consent.
+✅ AI disclosure: disclose AI-assisted voice, image, video, text and editing.
+✅ Claims: no fake accreditation, fake partnerships, fake index status.
+✅ Security: remove operationally sensitive details.
+✅ Privacy: inform participants about recording/transcription/AI note-taking.
+✅ Human review: required before publishing.
+
+Status: READY FOR HUMAN REVIEW.`;
+  $('qaOutput').textContent=out; addAsset('qa-compliance-report.md','QA and Compliance','QA Report','Ready',out,true);
+}
+function download(name, content, type='text/plain'){
+  const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
+}
+function bundleText(){
+  const p=project();
+  return `# WPA AV Engine v9 Production Bundle
+
+Project: ${p.title}
+Topic: ${p.topic}
+Audience: ${p.audience}
+Scenario: ${selectedScenario().id} · ${selectedScenario().title}
+Assets: ${state.assets.length}
+
+${state.assets.map(a=>`\n---\n## ${a.name}\nStage: ${a.stage}\nType: ${a.type}\nStatus: ${a.status}\n\n${a.content}`).join('\n')}`;
+}
+function exportJson(){
+  download('wpa-av-engine-v9-state.json', JSON.stringify({state,project:project(),scenario:selectedScenario(),assets:state.assets,exported_at:new Date().toISOString()},null,2), 'application/json');
+}
+function saveLocal(){localStorage.setItem('wpa-av-engine-v9', JSON.stringify({state,project:project(),assets:state.assets,notes:$('notes').value}));toast('Saved locally in browser.')}
+function copyText(t){navigator.clipboard.writeText(t||'').then(()=>toast('Copied.')).catch(()=>toast('Copy failed.'))}
+function updateRight(){
+  const s=stage();
+  $('rightStage').textContent=`Step ${String(s[0]).padStart(2,'0')} · ${s[1]}`;
+  $('rightAgent').textContent=s[2];
+  $('rightMeta').textContent=`Language: ${$('language').value} | Mode: ${$('mode').value} | Status: ${state.status}`;
+  $('rightPreview').textContent=`Selected Step ${String(s[0]).padStart(2,'0')}: ${s[1]}\nSelected Scenario: ${selectedScenario().id} · ${selectedScenario().title}`;
+}
+function filterSteps(q){
+  q=q.toLowerCase().trim();
+  document.querySelectorAll('[data-stage]').forEach(elm=>{
+    const id=Number(elm.dataset.stage); const s=stages.find(x=>x[0]===id); if(!s) return;
+    const hay=s.join(' ').toLowerCase(); elm.style.display=(!q||hay.includes(q))?'':'none';
+  });
+}
+
+function bindStageButtons(){
+  $('runCurrentBtn').onclick=runCurrent;
+  $('copyPromptBtn').onclick=()=>{state.lastPrompt=promptForStage(stage()); copyText(state.lastPrompt)};
+  $('copyOutputBtn').onclick=()=>copyText($('stageOutput').textContent);
+  $('addAssetBtn').onclick=manualAddCurrentAsset;
+}
+function bind(){
+  document.body.addEventListener('click', e=>{
+    const v=e.target.closest('[data-view]'); if(v){setView(v.dataset.view); return;}
+    const st=e.target.closest('[data-stage]'); if(st){selectStage(st.dataset.stage); return;}
+    const ar=e.target.closest('[data-agent-run]'); if(ar){selectStage(ar.dataset.agentRun,true);runCurrent(); return;}
+  });
+  $('agentSearch').oninput=e=>filterSteps(e.target.value);
+  $('language').onchange=updateRight; $('mode').onchange=updateRight;
+  $('saveBtn').onclick=saveLocal; $('runAllBtn').onclick=runAll; $('rightAll').onclick=runAll; $('rightRun').onclick=runCurrent;
+  $('rightPrompt').onclick=()=>{state.lastPrompt=promptForStage(stage()); copyText(state.lastPrompt)};
+  $('rightOutput').onclick=()=>copyText(state.lastOutput||$('stageOutput')?.textContent||'');
+  $('rightDownload').onclick=()=>$('downloadBundle').click();
+  $('intakeBtn').onclick=()=>{selectStage(1,true);runCurrent()};
+  $('scenarioSearch').oninput=renderScenarioGrid; $('scenarioCategory').onchange=renderScenarioGrid; $('buildScenarioBtn').onclick=scenarioToProtocol;
+  $('scenarioToProtocol').onclick=scenarioToProtocol; $('scenarioToRoom').onclick=scenarioToRoom; $('scenarioToDelivery').onclick=scenarioToDelivery;
+  $('builderRun').onclick=runBuilder; $('builderAdd').onclick=builderToDelivery;
+  $('addHandBtn').onclick=addHand; $('giveFloorBtn').onclick=giveFloor; $('muteAllBtn').onclick=muteAll; $('roomBuildBtn').onclick=buildRoomPolicy; $('roomMode').onchange=buildRoomPolicy; $('roomAttendees').oninput=buildRoomPolicy;
+  $('downloadBundle').onclick=()=>download('wpa-av-engine-v9-production-bundle.md', bundleText());
+  $('exportJson').onclick=exportJson; $('qaBtn').onclick=runQA; $('resetBtn').onclick=()=>{state.assets=[];state.status='draft';updateTables();toast('Outputs reset.')};
+}
+function init(){
+  renderViews(); renderStepNav(); renderStepsGrid(); renderAgentGrid(); renderStagePanel(); renderScenarioFilters(); renderScenarioGrid(); updateTables(); bind(); updateRight();
+  $('scenarioKpi').textContent=scenarioBank.length;
+  toast('WPA AV Engine v9 ready: 20 agents + 200 scenarios active.');
+}
+init();
+</script>
+</body>
+</html>
