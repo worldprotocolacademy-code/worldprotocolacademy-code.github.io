@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Правописен водич — Светска протоколарна академија</title>
+<meta name="description" content="Оперативен правописен водич на WPA според Правопис на македонскиот јазик (2017). Институт за македонски јазик „Крсте Мисирков".">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --wpa-navy: #0a1f44;
+  --wpa-navy-deep: #061330;
+  --wpa-navy-light: #1a3563;
+  --wpa-gold: #c9a45c;
+  --wpa-gold-bright: #e6c275;
+  --wpa-gold-deep: #8e6f30;
+  --wpa-ivory: #f7f3e9;
+  --wpa-ivory-warm: #ede5d3;
+  --wpa-paper: #fbf8f1;
+  --wpa-ink: #1a1a1a;
+  --wpa-ink-soft: #3a3a3a;
+  --wpa-border: rgba(10, 31, 68, 0.12);
+  --wpa-border-strong: rgba(10, 31, 68, 0.25);
+  --wpa-error: #a83232;
+  --wpa-success: #2d6a4f;
+  --serif: 'EB Garamond', 'Times New Roman', Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--wpa-ink);
+  background: var(--wpa-paper);
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(201, 164, 92, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(10, 31, 68, 0.03) 0%, transparent 50%);
+  min-height: 100vh;
+}
+
+/* ===== TOP RIBBON ===== */
+.top-ribbon {
+  background: var(--wpa-navy-deep);
+  color: var(--wpa-gold-bright);
+  padding: 8px 0;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-align: center;
+  border-bottom: 1px solid var(--wpa-gold-deep);
+}
+
+/* ===== MASTHEAD ===== */
+.masthead {
+  background: linear-gradient(180deg, var(--wpa-navy) 0%, var(--wpa-navy-deep) 100%);
+  color: var(--wpa-ivory);
+  padding: 60px 40px 50px;
+  border-bottom: 3px solid var(--wpa-gold);
+  position: relative;
+  overflow: hidden;
+}
+
+.masthead::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201, 164, 92, 0.03) 60px, rgba(201, 164, 92, 0.03) 61px);
+  pointer-events: none;
+}
+
+.masthead-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.masthead .crest {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--wpa-gold);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.crest::before, .crest::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--wpa-gold-deep), transparent);
+  max-width: 100px;
+}
+
+.masthead h1 {
+  font-family: var(--serif);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 18px;
+  color: var(--wpa-ivory);
+}
+
+.masthead h1 em {
+  color: var(--wpa-gold-bright);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.masthead .subtitle {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--wpa-ivory-warm);
+  max-width: 720px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.masthead .meta {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: rgba(247, 243, 233, 0.7);
+  letter-spacing: 0.05em;
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+}
+
+.masthead .meta strong {
+  color: var(--wpa-gold);
+  font-weight: 500;
+}
+
+.doctrine {
+  margin-top: 28px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--wpa-gold);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--wpa-ivory);
+  background: rgba(201, 164, 92, 0.06);
+  max-width: 560px;
+}
+
+/* ===== SEARCH BAR ===== */
+.search-bar {
+  background: var(--wpa-ivory);
+  border-bottom: 1px solid var(--wpa-border);
+  padding: 18px 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 var(--wpa-border), 0 8px 24px -16px rgba(10, 31, 68, 0.2);
+  backdrop-filter: blur(8px);
+  background: rgba(247, 243, 233, 0.96);
+}
+
+.search-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px 18px 12px 48px;
+  background: var(--wpa-paper);
+  border: 1px solid var(--wpa-border-strong);
+  border-radius: 2px;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--wpa-ink);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--wpa-gold);
+  box-shadow: 0 0 0 3px rgba(201, 164, 92, 0.18);
+}
+
+.search-box svg {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--wpa-navy);
+  opacity: 0.6;
+}
+
+.search-stats {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--wpa-ink-soft);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.search-stats strong { color: var(--wpa-gold-deep); }
+
+/* ===== LAYOUT ===== */
+.layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 50px 40px 80px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 60px;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; gap: 30px; }
+  .sidebar { position: static !important; }
+}
+
+/* ===== SIDEBAR (TOC) ===== */
+.sidebar {
+  position: sticky;
+  top: 90px;
+  align-self: start;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+
+.sidebar h3 {
+  font-family: var(--sans);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--wpa-gold-deep);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--wpa-border-strong);
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  margin-bottom: 4px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 7px 12px;
+  color: var(--wpa-navy);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  background: var(--wpa-ivory-warm);
+  border-left-color: var(--wpa-gold);
+  color: var(--wpa-navy-deep);
+}
+
+.sidebar a.active {
+  border-left-color: var(--wpa-gold);
+  background: var(--wpa-ivory-warm);
+  color: var(--wpa-navy-deep);
+  font-weight: 600;
+}
+
+/* ===== MAIN CONTENT ===== */
+.content {
+  min-width: 0;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 0;
+  margin-bottom: 40px;
+  border-bottom: 2px solid var(--wpa-border-strong);
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 14px 22px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--wpa-ink-soft);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: -2px;
+}
+
+.tab-btn:hover {
+  color: var(--wpa-navy);
+}
+
+.tab-btn.active {
+  color: var(--wpa-navy-deep);
+  border-bottom-color: var(--wpa-gold);
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTIONS ===== */
+section.rule-section {
+  margin-bottom: 60px;
+  scroll-margin-top: 100px;
+}
+
+section.rule-section h2 {
+  font-family: var(--serif);
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 500;
+  color: var(--wpa-navy-deep);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+section.rule-section .chapter-meta {
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--wpa-gold-deep);
+  margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--wpa-border);
+}
+
+section.rule-section h3 {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--wpa-navy);
+  margin: 36px 0 16px;
+  letter-spacing: -0.005em;
+}
+
+section.rule-section h4 {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--wpa-gold-deep);
+  margin: 24px 0 12px;
+}
+
+section.rule-section p {
+  margin-bottom: 16px;
+  color: var(--wpa-ink);
+}
+
+section.rule-section ul, section.rule-section ol {
+  margin: 16px 0 16px 28px;
+}
+
+section.rule-section li {
+  margin-bottom: 8px;
+}
+
+section.rule-section em {
+  font-style: italic;
+  color: var(--wpa-navy);
+}
+
+section.rule-section strong {
+  font-weight: 600;
+  color: var(--wpa-navy-deep);
+}
+
+/* Example boxes */
+.example {
+  background: var(--wpa-ivory);
+  border-left: 3px solid var(--wpa-gold);
+  padding: 18px 22px;
+  margin: 18px 0;
+  font-style: italic;
+  color: var(--wpa-ink-soft);
+  border-radius: 0 2px 2px 0;
+}
+
+.example.right::before {
+  content: '✓ ';
+  color: var(--wpa-success);
+  font-weight: 700;
+  font-style: normal;
+}
+
+.example.wrong {
+  border-left-color: var(--wpa-error);
+}
+
+.example.wrong::before {
+  content: '✗ ';
+  color: var(--wpa-error);
+  font-weight: 700;
+  font-style: normal;
+}
+
+.warning {
+  background: linear-gradient(135deg, rgba(201, 164, 92, 0.08), rgba(201, 164, 92, 0.03));
+  border: 1px solid var(--wpa-gold);
+  border-radius: 2px;
+  padding: 18px 22px;
+  margin: 22px 0;
+  font-family: var(--serif);
+  position: relative;
+  padding-left: 56px;
+}
+
+.warning::before {
+  content: '⚠';
+  position: absolute;
+  left: 20px;
+  top: 18px;
+  font-size: 24px;
+  color: var(--wpa-gold-deep);
+  font-family: var(--sans);
+}
+
+.warning strong {
+  color: var(--wpa-gold-deep);
+}
+
+/* Tables */
+.rule-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-family: var(--serif);
+  font-size: 16px;
+  background: var(--wpa-paper);
+  border: 1px solid var(--wpa-border-strong);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.rule-table thead {
+  background: var(--wpa-navy);
+  color: var(--wpa-gold-bright);
+}
+
+.rule-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.rule-table td {
+  padding: 12px 18px;
+  border-top: 1px solid var(--wpa-border);
+  vertical-align: top;
+}
+
+.rule-table tbody tr:hover {
+  background: var(--wpa-ivory);
+}
+
+.rule-table tbody tr:nth-child(even) {
+  background: rgba(247, 243, 233, 0.4);
+}
+
+.rule-table tbody tr:nth-child(even):hover {
+  background: var(--wpa-ivory);
+}
+
+.rule-table .wrong-cell {
+  color: var(--wpa-error);
+  text-decoration: line-through;
+  text-decoration-color: rgba(168, 50, 50, 0.5);
+  font-style: italic;
+}
+
+.rule-table .right-cell {
+  color: var(--wpa-success);
+  font-weight: 500;
+}
+
+.rule-table .arrow {
+  color: var(--wpa-gold-deep);
+  font-weight: 700;
+  text-align: center;
+  width: 30px;
+}
+
+.rule-table code {
+  font-family: var(--mono);
+  font-size: 14px;
+  background: var(--wpa-ivory-warm);
+  padding: 1px 6px;
+  border-radius: 2px;
+  color: var(--wpa-navy-deep);
+}
+
+/* Quiz */
+.quiz-container {
+  background: var(--wpa-paper);
+  border: 1px solid var(--wpa-border-strong);
+  border-top: 3px solid var(--wpa-gold);
+  border-radius: 2px;
+  padding: 36px 40px;
+}
+
+.quiz-intro {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--wpa-border);
+}
+
+.quiz-intro h2 {
+  font-family: var(--serif);
+  font-size: 32px;
+  color: var(--wpa-navy-deep);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.quiz-intro p {
+  color: var(--wpa-ink-soft);
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+.quiz-progress {
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--wpa-gold-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 8px;
+}
+
+.quiz-bar {
+  height: 4px;
+  background: var(--wpa-ivory-warm);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.quiz-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--wpa-gold), var(--wpa-gold-bright));
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.quiz-question {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--wpa-navy-deep);
+  line-height: 1.4;
+  margin-bottom: 24px;
+  font-weight: 500;
+}
+
+.quiz-question .q-num {
+  color: var(--wpa-gold-deep);
+  font-family: var(--sans);
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.quiz-option {
+  padding: 16px 22px;
+  background: var(--wpa-ivory);
+  border: 1px solid var(--wpa-border);
+  border-radius: 2px;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--wpa-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  position: relative;
+  padding-left: 52px;
+}
+
+.quiz-option::before {
+  content: attr(data-label);
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--sans);
+  font-weight: 700;
+  color: var(--wpa-gold-deep);
+  font-size: 14px;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--wpa-border-strong);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--wpa-paper);
+}
+
+.quiz-option:hover:not(:disabled) {
+  border-color: var(--wpa-gold);
+  background: var(--wpa-ivory-warm);
+}
+
+.quiz-option.correct {
+  background: rgba(45, 106, 79, 0.08);
+  border-color: var(--wpa-success);
+  color: var(--wpa-success);
+}
+
+.quiz-option.correct::before {
+  content: '✓';
+  background: var(--wpa-success);
+  color: white;
+  border-color: var(--wpa-success);
+}
+
+.quiz-option.wrong {
+  background: rgba(168, 50, 50, 0.07);
+  border-color: var(--wpa-error);
+  color: var(--wpa-error);
+}
+
+.quiz-option.wrong::before {
+  content: '✗';
+  background: var(--wpa-error);
+  color: white;
+  border-color: var(--wpa-error);
+}
+
+.quiz-option:disabled {
+  cursor: default;
+}
+
+.quiz-explanation {
+  background: var(--wpa-ivory);
+  border-left: 3px solid var(--wpa-navy);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--wpa-ink-soft);
+  font-style: italic;
+  display: none;
+}
+
+.quiz-explanation.show { display: block; animation: fadeIn 0.3s; }
+
+.quiz-explanation strong { color: var(--wpa-navy-deep); font-style: normal; }
+
+.quiz-controls {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 12px 28px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--wpa-navy);
+  color: var(--wpa-gold-bright);
+  border: 1px solid var(--wpa-navy);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--wpa-navy-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px -4px rgba(10, 31, 68, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--wpa-navy);
+  border: 1px solid var(--wpa-border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--wpa-ivory);
+  border-color: var(--wpa-navy);
+}
+
+.quiz-result {
+  text-align: center;
+  padding: 40px 20px;
+  display: none;
+}
+
+.quiz-result.show { display: block; animation: fadeIn 0.4s; }
+
+.quiz-result .score-display {
+  font-family: var(--serif);
+  font-size: 72px;
+  font-weight: 500;
+  color: var(--wpa-gold-deep);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.quiz-result .score-display .denominator {
+  color: var(--wpa-ink-soft);
+  font-size: 36px;
+  opacity: 0.6;
+}
+
+.quiz-result .score-label {
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  color: var(--wpa-ink-soft);
+  margin-bottom: 24px;
+}
+
+.quiz-result h3 {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--wpa-navy-deep);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.quiz-result p {
+  color: var(--wpa-ink-soft);
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+/* Errors Table — Task 2 deliverable */
+.errors-intro {
+  background: linear-gradient(135deg, rgba(10, 31, 68, 0.04), rgba(201, 164, 92, 0.04));
+  border: 1px solid var(--wpa-border);
+  padding: 24px 28px;
+  margin-bottom: 30px;
+  border-radius: 2px;
+  font-family: var(--serif);
+}
+
+.errors-intro h3 {
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--wpa-gold-deep);
+  margin-bottom: 12px;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--wpa-navy-deep);
+  color: var(--wpa-ivory);
+  padding: 50px 40px 30px;
+  border-top: 3px solid var(--wpa-gold);
+  margin-top: 60px;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+footer .footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+}
+
+@media (max-width: 700px) {
+  footer .footer-inner { grid-template-columns: 1fr; }
+}
+
+footer h4 {
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: var(--wpa-gold);
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+footer a {
+  color: var(--wpa-gold-bright);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+footer a:hover {
+  border-bottom-color: var(--wpa-gold-bright);
+}
+
+footer .copyright {
+  max-width: 1100px;
+  margin: 30px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid rgba(201, 164, 92, 0.2);
+  font-size: 12px;
+  color: rgba(247, 243, 233, 0.55);
+  font-style: italic;
+}
+
+/* Search highlight */
+.highlight {
+  background: var(--wpa-gold-bright);
+  color: var(--wpa-navy-deep);
+  padding: 0 3px;
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+.hidden-by-search {
+  display: none !important;
+}
+
+/* Print */
+@media print {
+  .search-bar, .sidebar, .tab-nav, footer, .top-ribbon { display: none; }
+  .layout { grid-template-columns: 1fr; padding: 20px; }
+  .tab-panel { display: block !important; page-break-after: always; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-ribbon">
+  Светска протоколарна академија &nbsp;·&nbsp; World Protocol Academy &nbsp;·&nbsp; Скопје
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="crest">WPA · ОБРАЗОВНА ИНФРАСТРУКТУРА · 2026</div>
+    <h1>Правописен <em>водич</em></h1>
+    <p class="subtitle">Оперативна референца за писмена комуникација во документите, веб-страниците и академските текстови на Светската протоколарна академија.</p>
+    <div class="meta">
+      <span>Според <strong>Правопис на македонскиот јазик</strong> (второ издание, 2017)</span>
+      <span>Институт за македонски јазик „Крсте Мисирков"</span>
+    </div>
+    <div class="doctrine">
+      „Преговарањето е опционално. Протоколот е апсолутен." — истото важи и за правописот: тој не е прашање на вкус, туку институционален стандард.
+    </div>
+  </div>
+</header>
+
+<!-- SEARCH BAR -->
+<div class="search-bar">
+  <div class="search-inner">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="search" id="searchInput" placeholder="Пребарајте збор, правило или поглавје... (Ctrl+F во прелистувачот)" autocomplete="off">
+    </div>
+    <div class="search-stats" id="searchStats">
+      <strong id="hitCount">0</strong> &nbsp;Резултати
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>Содржина</h3>
+    <ul id="tocList">
+      <li><a href="#ch1" class="toc-link">Поглавје I — Гласови</a></li>
+      <li><a href="#ch3" class="toc-link">Поглавје III — Голема/мала буква</a></li>
+      <li><a href="#ch5" class="toc-link">Поглавје V — Интерпункција</a></li>
+      <li><a href="#ch10" class="toc-link">Поглавје X — Транскрипција</a></li>
+      <li><a href="#ch11" class="toc-link">Поглавје XI — Географски имиња</a></li>
+      <li><a href="#tab-errors" class="toc-link">Табела на грешки</a></li>
+      <li><a href="#tab-quiz" class="toc-link">Интерактивен квиз</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content">
+
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="rules">Правила</button>
+      <button class="tab-btn" data-tab="errors">Табела на грешки</button>
+      <button class="tab-btn" data-tab="quiz">Квиз</button>
+      <button class="tab-btn" data-tab="about">За водичот</button>
+    </nav>
+
+    <!-- ========== RULES TAB ========== -->
+    <div class="tab-panel active" data-panel="rules">
+
+      <!-- CHAPTER I -->
+      <section class="rule-section" id="ch1">
+        <h2>Поглавје I — Пишување на гласовите</h2>
+        <div class="chapter-meta">Правопис 2017, стр. 3–24</div>
+
+        <p>Македонската азбука има 31 буква. Стандардниот фонетски систем содржи пет самогласки: <strong>а, е, и, о, у</strong>. Покрај нив, во некои сопствени именки се појавува „затемнето а" обележано со апостроф (на пр. <em>К'чев</em>, <em>В'чков</em>).</p>
+
+        <h3>1.1 Самогласка А</h3>
+        <p>Со <strong>а</strong> се пишуваат туѓи зборови во кои самогласката не постои во оригиналот, но се вградила во македонскиот: <em>амфитеатар, бакар, метар, регистар, регистарски, театар, цилиндар</em>; како и личните имиња <em>Александар</em>, <em>Димитар</em>, <em>Петар</em>.</p>
+        <div class="warning"><strong>Внимание:</strong> <em>магистер</em> и <em>министер</em> се исклучоци — се пишуваат со <strong>е</strong>, а не со <strong>а</strong>.</div>
+        <p>Со <strong>а</strong> се пишуваат и зборови од турско потекло (<em>кана, касмет, саклет</em>) и суфиксот <strong>-лак</strong>: <em>бовчалак, пазарлак, пијалак</em>.</p>
+
+        <h3>1.2 Самогласки Е, И, О, У</h3>
+        <p>Се пишува со <strong>е</strong>: <em>босилек, двесте, делириум, занает, инженер, комбинезон, прешлен, тек, тешта, честица</em>.</p>
+        <p>Се пишува со <strong>и</strong>: <em>аперитив, брилијант, интелигентен, интелигенција, компатибилен, компримира, коригира, перципира, судир</em>.</p>
+
+        <h4>Пар на двојности — важно за WPA академски текстови</h4>
+        <ul>
+          <li><em>интелигентен</em> (со <strong>и</strong>), но <em>интелект</em> (со <strong>е</strong>)</li>
+          <li><em>коригира</em> (со <strong>и</strong>), но <em>корекција, коректор</em> (со <strong>е</strong>)</li>
+          <li><em>перципира</em> (со <strong>и</strong>), но <em>перцепција</em> (со <strong>е</strong>)</li>
+          <li><em>компримира</em> (со <strong>и</strong>), но <em>компресија</em> (со <strong>е</strong>)</li>
+        </ul>
+
+        <p>Со <strong>о</strong>: <em>грашок, какофонија, контроверзен, лабораторија, лимон, мортадела, прашок, рамо, црковен, шпион</em>.</p>
+        <p>Без <strong>о</strong> во основната форма: <em>лакт – лактот – лакти</em>; <em>нокт – ноктот – нокти</em>.</p>
+        <p>Со <strong>у</strong>: <em>аукција, аудио, биографија, биологија, дилема, диктатура, литература, музика, ситуација, универзитет, факултет</em>.</p>
+
+        <h3>1.3 Согласки — критични точки</h3>
+        <p>Едначењето по звучност <strong>не се применува</strong> кај зборовите со префиксите <em>пост-, транс-, дис-</em> и кај некои туѓи зборови. Затоа се пишува:</p>
+        <div class="example right">пост-конференциски, транс-границен, дискусија, гангстер, јурисдикција, нокдаун, питбул</div>
+        <p>Според Правописот 2017, се пишува <strong>себство</strong> (не <em>сепство</em>).</p>
+      </section>
+
+      <!-- CHAPTER III -->
+      <section class="rule-section" id="ch3">
+        <h2>Поглавје III — Голема и мала почетна буква</h2>
+        <div class="chapter-meta">Правопис 2017, стр. 37–53 · Најважно поглавје за WPA</div>
+
+        <p>Ова поглавје е <strong>најкритично</strong> за WPA, бидејќи WPA постојано работи со институционални имиња, титули и официјални документи.</p>
+
+        <h3>3.1 Голема буква на сите делови (сопствени имиња)</h3>
+        <p>Со <strong>голема буква на секој дел</strong> се пишуваат:</p>
+        <ul>
+          <li><strong>Лични и презименски имиња:</strong> <em>Санде Смилјанов</em>, <em>Хенри Кисинџер</em></li>
+          <li><strong>Градови, држави, реки, планини:</strong> <em>Скопје</em>, <em>Република Северна Македонија</em>, <em>Вардар</em>, <em>Шар Планина</em></li>
+          <li><strong>Небесни тела:</strong> <em>Бодеева Галаксија</em>, <em>Голем Магеланов Облак</em></li>
+          <li><strong>Административни единици во име:</strong> <em>Град Скопје</em>, <em>Општина Карпош</em></li>
+          <li><strong>Неофицијални имиња на познати територии:</strong> <em>Нов Свет</em> (Америка), <em>Стар Континент</em> (Европа), <em>Градот на Светлината</em> (Париз), <em>Вечниот Град</em> (Рим)</li>
+        </ul>
+
+        <h3>3.2 Голема буква само на ПРВИОТ дел (правило што најчесто се крши)</h3>
+
+        <h4>Органи на државна власт</h4>
+        <div class="example right">Министерство за внатрешни работи · Министерство за образование и наука · Министерство за надворешни работи · Министерство за култура · Министерство за одбрана · Врховен суд · Уставен суд · Управа за јавни приходи</div>
+        <div class="example wrong">Министерство за Внатрешни Работи (НЕПРАВИЛНО — само првиот збор е со голема)</div>
+
+        <h4>Закони и историски акти</h4>
+        <div class="example right">Устав на Република Северна Македонија · Закон за употребата на македонскиот јазик · Виенска конвенција за дипломатски односи · Декларација за независност · Француска револуција · Прва светска војна</div>
+
+        <h4>Меѓународни организации и дипломатски претставништва</h4>
+        <div class="example right">Амбасада на САД · Конзулат на Република Турција · Организација на обединетите нации · Совет на Европа · Меѓународен монетарен фонд · Европски суд за човекови права</div>
+
+        <h4>Установи, факултети, универзитети</h4>
+        <div class="example right">Институт за македонски јазик „Крсте Мисирков" · Филолошки факултет „Блаже Конески" · Универзитет „Свети Кирил и Методиј" · Светска протоколарна академија</div>
+
+        <h3>3.3 Мала почетна буква — ТИТУЛИ И ЗВАЊА</h3>
+        <p>Со <strong>мала буква</strong> се пишуваат:</p>
+        <ul>
+          <li><strong>Титули и функции:</strong> <em>претседател, премиер, министер, министерка, градоначалник, амбасадор, конзул</em></li>
+          <li><strong>Научни звања:</strong> <em>професор, доцент, доктор, магистер, академик</em></li>
+          <li><strong>Дипломатски звања:</strong> <em>аташе, советник, прв секретар</em></li>
+        </ul>
+        <div class="example right">проф. д-р Санде Смилјанов (титулата со мала, името со голема)</div>
+        <div class="example right">Министерот за внатрешни работи донесе одлука. (титулата „министерот" е почеток на реченица → голема; но „за внатрешни работи" е дел од име на министерство → мала)</div>
+
+        <h3>3.4 Мала буква — други категории</h3>
+        <ul>
+          <li><strong>Природни и вештачки јазици:</strong> <em>македонски, англиски, француски, есперанто</em></li>
+          <li><strong>Парични единици:</strong> <em>денар, евро, долар, јен, франк</em></li>
+          <li><strong>Мерни единици:</strong> <em>ампер, ват, волт, њутн, џул</em></li>
+          <li><strong>Религии и движења:</strong> <em>христијанство, ислам, будизам, хуманизам, ренесанса, барок</em></li>
+          <li><strong>Информатички термини:</strong> <em>интернет, софтвер, хардвер, веб-страница, веб-папка, сервер</em></li>
+          <li><strong>Трговски марки:</strong> <em>кока-кола, скопско, тојота, конверс</em></li>
+        </ul>
+      </section>
+
+      <!-- CHAPTER V -->
+      <section class="rule-section" id="ch5">
+        <h2>Поглавје V — Интерпункција</h2>
+        <div class="chapter-meta">Правопис 2017, стр. 81–126</div>
+
+        <h3>5.1 Точка (.)</h3>
+        <p>Се пишува на крај на расказна реченица, заповедна искажана мирно, или реченичен соодветник со изоставен прирок.</p>
+
+        <h3>5.2 Запирка (,) — најчесто се греши</h3>
+        <p>Запирката се користи за набројување (без запирка пред последното „и"), издвојување апозиции и атрибути, вметнати реченици и воведни зборови.</p>
+        <div class="example right">На конференцијата учествуваа делегации од Германија, Франција, Италија и Шпанија. (без запирка пред „и")</div>
+        <div class="example right">Проф. д-р Санде Смилјанов, директор на WPA, отвори со воведно обраќање.</div>
+        <div class="example right">Сепак, заклучокот остана отворен.</div>
+
+        <h3>5.3 Точка и запирка (;)</h3>
+        <p>Се користи за поделба на дел-реченици што се блиски по смисла, но премногу долги за обична запирка.</p>
+        <div class="example right">Дипломатијата е уметност на можното; протоколот е наука на потребното.</div>
+
+        <h3>5.4 Две точки (:) и три точки (…)</h3>
+        <p>Две точки — пред набројување, директен говор, цитат или објаснување.</p>
+        <p>Три точки — се пишуваат како <strong>една ознака</strong> (на тастатура: Alt+0133), не како три одделни точки. Кога во цитат испуштате текст, користете <strong>[…]</strong> во квадратни загради.</p>
+
+        <h3>5.5 Црта (тире) (–) vs. цртичка (-) — ВАЖНО</h3>
+        <p>Ова е честа техничка грешка во WPA HTML и DOCX документи.</p>
+        <table class="rule-table">
+          <thead>
+            <tr><th>Знак</th><th>Име</th><th>Употреба</th><th>Тастатура</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>-</code></td><td><strong>цртичка</strong></td><td>Полусложени зборови: <em>кафе-пауза, веб-страница</em></td><td>Стандарден минус</td></tr>
+            <tr><td><code>–</code></td><td><strong>црта (en-dash)</strong></td><td>Распони: <em>2024–2026, стр. 15–30</em></td><td>Alt+0150 / U+2013</td></tr>
+            <tr><td><code>—</code></td><td>долга црта (em-dash)</td><td>Поретко во македонски</td><td>Alt+0151 / U+2014</td></tr>
+          </tbody>
+        </table>
+
+        <h3>5.6 Наводници — Македонски стандард</h3>
+        <p>Македонскиот користи <strong>„ "</strong> (долни на почеток, горни на крај), не <em>" "</em>.</p>
+        <div class="example right">Делегатот рече: „Состанокот започнува точно во 09:00 часот."</div>
+        <div class="example wrong">"Делегатот рече ова" — правите англиски наводници НЕ се користат во македонски WPA документи.</div>
+      </section>
+
+      <!-- CHAPTER X -->
+      <section class="rule-section" id="ch10">
+        <h2>Поглавје X — Транскрипција на туѓи имиња</h2>
+        <div class="chapter-meta">Правопис 2017, стр. 175–298</div>
+
+        <p>Транскрипција = бележење на изговорот; транслитерација = механичко пренесување буква за буква. Во македонски стандард доминира <strong>транскрипција</strong>, со одредени конвенционализирани форми.</p>
+
+        <h3>10.1 Англиски јазик (стр. 179)</h3>
+        <table class="rule-table">
+          <thead><tr><th>Оригинал</th><th>Македонска форма</th></tr></thead>
+          <tbody>
+            <tr><td>Washington</td><td><em>Вашингтон</em> (конвенционализирано)</td></tr>
+            <tr><td>London</td><td><em>Лондон</em></td></tr>
+            <tr><td>New York</td><td><em>Њујорк</em> (слеано)</td></tr>
+            <tr><td>Chicago</td><td><em>Чикаго</em> (со ч, не ш)</td></tr>
+            <tr><td>Los Angeles</td><td><em>Лос Анџелес</em></td></tr>
+            <tr><td>Edinburgh</td><td><em>Единбург</em></td></tr>
+            <tr><td>Henry Kissinger</td><td><em>Хенри Кисинџер</em></td></tr>
+          </tbody>
+        </table>
+
+        <h3>10.2 Француски, руски, кинески</h3>
+        <table class="rule-table">
+          <thead><tr><th>Оригинал</th><th>Македонска форма</th></tr></thead>
+          <tbody>
+            <tr><td>Paris</td><td><em>Париз</em></td></tr>
+            <tr><td>Marseille</td><td><em>Марсеј</em></td></tr>
+            <tr><td>Charles de Gaulle</td><td><em>Шарл де Гол</em></td></tr>
+            <tr><td>Москва</td><td><em>Москва</em></td></tr>
+            <tr><td>北京 (Beijing)</td><td><em>Пекинг</em> (конвенционализирано, не „Бејџинг")</td></tr>
+            <tr><td>上海 (Shanghai)</td><td><em>Шангај</em></td></tr>
+          </tbody>
+        </table>
+
+        <div class="warning"><strong>WPA препорака:</strong> При пренесување на туѓо име, прво проверете дали постои конвенционализирана форма во Правописот, потоа следете го правилото за тој јазик во поглавје X, а кога именка е премалку позната — додајте го оригиналот во загради: <em>Жан Моне (Jean Monnet)</em>.</div>
+      </section>
+
+      <!-- CHAPTER XI -->
+      <section class="rule-section" id="ch11">
+        <h2>Поглавје XI — Географски имиња и жители</h2>
+        <div class="chapter-meta">Правопис 2017, стр. 289–306</div>
+
+        <p>Алфабетски речник на странски географски имиња, со деривати за жители (м., ж., мн.) и придавки. За WPA — задолжителна референца. Записот има формат:</p>
+        <div class="example right"><strong>Држава</strong>, жител (м.), жителка (ж.), жители (мн.); придавка</div>
+        <div class="example right">Канада, Канаѓанец, Канаѓанка, Канаѓани; канадски</div>
+
+        <h3>11.1 Земји и жители — клучна референца</h3>
+        <table class="rule-table">
+          <thead><tr><th>Држава</th><th>Жител (м.)</th><th>Жителка (ж.)</th><th>Жители (мн.)</th><th>Придавка</th></tr></thead>
+          <tbody>
+            <tr><td>Албанија</td><td>Албанец</td><td>Албанка</td><td>Албанци</td><td>албански</td></tr>
+            <tr><td>Англија</td><td>Англичанец</td><td>Англичанка</td><td>Англичани</td><td>англиски</td></tr>
+            <tr><td>Аргентина</td><td>Аргентинец</td><td>Аргентинка</td><td>Аргентинци</td><td>аргентински</td></tr>
+            <tr><td>Австралија</td><td>Австралиец</td><td>Австралијка</td><td>Австралијци</td><td>австралиски</td></tr>
+            <tr><td>Австрија</td><td>Австриец</td><td>Австријка</td><td>Австријци</td><td>австриски</td></tr>
+            <tr><td>Белгија</td><td>Белгиец</td><td>Белгијка</td><td>Белгијци</td><td>белгиски</td></tr>
+            <tr><td>Бугарија</td><td>Бугарин</td><td>Бугарка</td><td>Бугари</td><td>бугарски</td></tr>
+            <tr><td>Германија</td><td>Германец</td><td>Германка</td><td>Германци</td><td>германски</td></tr>
+            <tr><td>Грција</td><td>Грк</td><td>Гркинка</td><td>Грци</td><td>грчки</td></tr>
+            <tr><td>Данска</td><td>Данец</td><td>Данка</td><td>Данци</td><td>дански</td></tr>
+            <tr><td>Италија</td><td>Италијанец</td><td>Италијанка</td><td>Италијанци</td><td>италијански</td></tr>
+            <tr><td>Јапонија</td><td>Јапонец</td><td>Јапонка</td><td>Јапонци</td><td>јапонски</td></tr>
+            <tr><td>Канада</td><td>Канаѓанец</td><td>Канаѓанка</td><td>Канаѓани</td><td>канадски</td></tr>
+            <tr><td>Кина</td><td>Кинез</td><td>Кинескинка</td><td>Кинези</td><td>кинески</td></tr>
+            <tr><td>Полска</td><td>Полјак</td><td>Полјакинка</td><td>Полјаци</td><td>полски</td></tr>
+            <tr><td>Романија</td><td>Романец</td><td>Романка</td><td>Романци</td><td>романски</td></tr>
+            <tr><td>Русија</td><td>Русин</td><td>Русинка</td><td>Руси</td><td>руски</td></tr>
+            <tr><td>Србија</td><td>Србин</td><td>Српка</td><td>Срби</td><td>српски</td></tr>
+            <tr><td>САД</td><td>Американец</td><td>Американка</td><td>Американци</td><td>американски</td></tr>
+            <tr><td>Турција</td><td>Турчин</td><td>Турчинка</td><td>Турци</td><td>турски</td></tr>
+            <tr><td>Унгарија</td><td>Унгарец</td><td>Унгарка</td><td>Унгарци</td><td>унгарски</td></tr>
+            <tr><td>Финска</td><td>Финец</td><td>Финка</td><td>Финци</td><td>фински</td></tr>
+            <tr><td>Франција</td><td>Французин</td><td>Французинка</td><td>Французи</td><td>француски</td></tr>
+            <tr><td>Холандија</td><td>Холанѓанец</td><td>Холанѓанка</td><td>Холанѓани</td><td>холандски</td></tr>
+            <tr><td>Хрватска</td><td>Хрват</td><td>Хрватка</td><td>Хрвати</td><td>хрватски</td></tr>
+            <tr><td>Швајцарија</td><td>Швајцарец</td><td>Швајцарка</td><td>Швајцарци</td><td>швајцарски</td></tr>
+            <tr><td>Шпанија</td><td>Шпанец</td><td>Шпанка</td><td>Шпанци</td><td>шпански</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+
+    <!-- ========== ERRORS TAB ========== -->
+    <div class="tab-panel" data-panel="errors" id="tab-errors">
+      <section class="rule-section">
+        <h2>Табела за брзо пребарување</h2>
+        <div class="chapter-meta">Најчести правописни грешки и нивните исправки</div>
+
+        <div class="errors-intro">
+          <h3>Напомена од WPA Редакцијата</h3>
+          <p style="font-style: italic; color: var(--wpa-ink-soft);">Оваа табела ќе се пополнува со <strong style="font-style: normal;">проверени</strong> примери од вистинските WPA HTML и DOCX датотеки. До тогаш — содржи само правописни принципи, не лажни „грешки → исправки" парови. Дополнителни примери ќе се додаваат после ревизија на репозиториумот. <strong style="font-style: normal;">Кога ќе најдете вистинска грешка во WPA датотека, пријавете ја преку</strong> <a href="mailto:worldprotocolacademy@gmail.com" style="color: var(--wpa-gold-deep); border-bottom: 1px solid;">worldprotocolacademy@gmail.com</a>.</p>
+        </div>
+
+        <h3>А) Голема vs. мала буква</h3>
+        <table class="rule-table">
+          <thead><tr><th>Несоодветна форма</th><th class="arrow"></th><th>Правилна форма</th><th>Образложение</th></tr></thead>
+          <tbody>
+            <tr><td class="wrong-cell">Министерство за Внатрешни Работи</td><td class="arrow">→</td><td class="right-cell">Министерство за внатрешни работи</td><td>Голема само на првиот дел</td></tr>
+            <tr><td class="wrong-cell">Министерство за Надворешни Работи</td><td class="arrow">→</td><td class="right-cell">Министерство за надворешни работи</td><td>Голема само на првиот дел</td></tr>
+            <tr><td class="wrong-cell">Министер за внатрешни работи</td><td class="arrow">→</td><td class="right-cell">министер за внатрешни работи</td><td>Функција = мала буква (освен на почеток на реченица)</td></tr>
+            <tr><td class="wrong-cell">Проф. Д-р Санде Смилјанов</td><td class="arrow">→</td><td class="right-cell">проф. д-р Санде Смилјанов</td><td>Титула пред име — мала буква</td></tr>
+            <tr><td class="wrong-cell">Француска Револуција</td><td class="arrow">→</td><td class="right-cell">Француска револуција</td><td>Само првиот дел е со голема</td></tr>
+            <tr><td class="wrong-cell">Прва Светска Војна</td><td class="arrow">→</td><td class="right-cell">Прва светска војна</td><td>Само првиот дел</td></tr>
+            <tr><td class="wrong-cell">Виенска Конвенција</td><td class="arrow">→</td><td class="right-cell">Виенска конвенција</td><td>Само првиот дел</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Б) Зборови што често се мешаат</h3>
+        <table class="rule-table">
+          <thead><tr><th>Често погрешно</th><th class="arrow"></th><th>Правилно</th><th>Контекст</th></tr></thead>
+          <tbody>
+            <tr><td class="wrong-cell">магистар</td><td class="arrow">→</td><td class="right-cell">магистер</td><td>Академско звање</td></tr>
+            <tr><td class="wrong-cell">министар</td><td class="arrow">→</td><td class="right-cell">министер</td><td>Функција (со мала буква)</td></tr>
+            <tr><td class="wrong-cell">сепство</td><td class="arrow">→</td><td class="right-cell">себство</td><td>Според Правопис 2017</td></tr>
+            <tr><td class="wrong-cell">интелект (но „интелигентен"!)</td><td class="arrow">→</td><td class="right-cell">интелигентен / интелект</td><td>Двојна основа: со и / со е</td></tr>
+            <tr><td class="wrong-cell">Бејџинг</td><td class="arrow">→</td><td class="right-cell">Пекинг</td><td>Конвенционализирано име</td></tr>
+            <tr><td class="wrong-cell">Њу Јорк</td><td class="arrow">→</td><td class="right-cell">Њујорк</td><td>Слеано</td></tr>
+            <tr><td class="wrong-cell">Лос-Анџелес</td><td class="arrow">→</td><td class="right-cell">Лос Анџелес</td><td>Без цртичка</td></tr>
+            <tr><td class="wrong-cell">Кисингер</td><td class="arrow">→</td><td class="right-cell">Кисинџер</td><td>Транскрипција од англиски</td></tr>
+          </tbody>
+        </table>
+
+        <h3>В) Технички (типографски) грешки</h3>
+        <table class="rule-table">
+          <thead><tr><th>Несоодветна форма</th><th class="arrow"></th><th>Правилна форма</th><th>Зошто</th></tr></thead>
+          <tbody>
+            <tr><td><code>"цитат"</code></td><td class="arrow">→</td><td><code>„цитат"</code></td><td>Македонски наводници (U+201E, U+201C)</td></tr>
+            <tr><td><code>2024-2026</code></td><td class="arrow">→</td><td><code>2024–2026</code></td><td>Распон — со <em>црта</em>, не со цртичка</td></tr>
+            <tr><td><code>стр. 15-30</code></td><td class="arrow">→</td><td><code>стр. 15–30</code></td><td>Распон — со <em>црта</em>, не со цртичка</td></tr>
+            <tr><td><code>веб - страница</code></td><td class="arrow">→</td><td><code>веб-страница</code></td><td>Полусложени — без празно</td></tr>
+            <tr><td><code>...</code> (три точки)</td><td class="arrow">→</td><td><code>…</code> (една ознака)</td><td>U+2026, не три точки</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- ========== QUIZ TAB ========== -->
+    <div class="tab-panel" data-panel="quiz" id="tab-quiz">
+      <div class="quiz-container">
+        <div class="quiz-intro">
+          <h2>Интерактивен квиз</h2>
+          <p>20 прашања за проверка на познавањето на македонскиот правопис според стандардот од 2017 година.</p>
+        </div>
+
+        <div id="quizMain">
+          <div class="quiz-progress" id="progressText">Прашање 1 од 20</div>
+          <div class="quiz-bar"><div class="quiz-bar-fill" id="progressBar"></div></div>
+
+          <div class="quiz-question" id="questionText">
+            <span class="q-num">Прашање 1</span>
+            <span id="qText"></span>
+          </div>
+
+          <div class="quiz-options" id="optionsContainer"></div>
+
+          <div class="quiz-explanation" id="explanation"></div>
+
+          <div class="quiz-controls">
+            <button class="btn btn-secondary" id="skipBtn">Прескокни</button>
+            <button class="btn btn-primary" id="nextBtn" disabled>Следно прашање</button>
+          </div>
+        </div>
+
+        <div class="quiz-result" id="quizResult">
+          <div class="score-label">Вашиот резултат</div>
+          <div class="score-display"><span id="scoreNum">0</span><span class="denominator">/20</span></div>
+          <h3 id="resultTitle"></h3>
+          <p id="resultMessage"></p>
+          <button class="btn btn-primary" id="restartBtn">Започни одново</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ABOUT TAB ========== -->
+    <div class="tab-panel" data-panel="about">
+      <section class="rule-section">
+        <h2>За водичот</h2>
+        <div class="chapter-meta">Извор, методологија, авторски права</div>
+
+        <h3>Извор</h3>
+        <p>Цветковски, Ж., Веновска-Антевска, С., Груевска-Маџоска, С., Јачева-Улчар, Е., Саздов, С. (ред.). (2017). <strong>Правопис на македонскиот јазик</strong> (второ издание). Скопје: Институт за македонски јазик „Крсте Мисирков"; Култура АД – Скопје.</p>
+        <p>ISBN 978-608-220-042-2 (Институт) / 978-9989-32-900-5 (Култура).</p>
+
+        <h3>Методологија</h3>
+        <p>Овој водич е <strong>оригинална институционална формулација на WPA</strong>, изработена како образовно резиме и оперативна референца за WPA авторите и редакторите. Не содржи дословни цитати од оригиналното дело. Правилата се <strong>парафразирани</strong> и илустрирани со примери релевантни за WPA — институционални имиња, дипломатска кореспонденција, академски текстови.</p>
+
+        <h3>Авторски права и фер употреба</h3>
+        <p>Овој дигитален водич е изработен од WPA врз основа на „Правопис на македонскиот јазик" (второ издание, 2017) – Институт за македонски јазик „Крсте Мисирков", Скопје. Ова е <strong>фер употреба</strong> за образовни цели — без репродукција на оригинален текст, со јасна атрибуција на изворот.</p>
+        <p>За официјална употреба, секогаш консултирајте го оригиналниот печатен Правопис. WPA препорачува секој автор и редактор да го поседува оригиналниот печатен извор.</p>
+
+        <h3>Препораки за WPA автори</h3>
+        <ol>
+          <li>Поседувајте го печатениот Правопис. Не постои дигитален заменик за рачно прелистување.</li>
+          <li>Кога имате двоумење — проверете во Правописот, не во Google.</li>
+          <li>Користете лектор за официјални документи.</li>
+          <li>За транскрипција на туѓи имиња — секогаш проверете во поглавје X.</li>
+          <li>За имиња на држави и жители — поглавје XI е авторитетно.</li>
+          <li>Македонски наводници секогаш — „", никогаш правите англиски "".</li>
+          <li>Распони со црта (–), не со цртичка (-).</li>
+          <li>Титули со мала буква (освен на почеток на реченица).</li>
+          <li>Институционални имиња — голема буква само на првиот збор.</li>
+          <li><strong>Преговарањето е опционално. Протоколот е апсолутен.</strong></li>
+        </ol>
+
+        <h3>Верзија и контакт</h3>
+        <p style="font-family: var(--mono); font-size: 14px; color: var(--wpa-ink-soft);">Верзија: 1.0.0 · Мај 2026 · WPA Образовна инфраструктура</p>
+        <p>За пријава на грешки или предлози: <a href="mailto:worldprotocolacademy@gmail.com" style="color: var(--wpa-gold-deep); border-bottom: 1px solid;">worldprotocolacademy@gmail.com</a></p>
+      </section>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <h4>Светска протоколарна академија</h4>
+      <p>Институционална референца за писмена комуникација во документите, веб-страниците и академските текстови на WPA.</p>
+      <p style="margin-top:12px; font-style: italic; color: rgba(247,243,233,0.65);">„Преговарањето е опционално. Протоколот е апсолутен."</p>
+    </div>
+    <div>
+      <h4>Извор</h4>
+      <p>Правопис на македонскиот јазик<br>(второ издание, 2017)<br>Институт „Крсте Мисирков"<br>Култура АД – Скопје</p>
+    </div>
+    <div>
+      <h4>Контакт</h4>
+      <p><a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+      <p><a href="mailto:worldprotocolacademy@outlook.com">worldprotocolacademy@outlook.com</a></p>
+    </div>
+  </div>
+  <div class="copyright">
+    © 2026 World Protocol Academy. Овој водич е оригинална институционална формулација изработена како образовно резиме врз основа на Правописот од 2017 година. Не претставува заменик за оригиналното дело.
+  </div>
+</footer>
+
+<script>
+'use strict';
+
+/* ===== TAB SWITCHING ===== */
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabPanels = document.querySelectorAll('.tab-panel');
+
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    tabBtns.forEach(b => b.classList.remove('active'));
+    tabPanels.forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector(`[data-panel="${target}"]`).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+/* ===== TOC AUTO-SWITCH TAB ===== */
+document.querySelectorAll('.toc-link').forEach(link => {
+  link.addEventListener('click', (e) => {
+    const target = link.getAttribute('href');
+    if (target === '#tab-errors') {
+      e.preventDefault();
+      document.querySelector('[data-tab="errors"]').click();
+      setTimeout(() => document.getElementById('tab-errors')?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } else if (target === '#tab-quiz') {
+      e.preventDefault();
+      document.querySelector('[data-tab="quiz"]').click();
+      setTimeout(() => document.getElementById('tab-quiz')?.scrollIntoView({ behavior: 'smooth' }), 100);
+    } else {
+      // Make sure rules tab is active
+      document.querySelector('[data-tab="rules"]').click();
+    }
+  });
+});
+
+/* ===== SEARCH (live filter + highlight) ===== */
+const searchInput = document.getElementById('searchInput');
+const hitCount = document.getElementById('hitCount');
+
+function clearHighlights(root) {
+  root.querySelectorAll('.highlight').forEach(el => {
+    const parent = el.parentNode;
+    parent.replaceChild(document.createTextNode(el.textContent), el);
+    parent.normalize();
+  });
+}
+
+function highlightTextInNode(node, query) {
+  if (!query) return 0;
+  let count = 0;
+  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => {
+      if (n.parentElement.closest('script,style,.search-bar,.tab-nav,.sidebar')) return NodeFilter.FILTER_REJECT;
+      return n.nodeValue.toLowerCase().includes(query.toLowerCase()) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const textNodes = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode);
+  const re = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+  textNodes.forEach(tn => {
+    const frag = document.createDocumentFragment();
+    let last = 0;
+    tn.nodeValue.replace(re, (match, offset) => {
+      frag.appendChild(document.createTextNode(tn.nodeValue.slice(last, offset)));
+      const span = document.createElement('span');
+      span.className = 'highlight';
+      span.textContent = match;
+      frag.appendChild(span);
+      last = offset + match.length;
+      count++;
+      return match;
+    });
+    frag.appendChild(document.createTextNode(tn.nodeValue.slice(last)));
+    tn.parentNode.replaceChild(frag, tn);
+  });
+  return count;
+}
+
+let searchTimeout;
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    const query = e.target.value.trim();
+    const activePanel = document.querySelector('.tab-panel.active');
+    clearHighlights(activePanel);
+    if (query.length < 2) {
+      hitCount.textContent = '0';
+      return;
+    }
+    const count = highlightTextInNode(activePanel, query);
+    hitCount.textContent = count;
+    if (count > 0) {
+      const first = activePanel.querySelector('.highlight');
+      first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 250);
+});
+
+/* ===== QUIZ ===== */
+const quizData = [
+  {
+    q: "Како се пишува името на органот за внатрешни работи?",
+    options: ["Министерство за Внатрешни Работи", "Министерство за внатрешни работи", "министерство за внатрешни работи", "МИНИСТЕРСТВО ЗА ВНАТРЕШНИ РАБОТИ"],
+    correct: 1,
+    explanation: "Имињата на државни органи се пишуваат со <strong>голема буква само на првиот дел</strong> од називот. Останатите делови се со мала буква."
+  },
+  {
+    q: "Која форма е правилна — академско звање?",
+    options: ["магистар", "магистер", "магистр", "Магистер"],
+    correct: 1,
+    explanation: "Според Правопис 2017, академското звање се пишува <strong>магистер</strong> (со <strong>е</strong>, не со <strong>а</strong>). Истото важи и за <em>министер</em>."
+  },
+  {
+    q: "Како се пишува името на главниот град на Кина?",
+    options: ["Бејџинг", "Пекинг", "Бејинг", "Beijing"],
+    correct: 1,
+    explanation: "Македонската конвенционализирана форма е <strong>Пекинг</strong>, не \u201EБејџинг\u201C."
+  },
+  {
+    q: "Која форма ги користи правилно македонските наводници?",
+    options: ['"состанокот започнува"', '\u201Eсостанокот започнува\u201C', "'состанокот започнува'", '«состанокот започнува»'],
+    correct: 1,
+    explanation: "Македонскиот стандард користи <strong>\u201E \u201C</strong> — долни наводници на почеток, горни на крај. Правите англиски <em>\" \"</em> не се користат."
+  },
+  {
+    q: "Како е правилно — распон на години?",
+    options: ["2024-2026", "2024–2026", "2024 - 2026", "2024 до 2026"],
+    correct: 1,
+    explanation: "Распони се пишуваат со <strong>црта (–, en-dash, U+2013)</strong>, не со цртичка (-). Тастатура: Alt+0150 или Option+минус."
+  },
+  {
+    q: "Која реченица е правилна?",
+    options: [
+      "Проф. Д-р Санде Смилјанов е директор на WPA.",
+      "Проф. д-р Санде Смилјанов е директор на WPA.",
+      "проф. д-р санде смилјанов е директор на WPA.",
+      "ПРОФ. Д-Р Санде Смилјанов е директор на WPA."
+    ],
+    correct: 1,
+    explanation: "Титулите (<em>проф., д-р</em>) се пишуваат со <strong>мала</strong> буква пред името. Личното име и презиме се со <strong>голема</strong>."
+  },
+  {
+    q: "Како се пишува името на најголемата воена војна од XX век?",
+    options: ["Прва Светска Војна", "Прва светска војна", "прва светска војна", "ПРВА СВЕТСКА ВОЈНА"],
+    correct: 1,
+    explanation: "Имињата на историски настани се пишуваат со <strong>голема буква само на првиот дел</strong>: <em>Прва светска војна</em>, <em>Француска револуција</em>, <em>Илинденско востание</em>."
+  },
+  {
+    q: "Која форма е правилна?",
+    options: ["сепство", "себство", "себе-ство", "Себство"],
+    correct: 1,
+    explanation: "Според Правопис 2017, се пишува <strong>себство</strong>, не \u201Eсепство\u201C. Тоа е една од промените воведени со новото издание."
+  },
+  {
+    q: "Како е правилно — име на установа?",
+    options: [
+      "Институт за Македонски Јазик",
+      "Институт за македонски јазик \u201EКрсте Мисирков\u201C",
+      "ИНСТИТУТ ЗА МАКЕДОНСКИ ЈАЗИК",
+      "институт за македонски јазик"
+    ],
+    correct: 1,
+    explanation: "Имињата на установи — голема буква само на првиот дел; сопствени имиња во составот (Крсте Мисирков) со голема буква на двата дела."
+  },
+  {
+    q: "Која форма на полусложен збор е правилна?",
+    options: ["веб - страница", "веб-страница", "вебстраница", "веб страница"],
+    correct: 1,
+    explanation: "Полусложените зборови се пишуваат со <strong>цртичка (-)</strong>, без празни знаци околу неа: <em>веб-страница, кафе-пауза, спорт-сектор</em>."
+  },
+  {
+    q: "Која форма е правилна — за функцијата на лицето во владата?",
+    options: ["Министер за надворешни работи", "министер за надворешни работи", "Министерот за Надворешни Работи", "МИНИСТЕР"],
+    correct: 1,
+    explanation: "Функцијата \u201Eминистер\u201C се пишува со <strong>мала</strong> буква, освен ако е на почеток на реченица. Истото важи за <em>претседател, премиер, амбасадор</em>."
+  },
+  {
+    q: "Како е правилно — паричната единица на Република Северна Македонија?",
+    options: ["Денар", "денар", "ДЕНАР", "ден."],
+    correct: 1,
+    explanation: "Паричните единици се пишуваат со <strong>мала</strong> буква: <em>денар, евро, долар, јен, франк, лира</em>."
+  },
+  {
+    q: "Кој од овие парови содржи правилен правопис?",
+    options: [
+      "интелигентен / перцепција",
+      "интелегентен / перципција",
+      "интелигентан / перцепцја",
+      "интелегентан / перцепција"
+    ],
+    correct: 0,
+    explanation: "Двојна основа: <em>интелигентен</em> со <strong>и</strong>, но <em>интелект</em> со <strong>е</strong>; <em>перципира</em> со <strong>и</strong>, но <em>перцепција</em> со <strong>е</strong>."
+  },
+  {
+    q: "Како е правилно — географска ознака?",
+    options: ["Лос-Анџелес", "Лос Анџелес", "ЛосАнџелес", "Los Angeles"],
+    correct: 1,
+    explanation: "Се пишува <strong>Лос Анџелес</strong> — без цртичка, со празно. Според поглавје XI."
+  },
+  {
+    q: "Кога се пишува запирка во ова набројување — \u201EГерманија, Франција, Италија и Шпанија\u201C?",
+    options: [
+      "Германија, Франција, Италија, и Шпанија (со запирка пред 'и')",
+      "Германија, Франција, Италија и Шпанија (без запирка пред 'и')",
+      "Германија Франција Италија и Шпанија (без запирки)",
+      "Германија; Франција; Италија; Шпанија"
+    ],
+    correct: 1,
+    explanation: "Во македонскиот стандард, <strong>пред последниот член со \u201Eи\u201C</strong> во набројување <strong>не</strong> се пишува запирка. Тоа е разлика во однос на американскиот англиски стил (\u201EOxford comma\u201C)."
+  },
+  {
+    q: "Која форма на име на жителка е правилна?",
+    options: ["Канаѓанка", "Канадинка", "Канадиец", "Канаѓанец"],
+    correct: 0,
+    explanation: "Според поглавје XI: <strong>Канаѓанка</strong> (ж.), Канаѓанец (м.), Канаѓани (мн.); канадски (придавка)."
+  },
+  {
+    q: "Како е правилно — име на воен/мировен договор?",
+    options: ["Виенска Конвенција за дипломатски односи", "Виенска конвенција за дипломатски односи", "ВИЕНСКА КОНВЕНЦИЈА", "виенска конвенција за дипломатски односи"],
+    correct: 1,
+    explanation: "Имињата на меѓународни договори и конференции — <strong>голема буква само на првиот дел</strong>."
+  },
+  {
+    q: "Која е правилната ознака за три точки во цитат?",
+    options: [".....", "...", "…", "[...]"],
+    correct: 2,
+    explanation: "Се користи единствената ознака <strong>… (U+2026)</strong>, не три одделни точки. При испуштање во цитат, формата е <em>[…]</em> во квадратни загради."
+  },
+  {
+    q: "Како е правилно — за информатички термин?",
+    options: ["Веб-Страница", "веб-страница", "Веб страница", "ВЕБ-СТРАНИЦА"],
+    correct: 1,
+    explanation: "Информатичките термини се пишуваат со <strong>мала</strong> буква: <em>интернет, софтвер, хардвер, веб-страница, веб-папка, сервер</em>."
+  },
+  {
+    q: "Што гласи WPA доктрината?",
+    options: [
+      "Преговарањето е стандардно. Протоколот е флексибилен.",
+      "Преговарањето е опционално. Протоколот е апсолутен.",
+      "Протоколот е опционален. Преговарањето е апсолутно.",
+      "Протоколот е стандардно. Преговарањето е дополнително."
+    ],
+    correct: 1,
+    explanation: "WPA доктрината: <strong>\u201EПреговарањето е опционално. Протоколот е апсолутен.\u201C</strong>"
+  }
+];
+
+let currentQ = 0;
+let score = 0;
+let answered = false;
+
+const qText = document.getElementById('qText');
+const optionsContainer = document.getElementById('optionsContainer');
+const explanationDiv = document.getElementById('explanation');
+const nextBtn = document.getElementById('nextBtn');
+const skipBtn = document.getElementById('skipBtn');
+const progressText = document.getElementById('progressText');
+const progressBar = document.getElementById('progressBar');
+const quizMain = document.getElementById('quizMain');
+const quizResult = document.getElementById('quizResult');
+const scoreNum = document.getElementById('scoreNum');
+const resultTitle = document.getElementById('resultTitle');
+const resultMessage = document.getElementById('resultMessage');
+
+function loadQuestion() {
+  answered = false;
+  const data = quizData[currentQ];
+  qText.textContent = data.q;
+  document.querySelector('.q-num').textContent = `Прашање ${currentQ + 1}`;
+  progressText.textContent = `Прашање ${currentQ + 1} од ${quizData.length}`;
+  progressBar.style.width = `${((currentQ) / quizData.length) * 100}%`;
+  optionsContainer.innerHTML = '';
+  const labels = ['А', 'Б', 'В', 'Г'];
+  data.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-option';
+    btn.dataset.label = labels[idx];
+    btn.textContent = opt;
+    btn.addEventListener('click', () => selectAnswer(idx, btn));
+    optionsContainer.appendChild(btn);
+  });
+  explanationDiv.classList.remove('show');
+  explanationDiv.innerHTML = '';
+  nextBtn.disabled = true;
+  nextBtn.textContent = currentQ === quizData.length - 1 ? 'Резултат' : 'Следно прашање';
+}
+
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  const data = quizData[currentQ];
+  const allOptions = optionsContainer.querySelectorAll('.quiz-option');
+  allOptions.forEach(o => o.disabled = true);
+  if (idx === data.correct) {
+    btn.classList.add('correct');
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    allOptions[data.correct].classList.add('correct');
+  }
+  explanationDiv.innerHTML = `<strong>Образложение:</strong> ${data.explanation}`;
+  explanationDiv.classList.add('show');
+  nextBtn.disabled = false;
+}
+
+nextBtn.addEventListener('click', () => {
+  if (currentQ < quizData.length - 1) {
+    currentQ++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+});
+
+skipBtn.addEventListener('click', () => {
+  if (currentQ < quizData.length - 1) {
+    currentQ++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+});
+
+function showResult() {
+  quizMain.style.display = 'none';
+  quizResult.classList.add('show');
+  scoreNum.textContent = score;
+  const pct = (score / quizData.length) * 100;
+  if (pct >= 90) {
+    resultTitle.textContent = 'Извонредно владеење на правописот';
+    resultMessage.textContent = 'Достигнавте институционален WPA стандард. Препорачано — продолжете со обуки за други автори.';
+  } else if (pct >= 70) {
+    resultTitle.textContent = 'Солидно познавање';
+    resultMessage.textContent = 'Совладано е основното. Препорачуваме рефреш на поглавјата каде што имавте грешки.';
+  } else if (pct >= 50) {
+    resultTitle.textContent = 'Потребна е дополнителна работа';
+    resultMessage.textContent = 'Препорачуваме систематско прелистување на поглавјата III (голема/мала буква) и V (интерпункција).';
+  } else {
+    resultTitle.textContent = 'Препорака за основна обука';
+    resultMessage.textContent = 'Препорачуваме почеток со печатениот Правопис и постепено вежбање со WPA текстови.';
+  }
+}
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  currentQ = 0;
+  score = 0;
+  answered = false;
+  quizMain.style.display = 'block';
+  quizResult.classList.remove('show');
+  loadQuestion();
+});
+
+loadQuestion();
+</script>
+
+</body>
+</html>
