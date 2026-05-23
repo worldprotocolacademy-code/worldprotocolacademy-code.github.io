@@ -1,0 +1,267 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldprotocolacademy.org/schemas/protocol-symbols/v1.0.json",
+  "title": "WPA Protocol Symbols Lab — Record Schema",
+  "description": "Канонска шема за 53-те записи на Лабораторијата за протоколни симболи на Светска Протоколна Академија (WPA). Секој запис содржи 6 јадрени домени (идентитет, знаме, химна, грб, главен град, континент), троен извор-аудит и слој за дипломатска корекција. Стандард: 3-извори (UN/Влада + CIA World Factbook + државен официјален извор). Доктрина: Преговарањето е опционално. Протоколот е апсолутен.",
+  "version": "1.1.0",
+  "release_date": "2026-05-23",
+  "changelog": "v1.1.0 (2026-05-23): Director-ordered amendments — (1) added 'legacy_record' to verification_status enum for migration of pre-3-source records; (2) added optional 'disclaimer' field at record level for explicit public-facing notices.",
+  "type": "object",
+  "required": [
+    "record_id",
+    "iso_3166_alpha_2",
+    "iso_3166_alpha_3",
+    "official_name_en",
+    "official_name_local",
+    "continent",
+    "capital",
+    "flag",
+    "anthem",
+    "coat_of_arms",
+    "verification_status",
+    "sources",
+    "audit_trail",
+    "correction_layer"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string",
+      "pattern": "^WPA-PSL-[0-9]{4}$",
+      "description": "Уникатен WPA серски број (пр. WPA-PSL-0001 = Северна Македонија)."
+    },
+    "iso_3166_alpha_2": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "ISO 3166-1 alpha-2 (пр. MK, US, CN, DE, BR)."
+    },
+    "iso_3166_alpha_3": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 3166-1 alpha-3 (пр. MKD, USA, CHN, DEU, BRA)."
+    },
+    "official_name_en": {
+      "type": "string",
+      "description": "Официјално долго име на англиски (UN Member States register)."
+    },
+    "official_name_local": {
+      "type": "object",
+      "description": "Официјално име на службениот јазик(и) на државата. Клуч = ISO 639-1, вредност = низа.",
+      "additionalProperties": { "type": "string" }
+    },
+    "continent": {
+      "type": "string",
+      "enum": [
+        "Europe",
+        "Asia",
+        "Africa",
+        "North America",
+        "South America",
+        "Oceania",
+        "Antarctica"
+      ],
+      "description": "UN геошема. Транс-континентални држави добиваат primary + secondary во capital.notes."
+    },
+    "capital": {
+      "type": "object",
+      "required": ["name_en", "name_local", "latitude", "longitude"],
+      "properties": {
+        "name_en": { "type": "string" },
+        "name_local": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "is_de_facto_only": {
+          "type": "boolean",
+          "description": "true ако главниот град е de facto но не de jure (пр. дискутирани случаи)."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "flag": {
+      "type": "object",
+      "required": [
+        "description_en",
+        "proportion",
+        "adoption_date_current",
+        "design_law"
+      ],
+      "properties": {
+        "description_en": {
+          "type": "string",
+          "description": "Хералдичен опис (придржува се на CIA Factbook стандард на опис кога е применливо)."
+        },
+        "proportion": {
+          "type": "string",
+          "pattern": "^[0-9]+:[0-9]+$",
+          "description": "Однос ширина:должина (пр. 1:2, 2:3, 7:10, 10:19)."
+        },
+        "adoption_date_current": {
+          "type": "string",
+          "format": "date",
+          "description": "Датум на усвојување на тековниот дизајн (ISO 8601: YYYY-MM-DD)."
+        },
+        "adoption_date_first": {
+          "type": "string",
+          "format": "date",
+          "description": "Опционално — првиот пост-независен/прв пост-уставен дизајн."
+        },
+        "design_law": {
+          "type": "string",
+          "description": "Цитат на конститутивниот закон/декрет/устав што го пропишува знамето."
+        },
+        "designer": { "type": "string" },
+        "colors_pantone": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Pantone/PMS кодови ако се пропишани со закон или олимписки протоколен прирачник."
+        }
+      }
+    },
+    "anthem": {
+      "type": "object",
+      "required": ["title_local", "title_en", "lyricist", "composer", "adoption_date_current"],
+      "properties": {
+        "title_local": { "type": "string" },
+        "title_en": { "type": "string" },
+        "lyricist": { "type": "string" },
+        "composer": { "type": "string" },
+        "year_composed": { "type": "integer", "minimum": 1500, "maximum": 2100 },
+        "adoption_date_current": {
+          "type": "string",
+          "format": "date",
+          "description": "Датум на усвојување или readoption во тековниот политички ентитет."
+        },
+        "design_law": { "type": "string" }
+      }
+    },
+    "coat_of_arms": {
+      "type": "object",
+      "required": ["description_en", "adoption_date_current"],
+      "properties": {
+        "description_en": { "type": "string" },
+        "adoption_date_current": {
+          "type": "string",
+          "format": "date"
+        },
+        "adoption_date_first": { "type": "string", "format": "date" },
+        "designer": { "type": "string" },
+        "design_law": { "type": "string" },
+        "heraldic_classification": {
+          "type": "string",
+          "enum": [
+            "socialist_heraldry",
+            "classical_heraldry",
+            "national_emblem_non_heraldic",
+            "republican_seal",
+            "monarchic_arms",
+            "other"
+          ]
+        }
+      }
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "fully_verified",
+        "partial_consensus",
+        "pending_clarification",
+        "corrected_by_state",
+        "legacy_record"
+      ],
+      "description": "fully_verified = сите 3 извори се согласуваат на сите јадрени полиња. partial_consensus = мнозинство-консензус со една споредна контрадикција (пр. датум на објавување vs. влез во сила) што е документирана но не блокира употреба. pending_clarification = јадрена контрадикција помеѓу извори; полето е заклучено за официјална употреба до резолуција. corrected_by_state = претходно непознато/контрадикторно поле е разрешено преку Diplomatic Correction Protocol со официјален државен документ. legacy_record = запис преземен од претходен WPA систем (пр. Protocol Symbols Verified Core, April 2026) кој сè уште не е повторно верифициран според 3-извори WPA стандардот; не смее да се користи протоколарно без ре-верификација."
+    },
+    "verification_status_notes": {
+      "type": "string",
+      "description": "Слободен текст што ја објаснува природата на контрадикцијата (ако постои). Задолжително ако status != fully_verified."
+    },
+    "disclaimer": {
+      "type": "string",
+      "description": "Експлицитен јавно-видлив дисклејмер на ниво на запис. Се користи кога WPA сака отворено да соопшти дека записот е предмет на дипломатски дијалог, миграциско ре-верификување, или има активно барање за корекција. Се прикажува на сите јавни прикази на записот (web, API одговор, PDF извештаи). Опционално; ако е празно — нема дисклејмер."
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 3,
+      "description": "Точно три или повеќе независни извори. ТИЕР 1 = UN/официјална влада. ТИЕР 2 = CIA World Factbook. ТИЕР 3 = државен сајт (МНР, претседателство, Собрание, Министерство за култура).",
+      "items": {
+        "type": "object",
+        "required": ["tier", "name", "url", "accessed_date", "fields_covered"],
+        "properties": {
+          "tier": { "type": "string", "enum": ["TIER_1_UN_GOV", "TIER_2_CIA_FACTBOOK", "TIER_3_STATE_OFFICIAL", "TIER_4_REFERENCE"] },
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "accessed_date": { "type": "string", "format": "date" },
+          "fields_covered": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["flag", "anthem", "coat_of_arms", "capital", "continent", "official_name"]
+            }
+          },
+          "publication_date": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "audit_trail": {
+      "type": "object",
+      "required": ["created_by", "created_at", "verified_by", "verified_at"],
+      "properties": {
+        "created_by": { "type": "string", "description": "пр. 'WPA Editorial Board / Claude WPA Officer'" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "verified_by": { "type": "string" },
+        "verified_at": { "type": "string", "format": "date-time" },
+        "last_review_at": { "type": "string", "format": "date-time" },
+        "next_scheduled_review": {
+          "type": "string",
+          "format": "date",
+          "description": "WPA политика: ре-верификација на секои 24 месеци или после Diplomatic Correction event."
+        },
+        "revision_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "correction_layer": {
+      "type": "object",
+      "required": ["status", "corrections_received"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["no_request", "request_received", "under_review", "applied", "rejected"]
+        },
+        "corrections_received": {
+          "type": "array",
+          "description": "Низа на сите дипломатски барања за корекција, инкл. одбиените.",
+          "items": {
+            "type": "object",
+            "required": ["request_id", "received_at", "requesting_entity", "field_affected", "supporting_document_url", "channel"],
+            "properties": {
+              "request_id": { "type": "string", "pattern": "^WPA-DCR-[0-9]{4}-[0-9]{4}$", "description": "WPA-DCR-{година}-{редоследен}" },
+              "received_at": { "type": "string", "format": "date-time" },
+              "requesting_entity": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "type": { "type": "string", "enum": ["foreign_ministry", "embassy_consulate", "head_of_state_office", "parliament", "ministry_of_culture", "national_heraldry_office", "other_state_organ"] },
+                  "country_iso": { "type": "string" }
+                }
+              },
+              "channel": {
+                "type": "string",
+                "enum": ["email_initial_request", "diplomatic_note_final_confirmation", "in_person_delivery_with_seal", "verified_official_letter"],
+                "description": "Двостепен официјален влез: email како инициjално барање + дипломатска нота за финална потврда."
+              },
+              "field_affected": { "type": "string" },
+              "old_value": {},
+              "proposed_value": {},
+              "supporting_document_url": { "type": "string", "format": "uri", "description": "Линк до официјален Сл. весник, закон, владин декрет или сертифицирана архива." },
+              "wpa_response_due_date": { "type": "string", "format": "date", "description": "WPA SLA = 15 календарски денови од прием на email-барање." },
+              "wpa_decision": { "type": "string", "enum": ["pending", "approved", "rejected", "request_more_evidence"] },
+              "wpa_decision_at": { "type": "string", "format": "date-time" },
+              "wpa_decision_rationale": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
