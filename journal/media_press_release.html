@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Global Institutions Index — Медиумска покана</title>
+<style>
+  :root {
+    --wpa-gold: #C9A84C;
+    --wpa-dark: #1a1a2e;
+    --wpa-navy: #16213e;
+    --wpa-blue: #0f3460;
+    --wpa-accent: #e94560;
+    --wpa-light: #f5f5f5;
+    --wpa-text: #333;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--wpa-light);
+    color: var(--wpa-text);
+    line-height: 1.7;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+  header {
+    background: linear-gradient(135deg, var(--wpa-dark) 0%, var(--wpa-navy) 100%);
+    color: white;
+    padding: 60px 40px;
+    text-align: center;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%23C9A84C" stroke-width="0.5" opacity="0.3"/></svg>');
+    background-size: 80px;
+    opacity: 0.1;
+  }
+  header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--wpa-gold);
+    position: relative;
+    z-index: 1;
+  }
+  header .subtitle {
+    font-size: 1.1em;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+  header .lang-switch {
+    margin-top: 20px;
+    font-size: 0.9em;
+    opacity: 0.7;
+    position: relative;
+    z-index: 1;
+  }
+  .section {
+    background: white;
+    padding: 35px 40px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--wpa-gold);
+  }
+  .section h2 {
+    color: var(--wpa-navy);
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--wpa-gold);
+  }
+  .section h3 {
+    color: var(--wpa-blue);
+    font-size: 1.2em;
+    margin: 25px 0 15px;
+  }
+  .highlight-box {
+    background: linear-gradient(135deg, var(--wpa-navy) 0%, var(--wpa-blue) 100%);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 8px;
+    margin: 25px 0;
+  }
+  .highlight-box p { margin: 0; font-size: 1.05em; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95em;
+  }
+  th {
+    background: var(--wpa-navy);
+    color: white;
+    padding: 14px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  tr:nth-child(even) { background: #f8f9fa; }
+  tr:hover { background: #eef2f7; }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 25px 0;
+  }
+  .stat-card {
+    background: linear-gradient(135deg, var(--wpa-dark) 0%, var(--wpa-navy) 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .stat-card .number {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--wpa-gold);
+    display: block;
+  }
+  .stat-card .label {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-top: 8px;
+  }
+  .collab-item {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 3px solid var(--wpa-accent);
+  }
+  .collab-item h4 {
+    color: var(--wpa-navy);
+    margin-bottom: 10px;
+    font-size: 1.1em;
+  }
+  .contact-section {
+    background: linear-gradient(135deg, var(--wpa-dark) 0%, var(--wpa-navy) 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  .contact-section h2 {
+    color: var(--wpa-gold);
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    border: none;
+  }
+  .contact-section a {
+    color: var(--wpa-gold);
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+  .contact-section a:hover { text-decoration: underline; }
+  .footer-quote {
+    text-align: center;
+    font-style: italic;
+    color: var(--wpa-navy);
+    font-size: 1.1em;
+    margin: 30px 0;
+    padding: 20px;
+    border-top: 2px solid var(--wpa-gold);
+    border-bottom: 2px solid var(--wpa-gold);
+  }
+  .copyright {
+    text-align: center;
+    color: #888;
+    font-size: 0.85em;
+    margin-top: 30px;
+    padding: 20px;
+  }
+  @media (max-width: 600px) {
+    header { padding: 40px 20px; }
+    header h1 { font-size: 1.6em; }
+    .section { padding: 25px 20px; }
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <h1>⚜️ WPA Global Institutions Index</h1>
+  <p class="subtitle">Првиот независен глобален институциски индекс за протокол, дипломатија, јавна комуникација и безбедност</p>
+  <p class="lang-switch">The first independent Global Institutions Index for Protocol, Diplomacy, Public Communication & Security Studies</p>
+</header>
+
+<div class="section">
+  <h2>📊 Што е WPA Индексот? | What is the WPA Index?</h2>
+  <p>WPA Индексот е специјализирана аналитичка алатка која ги оценува институциите според четири клучни столба:</p>
+  <p style="opacity:0.7; font-size:0.95em; margin-top:10px;">The WPA Index is a specialized analytical tool that evaluates institutions across four key pillars:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Столб / Pillar</th>
+        <th>Тежина / Weight</th>
+        <th>Опис / Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Научна и истражувачка продукција</strong><br><span style="font-size:0.85em; color:#666;">Scientific & Research Output</span></td>
+        <td>~30%</td>
+        <td>Публикации, цитати, истражувачки проекти<br><span style="font-size:0.85em; color:#666;">Publications, citations, research projects</span></td>
+      </tr>
+      <tr>
+        <td><strong>Програми и сертификација</strong><br><span style="font-size:0.85em; color:#666;">Programmes & Certification</span></td>
+        <td>~25%</td>
+        <td>Образовни програми, сертификати, акредитација<br><span style="font-size:0.85em; color:#666;">Educational programmes, certificates, accreditation</span></td>
+      </tr>
+      <tr>
+        <td><strong>Професионална практика</strong><br><span style="font-size:0.85em; color:#666;">Professional Practice</span></td>
+        <td>~25%</td>
+        <td>Владини соработки, дипломатски мисии, работилници<br><span style="font-size:0.85em; color:#666;">Government cooperation, diplomatic missions, workshops</span></td>
+      </tr>
+      <tr>
+        <td><strong>Транспарентност и соработка</strong><br><span style="font-size:0.85em; color:#666;">Transparency & Cooperation</span></td>
+        <td>~20%</td>
+        <td>Јавни податоци, меѓународни MoU-и, отворен пристап<br><span style="font-size:0.85em; color:#666;">Public data, international MoUs, open access</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="highlight-box">
+    <p>⚠️ <strong>Важно / Important:</strong> Индексот <strong>не е</strong> државна акредитација, <strong>не е</strong> универзитетска ранг-листа и <strong>не заменува</strong> Scopus, Web of Science или ORCID. Тоа е <strong>независна аналитичка рамка</strong> специјализирана за областа на протоколот и дипломатијата.</p>
+    <p style="margin-top:10px; opacity:0.9;">The Index is <strong>not</strong> a state accreditation, <strong>not</strong> a university ranking, and does <strong>not replace</strong> Scopus, Web of Science, or ORCID. It is an <strong>independent analytical framework</strong> specialized for the field of protocol and diplomacy.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🌍 Зошто е важен? | Why is it important?</h2>
+  <p>Ова е <strong>прв пат</strong> некоја независна академија да направи систематска споредба на институции од областа на протоколот и дипломатијата — од мали протоколарни академии до глобални универзитети како Harvard, Oxford и Sciences Po.</p>
+  <p style="opacity:0.7; font-size:0.95em; margin-top:10px;">This is the <strong>first time</strong> an independent academy has created a systematic comparison of institutions in the field of protocol and diplomacy — from small protocol academies to global universities like Harvard, Oxford, and Sciences Po.</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="number">125</span>
+      <span class="label">институции / institutions<br>во 9 групи / in 9 groups</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">9</span>
+      <span class="label">континенти и региони /<br>continents & regions</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">4</span>
+      <span class="label">нивоа на релевантност /<br>relevance levels (A–D)</span>
+    </div>
+    <div class="stat-card">
+      <span class="number">0</span>
+      <span class="label">државна акредитација /<br>state accreditation<br><span style="font-size:0.8em;">(целосно независен / fully independent)</span></span>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🤝 Како медиумите можат да соработуваат? | How can media collaborate?</h2>
+  <p>Покануваме весници, портали, специјализирани медиуми и аналитички платформи да објават:</p>
+  <p style="opacity:0.7; font-size:0.95em; margin-top:10px;">We invite newspapers, portals, specialized media, and analytical platforms to publish:</p>
+
+  <div class="collab-item">
+    <h4>📰 1. Ексклузивна статија за методологијата | Exclusive article on methodology</h4>
+    <p>Детален опис на четирите столба и тежините. Објаснување зашто мали академии не се споредуваат со големи универзитети. Прозирност на процесот — секоја институција може да побара корекција.</p>
+    <p style="opacity:0.7; font-size:0.9em;">Detailed description of the four pillars and weights. Explanation why small academies are not compared with large universities. Transparency — every institution can request correction.</p>
+  </div>
+
+  <div class="collab-item">
+    <h4>🎤 2. Интервју со основачот | Interview with the founder</h4>
+    <p><strong>Доц. д-р Санде Смиљанов</strong> (Doc. d-r Sande Smiljanov), основач и директор на WPA. Теми: зошто протоколот е важен во современата дипломатија, глобалните трендови, иднината на WPA.</p>
+    <p style="opacity:0.7; font-size:0.9em;"><strong>Doc. d-r Sande Smiljanov</strong>, Founder & Director of WPA. Topics: why protocol matters in modern diplomacy, global trends, WPA's future. Available in Macedonian, English, German, Japanese, Hindi, and Chinese.</p>
+  </div>
+
+  <div class="collab-item">
+    <h4>📊 3. Податоци од индексот за вашата земја | Index data for your country</h4>
+    <p>Список на институции од вашата држава со нивната релевантност. Споредба со регионални соседи. Анализа на силните и слабите страни.</p>
+    <p style="opacity:0.7; font-size:0.9em;">List of institutions from your country with their relevance levels. Comparison with regional neighbours. Analysis of strengths and weaknesses.</p>
+  </div>
+
+  <div class="collab-item">
+    <h4>📈 4. Визуелни материјали | Visual materials</h4>
+    <p>Инфографика со глобалната мапа на институциите. Табели со рангирање по групи. Графикони за дистрибуција по континенти и релевантност.</p>
+    <p style="opacity:0.7; font-size:0.9em;">Infographic with global map of institutions. Tables with group rankings. Charts for distribution by continent and relevance.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2>🏛️ За WPA | About WPA</h2>
+  <p><strong>World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies</strong></p>
+  <ul style="margin-top:15px; padding-left:20px;">
+    <li><strong>Мисија / Mission:</strong> Глобални протоколарни стандарди и академска размена / Global protocol standards and academic exchange</li>
+    <li><strong>Независност / Independence:</strong> Не е под влада, не е под универзитет, не е под корпорација / Not under government, not under university, not under corporation</li>
+    <li><strong>Активни партнерства / Active partnerships:</strong> CFAU (Кина / China), ICPA Japan, Diplomatische Akademie Wien (Австрија / Austria), SSIFS (Индија / India)</li>
+    <li><strong>Јазици / Languages:</strong> Македонски, англиски, германски, јапонски, хинди, кинески / Macedonian, English, German, Japanese, Hindi, Chinese</li>
+  </ul>
+</div>
+
+<div class="contact-section">
+  <h2>📧 Контакт | Contact</h2>
+  <p style="margin-bottom:20px;">За повеќе информации, договор за соработка или интервју:<br><span style="opacity:0.8;">For more information, partnership agreements, or interview requests:</span></p>
+  <p><a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+  <p style="margin-top:15px;"><a href="https://worldprotocolacademy-code.github.io">worldprotocolacademy-code.github.io</a></p>
+</div>
+
+<div class="footer-quote">
+  "Преговарањето е опционално. Протоколот е апсолутен."<br>
+  <span style="opacity:0.7;">"Negotiation is optional. Protocol is absolute."</span>
+</div>
+
+<div class="copyright">
+  © 2026 World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies<br>
+  worldprotocolacademy@gmail.com
+</div>
+
+</div>
+
+</body>
+</html>
