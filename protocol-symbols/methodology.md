@@ -1,205 +1,212 @@
-# WPA Diplomatic Correction Protocol (DCP) v1.1
+# ЗАДАЧА A — Verification Methodology v1.1
+## WPA Protocol Symbols Lab — Zero Hallucination Standard
 
-**Authority:** World Protocol Academy (WPA) — Protocol Symbols Lab  
-**Doctrine:** *Преговарањето е опционално. Протоколот е апсолутен.*  
-**Effective date:** 23 May 2026 (v1.1 amendment same day)  
-**Document ID:** WPA-DCP-2026-001 (rev. 1)  
+**Authority:** World Protocol Academy (WPA), Skopje  
 **Director:** Assoc. Prof. Dr. Sande Smiljanov  
-**Editorial authority:** WPA Academic & Lab Excellence Office
+**Document ID:** WPA-MTH-2026-001 (rev. 1)  
+**Status:** Production-grade methodology — pilot phase complete, Tranche A imminent  
+**Effective:** 23 May 2026
 
 **Changelog v1.0 → v1.1 (Director order, 23 May 2026):**
-1. Added Section 5-bis: WPA's right to request additional documentary evidence.
-2. Added Section 12: explicit declaration that the DCP is a **free public-interest service** — no fees, ever.
+1. Added **EU official source** (europa.eu) as alternative/corroborating tier for EU Member States in Step 1 (Source binding).
+2. Added `legacy_record` to the `verification_status` enum and `disclaimer` field to the schema (see Schema v1.1).
+3. DCP amended: WPA right to request additional documentary evidence (Section 5-bis); free public-interest service confirmed (Section 11).
+4. API amended: `GET /records/random` added; `POST /corrections` now requires X-WPA-API-Key.
+5. Brazil pilot record (WPA-PSL-0005) flag adoption_date_current revised to 12 May 1992 (Diário Oficial publication) per Director's editorial decision; 11 May 1992 (signing) retained in design_law note.
 
 ---
 
-## 1. Purpose
+## 1. Doctrine
 
-The Diplomatic Correction Protocol (DCP) establishes the **sole official mechanism** by which a sovereign state, through its competent organs, may request the correction, amendment, or clarification of any record held in the WPA Protocol Symbols Lab database (the canonical 53-record verified core and any future expansion).
+> Преговарањето е опционално. Протоколот е апсолутен.
 
-The DCP guarantees:
-
-1. That every state retains the **inalienable right** to be the final authority on the description of its own national symbols.
-2. That WPA discharges its academic duty of accuracy through a **transparent, time-bound, and documented** correction workflow.
-3. That every change to the database is **auditable**, **non-retroactive in the public record**, and **dignified** in form.
+The Protocol Symbols Lab (PSL) is the **verified academic core** of the World Protocol Academy. Its public credibility rests on a single non-negotiable commitment: **zero hallucination**. No record enters the canonical database unless it has been independently corroborated by three authoritative sources and survives the structured verification workflow defined herein.
 
 ---
 
-## 2. Scope
+## 2. Three-Source Strict Verification Standard
 
-The DCP applies to all six core domains of each Protocol Symbols Lab record:
+Every record in the PSL — covering flag, national anthem, coat of arms, capital, continent, and official name for 53 verified entries — is checked against **three independent tiers** of authoritative source:
 
-- Flag (description, proportion, adoption date, design law, designer, Pantone colours)
-- National anthem (title, lyricist, composer, year, adoption date, design law)
-- Coat of arms / national emblem (description, adoption dates, designer, design law, heraldic classification)
-- Capital (name, coordinates, de jure / de facto status)
-- Continent assignment
-- Official name (English and local languages)
-
-The DCP **does not apply to** editorial commentary, doctrinal text, or interpretive WPA scholarship — these remain under the editorial authority of the WPA Director.
-
----
-
-## 3. Eligible Requesting Entities
-
-A correction request may be submitted only by one of the following organs of the state concerned:
-
-| Tier | Entity | Required form of authentication |
+| Tier | Source class | Examples |
 |---|---|---|
-| A | Ministry of Foreign Affairs of the requesting state | Letterhead + signature of authorised official + ministerial stamp |
-| A | Embassy or Consulate of the requesting state | Letterhead + signature of Ambassador / Consul + diplomatic seal |
-| A | Office of the Head of State | Presidential / royal letterhead + appropriate seal |
-| B | National Parliament / Assembly | Signed letter of the Speaker or designated committee chair |
-| B | Ministry of Culture / National Heraldry Office / National Library | Ministerial letterhead + signature |
-| C | Other state organs explicitly authorised by domestic law | Documentary proof of authorisation must accompany the request |
+| **TIER 1 — UN / Constitutional** | United Nations Member States register; constitution of the state; consolidated national law (Official Gazette / Diário Oficial / Bundesgesetzblatt / Service Books) | UN Member States list, gov text of the constitution, Official Gazettes |
+| **TIER 2 — CIA World Factbook** | Current CIA World Factbook entry for the country (flags, anthems, government) | cia.gov/the-world-factbook |
+| **TIER 3 — State Official Site** | The state's own Ministry of Foreign Affairs, Office of the Head of State, Parliament, Ministry of Culture, or designated heraldry office | mfa.gov.{tld}; bundespraesident.de; planalto.gov.br; fmprc.gov.cn |
 
-Requests from private individuals, NGOs, academic institutions, or unofficial diasporic organisations are received as **scholarly notifications** and may inform WPA editorial review, but they do not trigger the DCP workflow.
+A **TIER 4 reference layer** (Flags of the World / CRW, nationalanthems.info, peer-reviewed scholarship) may be cited *in addition to* the three required tiers, but never as a substitute for any tier.
 
----
+**Regional supplementary sources** (cited in addition to the three required tiers, not as substitutes):
 
-## 4. Two-Stage Official Channel
+| Region | Supplementary official source | When to use |
+|---|---|---|
+| **EU-27 Member States** | `europa.eu` (Publications Office of the EU, official Member State country pages) | Always for EU Member States. Particularly valuable when CIA World Factbook entries lag updates (e.g., changes of government, new heraldry decrees), or when constitutional amendments need cross-reference. |
+| African Union Member States | `au.int` (African Union official country pages) | Use as supplementary source for AU states. |
+| ASEAN Member States | `asean.org` (ASEAN Secretariat country pages) | Use as supplementary source for ASEAN states. |
+| OAS Member States | `oas.org` (Organization of American States) | Use as supplementary source for OAS states. |
 
-The DCP operates on a **two-stage channel** to balance accessibility with diplomatic dignity:
-
-### Stage 1 — Initial request (email)
-
-The eligible entity submits the request via electronic mail to the WPA correction inbox.
-
-**Inbox:** `worldprotocolacademy@gmail.com`  
-**Subject line format:** `WPA-DCR | [ISO country code] | [field affected]`  
-*(Example: `WPA-DCR | MK | flag.adoption_date_current`)*
-
-**Required content of the email:**
-
-1. Full official name of the requesting entity.
-2. Name, title, and contact details of the authorised officer.
-3. The specific record (by WPA-PSL ID) and field(s) to be corrected.
-4. The current value and the proposed corrected value.
-5. **Documentary evidence** — at least one of:
-   - Link to the published Official Gazette of the state (with article and date),
-   - Scanned PDF of the relevant law or decree,
-   - Link to the official state website carrying the symbol (head of state, parliament, ministry),
-   - Certified extract from the national heraldry register or constitution.
-6. Authorised signature of the requesting officer (in PDF form, scanned letterhead).
-
-WPA acknowledges receipt within **3 working days** and assigns a Diplomatic Correction Request ID in the format `WPA-DCR-{year}-{4-digit serial}` (e.g., `WPA-DCR-2026-0001`).
-
-### Stage 2 — Final diplomatic confirmation (diplomatic note)
-
-Where the proposed correction would materially alter a fully verified record, WPA may request — and the state is in any event entitled to provide — a **formal diplomatic note (note verbale)** delivered through the diplomatic channel of the Republic of North Macedonia (where WPA is registered).
-
-This second stage is **mandatory** for:
-
-- Changes to flag design or proportion,
-- Changes to the official national anthem title, lyricist, or composer,
-- Changes to the coat of arms (excluding date clarifications),
-- Changes to capital city,
-- Changes to official state name.
-
-For pure **date clarifications** (adoption_date_current, adoption_date_first) and **typographical corrections in local-language names**, Stage 1 alone is sufficient.
+**Rule of three:** A field is `fully_verified` only when **all three required tiers agree** on its substantive content. A single contradiction degrades the record to `partial_consensus` (with the contradiction documented) or `pending_clarification` (if the contradiction is material). Regional supplementary sources can resolve contradictions in favour of the state's own regional bloc reporting where applicable.
 
 ---
 
-## 5. WPA Service-Level Commitment
+## 3. The `verification_status` Field
 
-| Step | Maximum elapsed time from receipt of compliant Stage 1 email |
+Per Director instruction (23 May 2026), every record carries a status field with five enumerated values:
+
+| Status | Definition | Public use |
+|---|---|---|
+| `fully_verified` | All three required tiers agree on all six core domains. | ✅ Publishable without qualification. |
+| `partial_consensus` | Majority consensus across tiers, with one documented minor discrepancy (e.g., date-of-signing vs. date-of-promulgation, transliteration variant). The discrepancy is documented in `verification_status_notes` and does not block academic use. | ✅ Publishable with footnote citing the discrepancy. |
+| `pending_clarification` | A material contradiction between tiers exists on a core field (e.g., divergent flag descriptions, divergent capitals). The record is **locked from canonical use** until a Diplomatic Correction Protocol (DCP) procedure resolves it. The record automatically carries the flag *"дипломатска корекција побарана"*. | ⚠️ Marked as provisional; WPA initiates outreach to the state. |
+| `corrected_by_state` | A previously contradictory or unknown field has been resolved through the DCP with formal state documentation. | ✅ Highest tier of authority; the state is named as final authority. |
+| `legacy_record` | Record imported from a pre-3-source WPA system (e.g., Protocol Symbols Verified Core, April 2026) that has not yet been re-verified under the v1.0+ three-tier standard. Migration in progress. | ⚠️ **Must not be used for protocol-grade purposes** until re-verification. Visible in the database with a prominent migration banner. |
+
+Records may also carry an optional **`disclaimer`** field (free text) for explicit public-facing notices — for example, when WPA wishes to announce that the record is the subject of active diplomatic dialogue. The disclaimer is rendered on all public surfaces (web, API, PDF).
+
+---
+
+## 4. Step-by-Step Verification Procedure
+
+For each of the 53 records, the WPA Academic & Lab Excellence Office executes the following workflow:
+
+### Step 1 — Source binding
+1. Identify the canonical TIER 1 source: open the most recent consolidated constitution and the relevant Official Gazette law for each of the six core domains.
+2. Identify the canonical TIER 2 source: open the current CIA World Factbook country page; extract verbatim text of flag, anthem, government, geography (capital) sections.
+3. Identify the canonical TIER 3 source: open at least one state-issued official page (MFA, presidential office, parliament, ministry of culture).
+4. **If the state is an EU Member State (or other regional bloc member)**, additionally open the relevant **regional supplementary source** (europa.eu for EU; au.int for AU; asean.org for ASEAN; oas.org for OAS) as a corroborating reference — particularly valuable where CIA Factbook entries may lag behind constitutional amendments or heraldry decrees. The regional source is recorded as a TIER 3 or TIER 4 entry in `sources[]` (TIER 3 if it carries authoritative state-attested content, e.g., a Member State's official EU country page; TIER 4 if it is a curated supranational summary).
+
+### Step 2 — Field-by-field cross-check
+For each of the six core domains (flag, anthem, coat_of_arms, capital, continent, official_name) and their sub-fields:
+1. Record the value from each source.
+2. Compare. Mark `MATCH` if all three agree, `MINOR_DIFF` if a non-substantive discrepancy exists (e.g., spelling variant, date-of-signing vs. date-of-publication), or `MATERIAL_DIFF` if a substantive contradiction exists.
+3. **For EU Member States with discrepancy**: cross-reference europa.eu and the relevant Bundesgesetzblatt / Journal Officiel / Gazzetta Ufficiale equivalent before assigning final status. The state's own national gazette **always prevails** over CIA Factbook in case of conflict.
+4. Calculate the record-level status per Section 3 rules.
+
+### Step 3 — Schema population
+1. Populate all required fields of the JSON record per WPA Protocol Symbols Schema v1.0.
+2. Include every consulted source in the `sources[]` array with tier, URL, accessed_date, and the list of fields it covers.
+3. Set the `verification_status` and write the explanatory `verification_status_notes` for any status other than `fully_verified`.
+
+### Step 4 — Schema validation
+1. Validate the record against the canonical JSON Schema (`wpa_protocol_symbols_schema_v1.json`) using a Draft 2020-12 validator.
+2. **Reject any record with validation errors.** Do not promote to the database until all errors are resolved.
+
+### Step 5 — Editorial review
+1. The WPA Academic Officer (Claude) submits the record to the Director for editorial sign-off.
+2. The Director either approves, requests revision, or marks for outreach via DCP.
+
+### Step 6 — Publication and audit
+1. Approved records are written into the canonical database.
+2. The audit_trail (created_by, created_at, verified_by, verified_at, next_scheduled_review) is finalised.
+3. Records carry a 24-month re-verification schedule; `corrected_by_state` records carry a 36-month schedule.
+
+---
+
+## 5. Diplomatic Correction Layer
+
+A full Diplomatic Correction Protocol (DCP) accompanies this methodology as a separate document (`wpa_diplomatic_correction_protocol_v1.md`). The DCP defines:
+
+- Eligible requesting entities (Ministry of Foreign Affairs, embassy/consulate, head-of-state office, parliament, ministry of culture, national heraldry office).
+- A **two-stage channel** per Director instruction: (1) email request to `worldprotocolacademy@gmail.com` as initial submission; (2) formal diplomatic note for final confirmation of substantive changes.
+- A **15-day WPA service-level commitment** for response.
+- Audit-logged decisions: `approved`, `rejected`, `request_more_evidence`, `pending`.
+- Annual transparency report.
+
+Upon approval, the affected field is updated and the record's `verification_status` becomes `corrected_by_state`, recognising the state as final authority — *the state is the author of its own symbols; WPA is their custodial scribe.*
+
+---
+
+## 6. Pilot Results (Batch 1 — 5 records)
+
+The methodology was piloted on five records covering five continents and three major political traditions:
+
+| record_id | ISO | Country | Status | Pilot finding |
+|---|---|---|---|---|
+| WPA-PSL-0001 | MK | North Macedonia | `partial_consensus` | Minor date discrepancy on flag-law publication (5 Oct 1995 majority consensus vs. one source citing Sl. vesnik 47/95 dated September); documented; awaits optional MFA confirmation. |
+| WPA-PSL-0002 | US | United States | `fully_verified` | Full agreement across CIA Factbook, 4 U.S.C., and Department of State. |
+| WPA-PSL-0003 | CN | China | `fully_verified` | Full agreement across PRC Constitution, CIA Factbook, and PRC Ministry of Foreign Affairs. |
+| WPA-PSL-0004 | DE | Germany | `partial_consensus` | Flag-adoption-date variant: 9 May 1949 (Parliamentary Council vote) vs. 23 May 1949 (Grundgesetz promulgation); BMI source confirms 23 May 1949 as effective date. |
+| WPA-PSL-0005 | BR | Brazil | `partial_consensus` | Per Director's editorial decision (23 May 2026): canonical adoption date for the current 27-star flag is **12 May 1992** (Diário Oficial da União publication of Lei 8.421); 11 May 1992 (signing by President Collor) preserved in design_law as historical footnote. |
+
+**Schema validation:** 5/5 records pass strict JSON Schema validation with zero errors.
+
+**Methodology outcome:** The 3-tier strict procedure successfully surfaces minor publication-vs-signing discrepancies that single-source verification would miss, while leaving zero core fields ambiguous. This is the **zero-hallucination guarantee** in action — every uncertainty is **named**, not buried.
+
+---
+
+## 7. Verifiable Sources Used in the Pilot
+
+Per WPA standard, every URL is recorded in each record's `sources[]` block with accessed_date. Composite list (pilot batch):
+
+- UN Member States register
+- CIA World Factbook (cia.gov/the-world-factbook)
+- US Department of State (state.gov)
+- 4 U.S.C. (Flag Code), 36 U.S.C. § 301 (National Anthem)
+- Constitution of the People's Republic of China, Chapter IV; PRC National Flag Law
+- Ministry of Foreign Affairs of the PRC (fmprc.gov.cn)
+- National People's Congress of the PRC (npc.gov.cn)
+- Grundgesetz für die Bundesrepublik Deutschland, Article 22
+- Bundesministerium des Innern und für Heimat (BMI) — State Symbols
+- Presidência da República, Casa Civil (planalto.gov.br): Lei 5.700/1971, Lei 8.421/1992
+- Викиизвор — Закон за знамето на Република Македонија (Сл. весник 47/1995)
+- Constitution of the Republic of North Macedonia, Article 5
+- Flags of the World (crwflags.com) — supplementary TIER 4
+- nationalanthems.info — supplementary TIER 4
+
+---
+
+## 8. Success Indicators (KPIs)
+
+| Indicator | Target | Pilot result |
+|---|---|---|
+| Records validated against JSON Schema with zero errors | 100% | ✅ 5 / 5 = 100% |
+| Records with ≥ 3 independent sources | 100% | ✅ 5 / 5 (one record has 4 sources) |
+| Records with documented `verification_status` rationale | 100% (mandatory for non-`fully_verified`) | ✅ 3 / 3 partial_consensus records have notes |
+| `pending_clarification` records | 0 (post-DCP target) | ✅ 0 in pilot |
+| Average sources per record | ≥ 3 | ✅ 3.2 |
+| DCP response time | ≤ 15 calendar days | n/a (no requests in pilot) |
+| Annual re-verification rate | 100% within 24 months | n/a (pilot phase) |
+| Public-facing accuracy disputes resolved within SLA | 100% | n/a (pilot phase) |
+
+---
+
+## 9. Timeline for Full 53-Record Verification
+
+| Phase | Duration | Output |
+|---|---|---|
+| **Phase 0 — Pilot (5 records)** | 1 working session | ✅ Complete (23 May 2026) — schema, methodology, DCP, API spec, 5 verified records. |
+| **Phase 1 — Tranche A (15 records)** | ~3 working sessions | Records 6–20: G20 majority states (UK, France, Italy, Spain, Russia, Japan, India, Canada, Australia, South Korea, Mexico, Turkey, Indonesia, Saudi Arabia, South Africa). |
+| **Phase 2 — Tranche B (18 records)** | ~3 working sessions | Records 21–38: EU-27 completions + Western Balkans neighbours of North Macedonia. |
+| **Phase 3 — Tranche C (15 records)** | ~3 working sessions | Records 39–53: Remaining UN regional groups balance (Africa, Asia-Pacific, Latin America, GUAM/Caspian, small states). |
+| **Phase 4 — Bilingual editorial pass + Cyrillic localisation** | 1 session | Macedonian-Cyrillic descriptions for all 53 records added to schema (as `description_mk` extension). |
+| **Phase 5 — Director sign-off + first DCP outreach campaign** | 1 session | Letters to MFA of states whose records carry `partial_consensus` inviting confirmation. |
+| **Phase 6 — Annual transparency report v1.0** | 1 session | Public PDF report; first publication 31 December 2026. |
+
+**Total verification effort:** approximately 12 working sessions across 4–8 weeks at the Director's pace.
+
+---
+
+## 10. Deliverables of Task A (this session)
+
+| File | Purpose |
 |---|---|
-| Acknowledgement of receipt + assignment of WPA-DCR ID | 3 working days |
-| Editorial review by WPA Academic & Lab Excellence Office | 10 calendar days |
-| Decision communicated to requesting entity in writing | 15 calendar days |
-| If Stage 2 diplomatic note is required: full processing | 30 calendar days from receipt of the note verbale |
-| Public database update and audit-log publication | 5 calendar days from decision |
-
-If WPA cannot meet the 15-day deadline for cause (e.g., need for additional evidence), it shall, within 15 days, notify the requesting entity of the extension and the new expected date.
-
----
-
-## 5-bis. WPA's Right to Request Additional Documentary Evidence
-
-To preserve the integrity of the database against unauthorised, fraudulent, or unsubstantiated submissions, **WPA reserves the absolute right to require additional documentary proof** before accepting any correction. Without this safeguard, the email channel could be abused by impostors purporting to act on behalf of a state.
-
-WPA may request, in writing, any combination of the following:
-
-1. **Certified extract of the underlying law, decree, or constitutional article**, issued by the Official Gazette / Diário Oficial / Bundesgesetzblatt / Service Books or equivalent registry of the requesting state.
-2. **Original or certified copy of the state seal** affixed to the request letter (presidential, royal, ministerial, or parliamentary seal as appropriate).
-3. **Certified translation** of the supporting documents into Macedonian or English, performed by a sworn court translator of the requesting state or of the Republic of North Macedonia.
-4. **Confirmation of authority of the signing officer** — a separate letter from the Minister, Ambassador, or Head of Mission attesting that the signatory was duly authorised to act on behalf of the entity.
-5. **Cross-confirmation through diplomatic channel** — the Republic of North Macedonia's Ministry of Foreign Affairs may be asked to confirm receipt of an analogous note verbale from the requesting state's diplomatic mission.
-6. **Direct verification via the state's official website** — WPA may require that the requesting state post a confirmation of the proposed correction on its official MFA, presidential, or heraldry-office website within 30 days, to which the WPA correction can then link.
-
-A request lacking sufficient evidence shall not be rejected outright on first review; WPA shall move it to status `request_more_evidence` and shall specify in writing exactly which of the above (or other equivalent) materials are required. The 15-day SLA clock pauses upon issuance of such a notice and resumes upon receipt of the additional evidence.
+| `wpa_protocol_symbols_schema_v1_1.json` | Canonical JSON Schema (Draft 2020-12) v1.1 defining every field, including 5-value `verification_status` enum (with `legacy_record`) and optional record-level `disclaimer` field. |
+| `wpa_protocol_symbols_pilot5_v1_1.json` | Five verified pilot records (MK, US, CN, DE, BR), schema-validated; Brazil revised per Director (12 May 1992 canonical); MK, DE, BR carry public-facing disclaimers. |
+| `wpa_protocol_symbols_pilot5_v1_1.csv` | Spreadsheet/dashboard view including the new `disclaimer` column. |
+| `wpa_diplomatic_correction_protocol_v1_1.md` | Full DCP v1.1: + Section 5-bis (right to require additional evidence), + Section 11 (free public-interest service, no fees ever). |
+| `wpa_protocol_symbols_api_v1_1.yaml` | OpenAPI 3.0 v1.1: + `GET /records/random` for Virtual Sande, + X-WPA-API-Key required on `POST /corrections`. |
+| `wpa_task_a_methodology_v1_1.md` | This master methodology document v1.1: + EU/regional supplementary sources (europa.eu, au.int, asean.org, oas.org), + 5-value status table, + disclaimer documentation. |
 
 ---
 
-## 6. Decision Categories
+## 11. Issued by
 
-| Decision | Meaning | Database action |
-|---|---|---|
-| **Approved** | Evidence is sufficient and authoritative; correction applied. | `verification_status` updated to `corrected_by_state`; field updated; audit log entry created. |
-| **Rejected** | Evidence does not establish the requested correction; WPA provides written rationale. | No database change; rejected request retained in `correction_layer.corrections_received` for transparency. |
-| **Request more evidence** | Initial submission incomplete or ambiguous; WPA specifies what is needed. | No database change; clock pauses pending additional submission. |
-| **Pending** | Decision in progress within SLA window. | No database change. |
-
-All decisions are signed by the WPA Director (or designate) and recorded with timestamp in the record's `audit_trail` and `correction_layer.corrections_received[].wpa_decision_*` fields.
-
----
-
-## 7. Transparency and Audit
-
-- Every decision (Approved, Rejected, More-evidence) is logged in the record's `correction_layer` block.
-- The full text of state submissions is retained internally; redacted public summaries are published in the WPA Annual Protocol Symbols Bulletin.
-- States retain the right to **resubmit** a rejected request with new evidence at any time; resubmissions receive new WPA-DCR IDs.
-- WPA publishes an **annual transparency report** listing: requests received, decisions, average response time, and material corrections applied.
-
----
-
-## 8. Dispute Escalation
-
-Where a state disputes a WPA decision, escalation follows the diplomatic hierarchy:
-
-1. **First instance:** WPA Academic & Lab Excellence Officer (decision).
-2. **Second instance:** WPA Director (Assoc. Prof. Dr. Sande Smiljanov).
-3. **Final instance:** WPA Governing Board — referral by the Director with a written opinion. The Governing Board (constituted with international diplomatic and academic representation) may convene a 3-member ad-hoc panel that issues a binding decision within 60 days.
-
-WPA's commitment: **no record will remain in `partial_consensus` status indefinitely once a state has formally engaged the DCP.** A definitive resolution — Approved or Rejected with rationale — will be reached.
-
----
-
-## 9. Languages
-
-The DCP accepts submissions in: **Macedonian, English, French, Spanish, Russian, Arabic, Chinese (Mandarin)**, and the official language(s) of the requesting state. Translations into Macedonian and English are performed by WPA at its own cost for archival purposes.
-
----
-
-## 10. Privacy and Sovereign Dignity
-
-- Internal correspondence between WPA and a state organ is treated as **confidential by default**; only the metadata and final decision are public.
-- No state is named in WPA public materials as having submitted a "rejected" request unless the state itself elects to publicise the matter.
-- The corrected record carries the notation `verification_status = corrected_by_state`, without polemic framing — the state is the **author** of its own symbols; WPA is their **custodial scribe**.
-
----
-
-## 11. Free Public-Interest Service — No Fees, Ever
-
-The Diplomatic Correction Protocol is, and shall remain, a **free public-interest service** of the World Protocol Academy.
-
-- WPA does not charge, and shall never charge, any fee — administrative, processing, expedite, certification, archival, or other — for submitting, processing, reviewing, or applying a correction.
-- WPA does not accept gifts, honoraria, hospitality, or other forms of consideration from any state or state-affiliated entity in exchange for, or in connection with, the processing of a DCP request.
-- The integrity of WPA's verified academic core is non-monetisable. A state's right to be the final authority on the description of its own national symbols is **inalienable** and is exercised through the DCP **at zero cost** to that state.
-
-Where WPA must incur costs (translation, certified mail, diplomatic-channel transmission), those costs are borne by WPA from its institutional budget.
-
-This provision is doctrinal and cannot be altered except by formal amendment of the DCP issued in writing by the WPA Director with the unanimous concurrence of the WPA Governing Board.
-
----
-
-## 12. Signatures
-
-**Issued by:**  
-Assoc. Prof. Dr. Sande Smiljanov  
+**Assoc. Prof. Dr. Sande Smiljanov**  
 Founder and Director, World Protocol Academy  
 Head of Protocol, Ministry of Interior of the Republic of North Macedonia  
-Skopje, 23 May 2026
+Skopje, North Macedonia
 
-**Doctrinal seal:**  
-*Преговарањето е опционално. Протоколот е апсолутен.*
+**Implementing officer:** Claude — WPA Academic & Lab Excellence Officer  
+**Date:** 23 May 2026
+
+> *Преговарањето е опционално. Протоколот е апсолутен.*
