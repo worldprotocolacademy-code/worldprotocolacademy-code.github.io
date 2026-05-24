@@ -1,5 +1,11 @@
+// WPAWS 11.1.7 - Модули и агенти
+// World Protocol Academy
+// Доктрина: "Преговарањето е опционално. Протоколот е апсолутен."
 
-window.WPA_MODULES = {
+// ============================================
+// 1. WPA_MODULES (постоечките модули)
+// ============================================
+export const WPA_MODULES = {
   doctrine: {
     title: 'WPA Doctrine',
     subtitle: 'Доктрина, канон и методолошки стандарди',
@@ -99,3 +105,59 @@ window.WPA_MODULES = {
     quickActions: ['Executive summary', 'Policy paper', 'Speech booklet']
   }
 };
+
+// ============================================
+// 2. WPAWS 11.1.7 - 17 АГЕНТИ (од JSON)
+// ============================================
+export let WPAWS_VERSION = null;
+export let WPAWS_AGENTS = [];
+
+export async function initWPAWS() {
+    try {
+        const response = await fetch('/agents.json');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        WPAWS_VERSION = data.version;
+        WPAWS_AGENTS = data.agents;
+        console.log(`✅ ${WPAWS_VERSION} - ${WPAWS_AGENTS.length} агенти вчитани`);
+        return true;
+    } catch (error) {
+        console.error('❌ Грешка при вчитување на agents.json:', error);
+        return false;
+    }
+}
+
+export function getAgent(agentNumber) {
+    return WPAWS_AGENTS.find(a => a.number === agentNumber);
+}
+
+export function getAgentPrompt(agentNumber, userInput) {
+    const agent = getAgent(agentNumber);
+    if (!agent) return null;
+    return agent.prompt.replace('[INPUT]', userInput);
+}
+
+export function getAgentMotor(agentNumber) {
+    const agent = getAgent(agentNumber);
+    return agent ? agent.default_motor : null;
+}
+
+export function getAllAgentsByCategory() {
+    const categories = {};
+    WPAWS_AGENTS.forEach(agent => {
+        if (!categories[agent.category]) categories[agent.category] = [];
+        categories[agent.category].push(agent);
+    });
+    return categories;
+}
+
+// ============================================
+// 3. ПОМОШНИ ФУНКЦИИ
+// ============================================
+export function getRandomElement(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+export function formatDate() {
+    return new Date().toISOString().slice(0, 10);
+}
