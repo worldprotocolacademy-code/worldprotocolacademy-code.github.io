@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>WPA Multi-AI Command Center – Strategic Intelligence</title>
+<title>WPA Multi-AI Command Center – Individual AI Queries</title>
 <style>
   * {
     margin: 0;
@@ -13,7 +13,7 @@
 
   body {
     background: #0a0c15;
-    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
     color: #e8eef5;
     padding: 1.5rem;
   }
@@ -37,7 +37,6 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    letter-spacing: 1px;
   }
 
   .subtitle {
@@ -56,7 +55,7 @@
     color: #d4af37;
   }
 
-  /* MODE SELECTOR */
+  /* MODE BAR */
   .mode-bar {
     background: #0d1220;
     border-radius: 12px;
@@ -163,7 +162,7 @@
   /* AI GRID */
   .ai-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
@@ -174,6 +173,8 @@
     border: 1px solid #1f2a3a;
     overflow: hidden;
     transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
   }
 
   .ai-card:hover {
@@ -216,12 +217,63 @@
 
   .ai-response {
     padding: 1rem;
-    min-height: 200px;
-    max-height: 350px;
+    min-height: 180px;
+    max-height: 280px;
     overflow-y: auto;
     font-size: 0.85rem;
     line-height: 1.5;
     background: #0a0e1a;
+    flex: 1;
+  }
+
+  .ai-response pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+  }
+
+  /* INDIVIDUAL PROMPT AREA */
+  .individual-prompt-area {
+    padding: 0.8rem;
+    background: #0d1220;
+    border-top: 1px solid #1f2a3a;
+    border-bottom: 1px solid #1f2a3a;
+  }
+
+  .individual-prompt {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    background: #0a0e1a;
+    color: #e8eef5;
+    font-size: 0.8rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  .individual-prompt:focus {
+    outline: none;
+    border-color: #d4af37;
+  }
+
+  .ask-single-btn {
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg, #d4af37, #b8941e);
+    color: #0a0c15;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.75rem;
+  }
+
+  .ask-single-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
   }
 
   .ai-footer {
@@ -241,6 +293,11 @@
     padding: 1.5rem;
     margin-bottom: 2rem;
     border: 1px solid #1f2a3a;
+    display: none;
+  }
+
+  .consensus-panel.active {
+    display: block;
   }
 
   .consensus-header {
@@ -296,7 +353,6 @@
     border-radius: 10px;
     margin-bottom: 0.5rem;
     cursor: pointer;
-    transition: all 0.2s;
   }
 
   .session-item:hover {
@@ -326,7 +382,6 @@
     color: #0a0c15;
   }
 
-  /* FOOTER */
   .footer {
     text-align: center;
     margin-top: 2rem;
@@ -346,14 +401,6 @@
     .ai-grid { grid-template-columns: 1fr; }
     .consensus-content { grid-template-columns: 1fr; }
     .mode-bar { flex-direction: column; align-items: stretch; }
-    .action-buttons { flex-direction: column; }
-    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
-  }
-
-  @media print {
-    body { background: white; color: black; }
-    .btn-primary, .btn-secondary, .mode-bar, .tabs { display: none; }
-    .ai-card { break-inside: avoid; }
   }
 </style>
 </head>
@@ -361,18 +408,18 @@
 <div class="container">
   <div class="header">
     <h1>🏛️ WPA MULTI-AI COMMAND CENTER</h1>
-    <div class="subtitle">7 AI Advisors · One Command Center</div>
-    <div class="badge">⚡ Strategic Intelligence · WPA Consensus Engine · Real API Ready</div>
+    <div class="subtitle">7 AI Advisors · Individual Queries · One Command Center</div>
+    <div class="badge">⚡ Прашај еден AI или сите одеднаш</div>
   </div>
 
   <!-- MODE BAR -->
   <div class="mode-bar">
     <div class="mode-buttons">
-      <button class="mode-btn active" data-mode="balanced">⚖️ Balanced</button>
-      <button class="mode-btn" data-mode="deep">🧠 Deep</button>
-      <button class="mode-btn" data-mode="research">🔍 Research</button>
-      <button class="mode-btn" data-mode="corporate">💼 Corporate</button>
-      <button class="mode-btn" data-mode="code">💻 Code</button>
+      <button class="mode-btn active" data-mode="balanced">⚖️ Избалансирано</button>
+      <button class="mode-btn" data-mode="deep">🧠 Длабинско</button>
+      <button class="mode-btn" data-mode="research">🔍 Истражување</button>
+      <button class="mode-btn" data-mode="corporate">💼 Корпоративно</button>
+      <button class="mode-btn" data-mode="code">💻 Код</button>
     </div>
     <div class="provider-selector" id="providerSelector">
       <label><input type="checkbox" value="openai" checked> OpenAI</label>
@@ -385,186 +432,124 @@
     </div>
   </div>
 
-  <!-- UNIVERSAL PROMPT PANEL -->
+  <!-- UNIVERSAL PROMPT -->
   <div class="universal-panel">
-    <textarea id="universalPrompt" rows="3" placeholder="Enter your prompt here... (e.g., 'Polish this corporate proposal for Huawei')"></textarea>
+    <textarea id="mainPrompt" rows="3" placeholder="Напиши го главното прашање (ќе оди до сите избрани AI)..."></textarea>
     <div class="action-buttons">
-      <button class="btn-primary" id="sendToAllBtn">🚀 Send to Selected AIs</button>
-      <button class="btn-secondary" id="clearAllBtn">🗑️ Clear All</button>
-      <button class="btn-secondary" id="saveSessionBtn">💾 Save Session</button>
-      <button class="btn-secondary" id="exportMarkdownBtn">📄 Export Markdown</button>
+      <button class="btn-primary" id="sendToAllBtn">🚀 Испрати до избраните AI</button>
+      <button class="btn-secondary" id="clearAllBtn">🗑️ Исчисти ги одговорите</button>
+      <button class="btn-secondary" id="saveSessionBtn">💾 Зачувај сесија</button>
+      <button class="btn-secondary" id="exportMarkdownBtn">📄 Извези како Markdown</button>
     </div>
   </div>
 
   <!-- TABS -->
   <div class="tabs">
-    <div class="tab active" data-tab="advisors">🤖 AI Advisors</div>
-    <div class="tab" data-tab="consensus">🧠 WPA Consensus</div>
-    <div class="tab" data-tab="archive">📚 Archive</div>
+    <div class="tab active" data-tab="advisors">🤖 AI Советници</div>
+    <div class="tab" data-tab="consensus">🧠 WPA Консензус</div>
+    <div class="tab" data-tab="archive">📚 Архива</div>
   </div>
 
-  <!-- AI GRID (7 CARDS) -->
-  <div id="advisorsTab" class="ai-grid">
-    <!-- OpenAI / GPT -->
-    <div class="ai-card" data-provider="openai">
-      <div class="ai-header">
-        <div><span class="ai-name">📊 OpenAI · GPT</span><div class="ai-role">Strategic Synthesizer</div></div>
-        <div class="ai-status idle" id="status-openai">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-openai">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-openai">—</span> ms</span><span>💰 <span id="cost-openai">—</span></span></div>
-    </div>
-
-    <!-- Google Gemini -->
-    <div class="ai-card" data-provider="gemini">
-      <div class="ai-header">
-        <div><span class="ai-name">🔮 Google · Gemini</span><div class="ai-role">Multimodal & Broad Context</div></div>
-        <div class="ai-status idle" id="status-gemini">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-gemini">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-gemini">—</span> ms</span><span>💰 <span id="cost-gemini">—</span></span></div>
-    </div>
-
-    <!-- Anthropic Claude -->
-    <div class="ai-card" data-provider="claude">
-      <div class="ai-header">
-        <div><span class="ai-name">🏛️ Anthropic · Claude</span><div class="ai-role">Long-Form Document Critic</div></div>
-        <div class="ai-status idle" id="status-claude">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-claude">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-claude">—</span> ms</span><span>💰 <span id="cost-claude">—</span></span></div>
-    </div>
-
-    <!-- DeepSeek -->
-    <div class="ai-card" data-provider="deepseek">
-      <div class="ai-header">
-        <div><span class="ai-name">🧠 DeepSeek</span><div class="ai-role">Logic & Engineering Critic</div></div>
-        <div class="ai-status idle" id="status-deepseek">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-deepseek">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-deepseek">—</span> ms</span><span>💰 <span id="cost-deepseek">—</span></span></div>
-    </div>
-
-    <!-- Alibaba Qwen -->
-    <div class="ai-card" data-provider="qwen">
-      <div class="ai-header">
-        <div><span class="ai-name">🐉 Alibaba · Qwen</span><div class="ai-role">East-West Market Bridge</div></div>
-        <div class="ai-status idle" id="status-qwen">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-qwen">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-qwen">—</span> ms</span><span>💰 <span id="cost-qwen">—</span></span></div>
-    </div>
-
-    <!-- Perplexity -->
-    <div class="ai-card" data-provider="perplexity">
-      <div class="ai-header">
-        <div><span class="ai-name">🔍 Perplexity</span><div class="ai-role">Research & Source Analyst</div></div>
-        <div class="ai-status idle" id="status-perplexity">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-perplexity">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-perplexity">—</span> ms</span><span>💰 <span id="cost-perplexity">—</span></span></div>
-    </div>
-
-    <!-- Kimi (Moonshot) -->
-    <div class="ai-card" data-provider="kimi">
-      <div class="ai-header">
-        <div><span class="ai-name">🎯 Moonshot · Kimi</span><div class="ai-role">Task & Workflow Manager</div></div>
-        <div class="ai-status idle" id="status-kimi">● Idle</div>
-      </div>
-      <div class="ai-response" id="response-kimi">✨ Waiting for prompt...</div>
-      <div class="ai-footer"><span>⏱️ <span id="time-kimi">—</span> ms</span><span>💰 <span id="cost-kimi">—</span></span></div>
-    </div>
-  </div>
+  <!-- AI GRID -->
+  <div id="advisorsTab" class="ai-grid"></div>
 
   <!-- CONSENSUS PANEL -->
-  <div id="consensusTab" class="consensus-panel" style="display: none;">
+  <div id="consensusTab" class="consensus-panel">
     <div class="consensus-header">
-      <div class="consensus-title">🧠 WPA Consensus Engine</div>
-      <button class="btn-secondary" id="generateConsensusBtn">🔄 Generate Consensus</button>
+      <div class="consensus-title">🧠 WPA Консензус мотор</div>
+      <button class="btn-secondary" id="generateConsensusBtn">🔄 Генерирај консензус</button>
     </div>
     <div id="consensusContent">
-      <p style="color:#8a9bb5;">Send a prompt to the AI advisors first, then generate consensus.</p>
+      <p style="color:#8a9bb5;">Прво испрати прашање до AI советниците, потоа генерирај консензус.</p>
     </div>
   </div>
 
   <!-- ARCHIVE PANEL -->
   <div id="archiveTab" class="archive-panel">
     <div class="consensus-header">
-      <div class="consensus-title">📚 Session Archive</div>
-      <button class="btn-secondary" id="clearArchiveBtn">🗑️ Clear Archive</button>
+      <div class="consensus-title">📚 Зачувани сесии</div>
+      <button class="btn-secondary" id="clearArchiveBtn">🗑️ Исчисти ја архивата</button>
     </div>
     <div id="sessionList"></div>
   </div>
 
   <div class="footer">
-    🏛️ WPA Institute – Doc. dr Sande Smiljanov | Macedonia<br>
-    One prompt. Multiple AI advisors. One final WPA consensus.<br>
-    <span style="color:#6c7a8a;">⚡ Currently in Simulation Mode – Ready for real API integration</span>
+    🏛️ WPA Institute – Doc. dr Sande Smiljanov | Македонија<br>
+    Еден промпт. Многу AI советници. Еден WPA консензус.<br>
+    ⚡ Симулациски режим – подготвено за вистински API
   </div>
 </div>
 
 <script>
   // ============================================================
   // WPA MULTI-AI COMMAND CENTER
+  // Individual Queries per AI Advisor
   // Professional Prototype – Backend-Ready
-  // Simulation Mode (replace with real API calls)
   // ============================================================
 
-  // Current state
+  // Provider data
+  const providers = [
+    { id: 'openai', name: 'OpenAI · GPT', role: 'Стратешки синтетизатор', color: '#10a37f', emoji: '📊' },
+    { id: 'gemini', name: 'Google · Gemini', role: 'Мултимодален аналитичар', color: '#4285f4', emoji: '🔮' },
+    { id: 'claude', name: 'Anthropic · Claude', role: 'Аналитичар на долги документи', color: '#7c3aed', emoji: '🏛️' },
+    { id: 'deepseek', name: 'DeepSeek', role: 'Логичар и инженерски критичар', color: '#0066cc', emoji: '🧠' },
+    { id: 'qwen', name: 'Alibaba · Qwen', role: 'Мост Исток-Запад', color: '#ff6b35', emoji: '🐉' },
+    { id: 'perplexity', name: 'Perplexity', role: 'Истражувач и аналитичар на извори', color: '#00c4a0', emoji: '🔍' },
+    { id: 'kimi', name: 'Moonshot · Kimi', role: 'Менаџер на задачи', color: '#f5a623', emoji: '🎯' }
+  ];
+
   let currentMode = 'balanced';
   let selectedProviders = ['openai', 'gemini', 'claude', 'deepseek', 'qwen'];
-  let sessions = JSON.parse(localStorage.getItem('wpa_sessions') || '[]');
   let currentResponses = {};
+  let sessions = JSON.parse(localStorage.getItem('wpa_sessions') || '[]');
+  let currentSessionId = null;
 
-  // Provider role-based system prompts (for simulation)
+  // Role-based system prompts (for simulation)
   const providerRoles = {
-    openai: 'Strategic Synthesizer – You create clear, structured, polished corporate text.',
-    gemini: 'Multimodal Analyst – You provide broad context and Google ecosystem perspective.',
-    claude: 'Document Critic – You carefully analyze for risks, ethics and legal nuance.',
-    deepseek: 'Logic & Engineering Critic – You focus on code, architecture and logical consistency.',
-    qwen: 'East-West Bridge – You provide Chinese and cross-cultural perspective.',
-    perplexity: 'Research Analyst – You provide source-grounded, factual answers with citations.',
-    kimi: 'Task Manager – You break down tasks into clear action items and workflows.'
+    openai: 'Стратешки синтетизатор – креираш јасен, структуриран, професионален текст.',
+    gemini: 'Мултимодален аналитичар – даваш широк контекст и перспектива на Google екосистемот.',
+    claude: 'Аналитичар на долги документи – внимателно анализираш ризици, етика и правни нијанси.',
+    deepseek: 'Логичар и инженерски критичар – фокусираш на код, архитектура и логичка конзистентност.',
+    qwen: 'Мост Исток-Запад – даваш кинеска и меѓукултурна перспектива.',
+    perplexity: 'Истражувачки аналитичар – даваш фактички одговори базирани на извори, со цитати.',
+    kimi: 'Менаџер на задачи – ги разложуваш задачите на јасни чекори и работни текови.'
   };
 
-  // Simulated AI responses (replace with real API calls)
-  function simulateAIResponse(provider, prompt, mode) {
-    const role = providerRoles[provider] || 'AI Advisor';
+  // Simulate AI response (replace with real API calls)
+  function simulateAIResponse(providerId, prompt, mode) {
+    const role = providerRoles[providerId] || 'AI Советник';
     const promptPreview = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
     
     const responses = {
-      openai: `📊 **OpenAI · GPT – ${role}**\n\n**Analysis of:** "${promptPreview}"\n\n**Strategic Assessment:**\nThis proposal is well-structured and professionally presented. The multi-device ecosystem approach is a strong differentiator.\n\n**Recommendations:**\n1. Add more specific pilot metrics\n2. Include a clearer timeline\n3. Strengthen the Lens Technology angle\n\n**Confidence:** 87%`,
+      openai: `📊 **OpenAI · GPT – ${role}**\n\n**Анализа на:** "${promptPreview}"\n\n**Стратешка проценка:**\nОвој предлог е добро структуриран и професионално претставен. Мулти-уредниот пристап е силна предност.\n\n**Препораки:**\n1. Додади повеќе специфични пилот метрики\n2. Вклучи појасен временски рок\n3. Зајакни го Lens Technology аголот\n\n**Доверба:** 87%`,
       
-      gemini: `🔮 **Gemini – ${role}**\n\n**Prompt:** "${promptPreview}"\n\n**Google Ecosystem Perspective:**\nThe multi-device strategy aligns well with Android/Google services. Consider Wear OS integration for smartwatch features.\n\n**Key Insight:** Educational content on family screens is an underserved market.\n\n**Confidence:** 82%`,
+      gemini: `🔮 **Gemini – ${role}**\n\n**Промпт:** "${promptPreview}"\n\n**Перспектива на Google екосистемот:**\nМулти-уредната стратегија е добро усогласена со Android/Google сервисите. Размисли за Wear OS интеграција.\n\n**Клучен увид:**\nОбразовната содржина на семејни екрани е недоволно опслужен пазар.\n\n**Доверба:** 82%`,
       
-      claude: `🏛️ **Claude – ${role}**\n\n**Document Review:**\nProposal is well-written with good cultural positioning.\n\n**Risk Assessment:**\n- Legal/IP section is appropriately cautious\n- Children's privacy mentions are good\n- Consider adding more explicit GDPR compliance notes\n\n**Confidence:** 91%`,
+      claude: `🏛️ **Claude – ${role}**\n\n**Преглед на документот:**\nПредлогот е добро напишан со добра културна позиција.\n\n**Проценка на ризик:**\n- Правниот/IP дел е соодветно внимателен\n- Детската приватност е добро спомната\n- Размисли за додавање на поексплицитни GDPR белешки\n\n**Доверба:** 91%`,
       
-      deepseek: `🧠 **DeepSeek – ${role}**\n\n**Logical Analysis:**\n\n\`\`\`\nif (pilot_successful && partner_commits) {\n    deploy_phase_3();\n    expand_to_multi_device();\n}\n\`\`\`\n\n**Engineering Assessment:**\nPWA-first approach is cost-effective. Recommend native wrappers for AppGallery.\n\n**Confidence:** 94%`,
+      deepseek: `🧠 **DeepSeek – ${role}**\n\n**Логичка анализа:**\n\n\`\`\`\nif (pilot_uspesen && partner_se_obvrze) {\n    deploy_faza_3();\n    proshiri_na_povekje_uredi();\n}\n\`\`\`\n\n**Инженерска проценка:**\nPWA-пристапот е исплатлив. Препорачувам native обвивка за AppGallery.\n\n**Доверба:** 94%`,
       
-      qwen: `🐉 **Qwen – ${role}**\n\n**Analysis from Eastern Perspective (从东方视角):**\n\n**东西方桥梁分析 (East-West Bridge):**\n- 教育内容 (Educational content): 高价值\n- 硬件生态系统 (Hardware ecosystem): 非常有潜力\n\n**Recommendation:** Strong potential for Chinese market with proper localization.\n\n**Confidence:** 85%`,
+      qwen: `🐉 **Qwen – ${role}**\n\n**Анализа од источна перспектива (从东方视角分析):**\n\n**东西方桥梁分析 (East-West Bridge Analysis):**\n- 教育内容 (Образовна содржина): висока вредност\n- 硬件生态系统 (Хардверски екосистем): многу потенцијален\n\n**Препорака (推荐):**\nГолем потенцијал за кинескиот пазар со соодветна локализација.\n\n**Доверба:** 85%`,
       
-      perplexity: `🔍 **Perplexity – ${role}**\n\n**Research Summary:**\nBased on industry reports, the educational gaming market is growing at 15% annually. Huawei's $300M gaming fund in Africa indicates commitment.\n\n**Sources:**\n1. Market analysis report 2025\n2. Huawei annual report 2025\n\n**Confidence:** 78% (requires live web search for latest)`,
+      perplexity: `🔍 **Perplexity – ${role}**\n\n**Преглед на истражување:**\nСпоред индустриските извештаи, пазарот на образовни игри расте 15% годишно. Фондот на Huawei од $300M за гејминг во Африка покажува посветеност.\n\n**Извори:**\n1. Анализа на пазарот 2025\n2. Годишен извештај на Huawei 2025\n\n**Доверба:** 78% (потребно е живо пребарување за најнови информации)`,
       
-      kimi: `🎯 **Kimi – ${role}**\n\n**Task Breakdown:**\n\n1. **Immediate (Week 1):** Send proposal to Huawei/Xiaomi\n2. **Week 2:** Prepare pilot metrics dashboard\n3. **Week 3:** Schedule follow-up calls\n4. **Week 4:** Begin technical integration planning\n\n**Priority:** High\n**Estimated effort:** 40 hours\n\n**Confidence:** 88%`
+      kimi: `🎯 **Kimi – ${role}**\n\n**Распоред на задачи:**\n\n1. **Итно (1 недела):** Испрати го предлогот до Huawei/Xiaomi\n2. **2 недела:** Подготви пилот метрики\n3. **3 недела:** Закажи повратни повици\n4. **4 недела:** Почни со техничка интеграција\n\n**Приоритет:** Висок\n**Проценет труд:** 40 часа\n\n**Доверба:** 88%`
     };
     
-    return responses[provider] || `${provider.toUpperCase()}: Analysis of your prompt.`;
+    return responses[providerId] || `${providerId.toUpperCase()}: Анализа на вашиот промпт.`;
   }
 
-  // Simulate API call with latency
-  async function callAIProvider(provider, prompt, mode) {
+  // Simulate API call
+  async function callAIProvider(providerId, prompt, mode) {
     const startTime = Date.now();
-    
-    // Simulate network delay (200-800ms realistic)
     const delay = 400 + Math.random() * 400;
     await new Promise(resolve => setTimeout(resolve, delay));
-    
-    const responseText = simulateAIResponse(provider, prompt, mode);
+    const responseText = simulateAIResponse(providerId, prompt, mode);
     const latency = Date.now() - startTime;
-    const estimatedCost = (responseText.length / 1000) * 0.001; // ~$0.001 per 1000 chars
+    const estimatedCost = (responseText.length / 1000) * 0.001;
     
     return {
-      provider,
+      provider: providerId,
       text: responseText,
       latency,
       estimatedCost: estimatedCost.toFixed(5),
@@ -572,167 +557,223 @@
     };
   }
 
-  // Send to selected providers (parallel)
-  async function sendToSelectedProviders() {
-    const prompt = document.getElementById('universalPrompt').value.trim();
+  // Update provider card status
+  function setProviderStatus(providerId, status) {
+    const statusEl = document.getElementById(`status-${providerId}`);
+    if (statusEl) {
+      const statusText = { idle: '● Мирува', loading: '● Размислува', success: '● Успешно', error: '● Грешка' };
+      statusEl.textContent = statusText[status] || '● Мирува';
+      statusEl.className = `ai-status ${status}`;
+    }
+  }
+
+  // Update provider card with response
+  function updateProviderCard(providerId, result) {
+    const responseEl = document.getElementById(`response-${providerId}`);
+    const timeEl = document.getElementById(`time-${providerId}`);
+    const costEl = document.getElementById(`cost-${providerId}`);
+    
+    if (responseEl) {
+      responseEl.innerHTML = `<pre style="white-space: pre-wrap;">${escapeHtml(result.text)}</pre>`;
+    }
+    if (timeEl) timeEl.textContent = result.latency;
+    if (costEl) costEl.textContent = `$${result.estimatedCost}`;
+    
+    setProviderStatus(providerId, 'success');
+    
+    // Store response
+    currentResponses[providerId] = result;
+  }
+
+  // Update provider card with error
+  function updateProviderError(providerId, errorMsg) {
+    const responseEl = document.getElementById(`response-${providerId}`);
+    if (responseEl) {
+      responseEl.innerHTML = `<span style="color:#e74c3c;">❌ Грешка: ${escapeHtml(errorMsg)}</span>`;
+    }
+    setProviderStatus(providerId, 'error');
+  }
+
+  // Ask single AI
+  async function askSingleAI(providerId) {
+    const individualPrompt = document.getElementById(`prompt-${providerId}`)?.value.trim();
+    const mainPrompt = document.getElementById('mainPrompt')?.value.trim();
+    const prompt = individualPrompt || mainPrompt;
+    
     if (!prompt) {
-      alert('Please enter a prompt first.');
+      alert('Внеси прашање во полето на AI-то или во главното поле!');
       return;
     }
     
-    // Update all card statuses to loading
-    for (const provider of selectedProviders) {
-      const statusEl = document.getElementById(`status-${provider}`);
-      const responseEl = document.getElementById(`response-${provider}`);
-      if (statusEl) {
-        statusEl.textContent = '● Loading';
-        statusEl.className = 'ai-status loading';
-      }
-      if (responseEl) {
-        responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Thinking...</div>';
-      }
-      const timeEl = document.getElementById(`time-${provider}`);
-      const costEl = document.getElementById(`cost-${provider}`);
+    setProviderStatus(providerId, 'loading');
+    const responseEl = document.getElementById(`response-${providerId}`);
+    if (responseEl) responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Размислува...</div>';
+    
+    try {
+      const result = await callAIProvider(providerId, prompt, currentMode);
+      updateProviderCard(providerId, result);
+    } catch (error) {
+      updateProviderError(providerId, error.message);
+    }
+  }
+
+  // Send to all selected providers
+  async function sendToSelectedProviders() {
+    const mainPrompt = document.getElementById('mainPrompt')?.value.trim();
+    if (!mainPrompt) {
+      alert('Внеси прашање во главното поле!');
+      return;
+    }
+    
+    // Reset all selected cards
+    for (const providerId of selectedProviders) {
+      setProviderStatus(providerId, 'loading');
+      const responseEl = document.getElementById(`response-${providerId}`);
+      if (responseEl) responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Размислува...</div>';
+      const timeEl = document.getElementById(`time-${providerId}`);
+      const costEl = document.getElementById(`cost-${providerId}`);
       if (timeEl) timeEl.textContent = '—';
       if (costEl) costEl.textContent = '—';
     }
     
-    // Parallel API calls to selected providers
-    const promises = selectedProviders.map(provider => callAIProvider(provider, prompt, currentMode));
+    // Parallel calls
+    const promises = selectedProviders.map(providerId => callAIProvider(providerId, mainPrompt, currentMode));
     const results = await Promise.allSettled(promises);
     
-    // Update UI with responses
-    currentResponses = {};
     for (const result of results) {
       if (result.status === 'fulfilled') {
-        const { provider, text, latency, estimatedCost, status } = result.value;
-        currentResponses[provider] = { text, latency, estimatedCost, status };
+        const { provider, text, latency, estimatedCost } = result.value;
+        currentResponses[provider] = { text, latency, estimatedCost, status: 'success' };
         
         const responseEl = document.getElementById(`response-${provider}`);
-        const statusEl = document.getElementById(`status-${provider}`);
         const timeEl = document.getElementById(`time-${provider}`);
         const costEl = document.getElementById(`cost-${provider}`);
         
         if (responseEl) responseEl.innerHTML = `<pre style="white-space: pre-wrap;">${escapeHtml(text)}</pre>`;
-        if (statusEl) {
-          statusEl.textContent = '● Success';
-          statusEl.className = 'ai-status success';
-        }
         if (timeEl) timeEl.textContent = latency;
         if (costEl) costEl.textContent = `$${estimatedCost}`;
+        setProviderStatus(provider, 'success');
       } else {
-        // Handle error
-        const provider = result.reason?.provider || 'unknown';
-        const responseEl = document.getElementById(`response-${provider}`);
-        const statusEl = document.getElementById(`status-${provider}`);
-        if (responseEl) responseEl.innerHTML = `<span style="color:#e74c3c;">❌ API Error: ${result.reason?.message || 'Request failed'}</span>`;
-        if (statusEl) {
-          statusEl.textContent = '● Error';
-          statusEl.className = 'ai-status error';
-        }
+        const providerId = result.reason?.provider || 'unknown';
+        updateProviderError(providerId, result.reason?.message || 'Непозната грешка');
       }
     }
   }
 
-  // Generate Consensus from current responses
+  // Generate consensus
   function generateConsensus() {
     const responsesArray = Object.entries(currentResponses);
     if (responsesArray.length === 0) {
-      alert('No responses yet. Send a prompt first.');
+      alert('Нема одговори. Прво испрати прашање до AI советниците.');
       return;
     }
     
-    // Simple consensus algorithm (in production, use WPA Consensus Engine)
-    const agreements = [];
-    const disagreements = [];
-    const actionItems = [];
+    const agreements = [
+      `✅ ${responsesArray.length}/${responsesArray.length} AI советници се согласуваат дека пилот-програмата е добар прв чекор`,
+      `✅ Сите препорачуваат техничка евалуација пред целосна имплементација`,
+      `✅ Сите го истакнуваат семејниот пристап како клучен`
+    ];
     
-    // Analyze responses for common patterns
-    const allText = responsesArray.map(([provider, data]) => data.text.toLowerCase());
+    const disagreements = [
+      `⚠️ OpenAI и Gemini имаат различни приоритети за интеграција на уреди`,
+      `⚠️ Нивото на доверба варира: ${responsesArray.map(([p,d]) => `${p}: ${d.estimatedCost}`).join(', ')}`
+    ];
     
-    const commonKeywords = ['education', 'family', 'children', 'pilot', 'partnership', 'huawei', 'xiaomi', 'lens'];
-    for (const keyword of commonKeywords) {
-      const mentions = allText.filter(t => t.includes(keyword)).length;
-      if (mentions >= responsesArray.length / 2) {
-        agreements.push(`✅ ${responsesArray.length}/${responsesArray.length} AI advisors mention "${keyword}" as important`);
-      }
-    }
-    
-    // Disagreements (simplified)
-    disagreements.push(`⚠️ OpenAI and Gemini prioritize different aspects of device integration`);
-    disagreements.push(`⚠️ Confidence levels vary: ${responsesArray.map(([p,d]) => `${p}: ${d.estimatedCost}`).join(', ')}`);
-    
-    // Action items
-    actionItems.push("📅 Schedule technical review meeting with selected partners");
-    actionItems.push("📊 Prepare pilot metrics dashboard");
-    actionItems.push("📝 Finalize legal/IP framework");
-    actionItems.push("🌍 Begin localization for target markets");
+    const actionPlan = [
+      "📅 Закажи технички преглед со избраните партнери",
+      "📊 Подготви табла за пилот метрики",
+      "📝 Финален правен/IP преглед",
+      "🌍 Почни со локализација за целните пазари"
+    ];
     
     const consensusHtml = `
       <div class="consensus-content">
         <div class="consensus-card">
-          <h4>🤝 Points of Agreement (${responsesArray.length} advisors)</h4>
+          <h4>🤝 Точки на согласување</h4>
           <ul style="margin-left: 1rem;">
             ${agreements.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
           </ul>
         </div>
         <div class="consensus-card">
-          <h4>⚠️ Points of Disagreement</h4>
+          <h4>⚠️ Точки на несогласување</h4>
           <ul style="margin-left: 1rem;">
             ${disagreements.map(d => `<li style="margin-bottom: 0.5rem;">${d}</li>`).join('')}
           </ul>
         </div>
         <div class="consensus-card">
-          <h4>🎯 Recommended Action Plan</h4>
+          <h4>🎯 Препорачан акционен план</h4>
           <ol style="margin-left: 1rem;">
-            ${actionItems.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
+            ${actionPlan.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
           </ol>
         </div>
         <div class="consensus-card">
-          <h4>📊 Consensus Confidence</h4>
-          <p>Overall confidence: <strong>82%</strong> (based on advisor agreement)</p>
-          <p>💡 <strong>WPA Recommendation:</strong> Proceed with pilot program. Strong alignment across AI advisors.</p>
+          <h4>📊 Консензус доверба</h4>
+          <p>Вкупна доверба: <strong>82%</strong></p>
+          <p>💡 <strong>WPA Препорака:</strong> Продолжи со пилот програмата. Силен консензус меѓу AI советниците.</p>
         </div>
       </div>
     `;
     
     document.getElementById('consensusContent').innerHTML = consensusHtml;
-    
-    // Switch to consensus tab
     document.querySelector('.tab[data-tab="consensus"]').click();
   }
 
-  // Save current session to archive
+  // Render all AI cards
+  function renderAICards() {
+    const container = document.getElementById('advisorsTab');
+    if (!container) return;
+    
+    container.innerHTML = providers.map(provider => `
+      <div class="ai-card" data-provider="${provider.id}">
+        <div class="ai-header">
+          <div>
+            <span class="ai-name" style="color: ${provider.color}">${provider.emoji} ${provider.name}</span>
+            <div class="ai-role">${provider.role}</div>
+          </div>
+          <div class="ai-status idle" id="status-${provider.id}">● Мирува</div>
+        </div>
+        <div class="ai-response" id="response-${provider.id}">✨ Чекам прашање...</div>
+        <div class="individual-prompt-area">
+          <textarea id="prompt-${provider.id}" class="individual-prompt" rows="2" placeholder="Прашај само ${provider.name}... (остави празно за да го користи главниот промпт)"></textarea>
+          <button class="ask-single-btn" onclick="askSingleAI('${provider.id}')">🎯 Прашај го само ${provider.name}</button>
+        </div>
+        <div class="ai-footer">
+          <span>⏱️ <span id="time-${provider.id}">—</span> ms</span>
+          <span>💰 <span id="cost-${provider.id}">—</span></span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Save session
   function saveCurrentSession() {
-    const prompt = document.getElementById('universalPrompt').value.trim();
+    const prompt = document.getElementById('mainPrompt').value.trim();
     if (!prompt) {
-      alert('Enter a prompt first.');
+      alert('Внеси прашање прво.');
       return;
     }
     
     const session = {
       id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString(),
       prompt: prompt.substring(0, 200),
       mode: currentMode,
       providers: [...selectedProviders],
-      responseCount: Object.keys(currentResponses).length,
-      preview: Object.values(currentResponses)[0]?.text.substring(0, 150) || 'No responses'
+      responseCount: Object.keys(currentResponses).length
     };
     
     sessions.unshift(session);
     localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
     renderArchive();
-    alert('Session saved!');
+    alert('Сесијата е зачувана!');
   }
 
-  // Render archive list
   function renderArchive() {
     const sessionList = document.getElementById('sessionList');
     if (!sessionList) return;
     
     if (sessions.length === 0) {
-      sessionList.innerHTML = '<p style="color:#8a9bb5;">No sessions saved yet.</p>';
+      sessionList.innerHTML = '<p style="color:#8a9bb5;">Нема зачувани сесии.</p>';
       return;
     }
     
@@ -743,7 +784,7 @@
           <span style="color:#8a9bb5;">${s.mode}</span>
         </div>
         <div style="font-size:0.8rem; margin-top: 0.3rem;">"${escapeHtml(s.prompt)}"</div>
-        <div style="font-size:0.7rem; color:#6c7a8a; margin-top: 0.3rem;">${s.responseCount} responses · ${s.providers.join(', ')}</div>
+        <div style="font-size:0.7rem; color:#6c7a8a; margin-top: 0.3rem;">${s.responseCount} одговори</div>
       </div>
     `).join('');
   }
@@ -751,40 +792,38 @@
   function loadSession(id) {
     const session = sessions.find(s => s.id === id);
     if (session) {
-      document.getElementById('universalPrompt').value = session.prompt;
-      alert(`Loaded session from ${new Date(session.timestamp).toLocaleString()}\nSend prompt to regenerate responses.`);
+      document.getElementById('mainPrompt').value = session.prompt;
+      alert(`Сесијата од ${new Date(session.timestamp).toLocaleString()} е вчитана.\nИспрати го промптот за да ги регенерираш одговорите.`);
     }
   }
   
   function clearArchive() {
-    if (confirm('Delete all saved sessions?')) {
+    if (confirm('Избриши ги сите зачувани сесии?')) {
       sessions = [];
       localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
       renderArchive();
     }
   }
   
-  // Export as Markdown
   function exportMarkdown() {
-    const prompt = document.getElementById('universalPrompt').value;
+    const prompt = document.getElementById('mainPrompt').value;
     let markdown = `# WPA Multi-AI Command Center Report\n\n`;
-    markdown += `**Date:** ${new Date().toLocaleString()}\n`;
-    markdown += `**Mode:** ${currentMode}\n`;
-    markdown += `**Prompt:** ${prompt}\n\n`;
-    markdown += `## AI Responses\n\n`;
+    markdown += `**Датум:** ${new Date().toLocaleString()}\n`;
+    markdown += `**Режим:** ${currentMode}\n`;
+    markdown += `**Прашање:** ${prompt}\n\n`;
+    markdown += `## Одговори од AI советниците\n\n`;
     
     for (const [provider, data] of Object.entries(currentResponses)) {
       markdown += `### ${provider.toUpperCase()}\n`;
       markdown += `${data.text}\n\n`;
-      markdown += `*Latency: ${data.latency} ms | Cost: $${data.estimatedCost}*\n\n`;
+      markdown += `*Време: ${data.latency} ms | Цена: $${data.estimatedCost}*\n\n`;
     }
     
-    // Download
     const blob = new Blob([markdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `wpa_report_${Date.now()}.md`;
+    a.download = `wpa_izvestaj_${Date.now()}.md`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -806,7 +845,7 @@
     const archiveTab = document.getElementById('archiveTab');
     
     advisorsTab.style.display = tabName === 'advisors' ? 'grid' : 'none';
-    consensusTab.style.display = tabName === 'consensus' ? 'block' : 'none';
+    consensusTab.classList.toggle('active', tabName === 'consensus');
     archiveTab.classList.toggle('active', tabName === 'archive');
     
     document.querySelectorAll('.tab').forEach(tab => {
@@ -816,10 +855,10 @@
     if (tabName === 'archive') renderArchive();
   }
   
-  // Event Listeners
+  // Event listeners
   document.getElementById('sendToAllBtn').addEventListener('click', sendToSelectedProviders);
   document.getElementById('clearAllBtn').addEventListener('click', () => {
-    if (confirm('Clear all responses?')) {
+    if (confirm('Исчисти ги сите одговори?')) {
       location.reload();
     }
   });
@@ -850,12 +889,11 @@
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
   });
   
-  // Load archive on init
+  // Initialize
+  renderAICards();
   renderArchive();
   
-  console.log('🏛️ WPA Multi-AI Command Center – Professional Prototype Ready');
-  console.log('⚡ Mode: Simulation (ready for real API integration)');
-  console.log('📡 Supported providers:', selectedProviders);
+  console.log('🏛️ WPA Multi-AI Command Center – Individual Queries Ready');
 </script>
 </body>
 </html>
