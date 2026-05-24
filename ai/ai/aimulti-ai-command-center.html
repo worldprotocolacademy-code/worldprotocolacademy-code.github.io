@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>WPA Multi-AI Command Center – Strategic Intelligence</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0a0c15;
+    font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+    color: #e8eef5;
+    padding: 1.5rem;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #d4af37;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    color: #8a9bb5;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.15);
+    padding: 0.3rem 1rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    margin-top: 0.8rem;
+    color: #d4af37;
+  }
+
+  /* MODE SELECTOR */
+  .mode-bar {
+    background: #0d1220;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid #1f2a3a;
+  }
+
+  .mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .mode-btn {
+    background: #1a2230;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    color: #8a9bb5;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    background: #d4af37;
+    color: #0a0c15;
+  }
+
+  .provider-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .provider-selector label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+  }
+
+  /* UNIVERSAL PROMPT */
+  .universal-panel {
+    background: #11161f;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    background: #0a0e1a;
+    border: 1px solid #2a3a4a;
+    border-radius: 12px;
+    color: #e8eef5;
+    font-size: 1rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #d4af37;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #d4af37, #b8941e);
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: bold;
+    color: #0a0c15;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary {
+    background: #1f2a3a;
+    border: 1px solid #d4af37;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: bold;
+    color: #d4af37;
+    cursor: pointer;
+  }
+
+  /* AI GRID */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .ai-card {
+    background: #11161f;
+    border-radius: 16px;
+    border: 1px solid #1f2a3a;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .ai-card:hover {
+    transform: translateY(-2px);
+    border-color: #d4af37;
+  }
+
+  .ai-header {
+    background: #0d1220;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #d4af37;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ai-name {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .ai-role {
+    font-size: 0.7rem;
+    color: #8a9bb5;
+  }
+
+  .ai-status {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background: #1a2230;
+  }
+
+  .ai-status.idle { color: #6c7a8a; }
+  .ai-status.loading { color: #d4af37; animation: pulse 1s infinite; }
+  .ai-status.success { color: #2ecc71; }
+  .ai-status.error { color: #e74c3c; }
+
+  .ai-response {
+    padding: 1rem;
+    min-height: 200px;
+    max-height: 350px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #0a0e1a;
+  }
+
+  .ai-footer {
+    padding: 0.5rem 1rem;
+    background: #0d1220;
+    border-top: 1px solid #1f2a3a;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c7a8a;
+  }
+
+  /* CONSENSUS PANEL */
+  .consensus-panel {
+    background: #0d1220;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+  }
+
+  .consensus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .consensus-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4af37;
+  }
+
+  .consensus-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .consensus-card {
+    background: #11161f;
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 3px solid #d4af37;
+  }
+
+  .consensus-card h4 {
+    margin-bottom: 0.5rem;
+    color: #d4af37;
+  }
+
+  /* ARCHIVE PANEL */
+  .archive-panel {
+    background: #0d1220;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+    display: none;
+  }
+
+  .archive-panel.active {
+    display: block;
+  }
+
+  .session-item {
+    background: #11161f;
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .session-item:hover {
+    background: #1a2230;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #1f2a3a;
+    padding-bottom: 0.5rem;
+  }
+
+  .tab {
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    background: #1a2230;
+    color: #8a9bb5;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: #d4af37;
+    color: #0a0c15;
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1f2a3a;
+    font-size: 0.7rem;
+    color: #6c7a8a;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    .ai-grid { grid-template-columns: 1fr; }
+    .consensus-content { grid-template-columns: 1fr; }
+    .mode-bar { flex-direction: column; align-items: stretch; }
+    .action-buttons { flex-direction: column; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+  }
+
+  @media print {
+    body { background: white; color: black; }
+    .btn-primary, .btn-secondary, .mode-bar, .tabs { display: none; }
+    .ai-card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏛️ WPA MULTI-AI COMMAND CENTER</h1>
+    <div class="subtitle">7 AI Advisors · One Command Center</div>
+    <div class="badge">⚡ Strategic Intelligence · WPA Consensus Engine · Real API Ready</div>
+  </div>
+
+  <!-- MODE BAR -->
+  <div class="mode-bar">
+    <div class="mode-buttons">
+      <button class="mode-btn active" data-mode="balanced">⚖️ Balanced</button>
+      <button class="mode-btn" data-mode="deep">🧠 Deep</button>
+      <button class="mode-btn" data-mode="research">🔍 Research</button>
+      <button class="mode-btn" data-mode="corporate">💼 Corporate</button>
+      <button class="mode-btn" data-mode="code">💻 Code</button>
+    </div>
+    <div class="provider-selector" id="providerSelector">
+      <label><input type="checkbox" value="openai" checked> OpenAI</label>
+      <label><input type="checkbox" value="gemini" checked> Gemini</label>
+      <label><input type="checkbox" value="claude" checked> Claude</label>
+      <label><input type="checkbox" value="deepseek" checked> DeepSeek</label>
+      <label><input type="checkbox" value="qwen" checked> Qwen</label>
+      <label><input type="checkbox" value="perplexity"> Perplexity</label>
+      <label><input type="checkbox" value="kimi"> Kimi</label>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL PROMPT PANEL -->
+  <div class="universal-panel">
+    <textarea id="universalPrompt" rows="3" placeholder="Enter your prompt here... (e.g., 'Polish this corporate proposal for Huawei')"></textarea>
+    <div class="action-buttons">
+      <button class="btn-primary" id="sendToAllBtn">🚀 Send to Selected AIs</button>
+      <button class="btn-secondary" id="clearAllBtn">🗑️ Clear All</button>
+      <button class="btn-secondary" id="saveSessionBtn">💾 Save Session</button>
+      <button class="btn-secondary" id="exportMarkdownBtn">📄 Export Markdown</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" data-tab="advisors">🤖 AI Advisors</div>
+    <div class="tab" data-tab="consensus">🧠 WPA Consensus</div>
+    <div class="tab" data-tab="archive">📚 Archive</div>
+  </div>
+
+  <!-- AI GRID (7 CARDS) -->
+  <div id="advisorsTab" class="ai-grid">
+    <!-- OpenAI / GPT -->
+    <div class="ai-card" data-provider="openai">
+      <div class="ai-header">
+        <div><span class="ai-name">📊 OpenAI · GPT</span><div class="ai-role">Strategic Synthesizer</div></div>
+        <div class="ai-status idle" id="status-openai">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-openai">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-openai">—</span> ms</span><span>💰 <span id="cost-openai">—</span></span></div>
+    </div>
+
+    <!-- Google Gemini -->
+    <div class="ai-card" data-provider="gemini">
+      <div class="ai-header">
+        <div><span class="ai-name">🔮 Google · Gemini</span><div class="ai-role">Multimodal & Broad Context</div></div>
+        <div class="ai-status idle" id="status-gemini">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-gemini">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-gemini">—</span> ms</span><span>💰 <span id="cost-gemini">—</span></span></div>
+    </div>
+
+    <!-- Anthropic Claude -->
+    <div class="ai-card" data-provider="claude">
+      <div class="ai-header">
+        <div><span class="ai-name">🏛️ Anthropic · Claude</span><div class="ai-role">Long-Form Document Critic</div></div>
+        <div class="ai-status idle" id="status-claude">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-claude">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-claude">—</span> ms</span><span>💰 <span id="cost-claude">—</span></span></div>
+    </div>
+
+    <!-- DeepSeek -->
+    <div class="ai-card" data-provider="deepseek">
+      <div class="ai-header">
+        <div><span class="ai-name">🧠 DeepSeek</span><div class="ai-role">Logic & Engineering Critic</div></div>
+        <div class="ai-status idle" id="status-deepseek">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-deepseek">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-deepseek">—</span> ms</span><span>💰 <span id="cost-deepseek">—</span></span></div>
+    </div>
+
+    <!-- Alibaba Qwen -->
+    <div class="ai-card" data-provider="qwen">
+      <div class="ai-header">
+        <div><span class="ai-name">🐉 Alibaba · Qwen</span><div class="ai-role">East-West Market Bridge</div></div>
+        <div class="ai-status idle" id="status-qwen">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-qwen">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-qwen">—</span> ms</span><span>💰 <span id="cost-qwen">—</span></span></div>
+    </div>
+
+    <!-- Perplexity -->
+    <div class="ai-card" data-provider="perplexity">
+      <div class="ai-header">
+        <div><span class="ai-name">🔍 Perplexity</span><div class="ai-role">Research & Source Analyst</div></div>
+        <div class="ai-status idle" id="status-perplexity">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-perplexity">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-perplexity">—</span> ms</span><span>💰 <span id="cost-perplexity">—</span></span></div>
+    </div>
+
+    <!-- Kimi (Moonshot) -->
+    <div class="ai-card" data-provider="kimi">
+      <div class="ai-header">
+        <div><span class="ai-name">🎯 Moonshot · Kimi</span><div class="ai-role">Task & Workflow Manager</div></div>
+        <div class="ai-status idle" id="status-kimi">● Idle</div>
+      </div>
+      <div class="ai-response" id="response-kimi">✨ Waiting for prompt...</div>
+      <div class="ai-footer"><span>⏱️ <span id="time-kimi">—</span> ms</span><span>💰 <span id="cost-kimi">—</span></span></div>
+    </div>
+  </div>
+
+  <!-- CONSENSUS PANEL -->
+  <div id="consensusTab" class="consensus-panel" style="display: none;">
+    <div class="consensus-header">
+      <div class="consensus-title">🧠 WPA Consensus Engine</div>
+      <button class="btn-secondary" id="generateConsensusBtn">🔄 Generate Consensus</button>
+    </div>
+    <div id="consensusContent">
+      <p style="color:#8a9bb5;">Send a prompt to the AI advisors first, then generate consensus.</p>
+    </div>
+  </div>
+
+  <!-- ARCHIVE PANEL -->
+  <div id="archiveTab" class="archive-panel">
+    <div class="consensus-header">
+      <div class="consensus-title">📚 Session Archive</div>
+      <button class="btn-secondary" id="clearArchiveBtn">🗑️ Clear Archive</button>
+    </div>
+    <div id="sessionList"></div>
+  </div>
+
+  <div class="footer">
+    🏛️ WPA Institute – Doc. dr Sande Smiljanov | Macedonia<br>
+    One prompt. Multiple AI advisors. One final WPA consensus.<br>
+    <span style="color:#6c7a8a;">⚡ Currently in Simulation Mode – Ready for real API integration</span>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // WPA MULTI-AI COMMAND CENTER
+  // Professional Prototype – Backend-Ready
+  // Simulation Mode (replace with real API calls)
+  // ============================================================
+
+  // Current state
+  let currentMode = 'balanced';
+  let selectedProviders = ['openai', 'gemini', 'claude', 'deepseek', 'qwen'];
+  let sessions = JSON.parse(localStorage.getItem('wpa_sessions') || '[]');
+  let currentResponses = {};
+
+  // Provider role-based system prompts (for simulation)
+  const providerRoles = {
+    openai: 'Strategic Synthesizer – You create clear, structured, polished corporate text.',
+    gemini: 'Multimodal Analyst – You provide broad context and Google ecosystem perspective.',
+    claude: 'Document Critic – You carefully analyze for risks, ethics and legal nuance.',
+    deepseek: 'Logic & Engineering Critic – You focus on code, architecture and logical consistency.',
+    qwen: 'East-West Bridge – You provide Chinese and cross-cultural perspective.',
+    perplexity: 'Research Analyst – You provide source-grounded, factual answers with citations.',
+    kimi: 'Task Manager – You break down tasks into clear action items and workflows.'
+  };
+
+  // Simulated AI responses (replace with real API calls)
+  function simulateAIResponse(provider, prompt, mode) {
+    const role = providerRoles[provider] || 'AI Advisor';
+    const promptPreview = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
+    
+    const responses = {
+      openai: `📊 **OpenAI · GPT – ${role}**\n\n**Analysis of:** "${promptPreview}"\n\n**Strategic Assessment:**\nThis proposal is well-structured and professionally presented. The multi-device ecosystem approach is a strong differentiator.\n\n**Recommendations:**\n1. Add more specific pilot metrics\n2. Include a clearer timeline\n3. Strengthen the Lens Technology angle\n\n**Confidence:** 87%`,
+      
+      gemini: `🔮 **Gemini – ${role}**\n\n**Prompt:** "${promptPreview}"\n\n**Google Ecosystem Perspective:**\nThe multi-device strategy aligns well with Android/Google services. Consider Wear OS integration for smartwatch features.\n\n**Key Insight:** Educational content on family screens is an underserved market.\n\n**Confidence:** 82%`,
+      
+      claude: `🏛️ **Claude – ${role}**\n\n**Document Review:**\nProposal is well-written with good cultural positioning.\n\n**Risk Assessment:**\n- Legal/IP section is appropriately cautious\n- Children's privacy mentions are good\n- Consider adding more explicit GDPR compliance notes\n\n**Confidence:** 91%`,
+      
+      deepseek: `🧠 **DeepSeek – ${role}**\n\n**Logical Analysis:**\n\n\`\`\`\nif (pilot_successful && partner_commits) {\n    deploy_phase_3();\n    expand_to_multi_device();\n}\n\`\`\`\n\n**Engineering Assessment:**\nPWA-first approach is cost-effective. Recommend native wrappers for AppGallery.\n\n**Confidence:** 94%`,
+      
+      qwen: `🐉 **Qwen – ${role}**\n\n**Analysis from Eastern Perspective (从东方视角):**\n\n**东西方桥梁分析 (East-West Bridge):**\n- 教育内容 (Educational content): 高价值\n- 硬件生态系统 (Hardware ecosystem): 非常有潜力\n\n**Recommendation:** Strong potential for Chinese market with proper localization.\n\n**Confidence:** 85%`,
+      
+      perplexity: `🔍 **Perplexity – ${role}**\n\n**Research Summary:**\nBased on industry reports, the educational gaming market is growing at 15% annually. Huawei's $300M gaming fund in Africa indicates commitment.\n\n**Sources:**\n1. Market analysis report 2025\n2. Huawei annual report 2025\n\n**Confidence:** 78% (requires live web search for latest)`,
+      
+      kimi: `🎯 **Kimi – ${role}**\n\n**Task Breakdown:**\n\n1. **Immediate (Week 1):** Send proposal to Huawei/Xiaomi\n2. **Week 2:** Prepare pilot metrics dashboard\n3. **Week 3:** Schedule follow-up calls\n4. **Week 4:** Begin technical integration planning\n\n**Priority:** High\n**Estimated effort:** 40 hours\n\n**Confidence:** 88%`
+    };
+    
+    return responses[provider] || `${provider.toUpperCase()}: Analysis of your prompt.`;
+  }
+
+  // Simulate API call with latency
+  async function callAIProvider(provider, prompt, mode) {
+    const startTime = Date.now();
+    
+    // Simulate network delay (200-800ms realistic)
+    const delay = 400 + Math.random() * 400;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    
+    const responseText = simulateAIResponse(provider, prompt, mode);
+    const latency = Date.now() - startTime;
+    const estimatedCost = (responseText.length / 1000) * 0.001; // ~$0.001 per 1000 chars
+    
+    return {
+      provider,
+      text: responseText,
+      latency,
+      estimatedCost: estimatedCost.toFixed(5),
+      status: 'success'
+    };
+  }
+
+  // Send to selected providers (parallel)
+  async function sendToSelectedProviders() {
+    const prompt = document.getElementById('universalPrompt').value.trim();
+    if (!prompt) {
+      alert('Please enter a prompt first.');
+      return;
+    }
+    
+    // Update all card statuses to loading
+    for (const provider of selectedProviders) {
+      const statusEl = document.getElementById(`status-${provider}`);
+      const responseEl = document.getElementById(`response-${provider}`);
+      if (statusEl) {
+        statusEl.textContent = '● Loading';
+        statusEl.className = 'ai-status loading';
+      }
+      if (responseEl) {
+        responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Thinking...</div>';
+      }
+      const timeEl = document.getElementById(`time-${provider}`);
+      const costEl = document.getElementById(`cost-${provider}`);
+      if (timeEl) timeEl.textContent = '—';
+      if (costEl) costEl.textContent = '—';
+    }
+    
+    // Parallel API calls to selected providers
+    const promises = selectedProviders.map(provider => callAIProvider(provider, prompt, currentMode));
+    const results = await Promise.allSettled(promises);
+    
+    // Update UI with responses
+    currentResponses = {};
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        const { provider, text, latency, estimatedCost, status } = result.value;
+        currentResponses[provider] = { text, latency, estimatedCost, status };
+        
+        const responseEl = document.getElementById(`response-${provider}`);
+        const statusEl = document.getElementById(`status-${provider}`);
+        const timeEl = document.getElementById(`time-${provider}`);
+        const costEl = document.getElementById(`cost-${provider}`);
+        
+        if (responseEl) responseEl.innerHTML = `<pre style="white-space: pre-wrap;">${escapeHtml(text)}</pre>`;
+        if (statusEl) {
+          statusEl.textContent = '● Success';
+          statusEl.className = 'ai-status success';
+        }
+        if (timeEl) timeEl.textContent = latency;
+        if (costEl) costEl.textContent = `$${estimatedCost}`;
+      } else {
+        // Handle error
+        const provider = result.reason?.provider || 'unknown';
+        const responseEl = document.getElementById(`response-${provider}`);
+        const statusEl = document.getElementById(`status-${provider}`);
+        if (responseEl) responseEl.innerHTML = `<span style="color:#e74c3c;">❌ API Error: ${result.reason?.message || 'Request failed'}</span>`;
+        if (statusEl) {
+          statusEl.textContent = '● Error';
+          statusEl.className = 'ai-status error';
+        }
+      }
+    }
+  }
+
+  // Generate Consensus from current responses
+  function generateConsensus() {
+    const responsesArray = Object.entries(currentResponses);
+    if (responsesArray.length === 0) {
+      alert('No responses yet. Send a prompt first.');
+      return;
+    }
+    
+    // Simple consensus algorithm (in production, use WPA Consensus Engine)
+    const agreements = [];
+    const disagreements = [];
+    const actionItems = [];
+    
+    // Analyze responses for common patterns
+    const allText = responsesArray.map(([provider, data]) => data.text.toLowerCase());
+    
+    const commonKeywords = ['education', 'family', 'children', 'pilot', 'partnership', 'huawei', 'xiaomi', 'lens'];
+    for (const keyword of commonKeywords) {
+      const mentions = allText.filter(t => t.includes(keyword)).length;
+      if (mentions >= responsesArray.length / 2) {
+        agreements.push(`✅ ${responsesArray.length}/${responsesArray.length} AI advisors mention "${keyword}" as important`);
+      }
+    }
+    
+    // Disagreements (simplified)
+    disagreements.push(`⚠️ OpenAI and Gemini prioritize different aspects of device integration`);
+    disagreements.push(`⚠️ Confidence levels vary: ${responsesArray.map(([p,d]) => `${p}: ${d.estimatedCost}`).join(', ')}`);
+    
+    // Action items
+    actionItems.push("📅 Schedule technical review meeting with selected partners");
+    actionItems.push("📊 Prepare pilot metrics dashboard");
+    actionItems.push("📝 Finalize legal/IP framework");
+    actionItems.push("🌍 Begin localization for target markets");
+    
+    const consensusHtml = `
+      <div class="consensus-content">
+        <div class="consensus-card">
+          <h4>🤝 Points of Agreement (${responsesArray.length} advisors)</h4>
+          <ul style="margin-left: 1rem;">
+            ${agreements.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="consensus-card">
+          <h4>⚠️ Points of Disagreement</h4>
+          <ul style="margin-left: 1rem;">
+            ${disagreements.map(d => `<li style="margin-bottom: 0.5rem;">${d}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="consensus-card">
+          <h4>🎯 Recommended Action Plan</h4>
+          <ol style="margin-left: 1rem;">
+            ${actionItems.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
+          </ol>
+        </div>
+        <div class="consensus-card">
+          <h4>📊 Consensus Confidence</h4>
+          <p>Overall confidence: <strong>82%</strong> (based on advisor agreement)</p>
+          <p>💡 <strong>WPA Recommendation:</strong> Proceed with pilot program. Strong alignment across AI advisors.</p>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('consensusContent').innerHTML = consensusHtml;
+    
+    // Switch to consensus tab
+    document.querySelector('.tab[data-tab="consensus"]').click();
+  }
+
+  // Save current session to archive
+  function saveCurrentSession() {
+    const prompt = document.getElementById('universalPrompt').value.trim();
+    if (!prompt) {
+      alert('Enter a prompt first.');
+      return;
+    }
+    
+    const session = {
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      prompt: prompt.substring(0, 200),
+      mode: currentMode,
+      providers: [...selectedProviders],
+      responseCount: Object.keys(currentResponses).length,
+      preview: Object.values(currentResponses)[0]?.text.substring(0, 150) || 'No responses'
+    };
+    
+    sessions.unshift(session);
+    localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
+    renderArchive();
+    alert('Session saved!');
+  }
+
+  // Render archive list
+  function renderArchive() {
+    const sessionList = document.getElementById('sessionList');
+    if (!sessionList) return;
+    
+    if (sessions.length === 0) {
+      sessionList.innerHTML = '<p style="color:#8a9bb5;">No sessions saved yet.</p>';
+      return;
+    }
+    
+    sessionList.innerHTML = sessions.map(s => `
+      <div class="session-item" onclick="loadSession('${s.id}')">
+        <div style="display: flex; justify-content: space-between;">
+          <strong>${new Date(s.timestamp).toLocaleString()}</strong>
+          <span style="color:#8a9bb5;">${s.mode}</span>
+        </div>
+        <div style="font-size:0.8rem; margin-top: 0.3rem;">"${escapeHtml(s.prompt)}"</div>
+        <div style="font-size:0.7rem; color:#6c7a8a; margin-top: 0.3rem;">${s.responseCount} responses · ${s.providers.join(', ')}</div>
+      </div>
+    `).join('');
+  }
+  
+  function loadSession(id) {
+    const session = sessions.find(s => s.id === id);
+    if (session) {
+      document.getElementById('universalPrompt').value = session.prompt;
+      alert(`Loaded session from ${new Date(session.timestamp).toLocaleString()}\nSend prompt to regenerate responses.`);
+    }
+  }
+  
+  function clearArchive() {
+    if (confirm('Delete all saved sessions?')) {
+      sessions = [];
+      localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
+      renderArchive();
+    }
+  }
+  
+  // Export as Markdown
+  function exportMarkdown() {
+    const prompt = document.getElementById('universalPrompt').value;
+    let markdown = `# WPA Multi-AI Command Center Report\n\n`;
+    markdown += `**Date:** ${new Date().toLocaleString()}\n`;
+    markdown += `**Mode:** ${currentMode}\n`;
+    markdown += `**Prompt:** ${prompt}\n\n`;
+    markdown += `## AI Responses\n\n`;
+    
+    for (const [provider, data] of Object.entries(currentResponses)) {
+      markdown += `### ${provider.toUpperCase()}\n`;
+      markdown += `${data.text}\n\n`;
+      markdown += `*Latency: ${data.latency} ms | Cost: $${data.estimatedCost}*\n\n`;
+    }
+    
+    // Download
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wpa_report_${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/\n/g, '<br>');
+  }
+  
+  // Tab switching
+  function switchTab(tabName) {
+    const advisorsTab = document.getElementById('advisorsTab');
+    const consensusTab = document.getElementById('consensusTab');
+    const archiveTab = document.getElementById('archiveTab');
+    
+    advisorsTab.style.display = tabName === 'advisors' ? 'grid' : 'none';
+    consensusTab.style.display = tabName === 'consensus' ? 'block' : 'none';
+    archiveTab.classList.toggle('active', tabName === 'archive');
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+    
+    if (tabName === 'archive') renderArchive();
+  }
+  
+  // Event Listeners
+  document.getElementById('sendToAllBtn').addEventListener('click', sendToSelectedProviders);
+  document.getElementById('clearAllBtn').addEventListener('click', () => {
+    if (confirm('Clear all responses?')) {
+      location.reload();
+    }
+  });
+  document.getElementById('saveSessionBtn').addEventListener('click', saveCurrentSession);
+  document.getElementById('exportMarkdownBtn').addEventListener('click', exportMarkdown);
+  document.getElementById('generateConsensusBtn').addEventListener('click', generateConsensus);
+  document.getElementById('clearArchiveBtn').addEventListener('click', clearArchive);
+  
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+    });
+  });
+  
+  // Provider checkboxes
+  document.querySelectorAll('#providerSelector input').forEach(cb => {
+    cb.addEventListener('change', () => {
+      selectedProviders = Array.from(document.querySelectorAll('#providerSelector input:checked'))
+        .map(cb => cb.value);
+    });
+  });
+  
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  });
+  
+  // Load archive on init
+  renderArchive();
+  
+  console.log('🏛️ WPA Multi-AI Command Center – Professional Prototype Ready');
+  console.log('⚡ Mode: Simulation (ready for real API integration)');
+  console.log('📡 Supported providers:', selectedProviders);
+</script>
+</body>
+</html>
