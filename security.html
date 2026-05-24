@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WPA Security & Trust Center™ | World Protocol Academy</title>
+  <meta name="description" content="WPA Security & Trust Center – ISO 27001 groundwork, GDPR readiness, AI Trust, certificate verification and institutional security governance." />
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111936;
+      --gold: #d6b35a;
+      --gold-2: #f3d98b;
+      --text: #f6f7fb;
+      --muted: #b7bfd6;
+      --line: rgba(214, 179, 90, 0.32);
+      --success: #78d28f;
+      --shadow: 0 22px 70px rgba(0,0,0,.35);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, rgba(214,179,90,.18), transparent 38%),
+        radial-gradient(circle at top right, rgba(93,115,199,.22), transparent 35%),
+        linear-gradient(180deg, #080c19 0%, var(--bg) 52%, #060815 100%);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    a { color: var(--gold-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
+    header {
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(8,12,25,.72);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; }
+    .brand { display: flex; flex-direction: column; gap: 2px; letter-spacing: .02em; }
+    .brand strong { color: var(--gold-2); font-size: 1.08rem; text-transform: uppercase; }
+    .brand span { color: var(--muted); font-size: .92rem; }
+    .navlinks { display: flex; gap: 14px; flex-wrap: wrap; font-size: .95rem; }
+    .hero { padding: 78px 0 40px; text-align: center; }
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--gold-2);
+      background: rgba(214,179,90,.08);
+      font-size: .92rem;
+      margin-bottom: 22px;
+    }
+    h1 { margin: 0; font-size: clamp(2.2rem, 6vw, 5.2rem); line-height: 1.05; letter-spacing: -.04em; }
+    .subtitle { max-width: 860px; margin: 22px auto 0; font-size: clamp(1.05rem, 2vw, 1.28rem); color: var(--muted); }
+    .actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+    .btn {
+      padding: 13px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .btn.primary { background: linear-gradient(135deg, var(--gold), #9f7f2e); color: #10131f; border-color: transparent; }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 42px auto 0; }
+    .metric, .card, .policy {
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .metric { padding: 20px; text-align: left; }
+    .metric strong { display: block; font-size: 1.6rem; color: var(--gold-2); }
+    .metric span { color: var(--muted); font-size: .92rem; }
+    section { padding: 48px 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 22px; margin-bottom: 22px; }
+    h2 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.6rem); line-height: 1.12; }
+    .section-head p { margin: 0; max-width: 560px; color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .card { padding: 22px; min-height: 230px; display: flex; flex-direction: column; justify-content: space-between; }
+    .card h3 { margin: 0 0 10px; font-size: 1.18rem; color: var(--gold-2); }
+    .card p { margin: 0; color: var(--muted); font-size: .96rem; }
+    .card .tag { display: inline-block; margin-bottom: 12px; color: var(--success); font-size: .84rem; text-transform: uppercase; letter-spacing: .08em; }
+    .card a { margin-top: 18px; font-weight: 700; }
+    .trust { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; }
+    .policy { padding: 26px; }
+    .policy ul { margin: 14px 0 0; padding-left: 22px; color: var(--muted); }
+    .roadmap { display: grid; gap: 12px; }
+    .step {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 18px;
+      background: rgba(255,255,255,.05);
+    }
+    .step strong { color: var(--gold-2); }
+    .step span { color: var(--muted); }
+    footer {
+      padding: 42px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+      text-align: center;
+    }
+    .notice {
+      margin-top: 22px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(214,179,90,.07);
+      color: var(--gold-2);
+    }
+    @media (max-width: 960px) {
+      .metrics, .grid { grid-template-columns: repeat(2, 1fr); }
+      .trust { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .metrics, .grid { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 1fr; }
+      header { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <div class="brand">
+        <strong>World Protocol Academy</strong>
+        <span>Institute for Protocol, Diplomacy, Public Communication & Security Studies</span>
+      </div>
+      <nav class="navlinks" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="certification.html">Certification</a>
+        <a href="protocol-symbols/">Protocol Symbols</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="badge">🔒 WPA Security & Trust Center™</div>
+        <h1>Security, Trust & AI Integrity</h1>
+        <p class="subtitle">
+          Official security governance centre for WPA: certificate anti-fake protection,
+          AI hallucination firewall, GDPR readiness, ISO 27001 groundwork and TÜV certification readiness.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="07_security_policy_v0.1.md">Open Security Policy</a>
+          <a class="btn" href="08_tuv_readiness_checklist.md">TÜV Readiness Checklist</a>
+          <a class="btn" href="02_ai_hallucination_firewall.md">AI Trust Framework</a>
+        </div>
+
+        <div class="metrics" aria-label="Security metrics">
+          <div class="metric"><strong>8</strong><span>Core security documents</span></div>
+          <div class="metric"><strong>ISO</strong><span>27001 groundwork prepared</span></div>
+          <div class="metric"><strong>GDPR</strong><span>DPIA-ready governance</span></div>
+          <div class="metric"><strong>AI</strong><span>Hallucination firewall model</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Security Documentation</h2>
+          <p>These documents form WPA Security Blueprint v1.0 and support the transition towards ISO 27001, GDPR compliance and German certification readiness.</p>
+        </div>
+
+        <div class="grid">
+          <article class="card"><div><span class="tag">Certificate Trust</span><h3>Certificate Anti-Fake System</h3><p>SHA-256, QR verification, PKI digital signatures and WPA Trust Layer for suspicious attempts.</p></div><a href="01_certificate_anti_fake_system.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">AI Trust</span><h3>AI Hallucination Firewall</h3><p>Protocol Symbols Lab first-rule, 3-source verification, confidence score and diplomatic filter.</p></div><a href="02_ai_hallucination_firewall.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">Privacy</span><h3>GDPR Structure</h3><p>GDPR checklist, DPIA plan, Article 17 erasure workflow and privacy policy core sections.</p></div><a href="03_gdpr_structure.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">Administration</span><h3>Admin Security Checklist</h3><p>15 admin rules, consequences, training modules and secure administrator behaviour.</p></div><a href="04_admin_security_checklist.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">ISO 27001</span><h3>Gap Analysis</h3><p>Critical Annex A controls from A.5 to A.8 for WPA’s first 6–12 months of security work.</p></div><a href="05_iso_27001_gap_analysis.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">Budget</span><h3>Security Budget Phase 1</h3><p>Minimum, optimal and premium security budget for 6, 12 and 24 months.</p></div><a href="06_budget_phase1.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">Policy</span><h3>Security Policy v0.1</h3><p>Bilingual MK/EN institutional security policy for WPA governance and audit readiness.</p></div><a href="07_security_policy_v0.1.md">Open document →</a></article>
+          <article class="card"><div><span class="tag">TÜV Readiness</span><h3>TÜV ISO 27001 Checklist</h3><p>Evidence checklist for Stage 1 and Stage 2 readiness towards German certification.</p></div><a href="08_tuv_readiness_checklist.md">Open document →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap trust">
+        <div class="policy">
+          <h2>WPA Trust Doctrine</h2>
+          <ul>
+            <li><strong>No fake certificates:</strong> every certificate must be verifiable by QR, SHA-256 hash and digital signature.</li>
+            <li><strong>No AI hallucinations:</strong> no verified source means no final answer.</li>
+            <li><strong>No unsafe administration:</strong> all admin actions are logged and governed by role-based access control.</li>
+            <li><strong>No privacy shortcuts:</strong> DPIA, GDPR workflows and data minimisation are mandatory.</li>
+            <li><strong>No unverified institutional claims:</strong> public security claims must be supported by documentation and review.</li>
+          </ul>
+          <div class="notice">
+            WPA security materials are working governance documents and will evolve through internal review, external audit and certification preparation.
+          </div>
+        </div>
+
+        <div class="policy">
+          <h2>Certification Roadmap</h2>
+          <div class="roadmap">
+            <div class="step"><strong>Month 1</strong><span>ISMS scope, Security Policy, Risk Register</span></div>
+            <div class="step"><strong>Month 2</strong><span>Statement of Applicability, Asset Register, RBAC matrix</span></div>
+            <div class="step"><strong>Month 3</strong><span>Logging, cryptography, incident response, DPIA, admin training</span></div>
+            <div class="step"><strong>Month 5</strong><span>Internal audit and management review</span></div>
+            <div class="step"><strong>Month 6</strong><span>Stage 1 readiness documentation package</span></div>
+            <div class="step"><strong>Month 9–12</strong><span>Stage 2 implementation evidence and certification readiness</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <strong>World Protocol Academy</strong><br />
+      Security & Trust Center™ · ISO 27001 Groundwork · GDPR Readiness · AI Trust Architecture<br />
+      © 2026 World Protocol Academy. All rights reserved.
+    </div>
+  </footer>
+</body>
+</html>
