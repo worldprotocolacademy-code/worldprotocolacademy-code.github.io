@@ -1,0 +1,2019 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Global Institutions Master List v1.0</title>
+<style>
+  :root {
+    --navy: #0d1f3c;
+    --navy-deep: #081328;
+    --gold: #c9a84c;
+    --gold-soft: #e3c878;
+    --parchment: #f5f0e0;
+    --cream: #fbf8ee;
+    --ink: #1a1a1a;
+    --grey-line: #d8d2bc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color: var(--cream);
+    padding: 40px 20px;
+    text-align: center;
+    border-bottom: 3px solid var(--gold);
+  }
+  .header h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: var(--gold);
+  }
+  .header p {
+    font-size: 14px;
+    opacity: 0.9;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .stats-bar {
+    background: var(--parchment);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--grey-line);
+  }
+  .stat-item {
+    text-align: center;
+  }
+  .stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  .group-section {
+    margin-bottom: 40px;
+  }
+  .group-header {
+    background: var(--navy);
+    color: var(--gold);
+    padding: 15px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-radius: 4px 4px 0 0;
+  }
+  .group-letter {
+    background: var(--gold);
+    color: var(--navy);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 20px;
+  }
+  .group-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--cream);
+    opacity: 0.8;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    font-size: 13px;
+  }
+  th {
+    background: #f0ebe0;
+    color: var(--navy);
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid var(--gold);
+  }
+  td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+  }
+  tr:hover {
+    background: #faf8f3;
+  }
+  .id-cell {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .name-cell {
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .country-cell {
+    font-size: 12px;
+    color: #666;
+  }
+  .type-cell {
+    font-size: 11px;
+    color: #555;
+    max-width: 200px;
+  }
+  .domain-cell {
+    font-size: 11px;
+    color: #444;
+    max-width: 250px;
+  }
+  .relevance-a { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .relevance-b { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .relevance-c { background: #d1ecf1; color: #0c5460; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .relevance-d { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+  .website-link {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 11px;
+  }
+  .website-link:hover {
+    color: var(--gold);
+    text-decoration: underline;
+  }
+  .notes-cell {
+    font-size: 11px;
+    color: #666;
+    max-width: 300px;
+    line-height: 1.4;
+  }
+  .established {
+    font-size: 11px;
+    color: #888;
+    white-space: nowrap;
+  }
+  .footer {
+    background: var(--navy-deep);
+    color: var(--cream);
+    padding: 30px 20px;
+    text-align: center;
+    border-top: 2px solid var(--gold);
+    margin-top: 40px;
+  }
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+  .search-box {
+    padding: 20px;
+    text-align: center;
+  }
+  .search-box input {
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid var(--grey-line);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  @media (max-width: 768px) {
+    table { font-size: 11px; }
+    th, td { padding: 6px; }
+    .notes-cell, .domain-cell, .type-cell { max-width: 150px; }
+    .stats-bar { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⚜️ WPA Global Institutions Master List</h1>
+  <p>World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies<br>
+  Version 1.0 · 125 Institutions · 9 Groups (A–I, R, WPA)</p>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number">125</div>
+    <div class="stat-label">Institutions</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">9</div>
+    <div class="stat-label">Groups</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">4</div>
+    <div class="stat-label">Relevance Levels</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">100+</div>
+    <div class="stat-label">Countries/Regions</div>
+  </div>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 Пребарај институции по име, држава или домен..." onkeyup="searchTable()">
+</div>
+
+<div class="container">
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">A</div>
+    <span>Specialized Protocol / Etiquette / Diplomatic Protocol Academies</span>
+    <span class="group-count">23 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">A001</td>
+        <td class="name-cell">Protocol Academy of Macedonia</td>
+        <td class="country-cell">North Macedonia</td>
+        <td class="type-cell">Specialized protocol academy</td>
+        <td class="domain-cell">Protocol, etiquette, diplomatic protocol</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td>—</td>
+        <td class="notes-cell">Emerging regional protocol education centre in the Balkans</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A002</td>
+        <td class="name-cell">International Etiquette & Protocol Academy of London</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Specialized etiquette and protocol academy</td>
+        <td class="domain-cell">International etiquette, protocol, diplomacy</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.etiquetteandprotocolacademy.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK-based international etiquette and protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A003</td>
+        <td class="name-cell">Protocol International</td>
+        <td class="country-cell">Netherlands / International</td>
+        <td class="type-cell">Protocol training provider</td>
+        <td class="domain-cell">International protocol, VVIP visits, diplomacy, negotiation</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.protocolinternational.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Global protocol training with VVIP specialisation</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A004</td>
+        <td class="name-cell">International Protocol Academy of Japan (ICPA)</td>
+        <td class="country-cell">Japan</td>
+        <td class="type-cell">Specialized protocol academy</td>
+        <td class="domain-cell">Japanese protocol, international protocol, elite global etiquette</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.protocol-academy.jp" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Japan's only internationally certified protocol institution; royal protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A005</td>
+        <td class="name-cell">Protocol School of Washington / INAAR Saudi Arabia Partnership</td>
+        <td class="country-cell">Saudi Arabia / USA</td>
+        <td class="type-cell">Protocol training partnership</td>
+        <td class="domain-cell">Protocol, etiquette, personal diplomacy, professional image</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.protocollifestyle.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Partnership between Protocol School of Washington and INAAR Saudi Arabia</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A006</td>
+        <td class="name-cell">Academy for Protocol and Diplomacy / Diplomatic and Protocol Academy of Kosovo</td>
+        <td class="country-cell">Kosovo</td>
+        <td class="type-cell">Protocol and diplomacy academy</td>
+        <td class="domain-cell">Diplomatic protocol, etiquette, diplomacy, international relations</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td>—</td>
+        <td class="notes-cell">Regional protocol and diplomacy training in the Western Balkans</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A007</td>
+        <td class="name-cell">British Academy for Training and Development - Diplomatic Protocol Training</td>
+        <td class="country-cell">United Kingdom / International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">Diplomatic protocol, etiquette, intercultural communication</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.britishacademy.uk.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK-based international professional training provider</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A008</td>
+        <td class="name-cell">Oxford Management Centre - Protocol & Diplomacy Training</td>
+        <td class="country-cell">United Kingdom / International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">Protocol, diplomacy, executive training</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.oxfordmanagementcentre.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Oxford-based executive training in protocol and diplomacy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A009</td>
+        <td class="name-cell">BMC Training - Business Etiquette and Protocol</td>
+        <td class="country-cell">International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">Business etiquette, protocol, international affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.bmctraining.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">International business etiquette and protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A010</td>
+        <td class="name-cell">Informa Academy - International Protocol & Diplomacy</td>
+        <td class="country-cell">International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">International protocol and diplomacy masterclasses</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.informaconnect.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Global professional training and masterclasses</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A011</td>
+        <td class="name-cell">Accademia del Cerimoniale - Protocol Academy</td>
+        <td class="country-cell">Italy</td>
+        <td class="type-cell">Protocol academy</td>
+        <td class="domain-cell">National, European and diplomatic protocol, ceremony</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.accademiadelcerimoniale.it" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Italian national and European protocol academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A012</td>
+        <td class="name-cell">Protocol International - Protocol Training in Rome</td>
+        <td class="country-cell">Italy / International</td>
+        <td class="type-cell">Protocol training provider</td>
+        <td class="domain-cell">International protocol, precedence, VVIP visits</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.protocolinternational.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Rome-based international protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A013</td>
+        <td class="name-cell">Oxford Management Centre - Protocol & Diplomacy Milan</td>
+        <td class="country-cell">Italy / International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">Protocol and diplomacy training</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.oxfordmanagementcentre.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Milan branch of Oxford Management Centre</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A014</td>
+        <td class="name-cell">BMC Training - International Affairs and Protocol Management Rome</td>
+        <td class="country-cell">Italy / International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">International affairs and protocol management</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.bmctraining.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Rome-based international affairs and protocol management</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A015</td>
+        <td class="name-cell">Blackbird Training - International Protocol & Diplomacy Certification Rome</td>
+        <td class="country-cell">Italy / International</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">International protocol and diplomacy certification</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.blackbirdtraining.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Rome-based protocol and diplomacy certification</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A016</td>
+        <td class="name-cell">EasyDiplomacy - Protocol and Ceremonial Courses Italy</td>
+        <td class="country-cell">Italy</td>
+        <td class="type-cell">Professional training provider</td>
+        <td class="domain-cell">Protocol and ceremonial courses</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.easydiplomacy.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Italian protocol and ceremonial courses provider</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A017</td>
+        <td class="name-cell">Académie des Métiers de la Diplomatie</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Diplomacy and protocol training academy</td>
+        <td class="domain-cell">Protocol, diplomatic practice, diplomacy</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.academiediplomatie.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">French diplomacy and protocol professions academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A018</td>
+        <td class="name-cell">Institut Diplomatique de Paris - Académie du Protocole</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Protocol and diplomacy academy</td>
+        <td class="domain-cell">Diplomatic protocol, diplomacy, international relations</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.institutdiplomatiqueparis.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Paris-based diplomatic protocol and diplomacy academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A019</td>
+        <td class="name-cell">Etiquette & Protocole Academy</td>
+        <td class="country-cell">France / Francophone</td>
+        <td class="type-cell">Etiquette and protocol training provider</td>
+        <td class="domain-cell">Etiquette, protocol, professional conduct</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td>—</td>
+        <td class="notes-cell">Francophone etiquette and protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A020</td>
+        <td class="name-cell">Butler Academy Paris - Rules of Protocol and Precedence</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Service excellence and protocol training provider</td>
+        <td class="domain-cell">Protocol rules, precedence, visits and receptions</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.butleracademy.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Paris-based service excellence and protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A021</td>
+        <td class="name-cell">The British Protocol Academy</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Protocol academy</td>
+        <td class="domain-cell">International diplomacy and protocol</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.britishprotocolacademy.co.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK-based international diplomacy and protocol academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A022</td>
+        <td class="name-cell">Europrotocol</td>
+        <td class="country-cell">International</td>
+        <td class="type-cell">Protocol training provider</td>
+        <td class="domain-cell">Protocol, diplomacy, ceremonial practice</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.europrotocol.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">European protocol and ceremonial practice training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">A023</td>
+        <td class="name-cell">Minding Manners / International Protocol & Diplomacy Certification</td>
+        <td class="country-cell">United Kingdom / International</td>
+        <td class="type-cell">Etiquette and protocol training provider</td>
+        <td class="domain-cell">Etiquette, international protocol, diplomacy</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mindingmanners.com" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK-based international etiquette and protocol certification</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">B</div>
+    <span>Diplomatic Academies and Government Training Institutes</span>
+    <span class="group-count">17 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">B001</td>
+        <td class="name-cell">NATO Defense College</td>
+        <td class="country-cell">Italy / NATO</td>
+        <td class="type-cell">Defence college / strategic studies institution</td>
+        <td class="domain-cell">Defence, security studies, NATO policy, strategic communication</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1951</td>
+        <td><a href="https://www.ndc.nato.int" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">NATO's premier strategic-level education and training institution</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B002</td>
+        <td class="name-cell">Bulgarian Diplomatic Institute</td>
+        <td class="country-cell">Bulgaria</td>
+        <td class="type-cell">Diplomatic institute / MFA-linked institute</td>
+        <td class="domain-cell">Diplomacy, diplomatic training, foreign policy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa.bg" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Bulgarian MFA-linked diplomatic training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B003</td>
+        <td class="name-cell">Diplomatic Academy, Ministry of Foreign and European Affairs of Croatia</td>
+        <td class="country-cell">Croatia</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, foreign affairs, international relations</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mvep.hr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Croatian government diplomatic academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B004</td>
+        <td class="name-cell">Diplomatic Academy, Ministry of Foreign Affairs of Serbia</td>
+        <td class="country-cell">Serbia</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomatic-consular training, foreign policy, protocol, international law</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.diplomacija.gov.rs" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Serbian MFA diplomatic academy with protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B005</td>
+        <td class="name-cell">Diplomatic Academy, Ministry of Foreign Affairs of Montenegro</td>
+        <td class="country-cell">Montenegro</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, international relations, professional exams</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mvp.gov.me" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Montenegrin MFA diplomatic academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B006</td>
+        <td class="name-cell">Diplomatic Academy of Vienna / Vienna School of International Studies</td>
+        <td class="country-cell">Austria</td>
+        <td class="type-cell">Diplomatic academy / postgraduate institute</td>
+        <td class="domain-cell">Diplomacy, international relations, international law, European affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1754</td>
+        <td><a href="https://www.da-vienna.ac.at" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's oldest professional school for international relations (founded by Empress Maria Theresa); autonomous public institution since 1996; APSIA member since 2010</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B007</td>
+        <td class="name-cell">Brussels Diplomatic Academy</td>
+        <td class="country-cell">Belgium</td>
+        <td class="type-cell">Diplomatic academy / postgraduate and executive training</td>
+        <td class="domain-cell">Economic diplomacy, international business, trade, investment</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.brusselsdiplomaticacademy.be" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Belgian diplomatic academy focused on economic diplomacy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B008</td>
+        <td class="name-cell">Saudi Arabia MOFA / Protocol School of Washington MOU</td>
+        <td class="country-cell">Saudi Arabia / USA</td>
+        <td class="type-cell">Government-protocol school cooperation</td>
+        <td class="domain-cell">Protocol training, diplomatic knowledge exchange</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mofa.gov.sa" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Cooperation between Saudi MOFA and Protocol School of Washington</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B009</td>
+        <td class="name-cell">Diplomacy Academy, Ministry of Foreign Affairs of Türkiye</td>
+        <td class="country-cell">Türkiye</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, foreign policy, protocol rules, negotiation</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa.gov.tr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Turkish MFA diplomacy academy with protocol and negotiation training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B010</td>
+        <td class="name-cell">École pratique des métiers de la diplomatie / France Diplomatie</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Government diplomatic professional school</td>
+        <td class="domain-cell">Diplomatic professions, French foreign ministry training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.diplomatie.gouv.fr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">French foreign ministry professional diplomatic school</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B011</td>
+        <td class="name-cell">Diplomatic Academy, Hellenic Ministry of Foreign Affairs</td>
+        <td class="country-cell">Greece</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomatic training, foreign affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa.gr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Greek MFA diplomatic training academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B012</td>
+        <td class="name-cell">Escuela Diplomática de España</td>
+        <td class="country-cell">Spain</td>
+        <td class="type-cell">Government diplomatic academy</td>
+        <td class="domain-cell">Diplomatic training, foreign affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1942</td>
+        <td><a href="https://www.exteriores.gob.es/escueladiplomatica" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Spanish diplomatic academy; official training for Spanish foreign service</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B013</td>
+        <td class="name-cell">Diplomatic Institute, Ministry of Foreign Affairs</td>
+        <td class="country-cell">Israel</td>
+        <td class="type-cell">Government diplomatic institute</td>
+        <td class="domain-cell">Diplomacy, communication, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.gov.il/en/departments/diplomatic_institute" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Israeli MFA diplomatic institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B014</td>
+        <td class="name-cell">Diplomatic Institute</td>
+        <td class="country-cell">Bahrain</td>
+        <td class="type-cell">Government diplomatic institute</td>
+        <td class="domain-cell">Protocol, international relations, diplomacy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mofa.gov.bh" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Bahraini diplomatic institute with protocol focus</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B015</td>
+        <td class="name-cell">Diplomatic Institute</td>
+        <td class="country-cell">Morocco</td>
+        <td class="type-cell">Government diplomatic institute</td>
+        <td class="domain-cell">Diplomacy, protocol, foreign affairs training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.diplomatie.ma" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Moroccan diplomatic institute with protocol training</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B016</td>
+        <td class="name-cell">Institute of Diplomatic Studies</td>
+        <td class="country-cell">Egypt</td>
+        <td class="type-cell">Government diplomatic institute</td>
+        <td class="domain-cell">Diplomatic training, protocol, foreign affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa.gov.eg" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Egyptian diplomatic training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">B017</td>
+        <td class="name-cell">Diplomatic Academy / MFA Kosovo</td>
+        <td class="country-cell">Kosovo</td>
+        <td class="type-cell">Government diplomatic training structure</td>
+        <td class="domain-cell">Diplomacy, foreign affairs training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa-ks.net" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Kosovar MFA diplomatic training structure</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">C</div>
+    <span>Universities / Schools of Diplomacy, IR, Law and Political Sciences</span>
+    <span class="group-count">17 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">C001</td>
+        <td class="name-cell">China Foreign Affairs University</td>
+        <td class="country-cell">China</td>
+        <td class="type-cell">Foreign affairs university</td>
+        <td class="domain-cell">Diplomacy, international relations, international law, foreign affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1955</td>
+        <td><a href="https://www.cfau.edu.cn" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">China's premier foreign affairs university; 73 countries, 182 partner universities; cradle of Chinese diplomacy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C002</td>
+        <td class="name-cell">Diplomatic Academy of the Russian Ministry of Foreign Affairs</td>
+        <td class="country-cell">Russia</td>
+        <td class="type-cell">Diplomatic academy / higher education institution</td>
+        <td class="domain-cell">Diplomacy, international relations, international law, international security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1934</td>
+        <td><a href="https://www.dipacademy.ru" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Russian MFA diplomatic academy; one of oldest diplomatic academies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C003</td>
+        <td class="name-cell">Italian Diplomatic Academy</td>
+        <td class="country-cell">Italy</td>
+        <td class="type-cell">Diplomatic academy / international relations institute</td>
+        <td class="domain-cell">International relations, diplomacy, international studies</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.esteri.it" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Italian diplomatic academy under Ministry of Foreign Affairs</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C004</td>
+        <td class="name-cell">CEDS - Centre d'Études Diplomatiques & Stratégiques</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Diplomatic and strategic studies institution</td>
+        <td class="domain-cell">Diplomacy, strategic studies, international relations, security, protocol</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.ceds.fr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">French diplomatic and strategic studies with protocol focus</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C005</td>
+        <td class="name-cell">Fletcher School of Law and Diplomacy, Tufts University</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">School of law and diplomacy</td>
+        <td class="domain-cell">International relations, diplomacy, law, global affairs</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1933</td>
+        <td><a href="https://fletcher.tufts.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">USA's oldest graduate school of international affairs</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C006</td>
+        <td class="name-cell">Walsh School of Foreign Service, Georgetown University</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">School of foreign service</td>
+        <td class="domain-cell">Diplomacy, international relations, security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1919</td>
+        <td><a href="https://sfs.georgetown.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">One of world's premier schools of international affairs; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C007</td>
+        <td class="name-cell">Elliott School of International Affairs, George Washington University</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">School of international affairs</td>
+        <td class="domain-cell">International affairs, diplomacy, security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1898</td>
+        <td><a href="https://elliott.gwu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">GWU's international affairs school; also listed in Group H for security studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C008</td>
+        <td class="name-cell">College of Europe</td>
+        <td class="country-cell">Belgium / Poland / Albania</td>
+        <td class="type-cell">European studies postgraduate institution</td>
+        <td class="domain-cell">European studies, diplomacy, communication, governance</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1948</td>
+        <td><a href="https://www.coleurope.eu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Europe's oldest postgraduate institute for European studies; campuses in Bruges, Natolin, Tirana; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C009</td>
+        <td class="name-cell">Clingendael Institute</td>
+        <td class="country-cell">Netherlands</td>
+        <td class="type-cell">International relations and diplomacy institute</td>
+        <td class="domain-cell">Diplomacy, negotiations, international relations</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1983</td>
+        <td><a href="https://www.clingendael.org" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Netherlands' leading think tank on international relations; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C010</td>
+        <td class="name-cell">Geneva Graduate Institute</td>
+        <td class="country-cell">Switzerland</td>
+        <td class="type-cell">Graduate institute</td>
+        <td class="domain-cell">International relations, international law, development, global governance</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1927</td>
+        <td><a href="https://www.graduateinstitute.ch" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Premier graduate institute for international affairs in Geneva</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C011</td>
+        <td class="name-cell">Sciences Po / Paris School of International Affairs (PSIA)</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">International affairs school</td>
+        <td class="domain-cell">Diplomacy, communication, European policy, security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1872</td>
+        <td><a href="https://www.sciencespo.fr/psia" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">France's premier political science institute; PSIA is its international affairs school; also listed in Group H and I</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C012</td>
+        <td class="name-cell">SOAS Centre for International Studies and Diplomacy</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">International studies and diplomacy centre</td>
+        <td class="domain-cell">Diplomacy, international studies, governance</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1916</td>
+        <td><a href="https://www.soas.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">SOAS University of London's centre for international studies and diplomacy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C013</td>
+        <td class="name-cell">University of Leicester / Centre for Politics and Diplomatic Studies</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">University department / centre</td>
+        <td class="domain-cell">Politics, diplomacy, international relations</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1921</td>
+        <td><a href="https://le.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Leicester University's centre for politics and diplomatic studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C014</td>
+        <td class="name-cell">Balsillie School of International Affairs</td>
+        <td class="country-cell">Canada</td>
+        <td class="type-cell">School of international affairs</td>
+        <td class="domain-cell">Global governance, international affairs, security</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">2007</td>
+        <td><a href="https://www.balsillieschool.ca" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Canadian school of international affairs focused on global governance</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C015</td>
+        <td class="name-cell">Asia-Pacific College of Diplomacy, ANU</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">Diplomacy college</td>
+        <td class="domain-cell">Diplomacy, international relations, security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://apcd.anu.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">ANU's Asia-Pacific diplomacy college; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C016</td>
+        <td class="name-cell">ADA University / Azerbaijan Diplomatic Academy</td>
+        <td class="country-cell">Azerbaijan</td>
+        <td class="type-cell">University / diplomatic academy origin</td>
+        <td class="domain-cell">Diplomacy, international affairs, public policy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">2006</td>
+        <td><a href="https://www.ada.edu.az" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Azerbaijan's premier university with diplomatic academy origins</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">C017</td>
+        <td class="name-cell">International Relations Institute of Cameroon (IRIC)</td>
+        <td class="country-cell">Cameroon</td>
+        <td class="type-cell">International relations institute</td>
+        <td class="domain-cell">Diplomacy, international relations</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.iric-cm.org" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Cameroon's leading international relations institute</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">D</div>
+    <span>Foreign Service Institutes</span>
+    <span class="group-count">13 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">D001</td>
+        <td class="name-cell">Foreign Service Institute / National Foreign Affairs Training Center</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Foreign service institute</td>
+        <td class="domain-cell">Diplomatic training, foreign service, protocol, language</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1946</td>
+        <td><a href="https://www.state.gov/foreign-service-institute" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">US State Department's primary training institution for foreign service officers; renamed NFATC</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D002</td>
+        <td class="name-cell">Instituto del Servicio Exterior de la Nación (ISEN)</td>
+        <td class="country-cell">Argentina</td>
+        <td class="type-cell">Foreign service institute</td>
+        <td class="domain-cell">Diplomacy, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.cancilleria.gob.ar" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Argentina's foreign service training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D003</td>
+        <td class="name-cell">Academia Diplomática de Chile Andrés Bello</td>
+        <td class="country-cell">Chile</td>
+        <td class="type-cell">Diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, communication, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.academiadiplomatica.cl" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Chilean diplomatic academy; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D004</td>
+        <td class="name-cell">Instituto Rio Branco</td>
+        <td class="country-cell">Brazil</td>
+        <td class="type-cell">Diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, protocol, international relations</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1945</td>
+        <td><a href="https://www.institutoriobranco.gov.br" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Brazil's premier diplomatic academy; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D005</td>
+        <td class="name-cell">Academia Diplomática del Perú Javier Pérez de Cuéllar</td>
+        <td class="country-cell">Peru</td>
+        <td class="type-cell">Diplomatic academy</td>
+        <td class="domain-cell">Diplomacy, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.academiadiplomatica.pe" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Peruvian diplomatic academy named after former UN Secretary-General</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D006</td>
+        <td class="name-cell">Sushma Swaraj Institute of Foreign Service (SSIFS)</td>
+        <td class="country-cell">India</td>
+        <td class="type-cell">Foreign service institute</td>
+        <td class="domain-cell">Diplomacy, international relations, foreign service</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1986</td>
+        <td><a href="https://www.ssifs.gov.in" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">India's premier foreign service training institute under MEA; 106 MoUs with 59 countries; 1,500+ foreign diplomats trained; renamed from FSI in 2020</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D007</td>
+        <td class="name-cell">Foreign Service Academy</td>
+        <td class="country-cell">Bangladesh</td>
+        <td class="type-cell">Foreign service academy</td>
+        <td class="domain-cell">Diplomatic training, foreign service</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mofa.gov.bd" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Bangladesh's foreign service training academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D008</td>
+        <td class="name-cell">Institute of Diplomacy and Foreign Relations (IDFR)</td>
+        <td class="country-cell">Malaysia</td>
+        <td class="type-cell">Diplomatic institute</td>
+        <td class="domain-cell">Diplomacy, international relations, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.idfr.gov.my" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Malaysian diplomatic and foreign relations training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D009</td>
+        <td class="name-cell">Foreign Service Institute</td>
+        <td class="country-cell">Philippines</td>
+        <td class="type-cell">Foreign service institute</td>
+        <td class="domain-cell">Diplomatic training, foreign policy, public diplomacy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.fsi.gov.ph" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Philippine foreign service training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D010</td>
+        <td class="name-cell">Foreign Service Training Institute</td>
+        <td class="country-cell">Japan</td>
+        <td class="type-cell">Foreign service training institute</td>
+        <td class="domain-cell">Diplomacy, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mofa.go.jp" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Japanese foreign service training institute under MOFA</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D011</td>
+        <td class="name-cell">Bandaranaike International Diplomatic Training Institute</td>
+        <td class="country-cell">Sri Lanka</td>
+        <td class="type-cell">Diplomatic training institute</td>
+        <td class="domain-cell">Diplomatic training, foreign service, protocol</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.bidti.lk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Sri Lankan international diplomatic training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D012</td>
+        <td class="name-cell">Devawongse Varopakarn Institute of Foreign Affairs</td>
+        <td class="country-cell">Thailand</td>
+        <td class="type-cell">Foreign affairs institute</td>
+        <td class="domain-cell">Diplomacy, foreign service training</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.mfa.go.th" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Thai foreign affairs training institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">D013</td>
+        <td class="name-cell">Korea National Diplomatic Academy / IFANS</td>
+        <td class="country-cell">South Korea</td>
+        <td class="type-cell">National diplomatic academy</td>
+        <td class="domain-cell">Diplomatic training, foreign policy research</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.knda.go.kr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">South Korea's national diplomatic academy and foreign policy research institute</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">G</div>
+    <span>Public Communication, PR & Communication Studies</span>
+    <span class="group-count">15 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">G001</td>
+        <td class="name-cell">USC Annenberg School for Communication and Journalism</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Communication and journalism school</td>
+        <td class="domain-cell">Public relations, strategic communication, journalism</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1971</td>
+        <td><a href="https://annenberg.usc.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">USC's premier communication and journalism school; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G002</td>
+        <td class="name-cell">NYU School of Professional Studies - Public Relations and Corporate Communication</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Professional studies school</td>
+        <td class="domain-cell">Public relations, corporate communication, crisis communication</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1934</td>
+        <td><a href="https://www.sps.nyu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">NYU's professional studies in PR and corporate communication; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G003</td>
+        <td class="name-cell">University of Florida College of Journalism and Communications</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Journalism and communications college</td>
+        <td class="domain-cell">Public relations, communication research, journalism</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.jou.ufl.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">University of Florida's journalism and communications college</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G004</td>
+        <td class="name-cell">Leeds Beckett University</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">University</td>
+        <td class="domain-cell">Public relations and communication programmes</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1824</td>
+        <td><a href="https://www.leedsbeckett.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK university with PR and communication programmes</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G005</td>
+        <td class="name-cell">Newcastle University</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">University</td>
+        <td class="domain-cell">Communication, media, PR</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1834</td>
+        <td><a href="https://www.ncl.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK university with communication and media studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G006</td>
+        <td class="name-cell">Queensland University of Technology (QUT)</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">University</td>
+        <td class="domain-cell">PR, media studies, communication</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1989</td>
+        <td><a href="https://www.qut.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Australian university with PR and media studies programmes</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G007</td>
+        <td class="name-cell">Curtin University</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">University</td>
+        <td class="domain-cell">Communication, media studies, public relations</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1966</td>
+        <td><a href="https://www.curtin.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Australian university with communication and PR programmes</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G008</td>
+        <td class="name-cell">University of Amsterdam</td>
+        <td class="country-cell">Netherlands</td>
+        <td class="type-cell">University</td>
+        <td class="domain-cell">Communication science, media studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1632</td>
+        <td><a href="https://www.uva.nl" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Netherlands' premier university with communication science programmes</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G009</td>
+        <td class="name-cell">Nanyang Technological University / Wee Kim Wee School of Communication and Information</td>
+        <td class="country-cell">Singapore</td>
+        <td class="type-cell">Communication school</td>
+        <td class="domain-cell">Communication, public relations, media studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1992</td>
+        <td><a href="https://www.ntu.edu.sg/wkwsci" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Singapore's leading communication school; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G010</td>
+        <td class="name-cell">Hong Kong Baptist University / Communication Studies</td>
+        <td class="country-cell">Hong Kong</td>
+        <td class="type-cell">University / communication school</td>
+        <td class="domain-cell">Media, communication, PR studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1956</td>
+        <td><a href="https://www.hkbu.edu.hk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Hong Kong's leading communication studies programme; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G011</td>
+        <td class="name-cell">Institute of Communication Studies (ICS)</td>
+        <td class="country-cell">North Macedonia</td>
+        <td class="type-cell">Communication studies institute</td>
+        <td class="domain-cell">Public communication, media, communication studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td>—</td>
+        <td class="notes-cell">North Macedonia's communication studies institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G012</td>
+        <td class="name-cell">London School of Economics / Department of Media and Communications</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">University department</td>
+        <td class="domain-cell">Media, communications, public relations, digital communication</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1895</td>
+        <td><a href="https://www.lse.ac.uk/media-and-communications" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">LSE's media and communications department; global leader in communication research</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G013</td>
+        <td class="name-cell">Northwestern University / Medill School of Journalism</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Journalism and integrated marketing school</td>
+        <td class="domain-cell">Journalism, integrated marketing communications, media strategy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1921</td>
+        <td><a href="https://www.medill.northwestern.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Northwestern's premier journalism and integrated marketing school</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G014</td>
+        <td class="name-cell">Syracuse University / S.I. Newhouse School of Public Communications</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Public communications school</td>
+        <td class="domain-cell">Public relations, advertising, journalism, digital media</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1964</td>
+        <td><a href="https://newhouse.syr.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Premier US school for public communications and PR</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">G015</td>
+        <td class="name-cell">University of Southern Queensland / School of Arts and Communication</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">University school</td>
+        <td class="domain-cell">Communication, public relations, digital media</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1967</td>
+        <td><a href="https://www.usq.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Australian university with communication and PR programmes</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">H</div>
+    <span>Security, Defence & Strategic Studies</span>
+    <span class="group-count">13 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">H001</td>
+        <td class="name-cell">Naval Postgraduate School</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Security and defence graduate institution</td>
+        <td class="domain-cell">National security, cyber security, defence studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1909</td>
+        <td><a href="https://www.nps.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">US Navy's graduate school for national security and defence</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H002</td>
+        <td class="name-cell">Georgetown University Security Studies Program</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Security studies programme</td>
+        <td class="domain-cell">International security, national security, defence policy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://securitystudies.georgetown.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Georgetown's security studies programme; also listed in Group C and I</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H003</td>
+        <td class="name-cell">George Washington University Elliott School - Security Studies</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">International affairs school</td>
+        <td class="domain-cell">Security studies, international affairs</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1898</td>
+        <td><a href="https://elliott.gwu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">GWU Elliott School's security studies track; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H004</td>
+        <td class="name-cell">King's College London / Department of War Studies</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">War and security studies department</td>
+        <td class="domain-cell">Security, strategy, conflict, war studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1926</td>
+        <td><a href="https://www.kcl.ac.uk/war-studies" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's premier department for war and security studies; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H005</td>
+        <td class="name-cell">Sciences Po - International Security programmes</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">International affairs school</td>
+        <td class="domain-cell">International security, diplomacy, policy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1872</td>
+        <td><a href="https://www.sciencespo.fr" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Sciences Po's international security programmes; also listed in Group C and I</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H006</td>
+        <td class="name-cell">Norwegian Defence University College</td>
+        <td class="country-cell">Norway</td>
+        <td class="type-cell">Defence university college</td>
+        <td class="domain-cell">Military sciences, security, defence studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.forsvaret.no" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Norwegian military higher education institution</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H007</td>
+        <td class="name-cell">National Defence University of Pakistan</td>
+        <td class="country-cell">Pakistan</td>
+        <td class="type-cell">Defence university</td>
+        <td class="domain-cell">Security and strategic studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.ndu.edu.pk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Pakistan's premier defence university for strategic studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H008</td>
+        <td class="name-cell">Jawaharlal Nehru University - International Relations and Security Studies</td>
+        <td class="country-cell">India</td>
+        <td class="type-cell">University / international studies centre</td>
+        <td class="domain-cell">International relations, security studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1969</td>
+        <td><a href="https://www.jnu.ac.in" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">India's premier university for international relations and security studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H009</td>
+        <td class="name-cell">ANU Strategic and Defence Studies Centre</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">Strategic and defence studies centre</td>
+        <td class="domain-cell">Security, defence, strategy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://sdsc.bellschool.anu.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">ANU's strategic and defence studies centre; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H010</td>
+        <td class="name-cell">Royal College of Defence Studies (RCDS)</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Defence and strategic studies college</td>
+        <td class="domain-cell">Strategic leadership, defence policy, international security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1927</td>
+        <td><a href="https://www.rcds.defenceacademy.mod.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UK's premier institution for strategic leadership and defence studies; part of UK Defence Academy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H011</td>
+        <td class="name-cell">National Defense University (NDU)</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Joint professional military education institution</td>
+        <td class="domain-cell">National security, military strategy, joint operations</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1976</td>
+        <td><a href="https://www.ndu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">US joint professional military education institution; includes National War College and Industrial College of the Armed Forces</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H012</td>
+        <td class="name-cell">Instituto Superior de Estudios de la Defensa Nacional (ISEDEN)</td>
+        <td class="country-cell">Spain</td>
+        <td class="type-cell">National defence studies institute</td>
+        <td class="domain-cell">Defence studies, national security, strategic analysis</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.iseden.es" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Spanish national defence studies institute</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">H013</td>
+        <td class="name-cell">Australian Defence College / Centre for Defence and Strategic Studies</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">Defence college</td>
+        <td class="domain-cell">Defence leadership, strategic studies, joint professional military education</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.defence.gov.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Australian Defence Force's premier college for defence leadership and strategic studies</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">I</div>
+    <span>Global Prestige Benchmark Institutions</span>
+    <span class="group-count">25 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">I001</td>
+        <td class="name-cell">Georgetown University / Walsh School of Foreign Service</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy, international relations, security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1919</td>
+        <td><a href="https://sfs.georgetown.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's premier school of foreign service; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I002</td>
+        <td class="name-cell">Johns Hopkins University / SAIS</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">International relations, global politics, economics</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1943</td>
+        <td><a href="https://sais.jhu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Johns Hopkins School of Advanced International Studies</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I003</td>
+        <td class="name-cell">Harvard Kennedy School</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Public policy, communication, security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1936</td>
+        <td><a href="https://www.hks.harvard.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Harvard's premier public policy school; also listed in Group I as benchmark</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I004</td>
+        <td class="name-cell">London School of Economics and Political Science (LSE)</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy, IR, politics, public policy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1895</td>
+        <td><a href="https://www.lse.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's leading social science institution; also listed in Group G for media/communications</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I005</td>
+        <td class="name-cell">University of Oxford / Blavatnik School of Government</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Public policy, governance, international relations</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">2012</td>
+        <td><a href="https://www.bsg.ox.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Oxford's school of government and public policy</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I006</td>
+        <td class="name-cell">King's College London / Department of War Studies</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Security and strategy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1926</td>
+        <td><a href="https://www.kcl.ac.uk/war-studies" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's premier war studies department; also listed in Group H</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I007</td>
+        <td class="name-cell">Sciences Po / PSIA</td>
+        <td class="country-cell">France</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy, communication, European policy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1872</td>
+        <td><a href="https://www.sciencespo.fr/psia" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">France's premier political science institute; PSIA is its international affairs school; also listed in Group C and H</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I008</td>
+        <td class="name-cell">Diplomatic Academy of Vienna</td>
+        <td class="country-cell">Austria</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy, international relations, protocol</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1754</td>
+        <td><a href="https://www.da-vienna.ac.at" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">World's oldest professional school for international relations; also listed in Group B</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I009</td>
+        <td class="name-cell">College of Europe</td>
+        <td class="country-cell">Belgium / Poland / Albania</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">European studies and communication</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1948</td>
+        <td><a href="https://www.coleurope.eu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Europe's oldest postgraduate institute for European studies; campuses in Bruges, Natolin, Tirana; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I010</td>
+        <td class="name-cell">Clingendael Institute</td>
+        <td class="country-cell">Netherlands</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy and negotiation</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established">1983</td>
+        <td><a href="https://www.clingendael.org" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Netherlands' leading think tank on international relations; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I011</td>
+        <td class="name-cell">USC Annenberg</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Public relations and communication</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1971</td>
+        <td><a href="https://annenberg.usc.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">USC's premier communication school; also listed in Group G</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I012</td>
+        <td class="name-cell">NYU SPS</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Corporate communication and PR</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1934</td>
+        <td><a href="https://www.sps.nyu.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">NYU's professional studies school; also listed in Group G</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I013</td>
+        <td class="name-cell">ANU Asia-Pacific College of Diplomacy</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy and security</td>
+        <td><span class="relevance-c">C</span></td>
+        <td class="established"></td>
+        <td><a href="https://apcd.anu.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">ANU's Asia-Pacific diplomacy college; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I014</td>
+        <td class="name-cell">ANU Strategic and Defence Studies Centre</td>
+        <td class="country-cell">Australia</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Security and defence</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established"></td>
+        <td><a href="https://sdsc.bellschool.anu.edu.au" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">ANU's strategic and defence studies centre; also listed in Group H</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I015</td>
+        <td class="name-cell">Instituto Rio Branco</td>
+        <td class="country-cell">Brazil</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1945</td>
+        <td><a href="https://www.institutoriobranco.gov.br" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Brazil's premier diplomatic academy; also listed in Group D</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I016</td>
+        <td class="name-cell">Academia Diplomática de Chile Andrés Bello</td>
+        <td class="country-cell">Chile</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established"></td>
+        <td><a href="https://www.academiadiplomatica.cl" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Chilean diplomatic academy; also listed in Group D</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I017</td>
+        <td class="name-cell">China Foreign Affairs University</td>
+        <td class="country-cell">China</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Diplomacy and security</td>
+        <td><span class="relevance-b">B</span></td>
+        <td class="established">1955</td>
+        <td><a href="https://www.cfau.edu.cn" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">China's premier foreign affairs university; also listed in Group C</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I018</td>
+        <td class="name-cell">NTU Wee Kim Wee School of Communication and Information</td>
+        <td class="country-cell">Singapore</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Communication and public relations</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1992</td>
+        <td><a href="https://www.ntu.edu.sg/wkwsci" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Singapore's leading communication school; also listed in Group G</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I019</td>
+        <td class="name-cell">Hong Kong Baptist University / Communication Studies</td>
+        <td class="country-cell">Hong Kong</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Media and PR studies</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1956</td>
+        <td><a href="https://www.hkbu.edu.hk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Hong Kong's leading communication studies programme; also listed in Group G</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I020</td>
+        <td class="name-cell">University of Toronto / Munk School of Global Affairs</td>
+        <td class="country-cell">Canada</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">International relations and security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">2000</td>
+        <td><a href="https://www.munkschool.utoronto.ca" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">University of Toronto's school of global affairs</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I021</td>
+        <td class="name-cell">Stanford University / Freeman Spogli Institute for International Studies</td>
+        <td class="country-cell">USA</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">International relations, democracy, development, security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1987</td>
+        <td><a href="https://fsi.stanford.edu" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Stanford's premier international studies institute; DA Vienna exchange partner</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I022</td>
+        <td class="name-cell">University of Cambridge / Centre of International Studies</td>
+        <td class="country-cell">United Kingdom</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">International relations, politics, history, security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1209</td>
+        <td><a href="https://www.polis.cam.ac.uk" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Cambridge's centre for international studies; world's third-oldest surviving university</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I023</td>
+        <td class="name-cell">ETH Zurich / Center for Security Studies (CSS)</td>
+        <td class="country-cell">Switzerland</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Security studies, international relations, technology policy</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1855</td>
+        <td><a href="https://css.ethz.ch" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">ETH Zurich's center for security studies; Swiss Federal Institute of Technology</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I024</td>
+        <td class="name-cell">University of Tokyo / Graduate School of Arts and Sciences / International Relations</td>
+        <td class="country-cell">Japan</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">International relations, Asian studies, diplomacy, security</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">1877</td>
+        <td><a href="https://www.u-tokyo.ac.jp" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Japan's premier university; international relations and Asian studies programmes</td>
+      </tr>
+
+      <tr>
+        <td class="id-cell">I025</td>
+        <td class="name-cell">National University of Singapore (NUS) / Lee Kuan Yew School of Public Policy</td>
+        <td class="country-cell">Singapore</td>
+        <td class="type-cell">Global prestige benchmark</td>
+        <td class="domain-cell">Public policy, international relations, governance, Asia-Pacific affairs</td>
+        <td><span class="relevance-d">D</span></td>
+        <td class="established">2004</td>
+        <td><a href="https://lkyspp.nus.edu.sg" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">Asia's premier public policy school; named after Singapore's founding father</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">R</div>
+    <span>Official Reference Sources</span>
+    <span class="group-count">1 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">R001</td>
+        <td class="name-cell">UN Protocol and Liaison Service</td>
+        <td class="country-cell">United Nations</td>
+        <td class="type-cell">Official protocol reference source</td>
+        <td class="domain-cell">Protocol guidance, diplomatic practice, liaison</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established">1945</td>
+        <td><a href="https://www.un.org/protocol" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">UN's official protocol and liaison service; publishes UN Protocol Handbook; primary global reference for diplomatic protocol</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<div class="group-section">
+  <div class="group-header">
+    <div class="group-letter">W</div>
+    <span>Emerging Specialized Institution</span>
+    <span class="group-count">1 institutions</span>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Country</th>
+        <th>Type</th>
+        <th>Primary Domain</th>
+        <th>Relevance</th>
+        <th>Est.</th>
+        <th>Website</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="id-cell">WPA001</td>
+        <td class="name-cell">World Protocol Academy</td>
+        <td class="country-cell">North Macedonia / Global</td>
+        <td class="type-cell">Emerging specialized institute and analytics platform</td>
+        <td class="domain-cell">Protocol, diplomacy, public communication, security studies, communication skills</td>
+        <td><span class="relevance-a">A</span></td>
+        <td class="established">2024</td>
+        <td><a href="https://worldprotocolacademy-code.github.io" target="_blank" class="website-link">🔗 Link</a></td>
+        <td class="notes-cell">WPA Global Institutions Index creator; independent analytics platform for protocol, diplomacy, public communication and security studies; 4 partnership proposals active (CFAU China, ICPA Japan, DA Vienna, SSIFS India)</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>© 2026 World Protocol Academy · Institute for Protocol, Diplomacy, Public Communication & Security Studies</p>
+  <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+    📧 <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> · 
+    🌐 <a href="https://worldprotocolacademy-code.github.io">worldprotocolacademy-code.github.io</a>
+  </p>
+  <p style="margin-top: 15px; font-style: italic; opacity: 0.7;">
+    „Преговарањето е опционално. Протоколот е апсолутен."<br>
+    "Negotiation is optional. Protocol is absolute."
+  </p>
+</div>
+
+<script>
+function searchTable() {
+  var input = document.getElementById('searchInput');
+  var filter = input.value.toLowerCase();
+  var tables = document.getElementsByTagName('table');
+
+  for (var t = 0; t < tables.length; t++) {
+    var tr = tables[t].getElementsByTagName('tr');
+    for (var i = 1; i < tr.length; i++) {
+      var td = tr[i].getElementsByTagName('td');
+      var found = false;
+      for (var j = 0; j < td.length; j++) {
+        if (td[j].textContent.toLowerCase().indexOf(filter) > -1) {
+          found = true;
+          break;
+        }
+      }
+      tr[i].style.display = found ? '' : 'none';
+    }
+  }
+}
+</script>
+
+</body>
+</html>
