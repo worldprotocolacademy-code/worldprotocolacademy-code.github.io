@@ -399,6 +399,7 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
     <button class="abt" id="abt-plagiat" onclick="swA('plagiat',this)"><span class="ai">🔍</span><span class="al">Плагијат</span><span class="new-badge">NEW</span></button>
     <button class="abt" id="abt-press" onclick="swA('press',this)"><span class="ai">📰</span><span class="al">WPA Press</span><span class="new-badge">NEW</span></button>
     <button class="abt" id="abt-sandeai" onclick="swA('sandeai',this)"><span class="ai">👑</span><span class="al">Санде AI</span></button>
+    <button class="abt" id="abt-mentor" onclick="swA('mentor',this)"><span class="ai">🧠🏛️</span><span class="al">Ментор-Архитект</span><span class="new-badge">NEW</span></button>
   </div>
 </nav>
 
@@ -1102,12 +1103,13 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
     <div class="srow"><span class="srow-l">Верзија</span><span class="srow-v">WPAWS 9.0</span></div>
     <div class="srow"><span class="srow-l">Claude API</span><span class="srow-v" id="sb-ckey">⚪ Нема</span></div>
     <div class="srow"><span class="srow-l">GPT-4o API</span><span class="srow-v" id="sb-gkey">⚪ Нема</span></div>
-    <div class="srow"><span class="srow-l">Агенти</span><span class="srow-v">16 / 16 активни</span></div>
+    <span class="srow-l">Агенти</span><span class="srow-v">17 / 17 активни</span>
   </div>
 
   <div class="scard">
     <h3>Брзи акции</h3>
     <div class="qgrid">
+      <button class="qbtn" onclick="qa('mentor','full')">🧠🏛️ Ментор-Архитект</button>
       <button class="qbtn" onclick="qa('architect','full')">🏛️ Анализа концепт</button>
       <button class="qbtn" onclick="qa('structure','generate')">📐 Генерирај структура</button>
       <button class="qbtn" onclick="qa('protocol','analyze')">🎩 Протоколарен советувач</button>
@@ -1205,6 +1207,36 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
 </div>
 
 <div id="toasts"></div>
+ <!-- ══════════════════════════════════════════ -->
+<!-- AGENT 17: МЕНТОР-АРХИТЕКТ (NEW) -->
+<!-- ══════════════════════════════════════════ -->
+<div class="sp panel" id="sp-mentor">
+  <div class="phd"><span class="phd-ico">🧠🏛️</span><span class="phd-title">Агент Ментор-Архитект <span class="badge badge-new">NEW</span></span><span class="phd-tag">Врховен надзор • Конзистентност • Финален вердикт</span></div>
+  <div class="pbody">
+    <div class="aibar"><span class="aibar-label">AI:</span>
+      <button class="aibtn active claude" onclick="setAI(this,'claude','mentor')">🔵 Claude</button>
+      <button class="aibtn hybrid" onclick="setAI(this,'hybrid','mentor')">⚡ Хибрид</button>
+      <button class="aibtn gpt" onclick="setAI(this,'gpt','mentor')">🟢 GPT-4o</button>
+      <button class="aibtn local" onclick="setAI(this,'local','mentor')">⚙️ Локален</button>
+    </div>
+    <div class="fg">
+      <label class="flabel">Излези од агенти (залепи ги овде)</label>
+      <textarea class="fta" id="mentorInput" rows="12" placeholder="Залепи ги излезите од 2-3 агенти. Ментор-Архитект ќе провери:&#10;&#10;--- АГЕНТ 1: Архитект ---&#10;[теза, методологија...]&#10;&#10;--- АГЕНТ 2: Структура ---&#10;[поглавја...]&#10;&#10;--- АГЕНТ 3: Уредник ---&#10;[уреден текст...]"></textarea>
+    </div>
+    <div class="brow">
+      <button class="btn bgo" onclick="cc('mentor','full')">🧠🏛️ Провери синџир</button>
+      <button class="btn bbl bsm" onclick="cc('mentor','consistency')">📊 Конзистентност</button>
+      <button class="btn bvi bsm" onclick="cc('mentor','risks')">⚠️ Ризици</button>
+      <button class="btn bgh bsm" onclick="cc('mentor','verdict')">⚖️ Финален вердикт</button>
+    </div>
+    <div class="pbar"><div class="pfill" id="p-mentor"></div></div>
+    <div class="rbox" id="r-mentor"><div class="rbox-empty">🧠🏛️ Залепи излези од агенти и кликни Провери синџир</div></div>
+    <div class="oactions" id="oa-mentor" style="display:none">
+      <button class="btn bgh bsm" onclick="copyR('r-mentor')">📋 Копирај</button>
+      <button class="btn bgh bsm" onclick="saveToMemory()">💾 Зачувај</button>
+    </div>
+  </div>
+</div> 
 
 <script>
 /* ============================================================
@@ -1856,6 +1888,7 @@ function updateKeyStatus(){
 
 // ─── AGENT NAVIGATION ───
 const AGENT_NAMES = {
+  mentor:'🧠🏛️ Ментор-Архитект'
   architect:'🏛️ Архитект',structure:'📐 Структура',book:'📚 Книга',
   analyze:'🔬 Анализа',semantic:'🧠 Семантика',ppp:'📊 PPP',
   protocol:'🎩 Протокол',diplomacy:'🌍 Дипломатија',security:'🛡️ Безбедност',
@@ -2012,6 +2045,13 @@ function v(id){ const el=document.getElementById(id); return el?(el.value||el.in
 function rTxt(id){ const el=document.getElementById(id); return el?el.innerText.replace(/📋 Копирај|Копирај/g,'').trim():''; }
 
 function buildP(agent, action){
+  if(agent === 'mentor'){
+  const input = v('mentorInput') || 'нема излези';
+  if(action === 'full') return `[МЕНТОР-АРХИТЕКТ] Провери ги следните излези од агенти:\n\n${input}\n\nЗАДОЛЖИТЕЛНА СТРУКТУРА:\n1. ОПШТА ОЦЕНКА\n2. СИЛНИ СТРАНИ\n3. СЛАБОСТИ\n4. РИЗИЦИ\n5. УСОГЛАСЕНОСТ СО WPA ДОКТРИНА\n6. ШТО МОРА ДА СЕ ПОПРАВИ\n7. ФИНАЛНА ПРЕПОРАКА: одобри/доработи/одбиј`;
+  if(action === 'consistency') return `[МЕНТОР-АРХИТЕКТ] Провери ја конзистентноста:\n\n${input}\n\nДали има противречности? Дали логиката е кохерентна?`;
+  if(action === 'risks') return `[МЕНТОР-АРХИТЕКТ] Идентификувај ги ризиците:\n\n${input}\n\nРизици: протоколарни, академски, институционални.`;
+  if(action === 'verdict') return `[МЕНТОР-АРХИТЕКТ] Дај финален вердикт:\n\n${input}\n\nВердикт: ОДОБРИ / ДОРАБОТИ / ОДБИЈ + образложение.`;
+}
   const topic = v('topic')||v('stopic')||v('semTopic')||v('bkTitle')||v('pppTitle')||v('saiq')||'[тема]';
   const prompts = {
     // ARCHITECT
