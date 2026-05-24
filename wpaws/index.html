@@ -3606,5 +3606,507 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 })();
 </script>
+  <script>
+// ============================================================
+// WPAWS 11.1.7 – 17 АГЕНТИ + МЕНТОР-АРХИТЕКТ
+// World Protocol Academy | Доц. д-р Санде Смиљанов
+// Доктрина: "Преговарањето е опционално. Протоколот е апсолутен."
+// ============================================================
+
+window.WPA_API_BASE = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev';
+
+// ========== STATE ==========
+let curAgent = 'architect';
+let curLang = 'mk';
+let curStyle = 'sande';
+let aiModes = {};
+let busy = false;
+let webSearchOn = false;
+let pppSlides = [], pppIdx = 0;
+let dialogOpen = false;
+let dialogHistory = [];
+
+// ========== HELPER FUNCTIONS ==========
+function $(id) { return document.getElementById(id); }
+function v(id) { const el = $(id); return el ? (el.value || '').trim() : ''; }
+function rTxt(id) { const el = $(id); return el ? el.innerText.replace(/📋 Копирај|Копирај/g,'').trim() : ''; }
+
+function toast(icon, msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3500);
+}
+
+function copyR(id) {
+    const el = $(id);
+    if (el) {
+        navigator.clipboard.writeText(el.innerText);
+        toast('📋', 'Копирано!');
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function fmt(text) {
+    if (!text) return '<div class="rbox-empty">Нема содржина</div>';
+    let h = escapeHtml(text).replace(/\n/g, '<br>');
+    h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    h = h.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    h = h.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    h = h.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    return h;
+}
+
+// ========== AGENT NAMES ==========
+const AGENT_NAMES = {
+    architect: '🏛️ Архитект', structure: '📐 Структура', book: '📚 Книга',
+    analyze: '🔬 Анализа', semantic: '🧠 Семантика', ppp: '📊 PPP',
+    protocol: '🎩 Протокол', diplomacy: '🌍 Дипломатија', security: '🛡️ Безбедност',
+    stylist: '✨ Стилист', citations: '📖 Цитати', editor: '✍️ Уредник',
+    reviewer: '🧐 Рецензент', plagiat: '🔍 Плагијат', press: '📰 WPA Press',
+    sandeai: '👑 Санде AI', mentor: '🧠🏛️ Ментор-Архитект'
+};
+
+// ========== NAVIGATION ==========
+function swA(agent, btn) {
+    document.querySelectorAll('.sp').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.abt').forEach(b => b.classList.remove('active'));
+    const panel = $(`sp-${agent}`);
+    if (panel) panel.classList.add('active');
+    if (btn) btn.classList.add('active');
+    curAgent = agent;
+    const sb = $('sb-agent');
+    if (sb) sb.textContent = AGENT_NAMES[agent] || agent;
+}
+
+function setAI(btn, mode, agent) {
+    const bar = btn.closest('.aibar');
+    if (bar) bar.querySelectorAll('.aibtn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    aiModes[agent || curAgent] = mode;
+    const labels = { claude: '🔵 Claude', hybrid: '⚡ Хибрид', gpt: '🟢 GPT-4o', local: '⚙️ Локален' };
+    const sb = $('sb-ai');
+    if (sb) sb.textContent = labels[mode] || mode;
+    const pill = $('aiPillTxt');
+    if (pill) pill.textContent = mode === 'claude' ? 'Claude Sonnet' : mode === 'gpt' ? 'GPT-4o' : mode === 'hybrid' ? 'Claude + GPT' : 'Локален';
+}
+
+function qa(agent, action) {
+    swA(agent, null);
+    setTimeout(() => cc(agent, action), 200);
+}
+
+// ========== API CALLS ==========
+function getApiBase() { return (window.WPA_API_BASE || '').replace(/\/$/, ''); }
+
+async function callWorkerAsk(system, prompt, maxTokens = 2000, engine = 'claude') {
+    const base = getApiBase();
+    if (!base) throw new Error('WPA_API_BASE не е поставен.');
+    const payload = {
+        message: prompt, lang: curLang, aiLang: curLang,
+        history: [{ role: 'assistant', content: system }],
+        quality: 'academic', engine, max_tokens: maxTokens, web_search: webSearchOn
+    };
+    if (payload.message && payload.message.length > 690) payload.message = payload.message.slice(0, 690);
+    const res = await fetch(`${base}/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.ok) throw new Error(data?.error || `Грешка ${res.status}`);
+    return data.answer || '';
+}
+
+async function callClaude(sys, prompt, tokens) { return callWorkerAsk(sys, prompt, tokens, 'claude'); }
+async function callGPT(sys, prompt, tokens) { return callWorkerAsk(sys, prompt, tokens, 'gpt'); }
+
+// ========== SYSTEM PROMPTS ==========
+function buildSys(agent) {
+    const lang = curLang === 'mk' ? 'македонски јазик' : curLang === 'en' ? 'English' : 'македонски';
+    const doctrine = '"Преговарањето е опционално. Протоколот е апсолутен."';
+    let spec = '';
+    if (agent === 'architect') spec = 'Осмислуваш научни трудови, тези и методологии.';
+    if (agent === 'mentor') spec = 'Ти си врховен агент. Проверуваш излези од агенти: точност, логика, стил, ризик, усогласеност со WPA доктрина.';
+    if (agent === 'protocol') spec = 'Специјалист за државен протокол, Виенска конвенција 1961, пресеанс, ред на седење.';
+    if (agent === 'stylist') spec = 'Преработуваш текст во академски, Санде Смиљанов стил.';
+    if (agent === 'reviewer') spec = 'Академски рецензент. Оценуваш теза, структура, аргументација, методологија, јазик.';
+    return `Ти си ${AGENT_NAMES[agent]}, AI агент на World Protocol Academy. Доктрина: ${doctrine} Одговарај на ${lang}. ${spec}`;
+}
+
+// ========== BUILD PROMPTS ==========
+function buildP(agent, action) {
+    // MENTOR AGENT
+    if (agent === 'mentor') {
+        const input = v('mentorInput') || 'нема излези';
+        if (action === 'full') return `[МЕНТОР-АРХИТЕКТ] Провери ги следните излези од агенти:\n\n${input}\n\nЗАДОЛЖИТЕЛНА СТРУКТУРА:\n1. ОПШТА ОЦЕНКА\n2. СИЛНИ СТРАНИ\n3. СЛАБОСТИ\n4. РИЗИЦИ\n5. УСОГЛАСЕНОСТ СО WPA ДОКТРИНА\n6. ШТО МОРА ДА СЕ ПОПРАВИ\n7. ФИНАЛНА ПРЕПОРАКА: одобри/доработи/одбиј`;
+        if (action === 'consistency') return `[МЕНТОР-АРХИТЕКТ] Провери ја конзистентноста:\n\n${input}\n\nДали има противречности? Дали логиката е кохерентна?`;
+        if (action === 'risks') return `[МЕНТОР-АРХИТЕКТ] Идентификувај ги ризиците:\n\n${input}\n\nРизици: протоколарни, академски, институционални.`;
+        if (action === 'verdict') return `[МЕНТОР-АРХИТЕКТ] Дај финален вердикт:\n\n${input}\n\nВердикт: ОДОБРИ / ДОРАБОТИ / ОДБИЈ + образложение.`;
+    }
+    
+    // ARCHITECT
+    if (agent === 'architect') {
+        if (action === 'full') return `Направи комплетна академска анализа:\nТема: ${v('topic')}\nКонцепт: ${v('concept')}\nТип: ${v('docType')}\n\nВклучи: главна теза, 3 истражувачки прашања, методологија, предложена структура, очекувани придонеси.`;
+        if (action === 'analyze') return `Анализирај го концептот:\nТема: ${v('topic')}\nКонцепт: ${v('concept')}\n\nОцени ја изводливоста.`;
+        if (action === 'thesis') return `Генерирај 3 тези за:\nТема: ${v('topic')}\nКонцепт: ${v('concept')}`;
+        if (action === 'keywords') return `Генерирај 10-15 клучни зборови за:\nТема: ${v('topic')}\nКонцепт: ${v('concept')}`;
+    }
+    
+    // STRUCTURE
+    if (agent === 'structure') return `Генерирај академска структура за:\n"${v('stopic') || v('topic')}"\nВклучи: Вовед, 3-5 главни поглавја со потточки, Заклучок, Библиографија.`;
+    
+    // PROTOCOL
+    if (agent === 'protocol') return `Протоколарна анализа на:\n${v('protDet') || 'Опишете ја ситуацијата'}\n\nВклучи: 1. ГРЕШКАТА 2. ПРАВИЛНАТА ПОСТАПКА 3. ПОСЛЕДИЦАТА. Доктрина: "Преговарањето е опционално. Протоколот е апсолутен."`;
+    
+    // STYLIST
+    if (agent === 'stylist') return `[DOCUMENT-FIRST] Преработи го следниот текст во академски, Санде Смиљанов стил:\n\n${v('stText') || 'Залепи текст'}\n\nВрати ја само преработената верзија.`;
+    
+    // REVIEWER
+    if (agent === 'reviewer') return `[DOCUMENT-FIRST] Рецензирај го следниот труд:\n\n${v('revText') || 'Залепи труд'}\n\nСтруктура: 1.Оценка на темата 2.Теза 3.Структура 4.Аргументација 5.Методологија 6.Јазик 7.Силни страни 8.Слабости 9.Препораки 10.Вердикт.`;
+    
+    // EDITOR
+    if (agent === 'editor') return `[DOCUMENT-FIRST] Уреди го следниот текст:\n\n${v('edText') || 'Залепи текст'}\n\nПодобри структура, јазик и стил. Врати ја уредената верзија.`;
+    
+    // PLAGIAT
+    if (agent === 'plagiat') return `[DOCUMENT-FIRST] Провери го интегритетот на текстот:\n\n${v('plagText') || 'Залепи текст'}\n\nИдентификувај сомнителни фрази. Користи внимателен јазик.`;
+    
+    // PRESS
+    if (agent === 'press') return `Напиши медиумско соопштение за:\n${v('prContent') || 'Внеси тема'}\n\nФормат: наслов, водечки параграф (кој, што, кога, зошто), тело, заклучок. Макс 250 збора.`;
+    
+    // SANDE AI
+    if (agent === 'sandeai') return `Одговори како Доц. д-р Санде Смиљанов на прашањето:\n${v('saiq') || 'Внеси прашање'}\n\nКраток, директен, протоколарен одговор. Заврши со цитат од доктрината.`;
+    
+    // BOOK
+    if (agent === 'book') return `Напиши дел од книга:\nНаслов: ${v('bkTitle') || 'WPA книга'}\n\nВклучи: вовед, главна содржина, заклучок.`;
+    
+    // ANALYSIS
+    if (agent === 'analyze') return `Анализирај го следниот текст:\n${v('analyzeQ') || 'Внесете текст'}`;
+    
+    // SEMANTIC
+    if (agent === 'semantic') return `Семантичка анализа на:\n${v('semTopic') || 'Внесете текст'}\n\nИзвлечи главно значење, клучни поими и противречности.`;
+    
+    // PPP
+    if (agent === 'ppp') return `Генерирај презентација:\nНаслов: ${v('pppTitle') || 'WPA презентација'}\n\nНаправи 10-12 слајдови во формат: [СЛАЈД N: НАСЛОВ]\n• Точка 1\n• Точка 2`;
+    
+    // DIPLOMACY
+    if (agent === 'diplomacy') return `Дипломатска анализа на:\n${v('dipDet') || 'Опишете ја ситуацијата'}\n\nСтатус на односи, ризици, препораки.`;
+    
+    // SECURITY
+    if (agent === 'security') return `Безбедносна анализа на:\n${v('secDet') || 'Опишете ја ситуацијата'}\n\nРизици, веројатност, последици, мерки.`;
+    
+    // CITATIONS
+    if (agent === 'citations') return `Генерирај библиографија за темата:\n${v('ctTopic') || 'протокол и дипломатија'}\n\nВо APA формат, 10-15 записи.`;
+    
+    return `Генерирај одговор за ${AGENT_NAMES[agent]}. Тема: ${v('topic') || '[тема]'}`;
+}
+
+// ========== MAIN CC FUNCTION ==========
+async function cc(agent, action) {
+    if (busy) { toast('⏳', 'Генерирање во тек...'); return; }
+    busy = true;
+    
+    const rboxId = `r-${agent}`;
+    const pbarId = `p-${agent}`;
+    const rbox = $(rboxId);
+    const pbar = $(pbarId);
+    
+    if (!rbox) { busy = false; return; }
+    
+    const mode = aiModes[agent] || 'claude';
+    const sys = buildSys(agent);
+    const prompt = buildP(agent, action);
+    
+    rbox.innerHTML = `<div class="thinking">${mode === 'claude' ? '🔵' : mode === 'gpt' ? '🟢' : '⚡'} <strong>Генерирање...</strong><div class="dots"><span></span><span></span><span></span></div></div>`;
+    if (pbar) pbar.style.width = '55%';
+    
+    try {
+        let result = null;
+        if (mode === 'claude') result = await callClaude(sys, prompt, 2000);
+        else if (mode === 'gpt') result = await callGPT(sys, prompt, 2000);
+        else if (mode === 'hybrid') {
+            result = await callClaude(sys, prompt, 2000);
+            const enriched = await callGPT('Подобри го стилот и додај протоколарна прецизност.', result, 1000);
+            if (enriched) result += '\n\n---\n⚡ Хибрид полирање:\n\n' + enriched;
+        }
+        
+        if (!result) result = `[Демо] ${AGENT_NAMES[agent]} – Внесете API клуч за вистинско генерирање.`;
+        
+        rbox.innerHTML = fmt(result);
+        if (pbar) pbar.style.width = '100%';
+        
+        const oa = $(`oa-${agent}`);
+        if (oa) oa.style.display = 'flex';
+        
+        toast('✅', 'Готово!');
+        setTimeout(() => { if (pbar) pbar.style.width = '0%'; }, 1200);
+    } catch (err) {
+        rbox.innerHTML = fmt(`❌ Грешка: ${err.message}`);
+        toast('❌', err.message.slice(0, 60));
+        if (pbar) pbar.style.width = '0%';
+    } finally {
+        busy = false;
+    }
+}
+
+// ========== MEMORY FUNCTIONS ==========
+const MEM_KEY = 'wpaws_memory_v9';
+
+function loadMemory() {
+    try { return JSON.parse(localStorage.getItem(MEM_KEY) || '[]'); } catch (e) { return []; }
+}
+
+function saveMemoryStore(arr) { localStorage.setItem(MEM_KEY, JSON.stringify(arr)); }
+
+function saveToMemory() {
+    const rbox = $(`r-${curAgent}`);
+    if (!rbox || rbox.innerText.includes('Внеси') || rbox.innerText.includes('Грешка')) {
+        toast('⚠️', 'Нема содржина за зачувување!');
+        return;
+    }
+    const mem = loadMemory();
+    mem.unshift({
+        id: Date.now(),
+        agent: curAgent,
+        agentName: AGENT_NAMES[curAgent],
+        content: rbox.innerText,
+        date: new Date().toLocaleString()
+    });
+    if (mem.length > 30) mem.splice(30);
+    saveMemoryStore(mem);
+    renderMemory();
+    toast('💾', 'Зачувано!');
+}
+
+function renderMemory() {
+    const mem = loadMemory();
+    const list = $('memoryList');
+    if (!list) return;
+    const count = mem.length;
+    document.querySelectorAll('.mem-count-badge').forEach(el => el.textContent = count);
+    if (!mem.length) {
+        list.innerHTML = '<div class="mem-empty">Нема зачувани документи.<br>Кликни 💾 по генерирање.</div>';
+        return;
+    }
+    list.innerHTML = mem.map(m => `
+        <div class="mem-item" onclick="restoreMemory(${m.id})" style="padding:8px;background:var(--surf2);border-radius:8px;margin-bottom:6px;cursor:pointer">
+            <div><strong>${m.agentName}</strong> <span style="font-size:10px;color:var(--dim)">${m.date}</span></div>
+            <div style="font-size:11px;color:var(--muted)">${m.content.slice(0, 80)}...</div>
+        </div>
+    `).join('');
+}
+
+function restoreMemory(id) {
+    const mem = loadMemory();
+    const entry = mem.find(m => m.id === id);
+    if (entry) {
+        swA(entry.agent, null);
+        setTimeout(() => {
+            const rbox = $(`r-${entry.agent}`);
+            if (rbox) rbox.innerHTML = fmt(entry.content);
+        }, 200);
+        toast('📂', 'Вратено!');
+    }
+}
+
+function exportAllMemory() {
+    const mem = loadMemory();
+    if (!mem.length) { toast('⚠️', 'Нема документи'); return; }
+    const content = mem.map(m => `${m.date}\n${m.agentName}\n${m.content}\n${'='.repeat(50)}\n`).join('');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `wpaws_memory_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('📤', 'Извезено!');
+}
+
+function openMemoryPanel() { $('memoryCard')?.scrollIntoView({ behavior: 'smooth' }); }
+
+// ========== KEY FUNCTIONS ==========
+function openModal() { const m = $('keyModal'); if (m) m.classList.add('open'); }
+function closeModal() { const m = $('keyModal'); if (m) m.classList.remove('open'); }
+function saveKeys() {
+    const ck = $('claudeIn')?.value.trim();
+    const gk = $('gptIn')?.value.trim();
+    if (ck) localStorage.setItem('wpaws_claude_key', ck);
+    if (gk) localStorage.setItem('wpaws_gpt_key', gk);
+    closeModal();
+    toast('✅', 'Клучевите се зачувани!');
+}
+function updateKeyStatus() {
+    const ck = localStorage.getItem('wpaws_claude_key');
+    const gk = localStorage.getItem('wpaws_gpt_key');
+    const sbC = $('sb-ckey');
+    const sbG = $('sb-gkey');
+    if (sbC) sbC.textContent = ck ? '🔵 Активен' : '⚪ Нема';
+    if (sbG) sbG.textContent = gk ? '🟢 Активен' : '⚪ Нема';
+    const keyBtn = $('keyBtn');
+    if (keyBtn) keyBtn.textContent = (ck || gk) ? '🔑 API ✓' : '🔑 API Клуч';
+}
+
+// ========== WEB SEARCH ==========
+function toggleWebSearch() {
+    webSearchOn = !webSearchOn;
+    const btn = $('webToggle');
+    if (btn) {
+        btn.classList.toggle('on', webSearchOn);
+        btn.textContent = webSearchOn ? '🌐 Web ON' : '🌐 Web';
+    }
+    toast(webSearchOn ? '🌐' : '✖️', webSearchOn ? 'Web активно' : 'Web исклучено');
+}
+
+// ========== DIALOG ==========
+function toggleGlobalDialog() {
+    dialogOpen = !dialogOpen;
+    const btn = $('globalDialog');
+    if (btn) {
+        btn.classList.toggle('active', dialogOpen);
+        btn.textContent = dialogOpen ? '💬 Дијалог ON' : '💬 Дијалог';
+    }
+    toast(dialogOpen ? '💬' : '✖️', dialogOpen ? 'Дијалог режим активен' : 'Дијалог исклучен');
+}
+
+// ========== LANGUAGE ==========
+function setUILang(lang) {
+    curLang = lang;
+    localStorage.setItem('wpaws_lang', lang);
+    document.documentElement.lang = lang;
+    toast('🌐', `UI: ${lang.toUpperCase()}`);
+}
+
+function setAILang(lang) {
+    toast('💬', `AI одговор: ${lang.toUpperCase()}`);
+}
+
+// ========== PPP SLIDES (основна) ==========
+function parsePPPSlides(txt) {
+    const slides = [];
+    const matches = [...txt.matchAll(/\[СЛАЈД\s*\d+:\s*([^\]]+)\]([\s\S]*?)(?=\[СЛАЈД|\Z)/gi)];
+    matches.forEach(m => slides.push({ title: m[1].trim(), body: m[2].split('\n').filter(l => l.trim()).map(l => l.replace(/^[•\-\*]\s*/, '')) }));
+    if (!slides.length) slides.push({ title: 'Слајд 1', body: ['Содржина...'] });
+    return slides;
+}
+
+// ========== STYLE ==========
+function setSt(style, btn) {
+    curStyle = style;
+    document.querySelectorAll('.ssb').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+}
+
+// ========== QUICK ACTIONS ==========
+function startChain(chainId) {
+    const chains = {
+        new_paper: ['architect', 'structure', 'editor', 'reviewer'],
+        monograph: ['architect', 'book', 'stylist', 'citations'],
+        protocol_doc: ['protocol', 'editor', 'press'],
+        review_paper: ['plagiat', 'reviewer', 'editor'],
+        press_release: ['sandeai', 'press', 'stylist']
+    };
+    const chain = chains[chainId];
+    if (!chain) return;
+    toast('🔗', 'Започнување синџир...');
+    let idx = 0;
+    function runNext() {
+        if (idx >= chain.length) { toast('✅', 'Синџирот завршен!'); return; }
+        const agent = chain[idx];
+        swA(agent, null);
+        setTimeout(() => {
+            cc(agent, 'full');
+            setTimeout(() => { idx++; runNext(); }, 3000);
+        }, 500);
+    }
+    runNext();
+}
+
+// ========== RUN ANALYZE ==========
+async function runAnalyze(mode) {
+    const rbox = $('r-analyze');
+    if (!rbox) return;
+    rbox.innerHTML = '<div class="thinking">🔬 <strong>Анализирање...</strong><div class="dots"><span></span><span></span><span></span></div></div>';
+    try {
+        const result = await callClaude('Анализирај го текстот.', v('analyzeQ') || 'Текст за анализа', 1500);
+        rbox.innerHTML = fmt(result || 'Анализата е завршена.');
+    } catch (err) {
+        rbox.innerHTML = fmt(`❌ Грешка: ${err.message}`);
+    }
+}
+
+// ========== RUN SEMANTIC ==========
+async function runSemantic(mode) {
+    const rbox = $('r-semantic');
+    if (!rbox) return;
+    rbox.innerHTML = '<div class="thinking">🧠 <strong>Семантичка анализа...</strong><div class="dots"><span></span><span></span><span></span></div></div>';
+    try {
+        const result = await callClaude('Направи семантичка анализа.', v('semTopic') || 'Текст за анализа', 1500);
+        rbox.innerHTML = fmt(result || 'Анализата е завршена.');
+    } catch (err) {
+        rbox.innerHTML = fmt(`❌ Грешка: ${err.message}`);
+    }
+}
+
+// ========== CHAIN RUN ==========
+function chainRun() { startChain('new_paper'); }
+
+// ========== PPP FUNCTIONS ==========
+function buildPPPList() {}
+function renderSlide() {}
+function navSlide(dir) {}
+function goSlide(i) {}
+
+// ========== EXPORT ==========
+function exportAs(format) {
+    const rbox = $(`r-${curAgent}`);
+    if (!rbox || rbox.innerText.includes('Внеси')) { toast('⚠️', 'Нема содржина за извоз!'); return; }
+    const content = rbox.innerText;
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `wpaws_${curAgent}_${Date.now()}.${format === 'txt' ? 'txt' : 'md'}`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast('📤', 'Извезено!');
+}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded', () => {
+    renderMemory();
+    updateKeyStatus();
+    const savedLang = localStorage.getItem('wpaws_lang') || 'mk';
+    setUILang(savedLang);
+    toast('⚜️', 'WPAWS 11.1.7 – 17 агенти подготвени!');
+});
+
+// Глобални експорти
+window.cc = cc;
+window.swA = swA;
+window.setAI = setAI;
+window.qa = qa;
+window.copyR = copyR;
+window.saveToMemory = saveToMemory;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.saveKeys = saveKeys;
+window.toggleWebSearch = toggleWebSearch;
+window.toggleGlobalDialog = toggleGlobalDialog;
+window.setUILang = setUILang;
+window.setAILang = setAILang;
+window.openMemoryPanel = openMemoryPanel;
+window.exportAllMemory = exportAllMemory;
+window.startChain = startChain;
+window.runAnalyze = runAnalyze;
+window.runSemantic = runSemantic;
+window.chainRun = chainRun;
+window.exportAs = exportAs;
+window.setSt = setSt;
+</script>
 </body>
 </html>
