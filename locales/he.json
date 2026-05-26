@@ -1,0 +1,190 @@
+/*!
+ * WPA Institute Translator Loader v1.0
+ * --------------------------------------------------------------
+ * Institute-only translator system.
+ * Does NOT touch root index.html, WPA homepage, journal,
+ * working-papers, or any global WPA translator.
+ *
+ * Default language : mk (Macedonian)
+ * Second canonical : en (English)
+ * Other 47 locales : machine-assisted drafts (needs human review)
+ *
+ * Fallback chain   : selected → en → mk → key
+ * RTL languages    : ar, he, fa, ur
+ * Storage          : localStorage["wpaInstituteLang"]
+ * Lazy load        : only selected JSON is fetched
+ *
+ * GitHub Pages compatible. No backend required.
+ * --------------------------------------------------------------
+ */
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "wpaInstituteLang";
+  var DEFAULT_LANG = "mk";
+  var FALLBACK_LANG = "en";
+  var RTL = ["ar", "he", "fa", "ur"];
+  var BASE_PATH = "locales/institute/";
+
+  // Brand terms that must never be translated, regardless of locale.
+  var BRAND_PROTECTED = [
+    "World Protocol Academy",
+    "WPA",
+    "WPA Journal",
+    "WPA Working Papers",
+    "WPAWS",
+    "Virtual Sande",
+    "ORCID",
+    "Scopus",
+    "Web of Science",
+    "DOAJ",
+    "Google Scholar",
+    "Crossref",
+    "DOI",
+    "ISSN",
+    "ISBN",
+    "OPC 2026"
+  ];
+
+  // In-memory cache of fetched locale dictionaries.
+  // We keep at most: selected, en (fallback), mk (fallback).
+  var cache = Object.create(null);
+
+  function isRTL(lang) {
+    return RTL.indexOf(lang) !== -1;
+  }
+
+  function applyDirection(lang) {
+    var html = document.documentElement;
+    var body = document.body;
+    if (isRTL(lang)) {
+      html.setAttribute("dir", "rtl");
+      html.setAttribute("lang", lang);
+      if (body) body.classList.add("rtl");
+    } else {
+      html.setAttribute("dir", "ltr");
+      html.setAttribute("lang", lang);
+      if (body) body.classList.remove("rtl");
+    }
+  }
+
+  function getStoredLang() {
+    try {
+      var stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored && typeof stored === "string") return stored;
+    } catch (e) {
+      // localStorage may be disabled (private mode / sandbox)
+    }
+    return DEFAULT_LANG;
+  }
+
+  function setStoredLang(lang) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, lang);
+    } catch (e) {
+      // silent
+    }
+  }
+
+  function fetchLocale(lang) {
+    if (cache[lang]) return Promise.resolve(cache[lang]);
+    return fetch(BASE_PATH + lang + ".json", { cache: "no-cache" })
+      .then(function (r) {
+        if (!r.ok) throw new Error("Locale not found: " + lang);
+        return r.json();
+      })
+      .then(function (dict) {
+        cache[lang] = dict;
+        return dict;
+      })
+      .catch(function (err) {
+        console.warn("[Institute Translator] Could not load locale '" + lang + "':", err.message);
+        return null;
+      });
+  }
+
+  function resolveKey(key, primary, en, mk) {
+    if (primary && Object.prototype.hasOwnProperty.call(primary, key)) return primary[key];
+    if (en && Object.prototype.hasOwnProperty.call(en, key)) return en[key];
+    if (mk && Object.prototype.hasOwnProperty.call(mk, key)) return mk[key];
+    return key; // last-resort: show the key name itself
+  }
+
+  function applyTranslations(lang) {
+    var promises = [fetchLocale(lang)];
+    if (lang !== FALLBACK_LANG) promises.push(fetchLocale(FALLBACK_LANG));
+    if (lang !== DEFAULT_LANG && FALLBACK_LANG !== DEFAULT_LANG) {
+      promises.push(fetchLocale(DEFAULT_LANG));
+    }
+
+    return Promise.all(promises).then(function (dicts) {
+      var primary = dicts[0] || {};
+      var en = (lang !== FALLBACK_LANG) ? (dicts[1] || {}) : primary;
+      var mk = (lang !== DEFAULT_LANG && FALLBACK_LANG !== DEFAULT_LANG) ? (dicts[2] || {}) : (lang === DEFAULT_LANG ? primary : en);
+
+      // Text content: [data-i18n="key"]
+      var nodes = document.querySelectorAll("[data-i18n]");
+      for (var i = 0; i < nodes.length; i++) {
+        var el = nodes[i];
+        var key = el.getAttribute("data-i18n");
+        if (!key) continue;
+
+        var attr = el.getAttribute("data-i18n-attr");
+        var value = resolveKey(key, primary, en, mk);
+
+        if (attr) {
+          el.setAttribute(attr, value);
+        } else {
+          // Preserve any nested children-only structure isn't expected on these elements,
+          // so it's safe to overwrite textContent. Note: brand terms are typically not
+          // sole-content of an i18n element, so no extra protection needed here. The
+          // BRAND_PROTECTED list is enforced by the locale files themselves.
+          el.textContent = value;
+        }
+      }
+
+      applyDirection(lang);
+      document.dispatchEvent(new CustomEvent("wpa:lang-changed", { detail: { lang: lang } }));
+    });
+  }
+
+  function syncSelector(lang) {
+    var sel = document.getElementById("instLangSelect");
+    if (sel && sel.value !== lang) sel.value = lang;
+  }
+
+  function bindSelector() {
+    var sel = document.getElementById("instLangSelect");
+    if (!sel) return;
+    sel.addEventListener("change", function () {
+      var lang = sel.value || DEFAULT_LANG;
+      setStoredLang(lang);
+      applyTranslations(lang);
+    });
+  }
+
+  function boot() {
+    var lang = getStoredLang();
+    syncSelector(lang);
+    bindSelector();
+    applyTranslations(lang);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+
+  // Expose minimal API on window for debugging / external triggers.
+  window.WPAInstituteTranslator = {
+    version: "1.0",
+    setLang: function (lang) {
+      setStoredLang(lang);
+      syncSelector(lang);
+      return applyTranslations(lang);
+    },
+    getLang: function () { return getStoredLang(); },
+    brandProtected: BRAND_PROTECTED.slice()
+  };
+})();

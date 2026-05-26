@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "lang": "ga",
+    "name": "Gaeilge",
+    "qa_status": "machine-assisted draft / needs human review",
+    "version": "0.1",
+    "updated": "2026-05-26",
+    "notice": "Only high-frequency UI keys are populated. Untranslated keys will fall back to English, then to Macedonian (canonical). Do not represent this file as a finalised academic translation.",
+    "rtl": false
+  },
+  "institute.nav.home": "Baile",
+  "institute.nav.identity": "Institiúid",
+  "institute.nav.charter": "Cairt",
+  "institute.nav.research": "Taighde",
+  "institute.nav.analytics": "Anailís",
+  "institute.nav.methodology": "Modheolaíocht",
+  "institute.nav.benchmark": "Léarscáil tagartha",
+  "institute.nav.practitioners": "Cleachtóirí",
+  "institute.nav.publications": "Foilseacháin",
+  "institute.hero.tagline": "WPA Institute · v2.0",
+  "institute.hero.cta_charter": "Léigh an Chairt →",
+  "institute.hero.cta_analytics": "Ionad Anailíse",
+  "institute.hero.cta_master_list": "Master List ↗",
+  "institute.charter.label": "Cairt na hInstitiúide",
+  "institute.cta.contact": "Teagmháil",
+  "institute.footer.about_label": "WPA Institute",
+  "institute.footer.contact_label": "Teagmháil",
+  "institute.footer.link_home": "Baile",
+  "institute.footer.link_privacy": "Príobháideacht"
+}
