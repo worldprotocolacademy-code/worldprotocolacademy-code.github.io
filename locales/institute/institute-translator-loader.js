@@ -1,5 +1,5 @@
 /*!
- * WPA Institute Translator Loader v1.1
+ * WPA Institute Translator Loader v1.2 (STABILISATION)
  * --------------------------------------------------------------
  * Institute-only translator system.
  * Does NOT touch root index.html, WPA homepage, journal,
@@ -12,13 +12,15 @@
  * Fallback chain   : selected → en → mk → existing DOM text → key
  * RTL languages    : ar, he, fa, ur
  * Storage          : localStorage["wpaInstituteLang"]
- * Lazy load        : only selected JSON is fetched
  *
- * v1.1 changes (2026-05-26):
- *  - file:// protocol detection with clear console warning
- *  - never claims success when fetch fails
- *  - preserves existing DOM text on translation failure (no key-name display)
- *  - non-blocking: page renders even if all locale fetches fail
+ * v1.2 changes (2026-05-27, stabilisation):
+ *  - BASE_PATH uses root-absolute URL (works regardless of page path)
+ *  - LOCALE_VERSION query-string cache-buster
+ *  - Allowed-language whitelist (rejects garbage in localStorage)
+ *  - Debug-safe fetch: separate r.text() + JSON.parse for clear error
+ *  - WPAInstituteTranslator.diagnose() — full system diagnostic
+ *  - WPAInstituteTranslator.resetLang() — clear storage + reload
+ *  - setLang() returns a Promise that resolves with diagnostic data
  *
  * GitHub Pages compatible. No backend required.
  * --------------------------------------------------------------
@@ -26,12 +28,35 @@
 (function () {
   "use strict";
 
-  var STORAGE_KEY = "wpaInstituteLang";
-  var DEFAULT_LANG = "mk";
-  var FALLBACK_LANG = "en";
-  var RTL = ["ar", "he", "fa", "ur"];
-  var BASE_PATH = "locales/institute/";
+  var STORAGE_KEY    = "wpaInstituteLang";
+  var DEFAULT_LANG   = "mk";
+  var FALLBACK_LANG  = "en";
+  var LOCALE_VERSION = "v1.4-2026-05-27";
+  var RTL            = ["ar", "he", "fa", "ur"];
 
+  // Build root-absolute BASE_PATH. Works for:
+  //   https://site.org/institute.html
+  //   https://site.org/institute/
+  //   https://site.org/some/sub/institute.html  (still hits /locales/institute/)
+  var BASE_PATH;
+  try {
+    BASE_PATH = new URL("/locales/institute/", window.location.origin).href;
+  } catch (e) {
+    // file:// or exotic origins where URL constructor fails — fall back to relative
+    BASE_PATH = "/locales/institute/";
+  }
+
+  // Allowed languages — must match the language selector option values exactly
+  var ALLOWED_LANGS = [
+    "mk","en","sq","el","sr","hr","bs","sl","bg","ro","tr",
+    "it","de","fr","es","pt","nl","pl","cs","sk","hu","uk","ru",
+    "da","sv","nb","fi","et","lv","lt","ga",
+    "ar","he","fa","hi","ur","bn",
+    "zh-Hans","zh-Hant","ja","ko",
+    "id","ms","sw","am","ha","af","vi","th"
+  ];
+
+  // Brand terms that must never be translated, regardless of locale.
   var BRAND_PROTECTED = [
     "World Protocol Academy", "WPA", "WPA Journal", "WPA Working Papers",
     "WPAWS", "Virtual Sande", "ORCID", "Scopus", "Web of Science",
@@ -39,11 +64,16 @@
     "OPC 2026", "AAB"
   ];
 
+  // In-memory cache of fetched locale dictionaries.
   var cache = Object.create(null);
   var fileProtocolWarned = false;
 
   function isFileProtocol() {
     return window.location.protocol === "file:";
+  }
+
+  function isAllowed(lang) {
+    return typeof lang === "string" && ALLOWED_LANGS.indexOf(lang) !== -1;
   }
 
   function isRTL(lang) {
@@ -67,13 +97,25 @@
   function getStoredLang() {
     try {
       var stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored && typeof stored === "string") return stored;
-    } catch (e) { /* localStorage may be disabled */ }
+      if (isAllowed(stored)) return stored;
+      // Garbage in localStorage (e.g. "English (EN)") — purge and fall back
+      if (stored) {
+        try { window.localStorage.removeItem(STORAGE_KEY); } catch (e2) {}
+      }
+    } catch (e) {
+      // localStorage disabled
+    }
     return DEFAULT_LANG;
   }
 
   function setStoredLang(lang) {
-    try { window.localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
+    if (!isAllowed(lang)) return false;
+    try {
+      window.localStorage.setItem(STORAGE_KEY, lang);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function warnFileProtocolOnce() {
@@ -89,20 +131,39 @@
     );
   }
 
+  function buildLocaleURL(lang) {
+    return BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
+  }
+
   function fetchLocale(lang) {
     if (cache[lang]) return Promise.resolve(cache[lang]);
     if (isFileProtocol()) {
       warnFileProtocolOnce();
       return Promise.resolve(null);
     }
-    return fetch(BASE_PATH + lang + ".json", { cache: "no-cache" })
+    var url = buildLocaleURL(lang);
+    return fetch(url, { cache: "no-store" })
       .then(function (r) {
-        if (!r.ok) throw new Error("HTTP " + r.status + " loading " + lang + ".json");
-        return r.json();
+        return r.text().then(function (text) {
+          if (!r.ok) {
+            throw new Error("HTTP " + r.status + " for " + url);
+          }
+          try {
+            return JSON.parse(text);
+          } catch (e) {
+            console.error("[WPA Institute Translator] Invalid JSON for " + lang +
+                          ". First 300 chars of response:\n" + text.slice(0, 300));
+            throw new Error("JSON parse failed for " + lang + ": " + e.message);
+          }
+        });
       })
-      .then(function (dict) { cache[lang] = dict; return dict; })
+      .then(function (dict) {
+        cache[lang] = dict;
+        return dict;
+      })
       .catch(function (err) {
-        console.warn("[WPA Institute Translator] Could not load locale '" + lang + "': " + err.message);
+        console.warn("[WPA Institute Translator] Could not load locale '" + lang +
+                     "': " + err.message);
         return null;
       });
   }
@@ -127,6 +188,8 @@
   }
 
   function applyTranslations(lang) {
+    if (!isAllowed(lang)) lang = DEFAULT_LANG;
+
     var promises = [fetchLocale(lang)];
     if (lang !== FALLBACK_LANG) promises.push(fetchLocale(FALLBACK_LANG));
     if (lang !== DEFAULT_LANG && FALLBACK_LANG !== DEFAULT_LANG) {
@@ -149,10 +212,11 @@
                        "Page will display existing HTML text. Check console for HTTP errors.");
         }
         applyDirection(lang);
-        return;
+        return { applied: 0, lang: lang, fetched: false };
       }
 
       var nodes = document.querySelectorAll("[data-i18n]");
+      var applied = 0;
       for (var i = 0; i < nodes.length; i++) {
         var el = nodes[i];
         var key = el.getAttribute("data-i18n");
@@ -165,10 +229,15 @@
         } else {
           el.textContent = value;
         }
+        applied++;
       }
 
       applyDirection(lang);
       document.dispatchEvent(new CustomEvent("wpa:lang-changed", { detail: { lang: lang } }));
+      return { applied: applied, lang: lang, fetched: true,
+               primary_keys: Object.keys(primary).length,
+               en_keys: Object.keys(en).length,
+               mk_keys: Object.keys(mk).length };
     });
   }
 
@@ -181,7 +250,13 @@
     var sel = document.getElementById("instLangSelect");
     if (!sel) return;
     sel.addEventListener("change", function () {
-      var lang = sel.value || DEFAULT_LANG;
+      var lang = sel.value;
+      if (!isAllowed(lang)) {
+        console.warn("[WPA Institute Translator] Selector returned invalid value '" +
+                     lang + "'; falling back to '" + DEFAULT_LANG + "'.");
+        lang = DEFAULT_LANG;
+        sel.value = DEFAULT_LANG;
+      }
       setStoredLang(lang);
       applyTranslations(lang);
     });
@@ -202,15 +277,113 @@
     boot();
   }
 
+  // ───────────────────────────────────────────────────────────
+  // Public diagnostic API
+  // ───────────────────────────────────────────────────────────
+  function diagnose() {
+    var sel = document.getElementById("instLangSelect");
+    var nodes = document.querySelectorAll("[data-i18n]");
+    var stored = null;
+    try { stored = window.localStorage.getItem(STORAGE_KEY); } catch (e) {}
+
+    var mkURL = buildLocaleURL("mk");
+    var enURL = buildLocaleURL("en");
+
+    var mkProbe = fetch(mkURL, { cache: "no-store" })
+      .then(function (r) {
+        return r.text().then(function (t) {
+          var parseOK = false, keyCount = 0;
+          try { var d = JSON.parse(t); parseOK = true;
+                keyCount = Object.keys(d).filter(function(k){return k !== "_meta";}).length; }
+          catch (e) {}
+          return { status: r.status, ok: r.ok, parseOK: parseOK, keys: keyCount };
+        });
+      })
+      .catch(function (e) { return { status: "ERR", error: e.message }; });
+
+    var enProbe = fetch(enURL, { cache: "no-store" })
+      .then(function (r) {
+        return r.text().then(function (t) {
+          var parseOK = false, keyCount = 0;
+          try { var d = JSON.parse(t); parseOK = true;
+                keyCount = Object.keys(d).filter(function(k){return k !== "_meta";}).length; }
+          catch (e) {}
+          return { status: r.status, ok: r.ok, parseOK: parseOK, keys: keyCount };
+        });
+      })
+      .catch(function (e) { return { status: "ERR", error: e.message }; });
+
+    return Promise.all([mkProbe, enProbe]).then(function (results) {
+      var mk = results[0], en = results[1];
+      var unique_html_keys = {};
+      for (var i = 0; i < nodes.length; i++) {
+        var k = nodes[i].getAttribute("data-i18n");
+        if (k) unique_html_keys[k] = true;
+      }
+      var diag = {
+        version: "v1.2 (translator loader)",
+        locale_version: LOCALE_VERSION,
+        url: window.location.href,
+        origin: window.location.origin,
+        protocol: window.location.protocol,
+        base_path: BASE_PATH,
+        mk_url: mkURL,
+        en_url: enURL,
+        mk_http_status: mk.status,
+        en_http_status: en.status,
+        mk_json_parse_ok: !!mk.parseOK,
+        en_json_parse_ok: !!en.parseOK,
+        mk_key_count: mk.keys || 0,
+        en_key_count: en.keys || 0,
+        html_data_i18n_nodes: nodes.length,
+        html_data_i18n_unique_keys: Object.keys(unique_html_keys).length,
+        stored_language: stored,
+        stored_language_valid: isAllowed(stored),
+        current_lang_attr: document.documentElement.getAttribute("lang"),
+        current_dir_attr: document.documentElement.getAttribute("dir"),
+        selector_value: sel ? sel.value : "(no selector found)",
+        selector_options: sel ? sel.options.length : 0
+      };
+
+      // Missing keys analysis (best-effort, only if mk + en both fetched)
+      if (mk.parseOK && en.parseOK && mk.keys && en.keys) {
+        diag.parity = (mk.keys === en.keys) ? "✓ MK = EN" : "✗ MK ≠ EN";
+        diag.missing_mk = Math.max(0, Object.keys(unique_html_keys).length - mk.keys);
+        diag.missing_en = Math.max(0, Object.keys(unique_html_keys).length - en.keys);
+      }
+
+      console.log("%c[WPA Institute Translator Diagnostic]", "color:#9d4edd;font-weight:bold;font-size:13px");
+      console.table(diag);
+      return diag;
+    });
+  }
+
+  function resetLang() {
+    try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    console.log("[WPA Institute Translator] Storage cleared. Reloading.");
+    location.reload();
+  }
+
   window.WPAInstituteTranslator = {
-    version: "1.1",
+    version: "1.2",
+    locale_version: LOCALE_VERSION,
+    allowed_languages: ALLOWED_LANGS.slice(),
+    brand_protected: BRAND_PROTECTED.slice(),
+    base_path: BASE_PATH,
     setLang: function (lang) {
+      if (!isAllowed(lang)) {
+        console.warn("[WPA Institute Translator] setLang('" + lang +
+                     "') rejected — not in ALLOWED_LANGS. Use one of: " +
+                     ALLOWED_LANGS.slice(0, 10).join(", ") + " …");
+        return Promise.resolve({ rejected: true, lang: lang });
+      }
       setStoredLang(lang);
       syncSelector(lang);
       return applyTranslations(lang);
     },
     getLang: function () { return getStoredLang(); },
-    brandProtected: BRAND_PROTECTED.slice(),
+    resetLang: resetLang,
+    diagnose: diagnose,
     isLocalFile: function () { return isFileProtocol(); }
   };
 })();
