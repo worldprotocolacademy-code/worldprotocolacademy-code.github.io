@@ -11,15 +11,7 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
-// ИСПРАВЕНА ДЕФИНИЦИЈА НА ПАТЕКАТА
-  var BASE_PATH = "";
-  if (window.location.hostname.includes("github.io")) {
-    // GitHub Pages бара релативна патека или точна апсолутна патека без дуплирање
-    BASE_PATH = "/locales/en/institute/"; 
-  } else {
-    // Локално
-    BASE_PATH = "locales/en/institute/";
-  }
+var BASE_PATH = "/locales/institute/";
 
   // ЕДИНСТВЕНА ФУНКЦИЈА ЗА ГРАДЕЊЕ НА ТОЧНО URL ЗА ПРЕВОДИТЕ
   function buildLocaleURL(lang) {
