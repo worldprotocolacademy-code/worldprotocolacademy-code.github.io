@@ -1,28 +1,6 @@
+// ИЗБРИШИ СЀ И ЗАЛЕПИ ГО ОВОЈ ЦЕЛОСЕН КОД ВНАТРЕ:
 /*!
- * WPA Institute Translator Loader v1.2 (STABILISATION)
- * --------------------------------------------------------------
- * Institute-only translator system.
- * Does NOT touch root index.html, WPA homepage, journal,
- * working-papers, or any global WPA translator.
- *
- * Default language : mk (Macedonian)
- * Second canonical : en (English)
- * Other 47 locales : machine-assisted drafts (needs human review)
- *
- * Fallback chain   : selected → en → mk → existing DOM text → key
- * RTL languages    : ar, he, fa, ur
- * Storage          : localStorage["wpaInstituteLang"]
- *
- * v1.2 changes (2026-05-27, stabilisation):
- *  - BASE_PATH uses root-absolute URL (works regardless of page path)
- *  - LOCALE_VERSION query-string cache-buster
- *  - Allowed-language whitelist (rejects garbage in localStorage)
- *  - Debug-safe fetch: separate r.text() + JSON.parse for clear error
- *  - WPAInstituteTranslator.diagnose() — full system diagnostic
- *  - WPAInstituteTranslator.resetLang() — clear storage + reload
- *  - setLang() returns a Promise that resolves with diagnostic data
- *
- * GitHub Pages compatible. No backend required.
+ * WPA Institute Translator Loader v1.2 (STABILISATION - FIXED)
  * --------------------------------------------------------------
  */
 (function () {
@@ -34,13 +12,21 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
+  // ЦЕНТРАЛНА ДЕФИНИЦИЈА НА ПАТЕКАТА (Автоматски детектира дали е на GitHub или локално)
+  var BASE_PATH = "";
+  if (window.location.hostname.includes("github.io")) {
+    BASE_PATH = window.location.origin + "/worldprotocolacademy-code.github.io/locales/en/institute/";
+  } else {
+    BASE_PATH = window.location.origin + "/locales/en/institute/";
+  }
+
+  // ЕДИНСТВЕНА И ЧИСТА ФУНКЦИЈА ЗА ГРАДЕЊЕ НА URL
   function buildLocaleURL(lang) {
-    // Се осигуруваме дека патеката секогаш ќе гаѓа директно во коренскиот директориум
-    var root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    if (root === "" || root === "/") {
-      return window.location.origin + "/" + BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
+    var base = BASE_PATH;
+    if (base.charAt(base.length - 1) !== '/') {
+      base += '/';
     }
-    return window.location.origin + root + "/" + BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
+    return base + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
   }
 
   var ALLOWED_LANGS = [
@@ -49,7 +35,6 @@
     "he", "fa", "hi", "ur", "bn", "zh-Hans", "zh-Hant", "ja", "ko", "id", "ms", "sw", "am", "ha", "af", "vi", "th"
   ];
 
-  // Brand terms that must never be translated, regardless of locale.
   var BRAND_PROTECTED = [
     "World Protocol Academy", "WPA", "WPA Journal", "WPA Working Papers",
     "WPAWS", "Virtual Sande", "ORCID", "Scopus", "Web of Science",
@@ -57,7 +42,6 @@
     "OPC 2026", "AAB"
   ];
 
-  // In-memory cache of fetched locale dictionaries.
   var cache = Object.create(null);
   var fileProtocolWarned = false;
 
@@ -91,7 +75,6 @@
     try {
       var stored = window.localStorage.getItem(STORAGE_KEY);
       if (isAllowed(stored)) return stored;
-      // Garbage in localStorage (e.g. "English (EN)") — purge and fall back
       if (stored) {
         try { window.localStorage.removeItem(STORAGE_KEY); } catch (e2) {}
       }
@@ -117,20 +100,9 @@
     console.warn(
       "[WPA Institute Translator] Local file mode detected (file://). " +
       "JSON fetch is blocked by browser security in this mode. " +
-      "Use a local HTTP server for translator testing, e.g.:\n" +
-      "    python3 -m http.server 8000\n" +
-      "    then open http://localhost:8000/institute.html\n" +
-      "On GitHub Pages or any HTTP/HTTPS host the translator works normally."
+      "On GitHub Pages host the translator works normally."
     );
   }
-
-  var BASE_PATH = "";
-  if (window.location.hostname.includes("github.io")) {
-    BASE_PATH = window.location.origin + "/worldprotocolacademy-code.github.io/locales/en/institute/";
-  } else {
-    BASE_PATH = window.location.origin + "/locales/en/institute/";
-  }
-    return base + lang + ".json?v=" + encodeURIC
 
   function fetchLocale(lang) {
     if (cache[lang]) return Promise.resolve(cache[lang]);
@@ -206,7 +178,7 @@
       if (primaryEmpty && enEmpty && mkEmpty) {
         if (!isFileProtocol()) {
           console.warn("[WPA Institute Translator] All locale fetches failed. " +
-                       "Page will display existing HTML text. Check console for HTTP errors.");
+                       "Page will display existing HTML text.");
         }
         applyDirection(lang);
         return { applied: 0, lang: lang, fetched: false };
@@ -249,8 +221,6 @@
     sel.addEventListener("change", function () {
       var lang = sel.value;
       if (!isAllowed(lang)) {
-        console.warn("[WPA Institute Translator] Selector returned invalid value '" +
-                     lang + "'; falling back to '" + DEFAULT_LANG + "'.");
         lang = DEFAULT_LANG;
         sel.value = DEFAULT_LANG;
       }
@@ -318,7 +288,7 @@
         if (k) unique_html_keys[k] = true;
       }
       var diag = {
-        version: "v1.2 (translator loader)",
+        version: "v1.2 (translator loader - fixed)",
         locale_version: LOCALE_VERSION,
         url: window.location.href,
         origin: window.location.origin,
@@ -338,16 +308,8 @@
         stored_language_valid: isAllowed(stored),
         current_lang_attr: document.documentElement.getAttribute("lang"),
         current_dir_attr: document.documentElement.getAttribute("dir"),
-        selector_value: sel ? sel.value : "(no selector found)",
-        selector_options: sel ? sel.options.length : 0
+        selector_value: sel ? sel.value : "(no selector found)"
       };
-
-      // Missing keys analysis (best-effort, only if mk + en both fetched)
-      if (mk.parseOK && en.parseOK && mk.keys && en.keys) {
-        diag.parity = (mk.keys === en.keys) ? "✓ MK = EN" : "✗ MK ≠ EN";
-        diag.missing_mk = Math.max(0, Object.keys(unique_html_keys).length - mk.keys);
-        diag.missing_en = Math.max(0, Object.keys(unique_html_keys).length - en.keys);
-      }
 
       console.log("%c[WPA Institute Translator Diagnostic]", "color:#9d4edd;font-weight:bold;font-size:13px");
       console.table(diag);
@@ -357,7 +319,6 @@
 
   function resetLang() {
     try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    console.log("[WPA Institute Translator] Storage cleared. Reloading.");
     location.reload();
   }
 
@@ -368,12 +329,7 @@
     brand_protected: BRAND_PROTECTED.slice(),
     base_path: BASE_PATH,
     setLang: function (lang) {
-      if (!isAllowed(lang)) {
-        console.warn("[WPA Institute Translator] setLang('" + lang +
-                     "') rejected — not in ALLOWED_LANGS. Use one of: " +
-                     ALLOWED_LANGS.slice(0, 10).join(", ") + " …");
-        return Promise.resolve({ rejected: true, lang: lang });
-      }
+      if (!isAllowed(lang)) return Promise.resolve({ rejected: true, lang: lang });
       setStoredLang(lang);
       syncSelector(lang);
       return applyTranslations(lang);
