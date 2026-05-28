@@ -34,13 +34,13 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
-  // Нова корегирана патека специјално за структурата на GitHub Pages
-  var BASE_PATH = "";
-  if (window.location.hostname.includes("github.io")) {
-    BASE_PATH = "/worldprotocolacademy-code.github.io/locales/en/institute/";
-  } else {
-    // Локално тестирање на компјутер
-    BASE_PATH = "/locales/en/institute/";
+  function buildLocaleURL(lang) {
+    // Се осигуруваме дека патеката секогаш ќе гаѓа директно во коренскиот директориум
+    var root = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    if (root === "" || root === "/") {
+      return window.location.origin + "/" + BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
+    }
+    return window.location.origin + root + "/" + BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
   }
 
   var ALLOWED_LANGS = [
