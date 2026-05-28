@@ -124,9 +124,13 @@
     );
   }
 
-  function buildLocaleURL(lang) {
-    return BASE_PATH + lang + ".json?v=" + encodeURIComponent(LOCALE_VERSION);
+  var BASE_PATH = "";
+  if (window.location.hostname.includes("github.io")) {
+    BASE_PATH = window.location.origin + "/worldprotocolacademy-code.github.io/locales/en/institute/";
+  } else {
+    BASE_PATH = window.location.origin + "/locales/en/institute/";
   }
+    return base + lang + ".json?v=" + encodeURIC
 
   function fetchLocale(lang) {
     if (cache[lang]) return Promise.resolve(cache[lang]);
