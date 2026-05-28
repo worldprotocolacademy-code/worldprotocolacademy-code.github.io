@@ -2120,5 +2120,101 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+  <!-- Ова е JavaScript преведувачот што треба да се вметне пред </body> -->
+<script>
+// 1. Дефинирање на речниците за превод
+const translations = {
+  mk: {
+    "institute.meta.title": "WPA Institute · Институт за протокол, дипломатија, јавна комуникација и безбедносни студии",
+    "institute.topbar.text": "Институт за протокол, дипломатија, јавна комуникација и безбедносни студии",
+    "institute.nav.brand_sub": "Institute · Скопје · 2026",
+    "institute.nav.home": "Почетна",
+    "institute.nav.identity": "Институт",
+    "institute.nav.charter": "Charter",
+    "institute.nav.research": "Истражување",
+    "institute.nav.publications": "Публикации",
+    "institute.publications.label": "Јавни резултати",
+    "institute.publications.title": "Публикации и аналитички резултати на Институтот",
+    "institute.publications.s1.meta": "FLAGSHIP JOURNAL · PHASE 0",
+    "institute.publications.s1.title": "WPA Journal",
+    "institute.publications.s1.text": "Специјализиран журнал за протокол, дипломатија, јавна комуникација, безбедносни студии и комуникологија. Инаугуралниот број излегува во септември 2026; повикот за втор број е отворен до 31 декември 2026.",
+    "institute.publications.s1.tag": "Coming Soon · First Issue September 2026",
+    "institute.publications.s1.cta": "Отвори го журналот →"
+  },
+  en: {
+    "institute.meta.title": "WPA Institute · Institute for Protocol, Diplomacy, Public Communication and Security Studies",
+    "institute.topbar.text": "Institute for Protocol, Diplomacy, Public Communication and Security Studies",
+    "institute.nav.brand_sub": "Institute · Skopje · 2026",
+    "institute.nav.home": "Home",
+    "institute.nav.identity": "Institute",
+    "institute.nav.charter": "Charter",
+    "institute.nav.research": "Research",
+    "institute.nav.publications": "Publications",
+    "institute.publications.label": "Public Results",
+    "institute.publications.title": "Publications and Analytical Results of the Institute",
+    "institute.publications.s1.meta": "FLAGSHIP JOURNAL · PHASE 0",
+    "institute.publications.s1.title": "WPA Journal",
+    "institute.publications.s1.text": "Specialized journal for protocol, diplomacy, public communication, security studies, and communicology. The inaugural issue will be released in September 2026; the call for papers for the second issue is open until December 31, 2026.",
+    "institute.publications.s1.tag": "Coming Soon · First Issue September 2026",
+    "institute.publications.s1.cta": "Open Journal →"
+  },
+  fr: {
+    "institute.meta.title": "WPA Institute · Institut d'études sur le protocole, la diplomatie, la communication publique et la sécurité",
+    "institute.topbar.text": "Institut d'études sur le protocole, la diplomatie, la communication publique et la sécurité",
+    "institute.nav.brand_sub": "Institut · Skopje · 2026",
+    "institute.nav.home": "Accueil",
+    "institute.nav.identity": "Institut",
+    "institute.nav.charter": "Charte",
+    "institute.nav.research": "Recherche",
+    "institute.nav.publications": "Publications",
+    "institute.publications.label": "Résultats Publics",
+    "institute.publications.title": "Publications et Résultats Analytiques de l'Institut",
+    "institute.publications.s1.meta": "JOURNAL PHARE · PHASE 0",
+    "institute.publications.s1.title": "WPA Journal",
+    "institute.publications.s1.text": "Journal spécialisé de protocole, diplomatie, communication publique, études de sécurité et communicologie. Le numéro inaugural paraîtra en septembre 2026; l'appel à contributions pour le second numéro est ouvert jusqu'au 31 décembre 2026.",
+    "institute.publications.s1.tag": "Bientôt disponible · Premier numéro en septembre 2026",
+    "institute.publications.s1.cta": "Ouvrir le journal →"
+  }
+};
+
+// 2. Функција која го извршува преводот низ DOM структурата
+function applyTranslations(lang) {
+  // Поставување на насока на текст (за секој случај ако има RTL)
+  document.documentElement.lang = lang;
+  if(lang === 'ar' || lang === 'he') {
+    document.body.classList.add('rtl');
+  } else {
+    document.body.classList.remove('rtl');
+  }
+
+  // Селектирање на сите елементи кои имаат 'data-i18n' атрибут
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    if (translations[lang] && translations[lang][key]) {
+      
+      // Ако елементот има и специфичен атрибут за превод (на пример 'content' за meta описот)
+      if (element.hasAttribute('data-i18n-attr')) {
+        const attrName = element.getAttribute('data-i18n-attr');
+        element.setAttribute(attrName, translations[lang][key]);
+      } else {
+        // Стандарден превод на текстуална содржина
+        element.innerText = translations[lang][key];
+      }
+    }
+  });
+}
+
+// 3. Слушач на настани (Event Listener) кој чека промена на јазикот од менито
+document.addEventListener('DOMContentLoaded', () => {
+  const langSelect = document.getElementById('instLangSelect');
+  
+  if (langSelect) {
+    langSelect.addEventListener('change', (e) => {
+      const selectedLanguage = e.target.value;
+      applyTranslations(selectedLanguage);
+    });
+  }
+});
+</script>
 </body>
 </html>
