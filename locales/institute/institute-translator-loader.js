@@ -1,6 +1,5 @@
-// ИЗБРИШИ СЀ И ЗАЛЕПИ ГО ОВОЈ ЦЕЛОСЕН КОД ВНАТРЕ:
 /*!
- * WPA Institute Translator Loader v1.2 (STABILISATION - FIXED)
+ * WPA Institute Translator Loader v1.3 (UNIVERSAL PATH CORRECTION)
  * --------------------------------------------------------------
  */
 (function () {
@@ -12,15 +11,21 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
-  // ЦЕНТРАЛНА ДЕФИНИЦИЈА НА ПАТЕКАТА (Автоматски детектира дали е на GitHub или локално)
+  // АВТОМАТСКА И СИГУРНА ДЕТЕКЦИЈА НА ПАТЕКАТА ЗА СИТЕ ТРИ СЦЕНАРИЈА
   var BASE_PATH = "";
-  if (window.location.hostname.includes("github.io")) {
+  
+  if (window.location.protocol === "file:") {
+    // 1. Ако го отвораш локално со двоен клик (file://) - користи релативна патека до твојата папка
+    BASE_PATH = "locales/en/institute/";
+  } else if (window.location.hostname.includes("github.io")) {
+    // 2. Ако е подигнато на во живо на GitHub Pages со подпапка
     BASE_PATH = window.location.origin + "/worldprotocolacademy-code.github.io/locales/en/institute/";
   } else {
+    // 3. Ако користиш локален сервер (localhost) или сопствен домен
     BASE_PATH = window.location.origin + "/locales/en/institute/";
   }
 
-  // ЕДИНСТВЕНА И ЧИСТА ФУНКЦИЈА ЗА ГРАДЕЊЕ НА URL
+  // ЕДИНСТВЕНА ФУНКЦИЈА ЗА ГРАДЕЊЕ НА ТОЧНО URL ЗА ПРЕВОДИТЕ
   function buildLocaleURL(lang) {
     var base = BASE_PATH;
     if (base.charAt(base.length - 1) !== '/') {
@@ -98,18 +103,20 @@
     if (fileProtocolWarned) return;
     fileProtocolWarned = true;
     console.warn(
-      "[WPA Institute Translator] Local file mode detected (file://). " +
-      "JSON fetch is blocked by browser security in this mode. " +
-      "On GitHub Pages host the translator works normally."
+      "[WPA Institute Translator] Детектиран е локален пристап (file://). " +
+      "Доколку прелистувачот ги блокира AJAX барањата поради CORS заштита, " +
+      "подигнете локален HTTP сервер или тестирајте директно на GitHub."
     );
   }
 
   function fetchLocale(lang) {
     if (cache[lang]) return Promise.resolve(cache[lang]);
+    
+    // Предупредување за локален фајл систем, но сепак дозволуваме обид за вчитување
     if (isFileProtocol()) {
       warnFileProtocolOnce();
-      return Promise.resolve(null);
     }
+    
     var url = buildLocaleURL(lang);
     return fetch(url, { cache: "no-store" })
       .then(function (r) {
@@ -120,9 +127,9 @@
           try {
             return JSON.parse(text);
           } catch (e) {
-            console.error("[WPA Institute Translator] Invalid JSON for " + lang +
-                          ". First 300 chars of response:\n" + text.slice(0, 300));
-            throw new Error("JSON parse failed for " + lang + ": " + e.message);
+            console.error("[WPA Institute Translator] Невалиден JSON формат за " + lang +
+                          ". Почеток на одговорот:\n" + text.slice(0, 300));
+            throw new Error("JSON парасирањето неуспешно за " + lang + ": " + e.message);
           }
         });
       })
@@ -131,7 +138,7 @@
         return dict;
       })
       .catch(function (err) {
-        console.warn("[WPA Institute Translator] Could not load locale '" + lang +
+        console.warn("[WPA Institute Translator] Не може да се вчита јазикот '" + lang +
                      "': " + err.message);
         return null;
       });
@@ -176,10 +183,6 @@
       var enEmpty      = Object.keys(en).length === 0;
       var mkEmpty      = Object.keys(mk).length === 0;
       if (primaryEmpty && enEmpty && mkEmpty) {
-        if (!isFileProtocol()) {
-          console.warn("[WPA Institute Translator] All locale fetches failed. " +
-                       "Page will display existing HTML text.");
-        }
         applyDirection(lang);
         return { applied: 0, lang: lang, fetched: false };
       }
@@ -288,7 +291,7 @@
         if (k) unique_html_keys[k] = true;
       }
       var diag = {
-        version: "v1.2 (translator loader - fixed)",
+        version: "v1.3 (universal path layout)",
         locale_version: LOCALE_VERSION,
         url: window.location.href,
         origin: window.location.origin,
@@ -323,7 +326,7 @@
   }
 
   window.WPAInstituteTranslator = {
-    version: "1.2",
+    version: "1.3",
     locale_version: LOCALE_VERSION,
     allowed_languages: ALLOWED_LANGS.slice(),
     brand_protected: BRAND_PROTECTED.slice(),
