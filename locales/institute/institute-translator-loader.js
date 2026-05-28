@@ -34,26 +34,19 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
-  // Build root-absolute BASE_PATH. Works for:
-  //   https://site.org/institute.html
-  //   https://site.org/institute/
-  //   https://site.org/some/sub/institute.html  (still hits /locales/institute/)
-  var BASE_PATH;
-  try {
-    BASE_PATH = new URL("/locales/institute/", window.location.origin).href;
-  } catch (e) {
-    // file:// or exotic origins where URL constructor fails — fall back to relative
-    BASE_PATH = "/locales/institute/";
+  // Нова корегирана патека специјално за структурата на GitHub Pages
+  var BASE_PATH = "";
+  if (window.location.hostname.includes("github.io")) {
+    BASE_PATH = "/worldprotocolacademy-code.github.io/locales/en/institute/";
+  } else {
+    // Локално тестирање на компјутер
+    BASE_PATH = "/locales/en/institute/";
   }
 
-  // Allowed languages — must match the language selector option values exactly
   var ALLOWED_LANGS = [
-    "mk","en","sq","el","sr","hr","bs","sl","bg","ro","tr",
-    "it","de","fr","es","pt","nl","pl","cs","sk","hu","uk","ru",
-    "da","sv","nb","fi","et","lv","lt","ga",
-    "ar","he","fa","hi","ur","bn",
-    "zh-Hans","zh-Hant","ja","ko",
-    "id","ms","sw","am","ha","af","vi","th"
+    "mk", "en", "fr", "sq", "el", "sr", "hr", "bs", "sl", "bg", "ro", "tr", "it", "de", "es", "pt", 
+    "nl", "pl", "cs", "sk", "hu", "uk", "ru", "da", "sv", "nb", "fi", "et", "lv", "lt", "ga", "ar", 
+    "he", "fa", "hi", "ur", "bn", "zh-Hans", "zh-Hant", "ja", "ko", "id", "ms", "sw", "am", "ha", "af", "vi", "th"
   ];
 
   // Brand terms that must never be translated, regardless of locale.
