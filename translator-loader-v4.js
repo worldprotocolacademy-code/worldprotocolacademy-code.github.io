@@ -43,8 +43,17 @@
     ];
   }
 
+  // Phase-1 rule: only languages with status 'canonical' or 'active' are usable in production.
+  // 'planned' languages remain tracked in governance but cannot be selected, nor activated
+  // from a stale localStorage value (e.g. set by a previous custom selector).
+  function activeLanguages(){
+    return supportedLanguages().filter(function(l){
+      return l.status === 'canonical' || l.status === 'active';
+    });
+  }
+
   function isSupported(lang){
-    return supportedLanguages().some(l => l.code === lang);
+    return activeLanguages().some(function(l){ return l.code === lang; });
   }
 
   function langDirection(lang){
@@ -108,7 +117,8 @@
     const mounts = document.querySelectorAll('[data-wpa-language-select]');
     if(!mounts.length) return;
 
-    const langs = supportedLanguages();
+    // Phase-1 rule: selector shows only canonical+active languages (see activeLanguages()).
+    const langs = activeLanguages();
     mounts.forEach(mount => {
       mount.innerHTML = '';
       const wrap = document.createElement('label');
