@@ -11,18 +11,14 @@
   var LOCALE_VERSION = "v1.4-2026-05-27";
   var RTL            = ["ar", "he", "fa", "ur"];
 
-  // АВТОМАТСКА И СИГУРНА ДЕТЕКЦИЈА НА ПАТЕКАТА ЗА СИТЕ ТРИ СЦЕНАРИЈА
+// ИСПРАВЕНА ДЕФИНИЦИЈА НА ПАТЕКАТА
   var BASE_PATH = "";
-  
-  if (window.location.protocol === "file:") {
-    // 1. Ако го отвораш локално со двоен клик (file://) - користи релативна патека до твојата папка
-    BASE_PATH = "locales/en/institute/";
-  } else if (window.location.hostname.includes("github.io")) {
-    // 2. Ако е подигнато на во живо на GitHub Pages со подпапка
-    BASE_PATH = window.location.origin + "/worldprotocolacademy-code.github.io/locales/en/institute/";
+  if (window.location.hostname.includes("github.io")) {
+    // GitHub Pages бара релативна патека или точна апсолутна патека без дуплирање
+    BASE_PATH = "/locales/en/institute/"; 
   } else {
-    // 3. Ако користиш локален сервер (localhost) или сопствен домен
-    BASE_PATH = window.location.origin + "/locales/en/institute/";
+    // Локално
+    BASE_PATH = "locales/en/institute/";
   }
 
   // ЕДИНСТВЕНА ФУНКЦИЈА ЗА ГРАДЕЊЕ НА ТОЧНО URL ЗА ПРЕВОДИТЕ
