@@ -2039,5 +2039,86 @@
     }
   })();
 </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const langSelect = document.getElementById("instLangSelect");
+    
+    // Овде ја дефинираме базата со преводи за клучните елементи (Речник)
+    // Можеш да ја надополнуваш со сите data-i18n тагови што ги имаш во твоите 2042 линии
+    const translations = {
+        "mk": {
+            "institute.meta.title": "WPA Institute · Институт за протокол, дипломатија, јавна комуникација и безбедносни студии",
+            "nav.home": "Почетна",
+            "nav.identity": "Идентитет",
+            "nav.charter": "Повелба",
+            "nav.research": "Истражувачки Столбови",
+            "nav.analytics": "Аналитика",
+            "nav.methodology": "Методологија",
+            "nav.publications": "Публикации",
+            "hero.badge": "МАТРИЦА НА ЗНАЕЊЕ & СТРУЧЕН ИНТАКТ",
+            "hero.title": "Институт за протокол, дипломатија, јавна комуникација и безбедносни студии",
+            "hero.subtitle": "Теорија + практика + научно-истражувачка дејност. Платформа на World Protocol Academy за верификација, бенчмаркинг и напредни институционални анализи."
+        },
+        "en": {
+            "institute.meta.title": "WPA Institute · Institute for Protocol, Diplomacy, Public Relations & Security Studies",
+            "nav.home": "Home",
+            "nav.identity": "Identity",
+            "nav.charter": "Charter",
+            "nav.research": "Research Pillars",
+            "nav.analytics": "Analytics",
+            "nav.methodology": "Methodology",
+            "nav.publications": "Publications",
+            "hero.badge": "MATRIX OF KNOWLEDGE & PROFESSIONAL INTEGRITY",
+            "hero.title": "Institute for Protocol, Diplomacy, Public Relations and Security Studies",
+            "hero.subtitle": "Theory + practice + scientific research activity. World Protocol Academy platform for verification, benchmarking, and advanced institutional analyses."
+        }
+    };
+
+    // Функција која ги наоѓа сите елементи со data-i18n и им го менува текстот
+    function applyTranslations(lang) {
+        if (!translations[lang]) return;
+
+        // Постави јазичен атрибут на HTML тагот (корисно за SEO и RTL поддршка)
+        document.documentElement.lang = lang;
+        if (lang === 'ar' || lang === 'he') {
+            document.documentElement.dir = 'rtl';
+        } else {
+            document.documentElement.dir = 'ltr';
+        }
+
+        // Превод на текстуални елементи
+        document.querySelectorAll("[data-i18n]").forEach(element => {
+            const key = element.getAttribute("data-i18n");
+            if (translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+
+        // Превод на атрибути (како placeholder или content описи)
+        document.querySelectorAll("[data-i18n-attr]").forEach(element => {
+            const attrName = element.getAttribute("data-i18n-attr");
+            const key = element.getAttribute("data-i18n");
+            if (translations[lang][key]) {
+                element.setAttribute(attrName, translations[lang][key]);
+            }
+        });
+        
+        // Зачувај го изборот во меморијата на прелистувачот
+        localStorage.setItem("wpa_selected_lang", lang);
+    }
+
+    // Слушач на настани: Кога корисникот ќе го смени јазикот во паѓачкото мени
+    if (langSelect) {
+        langSelect.addEventListener("change", function () {
+            applyTranslations(this.value);
+        });
+
+        // Вчитај го претходно зачуваниот јазик или користи македонски како стандарден
+        const savedLang = localStorage.getItem("wpa_selected_lang") || "mk";
+        langSelect.value = savedLang;
+        applyTranslations(savedLang);
+    }
+});
+</script>
 </body>
 </html>
