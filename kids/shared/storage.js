@@ -1,0 +1,1 @@
+const WPAStore={prefix:'wpa_junior_v1_', get(k){try{return JSON.parse(localStorage.getItem(this.prefix+k))}catch{return null}}, set(k,d){try{localStorage.setItem(this.prefix+k,JSON.stringify(d));return true}catch{return false}}};

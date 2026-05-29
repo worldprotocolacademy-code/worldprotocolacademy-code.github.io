@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="title">WPA Junior</title>
+  <link rel="stylesheet" href="shared/style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4A90E2">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-row">
+      <h1>🌟 <span data-i18n="title">WPA Junior</span></h1>
+      <button id="lang-toggle" class="lang-btn" aria-label="Toggle Language">MK / EN</button>
+    </div>
+    <p class="subtitle" data-i18n="subtitle">Бон тон и почитување</p>
+  </header>
+  <main class="dashboard">
+    <div class="card-link" data-href="good-manners/index.html"><h2 data-i18n="manners">📚 Бон тон и почитување</h2><p data-i18n="manners_desc">10 интерактивни лекции за културно однесување</p></div>
+    <div class="card-link" data-href="games/alexander/index.html"><h2 data-i18n="alexander">🏛️ Александар и патот на мудриот водач</h2><p data-i18n="alexander_desc">12 мисии за дипломатија, почит и мудро лидерство</p></div>
+    <div class="card-link" data-href="games/goce-delcev/index.html"><h2 data-i18n="goce">🕊️ Гоце Делчев и кодексот на достоинството</h2><p data-i18n="goce_desc">12 мисии за интегритет, храброст и заедница</p></div>
+  </main>
+  <section class="notice-section">
+    <div class="notice parent"><strong>👨‍👩‍👧 <span data-i18n="parent_note_title">Родителска/Наставничка белешка:</span></strong><span data-i18n="parent_note_body">Овој модул е образовна алатка за култура на однесување, почит и комуникација. Не собира лични податоци и не заменува родителско или стручно водство.</span></div>
+    <div class="notice safety"><strong>🛡️ <span data-i18n="safety_note_title">Безбедносна напомена:</span></strong><span data-i18n="safety_note_body">За деца под 13 години користењето треба да биде со родител или наставник.</span></div>
+  </section>
+  <footer class="app-footer"><p>© WPA Junior v1.0-CORRECTED-4 • Controlled internal testing candidate • Privacy-conscious design</p></footer>
+  <script src="shared/safety.js"></script>
+  <script src="shared/i18n.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => { await i18n.load(); i18n.apply(); document.getElementById('lang-toggle').addEventListener('click', () => i18n.toggle()); document.querySelectorAll('.card-link').forEach(c => { c.addEventListener('click', () => location.href = c.dataset.href); c.setAttribute('tabindex','0'); c.addEventListener('keydown', e => { if(e.key==='Enter') c.click(); }); }); if('serviceWorker' in navigator) try { await navigator.serviceWorker.register('./sw.js', {scope:'./'}); console.log('✅ SW registered'); } catch(e) { console.warn('⚠️ SW failed', e); } });
+  </script>
+</body>
+</html>
