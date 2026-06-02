@@ -23,6 +23,14 @@ locales/ (8 sets): journal, journal-issue-1, journal-template, journal-editorial
                    journal-submit, journal-guidelines, journal-metrics, journal-ethics-ai
 sitemap.xml (existing entries preserved + journal pages/feeds added)
 
+## Phase 0 refinements (this revision)
+- metrics.html — Impact Factor / CiteScore wording softened: "not currently claimed; may be
+  considered only after sustained publication history and official eligibility".
+- submit.html — uses "Responses are handled according to editorial availability" (no fixed time).
+- journal/author-guide.html — added as a redirect wrapper → author-guidelines.html (no duplicate page).
+- Feeds intentionally do NOT list WP-003/004/005: those individual URLs are not present in the
+  repo, so adding them would create broken links. The feed stays journal-scoped (forthcoming issue).
+
 ## Honest + safe (verified)
 - Issue JSON-LD = graph (Periodical · Organization · PublicationVolume · PublicationIssue ·
   CollectionPage); article-template = ScholarlyArticle TEMPLATE with [PLACEHOLDERS], no fake DOI.
