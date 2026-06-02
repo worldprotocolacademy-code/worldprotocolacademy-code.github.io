@@ -1,36 +1,31 @@
-# WPA — Trust wrapper fix (small OVERLAY patch)
+# WPA — head-metadata-only SAFE CI patch
 
-This is a small overlay patch. Upload/merge over the existing GitHub repository.
-Do NOT delete any existing folders or pages. This is NOT a full-site replacement.
-Do not change the translator. Do not touch Journal, WPAWS, Symbols or other modules.
+This is a head-metadata-only safe CI patch (overlay). Upload/merge over the existing
+GitHub repository. Do NOT delete any files. NOT a full-site replacement.
+No page bodies, scripts, content sections or translation systems were changed —
+only missing <head> metadata (<link rel="canonical">) was added.
 
-## What this fixes
-The redirect wrappers at:
-- institute/index/correction.html  → redirects to  ../../correction-request.html
-- institute/index/disclaimer.html  → redirects to  ../../public-disclaimer.html
-have been re-issued as clean, robust redirects (meta-refresh + JS location.replace +
-visible fallback link + noindex). Overwrite the two existing files with these.
+## Included files (genuinely patched from their current RICH repo versions)
+- rights-takedown.html      — added <link rel="canonical"> (rich page, body unchanged)
+- public-disclaimer.html    — added <link rel="canonical"> (rich page, body unchanged)
+- correction-request.html   — added <link rel="canonical"> (rich page, body unchanged)
 
-## IMPORTANT — why the live page still showed the old Audio Media Engine placeholder
-The wrapper files were ALREADY correct in the repository (verified on both `main` and
-`master`). The live site was serving a STALE cached version (old placeholder) via the
-GitHub Pages CDN / an out-of-date deployment — not a file error.
+Each already had <title>, viewport and meta description; only the canonical link was
+missing. CI checks (title / viewport / description / canonical) now pass for these pages.
+None contain a "Во подготовка / In preparation" placeholder.
 
-After uploading this patch:
-1. Commit the two files (this triggers a fresh GitHub Pages / Actions deployment).
-2. Wait 1–3 minutes for the deployment to finish.
-3. Hard-refresh the live URLs (Ctrl/Cmd + Shift + R) to bypass the browser cache.
-4. If GitHub Pages deploys from a specific branch, make sure these two files are on the
-   deployed branch (the repo has both `main` and `master`; upload to whichever Pages uses).
+## DELIBERATELY EXCLUDED — partnerships/index.html and privacy.html
+The only versions present in the repository (on BOTH `main` and `master`) are PLACEHOLDER
+pages (~3.6 KB, showing "Во подготовка / In preparation", no content sections). There is no
+richer version of these two files in the repo reachable here, and the live github.io site is
+not reachable from this build environment.
 
-## Verified already-live and correct (no change needed — included here for reference only)
-- public-disclaimer.html      — real MK/EN page (wpa-translator), live 200
-- correction-request.html     — real MK/EN page (wpa-translator), live 200
-- rights-takedown.html        — real MK/EN page (wpa-translator), live 200
-- institute.html              — Trust + footer links already point to the canonical root
-                                pages (public-disclaimer.html, correction-request.html,
-                                rights-takedown.html); no institute/index/* links remain.
+To avoid shipping/cementing placeholder pages, these two files are NOT included in this patch.
 
-## Files in this patch
-- institute/index/correction.html   (overwrite)
-- institute/index/disclaimer.html   (overwrite)
+### To fix their CI errors safely
+Provide the RICH current versions of partnerships/index.html and privacy.html (upload them),
+and only the two required <head> tags (<meta name="description"> + <link rel="canonical">)
+will be added to those rich pages — bodies untouched — and returned in an updated patch.
+
+Until then, CI will still flag partnerships/index.html and privacy.html for missing
+description/canonical, because their committed versions are placeholders without that metadata.
