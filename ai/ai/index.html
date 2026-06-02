@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>WPA Multi-AI Command Center – Individual AI Queries</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #0a0c15;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    color: #e8eef5;
+    padding: 1.5rem;
+  }
+
+  .container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #d4af37;
+  }
+
+  .header h1 {
+    font-size: 2rem;
+    background: linear-gradient(135deg, #d4af37, #f5e6a3, #d4af37);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .subtitle {
+    color: #8a9bb5;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.15);
+    padding: 0.3rem 1rem;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    margin-top: 0.8rem;
+    color: #d4af37;
+  }
+
+  /* MODE BAR */
+  .mode-bar {
+    background: #0d1220;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid #1f2a3a;
+  }
+
+  .mode-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .mode-btn {
+    background: #1a2230;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    color: #8a9bb5;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    background: #d4af37;
+    color: #0a0c15;
+  }
+
+  .provider-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .provider-selector label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    cursor: pointer;
+  }
+
+  /* UNIVERSAL PROMPT */
+  .universal-panel {
+    background: #11161f;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    background: #0a0e1a;
+    border: 1px solid #2a3a4a;
+    border-radius: 12px;
+    color: #e8eef5;
+    font-size: 1rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: #d4af37;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #d4af37, #b8941e);
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: bold;
+    color: #0a0c15;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary {
+    background: #1f2a3a;
+    border: 1px solid #d4af37;
+    padding: 0.7rem 1.8rem;
+    border-radius: 40px;
+    font-weight: bold;
+    color: #d4af37;
+    cursor: pointer;
+  }
+
+  /* AI GRID */
+  .ai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .ai-card {
+    background: #11161f;
+    border-radius: 16px;
+    border: 1px solid #1f2a3a;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ai-card:hover {
+    transform: translateY(-2px);
+    border-color: #d4af37;
+  }
+
+  .ai-header {
+    background: #0d1220;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid #d4af37;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ai-name {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  .ai-role {
+    font-size: 0.7rem;
+    color: #8a9bb5;
+  }
+
+  .ai-status {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    background: #1a2230;
+  }
+
+  .ai-status.idle { color: #6c7a8a; }
+  .ai-status.loading { color: #d4af37; animation: pulse 1s infinite; }
+  .ai-status.success { color: #2ecc71; }
+  .ai-status.error { color: #e74c3c; }
+
+  .ai-response {
+    padding: 1rem;
+    min-height: 180px;
+    max-height: 280px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    background: #0a0e1a;
+    flex: 1;
+  }
+
+  .ai-response pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+  }
+
+  /* INDIVIDUAL PROMPT AREA */
+  .individual-prompt-area {
+    padding: 0.8rem;
+    background: #0d1220;
+    border-top: 1px solid #1f2a3a;
+    border-bottom: 1px solid #1f2a3a;
+  }
+
+  .individual-prompt {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.7rem;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    background: #0a0e1a;
+    color: #e8eef5;
+    font-size: 0.8rem;
+    resize: vertical;
+    font-family: inherit;
+  }
+
+  .individual-prompt:focus {
+    outline: none;
+    border-color: #d4af37;
+  }
+
+  .ask-single-btn {
+    width: 100%;
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 30px;
+    border: none;
+    background: linear-gradient(135deg, #d4af37, #b8941e);
+    color: #0a0c15;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.75rem;
+  }
+
+  .ask-single-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+
+  .ai-footer {
+    padding: 0.5rem 1rem;
+    background: #0d1220;
+    border-top: 1px solid #1f2a3a;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: #6c7a8a;
+  }
+
+  /* CONSENSUS PANEL */
+  .consensus-panel {
+    background: #0d1220;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+    display: none;
+  }
+
+  .consensus-panel.active {
+    display: block;
+  }
+
+  .consensus-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .consensus-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4af37;
+  }
+
+  .consensus-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .consensus-card {
+    background: #11161f;
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 3px solid #d4af37;
+  }
+
+  .consensus-card h4 {
+    margin-bottom: 0.5rem;
+    color: #d4af37;
+  }
+
+  /* ARCHIVE PANEL */
+  .archive-panel {
+    background: #0d1220;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid #1f2a3a;
+    display: none;
+  }
+
+  .archive-panel.active {
+    display: block;
+  }
+
+  .session-item {
+    background: #11161f;
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+
+  .session-item:hover {
+    background: #1a2230;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #1f2a3a;
+    padding-bottom: 0.5rem;
+  }
+
+  .tab {
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    background: #1a2230;
+    color: #8a9bb5;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: #d4af37;
+    color: #0a0c15;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #1f2a3a;
+    font-size: 0.7rem;
+    color: #6c7a8a;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    .ai-grid { grid-template-columns: 1fr; }
+    .consensus-content { grid-template-columns: 1fr; }
+    .mode-bar { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏛️ WPA MULTI-AI COMMAND CENTER</h1>
+    <div class="subtitle">7 AI Advisors · Individual Queries · One Command Center</div>
+    <div class="badge">⚡ Прашај еден AI или сите одеднаш</div>
+  </div>
+
+  <!-- MODE BAR -->
+  <div class="mode-bar">
+    <div class="mode-buttons">
+      <button class="mode-btn active" data-mode="balanced">⚖️ Избалансирано</button>
+      <button class="mode-btn" data-mode="deep">🧠 Длабинско</button>
+      <button class="mode-btn" data-mode="research">🔍 Истражување</button>
+      <button class="mode-btn" data-mode="corporate">💼 Корпоративно</button>
+      <button class="mode-btn" data-mode="code">💻 Код</button>
+    </div>
+    <div class="provider-selector" id="providerSelector">
+      <label><input type="checkbox" value="openai" checked> OpenAI</label>
+      <label><input type="checkbox" value="gemini" checked> Gemini</label>
+      <label><input type="checkbox" value="claude" checked> Claude</label>
+      <label><input type="checkbox" value="deepseek" checked> DeepSeek</label>
+      <label><input type="checkbox" value="qwen" checked> Qwen</label>
+      <label><input type="checkbox" value="perplexity"> Perplexity</label>
+      <label><input type="checkbox" value="kimi"> Kimi</label>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL PROMPT -->
+  <div class="universal-panel">
+    <textarea id="mainPrompt" rows="3" placeholder="Напиши го главното прашање (ќе оди до сите избрани AI)..."></textarea>
+    <div class="action-buttons">
+      <button class="btn-primary" id="sendToAllBtn">🚀 Испрати до избраните AI</button>
+      <button class="btn-secondary" id="clearAllBtn">🗑️ Исчисти ги одговорите</button>
+      <button class="btn-secondary" id="saveSessionBtn">💾 Зачувај сесија</button>
+      <button class="btn-secondary" id="exportMarkdownBtn">📄 Извези како Markdown</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" data-tab="advisors">🤖 AI Советници</div>
+    <div class="tab" data-tab="consensus">🧠 WPA Консензус</div>
+    <div class="tab" data-tab="archive">📚 Архива</div>
+  </div>
+
+  <!-- AI GRID -->
+  <div id="advisorsTab" class="ai-grid"></div>
+
+  <!-- CONSENSUS PANEL -->
+  <div id="consensusTab" class="consensus-panel">
+    <div class="consensus-header">
+      <div class="consensus-title">🧠 WPA Консензус мотор</div>
+      <button class="btn-secondary" id="generateConsensusBtn">🔄 Генерирај консензус</button>
+    </div>
+    <div id="consensusContent">
+      <p style="color:#8a9bb5;">Прво испрати прашање до AI советниците, потоа генерирај консензус.</p>
+    </div>
+  </div>
+
+  <!-- ARCHIVE PANEL -->
+  <div id="archiveTab" class="archive-panel">
+    <div class="consensus-header">
+      <div class="consensus-title">📚 Зачувани сесии</div>
+      <button class="btn-secondary" id="clearArchiveBtn">🗑️ Исчисти ја архивата</button>
+    </div>
+    <div id="sessionList"></div>
+  </div>
+
+  <div class="footer">
+    🏛️ WPA Institute – Doc. dr Sande Smiljanov | Македонија<br>
+    Еден промпт. Многу AI советници. Еден WPA консензус.<br>
+    ⚡ Симулациски режим – подготвено за вистински API
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // WPA MULTI-AI COMMAND CENTER
+  // Individual Queries per AI Advisor
+  // Professional Prototype – Backend-Ready
+  // ============================================================
+
+  // Provider data
+  const providers = [
+    { id: 'openai', name: 'OpenAI · GPT', role: 'Стратешки синтетизатор', color: '#10a37f', emoji: '📊' },
+    { id: 'gemini', name: 'Google · Gemini', role: 'Мултимодален аналитичар', color: '#4285f4', emoji: '🔮' },
+    { id: 'claude', name: 'Anthropic · Claude', role: 'Аналитичар на долги документи', color: '#7c3aed', emoji: '🏛️' },
+    { id: 'deepseek', name: 'DeepSeek', role: 'Логичар и инженерски критичар', color: '#0066cc', emoji: '🧠' },
+    { id: 'qwen', name: 'Alibaba · Qwen', role: 'Мост Исток-Запад', color: '#ff6b35', emoji: '🐉' },
+    { id: 'perplexity', name: 'Perplexity', role: 'Истражувач и аналитичар на извори', color: '#00c4a0', emoji: '🔍' },
+    { id: 'kimi', name: 'Moonshot · Kimi', role: 'Менаџер на задачи', color: '#f5a623', emoji: '🎯' }
+  ];
+
+  let currentMode = 'balanced';
+  let selectedProviders = ['openai', 'gemini', 'claude', 'deepseek', 'qwen'];
+  let currentResponses = {};
+  let sessions = JSON.parse(localStorage.getItem('wpa_sessions') || '[]');
+  let currentSessionId = null;
+
+  // Role-based system prompts (for simulation)
+  const providerRoles = {
+    openai: 'Стратешки синтетизатор – креираш јасен, структуриран, професионален текст.',
+    gemini: 'Мултимодален аналитичар – даваш широк контекст и перспектива на Google екосистемот.',
+    claude: 'Аналитичар на долги документи – внимателно анализираш ризици, етика и правни нијанси.',
+    deepseek: 'Логичар и инженерски критичар – фокусираш на код, архитектура и логичка конзистентност.',
+    qwen: 'Мост Исток-Запад – даваш кинеска и меѓукултурна перспектива.',
+    perplexity: 'Истражувачки аналитичар – даваш фактички одговори базирани на извори, со цитати.',
+    kimi: 'Менаџер на задачи – ги разложуваш задачите на јасни чекори и работни текови.'
+  };
+
+  // Simulate AI response (replace with real API calls)
+  function simulateAIResponse(providerId, prompt, mode) {
+    const role = providerRoles[providerId] || 'AI Советник';
+    const promptPreview = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
+    
+    const responses = {
+      openai: `📊 **OpenAI · GPT – ${role}**\n\n**Анализа на:** "${promptPreview}"\n\n**Стратешка проценка:**\nОвој предлог е добро структуриран и професионално претставен. Мулти-уредниот пристап е силна предност.\n\n**Препораки:**\n1. Додади повеќе специфични пилот метрики\n2. Вклучи појасен временски рок\n3. Зајакни го Lens Technology аголот\n\n**Доверба:** 87%`,
+      
+      gemini: `🔮 **Gemini – ${role}**\n\n**Промпт:** "${promptPreview}"\n\n**Перспектива на Google екосистемот:**\nМулти-уредната стратегија е добро усогласена со Android/Google сервисите. Размисли за Wear OS интеграција.\n\n**Клучен увид:**\nОбразовната содржина на семејни екрани е недоволно опслужен пазар.\n\n**Доверба:** 82%`,
+      
+      claude: `🏛️ **Claude – ${role}**\n\n**Преглед на документот:**\nПредлогот е добро напишан со добра културна позиција.\n\n**Проценка на ризик:**\n- Правниот/IP дел е соодветно внимателен\n- Детската приватност е добро спомната\n- Размисли за додавање на поексплицитни GDPR белешки\n\n**Доверба:** 91%`,
+      
+      deepseek: `🧠 **DeepSeek – ${role}**\n\n**Логичка анализа:**\n\n\`\`\`\nif (pilot_uspesen && partner_se_obvrze) {\n    deploy_faza_3();\n    proshiri_na_povekje_uredi();\n}\n\`\`\`\n\n**Инженерска проценка:**\nPWA-пристапот е исплатлив. Препорачувам native обвивка за AppGallery.\n\n**Доверба:** 94%`,
+      
+      qwen: `🐉 **Qwen – ${role}**\n\n**Анализа од источна перспектива (从东方视角分析):**\n\n**东西方桥梁分析 (East-West Bridge Analysis):**\n- 教育内容 (Образовна содржина): висока вредност\n- 硬件生态系统 (Хардверски екосистем): многу потенцијален\n\n**Препорака (推荐):**\nГолем потенцијал за кинескиот пазар со соодветна локализација.\n\n**Доверба:** 85%`,
+      
+      perplexity: `🔍 **Perplexity – ${role}**\n\n**Преглед на истражување:**\nСпоред индустриските извештаи, пазарот на образовни игри расте 15% годишно. Фондот на Huawei од $300M за гејминг во Африка покажува посветеност.\n\n**Извори:**\n1. Анализа на пазарот 2025\n2. Годишен извештај на Huawei 2025\n\n**Доверба:** 78% (потребно е живо пребарување за најнови информации)`,
+      
+      kimi: `🎯 **Kimi – ${role}**\n\n**Распоред на задачи:**\n\n1. **Итно (1 недела):** Испрати го предлогот до Huawei/Xiaomi\n2. **2 недела:** Подготви пилот метрики\n3. **3 недела:** Закажи повратни повици\n4. **4 недела:** Почни со техничка интеграција\n\n**Приоритет:** Висок\n**Проценет труд:** 40 часа\n\n**Доверба:** 88%`
+    };
+    
+    return responses[providerId] || `${providerId.toUpperCase()}: Анализа на вашиот промпт.`;
+  }
+
+  // Simulate API call
+  async function callAIProvider(providerId, prompt, mode) {
+    const startTime = Date.now();
+    const delay = 400 + Math.random() * 400;
+    await new Promise(resolve => setTimeout(resolve, delay));
+    const responseText = simulateAIResponse(providerId, prompt, mode);
+    const latency = Date.now() - startTime;
+    const estimatedCost = (responseText.length / 1000) * 0.001;
+    
+    return {
+      provider: providerId,
+      text: responseText,
+      latency,
+      estimatedCost: estimatedCost.toFixed(5),
+      status: 'success'
+    };
+  }
+
+  // Update provider card status
+  function setProviderStatus(providerId, status) {
+    const statusEl = document.getElementById(`status-${providerId}`);
+    if (statusEl) {
+      const statusText = { idle: '● Мирува', loading: '● Размислува', success: '● Успешно', error: '● Грешка' };
+      statusEl.textContent = statusText[status] || '● Мирува';
+      statusEl.className = `ai-status ${status}`;
+    }
+  }
+
+  // Update provider card with response
+  function updateProviderCard(providerId, result) {
+    const responseEl = document.getElementById(`response-${providerId}`);
+    const timeEl = document.getElementById(`time-${providerId}`);
+    const costEl = document.getElementById(`cost-${providerId}`);
+    
+    if (responseEl) {
+      responseEl.innerHTML = `<pre style="white-space: pre-wrap;">${escapeHtml(result.text)}</pre>`;
+    }
+    if (timeEl) timeEl.textContent = result.latency;
+    if (costEl) costEl.textContent = `$${result.estimatedCost}`;
+    
+    setProviderStatus(providerId, 'success');
+    
+    // Store response
+    currentResponses[providerId] = result;
+  }
+
+  // Update provider card with error
+  function updateProviderError(providerId, errorMsg) {
+    const responseEl = document.getElementById(`response-${providerId}`);
+    if (responseEl) {
+      responseEl.innerHTML = `<span style="color:#e74c3c;">❌ Грешка: ${escapeHtml(errorMsg)}</span>`;
+    }
+    setProviderStatus(providerId, 'error');
+  }
+
+  // Ask single AI
+  async function askSingleAI(providerId) {
+    const individualPrompt = document.getElementById(`prompt-${providerId}`)?.value.trim();
+    const mainPrompt = document.getElementById('mainPrompt')?.value.trim();
+    const prompt = individualPrompt || mainPrompt;
+    
+    if (!prompt) {
+      alert('Внеси прашање во полето на AI-то или во главното поле!');
+      return;
+    }
+    
+    setProviderStatus(providerId, 'loading');
+    const responseEl = document.getElementById(`response-${providerId}`);
+    if (responseEl) responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Размислува...</div>';
+    
+    try {
+      const result = await callAIProvider(providerId, prompt, currentMode);
+      updateProviderCard(providerId, result);
+    } catch (error) {
+      updateProviderError(providerId, error.message);
+    }
+  }
+
+  // Send to all selected providers
+  async function sendToSelectedProviders() {
+    const mainPrompt = document.getElementById('mainPrompt')?.value.trim();
+    if (!mainPrompt) {
+      alert('Внеси прашање во главното поле!');
+      return;
+    }
+    
+    // Reset all selected cards
+    for (const providerId of selectedProviders) {
+      setProviderStatus(providerId, 'loading');
+      const responseEl = document.getElementById(`response-${providerId}`);
+      if (responseEl) responseEl.innerHTML = '<div style="animation:pulse 1s infinite;">🤔 Размислува...</div>';
+      const timeEl = document.getElementById(`time-${providerId}`);
+      const costEl = document.getElementById(`cost-${providerId}`);
+      if (timeEl) timeEl.textContent = '—';
+      if (costEl) costEl.textContent = '—';
+    }
+    
+    // Parallel calls
+    const promises = selectedProviders.map(providerId => callAIProvider(providerId, mainPrompt, currentMode));
+    const results = await Promise.allSettled(promises);
+    
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        const { provider, text, latency, estimatedCost } = result.value;
+        currentResponses[provider] = { text, latency, estimatedCost, status: 'success' };
+        
+        const responseEl = document.getElementById(`response-${provider}`);
+        const timeEl = document.getElementById(`time-${provider}`);
+        const costEl = document.getElementById(`cost-${provider}`);
+        
+        if (responseEl) responseEl.innerHTML = `<pre style="white-space: pre-wrap;">${escapeHtml(text)}</pre>`;
+        if (timeEl) timeEl.textContent = latency;
+        if (costEl) costEl.textContent = `$${estimatedCost}`;
+        setProviderStatus(provider, 'success');
+      } else {
+        const providerId = result.reason?.provider || 'unknown';
+        updateProviderError(providerId, result.reason?.message || 'Непозната грешка');
+      }
+    }
+  }
+
+  // Generate consensus
+  function generateConsensus() {
+    const responsesArray = Object.entries(currentResponses);
+    if (responsesArray.length === 0) {
+      alert('Нема одговори. Прво испрати прашање до AI советниците.');
+      return;
+    }
+    
+    const agreements = [
+      `✅ ${responsesArray.length}/${responsesArray.length} AI советници се согласуваат дека пилот-програмата е добар прв чекор`,
+      `✅ Сите препорачуваат техничка евалуација пред целосна имплементација`,
+      `✅ Сите го истакнуваат семејниот пристап како клучен`
+    ];
+    
+    const disagreements = [
+      `⚠️ OpenAI и Gemini имаат различни приоритети за интеграција на уреди`,
+      `⚠️ Нивото на доверба варира: ${responsesArray.map(([p,d]) => `${p}: ${d.estimatedCost}`).join(', ')}`
+    ];
+    
+    const actionPlan = [
+      "📅 Закажи технички преглед со избраните партнери",
+      "📊 Подготви табла за пилот метрики",
+      "📝 Финален правен/IP преглед",
+      "🌍 Почни со локализација за целните пазари"
+    ];
+    
+    const consensusHtml = `
+      <div class="consensus-content">
+        <div class="consensus-card">
+          <h4>🤝 Точки на согласување</h4>
+          <ul style="margin-left: 1rem;">
+            ${agreements.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="consensus-card">
+          <h4>⚠️ Точки на несогласување</h4>
+          <ul style="margin-left: 1rem;">
+            ${disagreements.map(d => `<li style="margin-bottom: 0.5rem;">${d}</li>`).join('')}
+          </ul>
+        </div>
+        <div class="consensus-card">
+          <h4>🎯 Препорачан акционен план</h4>
+          <ol style="margin-left: 1rem;">
+            ${actionPlan.map(a => `<li style="margin-bottom: 0.5rem;">${a}</li>`).join('')}
+          </ol>
+        </div>
+        <div class="consensus-card">
+          <h4>📊 Консензус доверба</h4>
+          <p>Вкупна доверба: <strong>82%</strong></p>
+          <p>💡 <strong>WPA Препорака:</strong> Продолжи со пилот програмата. Силен консензус меѓу AI советниците.</p>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('consensusContent').innerHTML = consensusHtml;
+    document.querySelector('.tab[data-tab="consensus"]').click();
+  }
+
+  // Render all AI cards
+  function renderAICards() {
+    const container = document.getElementById('advisorsTab');
+    if (!container) return;
+    
+    container.innerHTML = providers.map(provider => `
+      <div class="ai-card" data-provider="${provider.id}">
+        <div class="ai-header">
+          <div>
+            <span class="ai-name" style="color: ${provider.color}">${provider.emoji} ${provider.name}</span>
+            <div class="ai-role">${provider.role}</div>
+          </div>
+          <div class="ai-status idle" id="status-${provider.id}">● Мирува</div>
+        </div>
+        <div class="ai-response" id="response-${provider.id}">✨ Чекам прашање...</div>
+        <div class="individual-prompt-area">
+          <textarea id="prompt-${provider.id}" class="individual-prompt" rows="2" placeholder="Прашај само ${provider.name}... (остави празно за да го користи главниот промпт)"></textarea>
+          <button class="ask-single-btn" onclick="askSingleAI('${provider.id}')">🎯 Прашај го само ${provider.name}</button>
+        </div>
+        <div class="ai-footer">
+          <span>⏱️ <span id="time-${provider.id}">—</span> ms</span>
+          <span>💰 <span id="cost-${provider.id}">—</span></span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Save session
+  function saveCurrentSession() {
+    const prompt = document.getElementById('mainPrompt').value.trim();
+    if (!prompt) {
+      alert('Внеси прашање прво.');
+      return;
+    }
+    
+    const session = {
+      id: Date.now().toString(),
+      timestamp: new Date().toLocaleString(),
+      prompt: prompt.substring(0, 200),
+      mode: currentMode,
+      providers: [...selectedProviders],
+      responseCount: Object.keys(currentResponses).length
+    };
+    
+    sessions.unshift(session);
+    localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
+    renderArchive();
+    alert('Сесијата е зачувана!');
+  }
+
+  function renderArchive() {
+    const sessionList = document.getElementById('sessionList');
+    if (!sessionList) return;
+    
+    if (sessions.length === 0) {
+      sessionList.innerHTML = '<p style="color:#8a9bb5;">Нема зачувани сесии.</p>';
+      return;
+    }
+    
+    sessionList.innerHTML = sessions.map(s => `
+      <div class="session-item" onclick="loadSession('${s.id}')">
+        <div style="display: flex; justify-content: space-between;">
+          <strong>${new Date(s.timestamp).toLocaleString()}</strong>
+          <span style="color:#8a9bb5;">${s.mode}</span>
+        </div>
+        <div style="font-size:0.8rem; margin-top: 0.3rem;">"${escapeHtml(s.prompt)}"</div>
+        <div style="font-size:0.7rem; color:#6c7a8a; margin-top: 0.3rem;">${s.responseCount} одговори</div>
+      </div>
+    `).join('');
+  }
+  
+  function loadSession(id) {
+    const session = sessions.find(s => s.id === id);
+    if (session) {
+      document.getElementById('mainPrompt').value = session.prompt;
+      alert(`Сесијата од ${new Date(session.timestamp).toLocaleString()} е вчитана.\nИспрати го промптот за да ги регенерираш одговорите.`);
+    }
+  }
+  
+  function clearArchive() {
+    if (confirm('Избриши ги сите зачувани сесии?')) {
+      sessions = [];
+      localStorage.setItem('wpa_sessions', JSON.stringify(sessions));
+      renderArchive();
+    }
+  }
+  
+  function exportMarkdown() {
+    const prompt = document.getElementById('mainPrompt').value;
+    let markdown = `# WPA Multi-AI Command Center Report\n\n`;
+    markdown += `**Датум:** ${new Date().toLocaleString()}\n`;
+    markdown += `**Режим:** ${currentMode}\n`;
+    markdown += `**Прашање:** ${prompt}\n\n`;
+    markdown += `## Одговори од AI советниците\n\n`;
+    
+    for (const [provider, data] of Object.entries(currentResponses)) {
+      markdown += `### ${provider.toUpperCase()}\n`;
+      markdown += `${data.text}\n\n`;
+      markdown += `*Време: ${data.latency} ms | Цена: $${data.estimatedCost}*\n\n`;
+    }
+    
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `wpa_izvestaj_${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    }).replace(/\n/g, '<br>');
+  }
+  
+  // Tab switching
+  function switchTab(tabName) {
+    const advisorsTab = document.getElementById('advisorsTab');
+    const consensusTab = document.getElementById('consensusTab');
+    const archiveTab = document.getElementById('archiveTab');
+    
+    advisorsTab.style.display = tabName === 'advisors' ? 'grid' : 'none';
+    consensusTab.classList.toggle('active', tabName === 'consensus');
+    archiveTab.classList.toggle('active', tabName === 'archive');
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.tab === tabName);
+    });
+    
+    if (tabName === 'archive') renderArchive();
+  }
+  
+  // Event listeners
+  document.getElementById('sendToAllBtn').addEventListener('click', sendToSelectedProviders);
+  document.getElementById('clearAllBtn').addEventListener('click', () => {
+    if (confirm('Исчисти ги сите одговори?')) {
+      location.reload();
+    }
+  });
+  document.getElementById('saveSessionBtn').addEventListener('click', saveCurrentSession);
+  document.getElementById('exportMarkdownBtn').addEventListener('click', exportMarkdown);
+  document.getElementById('generateConsensusBtn').addEventListener('click', generateConsensus);
+  document.getElementById('clearArchiveBtn').addEventListener('click', clearArchive);
+  
+  // Mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMode = btn.dataset.mode;
+    });
+  });
+  
+  // Provider checkboxes
+  document.querySelectorAll('#providerSelector input').forEach(cb => {
+    cb.addEventListener('change', () => {
+      selectedProviders = Array.from(document.querySelectorAll('#providerSelector input:checked'))
+        .map(cb => cb.value);
+    });
+  });
+  
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  });
+  
+  // Initialize
+  renderAICards();
+  renderArchive();
+  
+  console.log('🏛️ WPA Multi-AI Command Center – Individual Queries Ready');
+</script>
+<script src="wpa-sim-overlay.js" defer></script>
+</body>
+</html>
