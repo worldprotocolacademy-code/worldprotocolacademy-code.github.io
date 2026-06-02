@@ -1,8 +1,8 @@
-# WPA Homepage — legal-positioning cleanup (homepage only)
+# WPA Root Homepage — restore patch (root index.html only)
 
-Small homepage-only overlay patch. Overlay/merge over the existing repository. Do not delete
-other files. NOT a redesign and NOT a full-site replacement. Does not touch partnerships,
-Journal, Institute, WPAWS, Protocol Symbols, Security, Audio Media Engine or wpa-translator.js.
+Root-homepage-only overlay patch. Overlay/merge over the existing repository.
+Do NOT delete other files. NOT a full-site replacement. Does not touch partnerships,
+locales/partnerships, Journal, Institute, WPAWS, Protocol Symbols, Security or wpa-translator.js.
 
 ## Files (overwrite only these)
 - index.html
@@ -10,38 +10,34 @@ Journal, Institute, WPAWS, Protocol Symbols, Security, Audio Media Engine or wpa
 - locales/index/en.json
 - locales/index/locale-status.json
 
-## Latest micro-fix
-- Removed hard-coded English word "credentials" from a Macedonian fallback in index.html.
-  "WPA сертификатите и записи се независни институционални credentials" ->
-  "WPA сертификатите и записите се независни проверливи сертификатски записи".
-  Wording aligned across index.html, mk.json and en.json (EN: "...are independent verifiable
-  certificate records, once the system is activated").
+## What this is
+The correct World Protocol Academy root homepage (the legally cleaned version:
+"платформа во развој" wording, planned access levels, no fixed prices, no active payment
+provider labels, founder = "Programme Director", no academy-as-status / credentials wording).
+Its main <h1> is "World Protocol Academy"; data-wpa-page="index"; full homepage structure
+(hero, platform layers, WPAWS, Protocol Symbols Lab, Professional English, books/papers,
+cultural diplomacy, bibliography, contact). It is NOT the Institutional Partnerships page.
 
-## Carried over (earlier in this cleanup)
-- "academy as legal status" wording -> "независна дигитална образовна и авторска платформа во
-  развој" / "independent digital educational and authorial platform in development"; institute
-  sense -> "институтска програмска рамка" / "institute-style programme framework";
-  "WPA е програмската куќа и дигиталната рамка" / "WPA is the programme home and digital framework".
-- Credentials wording -> "структурирани сертификатски патеки" / "structured certificate
-  pathways", "проверливи сертификатски записи" / "verifiable certificate records", "дигитални
-  записи за завршена програма" / "digital completion records, once the system is activated".
-- Pricing/payment: membership preserved but converted to planned model; fixed prices
-  (€9.99/€19.99) no longer shown as live (paid tiers display "Планирано" / "Planned"); heading
-  "Планирани пристапни нивоа" / "Planned access levels"; CTA "Изрази интерес ->" / "Express
-  interest ->"; planned-payment note (no active payment link); Stripe/PayPal/Visa/Mastercard
-  labels neutralized and the active provider logos removed.
-- Founder title -> "Основач и програмски директор на WPA" / "Founder and Programme Director of WPA".
-- Latin "ja" -> Cyrillic "ja" in Macedonian text.
+## Diagnosis (important)
+At the time of building this patch, BOTH the `main` and `master` branches already contained the
+correct WPA homepage at root index.html (verified, cache-busted: data-wpa-page="index", main
+<h1> "World Protocol Academy", no "Institutional Partnerships" as title/body, no "15 September
+2026 OPC"). So the live root showing Institutional Partnerships is most likely a STALE GitHub
+Pages CDN cache / previous deploy, not a current file error.
 
-## Preserved (unchanged)
-Publication counts, books/papers, WPAWS, Protocol Symbols Lab, Professional English, cultural
-diplomacy, audio-media engine link, bibliography links, contact email; translator
-(data-wpa-page="index", wpa-translator.js?v=3.0, data-i18n keys); the proper noun
-"Ohrid Academy of Humanism"; and existing disclaimers ("not a state diplomatic academy",
-"not a university", "does not award academic degrees").
+Re-committing this patch forces a fresh GitHub Pages deploy that clears the stale cache.
 
-## Validation (all pass)
-No "credentials" in Macedonian text; no "верификувани акредитиви"; no "verified credentials";
-no fixed prices; no active payment-provider labels; no Latin "ja" in Macedonian text; still the
-WPA homepage; MK/EN parity (627 keys); no missing data-i18n keys; no CJK/Hangul; no Bulgarian
-hard sign; no zip-inside-zip.
+## How to deploy
+1. Upload/overwrite these files to the branch GitHub Pages deploys from — to be safe, BOTH
+   `main` and `master`.
+2. Wait for the Pages build to finish, then hard-refresh (Ctrl/Cmd+Shift+R) the root URL.
+3. The root URL should then show the World Protocol Academy homepage.
+
+## Acceptance (all pass)
+- root shows the World Protocol Academy homepage (main <h1> = "World Protocol Academy");
+- root does NOT show Institutional Partnerships as the main title (only a minor in-page section
+  heading links to the partnerships page, which is normal homepage content);
+- root does NOT use the partnerships "WPA Institute" masthead;
+- no old partnerships body in index.html;
+- no "15 September 2026 OPC" text in root;
+- not a full-site replacement (root homepage files only).
