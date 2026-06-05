@@ -105,6 +105,17 @@
       .paper-card, .intro-box, .note-card, .author-responsibility { padding: 20px; }
       .topbar-inner { align-items: flex-start; }
     }
+
+    /* ── SHARE ROW ── */
+    .share-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .share-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(255,255,255,.45);font-family:var(--sans);margin-right:4px}
+    .share-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid rgba(201,168,76,.3);border-radius:3px;color:var(--gold-light);font-size:11px;font-weight:700;font-family:var(--sans);text-decoration:none;background:rgba(255,255,255,.04);transition:background .18s,border-color .18s;cursor:pointer}
+    .share-btn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.6);text-decoration:none}
+    /* ── JUMP MENU ── */
+    .jump-menu{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 0}
+    .jump-menu-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(255,255,255,.4);font-family:var(--sans);align-self:center;margin-right:4px}
+    .jump-link{display:inline-block;padding:5px 13px;border:1px solid rgba(201,168,76,.25);border-radius:20px;color:var(--gold-light);font-size:11px;font-weight:700;font-family:var(--sans);text-decoration:none;background:rgba(255,255,255,.03);transition:background .18s,border-color .18s}
+    .jump-link:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.55);text-decoration:none}
   </style>
 </head>
 
@@ -130,6 +141,23 @@
         <span>Negotiation is optional. Protocol is absolute.</span>
       </div>
     </div>
+      <!-- SHARE BLOCK -->
+      <div class="share-row">
+        <span class="share-label">Сподели ја страницата:</span>
+        <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fworking-papers%2F" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="share-btn" href="mailto:?subject=WPA%20Working%20Papers%20001-006%20%C2%B7%20Zenodo%20DOI%20Index&amp;body=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fworking-papers%2F">Email</a>
+        <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(function(){this.textContent='✓ Копирано'}.bind(this))">Копирај линк</button>
+      </div>
+
+      <!-- JUMP MENU -->
+      <nav class="jump-menu" aria-label="Скокај на дел">
+        <span class="jump-menu-label">Скокај на:</span>
+        <a class="jump-link" href="#series">Серија</a>
+        <a class="jump-link" href="#china-trilogy">China Protocol Trilogy</a>
+        <a class="jump-link" href="#wp006">WP-006</a>
+        <a class="jump-link" href="#author-responsibility">Одговорност</a>
+      </nav>
+
   </section>
 
   <main>
@@ -149,7 +177,7 @@
 
     <section class="papers">
       <div class="container">
-        <div class="section-title">
+        <div class="section-title" id="series">
           <h2>Zenodo DOI Records</h2>
           <span>The Series</span>
         </div>
@@ -245,17 +273,17 @@
     <section class="notes">
       <div class="container">
         <div class="note-card">
-          <h3>Reading Note · The Chinese Protocol Trilogy (WPA 003 → 004 → 005)</h3>
+          <h3 id="china-trilogy">Reading Note · The Chinese Protocol Trilogy (WPA 003 → 004 → 005)</h3>
           <p>WPA 003, 004, and 005 form a coherent corpus of protocol analyses of state visits to the People’s Republic of China. WPA 005 introduces the WPA Protocol Soft Power Index as a measurable and transferable instrument across the series.</p>
           <p><strong>Recommended reading order:</strong> WPA 003 → WPA 004 → WPA 005.</p>
         </div>
         <div class="note-card">
-          <h3>Reading Note · Ceremonial Diplomacy and Soft Power (WPA 006)</h3>
+          <h3 id="wp006">Reading Note · Ceremonial Diplomacy and Soft Power (WPA 006)</h3>
           <p>WPA 006 expands the WPA Working Paper series beyond the China-focused protocol case studies and introduces a transatlantic royal-state visit case study. It examines how ceremonial diplomacy, royal symbolism, presidential protocol, military honours, gift exchange, commemorative rites, and media framing operate as instruments of soft power and sovereign communication.</p>
           <p><strong>Recommended reading connection:</strong> WPA 001 → WPA 002 → WPA 006 for readers interested in ceremonial standards, contingency logic, and high-level state-visit protocol.</p>
         </div>
         <div class="author-responsibility">
-          <h3>Author Responsibility</h3>
+          <h3 id="author-responsibility">Author Responsibility</h3>
           <p>All six papers are issued as WPA Working Papers under the authorship and final editorial responsibility of Sande Smiljanov. None of the papers constitutes a formal peer-reviewed journal article. Each remains subject to correction through future Zenodo versions if factual, bibliographic, or formatting issues are identified.</p>
         </div>
       </div>
@@ -268,6 +296,7 @@
       <p>WPA Working Papers 001-006 · Zenodo DOI Index · Published Records</p>
       <p>© 2026 World Protocol Academy · Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies · Skopje</p>
     </div>
+  <p style="margin-top:10px;font-size:11px;color:rgba(255,255,255,.3);">Последно ажурирано: 5 јуни 2026 · Last updated: 5 June 2026</p>
   </footer>
 </body>
 </html>
