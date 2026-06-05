@@ -583,6 +583,17 @@ footer a{font-size:16px;}
   a{color:black;border:none;}
   .section, .hero, footer{page-break-inside:avoid;}
 }
+
+/* ── SHARE ROW (spec D) ── */
+.share-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:18px}
+.share-label{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(244,236,216,0.45);margin-right:4px}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid rgba(184,137,59,0.35);border-radius:3px;color:var(--gold-bright);font-size:11px;font-weight:700;font-family:'Inter',sans-serif;text-decoration:none;background:rgba(255,255,255,.04);border-bottom:none;transition:background .18s,border-color .18s;cursor:pointer}
+.share-btn:hover{background:rgba(184,137,59,0.14);border-color:rgba(184,137,59,0.65);color:var(--cream)}
+/* ── JUMP MENU (spec E) ── */
+.jump-menu{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+.jump-menu-label{font-family:'Inter',sans-serif;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(244,236,216,0.4);align-self:center;margin-right:4px}
+.jump-link{display:inline-block;padding:5px 13px;border:1px solid rgba(184,137,59,0.25);border-radius:20px;color:var(--gold-bright);font-size:11px;font-weight:700;font-family:'Inter',sans-serif;text-decoration:none;border-bottom:none;background:rgba(255,255,255,.03);transition:background .18s,border-color .18s}
+.jump-link:hover{background:rgba(184,137,59,0.14);border-color:rgba(184,137,59,0.55);color:var(--cream)}
 </style>
 <script type="application/ld+json">
 {
@@ -657,9 +668,13 @@ footer a{font-size:16px;}
 <div class="top-bar">
 <div class="tag">
 <span class="dot"></span>
-<a class="brand-link" data-i18n-html="m001" href="#"><span class="brand-W">W</span> World Protocol Academy · WPA Journal · Skopje, Republic of North Macedonia</a>
+<a class="brand-link" data-i18n-html="m001" href="../index.html"><span class="brand-W">W</span> World Protocol Academy · WPA Journal · Skopje, Republic of North Macedonia</a>
 </div>
 <div class="right" data-i18n="k002">Coming Soon · Phase 0 — Charter</div>
+</div>
+<!-- STATUS BANNER (spec G) -->
+<div style="position:relative;z-index:5;background:rgba(184,137,59,0.12);border:1px solid rgba(184,137,59,0.35);padding:12px 20px;text-align:center;font-family:'Inter',sans-serif;font-size:14px;color:var(--gold-bright);letter-spacing:.02em">
+  🚧 <strong>Во подготовка</strong> — повикот за трудови е отворен. Финалниот број и издавачкиот календар ќе бидат објавени посебно. &nbsp;|&nbsp; <em>In preparation — call for papers open. The final issue and publication calendar will be announced separately.</em>
 </div>
 <!-- ============ HERO ============ -->
 <section class="hero" id="main">
@@ -672,6 +687,22 @@ footer a{font-size:16px;}
     Submission бесплатно. Peer review бесплатно за авторот. Симболична такса само по прифаќање. Достапни waivers. Никакво плаќање за прифаќање. Никакво платено рангирање.
   </p>
 <div class="doctrine" data-i18n="k006">„Преговарањето е опционално. Протоколот е апсолутен.“</div>
+<!-- SHARE BLOCK (spec D) -->
+<div class="share-row">
+  <span class="share-label">Сподели ја страницата:</span>
+  <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fjournal%2F" target="_blank" rel="noopener">LinkedIn</a>
+  <a class="share-btn" href="mailto:?subject=WPA%20Journal%20%C2%B7%20World%20Protocol%20Academy&amp;body=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fjournal%2F">Email</a>
+  <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(function(){this.textContent='✓ Копирано'}.bind(this))">Копирај линк</button>
+</div>
+<!-- JUMP MENU (spec E) -->
+<nav class="jump-menu" aria-label="Скокај на дел">
+  <span class="jump-menu-label">Скокај на:</span>
+  <a class="jump-link" href="#journal-identity">Идентитет</a>
+  <a class="jump-link" href="#journal-scope">Обем</a>
+  <a class="jump-link" href="#journal-fees">Fair Access</a>
+  <a class="jump-link" href="#journal-submission">Поднесување</a>
+  <a class="jump-link" href="#journal-status">Статус</a>
+</nav>
 <!-- v1.1: Hero CTA buttons -->
 <div class="hero-cta">
 <a aria-label="Open Inaugural Issue Flipbook" class="cta-btn cta-btn-primary" data-i18n-html="m003" href="vol-1-issue-1-2026.html">
@@ -702,7 +733,7 @@ footer a{font-size:16px;}
 <!-- ===== Identity ===== -->
 <section class="section">
 <div class="section-head">
-<h2 data-i18n="h001">Идентитет на журналот</h2>
+<h2 data-i18n="h001" id="journal-identity">Идентитет на журналот</h2>
 
 </div>
 <p data-i18n-html="m004"><strong>Полно име:</strong> WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology.</p>
@@ -714,7 +745,7 @@ footer a{font-size:16px;}
 <!-- ===== Scope ===== -->
 <section class="section">
 <div class="section-head">
-<h2 data-i18n="h002">Обем — дисциплини</h2>
+<h2 data-i18n="h002" id="journal-scope">Обем — дисциплини</h2>
 
 </div>
 <ul class="scope">
@@ -750,7 +781,7 @@ footer a{font-size:16px;}
 <!-- ===== Fair Access ===== -->
 <section class="section">
 <div class="section-head">
-<h2 data-i18n="h004">Fair Access — модел на такси</h2>
+<h2 data-i18n="h004" id="journal-fees">Fair Access — модел на такси</h2>
 
 </div>
 <p data-i18n-html="m018">WPA Journal се обврзува на принципот на <strong>достапност без компромис на интегритет</strong>. Submission, peer review и уредничка одлука се бесплатни. Симболична такса само по прифаќање. Достапни waivers за студенти, early-career, и автори од нископриходни региони.</p>
@@ -821,7 +852,7 @@ footer a{font-size:16px;}
 <!-- ===== Peer review model ===== -->
 <section class="section">
 <div class="section-head">
-<h2 data-i18n="h007">Peer review модел</h2>
+<h2 data-i18n="h007" id="journal-submission">Peer review модел</h2>
 
 </div>
 <p data-i18n="k096">WPA Journal користи повеќеслоен peer review:</p>
@@ -853,7 +884,7 @@ footer a{font-size:16px;}
 <!-- ===== Indexing status ===== -->
 <section class="section">
 <div class="section-head">
-<h2 data-i18n="h010">Статус на индексирање</h2>
+<h2 data-i18n="h010" id="journal-status">Статус на индексирање</h2>
 
 </div>
 <p data-i18n-html="m028"><strong>Транспарентен статус:</strong> WPA Journal во моментот е во <strong>Phase 0 — Charter</strong>. WPA <strong>не претендира</strong> на индексирање во Scopus, Web of Science, DOAJ, Google Scholar, Crossref, ORCID, ResearchGate или AD Scientific Index. Сите индексни локации се <em>planned / intended / under development</em>. WPA Journal ќе аплицира за секоја локација кога ќе се исполнат критериумите за подобност.</p>
@@ -923,6 +954,7 @@ footer a{font-size:16px;}
     Уреднички: <a data-i18n="k105" href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> ·
     Медиумски: <a data-i18n="k106" href="mailto:worldprotocolacademy@outlook.com">worldprotocolacademy@outlook.com</a>
 </div>
+<p style="font-size:11px;color:rgba(244,236,216,0.3);margin-top:10px;font-family:'Inter',sans-serif">Последно ажурирано: 5 јуни 2026 · Last updated: 5 June 2026</p>
 </footer>
 <script src="../wpa-translator.js?v=3.0"></script></body>
 </html>
