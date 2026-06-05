@@ -166,6 +166,17 @@ a{color:inherit;text-decoration:none}
 @media(max-width:500px){
   .zenodo-hero-badge strong{font-size:12.5px}
 }
+
+/* ── SHARE ROW ── */
+.share-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px}
+.share-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(255,255,255,.45);font-family:var(--fb);margin-right:4px}
+.share-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1px solid rgba(201,168,76,.3);border-radius:3px;color:var(--goldl);font-size:11px;font-weight:600;font-family:var(--fb);text-decoration:none;background:rgba(255,255,255,.04);transition:background .18s,border-color .18s}
+.share-btn:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.6);text-decoration:none}
+/* ── JUMP MENU ── */
+.jump-menu{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 0}
+.jump-menu-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:rgba(255,255,255,.4);font-family:var(--fb);align-self:center;margin-right:4px}
+.jump-link{display:inline-block;padding:5px 13px;border:1px solid rgba(201,168,76,.25);border-radius:20px;color:var(--goldl);font-size:11px;font-weight:600;font-family:var(--fb);text-decoration:none;background:rgba(255,255,255,.03);transition:background .18s,border-color .18s}
+.jump-link:hover{background:rgba(201,168,76,.12);border-color:rgba(201,168,76,.55);text-decoration:none}
 </style>
 </head>
 <body>
@@ -187,6 +198,31 @@ a{color:inherit;text-decoration:none}
     <p>Founder, World Protocol Academy &nbsp;|&nbsp; Началник на Одделение за протоколарни настани и активности &nbsp;|&nbsp; Assoc. Prof. Dr.</p>
 
     <!-- COUNTERS -->
+    
+    <!-- SHARE BLOCK -->
+    <div class="share-row">
+      <span class="share-label">Сподели ја страницата:</span>
+      <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="share-btn" href="mailto:?subject=WPA%20Официјална%20библиографија&amp;body=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F">Email</a>
+      <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(function(){this.textContent='✓ Копирано'}.bind(this))">Копирај линк</button>
+    </div>
+    <!-- ACADEMIC PROFILES -->
+    <div class="share-row" style="margin-top:10px">
+      <span class="share-label">Академски профили:</span>
+      <a class="share-btn" href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener">ORCID</a>
+      <a class="share-btn" href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" target="_blank" rel="noopener">Google Scholar</a>
+      <a class="share-btn" href="https://www.researchgate.net/profile/Sande-Smiljanov-2" target="_blank" rel="noopener">ResearchGate</a>
+    </div>
+
+    <!-- JUMP MENU -->
+    <nav class="jump-menu" aria-label="Скокај на дел">
+      <span class="jump-menu-label">Скокај на:</span>
+      <a class="jump-link" href="#monographs">Монографии</a>
+      <a class="jump-link" href="#dissertation">Дисертација</a>
+      <a class="jump-link" href="#papers-section">Научни трудови</a>
+      <a class="jump-link" href="#zenodo-working-papers">Zenodo Working Papers</a>
+      <a class="jump-link" href="#academic-profiles">Академски профили</a>
+    </nav>
     <div class="counters">
       <div class="counter">
         <div class="counter-num">25</div>
@@ -221,7 +257,7 @@ a{color:inherit;text-decoration:none}
     <!-- ═══════════════════════════════════════════
          I. МОНОГРАФИИ И ПРИРАЧНИЦИ
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading">I. Монографии и прирачници</h2>
+    <h2 class="part-heading" id="monographs">I. Монографии и прирачници</h2>
 
     <!-- 01 -->
     <div class="bib-entry">
@@ -301,7 +337,7 @@ a{color:inherit;text-decoration:none}
     <!-- ═══════════════════════════════════════════
          II. ДОКТОРСКА ДИСЕРТАЦИЈА
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading">II. Докторска дисертација</h2>
+    <h2 class="part-heading" id="dissertation">II. Докторска дисертација</h2>
 
     <!-- D01 -->
     <div class="bib-entry diss">
@@ -322,7 +358,7 @@ a{color:inherit;text-decoration:none}
     <!-- ═══════════════════════════════════════════
          III. НАУЧНИ ТРУДОВИ И КОНФЕРЕНЦИСКИ ПРИЛОЗИ
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading">III. Научни трудови и конференциски прилози</h2>
+    <h2 class="part-heading" id="papers-section">III. Научни трудови и конференциски прилози</h2>
 
     <!-- T07 -->
     <div class="bib-entry">
@@ -608,7 +644,7 @@ a{color:inherit;text-decoration:none}
     <!-- Separate category · Author-Reviewed Final Releases · NOT counted among the 25 academic publications above -->
     <!-- DOI links use canonical https://doi.org/ format. A temporary DOI-resolver redirect error is an external service issue, not a malformed link. -->
 
-    <h2 class="part-heading">IV. WPA Working Papers · Zenodo DOI записи</h2>
+    <h2 class="part-heading" id="zenodo-working-papers">IV. WPA Working Papers · Zenodo DOI записи</h2>
 
     <div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
       Следните шест working papers се јавно достапни како поединечни Zenodo записи со трајни DOI идентификатори. Тие се издадени како <strong style="color:var(--text)">WPA Working Papers / Author-Reviewed Final Releases</strong> и <strong style="color:var(--text)">не се претставени како формални рецензирани журнални трудови</strong>. Се наведуваат како посебна категорија и не се вклучени во бројката од 25 академски публикации погоре. &nbsp;|&nbsp; <a href="https://worldprotocolacademy-code.github.io/working-papers/" target="_blank" rel="noopener" class="bib-link">Целосен Working Papers DOI индекс →</a>
@@ -754,7 +790,7 @@ a{color:inherit;text-decoration:none}
 
 <!-- ACADEMIC PRESENCE LINKS -->
     <div style="margin-top:48px;padding:28px 30px;background:var(--navy);border-radius:var(--r2);color:var(--white)">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:16px">◆ Академски профили на основачот</div>
+      <div id="academic-profiles" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:16px">◆ Академски профили на основачот</div>
       <div class="profiles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
         <a href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">Google Scholar →</a>
         <a href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">ORCID 0009-0008-3219-394X →</a>
@@ -777,6 +813,7 @@ a{color:inherit;text-decoration:none}
     </div>
     <a href="https://worldprotocolacademy-code.github.io/" class="btn btn-ghost">← Назад кон WPA</a>
   </div>
+  <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;font-family:var(--fb)">Последно ажурирано: 5 јуни 2026 · Last updated: 5 June 2026</p>
 </footer>
 
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
