@@ -30,6 +30,7 @@ ALLOWED_SITEMAP_PATHS = {
     "/passive-revenue.html",
     "/papers.html",
     "/bibliography/",
+    "/partnerships/",
     "/partnerships/index.html",
     "/book1-protocol.html",
     "/book2-conference.html",
@@ -40,6 +41,27 @@ ALLOWED_SITEMAP_PATHS = {
     "/institutional-diplomatic-track.html",
     "/privacy.html",
     "/rights-takedown.html",
+    # Core institutional pages
+    "/institute.html",
+    "/working-papers/",
+    "/journal/",
+    "/journal/index.html",
+    "/journal/vol-1-issue-1-2026.html",
+    # Tools and research pages
+    "/forms/",
+    "/wpa-research-framework.html",
+    "/wpa-global-institutions-master-list.html",
+    "/wpa-global-protocol-diplomacy-benchmark.html",
+    "/protocol-symbols.html",
+    "/multi-ai-command-center.html",
+    "/audio-media-engine.html",
+    # Policy and legal pages
+    "/public-disclaimer.html",
+    "/correction-request.html",
+    # Student Desk Beta -- main public paths only
+    # Individual module placeholder pages are excluded from sitemap
+    # until real doctrinal content replaces placeholder markers.
+    "/student-desk/",
 }
 
 FORBIDDEN_IN_SITEMAP = [
@@ -51,6 +73,7 @@ FORBIDDEN_IN_SITEMAP = [
     "/analytics-guide.html",
     "/monetization-checklist.html",
     "/promotion-playbook.html",
+    "/forms/thanks.html",
 ]
 
 
