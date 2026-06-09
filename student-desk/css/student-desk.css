@@ -1,0 +1,1036 @@
+/* ============================================================
+   World Protocol Academy — Student Desk Beta
+   Core Stylesheet
+   Visual Identity: navy #0a1628, gold #c9a84c, cream #f5f0e6
+   ============================================================ */
+
+/* ---- CSS Custom Properties (Design Tokens) ---- */
+:root {
+  /* Colors */
+  --wpa-navy: #0a1628;
+  --wpa-navy-light: #1a2744;
+  --wpa-gold: #c9a84c;
+  --wpa-gold-light: #d4b85c;
+  --wpa-gold-dark: #8b7355;
+  --wpa-cream: #f5f0e6;
+  --wpa-cream-dark: #e8e0d0;
+  --wpa-cream-darker: #d4c9b0;
+  --wpa-text: #2d2d2d;
+  --wpa-text-secondary: #555555;
+  --wpa-text-muted: #777777;
+  --wpa-white: #ffffff;
+  --wpa-border: #d4c9b0;
+  --wpa-border-light: #e8e0d0;
+  --wpa-danger: #8b0000;
+  --wpa-danger-bg: #fdf5f5;
+  --wpa-warn: #b8860b;
+  --wpa-warn-bg: #fefcf5;
+  --wpa-info: #4a6741;
+  --wpa-info-bg: #f8faf7;
+
+  /* Typography */
+  --font-serif: 'Crimson Pro', 'Noto Serif', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', 'Noto Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Courier New', 'Noto Sans Mono', monospace;
+
+  /* Spacing Scale */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* Layout */
+  --max-width: 1100px;
+  --sidebar-width: 260px;
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(10, 22, 40, 0.08);
+  --shadow-md: 0 2px 8px rgba(10, 22, 40, 0.10);
+  --shadow-lg: 0 4px 16px rgba(10, 22, 40, 0.12);
+}
+
+/* ---- Reset & Base ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--wpa-text);
+  background-color: var(--wpa-cream);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Typography ---- */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--wpa-navy);
+  line-height: 1.25;
+  margin-bottom: var(--space-md);
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.1rem; }
+
+p {
+  margin-bottom: var(--space-md);
+  text-align: justify;
+  text-align-last: left;
+}
+
+a {
+  color: var(--wpa-navy-light);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+a:hover {
+  border-bottom-color: var(--wpa-gold);
+  color: var(--wpa-navy);
+}
+
+strong { font-weight: 600; color: var(--wpa-navy-light); }
+em { font-style: italic; color: var(--wpa-text-secondary); }
+
+/* ---- Lists ---- */
+ul, ol {
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-lg);
+}
+
+li { margin-bottom: var(--space-xs); }
+
+/* ---- Layout: Container ---- */
+.wpa-container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  width: 100%;
+}
+
+.wpa-container-narrow {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  width: 100%;
+}
+
+/* ---- Header ---- */
+.wpa-header {
+  background: var(--wpa-navy);
+  color: var(--wpa-cream);
+  padding: var(--space-sm) 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.wpa-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.wpa-header-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.wpa-header-logo {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wpa-gold);
+  text-decoration: none;
+  border-bottom: none;
+  line-height: 1;
+}
+
+.wpa-header-logo:hover {
+  color: var(--wpa-gold-light);
+  border-bottom: none;
+}
+
+.wpa-header-tagline {
+  font-size: 0.7rem;
+  color: var(--wpa-cream-darker);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.wpa-header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.wpa-header-nav a {
+  color: var(--wpa-cream);
+  font-size: 0.85rem;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  border-bottom: none;
+  transition: background 0.2s ease;
+  white-space: nowrap;
+}
+
+.wpa-header-nav a:hover {
+  background: rgba(201, 168, 76, 0.15);
+  border-bottom: none;
+}
+
+.wpa-header-nav a.active {
+  background: rgba(201, 168, 76, 0.25);
+  color: var(--wpa-gold);
+}
+
+/* Language switcher */
+.wpa-lang-switch {
+  display: flex;
+  gap: var(--space-xs);
+  margin-left: var(--space-sm);
+  padding-left: var(--space-sm);
+  border-left: 1px solid rgba(201, 168, 76, 0.3);
+}
+
+.wpa-lang-switch a {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--wpa-cream-darker);
+  border-bottom: none;
+}
+
+.wpa-lang-switch a:hover {
+  color: var(--wpa-gold);
+  background: rgba(201, 168, 76, 0.1);
+  border-bottom: none;
+}
+
+.wpa-lang-switch a.active {
+  color: var(--wpa-gold);
+  font-weight: 600;
+}
+
+/* Mobile menu toggle */
+.wpa-menu-toggle {
+  display: none;
+  background: none;
+  border: 1px solid var(--wpa-gold);
+  color: var(--wpa-gold);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* ---- Footer ---- */
+.wpa-footer {
+  background: var(--wpa-navy);
+  color: var(--wpa-cream-darker);
+  padding: var(--space-xl) 0 var(--space-lg);
+  margin-top: auto;
+  font-size: 0.85rem;
+}
+
+.wpa-footer-inner {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-xl);
+}
+
+.wpa-footer-brand {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--wpa-gold);
+  margin-bottom: var(--space-sm);
+}
+
+.wpa-footer-founder {
+  color: var(--wpa-cream);
+  font-weight: 500;
+  margin-bottom: var(--space-xs);
+}
+
+.wpa-footer-orcid a {
+  color: var(--wpa-gold);
+  border-bottom: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.wpa-footer-orcid a:hover {
+  text-decoration: underline;
+}
+
+.wpa-footer-links h4 {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--wpa-gold);
+  margin-bottom: var(--space-sm);
+}
+
+.wpa-footer-links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.wpa-footer-links li {
+  margin-bottom: var(--space-xs);
+}
+
+.wpa-footer-links a {
+  color: var(--wpa-cream-darker);
+  font-size: 0.8rem;
+  border-bottom: none;
+}
+
+.wpa-footer-links a:hover {
+  color: var(--wpa-gold);
+}
+
+.wpa-footer-bottom {
+  border-top: 1px solid rgba(201, 168, 76, 0.2);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--wpa-gold-dark);
+}
+
+/* ---- Main Content ---- */
+.wpa-main {
+  flex: 1;
+  padding: var(--space-xl) 0;
+}
+
+/* ---- Hero Section ---- */
+.wpa-hero {
+  background: linear-gradient(135deg, var(--wpa-navy) 0%, var(--wpa-navy-light) 100%);
+  color: var(--wpa-cream);
+  padding: var(--space-3xl) 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.wpa-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(201, 168, 76, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(201, 168, 76, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.wpa-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.wpa-hero-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--wpa-gold);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 2px;
+  margin-bottom: var(--space-lg);
+}
+
+.wpa-hero h1 {
+  font-size: 2.5rem;
+  color: var(--wpa-cream);
+  margin-bottom: var(--space-md);
+}
+
+.wpa-hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--wpa-cream-darker);
+  max-width: 600px;
+  margin: 0 auto var(--space-lg);
+}
+
+/* ---- Cards ---- */
+.wpa-card {
+  background: var(--wpa-white);
+  border: 1px solid var(--wpa-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.wpa-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.wpa-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.wpa-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--wpa-navy);
+}
+
+.wpa-card-subtitle {
+  font-size: 0.9rem;
+  color: var(--wpa-text-secondary);
+  font-style: italic;
+}
+
+/* ---- Module Cards ---- */
+.wpa-module-card {
+  background: var(--wpa-white);
+  border-left: 4px solid var(--wpa-gold);
+  border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-md);
+  transition: box-shadow 0.2s ease;
+}
+
+.wpa-module-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.wpa-module-code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--wpa-gold-dark);
+  margin-bottom: var(--space-xs);
+}
+
+.wpa-module-title {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--wpa-navy);
+  margin-bottom: var(--space-xs);
+}
+
+.wpa-module-title-en {
+  font-size: 0.9rem;
+  color: var(--wpa-text-muted);
+  font-style: italic;
+  margin-bottom: var(--space-sm);
+}
+
+.wpa-module-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  font-size: 0.85rem;
+  color: var(--wpa-text-secondary);
+  margin-top: var(--space-sm);
+}
+
+.wpa-module-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---- Badges ---- */
+.wpa-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.wpa-badge-beginner { background: #e8f5e9; color: #2e7d32; }
+.wpa-badge-intermediate { background: #fff3e0; color: #ef6c00; }
+.wpa-badge-advanced { background: #fce4ec; color: #c62828; }
+.wpa-badge-beta { background: var(--wpa-warn-bg); color: var(--wpa-warn); border: 1px solid var(--wpa-warn); }
+.wpa-badge-preview { background: var(--wpa-danger-bg); color: var(--wpa-danger); border: 1px solid var(--wpa-danger); }
+.wpa-badge-gold { background: rgba(201, 168, 76, 0.15); color: var(--wpa-gold-dark); }
+
+/* ---- Buttons ---- */
+.wpa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--border-radius);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.wpa-btn:active {
+  transform: translateY(0);
+}
+
+.wpa-btn-primary {
+  background: var(--wpa-navy);
+  color: var(--wpa-cream);
+}
+
+.wpa-btn-primary:hover {
+  background: var(--wpa-navy-light);
+  color: var(--wpa-cream);
+  border-bottom: none;
+}
+
+.wpa-btn-secondary {
+  background: transparent;
+  color: var(--wpa-navy);
+  border: 1.5px solid var(--wpa-navy);
+}
+
+.wpa-btn-secondary:hover {
+  background: var(--wpa-navy);
+  color: var(--wpa-cream);
+  border-bottom: none;
+}
+
+.wpa-btn-gold {
+  background: var(--wpa-gold);
+  color: var(--wpa-navy);
+}
+
+.wpa-btn-gold:hover {
+  background: var(--wpa-gold-light);
+  color: var(--wpa-navy);
+  border-bottom: none;
+}
+
+/* ---- Sections ---- */
+.wpa-section {
+  margin-bottom: var(--space-2xl);
+}
+
+.wpa-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--wpa-navy);
+  padding-bottom: var(--space-sm);
+  border-bottom: 2px solid var(--wpa-gold);
+  margin-bottom: var(--space-lg);
+}
+
+/* ---- Grids ---- */
+.wpa-grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.wpa-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.wpa-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.wpa-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ---- Tables ---- */
+.wpa-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-lg);
+  font-size: 0.9rem;
+}
+
+.wpa-table thead {
+  display: table-header-group;
+}
+
+.wpa-table th {
+  background: var(--wpa-cream-dark);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border-top: 2px solid var(--wpa-navy);
+  border-bottom: 1.5px solid var(--wpa-navy);
+}
+
+.wpa-table td {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--wpa-border-light);
+}
+
+.wpa-table tbody tr:last-child td {
+  border-bottom: 2px solid var(--wpa-navy);
+}
+
+/* ---- Callouts / Alerts ---- */
+.wpa-callout {
+  border-left: 4px solid var(--wpa-gold);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--wpa-white);
+  margin-bottom: var(--space-lg);
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.wpa-callout-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  color: var(--wpa-navy);
+  margin-bottom: var(--space-xs);
+}
+
+.wpa-callout-warn { border-left-color: var(--wpa-warn); background: var(--wpa-warn-bg); }
+.wpa-callout-info { border-left-color: var(--wpa-info); background: var(--wpa-info-bg); }
+.wpa-callout-danger { border-left-color: var(--wpa-danger); background: var(--wpa-danger-bg); }
+
+/* ---- Beta Disclaimer Banner ---- */
+.wpa-beta-banner {
+  background: var(--wpa-warn-bg);
+  border: 1px solid var(--wpa-warn);
+  border-radius: var(--border-radius);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.wpa-beta-banner-text {
+  font-size: 0.9rem;
+  color: var(--wpa-warn);
+  margin: 0;
+}
+
+/* ---- Certificate Disclaimer (Strengthened) ---- */
+.wpa-cert-disclaimer {
+  background: var(--wpa-danger-bg);
+  border: 2px solid var(--wpa-danger);
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  text-align: center;
+}
+
+.wpa-cert-disclaimer-title {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--wpa-danger);
+  margin-bottom: var(--space-sm);
+  font-size: 1.1rem;
+}
+
+.wpa-cert-disclaimer-text {
+  color: var(--wpa-danger);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ---- Placeholder Marker ---- */
+.wpa-placeholder {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--wpa-cream),
+    var(--wpa-cream) 10px,
+    #faf8f3 10px,
+    #faf8f3 20px
+  );
+  border: 2px dashed var(--wpa-gold-dark);
+  border-radius: var(--border-radius);
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--wpa-gold-dark);
+  font-style: italic;
+  margin-bottom: var(--space-lg);
+}
+
+.wpa-placeholder-code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--wpa-warn);
+  background: var(--wpa-warn-bg);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ---- Breadcrumb ---- */
+.wpa-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8rem;
+  color: var(--wpa-text-muted);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.wpa-breadcrumb a {
+  color: var(--wpa-navy-light);
+  border-bottom: none;
+}
+
+.wpa-breadcrumb a:hover {
+  color: var(--wpa-gold);
+}
+
+.wpa-breadcrumb-sep {
+  color: var(--wpa-cream-darker);
+}
+
+/* ---- Quiz Interface ---- */
+.wpa-quiz-question {
+  background: var(--wpa-white);
+  border: 1px solid var(--wpa-border);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.wpa-quiz-question-text {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--wpa-navy);
+  margin-bottom: var(--space-md);
+}
+
+.wpa-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.wpa-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--wpa-border-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.wpa-quiz-option:hover {
+  background: var(--wpa-cream);
+  border-color: var(--wpa-gold);
+}
+
+.wpa-quiz-option input[type="radio"] {
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+.wpa-quiz-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--wpa-border-light);
+  border-radius: 3px;
+  margin-bottom: var(--space-lg);
+  overflow: hidden;
+}
+
+.wpa-quiz-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--wpa-gold) 0%, var(--wpa-gold-light) 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ---- Certificate Preview ---- */
+.wpa-cert-preview {
+  background: var(--wpa-white);
+  border: 3px solid var(--wpa-gold);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-3xl);
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.wpa-cert-preview::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid var(--wpa-gold);
+  border-radius: calc(var(--border-radius-lg) - 4px);
+  pointer-events: none;
+}
+
+.wpa-cert-header {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--wpa-gold-dark);
+  margin-bottom: var(--space-lg);
+}
+
+.wpa-cert-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--wpa-navy);
+  margin-bottom: var(--space-lg);
+}
+
+.wpa-cert-body {
+  font-size: 1rem;
+  color: var(--wpa-text);
+  line-height: 1.8;
+  margin-bottom: var(--space-xl);
+}
+
+.wpa-cert-name {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--wpa-navy);
+  border-bottom: 2px solid var(--wpa-gold);
+  display: inline-block;
+  padding: 0 var(--space-md) var(--space-xs);
+  margin: var(--space-sm) 0;
+}
+
+.wpa-cert-founder {
+  margin-top: var(--space-xl);
+  font-size: 0.9rem;
+  color: var(--wpa-text-secondary);
+}
+
+.wpa-cert-seal {
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--wpa-gold);
+  border-radius: 50%;
+  margin: var(--space-lg) auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--wpa-gold);
+}
+
+/* ---- Utility Classes ---- */
+.wpa-text-center { text-align: center; }
+.wpa-text-right { text-align: right; }
+.wpa-text-muted { color: var(--wpa-text-muted); }
+.wpa-mb-0 { margin-bottom: 0; }
+.wpa-mb-sm { margin-bottom: var(--space-sm); }
+.wpa-mb-md { margin-bottom: var(--space-md); }
+.wpa-mb-lg { margin-bottom: var(--space-lg); }
+.wpa-mt-lg { margin-top: var(--space-lg); }
+.wpa-mt-xl { margin-top: var(--space-xl); }
+
+/* ---- Skip Link (Accessibility) ---- */
+.wpa-skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--wpa-navy);
+  color: var(--wpa-cream);
+  padding: var(--space-sm) var(--space-md);
+  z-index: 200;
+  transition: top 0.2s;
+}
+
+.wpa-skip-link:focus {
+  top: 0;
+}
+
+/* ---- Focus Styles (Accessibility) ---- */
+a:focus, button:focus, input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--wpa-gold);
+  outline-offset: 2px;
+}
+
+/* ---- Print Styles ---- */
+@media print {
+  .wpa-header,
+  .wpa-footer,
+  .wpa-beta-banner,
+  .wpa-menu-toggle,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .wpa-cert-preview {
+    border: 3px solid #c9a84c;
+    page-break-inside: avoid;
+  }
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  .wpa-main {
+    padding: 0;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Tablet: 768px - 1023px */
+@media (max-width: 1023px) {
+  .wpa-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .wpa-footer-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .wpa-hero h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Mobile: < 768px */
+@media (max-width: 767px) {
+  :root {
+    --max-width: 100%;
+  }
+
+  .wpa-container,
+  .wpa-container-narrow {
+    padding: 0 var(--space-md);
+  }
+
+  .wpa-grid-2,
+  .wpa-grid-3,
+  .wpa-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .wpa-header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .wpa-header-nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-top: var(--space-sm);
+    border-top: 1px solid rgba(201, 168, 76, 0.2);
+    margin-top: var(--space-sm);
+  }
+
+  .wpa-header-nav.open {
+    display: flex;
+  }
+
+  .wpa-header-nav a {
+    padding: var(--space-sm);
+    width: 100%;
+  }
+
+  .wpa-menu-toggle {
+    display: block;
+    position: absolute;
+    right: var(--space-md);
+    top: var(--space-sm);
+  }
+
+  .wpa-lang-switch {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    margin-top: var(--space-sm);
+  }
+
+  .wpa-hero {
+    padding: var(--space-2xl) 0;
+  }
+
+  .wpa-hero h1 {
+    font-size: 1.6rem;
+  }
+
+  .wpa-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .wpa-footer-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .wpa-cert-preview {
+    padding: var(--space-lg);
+  }
+
+  .wpa-cert-title {
+    font-size: 1.3rem;
+  }
+
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+}
+
+/* Small Mobile: < 480px */
+@media (max-width: 479px) {
+  .wpa-hero h1 {
+    font-size: 1.3rem;
+  }
+
+  .wpa-module-meta {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .wpa-btn {
+    width: 100%;
+    margin-bottom: var(--space-xs);
+  }
+}

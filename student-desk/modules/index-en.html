@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Learning Modules — Student Desk Beta. World Protocol Academy.">
+<meta name="author" content="Assoc. Prof. Dr. Sande Smiljanov">
+<title>Modules — Student Desk Beta</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/student-desk.css">
+</head>
+<body>
+
+<a href="#main-content" class="wpa-skip-link">Skip to content</a>
+
+<header class="wpa-header">
+<div class="wpa-container wpa-header-inner">
+<div class="wpa-header-brand">
+<a href="../index-en.html" class="wpa-header-logo">Student Desk Beta</a>
+<div class="wpa-header-tagline">World Protocol Academy</div>
+</div>
+<button class="wpa-menu-toggle" data-menu-toggle aria-expanded="false" aria-label="Menu">Menu</button>
+<nav class="wpa-header-nav" data-header-nav aria-label="Main navigation">
+<a href="../index-en.html">Home</a>
+<a href="index-en.html" class="active">Modules</a>
+<a href="../quizzes/index.html">Quizzes</a>
+<a href="../certificates/index.html">Certificate</a>
+<a href="../resources/index.html">Resources</a>
+<a href="https://worldprotocolacademy-code.github.io/" target="_blank" rel="noopener">WPA ↗</a>
+<div class="wpa-lang-switch" aria-label="Language selection">
+<a href="index.html" lang="mk">MK</a>
+<a href="index-en.html" class="active" aria-current="page" lang="en">EN</a>
+</div>
+</nav>
+</div>
+</header>
+
+<main class="wpa-main" id="main-content">
+
+<div class="wpa-hero" style="padding: var(--space-2xl) 0;">
+<div class="wpa-container wpa-hero-content">
+<div class="wpa-hero-badge">Student Desk</div>
+<h1>Learning Modules</h1>
+<p class="wpa-hero-subtitle" style="font-style:italic;">Учебни модули</p>
+</div>
+</div>
+
+<div class="wpa-container" style="padding-top: var(--space-xl);">
+
+<div class="wpa-breadcrumb">
+<a href="../index-en.html">Student Desk</a>
+<span class="wpa-breadcrumb-sep">/</span>
+<span>Modules</span>
+</div>
+
+<div class="wpa-beta-banner" role="alert">
+<p class="wpa-beta-banner-text"><strong>Beta</strong> — Content is in preparation. Modules are structural templates without final doctrinal content.</p>
+</div>
+
+<section class="wpa-section">
+<h2 class="wpa-section-title">Module Overview</h2>
+<p class="wpa-text-muted wpa-mb-lg">Eight initial modules for the Beta release, organized by difficulty level.</p>
+
+<!-- Beginner -->
+<h3 style="margin-top: var(--space-xl);">🟢 Beginner</h3>
+<div id="modules-beginner"></div>
+
+<!-- Intermediate -->
+<h3 style="margin-top: var(--space-xl);">🟡 Intermediate</h3>
+<div id="modules-intermediate"></div>
+
+<!-- Advanced -->
+<h3 style="margin-top: var(--space-xl);">🔴 Advanced</h3>
+<div id="modules-advanced"></div>
+
+</section>
+
+<section class="wpa-section">
+<div class="wpa-callout wpa-callout-info">
+<div class="wpa-callout-title">Source Hierarchy</div>
+<p>All modules are based on the approved WPA source hierarchy: books and papers by Sande Smiljanov, doctoral dissertation, WPA Working Papers, Vienna Convention on Diplomatic Relations 1961, and other official sources.</p>
+</div>
+</section>
+
+<section class="wpa-section wpa-text-center">
+<p class="wpa-text-muted">← <a href="../index-en.html">Back to Student Desk</a></p>
+</section>
+
+</div>
+</main>
+
+<footer class="wpa-footer">
+<div class="wpa-container wpa-footer-inner">
+<div>
+<div class="wpa-footer-brand">World Protocol Academy</div>
+<div class="wpa-footer-founder">Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</div>
+<div class="wpa-footer-founder">Founder: Assoc. Prof. Dr. Sande Smiljanov</div>
+<div class="wpa-footer-orcid">
+<a href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener">ORCID: 0009-0008-3219-394X ↗</a>
+</div>
+</div>
+<div class="wpa-footer-links">
+<h4>Student Desk</h4>
+<ul>
+<li><a href="index-en.html">Modules</a></li>
+<li><a href="../quizzes/index.html">Quizzes</a></li>
+<li><a href="../certificates/index.html">Certificate</a></li>
+<li><a href="../resources/index.html">Resources</a></li>
+</ul>
+</div>
+<div class="wpa-footer-links">
+<h4>WPA</h4>
+<ul>
+<li><a href="https://worldprotocolacademy-code.github.io/" target="_blank" rel="noopener">WPA Home ↗</a></li>
+<li><a href="https://worldprotocolacademy-code.github.io/bibliography/" target="_blank" rel="noopener">Bibliography ↗</a></li>
+<li><a href="https://worldprotocolacademy-code.github.io/papers.html" target="_blank" rel="noopener">Working Papers ↗</a></li>
+</ul>
+</div>
+</div>
+<div class="wpa-container wpa-footer-bottom">
+<p>© 2026 World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies. Student Desk Beta.</p>
+</div>
+</footer>
+
+<script src="../js/student-desk.js"></script>
+<script>
+(function() {
+  fetch('../data/modules-en.json?v=' + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.modules) return;
+      ['beginner','intermediate','advanced'].forEach(function(level) {
+        var container = document.getElementById('modules-' + level);
+        if (!container) return;
+        var mods = data.modules.filter(function(m) { return m.level === level; });
+        var html = '<div class="wpa-grid wpa-grid-2">';
+        mods.forEach(function(m) {
+          var levelBadge = level === 'beginner' ? 'wpa-badge-beginner' :
+                           level === 'intermediate' ? 'wpa-badge-intermediate' : 'wpa-badge-advanced';
+          var levelText = level.charAt(0).toUpperCase() + level.slice(1);
+          html += '<div class="wpa-module-card">' +
+            '<div class="wpa-module-code">MODULE ' + wpaEscapeHtml(m.module_id) + '</div>' +
+            '<div class="wpa-module-title">' + wpaEscapeHtml(m.title_en) + '</div>' +
+            '<div class="wpa-module-title-en">' + wpaEscapeHtml(m.title_mk) + '</div>' +
+            '<p style="font-size:0.9rem; color:var(--wpa-text-secondary); margin-bottom:0.5rem;">' + wpaEscapeHtml(m.description) + '</p>' +
+            '<div class="wpa-module-meta">' +
+            '<span class="wpa-badge ' + levelBadge + '">' + wpaEscapeHtml(levelText) + '</span>' +
+            '<span>⏱ ' + m.estimated_time + ' min</span>' +
+            '<span><a href="' + wpaEscapeHtml(m.page) + '">Open →</a></span>' +
+            '</div></div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      });
+    })
+    .catch(function() {
+      ['beginner','intermediate','advanced'].forEach(function(level) {
+        var container = document.getElementById('modules-' + level);
+        if (container) container.innerHTML = '<p class="wpa-text-muted">Modules are not available at the moment.</p>';
+      });
+    });
+})();
+</script>
+
+</body>
+</html>
