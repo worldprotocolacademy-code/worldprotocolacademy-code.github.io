@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="WPA Intelligence Center — Центар за стратешка институционална анализа, јавни извори и протоколарна интелигенција. World Protocol Academy.">
+<meta name="keywords" content="протоколарна интелигенција, институционална анализа, јавни извори, дипломатија, протокол, World Protocol Academy">
+<title>WPA Intelligence Center | World Protocol Academy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --navy: #0a1628;
+  --navy-deep: #070f1d;
+  --navy-mid: #0f1f38;
+  --navy-light: #162544;
+  --gold: #c9a227;
+  --gold-bright: #e0b83a;
+  --gold-dim: rgba(201,162,39,0.12);
+  --gold-glow: rgba(201,162,39,0.25);
+  --parchment: #f5f1e8;
+  --parchment-warm: #faf6ed;
+  --text-dark: #1a1a2e;
+  --text-light: #f5f1e8;
+  --text-muted: #7a7a8a;
+  --text-muted-light: rgba(245,241,232,0.55);
+  --text-muted-dark: rgba(26,26,46,0.55);
+  --border: rgba(201,162,39,0.25);
+  --border-light: rgba(201,162,39,0.12);
+  --caution: rgba(201,162,39,0.08);
+  --success: #10b981;
+  --danger: #ef4444;
+  --radius: 10px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --shadow-soft: 0 2px 12px rgba(0,0,0,0.08);
+  --font-serif: 'Georgia', 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--parchment);
+  color: var(--text-dark);
+  line-height: 1.7;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.container-narrow { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+/* ===== NAV ===== */
+.nav {
+  background: var(--navy);
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.nav-brand { display: flex; align-items: center; gap: 0.6rem; }
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-decoration: none;
+}
+.nav-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted-light);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--text-muted-light);
+  text-decoration: none;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--gold);
+  border-color: var(--border);
+  background: var(--gold-dim);
+}
+
+/* ===== JUMP MENU ===== */
+.jump-menu {
+  background: var(--navy-mid);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0.5rem 0;
+}
+.jump-menu-inner {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.jump-menu a {
+  color: var(--text-muted-light);
+  text-decoration: none;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.jump-menu a:hover { color: var(--gold); background: var(--gold-dim); }
+
+/* ===== HERO ===== */
+.hero {
+  background: var(--navy);
+  padding: 4rem 0 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: 2.6rem;
+  color: var(--parchment);
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 0.75rem;
+  line-height: 1.2;
+}
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted-light);
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+.hero-lead {
+  font-size: 0.95rem;
+  color: var(--text-muted-light);
+  max-width: 720px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+.hero-doctrine {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--gold);
+  font-style: italic;
+  max-width: 680px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+  padding: 1.25rem;
+  border-left: 3px solid var(--gold);
+  border-right: 3px solid var(--gold);
+  background: var(--gold-dim);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+.hero-ctas a {
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 0.6rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: all 0.25s;
+  font-weight: 500;
+}
+.hero-ctas a:hover {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+}
+.hero-caution {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--text-muted-light);
+  font-style: italic;
+}
+.hero-caution strong { color: var(--parchment); font-weight: 600; }
+
+/* ===== SECTIONS ===== */
+.section { padding: 3.5rem 0; }
+.section-dark { background: var(--navy); color: var(--text-light); }
+.section-dark-alt { background: var(--navy-mid); color: var(--text-light); }
+.section-warm { background: var(--parchment-warm); }
+
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.5px;
+}
+.section-dark .section-title, .section-dark-alt .section-title { color: var(--gold); }
+.section-warm .section-title { color: var(--navy); }
+
+.section-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  font-style: italic;
+}
+.section-dark .section-subtitle, .section-dark-alt .section-subtitle { color: var(--text-muted-light); }
+
+.section-desc {
+  font-size: 0.95rem;
+  color: var(--text-muted-dark);
+  margin-bottom: 2rem;
+  line-height: 1.7;
+  max-width: 800px;
+}
+.section-dark .section-desc, .section-dark-alt .section-desc { color: var(--text-muted-light); }
+
+.section-rule {
+  width: 50px;
+  height: 2px;
+  background: var(--gold);
+  margin-bottom: 2rem;
+}
+
+/* ===== CARDS ===== */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+.card-grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.card {
+  background: var(--navy-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  transition: all 0.25s;
+}
+.card:hover { border-color: var(--gold); box-shadow: var(--shadow); transform: translateY(-2px); }
+.card-warm { background: #fff; border: 1px solid rgba(201,162,39,0.2); }
+.card-warm:hover { border-color: var(--gold); box-shadow: var(--shadow-soft); }
+.card-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--parchment);
+  margin-bottom: 0.6rem;
+  line-height: 1.3;
+}
+.card-warm .card-title { color: var(--navy); }
+.card-text {
+  font-size: 0.82rem;
+  color: var(--text-muted-light);
+  line-height: 1.65;
+}
+.card-warm .card-text { color: var(--text-muted); }
+
+/* ===== CAUTION BOX ===== */
+.caution-box {
+  border-left: 4px solid var(--gold);
+  background: var(--caution);
+  padding: 1.5rem 1.75rem;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 1.5rem 0;
+}
+.caution-box-dark {
+  background: rgba(201,162,39,0.06);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--gold);
+}
+.caution-title {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.caution-list { list-style: none; padding: 0; }
+.caution-list li {
+  padding: 0.4rem 0;
+  padding-left: 1.5rem;
+  position: relative;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+.section-dark .caution-list li, .section-dark-alt .caution-list li { color: var(--text-muted-light); }
+.caution-list li::before {
+  content: '\2014';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* ===== PIPELINE ===== */
+.pipeline { display: flex; flex-wrap: wrap; gap: 0; margin: 2rem 0; position: relative; }
+.pipeline-step {
+  flex: 1 1 120px;
+  text-align: center;
+  padding: 1rem 0.5rem;
+  position: relative;
+}
+.pipeline-step::after {
+  content: '';
+  position: absolute;
+  top: 2rem;
+  right: -10px;
+  width: 20px;
+  height: 1px;
+  background: var(--border);
+  z-index: 1;
+}
+.pipeline-step:last-child::after { display: none; }
+.pipeline-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+  background: var(--navy);
+}
+.pipeline-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--parchment);
+  margin-bottom: 0.2rem;
+  line-height: 1.3;
+}
+.pipeline-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted-light);
+  font-style: italic;
+}
+
+/* ===== SOURCE HIERARCHY ===== */
+.source-level { display: flex; gap: 1rem; align-items: flex-start; padding: 1.25rem 0; border-bottom: 1px solid var(--border-light); }
+.source-level:last-child { border-bottom: none; }
+.source-badge {
+  flex-shrink: 0;
+  width: 80px;
+  text-align: center;
+  padding: 0.4rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.source-badge-1 { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+.source-badge-2 { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+.source-badge-3 { background: rgba(201,162,39,0.15); color: var(--gold); border: 1px solid var(--border); }
+.source-badge-4 { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+.source-badge-5 { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
+.source-content h4 { font-size: 0.9rem; font-weight: 600; color: var(--parchment); margin-bottom: 0.25rem; }
+.section-warm .source-content h4 { color: var(--navy); }
+.source-content p { font-size: 0.82rem; color: var(--text-muted-light); line-height: 1.6; }
+.section-warm .source-content p { color: var(--text-muted); }
+
+/* ===== PRINCIPLE ROW ===== */
+.principle-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.principle-item { display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; border-radius: var(--radius); background: rgba(201,162,39,0.04); border: 1px solid var(--border-light); }
+.principle-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--gold-dim); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 0.85rem;
+}
+.principle-text { font-size: 0.82rem; color: var(--text-muted-light); line-height: 1.6; }
+.section-warm .principle-text { color: var(--text-muted); }
+
+/* ===== TAG ===== */
+.tag { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 3px; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; border: 1px solid var(--border); color: var(--gold); background: var(--gold-dim); }
+
+/* ===== LINKS ===== */
+.link-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+.link-row a {
+  color: var(--gold); text-decoration: none; font-size: 0.8rem;
+  padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: var(--radius);
+  transition: all 0.2s; font-weight: 500;
+}
+.link-row a:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+/* ===== BILINGUAL ===== */
+.lang-en { display: block; color: var(--text-muted); font-style: italic; margin-top: 0.2rem; font-size: 0.88em; line-height: 1.5; }
+.section-dark .lang-en, .section-dark-alt .lang-en { color: var(--text-muted-light); opacity: 0.7; }
+
+/* ===== FOOTER ===== */
+.footer { background: var(--navy-deep); padding: 2.5rem 0; border-top: 1px solid var(--border); text-align: center; }
+.footer-brand { font-family: var(--font-serif); font-size: 1.1rem; color: var(--gold); letter-spacing: 1px; margin-bottom: 0.5rem; }
+.footer-copy { font-size: 0.75rem; color: var(--text-muted-light); margin-top: 0.75rem; line-height: 1.6; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
+.footer-links a { color: var(--text-muted-light); text-decoration: none; font-size: 0.7rem; transition: color 0.2s; }
+.footer-links a:hover { color: var(--gold); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero { padding: 2.5rem 0 2rem; }
+  .hero h1 { font-size: 1.7rem; }
+  .hero-subtitle { font-size: 0.9rem; }
+  .hero-doctrine { font-size: 0.95rem; padding: 1rem; }
+  .hero-ctas { gap: 0.5rem; }
+  .hero-ctas a { font-size: 0.7rem; padding: 0.5rem 0.9rem; }
+  .section { padding: 2rem 0; }
+  .section-title { font-size: 1.3rem; }
+  .nav-inner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .nav-links { gap: 0.15rem; }
+  .nav-links a { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+  .jump-menu-inner { justify-content: flex-start; gap: 0.15rem; }
+  .jump-menu a { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
+  .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+  .pipeline-step { flex: 1 1 100%; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; }
+  .pipeline-step:last-child { border-bottom: none; }
+  .pipeline-step::after { display: none; }
+  .source-level { flex-direction: column; gap: 0.5rem; }
+  .source-badge { width: auto; display: inline-block; }
+  .principle-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.4rem; }
+  .container, .container-narrow { padding: 0 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <a href="/" class="nav-logo">WPA INSTITUTE</a>
+        <span class="nav-sub">Intelligence Center</span>
+      </div>
+      <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="institute.html">Institute</a>
+        <a href="intelligence-center.html" class="active">Intelligence</a>
+        <a href="wpa-global-institutions-master-list.html">Master List</a>
+        <a href="working-papers/">Working Papers</a>
+        <a href="public-disclaimer.html">Trust</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== JUMP MENU ===== -->
+<div class="jump-menu">
+  <div class="container">
+    <div class="jump-menu-inner">
+      <a href="#cel">Цел</a>
+      <a href="#granici">Граници</a>
+      <a href="#biroa">Бироа</a>
+      <a href="#ciklus">Циклус</a>
+      <a href="#izvori">Извори</a>
+      <a href="#proizvodi">Производи</a>
+      <a href="#etika">Етика</a>
+      <a href="#ispravka">Исправка</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SECTION 1 — HERO ===== -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-badge">World Protocol Academy</div>
+    <h1>WPA Intelligence Center</h1>
+    <p class="hero-subtitle">
+      Центар за стратешка институционална анализа, јавни извори и протоколарна интелигенција
+      <span class="lang-en">Center for Strategic Institutional Analysis, Public Sources and Protocol Intelligence</span>
+    </p>
+    <p class="hero-lead">
+      WPA Intelligence Center е аналитичка рамка за следење, проверка и толкување на јавни институционални сигнали во областа на протоколот, дипломатијата, јавната комуникација, безбедносните студии и институционалната репутација.
+      <span class="lang-en">The WPA Intelligence Center is an analytical framework for monitoring, verifying and interpreting public institutional signals in protocol, diplomacy, public communication, security studies and institutional reputation.</span>
+    </p>
+    <div class="hero-doctrine">
+      &bdquo;Јавните извори стануваат докази. Доказите стануваат анализа. Анализата станува институционална ориентација.&ldquo;
+      <span class="lang-en">&bdquo;Public sources become evidence. Evidence becomes analysis. Analysis becomes institutional orientation.&ldquo;</span>
+    </div>
+    <div class="hero-ctas">
+      <a href="#cel">Методологија</a>
+      <a href="#biroa">Аналитички бироа</a>
+      <a href="#ispravka">Исправка и доверба</a>
+      <a href="wpa-global-institutions-master-list.html">Master List</a>
+      <a href="working-papers/">WPA работни трудови</a>
+    </div>
+    <div class="hero-caution">
+      <strong>Не следиме луѓе. Следиме јавни институционални сигнали.</strong>
+      <span class="lang-en" style="display:inline;margin-left:0.5rem;">We do not track people. We monitor public institutional signals.</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== SECTION 2 — ШТО Е ОВОЈ ЦЕНТАР ===== -->
+<section id="cel" class="section section-warm">
+  <div class="container">
+    <h2 class="section-title">Што е WPA Intelligence Center</h2>
+    <p class="section-subtitle">What the WPA Intelligence Center is</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      WPA Intelligence Center е јавна, академска и институционална аналитичка рамка. Таа не собира тајни податоци и не врши надзор. Центарот користи јавни извори, документи, официјални објави, институционални страници, медиумски записи, научни публикации и проверливи дигитални траги за да создаде структурирана анализа.
+      <span class="lang-en">The WPA Intelligence Center is a public, academic and institutional analytical framework. It does not collect secret data and does not conduct surveillance. The Center uses public sources, documents, official releases, institutional pages, media records, scholarly publications and verifiable digital traces to produce structured analysis.</span>
+    </p>
+
+    <div class="principle-row">
+      <div class="principle-item">
+        <div class="principle-icon">1</div>
+        <div class="principle-text">
+          <strong style="color:var(--navy);">Јавни извори</strong> — Се користат само јавни, проверливи и атрибуирани извори.
+          <span class="lang-en">Public sources — Only public, verifiable and attributed sources are used.</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-icon">2</div>
+        <div class="principle-text">
+          <strong style="color:var(--navy);">Човечка ревизија</strong> — AI може да помогне во обработка, но конечната аналитичка одговорност останува човечка.
+          <span class="lang-en">Human review — AI may assist processing, but final analytical responsibility remains human.</span>
+        </div>
+      </div>
+      <div class="principle-item">
+        <div class="principle-icon">3</div>
+        <div class="principle-text">
+          <strong style="color:var(--navy);">Право на исправка</strong> — Институциите и лицата имаат право да побараат исправка на јавни податоци.
+          <span class="lang-en">right of correction — Institutions and individuals have the right to request correction of public data.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="caution-box" style="margin-top:2rem;">
+      <p style="font-size:0.85rem;color:var(--text-dark);line-height:1.7;">
+        <strong style="color:var(--navy);">Не работиме со тајни извори. Работиме со проверливи јавни извори.</strong>
+        <span class="lang-en">We do not work with secret sources. We work with verifiable public sources.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3 — ШТО НЕ Е ОВОЈ ЦЕНТАР ===== -->
+<section id="granici" class="section section-dark">
+  <div class="container">
+    <h2 class="section-title">Што не е овој центар</h2>
+    <p class="section-subtitle">What this center is not</p>
+    <div class="section-rule"></div>
+
+    <div class="caution-box caution-box-dark">
+      <div class="caution-title">Правни и оперативни граници / Legal &amp; Operational Boundaries</div>
+      <ul class="caution-list">
+        <li>не е државна разузнавачка служба; <span class="lang-en">not a state intelligence service;</span></li>
+        <li>не е орган за безбедносна истрага; <span class="lang-en">not a security investigation body;</span></li>
+        <li>не врши надзор врз приватни лица; <span class="lang-en">does not surveil private individuals;</span></li>
+        <li>не собира класифицирани или тајни информации; <span class="lang-en">does not collect classified or secret information;</span></li>
+        <li>не користи неовластен дигитален пристап, следење, прикриени извори или приватни бази; <span class="lang-en">does not use cyber intrusion, tracking, covert sources or private databases;</span></li>
+        <li>не носи правни пресуди; <span class="lang-en">does not issue legal judgments;</span></li>
+        <li>не претставува државна акредитација; <span class="lang-en">does not constitute state accreditation;</span></li>
+        <li>не претставува официјално признавање или лиценцирање; <span class="lang-en">does not constitute official recognition or licensing;</span></li>
+        <li>не е конечна светска ранг-листа. <span class="lang-en">not a final global ranking.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4 — АНАЛИТИЧКИ БИРОА ===== -->
+<section id="biroa" class="section section-dark-alt">
+  <div class="container">
+    <h2 class="section-title">Аналитички бироа</h2>
+    <p class="section-subtitle">Intelligence Desks</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Седум специјализирани аналитички бироа покриваат различни домени на институционална интелигенција. Секој биро работи во рамки на јавни извори и произведува аналитички излези базирани на докази.
+      <span class="lang-en">Seven specialized analytical desks cover distinct institutional intelligence domains. Each desk operates within public-source boundaries and produces evidence-based analytical outputs.</span>
+    </p>
+
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="card-num">I</div>
+        <div class="card-title">Биро за протоколарна интелигенција<br><span class="lang-en">Protocol Event Intelligence Desk</span></div>
+        <div class="card-text">
+          Следи јавни протоколарни настани, државни посети, церемонии, пречек, ред на предимство, симболи, говори, визуелна дипломатска режија и протоколарни гафови.
+          <span class="lang-en">Monitors public protocol events, state visits, ceremonies, welcomes, order of precedence, symbols, speeches, visual diplomatic staging and protocol failures.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">II</div>
+        <div class="card-title">Биро за дипломатски и институционални сигнали<br><span class="lang-en">Diplomatic &amp; Institutional Signals Desk</span></div>
+        <div class="card-text">
+          Ги следи јавните дипломатски сигнали: официјални изјави, посети, фотографии, соопштенија, агенди, учество на самити и институционален јазик.
+          <span class="lang-en">Tracks public diplomatic signals: official statements, visits, photographs, releases, agendas, summit participation and institutional language.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">III</div>
+        <div class="card-title">Монитор на глобални институции<br><span class="lang-en">Global Institutions Monitor</span></div>
+        <div class="card-text">
+          Ја поддржува Master List REV2 логиката преку јавна проверка на институции, академии, универзитети, центри, програми и меѓународни организации.
+          <span class="lang-en">Supports the Master List REV2 logic through public verification of institutions, academies, universities, centers, programmes and international organizations.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">IV</div>
+        <div class="card-title">Биро за јавна комуникација и репутација<br><span class="lang-en">Public Communication &amp; Reputation Desk</span></div>
+        <div class="card-text">
+          Следи јавна комуникација, медиумска видливост, институционална јасност, репутациски ризици, јавни реакции и комуникациски пропусти.
+          <span class="lang-en">Monitors public communication, media visibility, institutional clarity, reputational risks, public reactions and communication failures.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">V</div>
+        <div class="card-title">Биро за безбедносна култура и ризик<br><span class="lang-en">Security Culture &amp; Event Risk Desk</span></div>
+        <div class="card-text">
+          Не врши безбедносни истраги. Анализира јавни индикатори поврзани со организација на настани, безбедносна култура, ризична комуникација и кризна подготвеност.
+          <span class="lang-en">Does not conduct security investigations. Analyzes public indicators related to event organization, security culture, risk communication and crisis readiness.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">VI</div>
+        <div class="card-title">Биро за AI, потекло и цитирачки интегритет<br><span class="lang-en">AI, Provenance &amp; Citation Integrity Desk</span></div>
+        <div class="card-text">
+          Следи AI транспарентност, потекло на содржини, цитирачки интегритет, DOI/ORCID/ISSN/ISBN логика, предаторски практики и академска проверливост.
+          <span class="lang-en">Tracks AI transparency, content provenance, citation integrity, DOI/ORCID/ISSN/ISBN logic, predatory practices and academic verifiability.</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-num">VII</div>
+        <div class="card-title">Биро за исправка, доверба и етика<br><span class="lang-en">Correction, Trust &amp; Ethics Desk</span></div>
+        <div class="card-text">
+          Го поврзува аналитичкиот процес со правото на исправка, јавна напомена, етичка проверка, takedown барања и методолошка транспарентност.
+          <span class="lang-en">Connects the analytical process with correction rights, public disclaimers, ethical review, takedown requests and methodological transparency.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5 — АНАЛИТИЧКИ ЦИКЛУС ===== -->
+<section id="ciklus" class="section section-warm">
+  <div class="container">
+    <h2 class="section-title">Аналитички циклус</h2>
+    <p class="section-subtitle">Analytical Cycle</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      Секој аналитички производ мора да може да се врати до извор, категорија, доказ, методолошка белешка и статус на проверка.
+      <span class="lang-en">Every analytical product must be traceable back to a source, category, evidence item, methodological note and verification status.</span>
+    </p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-num">1</div>
+        <div class="pipeline-title">Собирање јавни извори</div>
+        <div class="pipeline-desc">Public source collection</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">2</div>
+        <div class="pipeline-title">Проверка на извори</div>
+        <div class="pipeline-desc">Source verification</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">3</div>
+        <div class="pipeline-title">Класификација на докази</div>
+        <div class="pipeline-desc">Evidence classification</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">4</div>
+        <div class="pipeline-title">Контекстуална анализа</div>
+        <div class="pipeline-desc">Contextual analysis</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">5</div>
+        <div class="pipeline-title">Толкување на ризици и сигнали</div>
+        <div class="pipeline-desc">Risk and signal interpretation</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">6</div>
+        <div class="pipeline-title">Човечка ревизија</div>
+        <div class="pipeline-desc">Human review</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">7</div>
+        <div class="pipeline-title">Исправка и ажурирање</div>
+        <div class="pipeline-desc">Correction and update</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6 — ХИЕРАРХИЈА НА ИЗВОРИ ===== -->
+<section id="izvori" class="section section-dark">
+  <div class="container">
+    <h2 class="section-title">Хиерархија на извори</h2>
+    <p class="section-subtitle">Source Hierarchy</p>
+    <div class="section-rule"></div>
+
+    <div class="source-level">
+      <div class="source-badge source-badge-1">Ниво 1</div>
+      <div class="source-content">
+        <h4>Официјални извори <span class="lang-en">Official sources</span></h4>
+        <p>
+          Официјални институционални веб-страници, владини соопштенија, меѓународни организации, академски институции, Zenodo/DOI записи.
+          <span class="lang-en">Official institutional websites, government releases, international organizations, academic institutions, Zenodo/DOI records.</span>
+        </p>
+      </div>
+    </div>
+    <div class="source-level">
+      <div class="source-badge source-badge-2">Ниво 2</div>
+      <div class="source-content">
+        <h4>Академски и професионални извори <span class="lang-en">Academic and professional sources</span></h4>
+        <p>
+          Книги, научни трудови, журнали, конференциски материјали, професионални стандарди.
+          <span class="lang-en">Books, scholarly papers, journals, conference materials, professional standards.</span>
+        </p>
+      </div>
+    </div>
+    <div class="source-level">
+      <div class="source-badge source-badge-3">Ниво 3</div>
+      <div class="source-content">
+        <h4>Реномирани медиуми и агенции <span class="lang-en">Reputable media and wire services</span></h4>
+        <p>
+          Реномирани медиуми, агенциски извори, проверливи медиумски архиви.
+          <span class="lang-en">Reputable media, wire services, verifiable media archives.</span>
+        </p>
+      </div>
+    </div>
+    <div class="source-level">
+      <div class="source-badge source-badge-4">Ниво 4</div>
+      <div class="source-content">
+        <h4>Јавни дигитални траги <span class="lang-en">Public digital traces</span></h4>
+        <p>
+          Јавни фотографии, видеа, програми, агенди, јавни профили, архивирани страници.
+          <span class="lang-en">Public photographs, videos, programmes, agendas, public profiles, archived pages.</span>
+        </p>
+      </div>
+    </div>
+    <div class="source-level">
+      <div class="source-badge source-badge-5">Ниво 5</div>
+      <div class="source-content">
+        <h4>Непроверени / известени тврдења <span class="lang-en">Unverified / reported claims</span></h4>
+        <p>
+          Извори со ограничена проверливост, означени како reported/unverified, без употреба како финален доказ.
+          <span class="lang-en">Sources with limited verifiability, marked as reported/unverified and not used as final evidence.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7 — АНАЛИТИЧКИ ПРОИЗВОДИ ===== -->
+<section id="proizvodi" class="section section-warm">
+  <div class="container">
+    <h2 class="section-title">Аналитички производи</h2>
+    <p class="section-subtitle">Analytical Outputs</p>
+    <div class="section-rule"></div>
+
+    <div class="card-grid card-grid-3">
+      <div class="card card-warm">
+        <div class="card-title">Протоколарни анализи на настани<br><span class="lang-en">Protocol Event Briefs</span></div>
+        <div class="card-text">
+          Кратки анализи на јавни протоколарни настани, церемонии и дипломатски сигнали.
+          <span class="lang-en">Short analyses of public protocol events, ceremonies and diplomatic signals.</span>
+        </div>
+      </div>
+      <div class="card card-warm">
+        <div class="card-title">Институционални профили<br><span class="lang-en">Institutional Profiles</span></div>
+        <div class="card-text">
+          Јавни профили на институции со извори, категорија, видливост, програми и статус на проверка.
+          <span class="lang-en">Public institutional profiles with sources, category, visibility, programmes and verification status.</span>
+        </div>
+      </div>
+      <div class="card card-warm">
+        <div class="card-title">Белешки за ризик и репутација<br><span class="lang-en">Risk &amp; Reputation Notes</span></div>
+        <div class="card-text">
+          Белешки за јавни ризици, репутациски индикатори и комуникациски пропусти.
+          <span class="lang-en">Notes on public risks, reputational indicators and communication failures.</span>
+        </div>
+      </div>
+      <div class="card card-warm">
+        <div class="card-title">Извештаи за проверка на извори<br><span class="lang-en">Source Verification Reports</span></div>
+        <div class="card-text">
+          Извештаи за достапност, веродостојност, недостиг или конфликт на извори.
+          <span class="lang-en">Reports on source availability, credibility, absence or conflict.</span>
+        </div>
+      </div>
+      <div class="card card-warm">
+        <div class="card-title">Влезови за работни трудови<br><span class="lang-en">Working Paper Inputs</span></div>
+        <div class="card-text">
+          Подготвителни истражувачки белешки за WPA Working Papers и студии на случај.
+          <span class="lang-en">Preparatory research notes for WPA Working Papers and case studies.</span>
+        </div>
+      </div>
+      <div class="card card-warm">
+        <div class="card-title">Евиденција на исправки<br><span class="lang-en">Correction Logs</span></div>
+        <div class="card-text">
+          Јавна евиденција за корекции, ревизии и методолошки ажурирања.
+          <span class="lang-en">Public record of corrections, revisions and methodological updates.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 8 — ВРСКА СО MASTER LIST ===== -->
+<section id="masterlist" class="section section-dark-alt">
+  <div class="container">
+    <h2 class="section-title">Врска со Master List и Institute Index</h2>
+    <p class="section-subtitle">Relation to the Master List and Institute Index</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      WPA Intelligence Center не создава конечна ранг-листа. Тој обезбедува аналитичка инфраструктура за јавна проверка на извори, категоризација, доказна дисциплина и право на исправка. Master List REV2 останува посебен pre-publication institutional mapping dataset со 160 records, 159 external records, 155 distinct external institutions and 8 groups (A–D, G–I, R).
+      <span class="lang-en">The WPA Intelligence Center does not create a final ranking. It provides analytical infrastructure for public source verification, categorization, evidence discipline and correction rights. Master List REV2 remains a separate pre-publication institutional mapping dataset with 160 records, 159 external records, 155 distinct external institutions and 8 groups (A–D, G–I, R).</span>
+    </p>
+
+    <div class="caution-box caution-box-dark" style="margin-top:1rem;">
+      <div style="font-size:0.85rem;color:var(--text-muted-light);line-height:1.7;">
+        <strong style="color:var(--gold);">REV2 canonical counts:</strong><br>
+        160 records (total) · 159 external records · 155 distinct external institutions · 8 groups (A–D, G–I, R) · Groups E and F are not used in REV2 · Source verification pending · Not final public benchmark · URL restoration does not equal source verification · Not an accreditation list · Not an official recognition list · Not a fully verified institutional ranking.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 9 — ВРСКА СО WORKING PAPERS ===== -->
+<section id="working-papers" class="section section-warm">
+  <div class="container">
+    <h2 class="section-title">Врска со WPA Working Papers</h2>
+    <p class="section-subtitle">Relation to WPA Working Papers</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      WPA Intelligence Center може да обезбеди подготвителна аналитичка инфраструктура за работни трудови, но не заменува авторска одговорност, цитирање, DOI процес или човечка ревизија.
+      <span class="lang-en">The WPA Intelligence Center may provide preparatory analytical infrastructure for working papers, but it does not replace authorial responsibility, citation practice, DOI processes or human review.</span>
+    </p>
+    <div class="tag" style="margin-top:0.5rem;">WPA Working Papers 001–008 · WPA работни трудови 001–008</div>
+    <p class="section-desc" style="margin-top:1rem;font-size:0.9rem;">
+      WPA работни трудови 001–008: WP-001, WP-002, WP-003, WP-004, WP-005, WP-006, WP-007 и WP-008.
+      <span class="lang-en">WPA Working Papers 001–008: WP-001, WP-002, WP-003, WP-004, WP-005, WP-006, WP-007 and WP-008.</span>
+    </p>
+  </div>
+</section>
+
+<!-- ===== SECTION 10 — AI, WPAWS И ЧОВЕЧКА РЕВИЗИЈА ===== -->
+<section id="ai" class="section section-dark">
+  <div class="container">
+    <h2 class="section-title">AI, WPAWS и човечка ревизија</h2>
+    <p class="section-subtitle">AI, WPAWS and Human Review</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      AI може да помогне во собирање, структурирање, споредување и сумирање на јавни податоци. Но AI не смее да измислува факти, цитати, институционални врски, договори, согласности или академски статус. Сите чувствителни аналитички заклучоци бараат човечка проверка.
+      <span class="lang-en">AI may assist in collecting, structuring, comparing and summarizing public data. But AI must not invent facts, citations, institutional links, agreements, consents or academic status. All sensitive analytical conclusions require human review.</span>
+    </p>
+
+    <div class="principle-row">
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">AI-assisted, not AI-authoritative / AI помага, но не е авторитет</div></div>
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">public-source only / само јавни извори</div></div>
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">human-reviewed / човечки ревизирано</div></div>
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">correction-enabled / со можност за исправка</div></div>
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">citation-aware / свесно за цитирање</div></div>
+      <div class="principle-item"><div class="principle-icon">&#9679;</div><div class="principle-text">provenance-aware / свесно за потекло</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 11 — ЕТИЧКИ ГРАНИЦИ ===== -->
+<section id="etika" class="section section-warm">
+  <div class="container">
+    <h2 class="section-title">Етички граници</h2>
+    <p class="section-subtitle">Ethical Boundaries</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      WPA Intelligence Center не собира приватни податоци, не профилира приватни лица, не следи локации, не користи прикриени методи, не врши политичка агитација и не произведува неосновани заклучоци.
+      <span class="lang-en">The WPA Intelligence Center does not collect private data, does not profile private individuals, does not track locations, does not use covert methods, does not engage in political agitation and does not produce unsupported conclusions.</span>
+    </p>
+
+    <div class="caution-box" style="margin-top:1rem;">
+      <p style="font-size:0.85rem;color:var(--text-dark);line-height:1.7;">
+        <strong style="color:var(--navy);">Протокол за чувствителни заклучоци:</strong> Секој чувствителен заклучок мора да биде означен како набљудување, интерпретација, ограничување или отворено прашање.
+        <span class="lang-en">Sensitive conclusions protocol: Every sensitive conclusion must be labelled as observation, interpretation, limitation or open question.</span>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 12 — ИСПРАВКА И РЕВИЗИЈА ===== -->
+<section id="ispravka" class="section section-dark-alt">
+  <div class="container">
+    <h2 class="section-title">Исправка и ревизија</h2>
+    <p class="section-subtitle">Correction and Review</p>
+    <div class="section-rule"></div>
+    <p class="section-desc">
+      WPA Intelligence Center одржува транспарентен работен процес за исправка. Сите исправки се евидентираат јавно и методолошките ажурирања се документираат.
+      <span class="lang-en">The WPA Intelligence Center maintains a transparent correction workflow. All corrections are logged publicly and methodological updates are documented.</span>
+    </p>
+
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-num">1</div>
+        <div class="pipeline-title">Јавно барање за исправка</div>
+        <div class="pipeline-desc">Public correction request</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">2</div>
+        <div class="pipeline-title">Проверка на извори</div>
+        <div class="pipeline-desc">Source check</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">3</div>
+        <div class="pipeline-title">Ревизија на докази</div>
+        <div class="pipeline-desc">Evidence review</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">4</div>
+        <div class="pipeline-title">Уредничка одлука</div>
+        <div class="pipeline-desc">Editorial decision</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">5</div>
+        <div class="pipeline-title">Јавна белешка за ажурирање</div>
+        <div class="pipeline-desc">Public update note</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">6</div>
+        <div class="pipeline-title">Архива на ревизија</div>
+        <div class="pipeline-desc">Archive of revision</div>
+      </div>
+    </div>
+
+    <div class="link-row">
+      <a href="correction-request.html">Барање за исправка / Correction Request</a>
+      <a href="public-disclaimer.html">Јавна напомена / Public Disclaimer</a>
+      <a href="rights-takedown.html">Права и takedown / Rights &amp; Takedown</a>
+      <a href="MASTER-LIST-CANONICAL.md">Canonical counts &amp; taxonomy note</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-brand">WORLD PROTOCOL ACADEMY</div>
+    <p style="font-size:0.8rem;color:var(--text-muted-light);">
+      Skopje · North Macedonia · 2026
+    </p>
+    <div class="footer-links">
+      <a href="institute.html">Institute</a>
+      <a href="intelligence-center.html">Intelligence Center</a>
+      <a href="wpa-global-institutions-master-list.html">Master List</a>
+      <a href="working-papers/">Working Papers</a>
+      <a href="public-disclaimer.html">Trust &amp; Corrections</a>
+      <a href="correction-request.html">Correction Request</a>
+    </div>
+    <p class="footer-copy">
+      &copy; 2026 World Protocol Academy · All rights reserved<br>
+      &bdquo;Преговарањето е опционално. Протоколот е апсолутен.&ldquo; · "Negotiation is optional. Protocol is absolute."<br>
+      <span style="font-size:0.65rem;">December 2026 · Декември 2026</span>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
