@@ -848,16 +848,188 @@
     </div>
   </div>
 </nav>
+<!-- WPA Institutional Identity (REV2-aligned, embeddable) -->
+<!-- ============================================================
+     WPA · Institutional Identity — EMBEDDABLE SECTION (namespaced)
+     Paste this whole block inside the existing page body of institute.html.
+     One scoped style block + one section (class wpa-identity) + one scoped script.
+     Adds no page-level document wrappers. Every inner class is prefixed wpaid-
+     and every rule is descendant-scoped under .wpa-identity to prevent any
+     collision with the host page CSS.
+     ============================================================ -->
+<style>
+  .wpa-identity{
+    --wpaid-navy:#0D1F3C; --wpaid-navy-deep:#091628; --wpaid-gold:#C9A84C; --wpaid-gold-soft:#E3CE8C;
+    --wpaid-parchment:#F5F0E0; --wpaid-line:rgba(201,168,76,.28);
+    --wpaid-serif:Georgia,'Times New Roman',serif; --wpaid-body:'Times New Roman',Georgia,serif;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(201,168,76,.10), transparent 60%),
+      linear-gradient(180deg,var(--wpaid-navy) 0%, var(--wpaid-navy-deep) 100%);
+    color:var(--wpaid-parchment); font-family:var(--wpaid-body);
+    padding:clamp(3rem,7vw,6.5rem) clamp(1.2rem,5vw,3rem); overflow:hidden; position:relative;
+  }
+  .wpa-identity *{box-sizing:border-box}
+  .wpa-identity .wpaid-wrap{max-width:1080px;margin:0 auto}
+
+  .wpa-identity .wpaid-draft{
+    position:absolute;top:1rem;right:1rem;max-width:min(70vw,360px);text-align:right;line-height:1.3;
+    font-family:var(--wpaid-serif);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--wpaid-gold);border:1px solid var(--wpaid-line);border-radius:2px;padding:.3rem .6rem;opacity:.8;
+  }
+  .wpa-identity .wpaid-eyebrow{
+    font-family:var(--wpaid-serif);font-size:.74rem;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--wpaid-gold);display:flex;align-items:center;gap:.8rem;margin:0 0 1.6rem;
+  }
+  .wpa-identity .wpaid-eyebrow::after{content:"";flex:1;height:1px;background:var(--wpaid-line)}
+
+  .wpa-identity .wpaid-hero h1{
+    font-family:var(--wpaid-serif);font-weight:400;font-size:clamp(2.6rem,8vw,5.4rem);
+    line-height:.98;margin:0;letter-spacing:-.01em;color:var(--wpaid-parchment);
+  }
+  .wpa-identity .wpaid-hero h1 .wpaid-en{display:block;color:var(--wpaid-gold);font-style:italic;font-size:.5em;margin-top:.35em;letter-spacing:0}
+  .wpa-identity .wpaid-lede{margin:1.8rem 0 0;max-width:46ch;font-size:clamp(1.05rem,2.4vw,1.32rem);line-height:1.5;color:rgba(245,240,224,.82)}
+  .wpa-identity .wpaid-lede em{color:var(--wpaid-gold-soft);font-style:italic}
+
+  .wpa-identity .wpaid-rule{height:1px;background:var(--wpaid-line);margin:clamp(2.6rem,6vw,4.4rem) 0}
+  .wpa-identity .wpaid-seclabel{font-family:var(--wpaid-serif);font-size:.78rem;letter-spacing:.26em;text-transform:uppercase;color:var(--wpaid-gold);margin:0 0 1.6rem}
+
+  .wpa-identity .wpaid-axiom{position:relative}
+  .wpa-identity .wpaid-axiom ol{list-style:none;margin:0;padding:0;position:relative}
+  .wpa-identity .wpaid-axiom ol::before{content:"";position:absolute;left:1.05rem;top:1.1rem;bottom:1.1rem;width:2px;background:linear-gradient(180deg,var(--wpaid-gold),rgba(201,168,76,.15))}
+  .wpa-identity .wpaid-axiom li{position:relative;padding:0 0 2rem 3.6rem}
+  .wpa-identity .wpaid-axiom li:last-child{padding-bottom:0}
+  .wpa-identity .wpaid-node{position:absolute;left:0;top:0;width:2.2rem;height:2.2rem;border-radius:50%;border:2px solid var(--wpaid-gold);background:var(--wpaid-navy-deep);display:flex;align-items:center;justify-content:center;font-family:var(--wpaid-serif);font-size:.82rem;color:var(--wpaid-gold);z-index:1}
+  .wpa-identity .wpaid-tag{font-family:var(--wpaid-serif);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--wpaid-gold);display:block;margin-bottom:.35rem}
+  .wpa-identity .wpaid-mk{font-family:var(--wpaid-serif);font-size:clamp(1.18rem,3vw,1.7rem);line-height:1.25;margin:0;color:var(--wpaid-parchment)}
+  .wpa-identity .wpaid-axiom .wpaid-en{display:block;font-style:italic;color:rgba(245,240,224,.62);font-size:.82em;margin-top:.3rem}
+
+  .wpa-identity .wpaid-coin{border:1px solid var(--wpaid-line);border-left:3px solid var(--wpaid-gold);background:rgba(201,168,76,.05);padding:clamp(1.4rem,4vw,2.2rem);border-radius:2px}
+  .wpa-identity .wpaid-term{font-family:var(--wpaid-serif);font-size:clamp(1.6rem,5vw,2.4rem);color:var(--wpaid-gold);margin:0}
+  .wpa-identity .wpaid-lat{color:var(--wpaid-gold-soft);font-style:italic;font-size:.7em}
+  .wpa-identity .wpaid-pos{font-style:italic;color:rgba(245,240,224,.55);margin:.2rem 0 .9rem}
+  .wpa-identity .wpaid-def{margin:0;max-width:60ch;line-height:1.55;font-size:1.05rem;color:var(--wpaid-parchment)}
+  .wpa-identity .wpaid-def .wpaid-en{display:block;color:rgba(245,240,224,.6);font-style:italic;margin-top:.4rem;font-size:.95em}
+
+  .wpa-identity .wpaid-instruments{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  .wpa-identity .wpaid-inst{border:1px solid var(--wpaid-line);border-radius:2px;background:rgba(255,255,255,.02);padding:clamp(1.3rem,3.5vw,2rem)}
+  .wpa-identity .wpaid-kicker{font-family:var(--wpaid-serif);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--wpaid-gold);margin:0 0 .7rem}
+  .wpa-identity .wpaid-inst h3{font-family:var(--wpaid-serif);font-weight:400;font-size:clamp(1.4rem,3.5vw,1.85rem);margin:0 0 .2rem;color:var(--wpaid-parchment)}
+  .wpa-identity .wpaid-inst h3 .wpaid-en{display:block;font-style:italic;color:rgba(245,240,224,.55);font-size:.62em;letter-spacing:.04em}
+  .wpa-identity .wpaid-measures{color:var(--wpaid-gold-soft);font-style:italic;margin:.7rem 0 .55rem;font-size:1rem}
+  .wpa-identity .wpaid-inst p{margin:0;line-height:1.5;color:rgba(245,240,224,.78);font-size:.98rem}
+  .wpa-identity .wpaid-meta{margin-top:1rem;font-family:var(--wpaid-serif);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,.7)}
+  .wpa-identity .wpaid-shared{margin-top:1.4rem;text-align:center;font-style:italic;color:rgba(245,240,224,.7);line-height:1.5;font-size:1rem}
+  .wpa-identity .wpaid-shared .wpaid-en{display:block;color:rgba(245,240,224,.45);font-size:.9em;margin-top:.25rem}
+
+  .wpa-identity .wpaid-doctrine{margin-top:clamp(2.6rem,6vw,4rem);text-align:center;padding-top:clamp(2rem,5vw,3rem);border-top:1px solid var(--wpaid-line)}
+  .wpa-identity .wpaid-doctrine p{font-family:var(--wpaid-serif);font-size:clamp(1.15rem,3vw,1.55rem);margin:0;color:var(--wpaid-parchment)}
+  .wpa-identity .wpaid-doctrine .wpaid-en{display:block;font-style:italic;color:var(--wpaid-gold);font-size:.7em;margin-top:.5rem}
+
+  .wpa-identity .wpaid-reveal{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+  .wpa-identity .wpaid-reveal.wpaid-in{opacity:1;transform:none}
+  .wpa-identity .wpaid-axiom li.wpaid-reveal{transition-delay:var(--d,0s)}
+  .wpa-identity :focus-visible{outline:2px solid var(--wpaid-gold);outline-offset:3px}
+
+  @media (max-width:680px){ .wpa-identity .wpaid-instruments{grid-template-columns:1fr} }
+  @media (prefers-reduced-motion:reduce){ .wpa-identity .wpaid-reveal{opacity:1;transform:none;transition:none} }
+</style>
+
+<section class="wpa-identity" aria-label="World Protocol Academy — институтски идентитет">
+  <span class="wpaid-draft" aria-hidden="true">Pre-publication methodology · Source verification pending</span>
+  <div class="wpaid-wrap">
+
+    <p class="wpaid-eyebrow wpaid-reveal">Институтски идентитет · Institutional Identity</p>
+
+    <div class="wpaid-hero">
+      <h1 class="wpaid-reveal">Не рангираме.<br>Мериме.<span class="wpaid-en">We do not rank. We measure.</span></h1>
+      <p class="wpaid-lede wpaid-reveal">Еден од првите специјализирани институти што го третира протоколот како <em>мерлива институционална дисциплина</em> — со објавени инструменти, транспарентна методологија и право на исправка.
+        <span class="wpaid-en" style="display:block;color:rgba(245,240,224,.55);font-style:italic;margin-top:.6rem">One of the first specialised institutes to treat protocol as a measurable institutional discipline — with published instruments, transparent methodology and a right of correction.</span>
+      </p>
+    </div>
+
+    <div class="wpaid-rule"></div>
+
+    <p class="wpaid-seclabel wpaid-reveal">Темелна аксиома · Founding axiom</p>
+    <div class="wpaid-axiom">
+      <ol>
+        <li class="wpaid-reveal" style="--d:.05s"><span class="wpaid-node">01</span>
+          <span class="wpaid-tag">Апсолутно · Absolute</span>
+          <p class="wpaid-mk">Протоколот е апсолутен.<span class="wpaid-en">Protocol is absolute.</span></p></li>
+        <li class="wpaid-reveal" style="--d:.15s"><span class="wpaid-node">02</span>
+          <span class="wpaid-tag">Мерливо · Measurable</span>
+          <p class="wpaid-mk">Тоа што е апсолутно — може да се мери.<span class="wpaid-en">What is absolute can be measured.</span></p></li>
+        <li class="wpaid-reveal" style="--d:.25s"><span class="wpaid-node">03</span>
+          <span class="wpaid-tag">Јавно · Shown</span>
+          <p class="wpaid-mk">Тоа што се мери — мора да се покаже.<span class="wpaid-en">What is measured must be shown.</span></p></li>
+        <li class="wpaid-reveal" style="--d:.35s"><span class="wpaid-node">04</span>
+          <span class="wpaid-tag">Исправливо · Correctable</span>
+          <p class="wpaid-mk">Тоа што се покажува — отворено е за исправка.<span class="wpaid-en">What is shown remains open to correction.</span></p></li>
+      </ol>
+    </div>
+
+    <div class="wpaid-rule"></div>
+
+    <div class="wpaid-coin wpaid-reveal">
+      <p class="wpaid-term">протоколометрија <span class="wpaid-lat">· protocolometry</span></p>
+      <p class="wpaid-pos">работен поим скован од WPA · WPA-coined working concept</p>
+      <p class="wpaid-def">Предложено име за мерењето на протоколарната изведба спрема стандард — <strong>поим во настанување, не веќе универзално воспоставена дисциплина.</strong>
+        <span class="wpaid-en">A proposed name for the measurement of protocol performance against a standard — an emerging methodological term, not an already universally established discipline.</span>
+      </p>
+    </div>
+
+    <div class="wpaid-rule"></div>
+
+    <p class="wpaid-seclabel wpaid-reveal">Семејство инструменти · The WPA Instruments</p>
+    <div class="wpaid-instruments">
+      <div class="wpaid-inst wpaid-reveal">
+        <p class="wpaid-kicker">Инструмент I</p>
+        <h3>PSPI · ИПММ<span class="wpaid-en">Protocol State Performance Index</span></h3>
+        <p class="wpaid-measures">Мери настани · Measures events</p>
+        <p>Државни посети, церемонии, протоколарна изведба на конкретна прилика. Емпириски применет во WPA working-paper case studies: Пекинг, Си–КНДР, Тиват и други протоколарни случаи.<span style="display:block;font-style:italic;color:rgba(245,240,224,.55);margin-top:.45rem">Empirically applied in WPA working-paper case studies: Beijing, Xi–DPRK, Tivat and other protocol cases.</span></p>
+        <p class="wpaid-meta">Верзиониран инструмент · DOI каде што е применливо · преглед од ААБ во тек<br><span style="opacity:.8">Versioned instrument · DOI where applicable · AAB review pending</span></p>
+      </div>
+      <div class="wpaid-inst wpaid-reveal">
+        <p class="wpaid-kicker">Инструмент II</p>
+        <h3>Индекс на Институтот<span class="wpaid-en">WPA Institute Index</span></h3>
+        <p class="wpaid-measures">Мери институции · Measures institutions</p>
+        <p>Четири димензии: истражување и публикации, програми и сертификација, професионална пракса, транспарентност и соработка.</p>
+        <p class="wpaid-meta">Нацрт-инструмент · внатрешна методологија · преглед од ААБ во тек<br><span style="opacity:.8">Draft instrument · internal methodology · AAB review pending</span></p>
+      </div>
+    </div>
+    <p class="wpaid-shared wpaid-reveal">Два инструмента, една дисциплина: транспарентна, верзионирана, DOI каде што е применливо, отворена за исправка.
+      <span class="wpaid-en">Two instruments, one discipline: transparent, versioned, DOI where applicable, open to correction.</span>
+    </p>
+
+    <div class="wpaid-doctrine wpaid-reveal">
+      <p>„Преговарањето е опционално. Протоколот е апсолутен.“<span class="wpaid-en">Negotiation is optional. Protocol is absolute.</span></p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var scope=document.querySelector('.wpa-identity'); if(!scope) return;
+  var els=[].slice.call(scope.querySelectorAll('.wpaid-reveal'));
+  if(!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+    els.forEach(function(e){e.classList.add('wpaid-in')}); return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('wpaid-in');io.unobserve(en.target);}});
+  },{threshold:.15});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
 <section id="wpa-public-tools-hub">
 <div class="container">
 <div class="section-label" data-i18n="institute.tools_hub.label">Центар за јавни алатки</div>
 <h2 class="section-title" data-i18n="institute.tools_hub.title">Јавни алатки на WPA Институтот</h2>
 <p class="section-lead" data-i18n="institute.tools_hub.lead">Брз влез кон главните јавни функции на Институтот: WPA Journal, Слој за доверба, Индексни алатки, Student Desk Beta, AI Roadmap, WPAWS, Audio Media Engine и поддршка за автори.</p>
-<!-- Master List v1.0 -->
+<!-- Master List (REV2) -->
 <div class="domain-card">
 <div class="domain-tag" data-i18n="institute.tools_hub.tag.data">Data</div>
-<h3 data-i18n="institute.tools_hub.master_list.title">Master List v1.0</h3>
-<p data-i18n="institute.tools_hub.master_list.text">125 институции · 7 споредбени групи · 2 референтни секции · целосни полиња. JSON + CSV формат.</p>
+<h3>WPA Global Institutions Master List</h3>
+<p>Pre-Publication Institutional Mapping Dataset · Master List REV2 · 160 records · 155 distinct external institutions · 8 groups. JSON + CSV + Markdown.</p>
 <p style="margin-top: 18px;">
 <a class="btn btn-primary" data-i18n="institute.tools_hub.master_list.cta" href="wpa_institutions_master_list_v1.0.html">Open Master List →</a>
 <a class="btn btn-ghost" data-i18n="institute.tools_hub.master_list.csv" download="" href="data/wpa_institutions_master_list_v1.0.csv" style="margin-left: 10px;">CSV ↓</a>
@@ -1124,26 +1296,34 @@
 <table class="method-table">
 <thead>
 <tr>
-<th data-i18n="institute.methodology.col_group">Група</th>
-<th data-i18n="institute.methodology.col_category">Категорија</th>
-<th data-i18n="institute.methodology.col_examples">Примери</th>
+<th>Група · Group</th>
+<th>Категорија · Category</th>
+<th>Записи · Records</th>
 </tr>
 </thead>
 <tbody>
-<tr><td class="group-letter">A</td><td><div class="category-name" data-i18n="institute.methodology.gA.name">Протоколарни / етикеција / дипломатско-протоколарни академии</div></td><td class="examples" data-i18n="institute.methodology.gA.examples">Protocol Academy of Macedonia, IEPA London, Accademia del Cerimoniale, Protocol School of Washington</td></tr>
-<tr><td class="group-letter">B</td><td><div class="category-name" data-i18n="institute.methodology.gB.name">Дипломатски академии и владини институти за обука</div></td><td class="examples" data-i18n="institute.methodology.gB.examples">Diplomatic Academy of Vienna, Bulgarian Diplomatic Institute, Diplomacy Academy Türkiye, Clingendael Institute</td></tr>
-<tr><td class="group-letter">C</td><td><div class="category-name" data-i18n="institute.methodology.gC.name">Универзитети / факултети за дипломатија, MO, право, политички науки</div></td><td class="examples" data-i18n="institute.methodology.gC.examples">China Foreign Affairs University, Sciences Po, CEDS France, College of Europe</td></tr>
-<tr><td class="group-letter">D</td><td><div class="category-name" data-i18n="institute.methodology.gD.name">Институти за надворешни служби</div></td><td class="examples" data-i18n="institute.methodology.gD.examples">US FSI, Instituto Rio Branco, ISEN Argentina, Foreign Service Institute of India, FSI Indonesia</td></tr>
-<tr><td class="group-letter">E</td><td><div class="category-name" data-i18n="institute.methodology.gE.name">Институти за културна и меѓукултурна дипломатија</div></td><td class="examples" data-i18n="institute.methodology.gE.examples">Institute for Cultural Diplomacy, Anna Lindh Foundation, British Council Cultural Relations</td></tr>
-<tr><td class="group-letter">F</td><td><div class="category-name" data-i18n="institute.methodology.gF.name">Тренинг центри на меѓународни организации</div></td><td class="examples" data-i18n="institute.methodology.gF.examples">UN Staff College, OSCE Academy, NATO School, EU College of Europe (Bruges/Natolin)</td></tr>
-<tr><td class="group-letter">G</td><td><div class="category-name" data-i18n="institute.methodology.gG.name">Студии за односи со јавност и комуникации</div></td><td class="examples" data-i18n="institute.methodology.gG.examples">USC Annenberg, NYU SPS, University of Amsterdam, NTU Wee Kim Wee School</td></tr>
-<tr><td class="group-letter">H</td><td><div class="category-name" data-i18n="institute.methodology.gH.name">Безбедност, одбрана и стратешки студии</div></td><td class="examples" data-i18n="institute.methodology.gH.examples">NATO Defense College, King's College War Studies, Georgetown SSP, ANU SDSC</td></tr>
-<tr><td class="group-letter">I</td><td><div class="category-name" data-i18n="institute.methodology.gI.name">Глобални престижни benchmark институции</div></td><td class="examples" data-i18n="institute.methodology.gI.examples">Georgetown SFS, Johns Hopkins SAIS, Harvard Kennedy School, Oxford, LSE</td></tr>
+<tr><td class="group-letter">A</td><td><div class="category-name">Leading protocol, diplomacy and foreign-service academies</div></td><td>25 records</td></tr>
+<tr><td class="group-letter">B</td><td><div class="category-name">Think tanks and international-relations institutes</div></td><td>25 records</td></tr>
+<tr><td class="group-letter">C</td><td><div class="category-name">Training centres and institutional programmes linked to international organisations</div></td><td>25 records</td></tr>
+<tr><td class="group-letter">D</td><td><div class="category-name">Universities, faculties, schools and academic departments</div></td><td>25 records</td></tr>
+<tr><td class="group-letter">G</td><td><div class="category-name">UN agencies, UN-related bodies and convention secretariats</div></td><td>25 records</td></tr>
+<tr><td class="group-letter">H</td><td><div class="category-name">International NGOs, courts, tribunals and related global institutions</div></td><td>29 records</td></tr>
+<tr><td class="group-letter">I</td><td><div class="category-name">International financial institutions</div></td><td>5 records</td></tr>
+<tr><td class="group-letter">R</td><td><div class="category-name">WPA internal reference record</div></td><td>1 record</td></tr>
 </tbody>
 </table>
 </div>
+<div class="wpa-rev2-note" style="margin-top:24px;padding:20px 24px;border:1px solid rgba(13,31,60,.15);border-left:3px solid var(--gold);background:rgba(201,168,76,.06);border-radius:4px;font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;color:var(--navy)">
+<p style="margin:0 0 10px"><strong>Master List v1.0-CORRECTED-4F-REV2 · 160 records · 159 external records · 155 distinct external institutions · 8 groups (A–D, G–I, R) · JSON + CSV + Markdown.</strong></p>
+<p style="margin:0 0 10px"><em>E and F are not used in REV2. They are reserved/legacy taxonomy slots and should not be treated as current REV2 groups.</em></p>
+<p style="margin:0 0 10px">REV2 uses the operational dataset group scheme A–D, G–I, R. Older Institute-page wording using earlier institution counts, a seven-group reference, or a nine-group A–I taxonomy should be treated as legacy wording; see the canonical counts note.</p>
+<p style="margin:0 0 10px">Status: Not final public benchmark · Source verification pending · URL restoration does not equal source verification · Not an accreditation list · Not an official recognition list · Not a fully verified institutional ranking.</p>
+<p style="margin:0 0 10px">Reported / unverified — verification pending, no URL: <strong>A005</strong> reported cooperation-model observation, not a verified institutional entity · <strong>A010</strong> reported affiliated branch / historical branded training presence, not verified as a current independent official protocol academy · <strong>B008</strong> reported cooperation-model observation, not a verified institutional entity · <strong>C011</strong> SCO University network, no URL in REV2.</p>
+<p style="margin:0 0 10px"><strong>R001</strong> — World Protocol Academy (WPA) — internal reference record; not counted as an external institution.</p>
+<p style="margin:0"><a href="MASTER-LIST-CANONICAL.md" style="color:var(--navy);font-weight:600">Canonical counts and taxonomy note</a> · <a href="data/wpa_institutions_master_list.json" style="color:var(--navy)">JSON</a> · <a href="data/wpa_institutions_master_list.csv" style="color:var(--navy)">CSV</a> · <a href="data/wpa_institutions_master_list.md" style="color:var(--navy)">Markdown</a></p>
+</div>
 <p style="text-align: center; margin-top: 32px;">
-<a class="btn btn-primary" data-i18n="institute.methodology.cta" href="wpa-global-institutions-master-list.html">Отвори WPA Master List v1.0 →</a>
+<a class="btn btn-primary" href="wpa-global-institutions-master-list.html">Отвори WPA Master List →</a>
 </p>
 </div>
 </section>
