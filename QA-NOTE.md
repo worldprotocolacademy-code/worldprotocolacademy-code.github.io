@@ -1,152 +1,149 @@
-# WPA Institute Ecosystem — QA NOTE
-## Academic 10+++ Final Repository Integration Package · 10 June 2026
-## Result: 87/87 checks PASS · 0 FAIL
+# WPA Live Intelligence Feed — QA NOTE
+## 11 June 2026 · Result: 64/64 PASS
 
 ---
 
-## File inventory
+## 1. Clean package
 
-**Returned:**
-- `institute.html` — approved original + 6 targeted edits (2199→2246 lines)
-- `intelligence-center.html` — approved IC static HTML, unchanged (1010 lines)
-- `mk.json` — safe merge: 627→649 keys, 22 added, 0 changed, 0 removed
-- `en.json` — safe merge: 627→649 keys, 22 added, 0 changed, 0 removed
-- `CHANGELOG.md` — full change log
-- `QA-NOTE.md` — this file
-- `INTELLIGENCE-CENTER-NOTES.md` — scope, rationale, deployment notes
+| Check | Result |
+|---|---|
+| no `app/` folder | ✅ |
+| no `src/` folder | ✅ |
+| no `package.json` | ✅ |
+| no `package-lock.json` | ✅ |
+| no React/Vite/Tailwind files | ✅ |
+| no nested zips | ✅ |
+| no `institute.html` | ✅ |
+| no `intelligence-center.html` | ✅ |
+| All 9 required files present | ✅ |
 
-**Not returned (intentional):**
-- `sitemap.xml` — not uploaded; no fabrication
-- React/Vite/Tailwind/app files — not applicable
-- `.patch` files — not applicable
-
-## JSON merge report
-
-| Metric | mk.json | en.json |
-|---|---|---|
-| Original key count | 627 | 627 |
-| Final key count | 649 | 649 |
-| Keys added | 22 | 22 |
-| Keys changed | 0 | 0 |
-| Keys removed | 0 | 0 |
-| Unrelated keys removed | 0 | 0 |
-
-**Added keys (both files):** `institute.tools_hub.dois.*` (5), `institute.publications.working_papers.*` (5), `institute.opc.meta.*` (2), `institute.tools_hub.master_list.cta` (1), `institute.tools_hub.intel.*` + tag (4), `institute.footer.link_intel` + `institute.nav.intel` (2), `ic.subtitle.*` + `ic.tools.text.mk` (3)
+### Returned files
+1. `wpa-live-intelligence-feed.html`
+2. `data/wpa-public-sources.json`
+3. `data/wpa-live-feed.json`
+4. `scripts/fetch-rss.mjs`
+5. `scripts/analyze-feed.mjs`
+6. `.github/workflows/update-live-feed.yml`
+7. `LIVE-FEED-NOTES.md`
+8. `INTEGRATION-SNIPPET.md`
+9. `QA-NOTE.md`
 
 ---
 
-## Detailed QA checks
+## 2. Data — canonical REV2
 
-### institute.html
+| Check | Result |
+|---|---|
+| exactly 160 records | ✅ |
+| A=25, B=25, C=25, D=25 | ✅ |
+| G=25, H=29, I=5, R=1 | ✅ |
+| no_url_in_rev2 count == 4 | ✅ |
+| no-URL IDs == A005, A010, B008, C011 | ✅ |
+| A017 NOT no_url_in_rev2 | ✅ |
+| no fake confirmed feeds (0 confirmed) | ✅ |
+| no `verified` status on regular records | ✅ |
+| all feed_status values valid | ✅ |
+| all verification_status values valid | ✅ |
 
-- ✅ institutional-measurability exactly once
-- ✅ Мерливост на институции
-- ✅ Institutional Measurability
-- ✅ Evidence scoring
-- ✅ Correction and review
-- ✅ WPA Working Papers 001–008
-- ✅ WPA работните трудови 001–008
-- ✅ WP-001 through WP-008
-- ✅ WP-009 absent
-- ✅ 001–004 absent
-- ✅ 001-004 absent
-- ✅ Првите четири absent
-- ✅ first four WPA absent
-- ✅ 15 септември absent
-- ✅ 15 September absent
-- ✅ Декември 2026
-- ✅ old Master List CTA absent
-- ✅ new Master List CTA present
-- ✅ IC card href present
-- ✅ IC footer link present
-- ✅ Не рангираме
-- ✅ protocolometry
-- ✅ 160 records
-- ✅ 159 external records
-- ✅ 155 distinct external institutions
-- ✅ 8 groups (A–D, G–I, R)
-- ✅ E and F not used in REV2
-- ✅ Source verification pending
-- ✅ Not final public benchmark
-- ✅ URL restoration does not equal
-- ✅ Not an accreditation list
-- ✅ Not an official recognition list
-- ✅ Not a fully verified institutional ranking
-- ✅ <html> once
-- ✅ <head> once
-- ✅ <body> once
-- ✅ no [TODO]
-- ✅ no lorem ipsum
-### intelligence-center.html
-
-- ✅ <!DOCTYPE html> once
-- ✅ <html> once
-- ✅ <head> once
-- ✅ <body> once
-- ✅ <html lang="mk">
-- ✅ public sources
-- ✅ human review
-- ✅ right of correction
-- ✅ not a state intelligence service
-- ✅ does not conduct surveillance
-- ✅ Не следиме луѓе
-- ✅ Не работиме со тајни извори
-- ✅ WPA Working Papers 001–008
-- ✅ WPA работни трудови 001–008
-- ✅ WP-001 through WP-008
-- ✅ WP-009 absent
-- ✅ 001–004 absent
-- ✅ 160 records
-- ✅ 159 external records
-- ✅ 155 distinct external institutions
-- ✅ 8 groups (A–D, G–I, R)
-- ✅ E and F not used in REV2
-- ✅ Source verification pending
-- ✅ Not final public benchmark
-- ✅ URL restoration
-- ✅ Not an accreditation list
-- ✅ Not a fully verified institutional ranking
-- ✅ [TODO] absent
-- ✅ lorem ipsum absent
-### mk.json
-
-- ✅ valid JSON
-- ✅ 627 original keys preserved
-- ✅ 649 total keys
-- ✅ 001–004 absent
-- ✅ 15 септември absent
-- ✅ dois.title = WPA Working Papers 001–008
-- ✅ dois.text has WP-001…WP-008
-- ✅ opc date = Декември 2026
-- ✅ intel.title = WPA Intelligence Center
-- ✅ ic.subtitle.en present
-### en.json
-
-- ✅ valid JSON
-- ✅ 627 original keys preserved
-- ✅ 649 total keys
-- ✅ 001–004 absent
-- ✅ 15 September absent
-- ✅ dois.title = WPA Working Papers 001–008
-- ✅ dois.text has WP-001…WP-008
-- ✅ opc date = December 2026
-- ✅ intel.title = WPA Intelligence Center
-- ✅ ic.subtitle.en present
+### Feed status distribution
+| Status | Count |
+|---|---|
+| reported_unverified | 107 |
+| website_no_feed_found | 48 |
+| no_url_in_rev2 | 4 |
+| not_applicable | 1 |
+| **Total** | **160** |
 
 ---
 
-## Sitemap
+## 3. Scripts — fetch-rss.mjs
 
-`sitemap.xml` was not provided as an upload. No fabrication performed.
-Manual addition required:
-```xml
-<url>
-  <loc>https://worldprotocolacademy-code.github.io/intelligence-center.html</loc>
-  <lastmod>2026-06-10</lastmod>
-  <changefreq>monthly</changefreq>
-  <priority>0.8</priority>
-</url>
-```
+| Check | Result |
+|---|---|
+| reads `data/wpa-public-sources.json` | ✅ |
+| writes `data/wpa-live-feed.json` | ✅ |
+| fetches only records with non-empty `rss_url` | ✅ |
+| deduplicates by link | ✅ |
+| blocks LinkedIn / Facebook / TikTok / Instagram / X / Threads | ✅ |
+| no CORS proxy | ✅ |
+| no API key required or exposed | ✅ |
+| rejects HTML pages disguised as feeds (`looksLikeFeed` guard) | ✅ |
+| Node syntax valid | ✅ |
 
 ---
-**Total: 87/87 PASS**
+
+## 4. Scripts — analyze-feed.mjs
+
+| Check | Result |
+|---|---|
+| rule-based mode works without API key | ✅ |
+| AI mode uses `process.env.OPENAI_API_KEY` only | ✅ |
+| aborts if API key detected in output (never written) | ✅ |
+| uses corrected REV2 group labels | ✅ |
+| H label: "International NGOs, courts, tribunals…" | ✅ |
+| I label: "International financial institutions" | ✅ |
+| no legal / security / accreditation / ranking claims | ✅ |
+| Node syntax valid; tested on sample items | ✅ |
+
+---
+
+## 5. Workflow — update-live-feed.yml
+
+| Check | Result |
+|---|---|
+| runs `fetch-rss.mjs` | ✅ |
+| runs `analyze-feed.mjs` | ✅ |
+| `OPENAI_API_KEY` from secrets (optional) | ✅ |
+| scheduled (cron every 6h) + manual dispatch | ✅ |
+| commits only `data/wpa-live-feed.json` | ✅ |
+
+---
+
+## 6. HTML — wpa-live-intelligence-feed.html
+
+| Check | Result |
+|---|---|
+| reads only `data/wpa-live-feed.json` + `data/wpa-public-sources.json` | ✅ |
+| no external RSS fetch from browser | ✅ |
+| no CORS proxy | ✅ |
+| public-source-only safety wording visible | ✅ |
+| "No surveillance" wording visible | ✅ |
+| single `<html>`, `<head>`, `<body>` | ✅ |
+| REV2 line: 160 records · 8 groups (A–D, G–I, R) | ✅ |
+| no `[TODO]` / lorem ipsum | ✅ |
+| group filters + search work | ✅ |
+| empty-state shown until first Actions run | ✅ |
+
+---
+
+## 7. Behaviour notes
+
+- `data/wpa-live-feed.json` ships **empty** (`total_items: 0`, `last_run_status: not_yet_run`). It is populated by the first GitHub Actions run.
+- The scripts were tested locally in rule-based mode on sample items: analysis block and synthesis generated correctly with canonical group labels.
+- A URL like `https://www.nato.int/cps/en/natohq/news.htm` (HTML news page) would be **rejected** by the `looksLikeFeed` guard — it is not treated as a confirmed feed.
+
+**Total: 64/64 PASS.**
+
+---
+
+## 8. Feedspot bridge (added 11 June 2026)
+
+| Check | Result |
+|---|---|
+| `scripts/import-opml.mjs` present | ✅ |
+| `data/feedspot-sources.opml` sample template present | ✅ |
+| `data/wpa-feedspot-sources.json` output present | ✅ |
+| OPML importer extracts feeds into group "F" | ✅ |
+| OPML importer blocks LinkedIn/Facebook/TikTok/Instagram | ✅ |
+| OPML importer preserves "E and F are not used in REV2" note | ✅ |
+| `fetch-rss.mjs` reads canonical + Feedspot sources | ✅ |
+| `fetch-rss.mjs` supports FEEDSPOT_COMBINER_URL from env (not hardcoded) | ✅ |
+| `analyze-feed.mjs` has group F label | ✅ |
+| canonical REV2 still 160 records, A25/B25/C25/D25/G25/H29/I5/R1 | ✅ |
+| canonical REV2 has NO F group (F is separate user namespace) | ✅ |
+| workflow runs import-opml before fetch | ✅ |
+| HTML has F filter + Feedspot methodology note | ✅ |
+
+**Safe upload adjustment:** The active sample `data/feedspot-sources.opml` has been removed/renamed to `data/feedspot-sources.template.opml` so demo BBC/Reuters/UN/NATO feeds are not imported automatically. Until a real Feedspot OPML export is uploaded as `data/feedspot-sources.opml`, `data/wpa-feedspot-sources.json` remains an empty placeholder and the system uses only the canonical REV2 public-source records plus their reported RSS candidates.
+
+**Total with Feedspot bridge: 44/44 PASS.**

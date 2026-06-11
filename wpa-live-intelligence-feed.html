@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="mk" data-wpa-page="live-intelligence-feed">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpa-live-intelligence-feed.html"/>
+<title>WPA Live Intelligence Feed · WPA Institute</title>
+<meta name="description" content="WPA Live Intelligence Feed — aggregated public-source RSS items from Master List REV2 institutions with rule-based synthesis. Public sources only. No surveillance."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy: #0d1f3c; --navy-deep: #081328; --navy-soft: #1a2c4f;
+    --gold: #c9a84c; --gold-soft: #e3c878; --gold-deep: #9c8336;
+    --parchment: #f5f0e0; --parchment-soft: #faf6ea; --cream: #fbf8ee;
+    --ink: #1a1a1a; --ink-soft: #2c2c2c; --grey-line: #d8d2bc; --accent-red: #8b1e2c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 500; line-height: 1.2; color: var(--navy); }
+
+  .topbar { background: var(--navy); color: rgba(251,248,238,.75); padding: 7px 24px; font-size: 12px; text-align: center; border-bottom: 1px solid var(--gold); }
+  .topbar a { color: var(--gold-soft); text-decoration: none; }
+
+  .nav-wrap { background: var(--navy-deep); border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
+  nav { max-width: 1200px; margin: 0 auto; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .brand-mark { width: 40px; height: 40px; border: 2px solid var(--gold); display: grid; place-items: center; font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); }
+  .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--cream); }
+  .brand-sub { font-size: 10px; letter-spacing: .12em; color: var(--gold-soft); text-transform: uppercase; }
+  .nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-links a { color: rgba(251,248,238,.82); text-decoration: none; padding: 7px 13px; font-size: 12.5px; font-weight: 500; border: 1px solid transparent; border-radius: 2px; transition: all .2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold-soft); border-color: rgba(201,168,76,.35); background: rgba(201,168,76,.06); }
+
+  #hero { background: linear-gradient(145deg, var(--navy-deep) 0%, var(--navy-soft) 100%); border-bottom: 2px solid var(--gold); padding: 64px 32px 48px; }
+  .hero-inner { max-width: 1100px; margin: 0 auto; }
+  .hero-tag { display: inline-block; color: var(--gold-soft); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; padding: 5px 16px; border: 1px solid var(--gold); border-radius: 2px; margin-bottom: 22px; font-weight: 700; }
+  #hero h1 { color: var(--cream); font-size: clamp(30px, 4.5vw, 50px); margin-bottom: 12px; }
+  .hero-sub-mk { color: var(--gold-soft); font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; margin-bottom: 6px; }
+  .hero-sub-en { color: rgba(251,248,238,.72); font-size: 15px; margin-bottom: 26px; }
+  .hero-warning { background: rgba(139,30,44,.12); border: 1px solid rgba(139,30,44,.32); border-left: 4px solid var(--accent-red); padding: 18px 22px; border-radius: 2px; max-width: 800px; }
+  .hero-warning p { color: rgba(251,248,238,.88); font-size: 13.5px; line-height: 1.7; }
+
+  .btn { display: inline-flex; align-items: center; gap: 7px; padding: 11px 22px; font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-decoration: none; border-radius: 2px; transition: all .22s; cursor: pointer; border: none; font-family: 'Inter', sans-serif; }
+  .btn-primary { background: var(--gold); color: var(--navy-deep); }
+  .btn-primary:hover { background: var(--gold-soft); transform: translateY(-2px); }
+  .btn-ghost { background: transparent; color: rgba(251,248,238,.85); border: 1px solid rgba(201,168,76,.45); }
+  .btn-ghost:hover { background: rgba(201,168,76,.10); color: var(--cream); border-color: var(--gold); }
+
+  #status-bar { background: var(--navy); padding: 18px 32px; border-bottom: 1px solid rgba(201,168,76,.25); }
+  .status-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .status-item { display: flex; flex-direction: column; }
+  .status-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--gold); font-style: italic; line-height: 1; }
+  .status-label { color: rgba(251,248,238,.65); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; margin-top: 2px; }
+
+  #controls { background: var(--parchment-soft); padding: 28px 32px; border-bottom: 1px solid var(--grey-line); }
+  .controls-inner { max-width: 1100px; margin: 0 auto; }
+  .filter-label { font-size: 10.5px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; color: var(--navy); margin-bottom: 8px; }
+  .filter-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+  .filter-btn { padding: 5px 12px; border: 1px solid var(--navy); border-radius: 999px; background: transparent; color: var(--navy); font-size: 11.5px; font-weight: 700; cursor: pointer; transition: all .18s; font-family: 'Inter', sans-serif; }
+  .filter-btn:hover, .filter-btn.active { background: var(--navy); color: var(--cream); }
+  .filter-btn.active { background: var(--gold-deep); border-color: var(--gold-deep); }
+  .search-input { width: 100%; max-width: 480px; padding: 10px 16px; border: 1.5px solid var(--grey-line); border-radius: 2px; font-size: 14px; font-family: 'Inter', sans-serif; background: var(--cream); color: var(--ink); outline: none; }
+  .search-input:focus { border-color: var(--navy); }
+
+  #feed { padding: 48px 32px 72px; max-width: 1100px; margin: 0 auto; }
+  .feed-count { font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; }
+  .feed-count strong { color: var(--navy); }
+
+  .feed-item { background: var(--cream); border: 1px solid var(--grey-line); border-left: 4px solid var(--gold); border-radius: 2px; padding: 24px 26px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(13,31,60,.05); transition: all .2s; }
+  .feed-item:hover { box-shadow: 0 6px 26px rgba(13,31,60,.10); transform: translateY(-2px); }
+  .feed-item.hidden { display: none; }
+  .feed-head { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 12px; }
+  .group-badge { display: inline-block; width: 26px; height: 26px; background: var(--navy-deep); color: var(--gold); border-radius: 3px; text-align: center; line-height: 26px; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+  .feed-source { font-size: 12px; color: var(--navy-soft); font-weight: 700; }
+  .feed-country { font-size: 11px; color: #888; }
+  .feed-status-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #fef9e8; color: #7a5c00; border: 1px solid #7a5c0040; margin-left: auto; }
+  .feed-title { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 8px; font-family: 'Inter', sans-serif; line-height: 1.4; }
+  .feed-title a { color: var(--navy); text-decoration: none; }
+  .feed-title a:hover { color: var(--gold-deep); text-decoration: underline; }
+  .feed-date { font-size: 11.5px; color: #999; margin-bottom: 12px; }
+  .feed-summary { font-size: 14px; color: var(--ink-soft); line-height: 1.65; margin-bottom: 16px; }
+  .feed-analysis { background: var(--parchment); border-radius: 2px; padding: 16px 18px; border-left: 3px solid var(--navy-soft); }
+  .analysis-label { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--navy-soft); margin-bottom: 8px; }
+  .analysis-topics { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .topic-chip { font-size: 10.5px; font-weight: 600; padding: 3px 9px; background: var(--navy); color: var(--gold-soft); border-radius: 999px; }
+  .analysis-text { font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 8px; }
+  .analysis-caution { font-size: 11px; color: #888; font-style: italic; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+  .empty-state h3 { color: var(--navy); font-size: 24px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; max-width: 540px; margin: 0 auto 8px; line-height: 1.7; }
+
+  #methodology { background: var(--parchment); border-top: 1px solid var(--grey-line); border-bottom: 1px solid var(--grey-line); padding: 52px 32px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label { color: #5a4220; font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; font-weight: 700; margin-bottom: 12px; }
+  .disclaimer-box { background: var(--cream); border: 1px solid var(--grey-line); border-left: 4px solid var(--gold-deep); padding: 22px 26px; border-radius: 2px; margin-top: 24px; }
+  .disclaimer-box p { color: var(--ink-soft); font-size: 13.5px; line-height: 1.75; margin-bottom: 8px; }
+  .disclaimer-box p:last-child { margin: 0; }
+
+  footer { background: var(--navy-deep); border-top: 3px solid var(--gold); padding: 40px 32px 24px; }
+  .footer-inner { max-width: 1100px; margin: 0 auto; display: flex; gap: 32px; flex-wrap: wrap; justify-content: space-between; }
+  .footer-col h4 { color: var(--gold-soft); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 14px; font-family: 'Inter', sans-serif; font-weight: 700; }
+  .footer-col a { display: block; color: rgba(251,248,238,.68); font-size: 12.5px; text-decoration: none; line-height: 2; }
+  .footer-col a:hover { color: var(--gold-soft); }
+  .footer-bottom { text-align: center; color: rgba(251,248,238,.42); font-size: 11.5px; margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(201,168,76,.18); }
+
+  @media (max-width: 640px) {
+    nav { padding: 12px 16px; }
+    #hero { padding: 48px 18px 36px; }
+    #feed, #controls, #status-bar, #methodology { padding-left: 18px; padding-right: 18px; }
+    .status-inner { gap: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  WPA Institute · <a href="institute.html">Institute</a> · <a href="intelligence-center.html">Intelligence Center</a> · <a href="wpa-global-institutions-master-list.html">Master List</a> · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+</div>
+
+<div class="nav-wrap">
+<nav>
+  <a class="brand" href="index.html">
+    <div class="brand-mark">W</div>
+    <div>
+      <div class="brand-name">World Protocol Academy</div>
+      <div class="brand-sub">Live Intelligence Feed · 2026</div>
+    </div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="institute.html">Institute</a>
+    <a href="intelligence-center.html">Intelligence Center</a>
+    <a href="wpa-global-institutions-master-list.html">Master List</a>
+    <a href="wpa-live-intelligence-feed.html" class="active">Live Feed</a>
+    <a href="correction-request.html">Correction</a>
+  </div>
+</nav>
+</div>
+
+<section id="hero">
+<div class="hero-inner">
+  <span class="hero-tag">WPA Intelligence Center · Public-Source Live Feed</span>
+  <h1>WPA Live Intelligence Feed</h1>
+  <p class="hero-sub-mk">Жив агрегат на јавни RSS/Atom сигнали од институциите во Master List REV2, со синтеза и анализа за секоја вест.</p>
+  <p class="hero-sub-en">A live aggregate of public RSS/Atom signals from Master List REV2 institutions, with synthesis and analysis for each item.</p>
+  <div class="hero-warning">
+    <p>Public sources only · No surveillance · No private tracking · No classified data · Feeds are fetched server-side, not in your browser · Source verification pending.</p>
+  </div>
+</div>
+</section>
+
+<section id="status-bar">
+<div class="status-inner" id="status-inner">
+  <div class="status-item"><span class="status-num" id="stat-items">—</span><span class="status-label">Feed Items</span></div>
+  <div class="status-item"><span class="status-num" id="stat-sources">—</span><span class="status-label">Sources Succeeded</span></div>
+  <div class="status-item"><span class="status-num" id="stat-mode">—</span><span class="status-label">Analysis Mode</span></div>
+  <div class="status-item"><span class="status-num" id="stat-updated" style="font-size:15px;">—</span><span class="status-label">Last Updated</span></div>
+</div>
+</section>
+
+<section id="controls">
+<div class="controls-inner">
+  <div class="filter-label">Filter by Group</div>
+  <div class="filter-buttons" id="group-filters">
+    <button class="filter-btn active" data-group="all">All</button>
+    <button class="filter-btn" data-group="A">A · Protocol Academies</button>
+    <button class="filter-btn" data-group="B">B · Think Tanks</button>
+    <button class="filter-btn" data-group="C">C · Training Centres</button>
+    <button class="filter-btn" data-group="D">D · Universities</button>
+    <button class="filter-btn" data-group="G">G · UN Agencies</button>
+    <button class="filter-btn" data-group="H">H · NGOs & Courts</button>
+    <button class="filter-btn" data-group="I">I · Financial</button>
+    <button class="filter-btn" data-group="F">F · Feedspot Sources</button>
+  </div>
+  <div class="filter-label">Search</div>
+  <input type="text" class="search-input" id="search-input" placeholder="Search title, institution, country or topic…" aria-label="Search feed"/>
+</div>
+</section>
+
+<section id="feed">
+  <div class="feed-count">Showing <strong id="visible-count">0</strong> of <strong id="total-count">0</strong> items</div>
+  <div id="feed-list"></div>
+</section>
+
+<section id="methodology">
+<div class="container">
+  <div class="section-label">Методологија · Methodology</div>
+  <h2 style="font-size:clamp(22px,3vw,32px);margin-bottom:8px;">How this feed works</h2>
+  <p style="max-width:780px;color:var(--ink-soft);font-size:15px;line-height:1.7;margin-bottom:8px;">A scheduled GitHub Actions workflow fetches public RSS/Atom feeds server-side, deduplicates by link, and produces a cautious institutional synthesis for each item. This page reads only the pre-generated JSON files — it never fetches external feeds from your browser and uses no CORS proxy.</p>
+  <div class="disclaimer-box">
+    <p><strong>Public sources only.</strong> This feed aggregates publicly published RSS/Atom items. It does not track individuals, does not access private platforms (LinkedIn, Facebook, TikTok, Instagram), and does not collect classified or private data.</p>
+    <p><strong>Verification pending.</strong> Most source feeds are marked reported_unverified — their URLs are publicly known but not independently confirmed by WPA. Source verification pending. URL restoration does not equal source verification.</p>
+    <p><strong>Not an evaluation.</strong> The synthesis is descriptive institutional context, not an accreditation, official recognition, final ranking, legal or security-operational claim. Master List REV2: 160 records · 159 external records · 155 distinct external institutions · 8 groups (A–D, G–I, R).</p>
+    <p><strong>Feedspot bridge.</strong> Sources you follow on Feedspot can be imported via OPML export (group "F") or an RSS Combiner URL. Feedspot-imported feeds are user sources, clearly separated from the canonical REV2 institutions, and do not change the REV2 taxonomy. Private platforms (LinkedIn, Facebook, TikTok, Instagram) are never imported.</p>
+  </div>
+</div>
+</section>
+
+<footer>
+<div class="footer-inner">
+  <div class="footer-col" style="flex:2;min-width:220px;">
+    <h4>WPA Live Intelligence Feed</h4>
+    <p style="color:rgba(251,248,238,.65);font-size:13px;line-height:1.75;">Public-source RSS aggregation with institutional synthesis. Part of the WPA Intelligence Center. Public sources only · No surveillance · Verification pending.</p>
+  </div>
+  <div class="footer-col" style="min-width:150px;">
+    <h4>WPA Ecosystem</h4>
+    <a href="institute.html">WPA Institute</a>
+    <a href="intelligence-center.html">Intelligence Center</a>
+    <a href="wpa-public-sources-directory.html">Sources Directory</a>
+    <a href="wpa-global-institutions-master-list.html">Master List</a>
+  </div>
+  <div class="footer-col" style="min-width:150px;">
+    <h4>Data</h4>
+    <a href="data/wpa-live-feed.json">Live Feed JSON</a>
+    <a href="data/wpa-public-sources.json">Public Sources JSON</a>
+    <a href="correction-request.html">Correction Request</a>
+  </div>
+</div>
+<div class="footer-bottom">© 2026 World Protocol Academy · Live Intelligence Feed · Public sources only · Source verification pending · Не следиме луѓе. Следиме јавни институционални сигнали.</div>
+</footer>
+
+<script>
+(function() {
+  var allItems = [];
+  var activeGroup = 'all';
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toISOString().slice(0, 10);
+  }
+
+  function statusTag(status) {
+    var map = {
+      'confirmed_rss': ['✓ RSS', '#1a7a3c', '#e8f5ee'],
+      'confirmed_atom': ['✓ Atom', '#1a5a7a', '#e8f0f8'],
+      'reported_unverified': ['⚠ Unverified', '#7a5c00', '#fef9e8'],
+      'website_no_feed_found': ['◌ No feed', '#5a5a5a', '#f0f0f0']
+    };
+    var c = map[status] || ['?', '#888', '#f5f5f5'];
+    return '<span class="feed-status-tag" style="color:' + c[1] + ';background:' + c[2] + ';border-color:' + c[1] + '40;">' + c[0] + '</span>';
+  }
+
+  function escapeHtml(s) {
+    return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function renderItem(item) {
+    var topics = (item.analysis && item.analysis.topics) || [];
+    var topicChips = topics.map(function(t) { return '<span class="topic-chip">' + escapeHtml(t) + '</span>'; }).join('');
+    var synthesis = (item.analysis && item.analysis.synthesis) || 'No analysis available.';
+    var caution = (item.analysis && item.analysis.caution) || '';
+    var titleHtml = item.link
+      ? '<a href="' + escapeHtml(item.link) + '" target="_blank" rel="noopener">' + escapeHtml(item.title) + '</a>'
+      : escapeHtml(item.title);
+
+    return '<div class="feed-item" data-group="' + escapeHtml(item.source_group) + '">' +
+      '<div class="feed-head">' +
+        '<span class="group-badge">' + escapeHtml(item.source_group) + '</span>' +
+        '<div><div class="feed-source">' + escapeHtml(item.source_name) + '</div>' +
+        '<div class="feed-country">' + escapeHtml(item.source_country) + '</div></div>' +
+        statusTag(item.source_feed_status) +
+      '</div>' +
+      '<div class="feed-title">' + titleHtml + '</div>' +
+      '<div class="feed-date">' + fmtDate(item.published) + '</div>' +
+      (item.summary_raw ? '<div class="feed-summary">' + escapeHtml(item.summary_raw.slice(0, 280)) + (item.summary_raw.length > 280 ? '…' : '') + '</div>' : '') +
+      '<div class="feed-analysis">' +
+        '<div class="analysis-label">WPA Synthesis &amp; Analysis</div>' +
+        (topicChips ? '<div class="analysis-topics">' + topicChips + '</div>' : '') +
+        '<div class="analysis-text">' + escapeHtml(synthesis) + '</div>' +
+        (caution ? '<div class="analysis-caution">' + escapeHtml(caution) + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }
+
+  function applyFilters() {
+    var search = document.getElementById('search-input').value.toLowerCase().trim();
+    var visible = 0;
+    var items = document.querySelectorAll('#feed-list .feed-item');
+    items.forEach(function(el) {
+      var grp = el.getAttribute('data-group');
+      var txt = el.textContent.toLowerCase();
+      var grpOk = (activeGroup === 'all' || grp === activeGroup);
+      var srcOk = (!search || txt.indexOf(search) !== -1);
+      if (grpOk && srcOk) { el.classList.remove('hidden'); visible++; }
+      else { el.classList.add('hidden'); }
+    });
+    document.getElementById('visible-count').textContent = visible;
+  }
+
+  function renderEmpty() {
+    document.getElementById('feed-list').innerHTML =
+      '<div class="empty-state">' +
+      '<h3>No feed items yet</h3>' +
+      '<p>The live feed has not been populated yet. The GitHub Actions workflow <code>update-live-feed.yml</code> fetches public RSS/Atom feeds on a schedule and commits the results to <code>data/wpa-live-feed.json</code>.</p>' +
+      '<p>Once the first run completes, public-source items will appear here with synthesis and analysis.</p>' +
+      '</div>';
+  }
+
+  // Read ONLY the local static JSON files. No external fetching.
+  fetch('data/wpa-live-feed.json')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var meta = data.meta || {};
+      document.getElementById('stat-items').textContent = meta.total_items != null ? meta.total_items : 0;
+      document.getElementById('stat-sources').textContent = meta.sources_succeeded != null ? meta.sources_succeeded : 0;
+      var mode = (data.synthesis && data.synthesis.analysis_mode) || 'rule_based';
+      document.getElementById('stat-mode').textContent = mode === 'ai_assisted' ? 'AI' : 'Rule';
+      document.getElementById('stat-updated').textContent = meta.generated_at ? fmtDate(meta.generated_at) : 'Not run';
+
+      allItems = data.items || [];
+      document.getElementById('total-count').textContent = allItems.length;
+
+      if (allItems.length === 0) {
+        renderEmpty();
+        document.getElementById('visible-count').textContent = 0;
+        return;
+      }
+
+      document.getElementById('feed-list').innerHTML = allItems.map(renderItem).join('');
+      document.getElementById('visible-count').textContent = allItems.length;
+    })
+    .catch(function(err) {
+      console.error('Could not load live feed:', err);
+      renderEmpty();
+    });
+
+  document.querySelectorAll('#group-filters .filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#group-filters .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeGroup = btn.getAttribute('data-group');
+      applyFilters();
+    });
+  });
+
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+})();
+</script>
+</body>
+</html>

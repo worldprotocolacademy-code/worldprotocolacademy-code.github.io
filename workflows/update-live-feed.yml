@@ -1,0 +1,61 @@
+name: Update WPA Live Intelligence Feed
+
+# Runs the public-source RSS fetch + analysis server-side, then commits the result.
+# No browser fetching, no CORS proxy, no API keys in committed files.
+
+on:
+  schedule:
+    # Every 6 hours (UTC). Adjust as needed.
+    - cron: '0 */6 * * *'
+  workflow_dispatch:        # Allow manual run from the Actions tab
+
+permissions:
+  contents: write           # Needed to commit the updated data files
+
+concurrency:
+  group: wpa-live-feed
+  cancel-in-progress: false
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Import Feedspot OPML (optional)
+        # If data/feedspot-sources.opml exists, import it into group F (user sources).
+        # Skips gracefully if no OPML file is present.
+        run: node scripts/import-opml.mjs
+
+      - name: Fetch public RSS/Atom feeds (server-side)
+        # Optional Feedspot RSS Combiner URL can be supplied via repo variable.
+        env:
+          FEEDSPOT_COMBINER_URL: ${{ vars.FEEDSPOT_COMBINER_URL }}
+        run: node scripts/fetch-rss.mjs
+
+      - name: Analyse and synthesise feed
+        # OPENAI_API_KEY is OPTIONAL. If absent, analyze-feed.mjs runs in rule-based mode.
+        # The key is passed only as an environment variable and is never written to any file.
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: node scripts/analyze-feed.mjs
+
+      - name: Commit updated feed data
+        run: |
+          git config user.name "wpa-live-feed-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/wpa-live-feed.json data/wpa-feedspot-sources.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(live-feed): update WPA live intelligence feed [skip ci]"
+            git push
+          fi
