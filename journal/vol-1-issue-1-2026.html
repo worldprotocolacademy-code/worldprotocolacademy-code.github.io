@@ -36,12 +36,12 @@
  v16.2 ADDITIONS (additive only — Submission Policy integration):
   D) PAGE 10 — WORD LIMITS TABLE (per WPA-JOURNAL-SUB-POL-2026-001 §2.2)
    • Compact 6-step submission process (consolidated from 10 steps)
-   • 10-row word-limits table by article type:
+   • 10-row word-limits table by article type, with approximate page equivalents:
        Research 6,000–10,000 · Practitioner 3,000–6,000 ·
        Case study 4,000–8,000 · Policy brief 2,000–4,000 ·
        Protocol scenario 3,000–6,000 · Book review 1,000–2,500 ·
        Methodology note 2,000–5,000 · Interview 2,000–5,000 ·
-       Comparative note 3,000–6,000 · Teaching note 2,000–4,000
+       Comparative note 3,000–6,000 · Teaching note 2,000–4,000; page equivalents use A4/B5, Garamond 11–12 pt, 1.5 spacing
    • Direct reference to official Submission Policy document ID
 
   E) RESOURCE CARDS — 4 POLICY LINKS ACTIVATED:
@@ -57,7 +57,7 @@
    • .author-portrait class — 30×40mm portrait frame, navy + gold thin border
      with float:left layout for article-opening pages
    • Asset path convention: assets/authors/[slug]-30x40.jpg
-   • Page 06 (Flagship Trump/Putin): Sande real photo + SVG W-monogram fallback
+   • Page 06 (Editor's Spotlight · Digital Protocol): Sande real photo + SVG W-monogram fallback
    • Future authors (pp. 33, 51, 65, 81, 95): CSS system ready;
      to add: copy the .author-portrait block from page 06,
      change img src + caption .ap-name
@@ -978,7 +978,7 @@ footer .doctrine-mini{
   border-left:2px solid var(--gold);
 }
 
-/* ============ EDITOR'S SPOTLIGHT (WPA-004) ============ */
+/* ============ EDITOR'S SPOTLIGHT (DIGITAL PROTOCOL) ============ */
 .spotlight-banner{
   background:linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-deep) 100%);
   color:var(--cream);
@@ -1812,6 +1812,26 @@ footer{display:none;}
   letter-spacing:.02em;
   white-space:nowrap;
 }
+.word-limits-table tbody td.pages{
+  text-align:right;
+  font-family:'Inter',sans-serif;
+  font-size:9.5px;
+  color:var(--gold-deep);
+  font-weight:500;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.limits-note{
+  margin-top:4px;
+  padding-top:4px;
+  border-top:1px dotted rgba(184,137,59,0.32);
+  font-family:'EB Garamond',serif;
+  font-size:9.2px;
+  line-height:1.25;
+  font-style:italic;
+  color:var(--gold-deep);
+  text-align:center;
+}
 .word-limits-table tbody tr:hover td{
   background:rgba(184,137,59,0.05);
 }
@@ -1836,13 +1856,18 @@ footer{display:none;}
   .word-limits-table{font-size:10px;}
   .word-limits-table tbody td{padding:3px 5px;}
   .word-limits-table tbody td.words{font-size:9.5px;}
+  .word-limits-table tbody td.pages{font-size:9px;}
 }
+
 @media (max-width:540px){
   .word-limits-table{font-size:9.5px;}
   .word-limits-table thead th{font-size:8px;padding:5px 5px;}
   .word-limits-table tbody td{padding:3px 4px;}
   .word-limits-table tbody td.words{font-size:9px;}
+  .word-limits-table tbody td.pages{font-size:8.5px;}
+  .limits-note{font-size:8.5px;}
 }
+
 
 
 /* --- WORD LIMITS TABLE — boxed presentation (v16.3 refinement) --- */
@@ -2192,6 +2217,40 @@ footer{display:none;}
 .page06-raise .page-num{
   bottom:6px !important;
 }
+
+/* ---- Page 06 digital protocol domain list (patched) ---- */
+.page06-raise .page06-domains{
+  margin-top:5px;
+  padding:5px 7px;
+  background:rgba(184,137,59,0.055);
+  border:1px solid rgba(184,137,59,0.22);
+  border-left:2px solid var(--gold);
+}
+.page06-raise .page06-domains-label{
+  font-family:'Inter',sans-serif;
+  font-size:7.2px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--burgundy);
+  margin-bottom:3px;
+}
+.page06-raise .page06-domains ol{
+  margin:0;
+  padding-left:16px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px 10px;
+}
+.page06-raise .page06-domains li{
+  font-size:9.6px;
+  line-height:1.18;
+  color:var(--forest-deep);
+}
+@media (max-width:540px){
+  .page06-raise .page06-domains ol{grid-template-columns:1fr;}
+  .page06-raise .page06-domains li{font-size:9px;}
+}
+
 </style>
 </head>
 <body>
@@ -2486,8 +2545,8 @@ footer{display:none;}
               <div class="masthead-block">
                 <h4>Editor-in-Chief</h4>
                 <div class="name">Assoc. Prof. Dr. Sande Smiljanov</div>
-                <div class="role-mini" data-mk="Founder · WPA Skopje · Head of Protocol, MoI RNM"
-                     data-en="Founder · WPA Skopje · Head of Protocol, MoI RNM">Founder · WPA Skopje · Head of Protocol, MoI RNM</div>
+                <div class="role-mini" data-mk="Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM"
+                     data-en="Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM">Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM</div>
                 <div class="role-mini" style="text-transform:none;letter-spacing:0;">ORCID 0009-0008-3219-394X</div>
               </div>
 
@@ -2535,7 +2594,7 @@ footer{display:none;}
                 <div class="name" style="font-style:italic;color:var(--gold-deep);"
                      data-mk="Фаза на покана · по AAB"
                      data-en="Invitation phase · after AAB">Фаза на покана · по AAB</div>
-                <div class="role-desc" style="font-size:10.5px;">Balkans · Europe · India · China · Russia · Australia · N. America · L. America · Caribbean · Africa · Middle East · C. Asia · SE Asia · E. Asia · Global Orgs</div>
+                <div class="role-desc" style="font-size:10.5px;">Balkans · Europe as a whole · Asia as a whole · India · Africa as a whole · Americas · Australia/Oceania · Pacific · Atlantic · Indian · Arctic Oceans · Global Orgs</div>
                 <div class="role-desc"
                      data-mk="Регионален дострел · идентификација на автори · тематски препораки · институционално мапирање."
                      data-en="Regional outreach · author identification · topic recommendations · institutional mapping.">Регионален дострел · идентификација на автори · тематски препораки · институционално мапирање.</div>
@@ -2651,8 +2710,8 @@ footer{display:none;}
             <div>
               <div class="editor-id">
                 Assoc. Prof. Dr. Sande Smiljanov
-                <small data-mk="Founder · World Protocol Academy&lt;br&gt;Former Head of Protocol · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X"
-                       data-en="Founder · World Protocol Academy&lt;br&gt;Former Head of Protocol · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X">Founder · World Protocol Academy<br>Former Head of Protocol · MoI RNM<br>ORCID 0009-0008-3219-394X</small>
+                <small data-mk="Founder · World Protocol Academy&lt;br&gt;Head of Department for Protocol Events and Activities · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X"
+                       data-en="Founder · World Protocol Academy&lt;br&gt;Head of Department for Protocol Events and Activities · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X">Founder · World Protocol Academy<br>Head of Department for Protocol Events and Activities · MoI RNM<br>ORCID 0009-0008-3219-394X</small>
               </div>
               <div class="editor-pull"
                    data-mk="„Преговарањето е опционално. Протоколот е апсолутен.“"
@@ -2668,17 +2727,17 @@ footer{display:none;}
           </div>
 
           <p class="dropcap"
-             data-mk="Постојат списанија за дипломатија. Постојат списанија за безбедност. Постојат списанија за комуникација. Но протоколот — како операционален јазик на државата — остана растворен меѓу нив, без своја академска куќа. WPA Journal се раѓа за да го пополни тоа место."
-             data-en="There are journals for diplomacy. There are journals for security. There are journals for communication. But protocol — as the operational language of the state — has remained dissolved among them, without its own academic home. The WPA Journal is born to occupy that place.">
-            Постојат списанија за дипломатија. Постојат списанија за безбедност. Постојат списанија за комуникација. Но <em>протоколот</em> — како операционален јазик на државата — остана растворен меѓу нив, без своја академска куќа. WPA Journal се раѓа за да го пополни тоа место.
+             data-mk="Постојат списанија за дипломатија. Постојат списанија за безбедност. Постојат списанија за комуникација. Но протоколот — како операционален јазик на државата — остана дисперзиран меѓу нив, без своја академска куќа. WPA Journal се раѓа за да го пополни тоа место."
+             data-en="There are journals for diplomacy. There are journals for security. There are journals for communication. But protocol — as the operational language of the state — has remained dispersed among them, without its own academic home. The WPA Journal is born to occupy that place.">
+            Постојат списанија за дипломатија. Постојат списанија за безбедност. Постојат списанија за комуникација. Но <em>протоколот</em> — како операционален јазик на државата — остана дисперзиран меѓу нив, без своја академска куќа. WPA Journal се раѓа за да го пополни тоа место.
           </p>
-          <p data-mk="Во инаугуралниот број (септември 2026) го отвораме списанието со флагшип труд (стр. 09) во кој се применува нашата сопствена Feedback 360° методологија врз посетите на Кина од Доналд Џ. Трамп и Владимир В. Путин. Не како вест — туку како структуриран корпус на протоколарни сигнали преку кои Пекинг распределува достоинство, топлина и стратешко значење."
-             data-en="In this inaugural issue (September 2026), we open the journal with a flagship paper (p. 09) that applies our own Feedback 360° methodology to the visits to China by Donald J. Trump and Vladimir V. Putin. Not as news — but as a structured corpus of protocol signals through which Beijing distributes dignity, warmth and strategic meaning.">
-            Во инаугуралниот број (септември 2026) го отвораме списанието со флагшип труд (стр. 09) во кој се применува нашата сопствена Feedback 360° методологија врз посетите на Кина од Доналд Џ. Трамп и Владимир В. Путин. Не како вест — туку како структуриран корпус на протоколарни сигнали преку кои Пекинг распределува достоинство, топлина и стратешко значење.
+          <p data-mk="Во инаугуралниот број (септември 2026) Editor’s Spotlight (стр. 06) го посветуваме на дигиталниот протокол во ерата на вештачката интелигенција. Не како технички додаток на класичниот протокол — туку како нова институционална зона во која официјалното однесување, видливоста, безбедноста и јавната комуникација се одвиваат преку електронски канали, виртуелни платформи и социјални медиуми."
+             data-en="In this inaugural issue (September 2026), the Editor’s Spotlight (p. 06) is dedicated to digital protocol in the age of artificial intelligence. Not as a technical appendix to classical protocol — but as a new institutional zone in which official conduct, visibility, security and public communication operate through electronic channels, virtual platforms and social media.">
+            Во инаугуралниот број (септември 2026) <em>Editor’s Spotlight</em> (стр. 06) го посветуваме на <strong>дигиталниот протокол во ерата на вештачката интелигенција</strong>. Не како технички додаток на класичниот протокол — туку како нова институционална зона во која официјалното однесување, видливоста, безбедноста и јавната комуникација се одвиваат преку електронски канали, виртуелни платформи и социјални медиуми.
           </p>
-          <p data-mk="Откритието на трудот е едноставно но методолошки одлучно: Трампските посети се одликуваат со контролирана топлина — почитта е видлива, но проксимитетот е ограничен. Путинските посети се одликуваат со видлива блискост — повторувањето станува институционален јазик. Двата протокола се учтиви; не се еднакви."
-             data-en="The paper's finding is simple but methodologically decisive: Trump's visits are characterised by controlled warmth — respect is visible, but proximity is bounded. Putin's visits are characterised by visible intimacy — repetition becomes institutional language. Both protocols are polite; they are not equal.">
-            Откритието на трудот е едноставно но методолошки одлучно: <em>Трампските</em> посети се одликуваат со <strong>контролирана топлина</strong> — почитта е видлива, но проксимитетот е ограничен. <em>Путинските</em> посети се одликуваат со <strong>видлива блискост</strong> — повторувањето станува институционален јазик. Двата протокола се учтиви; не се еднакви.
+          <p data-mk="Централната теза е едноставна но методолошки одлучна: дигиталниот протокол е функционална трансформација на традиционалниот протокол — не негова замена. Хиерархијата, реципроцитетот, точноста, почитта и безбедносната дисциплина остануваат исти; се менува просторот во кој тие мора да се управуваат."
+             data-en="The central thesis is simple but methodologically decisive: digital protocol is a functional transformation of traditional protocol — not its replacement. Hierarchy, reciprocity, punctuality, respect and security discipline remain the same; what changes is the space in which they must be managed.">
+            Централната теза е едноставна но методолошки одлучна: <strong>дигиталниот протокол е функционална трансформација</strong> на традиционалниот протокол — не негова замена. Хиерархијата, реципроцитетот, точноста, почитта и безбедносната дисциплина остануваат исти; се менува просторот во кој тие мора да се управуваат.
           </p>
           <p data-mk="Тоа е поентата на WPA Journal: да се чита државната видливост како текст. За средните држави — а Северна Македонија е една од нив — ова не е далечен спектакл; ова е тренинг поле."
              data-en="This is the point of the WPA Journal: to read state visibility as a text. For medium-power states — and the Republic of North Macedonia is one — this is not a distant spectacle; it is a training field.">
@@ -2709,9 +2768,9 @@ footer{display:none;}
             </li>
             <li>
               <span class="toc-num">II.</span>
-              <span class="toc-title" data-mk="Посети на Кина: Трамп и Путин — Feedback 360° анализа"
-                    data-en="Visits to China: Trump &amp; Putin — A Feedback 360° Analysis">Посети на Кина: Трамп и Путин — Feedback 360° анализа<em>Flagship Research · Smiljanov · WPA-004</em></span>
-              <span class="toc-page">p. 09</span>
+              <span class="toc-title" data-mk="Дигитален протокол во ерата на вештачката интелигенција"
+                    data-en="Digital Protocol in the Age of Artificial Intelligence">Дигитален протокол во ерата на вештачката интелигенција<em>Editor’s Spotlight · Smiljanov · IMCSM26</em></span>
+              <span class="toc-page">p. 06</span>
             </li>
             <li>
               <span class="toc-num">III.</span>
@@ -2733,8 +2792,8 @@ footer{display:none;}
             </li>
             <li>
               <span class="toc-num">VI.</span>
-              <span class="toc-title" data-mk="Споредбена белешка · 15 региони"
-                    data-en="Comparative Note · 15 Regions">Споредбена белешка · 15 региони<em>Institutional Note</em></span>
+              <span class="toc-title" data-mk="Споредбена белешка · глобални региони и океани"
+                    data-en="Comparative Note · Global Regions &amp; Oceans">Споредбена белешка · глобални региони и океани<em>Institutional Note</em></span>
               <span class="toc-page">p. 81</span>
             </li>
             <li>
@@ -2772,9 +2831,9 @@ footer{display:none;}
              data-en="Doctrine: “Negotiation is optional. Protocol is absolute.”">
             Доктрина: „Преговарањето е опционално. Протоколот е апсолутен.“
           </p>
-          <p data-mk="Списанието развива и сопствени методолошки рамки — меѓу нив Feedback 360° за анализа на државни посети, што е применета во флагшип трудот на овој инаугурален број (стр. 09)."
-             data-en="The journal also develops its own methodological frameworks — among them Feedback 360° for state-visit analysis, applied in the flagship paper of this inaugural issue (p. 09).">
-            Списанието развива и сопствени методолошки рамки — меѓу нив <em>Feedback 360°</em> за анализа на државни посети, што е применета во флагшип трудот на овој инаугурален број (стр. 09).
+          <p data-mk="Списанието развива и сопствени методолошки рамки — меѓу нив дигитален протокол, Feedback 360° за анализа на државни посети и сценарио-анализа за протоколарни грешки, ризик и институционална реакција."
+             data-en="The journal also develops its own methodological frameworks — including digital protocol, Feedback 360° for state-visit analysis, and scenario analysis for protocol errors, risk and institutional response.">
+            Списанието развива и сопствени методолошки рамки — меѓу нив <em>дигитален протокол</em>, <em>Feedback 360°</em> за анализа на државни посети и сценарио-анализа за протоколарни грешки, ризик и институционална реакција.
           </p>
           <p data-mk="Прифатени се десет типа статии: research, practitioner, case study, policy brief, protocol scenario, book review, methodology note, interview, comparative institutional note, и teaching note."
              data-en="Ten article types are accepted: research, practitioner, case study, policy brief, protocol scenario, book review, methodology note, interview, comparative institutional note, and teaching note.">
@@ -2788,17 +2847,17 @@ footer{display:none;}
 
       <div class="page back">
         <div class="page-inner page06-raise">
-          <div class="page-header"><span data-mk="Flagship Research · Vol. 1" data-en="Flagship Research · Vol. 1">Flagship Research · Vol. 1</span><span>Page 06</span></div>
+          <div class="page-header"><span data-mk="Editor's Spotlight · Vol. 1" data-en="Editor's Spotlight · Vol. 1">Editor's Spotlight · Vol. 1</span><span>Page 06</span></div>
 
           <div class="spotlight-banner">
-            <div class="label" data-mk="Editor's Spotlight · WPA-004" data-en="Editor's Spotlight · WPA-004">Editor's Spotlight · WPA-004</div>
-            <div class="title" data-mk="Feedback 360° применет на пекиншката церемонија" data-en="Feedback 360° applied to Beijing's ceremony">Feedback 360° applied to Beijing's ceremony</div>
+            <div class="label" data-mk="Editor's Spotlight · IMCSM26" data-en="Editor's Spotlight · IMCSM26">Editor's Spotlight · IMCSM26</div>
+            <div class="title" data-mk="Network-society analysis of public-sector protocol" data-en="Network-society analysis of public-sector protocol">Network-society analysis of public-sector protocol</div>
           </div>
 
-          <h2 class="page-title" style="font-size:21px;margin-top:4px;"
-              data-mk="Посети на Кина: Трамп и Путин"
-              data-en="Visits to China: Trump &amp; Putin">
-            Посети на Кина: Трамп и Путин
+          <h2 class="page-title" style="font-size:20px;margin-top:4px;"
+              data-mk="Дигитален протокол во ерата на вештачката интелигенција"
+              data-en="Digital Protocol in the Age of Artificial Intelligence">
+            Дигитален протокол во ерата на вештачката интелигенција
           </h2>
           <div class="page-rule"></div>
 
@@ -2823,7 +2882,7 @@ footer{display:none;}
               </div>
               <div class="ap-caption">
                 <span class="ap-name">Sande Smiljanov</span>
-                Flagship Author
+                Editor-in-Chief
               </div>
             </div>
           <div class="author-line" style="margin-bottom:4px;">
@@ -2833,38 +2892,49 @@ footer{display:none;}
           </div>
 
           <div class="abstract-meta">
-            <span>Flagship Research</span><span>WPA-004 v1.0</span><span>Region: E. Asia / Global</span>
+            <span>Conference Paper</span><span>IMCSM26 · Belgrade</span><span>Vol. XXII (1) 2026 · pp. 144–150</span>
           </div>
 
-          <p class="lede" style="font-size:12.5px;margin-bottom:8px;"
-             data-mk="Abstract — Овој труд ги третира пекиншките посети на претседателите Трамп и Путин не како изолирани дипломатски епизоди, туку како структуриран корпус на протоколарни сигнали преку кои Кина распределува достоинство, топлина, дистанца и стратешко значење."
-             data-en="Abstract — This paper treats the Beijing visits of Presidents Trump and Putin not as isolated diplomatic episodes but as a structured corpus of protocol signals through which China distributes dignity, warmth, distance and strategic meaning.">
-            Abstract — Овој труд ги третира пекиншките посети на претседателите Трамп и Путин не како изолирани дипломатски епизоди, туку како структуриран корпус на протоколарни сигнали преку кои Кина распределува достоинство, топлина, дистанца и стратешко значење.
+          <p class="lede" style="font-size:12.5px;margin-bottom:7px;"
+             data-mk="Abstract — Дигиталниот протокол е нов домен на институционална практика што го регулира официјалното однесување преку електронски канали, виртуелни платформи и социјални медиуми. Втемелен во теоријата на мрежното општество (Castells), трудот дефинира пет оперативни домени и изведува седум стратешки препораки за менаџментот во јавниот сектор."
+             data-en="Abstract — Digital protocol is a new domain of institutional practice regulating official conduct through electronic channels, virtual platforms and social media. Grounded in network-society theory (Castells), the paper defines five operational domains and derives seven strategic recommendations for public-sector management.">
+            Abstract — <strong>Дигиталниот протокол</strong> е нов домен на институционална практика што го регулира официјалното однесување преку електронски канали, виртуелни платформи и социјални медиуми. Втемелен во теоријата на мрежното општество (Castells), трудот дефинира пет оперативни домени и изведува седум стратешки препораки за менаџментот во јавниот сектор.
           </p>
 
           <div class="findings-grid">
             <div class="finding-card">
-              <div class="fc-label" data-mk="Главна категорија" data-en="Core category">Главна категорија</div>
-              <div class="fc-title" data-mk="Контролирана топлина" data-en="Controlled warmth">Контролирана топлина</div>
-              <p data-mk="Trump 2017/2026: почитта е видлива, дигнитетот зачуван, но проксимитетот е намерно ограничен."
-                 data-en="Trump 2017/2026: respect is visible, dignity preserved, but proximity is deliberately bounded.">Trump 2017/2026: почитта е видлива, дигнитетот зачуван, но проксимитетот е намерно ограничен.</p>
+              <div class="fc-label" data-mk="Теза" data-en="Thesis">Теза</div>
+              <div class="fc-title" data-mk="Континуитет, не раскин" data-en="Continuity, not rupture">Континуитет, не раскин</div>
+              <p data-mk="Дигиталниот протокол е функционална трансформација на традиционалниот протокол — не негова замена."
+                 data-en="Digital protocol is a functional transformation of traditional protocol — not its replacement.">Дигиталниот протокол е функционална трансформација на традиционалниот протокол — не негова замена.</p>
             </div>
             <div class="finding-card gold">
-              <div class="fc-label" data-mk="Главна категорија" data-en="Core category">Главна категорија</div>
-              <div class="fc-title" data-mk="Видлива блискост" data-en="Visible intimacy">Видлива блискост</div>
-              <p data-mk="Putin 2024–2026: повторувањето станува институционален јазик; меморијата станува протоколарен капитал."
-                 data-en="Putin 2024–2026: repetition becomes institutional language; memory becomes protocol capital.">Putin 2024–2026: повторувањето станува институционален јазик; меморијата станува протоколарен капитал.</p>
+              <div class="fc-label" data-mk="Ризик" data-en="Risk">Ризик</div>
+              <div class="fc-title" data-mk="Нови ранливости" data-en="New vulnerabilities">Нови ранливости</div>
+              <p data-mk="Хакнати профили, пресретнати комуникации и deepfake-снимки стануваат напад врз претставничкиот авторитет."
+                 data-en="Hacked profiles, intercepted communication and deepfake recordings become attacks on representative authority.">Хакнати профили, пресретнати комуникации и deepfake-снимки стануваат напад врз претставничкиот авторитет.</p>
             </div>
           </div>
 
-          <p style="font-size:11.5px;margin-top:10px;"
-             data-mk="Методолошки: Feedback 360° ги испитува хронологијата, нивото на пречек, церемонијалната локација, составот на делегацијата, потпишаните документи, post-visit реториката и невербалните микро-сигнали (ракосек, допир, ориентација кон камера)."
-             data-en="Methodologically: Feedback 360° examines chronology, reception level, ceremonial location, delegation composition, signed documents, post-visit rhetoric and non-verbal micro-signals (handshake, touch, camera-facing orientation).">
-            Методолошки: <em>Feedback 360°</em> ги испитува хронологијата, нивото на пречек, церемонијалната локација, составот на делегацијата, потпишаните документи, post-visit реториката и невербалните микро-сигнали.
+          <div class="page06-domains">
+            <div class="page06-domains-label" data-mk="Пет оперативни домени" data-en="Five operational domains">Пет оперативни домени</div>
+            <ol>
+              <li data-mk="Дигитален бонтон во комуникацијата" data-en="Digital etiquette in communication">Дигитален бонтон во комуникацијата</li>
+              <li data-mk="Виртуелни дипломатски средби" data-en="Virtual diplomatic meetings">Виртуелни дипломатски средби</li>
+              <li data-mk="Социјалните медиуми како протоколарен инструмент" data-en="Social media as a protocol instrument">Социјалните медиуми како протоколарен инструмент</li>
+              <li data-mk="ВИ во управувањето со протоколот" data-en="AI in protocol management">ВИ во управувањето со протоколот</li>
+              <li data-mk="Сајбербезбедност и интегритет на протоколот" data-en="Cybersecurity and protocol integrity">Сајбербезбедност и интегритет на протоколот</li>
+            </ol>
+          </div>
+
+          <p style="font-size:10.5px;margin-top:5px;"
+             data-mk="Метод: мрежно општество (Castells) · пет домени · седум стратешки препораки · три институционални студии на случај — Национална сајбербезбедносна стратегија 2025–2028 · ECHO H2020 · Дигитална форензичка лабораторија на МВР — OKTIV."
+             data-en="Method: network society (Castells) · five domains · seven strategic recommendations · three institutional case studies — National Cybersecurity Strategy 2025–2028 · ECHO H2020 · MoI Digital Forensic Laboratory — OKTIV.">
+            <strong>Метод:</strong> мрежно општество (Castells) · пет домени · седум стратешки препораки · три институционални студии на случај — Национална сајбербезбедносна стратегија 2025–2028 · ECHO H2020 · Дигитална форензичка лабораторија на МВР — OKTIV.
           </p>
 
           <div class="keywords">
-            <strong>Keywords</strong> diplomatic protocol · state visits · China · Trump · Putin · Xi · Feedback 360° · controlled warmth · visible intimacy · WPA Doctrine
+            <strong>Keywords</strong> digital protocol · digitalisation · public sector management · artificial intelligence · cybersecurity
           </div>
 
           <div class="page-num">06</div>
@@ -2919,38 +2989,41 @@ footer{display:none;}
       <div class="page back">
         <div class="page-inner">
           <div class="page-header"><span>Global Participation</span><span>Page 08</span></div>
-          <div class="page-eyebrow" data-mk="15 глобални региони" data-en="15 Global Regions">15 глобални региони</div>
+          <div class="page-eyebrow" data-mk="Глобални региони и океани" data-en="Global Regions &amp; Oceans">Глобални региони и океани</div>
           <h2 class="page-title" data-mk="Глобално учество" data-en="Global Participation">Глобално учество</h2>
           <div class="page-rule"></div>
 
-          <p style="font-size:11.5px;"
-             data-mk="WPA Journal експлицитно прима автори и институции од сите 15 глобални региони — со посебно внимание на оние подзастапени во главните западни академски ленти."
-             data-en="The WPA Journal explicitly welcomes authors and institutions from all 15 global regions — with special attention to those underrepresented in mainstream Western academic streams.">
-            WPA Journal експлицитно прима автори и институции од сите 15 глобални региони — со посебно внимание на оние подзастапени во главните западни академски ленти.
+          <p style="font-size:11.2px;line-height:1.42;"
+             data-mk="WPA Journal експлицитно прима автори, практичари и институции од Балканот, цела Европа, цела Азија, Индија како посебен цивилизациско-академски и практичарски простор, цела Африка, Америка во северните, централните и јужните подрегиони, Австралија и Океанија, како и од четирите главни океански простори: Пацифичкиот, Атлантскиот, Индискиот и Арктичкиот океански простор."
+             data-en="The WPA Journal explicitly welcomes authors, practitioners and institutions from the Balkans, Europe as a whole, Asia as a whole, India as a distinct civilisational, academic and practitioner space, Africa as a whole, the Americas across North, Central and South American subregions, Australia and Oceania, and the four major oceanic spaces: the Pacific, Atlantic, Indian and Arctic oceanic spaces.">
+            WPA Journal експлицитно прима автори, практичари и институции од Балканот, цела Европа, цела Азија, Индија како посебен цивилизациско-академски и практичарски простор, цела Африка, Америка во северните, централните и јужните подрегиони, Австралија и Океанија, како и од четирите главни океански простори: Пацифичкиот, Атлантскиот, Индискиот и Арктичкиот океански простор.
+          </p>
+
+          <p style="font-size:10.3px;line-height:1.35;margin-bottom:5px;color:var(--forest-deep);"
+             data-mk="Посебно внимание се посветува на мали држави, островски држави, средни сили, подзастапени академски заедници, незападни институционални средини, пристанишни и поморски администрации и практичари надвор од доминантните западни академски ленти."
+             data-en="Special attention is given to small states, island states, middle powers, underrepresented academic communities, non-Western institutional environments, port and maritime administrations, and practitioners outside dominant Western academic publishing lanes.">
+            Посебно внимание се посветува на мали држави, островски држави, средни сили, подзастапени академски заедници, незападни институционални средини, пристанишни и поморски администрации и практичари надвор од доминантните западни академски ленти.
           </p>
 
           <div class="regions-grid">
             <div class="region-card"><span class="rname">Balkans</span><span class="rcode">R01</span></div>
-            <div class="region-card"><span class="rname">Europe</span><span class="rcode">R02</span></div>
-            <div class="region-card"><span class="rname">India</span><span class="rcode">R03</span></div>
-            <div class="region-card"><span class="rname">China</span><span class="rcode">R04</span></div>
-            <div class="region-card"><span class="rname">Russia</span><span class="rcode">R05</span></div>
-            <div class="region-card"><span class="rname">Australia</span><span class="rcode">R06</span></div>
-            <div class="region-card"><span class="rname">N. America</span><span class="rcode">R07</span></div>
-            <div class="region-card"><span class="rname">L. America</span><span class="rcode">R08</span></div>
-            <div class="region-card"><span class="rname">Caribbean</span><span class="rcode">R09</span></div>
-            <div class="region-card"><span class="rname">Africa</span><span class="rcode">R10</span></div>
-            <div class="region-card"><span class="rname">Middle East</span><span class="rcode">R11</span></div>
-            <div class="region-card"><span class="rname">C. Asia</span><span class="rcode">R12</span></div>
-            <div class="region-card"><span class="rname">SE Asia</span><span class="rcode">R13</span></div>
-            <div class="region-card"><span class="rname">E. Asia</span><span class="rcode">R14</span></div>
-            <div class="region-card"><span class="rname">Global Orgs</span><span class="rcode">R15</span></div>
+            <div class="region-card"><span class="rname">Europe · Whole</span><span class="rcode">R02</span></div>
+            <div class="region-card"><span class="rname">Asia · Whole</span><span class="rcode">R03</span></div>
+            <div class="region-card"><span class="rname">India · Whole</span><span class="rcode">R04</span></div>
+            <div class="region-card"><span class="rname">Africa · Whole</span><span class="rcode">R05</span></div>
+            <div class="region-card"><span class="rname">Americas · N/C/S</span><span class="rcode">R06</span></div>
+            <div class="region-card"><span class="rname">Australia / Oceania</span><span class="rcode">R07</span></div>
+            <div class="region-card"><span class="rname">Pacific Ocean</span><span class="rcode">O01</span></div>
+            <div class="region-card"><span class="rname">Atlantic Ocean</span><span class="rcode">O02</span></div>
+            <div class="region-card"><span class="rname">Indian Ocean</span><span class="rcode">O03</span></div>
+            <div class="region-card"><span class="rname">Arctic Ocean</span><span class="rcode">O04</span></div>
+            <div class="region-card"><span class="rname">Global / Intl Orgs</span><span class="rcode">G01</span></div>
           </div>
 
-          <p style="margin-top:auto;font-size:10.5px;font-style:italic;color:var(--gold-deep);text-align:center;"
-             data-mk="Sub-region descriptors се прифатени каде што е применливо."
-             data-en="Sub-region descriptors are accepted where applicable.">
-            Sub-region descriptors се прифатени каде што е применливо.
+          <p style="margin-top:auto;font-size:10px;font-style:italic;color:var(--gold-deep);text-align:center;"
+             data-mk="Sub-region, country and maritime descriptors се прифатени каде што е применливо."
+             data-en="Sub-region, country and maritime descriptors are accepted where applicable.">
+            Sub-region, country and maritime descriptors се прифатени каде што е применливо.
           </p>
           <div class="page-num">08</div>
         </div>
@@ -2973,9 +3046,9 @@ footer{display:none;}
                data-en="Deadline · 31 December 2026">Краен рок · 31 декември 2026</div>
 
           <p style="font-size:11.5px;"
-             data-mk="Како дел од планираниот глобален дострел до сите 15 региони, WPA Journal го отвора повикот за вториот број (март 2027) во кој ќе бидат прифатени дополнителни трудови надвор од инаугуралниот циклус."
+             data-mk="Како дел од планираниот глобален дострел до сите региони и океански простори, WPA Journal го отвора повикот за вториот број (март 2027) во кој ќе бидат прифатени дополнителни трудови надвор од инаугуралниот циклус."
              data-en="As part of WPA&#x2019;s planned global outreach to all 15 regions, the WPA Journal opens the call for Issue II (March 2027), which will accommodate additional submissions beyond the inaugural cycle.">
-            Како дел од планираниот глобален дострел до сите 15 региони, WPA Journal го отвора повикот за <em>вториот број</em> (март 2027) во кој ќе бидат прифатени дополнителни трудови надвор од инаугуралниот циклус.
+            Како дел од планираниот глобален дострел до сите региони и океански простори, WPA Journal го отвора повикот за <em>вториот број</em> (март 2027) во кој ќе бидат прифатени дополнителни трудови надвор од инаугуралниот циклус.
           </p>
 
           <ul class="cfp-tracks">
@@ -3032,19 +3105,31 @@ footer{display:none;}
               <span class="limits-box-ref">WPA-SUB-POL-2026-001 §2.2</span>
             </div>
             <table class="word-limits-table">
+              <thead>
+                <tr>
+                  <th data-mk="Тип" data-en="Type">Тип</th>
+                  <th data-mk="Зборови" data-en="Words">Зборови</th>
+                  <th data-mk="Страници" data-en="Pages">Страници</th>
+                </tr>
+              </thead>
               <tbody>
-                <tr><td class="type" data-mk="Research article" data-en="Research article">Research article</td><td class="words">6,000–10,000</td></tr>
-                <tr><td class="type" data-mk="Practitioner article" data-en="Practitioner article">Practitioner article</td><td class="words">3,000–6,000</td></tr>
-                <tr><td class="type" data-mk="Case study" data-en="Case study">Case study</td><td class="words">4,000–8,000</td></tr>
-                <tr><td class="type" data-mk="Policy brief" data-en="Policy brief">Policy brief</td><td class="words">2,000–4,000</td></tr>
-                <tr><td class="type" data-mk="Protocol scenario analysis" data-en="Protocol scenario analysis">Protocol scenario analysis</td><td class="words">3,000–6,000</td></tr>
-                <tr><td class="type" data-mk="Book review" data-en="Book review">Book review</td><td class="words">1,000–2,500</td></tr>
-                <tr><td class="type" data-mk="Methodology note" data-en="Methodology note">Methodology note</td><td class="words">2,000–5,000</td></tr>
-                <tr><td class="type" data-mk="Interview with practitioner" data-en="Interview with practitioner">Interview with practitioner</td><td class="words">2,000–5,000</td></tr>
-                <tr><td class="type" data-mk="Comparative institutional note" data-en="Comparative institutional note">Comparative institutional note</td><td class="words">3,000–6,000</td></tr>
-                <tr><td class="type" data-mk="Teaching note" data-en="Teaching note">Teaching note</td><td class="words">2,000–4,000</td></tr>
+                <tr><td class="type" data-mk="Research article" data-en="Research article">Research article</td><td class="words">6,000–10,000</td><td class="pages" data-mk="≈ 15–25 стр." data-en="≈ 15–25 pp.">≈ 15–25 стр.</td></tr>
+                <tr><td class="type" data-mk="Practitioner article" data-en="Practitioner article">Practitioner article</td><td class="words">3,000–6,000</td><td class="pages" data-mk="≈ 8–15 стр." data-en="≈ 8–15 pp.">≈ 8–15 стр.</td></tr>
+                <tr><td class="type" data-mk="Case study" data-en="Case study">Case study</td><td class="words">4,000–8,000</td><td class="pages" data-mk="≈ 10–20 стр." data-en="≈ 10–20 pp.">≈ 10–20 стр.</td></tr>
+                <tr><td class="type" data-mk="Policy brief" data-en="Policy brief">Policy brief</td><td class="words">2,000–4,000</td><td class="pages" data-mk="≈ 5–10 стр." data-en="≈ 5–10 pp.">≈ 5–10 стр.</td></tr>
+                <tr><td class="type" data-mk="Protocol scenario analysis" data-en="Protocol scenario analysis">Protocol scenario analysis</td><td class="words">3,000–6,000</td><td class="pages" data-mk="≈ 8–15 стр." data-en="≈ 8–15 pp.">≈ 8–15 стр.</td></tr>
+                <tr><td class="type" data-mk="Book review" data-en="Book review">Book review</td><td class="words">1,000–2,500</td><td class="pages" data-mk="≈ 3–6 стр." data-en="≈ 3–6 pp.">≈ 3–6 стр.</td></tr>
+                <tr><td class="type" data-mk="Methodology note" data-en="Methodology note">Methodology note</td><td class="words">2,000–5,000</td><td class="pages" data-mk="≈ 5–13 стр." data-en="≈ 5–13 pp.">≈ 5–13 стр.</td></tr>
+                <tr><td class="type" data-mk="Interview with practitioner" data-en="Interview with practitioner">Interview with practitioner</td><td class="words">2,000–5,000</td><td class="pages" data-mk="≈ 5–13 стр." data-en="≈ 5–13 pp.">≈ 5–13 стр.</td></tr>
+                <tr><td class="type" data-mk="Comparative institutional note" data-en="Comparative institutional note">Comparative institutional note</td><td class="words">3,000–6,000</td><td class="pages" data-mk="≈ 8–15 стр." data-en="≈ 8–15 pp.">≈ 8–15 стр.</td></tr>
+                <tr><td class="type" data-mk="Teaching note" data-en="Teaching note">Teaching note</td><td class="words">2,000–4,000</td><td class="pages" data-mk="≈ 5–10 стр." data-en="≈ 5–10 pp.">≈ 5–10 стр.</td></tr>
               </tbody>
             </table>
+            <div class="limits-note"
+                 data-mk="Ориентир: A4/B5 · Garamond 11–12 pt · 1.5 проред · приближно 350–450 зборови по страница."
+                 data-en="Guide: A4/B5 · Garamond 11–12 pt · 1.5 spacing · approximately 350–450 words per page.">
+              Ориентир: A4/B5 · Garamond 11–12 pt · 1.5 проред · приближно 350–450 зборови по страница.
+            </div>
           </div>
 
           <!-- Concise 5-step process AFTER the table — the author already knows their type -->
@@ -3316,9 +3401,9 @@ footer{display:none;}
           <div class="page-header"><span data-mk="Comparative Institutional Note · Vol. 1" data-en="Comparative Institutional Note · Vol. 1">Comparative Institutional Note · Vol. 1</span><span>Page 81</span></div>
 
           <h2 class="page-title" style="font-size:21px;margin-top:4px;"
-              data-mk="Споредбена белешка · 15 региони"
-              data-en="Comparative Institutional Note · 15 Regions">
-            Споредбена белешка · 15 региони
+              data-mk="Споредбена белешка · глобални региони и океани"
+              data-en="Comparative Institutional Note · Global Regions &amp; Oceans">
+            Споредбена белешка · глобални региони и океани
           </h2>
           <div class="page-rule"></div>
 
@@ -3368,19 +3453,19 @@ footer{display:none;}
           <div class="abstract-meta">
             <span>Comparative Institutional Note</span>
             <span>WPA-008 v1.0</span>
-            <span>Region: 15 Regional Editors</span>
+            <span>Region: Global / Oceans</span>
           </div>
 
           <p class="lede" style="font-size:12.5px;margin-bottom:8px;"
-             data-mk="Abstract — Преку мрежата на 15-те регионални уредници на WPA Journal, оваа белешка ја собира институционалната варијација на државниот протокол во Балканот, Европа, Индија, Кина, Русија, Австралија, Северна и Латинска Америка, Африка, Среден Исток и Тихиот Океан."
-             data-en="Abstract — Drawing on the WPA Journal network of 15 regional editors, this note compiles the institutional variation of state protocol across the Balkans, Europe, India, China, Russia, Australia, North and Latin America, Africa, the Middle East and the Pacific.">
-            <em>Abstract</em> — Преку мрежата на 15-те регионални уредници на WPA Journal, оваа белешка ја собира институционалната варијација на државниот протокол во Балканот, Европа, Индија, Кина, Русија, Австралија, Северна и Латинска Америка, Африка, Среден Исток и Тихиот Океан.
+             data-mk="Abstract — Преку глобалната регионална и океанска рамка на WPA Journal, оваа белешка ја собира институционалната варијација на државниот протокол во Балканот, цела Европа, цела Азија, Индија, цела Африка, Америка, Австралија/Океанија и четирите главни океански простори."
+             data-en="Abstract — Drawing on the WPA Journal global regional and oceanic framework, this note compiles the institutional variation of state protocol across the Balkans, Europe as a whole, Asia as a whole, India, Africa as a whole, the Americas, Australia/Oceania and the four major oceanic spaces.">
+            <em>Abstract</em> — Преку глобалната регионална и океанска рамка на WPA Journal, оваа белешка ја собира институционалната варијација на државниот протокол во Балканот, цела Европа, цела Азија, Индија, цела Африка, Америка, Австралија/Океанија и четирите главни океански простори.
           </p>
 
           <p style="font-size:10.5px;color:var(--forest-deep);margin-top:4px;line-height:1.5;"
-             data-mk="<strong>Keywords</strong> · споредбена анализа · регионални уредници · институционална варијација · светски протокол"
-             data-en="<strong>Keywords</strong> · comparative analysis · regional editors · institutional variation · world protocol">
-            <strong>Keywords</strong> · споредбена анализа · регионални уредници · институционална варијација · светски протокол
+             data-mk="<strong>Keywords</strong> · споредбена анализа · глобални региони · океански простори · светски протокол"
+             data-en="<strong>Keywords</strong> · comparative analysis · global regions · oceanic spaces · world protocol">
+            <strong>Keywords</strong> · споредбена анализа · глобални региони · океански простори · светски протокол
           </p>
 
           <div class="page-num">81</div>
@@ -3666,11 +3751,11 @@ footer{display:none;}
       <!-- 1 · Featured Article -->
       <div class="issue-card">
         <div class="issue-card-label" data-mk="Истакнато" data-en="Featured">Истакнато</div>
-        <div class="issue-card-title" data-mk="Главен труд" data-en="Featured Article">Главен труд</div>
+        <div class="issue-card-title" data-mk="Editor’s Spotlight" data-en="Editor’s Spotlight">Editor’s Spotlight</div>
         <div class="issue-card-desc"
-             data-mk="Trump–Putin Alaska Summit Protocol Analysis · Feedback 360° и протоколарна анализа на високоризична дипломатска средба."
-             data-en="Trump–Putin Alaska Summit Protocol Analysis · Feedback 360° and protocol analysis of a high-risk diplomatic encounter.">
-          Trump–Putin Alaska Summit Protocol Analysis · Feedback 360° и протоколарна анализа на високоризична дипломатска средба.
+             data-mk="Дигитален протокол во ерата на вештачката интелигенција · трансформација, ризици и стратешки препораки за јавниот сектор."
+             data-en="Digital Protocol in the Age of Artificial Intelligence · transformation, risks and strategic recommendations for the public sector.">
+          Дигитален протокол во ерата на вештачката интелигенција · трансформација, ризици и стратешки препораки за јавниот сектор.
         </div>
         <a class="issue-card-action" href="#flipbook-stage" data-mk="Отвори во flipbook" data-en="Open in flipbook">Отвори во flipbook</a>
       </div>
@@ -3920,7 +4005,7 @@ footer{display:none;}
   let pos = 0;
 
   const spreadLabels = {
-    mk: ['Cover', 'Masthead · стр. 02–03', 'Содржина · стр. 04–05', 'Abstract · стр. 06–07', 'Региони · стр. 08–09', 'Submission · стр. 10–11', 'Заден · стр. 12'],
+    mk: ['Cover', 'Masthead · стр. 02–03', 'Содржина · стр. 04–05', 'Spotlight / Fair Access · стр. 06–07', 'Региони · стр. 08–09', 'Submission · стр. 10–11', 'Заден · стр. 12'],
     en: ['Cover', 'Masthead · p.02–03', 'Contents · p.04–05', 'Abstract · p.06–07', 'Regions · p.08–09', 'Submission · p.10–11', 'Back · p.12']
   };
 
