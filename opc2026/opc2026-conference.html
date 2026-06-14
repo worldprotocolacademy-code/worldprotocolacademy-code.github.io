@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPC 2026 · Ohrid Protocol Conference · World Protocol Academy</title>
+<meta name="description" content="Прва меѓународна конференција за протокол, дипломатија, јавна комуникација и безбедносни студии. Декември 2026 · Hotel Inex Olgica · Охрид, Северна Македонија.">
+<meta property="og:title" content="OPC 2026 · Ohrid Protocol Conference">
+<meta property="og:description" content="Прва меѓународна конференција за протокол, дипломатија, јавна комуникација и безбедносни студии. Декември 2026 · Охрид.">
+<meta property="og:type" content="event">
+<meta property="og:url" content="https://worldprotocolacademy-code.github.io/opc2026-conference.html">
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/opc2026-conference.html">
+
+<style>
+/* ── FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── TOKENS ── */
+:root {
+  --gold:       #B8960C;
+  --gold-light: #D4AF37;
+  --gold-dim:   #8A6E09;
+  --gold-pale:  rgba(184,150,12,0.10);
+  --ink:        #0E0E0E;
+  --charcoal:   #181818;
+  --slate:      #232323;
+  --border:     #2A2520;
+  --border-s:   #333333;
+  --parchment:  #F5F2EB;
+  --cream:      #FFFDF7;
+  --muted:      #6B6258;
+  --text-body:  #C5B99A;
+  --green:      #16A34A;
+  --green-bg:   rgba(22,163,74,0.10);
+  --green-bdr:  rgba(22,163,74,0.30);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--ink); color: var(--parchment); line-height: 1.7; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* ── HEADER ── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,14,14,0.97); backdrop-filter: blur(10px);
+}
+.logo { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:700; color:var(--gold-light); text-decoration:none; letter-spacing:.04em; }
+.logo span { color:var(--parchment); font-weight:400; }
+.header-back { font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .15s; }
+.header-back:hover, .header-back:focus-visible { color:var(--gold-light); }
+
+/* ── HERO ── */
+.hero-banner {
+  position: relative; overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  padding: 5rem 2rem 4rem;
+  background: linear-gradient(160deg, #0E0E0E 0%, #1A140A 50%, #0E0E0E 100%);
+  text-align: center;
+}
+.hero-banner::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(184,150,12,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.conf-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:1.2rem;
+  display:inline-block; border-bottom:1px solid var(--gold-dim); padding-bottom:.4rem;
+}
+.conf-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,5vw,3.5rem); font-weight:900; line-height:1.05;
+  color:var(--cream); margin-bottom:.6rem;
+}
+.conf-subtitle {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1rem,2.5vw,1.4rem); font-weight:400; font-style:italic;
+  color:var(--gold-light); margin-bottom:2rem;
+}
+.conf-meta-row {
+  display:flex; flex-wrap:wrap; gap:2rem; justify-content:center; margin-bottom:2.5rem;
+}
+.conf-meta-item { text-align:center; }
+.cm-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:.2rem;
+}
+.cm-val { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:600; color:var(--parchment); }
+.hero-cta-row { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+.conf-note {
+  margin-top:2rem; font-size:.74rem; color:var(--muted);
+  font-family:'JetBrains Mono',monospace; letter-spacing:.04em;
+}
+
+/* ── BUTTONS ── */
+.btn-gold {
+  display:inline-block; padding:.85rem 2rem;
+  background:var(--gold); color:#000;
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+  text-decoration:none; border:none; cursor:pointer; transition:background .15s;
+}
+.btn-gold:hover, .btn-gold:focus-visible { background:var(--gold-light); }
+.btn-outline {
+  display:inline-block; padding:.85rem 2rem;
+  background:transparent; color:var(--parchment);
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+  text-decoration:none; border:1px solid var(--border-s); cursor:pointer; transition:border-color .15s,color .15s;
+}
+.btn-outline:hover, .btn-outline:focus-visible { border-color:var(--gold-dim); color:var(--gold-light); }
+.btn-full {
+  display:block; width:100%; padding:.9rem 1rem; text-align:center;
+  background:var(--gold); color:#000;
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+  text-decoration:none; border:none; cursor:pointer; transition:background .15s;
+}
+.btn-full:hover, .btn-full:focus-visible { background:var(--gold-light); }
+.btn-full-outline {
+  display:block; width:100%; padding:.9rem 1rem; text-align:center;
+  background:transparent; color:var(--gold-light);
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+  text-decoration:none; border:1px solid var(--gold-dim); cursor:pointer; transition:background .15s;
+}
+.btn-full-outline:hover, .btn-full-outline:focus-visible { background:var(--gold-pale); }
+
+/* ── COUNTDOWN ── */
+.countdown-bar {
+  background:var(--slate); border-bottom:1px solid var(--border);
+  padding:1.5rem 2rem; display:flex; gap:2rem; justify-content:center; align-items:center; flex-wrap:wrap;
+}
+.cd-label { font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+.countdown-units { display:flex; gap:1.5rem; }
+.cd-unit { text-align:center; }
+.cd-num { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--gold-light); line-height:1; display:block; }
+.cd-lbl { font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.eb-badge {
+  background:rgba(184,150,12,0.12); border:1px solid var(--gold-dim);
+  padding:.5rem 1rem;
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-light);
+}
+
+/* ── SECTIONS ── */
+.section { max-width:1100px; margin:0 auto; padding:4rem 2rem; }
+.section-sm { max-width:800px; margin:0 auto; padding:4rem 2rem; }
+.section-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:.5rem; display:block;
+}
+.section-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.4rem,3vw,2.1rem); font-weight:700; color:var(--cream); margin-bottom:2rem; line-height:1.2;
+}
+hr.rule { border:none; border-top:1px solid var(--border); }
+
+/* ── TARGET AUDIENCE ── */
+.audience-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:1px; background:var(--border); border:1px solid var(--border);
+}
+.audience-cell {
+  background:var(--charcoal); padding:1.4rem 1.5rem;
+}
+.audience-cell .ac-icon { font-size:1rem; margin-bottom:.5rem; display:block; }
+.audience-cell h4 { font-size:.86rem; font-weight:600; color:var(--parchment); margin-bottom:.25rem; }
+.audience-cell p { font-size:.76rem; color:var(--muted); line-height:1.5; }
+
+/* ── TOPICS ── */
+.topics-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:1px; background:var(--border); border:1px solid var(--border);
+}
+.topic-cell { background:var(--charcoal); padding:1.5rem; }
+.topic-cell .t-num {
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:.4rem; display:block;
+}
+.topic-cell h4 { font-size:.9rem; font-weight:600; color:var(--parchment); margin-bottom:.3rem; }
+.topic-cell p { font-size:.78rem; color:var(--muted); line-height:1.5; }
+
+/* ── TICKETS ── */
+.tickets-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1px; background:var(--border); border:1px solid var(--border); margin-bottom:1.5rem;
+}
+.ticket-card { background:var(--charcoal); padding:1.8rem 1.5rem; display:flex; flex-direction:column; position:relative; }
+.ticket-card.eb { outline:1px solid var(--gold-dim); outline-offset:-1px; }
+.ticket-card.eb::after {
+  content:'Early Bird';
+  position:absolute; top:0; right:0;
+  font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.12em; text-transform:uppercase;
+  background:var(--gold); color:#000; padding:.2rem .7rem;
+}
+.ticket-type { font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:.8rem; }
+.ticket-price { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:900; color:var(--cream); line-height:1; margin-bottom:.3rem; }
+.ticket-price .cur { font-size:1rem; vertical-align:super; color:var(--gold-light); }
+.ticket-deadline { font-size:.72rem; color:var(--muted); margin-bottom:1rem; font-style:italic; }
+.ticket-includes { list-style:none; margin-bottom:1.5rem; flex-grow:1; }
+.ticket-includes li {
+  display:flex; gap:.6rem; align-items:flex-start;
+  font-size:.78rem; color:var(--text-body); margin-bottom:.5rem;
+}
+.ticket-includes li::before { content:'⚜'; color:var(--gold-dim); font-size:.65rem; flex-shrink:0; margin-top:.15rem; }
+.ticket-note { font-size:.72rem; color:var(--muted); font-style:italic; }
+
+/* ── PAYMENT POLICY ── */
+.payment-policy {
+  border:1px solid var(--border-s); padding:1.1rem 1.5rem;
+  font-size:.78rem; color:var(--muted); line-height:1.65;
+}
+.payment-policy strong { color:var(--parchment); }
+.payment-policy a { color:var(--gold-dim); }
+
+/* ── REGISTRATION FORM ── */
+.form-wrapper {
+  background:var(--slate); border:1px solid var(--border-s);
+  padding:2.5rem; margin-bottom:2rem;
+}
+.form-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:var(--cream); margin-bottom:.4rem; }
+.form-sub { font-size:.82rem; color:var(--muted); margin-bottom:2rem; line-height:1.65; }
+.form-group { display:flex; flex-direction:column; gap:.4rem; margin-bottom:1rem; }
+.form-group label {
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background:var(--charcoal); border:1px solid var(--border-s); color:var(--parchment);
+  font-family:'Inter',sans-serif; font-size:.85rem;
+  padding:.7rem .9rem; outline:none; transition:border-color .15s; width:100%;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color:var(--gold-dim); }
+.form-group select option { background:var(--charcoal); }
+.form-group textarea { resize:vertical; min-height:90px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.form-checkboxes { display:flex; flex-direction:column; gap:.6rem; }
+.form-check { display:flex; gap:.75rem; align-items:flex-start; font-size:.82rem; color:var(--text-body); cursor:pointer; }
+.form-check input[type=checkbox] { width:16px; height:16px; flex-shrink:0; accent-color:var(--gold); margin-top:.15rem; }
+.form-error {
+  font-size:.74rem; color:#F87171; margin-top:.3rem; display:none;
+}
+.form-privacy { font-size:.72rem; color:var(--muted); line-height:1.6; margin-top:.5rem; }
+.form-privacy a { color:var(--gold-dim); }
+.form-status {
+  display:none; padding:1rem 1.2rem; font-size:.82rem; line-height:1.6; margin-top:1rem;
+}
+.form-status.success { background:rgba(22,163,74,0.1); border:1px solid rgba(22,163,74,0.3); color:#4ADE80; }
+.form-status.error   { background:rgba(220,38,38,0.08); border:1px solid rgba(220,38,38,0.3);  color:#F87171; }
+
+/* ── VENUE ── */
+.venue-box {
+  background:var(--slate); border:1px solid var(--border-s);
+  display:grid; grid-template-columns:1fr 1fr; gap:0;
+}
+.venue-info { padding:2rem; }
+.venue-info h3 { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--cream); margin-bottom:.3rem; }
+.venue-info .vi-sub { font-size:.8rem; color:var(--gold-light); margin-bottom:1rem; }
+.venue-info p { font-size:.82rem; color:#A89E8A; line-height:1.7; }
+.venue-details { border-left:1px solid var(--border); padding:2rem; }
+.vd-row { display:flex; gap:.75rem; margin-bottom:1rem; align-items:flex-start; }
+.vd-row:last-child { margin-bottom:0; }
+.vd-icon { font-size:.9rem; flex-shrink:0; margin-top:.15rem; }
+.vd-label { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:.12rem; display:block; }
+.vd-val { font-size:.82rem; color:var(--parchment); }
+
+/* ── FOOTER ── */
+.page-footer {
+  border-top:1px solid var(--border); padding:2rem; text-align:center;
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+}
+.page-footer a { color:var(--gold-dim); text-decoration:none; }
+.page-footer a:hover { color:var(--gold-light); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:700px) {
+  .conf-meta-row { gap:1.2rem; }
+  .countdown-bar { flex-direction:column; gap:1rem; }
+  .tickets-grid, .audience-grid { grid-template-columns:1fr; }
+  .venue-box { grid-template-columns:1fr; }
+  .venue-details { border-left:none; border-top:1px solid var(--border); }
+  .form-row { grid-template-columns:1fr; }
+  .section, .section-sm { padding:3rem 1.25rem; }
+  .hero-banner { padding:3.5rem 1.25rem 3rem; }
+  .site-header { padding:1rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="site-header" role="banner">
+  <a class="logo" href="https://worldprotocolacademy-code.github.io/" aria-label="World Protocol Academy — Почетна">
+    WPA <span>· World Protocol Academy</span>
+  </a>
+  <a class="header-back" href="https://worldprotocolacademy-code.github.io/institute.html">← Институт</a>
+</header>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero-banner" aria-labelledby="conf-heading">
+  <div class="conf-label">OPC 2026 · Ohrid Protocol Conference · Flagship Event</div>
+  <h1 class="conf-title" id="conf-heading">
+    Прва меѓународна конференција<br>за протокол и дипломатија
+  </h1>
+  <p class="conf-subtitle">Protocol · Diplomacy · Public Communication · Security Studies</p>
+  <div class="conf-meta-row" role="list">
+    <div class="conf-meta-item" role="listitem">
+      <span class="cm-label">Датум</span>
+      <span class="cm-val">Декември 2026 *</span>
+    </div>
+    <div class="conf-meta-item" role="listitem">
+      <span class="cm-label">Место</span>
+      <span class="cm-val">Hotel Inex Olgica</span>
+    </div>
+    <div class="conf-meta-item" role="listitem">
+      <span class="cm-label">Локација</span>
+      <span class="cm-val">Охрид, Северна Македонија</span>
+    </div>
+    <div class="conf-meta-item" role="listitem">
+      <span class="cm-label">Формат</span>
+      <span class="cm-val">Хибриден · 17+ земји</span>
+    </div>
+  </div>
+  <div class="hero-cta-row">
+    <a href="#register" class="btn-gold">Пријави интерес →</a>
+    <a href="#tickets" class="btn-outline">Погледни котизација</a>
+  </div>
+  <p class="conf-note">* Конечниот датум е предмет на официјална потврда. Регистрирачите ќе бидат информирани навремено.</p>
+</section>
+
+<!-- COUNTDOWN -->
+<div class="countdown-bar" role="timer" aria-live="polite" aria-label="Броење до OPC 2026">
+  <span class="cd-label">Броење до OPC 2026</span>
+  <div class="countdown-units">
+    <div class="cd-unit"><span class="cd-num" id="cd-days">—</span><span class="cd-lbl">Дена</span></div>
+    <div class="cd-unit"><span class="cd-num" id="cd-hours">—</span><span class="cd-lbl">Часа</span></div>
+    <div class="cd-unit"><span class="cd-num" id="cd-min">—</span><span class="cd-lbl">Мин</span></div>
+    <div class="cd-unit"><span class="cd-num" id="cd-sec">—</span><span class="cd-lbl">Сек</span></div>
+  </div>
+  <div class="eb-badge" aria-label="Early Bird рок">⭐ Early Bird: до 1 септември 2026</div>
+</div>
+
+<hr class="rule">
+
+<!-- ═══════ ABOUT ═══════ -->
+<section class="section-sm" aria-labelledby="about-heading">
+  <span class="section-label">За конференцијата</span>
+  <h2 class="section-title" id="about-heading">OPC 2026 — Охрид</h2>
+  <p style="font-size:.9rem;color:#A89E8A;line-height:1.85;margin-bottom:1.2rem;">
+    Охрид — УНЕСКО Светско наследство и место на духовна и образовна традиција — е
+    избраната локација за прв меѓународен собир посветен на протоколот, дипломатијата,
+    јавната комуникација и безбедносните студии. OPC 2026 ги собира академски истражувачи,
+    протоколарни службеници, дипломати, стручњаци за безбедност и комуникатори
+    од повеќе од 17 земји на еден заеднички форум.
+  </p>
+  <p style="font-size:.9rem;color:#A89E8A;line-height:1.85;margin-bottom:1.2rem;">
+    Конференцијата ги поврзува теоријата со практиката, академскиот авторитет со
+    практичарското искуство и регионалната перспектива со меѓународните стандарди.
+    Секој учесник — во живо или онлајн — добива WPA Certificate of Participation
+    со уникатен QR верификациски код.
+  </p>
+  <p style="font-size:.82rem;font-family:'JetBrains Mono',monospace;letter-spacing:.05em;color:var(--muted);">
+    Организатор: World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies ·
+    Основач и програмски директор: Доц. д-р Санде Смиљанов
+  </p>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ AUDIENCE ═══════ -->
+<section class="section" aria-labelledby="audience-heading">
+  <span class="section-label">Целна публика</span>
+  <h2 class="section-title" id="audience-heading">За кого е OPC 2026?</h2>
+  <div class="audience-grid" role="list">
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">🏛️</span>
+      <h4>Протоколарни службеници</h4>
+      <p>Шефови на протокол, координатори на церемонии и службеници за официјални настани.</p>
+    </div>
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">🌐</span>
+      <h4>Дипломати и конзуларни службеници</h4>
+      <p>Амбасадори, дипломатски аташеа, конзули и службеници на меѓународни организации.</p>
+    </div>
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">📢</span>
+      <h4>Комуникатори и PR специјалисти</h4>
+      <p>Портпароли, PR директори, медиумски советници и институционални комуникатори.</p>
+    </div>
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">🔐</span>
+      <h4>Безбедносни стручњаци</h4>
+      <p>Безбедносни координатори, одбранбени аташеа и стручњаци за безбедност на настани.</p>
+    </div>
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">🎓</span>
+      <h4>Академици и истражувачи</h4>
+      <p>Универзитетски предавачи, докторанди и истражувачи во областа на протоколот и дипломатијата.</p>
+    </div>
+    <div class="audience-cell" role="listitem">
+      <span class="ac-icon" aria-hidden="true">🏢</span>
+      <h4>Јавна администрација и корпорации</h4>
+      <p>Претставници на општини, министерства, меѓународни компании и корпоративни протоколарни тимови.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ TOPICS ═══════ -->
+<section class="section" aria-labelledby="topics-heading">
+  <span class="section-label">Програмски теми</span>
+  <h2 class="section-title" id="topics-heading">Теми и области</h2>
+  <div class="topics-grid" role="list">
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 01</span>
+      <h4>Државен и дипломатски протокол</h4>
+      <p>Церемонијал, ред на предимство, официјални посети, флаг-протокол, меѓународен и мултилатерален протокол.</p>
+    </div>
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 02</span>
+      <h4>Јавна комуникација и институционална репутација</h4>
+      <p>Стратешка комуникација, кризна комуникација, медиумски односи и управување со дигиталната репутација.</p>
+    </div>
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 03</span>
+      <h4>Безбедност и одбранбена дипломатија</h4>
+      <p>Безбедност на јавни настани, заштита на VIP лица, кризни процедури и меѓуинституционална координација.</p>
+    </div>
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 04</span>
+      <h4>Дипломатија и меѓународни односи</h4>
+      <p>Билатерални и мултилатерални рамки, јавна дипломатија, конференциски менаџмент и преговарачки методи.</p>
+    </div>
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 05</span>
+      <h4>Протоколарна теорија и истражување</h4>
+      <p>Историски развој, компаративна анализа, методологија, PSPI индекс и WPA Working Papers.</p>
+    </div>
+    <div class="topic-cell" role="listitem">
+      <span class="t-num">Тема 06</span>
+      <h4>Практична протоколарна мудрост</h4>
+      <p>Студии на случај, анализа на протоколарни ситуации, практичарски предавања и WPA case studies.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ TICKETS ═══════ -->
+<section class="section" id="tickets" aria-labelledby="tickets-heading">
+  <span class="section-label">Учество и котизација</span>
+  <h2 class="section-title" id="tickets-heading">Типови учество</h2>
+
+  <div class="tickets-grid" role="list">
+    <article class="ticket-card eb" role="listitem" aria-labelledby="ticket-eb-name">
+      <div class="ticket-type" id="ticket-eb-name">In-Person · Early Bird</div>
+      <div class="ticket-price"><span class="cur" aria-hidden="true">€</span>120</div>
+      <div class="ticket-deadline">До 1 септември 2026</div>
+      <ul class="ticket-includes" aria-label="Вклучено">
+        <li>Целосен пристап до сите сесии (во живо)</li>
+        <li>Hotel Inex Olgica · Охрид</li>
+        <li>Конференциски материјали</li>
+        <li>WPA Certificate of Participation (QR верификуван)</li>
+        <li>WPA Journal прв број (печатено издание)</li>
+        <li>Паузи и работна вечера</li>
+      </ul>
+      <a href="#register" class="btn-full" aria-label="Пријави интерес за Early Bird учество">
+        Пријави интерес →
+      </a>
+    </article>
+
+    <article class="ticket-card" role="listitem" aria-labelledby="ticket-std-name">
+      <div class="ticket-type" id="ticket-std-name">In-Person · Standard</div>
+      <div class="ticket-price"><span class="cur" aria-hidden="true">€</span>180</div>
+      <div class="ticket-deadline">1 септември — 1 ноември 2026</div>
+      <ul class="ticket-includes" aria-label="Вклучено">
+        <li>Целосен пристап до сите сесии (во живо)</li>
+        <li>Hotel Inex Olgica · Охрид</li>
+        <li>Конференциски материјали</li>
+        <li>WPA Certificate of Participation (QR верификуван)</li>
+        <li>WPA Journal прв број (печатено издание)</li>
+        <li>Паузи</li>
+      </ul>
+      <a href="#register" class="btn-full" aria-label="Пријави интерес за Standard учество">
+        Пријави интерес →
+      </a>
+    </article>
+
+    <article class="ticket-card" role="listitem" aria-labelledby="ticket-online-name">
+      <div class="ticket-type" id="ticket-online-name">Online учество</div>
+      <div class="ticket-price"><span class="cur" aria-hidden="true">€</span>60</div>
+      <div class="ticket-deadline">До 1 ноември 2026</div>
+      <ul class="ticket-includes" aria-label="Вклучено">
+        <li>Live stream на сите сесии</li>
+        <li>Пристап до записите (30 дена)</li>
+        <li>WPA Certificate of Participation (дигитален, QR)</li>
+        <li>Конференциски материјали (PDF)</li>
+        <li>Учество во Q&amp;A преку онлајн платформа</li>
+      </ul>
+      <a href="#register" class="btn-full" aria-label="Пријави интерес за онлајн учество">
+        Пријави интерес →
+      </a>
+    </article>
+
+    <article class="ticket-card" role="listitem" aria-labelledby="ticket-inst-name">
+      <div class="ticket-type" id="ticket-inst-name">Institutional Table</div>
+      <div class="ticket-price"><span class="cur" aria-hidden="true">€</span>500</div>
+      <div class="ticket-deadline">До 1 октомври 2026</div>
+      <ul class="ticket-includes" aria-label="Вклучено">
+        <li>3 in-person места</li>
+        <li>Лого на институцијата во официјалната програма</li>
+        <li>Споменување во отворачкото слово</li>
+        <li>Институционален простор на конференцијата</li>
+        <li>3 × Certificate of Participation (QR верификуван)</li>
+        <li>WPA Institutional Partner статус (1 год.)</li>
+      </ul>
+      <a href="mailto:worldprotocolacademy@gmail.com?subject=OPC%202026%20Institutional%20Table"
+         class="btn-full-outline"
+         aria-label="Контактирај WPA за Institutional Table">
+        Контактирај →
+      </a>
+    </article>
+  </div>
+
+  <!-- Payment policy -->
+  <div class="payment-policy" role="note">
+    <strong>Политика на плаќање и откажување:</strong>
+    Официјалниот invoice и инструкции за плаќање се испраќаат по потврда на регистрацијата.
+    Прифатени начини: банкарска трансакција, PayPal.
+    Регистрацијата е финална само по потврда на уплатата.
+    Откажувања до 1 октомври 2026 — целосен поврат; по 1 октомври 2026 — 50% поврат.
+    Прашања: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ REGISTRATION FORM ═══════ -->
+<section class="section-sm" id="register" aria-labelledby="register-heading">
+  <span class="section-label">Регистрација · Expression of Interest</span>
+  <h2 class="section-title" id="register-heading">Пријави се за OPC 2026</h2>
+
+  <div class="form-wrapper">
+    <div class="form-title">Expression of Interest — OPC 2026</div>
+    <p class="form-sub">
+      Пополнете ја формата за да го пријавите вашиот интерес. По приемот,
+      WPA ќе ви испрати потврда со инструкции за следните чекори и официјален invoice.
+      <strong style="color:var(--parchment);">Регистрацијата е финална само по официјална потврда и уплата од страна на WPA.</strong>
+    </p>
+
+    <!--
+    ══════════════════════════════════════════════════════
+    FORM ENDPOINT CONFIGURATION
+    To connect a real backend, set FORM_ENDPOINT below.
+    Options: Formspree (https://formspree.io/f/YOUR_ID),
+             Tally (embed code below), Google Forms, Airtable, etc.
+    If left as NONE, the form uses email fallback.
+    ══════════════════════════════════════════════════════
+    -->
+
+    <form id="opc-form" novalidate aria-label="OPC 2026 Expression of Interest форма">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="f-name">Полно име <span aria-hidden="true">*</span></label>
+          <input type="text" id="f-name" name="fullName" required autocomplete="name" aria-required="true" placeholder="Ана Петровска">
+          <span class="form-error" id="err-name" role="alert">Внесете го вашето полно име.</span>
+        </div>
+        <div class="form-group">
+          <label for="f-title">Позиција / Титула <span aria-hidden="true">*</span></label>
+          <input type="text" id="f-title" name="title" required aria-required="true" placeholder="Шеф на протокол">
+          <span class="form-error" id="err-title" role="alert">Внесете ја вашата позиција.</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="f-org">Институција / Организација <span aria-hidden="true">*</span></label>
+          <input type="text" id="f-org" name="organization" required aria-required="true" placeholder="Министерство за надворешни работи">
+          <span class="form-error" id="err-org" role="alert">Внесете ја вашата институција.</span>
+        </div>
+        <div class="form-group">
+          <label for="f-email">Е-пошта <span aria-hidden="true">*</span></label>
+          <input type="email" id="f-email" name="email" required autocomplete="email" aria-required="true" placeholder="ana.petrovska@mfa.gov.mk">
+          <span class="form-error" id="err-email" role="alert">Внесете валидна е-пошта.</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="f-country">Земја</label>
+        <select id="f-country" name="country" autocomplete="country-name">
+          <option value="">Изберете земја…</option>
+          <option>Северна Македонија</option>
+          <option>Албанија</option>
+          <option>Бугарија</option>
+          <option>Косово</option>
+          <option>Грција</option>
+          <option>Србија</option>
+          <option>Хрватска</option>
+          <option>Словенија</option>
+          <option>Босна и Херцеговина</option>
+          <option>Турција</option>
+          <option>Австрија</option>
+          <option>Германија</option>
+          <option>Франција</option>
+          <option>Италија</option>
+          <option>Велика Британија</option>
+          <option>Унгарија</option>
+          <option>Романија</option>
+          <option>Друга земја</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Заинтересирани сте за (може повеќе):</label>
+        <div class="form-checkboxes" role="group" aria-label="Тип на учество">
+          <label class="form-check"><input type="checkbox" name="interest[]" value="in-person"> Учество во живо (Охрид, Декември 2026)</label>
+          <label class="form-check"><input type="checkbox" name="interest[]" value="online"> Онлајн учество (Live stream)</label>
+          <label class="form-check"><input type="checkbox" name="interest[]" value="institutional-table"> Institutional Table (3 места + лого)</label>
+          <label class="form-check"><input type="checkbox" name="interest[]" value="paper"> Поднесување труд за WPA Journal</label>
+          <label class="form-check"><input type="checkbox" name="interest[]" value="speaker"> Учество како предавач / практичар</label>
+          <label class="form-check"><input type="checkbox" name="interest[]" value="wpa-partner"> WPA Institutional партнерство</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="f-topics">Теми или предлози (опционално)</label>
+        <textarea id="f-topics" name="topics" placeholder="Кои теми ве интересираат? Имате ли предлог за панел или работилница?"></textarea>
+      </div>
+      <p class="form-privacy">
+        Со поднесувањето на оваа форма се согласувате дека вашите контакт информации ќе бидат
+        користени исклучиво за комуникација поврзана со OPC 2026 и WPA активности.
+        Информациите нема да бидат споделени со трети страни.
+        <a href="https://worldprotocolacademy-code.github.io/privacy.html">Политика на приватност →</a>
+      </p>
+      <div style="margin-top:1.2rem;">
+        <button type="submit" class="btn-gold" style="display:inline-block;padding:.9rem 2.5rem;" aria-label="Поднеси пријава за OPC 2026">
+          Поднеси Expression of Interest →
+        </button>
+      </div>
+      <div id="form-status" class="form-status" role="alert" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <p style="font-size:.75rem;color:var(--muted);text-align:center;">
+    Прашања? Контактирајте на
+    <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--gold-dim);">worldprotocolacademy@gmail.com</a>
+  </p>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ VENUE ═══════ -->
+<section class="section-sm" aria-labelledby="venue-heading">
+  <span class="section-label">Место на одржување</span>
+  <h2 class="section-title" id="venue-heading">Hotel Inex Olgica · Охрид</h2>
+  <div class="venue-box">
+    <div class="venue-info">
+      <h3>Hotel Inex Olgica</h3>
+      <p class="vi-sub">Охрид · Охридско Езеро · УНЕСКО Светско наследство</p>
+      <p>Hotel Inex Olgica е едно од водечките конференциски хотели во Охрид,
+      со директен поглед на езерото и целосна конференциска инфраструктура.
+      Охрид е меѓународно препознатлив туристички и културен центар и идеална
+      локација за флагшип меѓународен настан.</p>
+    </div>
+    <div class="venue-details">
+      <div class="vd-row">
+        <span class="vd-icon" aria-hidden="true">📍</span>
+        <div><span class="vd-label">Адреса</span><div class="vd-val">Охрид, Република Северна Македонија</div></div>
+      </div>
+      <div class="vd-row">
+        <span class="vd-icon" aria-hidden="true">✈️</span>
+        <div><span class="vd-label">Транспорт</span><div class="vd-val">Аеродром Охрид (OHD) или Скопје (SKP) + трансфер</div></div>
+      </div>
+      <div class="vd-row">
+        <span class="vd-icon" aria-hidden="true">🏨</span>
+        <div><span class="vd-label">Сместување</span><div class="vd-val">Информации за групни цени по официјална потврда</div></div>
+      </div>
+      <div class="vd-row">
+        <span class="vd-icon" aria-hidden="true">🌍</span>
+        <div><span class="vd-label">УНЕСКО статус</span><div class="vd-val">Охрид — Светско природно и културно наследство</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="page-footer" role="contentinfo">
+  <p>
+    OPC 2026 · Ohrid Protocol Conference · World Protocol Academy ·
+    Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies ·
+    <a href="https://worldprotocolacademy-code.github.io/">Почетна</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/institute.html">Институт</a> ·
+    <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> ·
+    Скопје, Северна Македонија · 2026
+  </p>
+</footer>
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<script>
+// ══════════════════════════════════════════════
+// FORM CONFIGURATION
+// Set FORM_ENDPOINT to a real endpoint to enable
+// direct form submission (Formspree, etc.).
+// Leave as "NONE" to use email fallback.
+// ══════════════════════════════════════════════
+const FORM_CONFIG = {
+  ENDPOINT:      "NONE",   // e.g. "https://formspree.io/f/YOUR_FORM_ID"
+  CONTACT_EMAIL: "worldprotocolacademy@gmail.com"
+};
+
+// ── Countdown ──
+// Update TARGET_DATE when the official date is confirmed.
+const TARGET_DATE = new Date('2026-12-05T09:00:00');
+
+function updateCountdown() {
+  const diff = TARGET_DATE - new Date();
+  if (diff <= 0) {
+    ['cd-days','cd-hours','cd-min','cd-sec'].forEach(id => document.getElementById(id).textContent = '0');
+    return;
+  }
+  document.getElementById('cd-days').textContent  = String(Math.floor(diff / 86400000)).padStart(2,'0');
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+  document.getElementById('cd-min').textContent   = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+  document.getElementById('cd-sec').textContent   = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// ── Form submission ──
+document.getElementById('opc-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  // Field validation
+  let valid = true;
+
+  function validateField(id, errId, test) {
+    const el  = document.getElementById(id);
+    const err = document.getElementById(errId);
+    if (!test(el.value.trim())) {
+      err.style.display = 'block';
+      el.setAttribute('aria-invalid', 'true');
+      valid = false;
+    } else {
+      err.style.display = 'none';
+      el.setAttribute('aria-invalid', 'false');
+    }
+  }
+
+  validateField('f-name',  'err-name',  v => v.length >= 2);
+  validateField('f-title', 'err-title', v => v.length >= 2);
+  validateField('f-org',   'err-org',   v => v.length >= 2);
+  validateField('f-email', 'err-email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+
+  if (!valid) return;
+
+  const statusEl = document.getElementById('form-status');
+  const name  = document.getElementById('f-name').value.trim();
+  const org   = document.getElementById('f-org').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+
+  if (FORM_CONFIG.ENDPOINT !== 'NONE') {
+    // ── Real endpoint submission ──
+    const formData = new FormData(this);
+    statusEl.textContent = 'Се испраќа…';
+    statusEl.className   = 'form-status';
+    statusEl.style.display = 'block';
+
+    fetch(FORM_CONFIG.ENDPOINT, {
+      method:  'POST',
+      body:    formData,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(r => {
+      if (r.ok) {
+        statusEl.textContent  = '✓ Вашата пријава е успешно поднесена. WPA ќе ве контактира наскоро.';
+        statusEl.className    = 'form-status success';
+        document.getElementById('opc-form').reset();
+      } else {
+        throw new Error('Server error');
+      }
+    })
+    .catch(() => {
+      statusEl.textContent = '⚠ Грешка при испраќање. Обидете се повторно или пишете на ' + FORM_CONFIG.CONTACT_EMAIL;
+      statusEl.className   = 'form-status error';
+    });
+
+  } else {
+    // ── Email fallback ──
+    const interests = [...document.querySelectorAll('input[name="interest[]"]:checked')].map(c => c.value).join(', ');
+    const topics    = document.getElementById('f-topics').value.trim();
+
+    const body = [
+      'Име / Name: ' + name,
+      'Позиција / Title: ' + title,
+      'Институција / Organization: ' + org,
+      'Е-пошта / Email: ' + email,
+      'Интерес / Interest: ' + (interests || 'не е наведено'),
+      topics ? 'Теми / Topics: ' + topics : ''
+    ].filter(Boolean).join('\n');
+
+    const mailto = 'mailto:' + FORM_CONFIG.CONTACT_EMAIL
+      + '?subject=' + encodeURIComponent('OPC 2026 — Expression of Interest — ' + name)
+      + '&body='    + encodeURIComponent(body);
+
+    window.location.href = mailto;
+
+    statusEl.innerHTML    = '✓ Вашиот е-маил клиент ќе се отвори за испраќање на пријавата. '
+      + 'Ако тоа не се случи, пишете директно на <a href="mailto:' + FORM_CONFIG.CONTACT_EMAIL + '">' + FORM_CONFIG.CONTACT_EMAIL + '</a>.';
+    statusEl.className    = 'form-status success';
+    statusEl.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>

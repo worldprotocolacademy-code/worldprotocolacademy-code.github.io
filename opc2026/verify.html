@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Верификација на сертификат · World Protocol Academy</title>
+<meta name="description" content="Проверете ја автентичноста на WPA сертификат со уникатен сериски број или QR код. Официјална верификациска страница на World Protocol Academy.">
+<meta property="og:title" content="Верификација на WPA сертификат">
+<meta property="og:description" content="Официјална верификациска страница на World Protocol Academy. Внесете сериски ID за проверка на автентичноста.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://worldprotocolacademy-code.github.io/verify.html">
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/verify.html">
+
+<style>
+/* ── FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── TOKENS ── */
+:root {
+  --gold:       #B8960C;
+  --gold-light: #D4AF37;
+  --gold-dim:   #8A6E09;
+  --ink:        #0E0E0E;
+  --charcoal:   #181818;
+  --slate:      #222222;
+  --border:     #2A2520;
+  --border-s:   #333333;
+  --parchment:  #F5F2EB;
+  --cream:      #FFFDF7;
+  --muted:      #6B6258;
+  --text-body:  #C5B99A;
+  --green:      #16A34A;
+  --green-bg:   rgba(22,163,74,0.10);
+  --green-bdr:  rgba(22,163,74,0.30);
+  --red:        #DC2626;
+  --red-bg:     rgba(220,38,38,0.08);
+  --red-bdr:    rgba(220,38,38,0.30);
+  --amber:      #D97706;
+  --amber-bg:   rgba(217,119,6,0.08);
+  --amber-bdr:  rgba(217,119,6,0.30);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--ink); color: var(--parchment); line-height: 1.7; min-height: 100vh; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* ── HEADER ── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.1rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(14,14,14,0.97); position: sticky; top: 0; z-index: 100;
+}
+.logo { font-family:'Playfair Display',serif; font-size:.95rem; font-weight:700; color:var(--gold-light); text-decoration:none; letter-spacing:.04em; }
+.logo span { color:var(--parchment); font-weight:400; }
+.header-tag { font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+
+/* ── HERO ── */
+.hero {
+  max-width: 680px; margin: 0 auto;
+  padding: 4.5rem 2rem 3rem; text-align: center;
+}
+.eyebrow {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:1.2rem; display:block;
+}
+.hero h1 {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,4vw,2.7rem); font-weight:900; color:var(--cream); margin-bottom:1rem; line-height:1.1;
+}
+.hero-sub { font-size:.88rem; color:#A89E8A; line-height:1.8; }
+
+/* ── SEARCH BOX ── */
+.search-section {
+  max-width: 640px; margin: 0 auto; padding: 0 2rem 4rem;
+}
+
+/* Demo mode notice — shown only in demo mode */
+.demo-notice {
+  background: var(--amber-bg);
+  border: 1px solid var(--amber-bdr);
+  padding: .8rem 1.2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+  display: none; /* shown via JS when DEMO_MODE = true */
+}
+
+.search-box {
+  border: 1px solid var(--border-s);
+  background: var(--charcoal);
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+.search-label {
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:.6rem; display:block;
+}
+.search-row { display:flex; }
+.search-input {
+  flex: 1;
+  background: var(--slate); border: 1px solid var(--border-s); border-right: none;
+  color: var(--parchment);
+  font-family:'JetBrains Mono',monospace; font-size:.85rem; letter-spacing:.06em; text-transform:uppercase;
+  padding: .85rem 1rem;
+  outline: none; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--gold-dim); }
+.search-input::placeholder { color:var(--muted); text-transform:none; font-size:.78rem; letter-spacing:.02em; }
+.search-btn {
+  background: var(--gold); color: #000;
+  font-family:'JetBrains Mono',monospace; font-size:.65rem; font-weight:500; letter-spacing:.12em; text-transform:uppercase;
+  border: none; padding: .85rem 1.5rem; cursor: pointer; transition: background .15s; white-space:nowrap; flex-shrink:0;
+}
+.search-btn:hover, .search-btn:focus-visible { background: var(--gold-light); }
+.search-hint { font-size:.72rem; color:var(--muted); margin-top:.75rem; line-height:1.65; }
+.search-hint strong { color:var(--parchment); }
+
+/* Demo shortcut buttons — shown only in demo mode */
+.demo-shortcuts { margin-bottom:2rem; display:none; }
+.demo-shortcuts-label { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:.5rem; display:block; }
+.demo-shortcuts-row { display:flex; gap:.5rem; flex-wrap:wrap; }
+.demo-btn {
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--gold-dim); background:transparent; border:1px solid var(--border-s);
+  padding:.25rem .7rem; cursor:pointer; transition:border-color .15s,color .15s;
+}
+.demo-btn:hover, .demo-btn:focus-visible { border-color:var(--gold-dim); color:var(--gold-light); }
+
+/* ── RESULT STATES ── */
+.result-panel { display:none; margin-top:.5rem; }
+.result-panel.visible { display:block; }
+
+/* Loading */
+.result-loading {
+  display: none;
+  padding: 1.5rem; text-align: center;
+  font-family:'JetBrains Mono',monospace; font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+}
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+.result-loading::before { content:'◉'; display:block; font-size:1.2rem; color:var(--gold-dim); animation:pulse 1.2s infinite; margin-bottom:.5rem; }
+
+/* Valid certificate card */
+.cert-card { border:1px solid var(--green-bdr); background:var(--charcoal); overflow:hidden; margin-bottom:1rem; display:none; }
+.cert-card-header {
+  background:var(--green-bg); border-bottom:1px solid var(--green-bdr);
+  padding:1rem 1.5rem; display:flex; align-items:center; gap:.75rem; flex-wrap:wrap;
+}
+.cert-card-header .status-icon { font-size:1.1rem; flex-shrink:0; }
+.cert-card-header .status-text { font-family:'JetBrains Mono',monospace; font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--green); flex:1; }
+.cert-card-header .cert-id-display { font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.08em; color:var(--muted); }
+.cert-card-body { padding:1.8rem 1.5rem; }
+.cert-row { display:grid; grid-template-columns:140px 1fr; gap:.4rem 1rem; margin-bottom:.7rem; align-items:baseline; }
+.cert-row:last-child { margin-bottom:0; }
+.cr-label { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+.cr-value { font-size:.88rem; color:var(--parchment); }
+.cr-value.primary { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; color:var(--cream); }
+.cr-value.accent  { color:var(--gold-light); font-weight:500; }
+.cert-card-footer {
+  border-top:1px solid var(--border-s); padding:1rem 1.5rem;
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.75rem;
+}
+.cert-timestamp { font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.06em; color:var(--muted); }
+.cert-print-btn {
+  font-family:'JetBrains Mono',monospace; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); background:transparent; border:1px solid var(--border-s);
+  padding:.25rem .75rem; cursor:pointer; transition:color .15s,border-color .15s;
+}
+.cert-print-btn:hover, .cert-print-btn:focus-visible { color:var(--gold-light); border-color:var(--gold-dim); }
+
+/* Verification note */
+.verify-note {
+  border:1px solid var(--green-bdr); background:var(--green-bg);
+  padding:1rem 1.2rem; font-size:.78rem; color:#86EFAC; line-height:1.7; display:none;
+}
+.verify-note a { color:var(--gold-dim); }
+
+/* Not found */
+.result-notfound {
+  border:1px solid var(--red-bdr); background:var(--red-bg);
+  padding:1.5rem; margin-bottom:1rem; display:none;
+}
+.result-notfound h3 { font-family:'JetBrains Mono',monospace; font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--red); margin-bottom:.5rem; }
+.result-notfound p { font-size:.82rem; color:#A89E8A; line-height:1.7; }
+.result-notfound ul { margin:.65rem 0 .65rem 1.2rem; font-size:.8rem; color:#A89E8A; line-height:1.8; }
+.result-notfound a { color:var(--gold-dim); }
+
+/* Revoked / expired */
+.result-revoked {
+  border:1px solid var(--amber-bdr); background:var(--amber-bg);
+  padding:1.5rem; margin-bottom:1rem; display:none;
+}
+.result-revoked h3 { font-family:'JetBrains Mono',monospace; font-size:.65rem; letter-spacing:.14em; text-transform:uppercase; color:var(--amber); margin-bottom:.5rem; }
+.result-revoked p { font-size:.82rem; color:#A89E8A; line-height:1.7; }
+
+/* ── HOW IT WORKS ── */
+.how-section {
+  border-top:1px solid var(--border);
+  max-width:900px; margin:0 auto; padding:4rem 2rem;
+}
+.section-label { font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:.5rem; display:block; }
+.section-title { font-family:'Playfair Display',serif; font-size:clamp(1.3rem,2.5vw,1.9rem); font-weight:700; color:var(--cream); margin-bottom:2rem; }
+.steps-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:1px; background:var(--border); border:1px solid var(--border);
+}
+.step-cell { background:var(--charcoal); padding:1.5rem; }
+.step-cell .s-num { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:900; color:var(--gold-dim); line-height:1; margin-bottom:.65rem; display:block; }
+.step-cell h4 { font-size:.86rem; font-weight:600; color:var(--parchment); margin-bottom:.3rem; }
+.step-cell p { font-size:.76rem; color:var(--muted); line-height:1.55; }
+
+/* ── DISCLAIMER ── */
+.disclaimer-wrap { max-width:900px; margin:0 auto; padding:0 2rem 4rem; }
+.disclaimer-inner {
+  border:1px solid var(--border-s); padding:1.4rem 1.8rem;
+  font-size:.76rem; color:var(--muted); line-height:1.7;
+}
+.disclaimer-inner strong { color:var(--parchment); }
+.disclaimer-inner a { color:var(--gold-dim); }
+
+/* ── FOOTER ── */
+.page-footer {
+  border-top:1px solid var(--border); padding:2rem; text-align:center;
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+}
+.page-footer a { color:var(--gold-dim); text-decoration:none; }
+.page-footer a:hover { color:var(--gold-light); }
+
+hr.rule { border:none; border-top:1px solid var(--border); }
+
+/* ── PRINT ── */
+@media print {
+  .site-header,.search-section,.how-section,.disclaimer-wrap,.page-footer,.cert-print-btn,.demo-shortcuts,.demo-notice { display:none !important; }
+  body { background:#fff; color:#000; }
+  .cert-card { border-color:#999; }
+  .cert-card-header { background:#f5f5f5; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width:640px) {
+  .search-row { flex-direction:column; }
+  .search-input { border-right:1px solid var(--border-s); border-bottom:none; }
+  .cert-row { grid-template-columns:1fr; gap:.1rem; }
+  .cr-label { margin-top:.4rem; }
+  .hero, .search-section { padding-left:1.25rem; padding-right:1.25rem; }
+  .how-section, .disclaimer-wrap { padding-left:1.25rem; padding-right:1.25rem; }
+  .site-header { padding:1rem 1.25rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="site-header" role="banner">
+  <a class="logo" href="https://worldprotocolacademy-code.github.io/" aria-label="World Protocol Academy — Почетна">
+    WPA <span>· World Protocol Academy</span>
+  </a>
+  <span class="header-tag">Верификација на сертификат</span>
+</header>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero" aria-labelledby="verify-heading">
+  <span class="eyebrow">WPA · Официјална верификација · verify.html</span>
+  <h1 id="verify-heading">Верификација на WPA сертификат</h1>
+  <p class="hero-sub">
+    Внесете го сериски ID на сертификатот (формат:
+    <strong style="color:var(--gold-light);font-family:'JetBrains Mono',monospace;">WPA-YYYY-NNNNN</strong>)
+    за да проверите дали записот постои во официјалниот WPA регистар.
+  </p>
+</section>
+
+<!-- ═══════ SEARCH ═══════ -->
+<section class="search-section" aria-label="Верификациска форма">
+
+  <!-- Demo mode notice (hidden in production) -->
+  <div class="demo-notice" id="demo-notice" role="note">
+    ⚠ Demo режим · Ова е тест-база. За продукција, поврзете реален верификациски API.
+  </div>
+
+  <!-- Demo shortcuts (hidden in production) -->
+  <div class="demo-shortcuts" id="demo-shortcuts" aria-label="Тест примери">
+    <span class="demo-shortcuts-label">Тест примери (само во демо режим):</span>
+    <div class="demo-shortcuts-row">
+      <button class="demo-btn" onclick="loadDemo('WPA-2026-00142')" aria-label="Тест валиден сертификат 1">WPA-2026-00142</button>
+      <button class="demo-btn" onclick="loadDemo('WPA-2026-00089')" aria-label="Тест валиден сертификат 2">WPA-2026-00089</button>
+      <button class="demo-btn" onclick="loadDemo('WPA-2026-00001')" aria-label="Тест валиден сертификат 3">WPA-2026-00001</button>
+      <button class="demo-btn" onclick="loadDemo('WPA-2025-REVOKED')" aria-label="Тест повлечен сертификат">WPA-2025-REVOKED</button>
+      <button class="demo-btn" onclick="loadDemo('WPA-9999-XXXXX')" aria-label="Тест непостоечки ID">Не постои</button>
+    </div>
+  </div>
+
+  <!-- Search input -->
+  <div class="search-box">
+    <label class="search-label" for="cert-input">
+      Сериски број на сертификатот
+    </label>
+    <div class="search-row">
+      <input
+        type="text"
+        id="cert-input"
+        class="search-input"
+        placeholder="пример: WPA-2026-00142"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        maxlength="20"
+        aria-label="Внесете сериски број на WPA сертификат"
+        aria-describedby="search-hint"
+        oninput="clearResult()"
+      >
+      <button class="search-btn" onclick="verifyCert()" aria-label="Верифицирај сертификат">
+        Верифицирај →
+      </button>
+    </div>
+    <p class="search-hint" id="search-hint">
+      Серискиот број се наоѓа на <strong>долниот дел на сертификатот</strong>.
+      Скенирањето на <strong>QR кодот</strong> ќе ве однесе директно на оваа страница со претходно пополнет ID.
+      Внесете го ID точно онака како што е отпечатен.
+    </p>
+  </div>
+
+  <!-- Result panel -->
+  <div class="result-panel" id="result-panel" aria-live="polite" aria-atomic="true">
+
+    <!-- Loading -->
+    <div class="result-loading" id="result-loading" aria-label="Верификацијата е во тек">
+      Верификацијата е во тек…
+    </div>
+
+    <!-- Valid -->
+    <div class="cert-card" id="result-valid" role="region" aria-label="Резултат: валиден сертификат">
+      <div class="cert-card-header">
+        <span class="status-icon" aria-hidden="true">✅</span>
+        <span class="status-text">Записот е потврден · Сертификатот постои во WPA регистарот</span>
+        <span class="cert-id-display" id="r-cert-id"></span>
+      </div>
+      <div class="cert-card-body">
+        <div class="cert-row">
+          <span class="cr-label">Носител</span>
+          <span class="cr-value primary" id="r-name">—</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Сертификат</span>
+          <span class="cr-value accent" id="r-cert-type">—</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Програма</span>
+          <span class="cr-value" id="r-programme">—</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Оценка</span>
+          <span class="cr-value" id="r-grade">—</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Датум на издавање</span>
+          <span class="cr-value" id="r-date">—</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Издавач</span>
+          <span class="cr-value">World Protocol Academy · Скопје, Северна Македонија</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Авторитет</span>
+          <span class="cr-value">Доц. д-р Санде Смиљанов · Основач и програмски директор</span>
+        </div>
+        <div class="cert-row">
+          <span class="cr-label">Статус</span>
+          <span class="cr-value" id="r-status">—</span>
+        </div>
+      </div>
+      <div class="cert-card-footer">
+        <span class="cert-timestamp" id="r-timestamp">Верификација извршена: —</span>
+        <button class="cert-print-btn" onclick="window.print()" aria-label="Печати или зачувај PDF на верификацискиот запис">⎙ Печати / PDF</button>
+      </div>
+    </div>
+    <div class="verify-note" id="verify-note">
+      Верификацијата го потврдува само постоењето на записот во WPA системот.
+      За финална институционална потврда каде тоа е потребно, контактирајте го WPA директно:
+      <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+    </div>
+
+    <!-- Not found -->
+    <div class="result-notfound" id="result-notfound" role="alert">
+      <h3>Записот не е пронајден</h3>
+      <p>Бројот <strong id="r-invalid-id" style="font-family:'JetBrains Mono',monospace;color:var(--parchment);"></strong> не постои во WPA регистарот.</p>
+      <ul>
+        <li>Проверете го правописот на серискиот број.</li>
+        <li>Бројот може да е внесен со грешка (мали/големи букви, тире).</li>
+        <li>Сертификатот може да е издаден неодамна и сè уште да не е внесен во базата.</li>
+        <li>Ако имате сомнеж за автентичноста, контактирајте го WPA директно.</li>
+      </ul>
+      <p>Контакт за рачна верификација: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+    </div>
+
+    <!-- Revoked / expired -->
+    <div class="result-revoked" id="result-revoked" role="alert">
+      <h3>⚠ Сертификатот е повлечен или истечен</h3>
+      <p id="r-revoked-msg">Овој сертификатен запис постои во WPA системот, но неговиот статус е изменет. За детали, контактирајте го WPA директно: <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--gold-dim);">worldprotocolacademy@gmail.com</a></p>
+    </div>
+
+  </div><!-- /result-panel -->
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ HOW IT WORKS ═══════ -->
+<section class="how-section" aria-labelledby="how-heading">
+  <span class="section-label">Верификациски систем</span>
+  <h2 class="section-title" id="how-heading">Како функционира WPA верификацијата</h2>
+  <div class="steps-grid" role="list">
+    <div class="step-cell" role="listitem">
+      <span class="s-num">01</span>
+      <h4>Издавање на сертификатот</h4>
+      <p>По успешно завршување на програмата, WPA генерира уникатен сериски ID и QR код за секој учесник.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">02</span>
+      <h4>Регистрација во WPA регистарот</h4>
+      <p>Серискиот ID и основните податоци за носителот, програмата, оценката и датумот се внесуваат во официјалниот WPA регистар.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">03</span>
+      <h4>QR код за директен пристап</h4>
+      <p>QR кодот на сертификатот води директно на оваа страница со претходно пополнет сериски ID.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">04</span>
+      <h4>Јавна проверка</h4>
+      <p>Работодавачи, институции и партнери можат директно да проверат дали постои соодветен запис во WPA регистарот.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">05</span>
+      <h4>Постојана архива</h4>
+      <p>Записот останува достапен во WPA системот согласно важечката WPA политика за архивирање.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">06</span>
+      <h4>Директна потврда</h4>
+      <p>За случаи кои бараат финална институционална потврда, WPA може да биде контактиран директно.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ DISCLAIMER ═══════ -->
+<div class="disclaimer-wrap">
+  <div class="disclaimer-inner" role="note">
+    <strong>Напомена за верификацијата:</strong>
+    Оваа страница проверува дали сертификатен запис постои во WPA системот.
+    Верификацијата потврдува постоење на запис, но не заменува директна институционална потврда таму каде тоа е потребно.
+    За финална потврда, WPA може да биде контактиран на
+    <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>.
+    <br><br>
+    <strong>Напомена за природата на WPA сертификатите:</strong>
+    WPA сертификатите се професионални сертификати издадени од независна институционално-образовна платформа.
+    Тие не се дипломи за прв, втор или трет циклус и не претставуваат државна акредитација,
+    универзитетска диплома или замена за национални системи за акредитација.
+    <br><br>
+    <a href="https://worldprotocolacademy-code.github.io/privacy.html">Политика на приватност</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/rights-takedown.html">Rights &amp; Takedown</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/">World Protocol Academy</a>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="page-footer" role="contentinfo">
+  <p>
+    WPA · Верификација на сертификат · World Protocol Academy ·
+    Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies ·
+    <a href="https://worldprotocolacademy-code.github.io/">Почетна</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/certification.html">Сертификација</a> ·
+    <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> ·
+    Скопје, Северна Македонија · 2026
+  </p>
+</footer>
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<script>
+// ══════════════════════════════════════════════════════════════
+// VERIFICATION SYSTEM CONFIGURATION
+//
+// DEMO_MODE: set to false in production.
+//   When true, uses the local DEMO_DB below and shows demo UI.
+//
+// VERIFY_ENDPOINT: URL of your real verification backend.
+//   Set this to enable live lookups. Examples:
+//     Supabase Edge Function: "https://xxx.supabase.co/functions/v1/verify"
+//     Google Apps Script:     "https://script.google.com/macros/s/YOUR_ID/exec"
+//     Custom API:             "/api/verify"
+//   Leave as "NONE" when DEMO_MODE is true.
+//
+// CONTACT_EMAIL: WPA contact for manual verification.
+// ══════════════════════════════════════════════════════════════
+const VERIFY_CONFIG = {
+  DEMO_MODE:       true,
+  VERIFY_ENDPOINT: "NONE",
+  CONTACT_EMAIL:   "worldprotocolacademy@gmail.com"
+};
+
+// ── Demo database (used only when DEMO_MODE = true) ──
+// In production: remove or comment out DEMO_DB and set DEMO_MODE = false.
+// WARNING: Never expose real personal data in front-end JavaScript.
+const DEMO_DB = {
+  'WPA-2026-00001': {
+    name:     'Ана Петровска',
+    certType: 'WPA Foundation Certificate',
+    programme:'Foundation Certificate Programme · Protocol & Etiquette',
+    grade:    'Pass with Distinction',
+    issued:   '15 март 2026',
+    status:   'active'
+  },
+  'WPA-2026-00089': {
+    name:     'Marko Stojanovski',
+    certType: 'WPA Professional Certificate',
+    programme:'Professional Certificate Programme · State & Diplomatic Protocol',
+    grade:    'Pass',
+    issued:   '1 јуни 2026',
+    status:   'active'
+  },
+  'WPA-2026-00142': {
+    name:     'Elena Dimitriou',
+    certType: 'WPA Advanced Certificate',
+    programme:'Advanced Certificate Programme · Security, Communication & Multilateral Protocol',
+    grade:    'Pass with High Distinction',
+    issued:   '15 мај 2026',
+    status:   'active'
+  },
+  'WPA-2025-REVOKED': {
+    name:     '[Повлечен запис]',
+    certType: 'WPA Foundation Certificate',
+    programme:'Foundation Certificate Programme',
+    grade:    '—',
+    issued:   '1 јануари 2025',
+    status:   'revoked',
+    revokedReason: 'Записот е повлечен по барање. За детали, контактирајте го WPA.'
+  }
+};
+
+const STATUS_LABELS = {
+  active:  '✓ Активен',
+  expired: '⏳ Истечен',
+  revoked: '✗ Повлечен',
+  pending: '⏱ Во преглед'
+};
+
+// ── Show demo UI if in demo mode ──
+if (VERIFY_CONFIG.DEMO_MODE) {
+  document.getElementById('demo-notice').style.display    = 'block';
+  document.getElementById('demo-shortcuts').style.display = 'block';
+}
+
+// ── URL parameter auto-run: verify.html?id=WPA-2026-00142 ──
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (id) {
+    document.getElementById('cert-input').value = id.toUpperCase();
+    verifyCert();
+  }
+})();
+
+// ── Helpers ──
+function loadDemo(id) {
+  document.getElementById('cert-input').value = id;
+  verifyCert();
+}
+
+function clearResult() {
+  const panel = document.getElementById('result-panel');
+  panel.classList.remove('visible');
+  ['result-loading','cert-card','verify-note','result-notfound','result-revoked'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function showOnly(id) {
+  ['result-loading','cert-card','verify-note','result-notfound','result-revoked'].forEach(eid => {
+    document.getElementById(eid).style.display = (eid === id) ? 'block' : 'none';
+  });
+  document.getElementById('result-panel').classList.add('visible');
+  document.getElementById('result-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function renderValid(cert, rawId) {
+  document.getElementById('r-cert-id').textContent   = rawId;
+  // Use textContent instead of innerHTML so live API responses cannot inject HTML.
+  document.getElementById('r-name').textContent        = cert.name || '—';
+  document.getElementById('r-cert-type').textContent   = cert.certType || '—';
+  document.getElementById('r-programme').textContent   = cert.programme || '—';
+  document.getElementById('r-grade').textContent     = cert.grade;
+  document.getElementById('r-date').textContent      = cert.issued;
+  document.getElementById('r-status').textContent    = STATUS_LABELS[cert.status] || cert.status;
+  document.getElementById('r-status').style.color    = cert.status === 'active' ? 'var(--green)' : 'var(--amber)';
+  document.getElementById('r-timestamp').textContent = 'Верификација извршена: ' + new Date().toLocaleString('mk-MK');
+
+  document.getElementById('cert-card').style.display  = 'block';
+  document.getElementById('verify-note').style.display = 'block';
+}
+
+// ── Main verification function ──
+function verifyCert() {
+  const rawInput = document.getElementById('cert-input').value.trim().toUpperCase();
+  if (!rawInput) return;
+
+  document.getElementById('result-panel').classList.add('visible');
+  showOnly('result-loading');
+
+  if (VERIFY_CONFIG.DEMO_MODE || VERIFY_CONFIG.VERIFY_ENDPOINT === 'NONE') {
+    // ── Demo mode lookup ──
+    setTimeout(() => {
+      const cert = DEMO_DB[rawInput];
+      if (!cert) {
+        showOnly('result-notfound');
+        document.getElementById('r-invalid-id').textContent = rawInput;
+      } else if (cert.status === 'revoked' || cert.status === 'expired') {
+        showOnly('result-revoked');
+        if (cert.revokedReason) {
+          document.getElementById('r-revoked-msg').textContent = cert.revokedReason;
+        }
+      } else {
+        renderValid(cert, rawInput);
+        document.getElementById('result-loading').style.display = 'none';
+      }
+    }, 900);
+
+  } else {
+    // ── Real API lookup ──
+    // Replace VERIFY_CONFIG.VERIFY_ENDPOINT with your backend URL.
+    // Expected response JSON: { found: bool, status: string, name, certType, programme, grade, issued }
+    fetch(VERIFY_CONFIG.VERIFY_ENDPOINT + '?id=' + encodeURIComponent(rawInput), {
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(r => {
+      if (!r.ok) throw new Error('Network error');
+      return r.json();
+    })
+    .then(data => {
+      if (!data.found) {
+        showOnly('result-notfound');
+        document.getElementById('r-invalid-id').textContent = rawInput;
+      } else if (data.status === 'revoked' || data.status === 'expired') {
+        showOnly('result-revoked');
+        if (data.revokedReason) document.getElementById('r-revoked-msg').textContent = data.revokedReason;
+      } else {
+        renderValid(data, rawInput);
+        document.getElementById('result-loading').style.display = 'none';
+      }
+    })
+    .catch(() => {
+      showOnly('result-notfound');
+      document.getElementById('r-invalid-id').textContent = rawInput;
+      const errorLine = document.getElementById('result-notfound').querySelector('p:last-child');
+      errorLine.textContent = 'Настана грешка при верификацијата. Обидете се повторно или контактирајте: ' + VERIFY_CONFIG.CONTACT_EMAIL;
+    });
+  }
+}
+
+// ── Enter key support ──
+document.getElementById('cert-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') verifyCert();
+});
+</script>
+
+</body>
+</html>

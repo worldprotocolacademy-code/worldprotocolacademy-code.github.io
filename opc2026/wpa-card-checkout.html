@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA Card · Членство и пристап · World Protocol Academy</title>
+<meta name="description" content="WPA Card — дигитална членска картичка и пристап до програмите, сертификацијата и алатките на World Protocol Academy. Free, Pro, Academic Pro и Institutional нивоа.">
+<meta property="og:title" content="WPA Card · Членство и пристап · World Protocol Academy">
+<meta property="og:description" content="Изберете го членството кое одговара на вашата патека. World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://worldprotocolacademy-code.github.io/wpa-card-checkout.html">
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpa-card-checkout.html">
+
+<style>
+/* ── GOOGLE FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── DESIGN TOKENS ── */
+:root {
+  --gold:        #B8960C;
+  --gold-light:  #D4AF37;
+  --gold-dim:    #8A6E09;
+  --gold-pale:   rgba(184,150,12,0.12);
+  --ink:         #0E0E0E;
+  --charcoal:    #181818;
+  --slate:       #242424;
+  --border:      #2A2520;
+  --border-s:    #333333;
+  --parchment:   #F5F2EB;
+  --cream:       #FFFDF7;
+  --muted:       #6B6258;
+  --text-body:   #C5B99A;
+  --green:       #16A34A;
+  --green-bg:    rgba(22,163,74,0.10);
+  --green-bdr:   rgba(22,163,74,0.30);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--ink);
+  color: var(--parchment);
+  line-height: 1.7;
+}
+a { color: inherit; }
+img { max-width: 100%; }
+
+/* ── FOCUS VISIBILITY ── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── HEADER ── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 1.1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(14,14,14,0.97);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+.logo span { color: var(--parchment); font-weight: 400; }
+.header-back {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.header-back:hover, .header-back:focus-visible { color: var(--gold-light); }
+
+/* ── HERO ── */
+.hero {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 5rem 2rem 3.5rem;
+  text-align: center;
+}
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  color: var(--cream);
+  margin-bottom: 1.2rem;
+}
+.hero h1 em { font-style: italic; color: var(--gold-light); }
+.hero-sub {
+  font-size: 1rem;
+  color: #A89E8A;
+  max-width: 560px;
+  margin: 0 auto 2rem;
+  line-height: 1.85;
+}
+.trust-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  border: 1px solid var(--border-s);
+  padding: 0.7rem 1.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.trust-strip .ts-item { display: flex; align-items: center; gap: 0.4rem; }
+.trust-strip .ts-check { color: var(--green); }
+
+/* ── CARD DISCLAIMER ── */
+.card-disclaimer {
+  max-width: 760px;
+  margin: 2rem auto 0;
+  border-left: 3px solid var(--gold-dim);
+  background: var(--gold-pale);
+  padding: 0.9rem 1.2rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.card-disclaimer strong { color: var(--parchment); }
+
+/* ── PRICING SECTION ── */
+.pricing-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+/* Billing toggle */
+.billing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+.billing-toggle label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+.toggle-track {
+  width: 44px;
+  height: 24px;
+  background: var(--border-s);
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle-track.active { background: var(--gold); }
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle-track.active .toggle-knob { transform: translateX(20px); }
+.save-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: #000;
+  padding: 0.15rem 0.5rem;
+}
+
+/* Cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+/* Individual plan card */
+.plan-card {
+  background: var(--charcoal);
+  padding: 2.2rem 1.8rem 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.plan-card.featured {
+  background: var(--slate);
+  outline: 1px solid var(--gold-dim);
+  outline-offset: -1px;
+  z-index: 1;
+}
+.featured-badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: #000;
+  padding: 0.2rem 0.9rem;
+  white-space: nowrap;
+}
+.plan-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1rem;
+}
+.plan-price { margin-bottom: 0.4rem; }
+.plan-price .amount {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--cream);
+  line-height: 1;
+}
+.plan-price .currency { font-size: 1.2rem; vertical-align: super; color: var(--gold-light); }
+.plan-price .period {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.plan-price-note {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  min-height: 1.2rem;
+}
+.plan-target {
+  font-size: 0.75rem;
+  color: var(--gold-dim);
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+.plan-desc {
+  font-size: 0.82rem;
+  color: #A89E8A;
+  margin-bottom: 1.6rem;
+  line-height: 1.65;
+  flex-grow: 1;
+}
+.plan-features {
+  list-style: none;
+  margin-bottom: 2rem;
+}
+.plan-features li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  font-size: 0.79rem;
+  color: var(--text-body);
+  margin-bottom: 0.6rem;
+  line-height: 1.5;
+}
+.plan-features li::before {
+  content: '✓';
+  color: var(--green);
+  font-size: 0.72rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  font-weight: 700;
+}
+.plan-features li.dim { color: var(--muted); }
+.plan-features li.dim::before { content: '—'; color: var(--border-s); }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: var(--gold);
+  color: #000;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover, .btn-primary:focus-visible { background: var(--gold-light); }
+.btn-ghost {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: transparent;
+  color: var(--parchment);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--border-s);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:hover, .btn-ghost:focus-visible {
+  border-color: var(--gold-dim);
+  color: var(--gold-light);
+}
+.btn-contact {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: var(--slate);
+  color: var(--gold-light);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--gold-dim);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-contact:hover, .btn-contact:focus-visible { background: var(--gold-pale); }
+
+/* Payment link pending state */
+.btn-pending {
+  display: block;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  text-align: center;
+  background: var(--slate);
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px dashed var(--border-s);
+  cursor: default;
+}
+
+/* ── PAYMENT NOTICE ── */
+.payment-notice {
+  max-width: 800px;
+  margin: 2.5rem auto 0;
+  border: 1px solid var(--border-s);
+  padding: 1.2rem 1.6rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.payment-notice .icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+.payment-notice p {
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.payment-notice a { color: var(--gold-dim); }
+.payment-notice strong { color: var(--parchment); }
+
+/* ── AFTER PAYMENT SECTION ── */
+.after-payment {
+  max-width: 860px;
+  margin: 4rem auto 0;
+  padding: 0 2rem;
+}
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.3rem, 2.5vw, 1.9rem);
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 1.8rem;
+}
+.steps-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.step-cell {
+  background: var(--charcoal);
+  padding: 1.4rem;
+}
+.step-cell .s-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold-dim);
+  line-height: 1;
+  margin-bottom: 0.6rem;
+  display: block;
+}
+.step-cell h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--parchment);
+  margin-bottom: 0.3rem;
+}
+.step-cell p { font-size: 0.76rem; color: var(--muted); line-height: 1.55; }
+
+/* ── VERIFICATION SECTION ── */
+.verify-section {
+  border-top: 1px solid var(--border);
+  max-width: 900px;
+  margin: 4rem auto 0;
+  padding: 4rem 2rem;
+}
+.verify-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.verify-cell {
+  background: var(--charcoal);
+  padding: 1.5rem;
+}
+.verify-cell .vc-icon { font-size: 1.2rem; margin-bottom: 0.65rem; display: block; }
+.verify-cell h4 {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--parchment);
+  margin-bottom: 0.35rem;
+}
+.verify-cell p { font-size: 0.77rem; color: var(--muted); line-height: 1.55; }
+
+/* Sample certificate record */
+.cert-sample {
+  background: var(--slate);
+  border: 1px solid var(--border-s);
+  padding: 1.5rem 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cert-qr-box {
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  background: var(--ink);
+  border: 1px solid var(--border-s);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.5;
+}
+.cert-info { flex: 1; min-width: 200px; }
+.cert-id-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--gold-light);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.35rem;
+  display: block;
+}
+.cert-holder {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 0.25rem;
+}
+.cert-meta { font-size: 0.74rem; color: var(--muted); line-height: 1.5; }
+.cert-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--green-bg);
+  border: 1px solid var(--green-bdr);
+  padding: 0.22rem 0.7rem;
+  margin-top: 0.7rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+/* ── FAQ ── */
+.faq-section {
+  border-top: 1px solid var(--border);
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+.faq-item { border-bottom: 1px solid var(--border); padding: 1.4rem 0; }
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--parchment);
+  margin-bottom: 0.5rem;
+}
+.faq-a {
+  font-size: 0.82rem;
+  color: #A89E8A;
+  line-height: 1.75;
+}
+.faq-a a { color: var(--gold-dim); }
+
+/* ── SUPPORT BOX ── */
+.support-box {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+.support-inner {
+  background: var(--charcoal);
+  border: 1px solid var(--border-s);
+  padding: 1.8rem 2rem;
+  text-align: center;
+}
+.support-inner p {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.support-inner a {
+  color: var(--gold-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.page-footer a { color: var(--gold-dim); text-decoration: none; }
+.page-footer a:hover { color: var(--gold-light); }
+
+hr.rule { border: none; border-top: 1px solid var(--border); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 700px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .hero { padding: 3rem 1.25rem 2.5rem; }
+  .pricing-section { padding: 2rem 1.25rem 3rem; }
+  .verify-section,
+  .faq-section,
+  .after-payment { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .support-box { padding-left: 1.25rem; padding-right: 1.25rem; }
+  .site-header { padding: 1rem 1.25rem; }
+  .billing-toggle { gap: 0.6rem; }
+  .cert-sample { flex-direction: column; gap: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ HEADER ═══════ -->
+<header class="site-header" role="banner">
+  <a class="logo" href="https://worldprotocolacademy-code.github.io/" aria-label="World Protocol Academy — Почетна">
+    WPA <span>· World Protocol Academy</span>
+  </a>
+  <a class="header-back" href="https://worldprotocolacademy-code.github.io/">← Почетна</a>
+</header>
+
+<!-- ═══════ HERO ═══════ -->
+<section class="hero" aria-labelledby="hero-heading">
+  <span class="eyebrow">WPA Card · Членство и пристап · 2026</span>
+  <h1 id="hero-heading">Пристап до <em>World Protocol Academy</em></h1>
+  <p class="hero-sub">
+    WPA Card е вашата дигитална членска картичка за пристап до програмите,
+    сертификацијата, алатките и институционалните ресурси на Академијата.
+    Изберете го нивото кое одговара на вашата патека.
+  </p>
+  <div class="trust-strip" role="list">
+    <span class="ts-item" role="listitem"><span class="ts-check" aria-hidden="true">✓</span> Бесплатно стартување</span>
+    <span class="ts-item" role="listitem"><span class="ts-check" aria-hidden="true">✓</span> Откажување во секое време</span>
+    <span class="ts-item" role="listitem"><span class="ts-check" aria-hidden="true">✓</span> QR верификација на секој сертификат</span>
+  </div>
+  <!-- WPA Card disclaimer -->
+  <div class="card-disclaimer" role="note">
+    <strong>Напомена:</strong> WPA Card е институционална дигитална членска картичка и картичка за пристап
+    до образовните ресурси на World Protocol Academy. Таа не е официјален државен документ за идентификација.
+  </div>
+</section>
+
+<!-- ═══════ PRICING ═══════ -->
+<section class="pricing-section" aria-labelledby="pricing-heading">
+  <h2 id="pricing-heading" class="visually-hidden">Нивоа на членство</h2>
+
+  <!-- Billing toggle -->
+  <div class="billing-toggle" role="group" aria-label="Тип на наплата">
+    <label id="label-monthly">Месечно</label>
+    <div class="toggle-track active"
+         id="billing-toggle"
+         role="switch"
+         aria-checked="true"
+         tabindex="0"
+         aria-label="Префрли помеѓу месечна и годишна наплата"
+         onclick="toggleBilling()"
+         onkeydown="if(event.key==='Enter'||event.key===' ')toggleBilling()">
+      <div class="toggle-knob" aria-hidden="true"></div>
+    </div>
+    <label id="label-annual">Годишно &nbsp;<span class="save-badge">— 2 месеци бесплатно</span></label>
+  </div>
+
+  <div class="cards-grid" role="list">
+
+    <!-- FREE -->
+    <article class="plan-card" role="listitem" aria-labelledby="plan-free-name">
+      <div class="plan-name" id="plan-free-name">WPA Free</div>
+      <div class="plan-price">
+        <span class="currency" aria-hidden="true">€</span><span class="amount">0</span>
+      </div>
+      <div class="plan-price-note">Засекогаш бесплатно</div>
+      <p class="plan-target">За сите кои сакаат да ја запознаат WPA платформата</p>
+      <p class="plan-desc">
+        Основен пристап до јавните ресурси на WPA. Идеален за ориентација и запознавање
+        со академијата пред продолжување на следно ниво.
+      </p>
+      <ul class="plan-features" aria-label="Вклучено во Free план">
+        <li>Јавен пристап до WPA Journal (апстракти и Editor's Letter)</li>
+        <li>Protocol Symbols Lab — основен пристап</li>
+        <li>Virtual Sande — ограничени прашања</li>
+        <li>WPA Working Papers WP-001 до WP-004 (Zenodo)</li>
+        <li>Student Desk Beta</li>
+        <li class="dim">Premium WPAWS агенти</li>
+        <li class="dim">Сертификациски патеки</li>
+        <li class="dim">Journal архива</li>
+        <li class="dim">QR верификуван сертификат</li>
+      </ul>
+      <a href="https://worldprotocolacademy-code.github.io/" class="btn-ghost" aria-label="Започни бесплатно со WPA Free">
+        Започни бесплатно →
+      </a>
+    </article>
+
+    <!-- PRO -->
+    <article class="plan-card featured" role="listitem" aria-labelledby="plan-pro-name">
+      <div class="featured-badge" aria-label="Препорачано ниво">Препорачано</div>
+      <div class="plan-name" id="plan-pro-name">WPA Pro</div>
+      <div class="plan-price">
+        <span class="currency" aria-hidden="true">€</span>
+        <span class="amount" id="pro-price">49</span>
+        <span class="period" id="pro-period">&nbsp;/ година</span>
+      </div>
+      <div class="plan-price-note" id="pro-note">или €5 / месец при месечна наплата</div>
+      <p class="plan-target">За протоколарни професионалци, дипломати и сериозни учесници</p>
+      <p class="plan-desc">
+        Целосен пристап до алатките, содржините и напредните функции на WPA платформата.
+        Вклучува попусти на настани и приоритетна поддршка.
+      </p>
+      <ul class="plan-features" aria-label="Вклучено во Pro план">
+        <li>Сè од Free</li>
+        <li>WPAWS — напредни агенти (Протокол, Дипломатија, Истражување)</li>
+        <li>Virtual Sande — неограничени прашања</li>
+        <li>WP-005 нагоре — целосен PDF пристап</li>
+        <li>Premium Intelligence Feed</li>
+        <li>Попуст 25% на Practitioner Webinars</li>
+        <li>WPA Journal — целосни изданија</li>
+        <li>Дигитален WPA Pro беџ</li>
+        <li class="dim">Сертификациски испити (достапни по дополнителна цена)</li>
+        <li class="dim">Institutional тим-пристап</li>
+      </ul>
+      <button class="btn-primary" id="pro-btn" onclick="handlePayment('pro')" aria-label="Активирај WPA Pro членство">
+        Активирај WPA Pro →
+      </button>
+    </article>
+
+    <!-- ACADEMIC PRO -->
+    <article class="plan-card" role="listitem" aria-labelledby="plan-acad-name">
+      <div class="plan-name" id="plan-acad-name">WPA Academic Pro</div>
+      <div class="plan-price">
+        <span class="currency" aria-hidden="true">€</span>
+        <span class="amount" id="acad-price">79</span>
+        <span class="period" id="acad-period">&nbsp;/ година</span>
+      </div>
+      <div class="plan-price-note" id="acad-note">или €8 / месец при месечна наплата</div>
+      <p class="plan-target">За истражувачи, предавачи и PhD студенти</p>
+      <p class="plan-desc">
+        Целосна академска инфраструктура: цитирање, рецензии, journal поддршка
+        и целосни сертификациски патеки.
+      </p>
+      <ul class="plan-features" aria-label="Вклучено во Academic Pro план">
+        <li>Сè од Pro</li>
+        <li>WPAWS Academic режим — цитирање, рецензии, структура</li>
+        <li>Journal архива — сите изданија</li>
+        <li>Author Support &amp; Indexing Readiness Desk</li>
+        <li>Citation integrity проверка</li>
+        <li>Предност при Journal submission review</li>
+        <li>Попуст 50% на Practitioner Webinars</li>
+        <li>Целосни сертификациски патеки (Foundation + Professional)</li>
+        <li>QR верификуван дигитален сертификат</li>
+        <li class="dim">Institutional тим-пристап</li>
+      </ul>
+      <button class="btn-primary" id="acad-btn" onclick="handlePayment('academic')" aria-label="Активирај Academic Pro членство">
+        Активирај Academic Pro →
+      </button>
+    </article>
+
+    <!-- INSTITUTIONAL -->
+    <article class="plan-card" role="listitem" aria-labelledby="plan-inst-name">
+      <div class="plan-name" id="plan-inst-name">WPA Institutional</div>
+      <div class="plan-price">
+        <span class="currency" aria-hidden="true">€</span><span class="amount">499</span>
+        <span class="period">&nbsp;— €1.500 / год</span>
+      </div>
+      <div class="plan-price-note">Минимум 5 места · По договор</div>
+      <p class="plan-target">За министерства, амбасади, универзитети и корпоративни тимови</p>
+      <p class="plan-desc">
+        Прилагоден институционален пакет со тимски пристап, приоритетна поддршка
+        и директна соработка со WPA.
+      </p>
+      <ul class="plan-features" aria-label="Вклучено во Institutional план">
+        <li>Сè од Academic Pro — за цел тим</li>
+        <li>Custom training пакети (Meet / Zoom / Webex)</li>
+        <li>Executive Protocol Briefings (до 2 годишно)</li>
+        <li>Приоритетна поддршка (одговор во 24 часа)</li>
+        <li>Институционален WPA беџ за организацијата</li>
+        <li>PSPI Assessment (опционален додаток)</li>
+        <li>Годишен Protocol Audit (опционален додаток)</li>
+        <li>Именување во WPA Institutional Partners</li>
+      </ul>
+      <a href="mailto:worldprotocolacademy@gmail.com?subject=WPA%20Institutional%20Inquiry"
+         class="btn-contact"
+         aria-label="Контактирај WPA за Institutional понуда">
+        Побарај понуда →
+      </a>
+    </article>
+
+  </div><!-- /cards-grid -->
+
+  <!-- Payment notice -->
+  <div class="payment-notice" role="note">
+    <span class="icon" aria-hidden="true">🔒</span>
+    <p>
+      Плаќањата може да се процесираат преку <strong>LemonSqueezy</strong> — платформа која прифаќа
+      македонски и меѓународни картички и автоматски го пресметува ДДВ за дигитални производи.
+      За B2B плаќања (институции, амбасади) е достапна и банкарска уплата преку официјална профактура или фактура.
+      За прашања: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+    </p>
+  </div>
+
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ AFTER PAYMENT ═══════ -->
+<div class="after-payment">
+  <span class="section-label">По регистрацијата</span>
+  <h2 class="section-title">Што следи по активирањето?</h2>
+  <div class="steps-row" role="list">
+    <div class="step-cell" role="listitem">
+      <span class="s-num">01</span>
+      <h4>Плаќање или пријава</h4>
+      <p>Завршете ја уплатата или испратете барање за пристап. Процесирањето може да биде автоматско или рачно, зависно од избраниот начин на регистрација.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">02</span>
+      <h4>WPA потврда</h4>
+      <p>WPA ја регистрира вашата членска картичка и ги потврдува деталите на записот.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">03</span>
+      <h4>Активирање на пристапот</h4>
+      <p>Добивате потврда по е-пошта со пристап до ресурсите на вашето ниво.</p>
+    </div>
+    <div class="step-cell" role="listitem">
+      <span class="s-num">04</span>
+      <h4>WPA Card / беџ</h4>
+      <p>Дигиталниот WPA Card или беџ е издаден и достапен за преземање или прикажување.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="rule" style="margin-top:3rem;">
+
+<!-- ═══════ VERIFICATION ═══════ -->
+<section class="verify-section" aria-labelledby="verify-heading">
+  <span class="section-label">QR Верификација · Сертификати</span>
+  <h2 class="section-title" id="verify-heading">Секој WPA сертификат е јавно проверлив</h2>
+
+  <div class="verify-grid" role="list">
+    <div class="verify-cell" role="listitem">
+      <span class="vc-icon" aria-hidden="true">🔐</span>
+      <h4>Уникатен сериски ID</h4>
+      <p>Секој сертификат содржи генериран ID во форматот WPA-YYYY-NNNNN, поврзан со официјалниот WPA регистар.</p>
+    </div>
+    <div class="verify-cell" role="listitem">
+      <span class="vc-icon" aria-hidden="true">📱</span>
+      <h4>QR код за верификација</h4>
+      <p>Скенирајте го QR кодот на сертификатот за да отворите верификациска страница со деталите за сертификатот.</p>
+    </div>
+    <div class="verify-cell" role="listitem">
+      <span class="vc-icon" aria-hidden="true">🌐</span>
+      <h4>Јавно проверливо</h4>
+      <p>Работодавачи, институции и партнери можат да ја проверат автентичноста директно преку официјалната WPA верификациска страница.</p>
+    </div>
+    <div class="verify-cell" role="listitem">
+      <span class="vc-icon" aria-hidden="true">📋</span>
+      <h4>Постојана архива</h4>
+      <p>Записот останува активен во WPA системот без временско ограничување по издавање на сертификатот.</p>
+    </div>
+  </div>
+
+  <div class="cert-sample" role="region" aria-label="Пример на сертификатски запис">
+    <div class="cert-qr-box" aria-label="Место за QR код">
+      QR<br>→<br>verify.html<br>?id=WPA-<br>2026-00142
+    </div>
+    <div class="cert-info">
+      <span class="cert-id-label">WPA-2026-00142 · Демо запис</span>
+      <div class="cert-holder">WPA Professional Certificate</div>
+      <div class="cert-meta">
+        Програма: Professional Certificate Programme · State &amp; Diplomatic Protocol<br>
+        Издаден: 15 септември 2026 · World Protocol Academy · Скопје
+      </div>
+      <span class="cert-status-badge" aria-label="Статус: верификуван">✓ Верификацијата е потврдена</span>
+    </div>
+  </div>
+
+  <p style="font-size:0.75rem;color:var(--muted);margin-top:1.2rem;line-height:1.65;">
+    Верификацијата потврдува постоење на запис во WPA системот. За финална институционална потврда
+    каде тоа е потребно, контактирајте го WPA директно:
+    <a href="mailto:worldprotocolacademy@gmail.com" style="color:var(--gold-dim);">worldprotocolacademy@gmail.com</a>
+  </p>
+</section>
+
+<hr class="rule">
+
+<!-- ═══════ FAQ ═══════ -->
+<section class="faq-section" aria-labelledby="faq-heading">
+  <span class="section-label">Честопоставувани прашања</span>
+  <h2 class="section-title" id="faq-heading">WPA Card · FAQ</h2>
+
+  <div class="faq-item">
+    <h3 class="faq-q">Може ли да се откаже претплатата?</h3>
+    <p class="faq-a">Да, во секое време. LemonSqueezy овозможува самостојно откажување без потреба за контакт со поддршка. Пристапот останува активен до крајот на веќе платениот период.</p>
+  </div>
+  <div class="faq-item">
+    <h3 class="faq-q">Кои начини на плаќање се прифатени?</h3>
+    <p class="faq-a">Visa, Mastercard, American Express и PayPal преку LemonSqueezy. За институционални нарачки (€499+) е достапна и банкарска трансакција преку официјален invoice. Контакт: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+  </div>
+  <div class="faq-item">
+    <h3 class="faq-q">Дали WPA сертификатите се универзитетски степени?</h3>
+    <p class="faq-a">Не. WPA сертификатите се professional certificates издадени од независна институционално-образовна платформа. Тие не се bachelor, master или doctorate степени и не се претставуваат како такви. Нивната вредност произлегува од структурираната програма, оценувањето и јавно проверливата верификација.</p>
+  </div>
+  <div class="faq-item">
+    <h3 class="faq-q">Може ли да се смени планот подоцна?</h3>
+    <p class="faq-a">Да. Во секое време може да се надгради (upgrade) на повисоко ниво. За прашања поврзани со надградба, контактирајте: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+  </div>
+  <div class="faq-item">
+    <h3 class="faq-q">Постои ли попуст за студенти или земји во развој?</h3>
+    <p class="faq-a">Да. За студенти, истражувачи и апликанти од земји во развој е достапен waiver или намален надомест. Контактирајте на <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> со кратко образложение.</p>
+  </div>
+  <div class="faq-item">
+    <h3 class="faq-q">Дали Institutional планот вклучува обуки во живо?</h3>
+    <p class="faq-a">Да. Institutional планот вклучува до 2 Executive Protocol Briefings годишно (онлајн преку Meet/Zoom/Webex). Дополнителни сесии се договараат посебно. За целосна понуда: <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- ═══════ SUPPORT ═══════ -->
+<div class="support-box">
+  <div class="support-inner">
+    <p>Имате прашање за кое не нашовте одговор?<br>WPA е достапен за институционални прашања, барања за понуда и индивидуална поддршка.</p>
+    <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="page-footer" role="contentinfo">
+  <p>
+    World Protocol Academy · Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies ·
+    <a href="https://worldprotocolacademy-code.github.io/">Почетна</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/institute.html">Институт</a> ·
+    <a href="https://worldprotocolacademy-code.github.io/certification.html">Сертификација</a> ·
+    <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a> ·
+    Скопје, Северна Македонија · 2026
+  </p>
+</footer>
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<style>.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+<script>
+// ══════════════════════════════════════════════
+// PAYMENT LINKS CONFIGURATION
+// Replace the placeholder values below with your
+// real LemonSqueezy (or other provider) links.
+// ══════════════════════════════════════════════
+const PAYMENT_LINKS = {
+  pro_annual:      "REPLACE_WITH_PRO_ANNUAL_PAYMENT_LINK",
+  pro_monthly:     "REPLACE_WITH_PRO_MONTHLY_PAYMENT_LINK",
+  academic_annual: "REPLACE_WITH_ACADEMIC_ANNUAL_PAYMENT_LINK",
+  academic_monthly:"REPLACE_WITH_ACADEMIC_MONTHLY_PAYMENT_LINK"
+};
+
+const CONTACT_EMAIL = "worldprotocolacademy@gmail.com";
+
+// ── Billing toggle ──
+let isAnnual = true;
+
+const prices = {
+  pro: {
+    annual:  { price: '49', period: '/ година', note: 'или €5 / месец при месечна наплата',  key: 'pro_annual'  },
+    monthly: { price: '5',  period: '/ месец',  note: 'или €49 / година — заштеди 2 месеци', key: 'pro_monthly' }
+  },
+  academic: {
+    annual:  { price: '79', period: '/ година', note: 'или €8 / месец при месечна наплата',  key: 'academic_annual'  },
+    monthly: { price: '8',  period: '/ месец',  note: 'или €79 / година — заштеди 2 месеци', key: 'academic_monthly' }
+  }
+};
+
+function toggleBilling() {
+  isAnnual = !isAnnual;
+  const track = document.getElementById('billing-toggle');
+  track.classList.toggle('active', isAnnual);
+  track.setAttribute('aria-checked', isAnnual.toString());
+  const mode = isAnnual ? 'annual' : 'monthly';
+
+  document.getElementById('pro-price').textContent   = prices.pro[mode].price;
+  document.getElementById('pro-period').textContent  = ' ' + prices.pro[mode].period;
+  document.getElementById('pro-note').textContent    = prices.pro[mode].note;
+
+  document.getElementById('acad-price').textContent  = prices.academic[mode].price;
+  document.getElementById('acad-period').textContent = ' ' + prices.academic[mode].period;
+  document.getElementById('acad-note').textContent   = prices.academic[mode].note;
+}
+
+// ── Payment handler ──
+function handlePayment(plan) {
+  const mode = isAnnual ? 'annual' : 'monthly';
+  const key  = prices[plan][mode].key;
+  const link = PAYMENT_LINKS[key];
+
+  if (!link || link.startsWith('REPLACE_')) {
+    // Payment link not yet configured — fall back to contact email.
+    // This prevents users from being sent to a fake or broken checkout page.
+    alert('Линкот за плаќање е во финализација. Ве молиме контактирајте го WPA за рачна регистрација.');
+    const subject = encodeURIComponent('WPA ' + (plan === 'pro' ? 'Pro' : 'Academic Pro') + ' — Барање за регистрација');
+    const body    = encodeURIComponent('Ве молам испратете ми информации за активирање на WPA ' + (plan === 'pro' ? 'Pro' : 'Academic Pro') + ' членството.');
+    window.location.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + subject + '&body=' + body;
+  } else {
+    window.location.href = link;
+  }
+}
+</script>
+
+</body>
+</html>
