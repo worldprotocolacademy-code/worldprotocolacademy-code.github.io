@@ -287,12 +287,12 @@ section{padding:88px 0}
 .plink:hover{border-color:var(--gold);transform:translateX(3px)}
 .plink span:last-child{color:var(--goldd);font-size:12px}
 
-/* FOUNDER */
-.founder-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:48px;align-items:start}
-.founder-photo{border-radius:var(--r2);overflow:hidden;border:2px solid var(--line);box-shadow:var(--shm)}
-.founder-photo img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:var(--cream2)}
-.founder-title{color:var(--goldd);font-size:14px;font-weight:500;margin-bottom:20px;font-family:var(--fb)}
-.founder-content p{color:var(--muted);font-size:15px;line-height:1.75;margin-bottom:14px}
+/* AUTHOR / PLATFORM CREATOR */
+.platform-creator-grid{display:grid;grid-template-columns:1fr 1.3fr;gap:48px;align-items:start}
+.platform-creator-photo{border-radius:var(--r2);overflow:hidden;border:2px solid var(--line);box-shadow:var(--shm)}
+.platform-creator-photo img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:var(--cream2)}
+.platform-creator-title{color:var(--goldd);font-size:14px;font-weight:500;margin-bottom:20px;font-family:var(--fb)}
+.platform-creator-content p{color:var(--muted);font-size:15px;line-height:1.75;margin-bottom:14px}
 .doctrine{margin-top:20px;padding:20px 24px;border-left:3px solid var(--gold);background:var(--cream);border-radius:0 var(--r2) var(--r2) 0}
 .doctrine p{font-family:var(--fp);font-style:italic;font-size:19px;color:var(--navy);line-height:1.5;margin:0}
 .doctrine small{display:block;margin-top:8px;font-size:12px;color:var(--muted);font-family:var(--fb);font-style:normal}
@@ -392,7 +392,7 @@ section{padding:88px 0}
 
 /* RESPONSIVE */
 @media(max-width:1180px){
-  .hero-grid,.founder-grid{grid-template-columns:1fr}
+  .hero-grid,.platform-creator-grid{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr 1fr 1fr}
   .pub-grid,.pricing-grid,.g4{grid-template-columns:repeat(2,1fr)}
   .matrix-grid{grid-template-columns:repeat(2,1fr)}
@@ -437,18 +437,136 @@ section{padding:88px 0}
 .jump-menu-bar-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);align-self:center;margin-right:4px}
 .jmp{display:inline-block;padding:4px 12px;border:1px solid var(--line);border-radius:20px;color:var(--text);font-size:11px;font-weight:600;text-decoration:none;background:var(--white);transition:background .18s,border-color .18s}
 .jmp:hover{background:var(--cream2);border-color:var(--gold);text-decoration:none}
+
+
+/* ============================================================
+   WPA RISK-SAFE DEVELOPMENT / TEST PHASE NOTICE — 2026
+   Added for transparent platform status and institutional clarity.
+   ============================================================ */
+body::before{
+  content:"WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026";
+  position:fixed;
+  inset:-20%;
+  z-index:0;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(28px,6vw,82px);
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#0d1f3c;
+  opacity:.035;
+  transform:rotate(-28deg);
+  white-space:nowrap;
+}
+body > *{position:relative;z-index:1}
+.wpa-status-ribbon{
+  background:linear-gradient(90deg,#0d1f3c,#162947);
+  color:#f4e8c1;
+  border-top:1px solid rgba(201,168,76,.35);
+  border-bottom:1px solid rgba(201,168,76,.35);
+  padding:10px 18px;
+  text-align:center;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  font-size:12px;
+  line-height:1.55;
+  letter-spacing:.03em;
+}
+.wpa-status-ribbon strong{color:#e8d49a;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.wpa-identity-safe-card{
+  margin:18px auto;
+  max-width:1080px;
+  padding:18px 22px;
+  border:1px solid rgba(201,168,76,.38);
+  border-left:4px solid #c9a84c;
+  border-radius:8px;
+  background:rgba(255,255,255,.86);
+  color:#0d1f3c;
+  box-shadow:0 4px 24px rgba(13,31,60,.08);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+}
+.wpa-identity-safe-card .wpa-mk-name{font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;line-height:1.2;color:#0d1f3c}
+.wpa-identity-safe-card .wpa-en-name{font-family:Georgia,'Times New Roman',serif;font-size:18px;font-weight:600;line-height:1.25;color:#a8873a;margin-top:2px}
+.wpa-identity-safe-card .wpa-inst-mk{font-size:13.5px;font-weight:700;margin-top:10px;color:#0d1f3c}
+.wpa-identity-safe-card .wpa-inst-en{font-size:13px;font-style:italic;color:#5a6677;margin-top:2px}
+.wpa-identity-safe-card .wpa-safe-status{font-size:12.5px;line-height:1.65;margin-top:12px;color:#2c2c2c}
+.wpa-identity-safe-card .wpa-author-line{font-size:12.5px;line-height:1.6;margin-top:10px;color:#5a4220;font-weight:600}
+.wpa-legal-disclaimer{
+  margin:18px auto;
+  max-width:1080px;
+  padding:14px 18px;
+  border:1px solid rgba(90,66,32,.18);
+  border-left:4px solid #8b1e2c;
+  border-radius:6px;
+  background:rgba(245,240,224,.92);
+  color:#2c2c2c;
+  font-size:12.5px;
+  line-height:1.65;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+}
+
+
+/* ============================================================
+   WPA SAFE IDENTITY / TEST PHASE HEADER NOTICE — 2026
+   ============================================================ */
+.wpa-test-phase-header{
+  position:relative;
+  z-index:1002;
+  background:linear-gradient(135deg,#071326,#0d1f3c,#162947);
+  color:#f8f4ee;
+  border-bottom:1px solid rgba(201,168,76,.45);
+  padding:12px 18px;
+  text-align:center;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  box-shadow:0 4px 22px rgba(0,0,0,.18);
+}
+.wpa-test-phase-header strong{
+  display:block;
+  color:#e8d49a;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.wpa-test-phase-header span{
+  display:block;
+  font-size:11.5px;
+  line-height:1.45;
+  color:rgba(248,244,238,.78);
+}
+.wpa-test-phase-header em{
+  font-style:normal;
+  color:#e8d49a;
+}
+@media(max-width:640px){
+  .wpa-test-phase-header{padding:10px 12px}
+  .wpa-test-phase-header strong{font-size:10.5px;letter-spacing:.05em}
+  .wpa-test-phase-header span{font-size:10.5px}
+}
+
 </style>
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalOrganization","name":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална образовна и авторска платформа во развој и платформа за протокол, дипломатија, безбедност и институционална комуникација.","founder":{"@type":"Person","name":"Sande Smiljanov"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална образовна и авторска платформа во развој и платформа за протокол, дипломатија, безбедност и институционална комуникација.","platform creator":{"@type":"Person","name":"Sande Smiljanov"}}</script>
 </head>
 <body id="top" data-page="index">
+
+<div class="wpa-test-phase-header" role="note" aria-label="WPA development and test phase notice">
+  <strong>СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · WORLD PROTOCOL ACADEMY</strong>
+  <span>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии · Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>
+  <span>Независна дигитална образовна, истражувачка и авторска платформа · <em>Развојна, тест и пробна фаза — 2026</em> · Development, Testing and Pilot Phase — 2026</span>
+</div>
+
+
 <div id="tbar"></div>
 
 <!-- ANNOUNCE BAR -->
 <div class="announce">
   <div class="container announce-inner">
-    <div><strong data-i18n="a_top.1">World Protocol Academy</strong> — <span data-i18n="topbar1">премиум институционално-образовна платформа во развој за протокол, дипломатија, безбедност и институционална комуникација.</span></div>
-    <div data-i18n="topbar2">Водена од основач · AI-поддржана · WPAWS · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></div>
+    <div><strong data-i18n="a_top.1">Светска академија за протокол · World Protocol Academy</strong> — <span data-i18n="topbar1">независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 за протокол, дипломатија, безбедност и институционална комуникација.</span></div>
+    <div data-i18n="topbar2">Авторски креирана платформа · AI-поддржана · WPAWS · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></div>
   </div>
 </div>
 
@@ -460,7 +578,7 @@ section{padding:88px 0}
         <img src="https://worldprotocolacademy-code.github.io/logo.png" alt="WPA" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--goldl);font-family:var(--fd);font-size:18px;font-weight:700&quot;>WPA</span>'">
       </div>
       <div class="brand-text">
-        <h1 data-i18n="a_header.1">World Protocol Academy</h1>
+        <h1 data-i18n="a_header.1">Светска академија за протокол<br><span style="font-size:.82em;color:var(--goldd)">World Protocol Academy</span></h1>
         <p data-i18n="brandSub">Протокол · Дипломатија · Безбедност · Комуникација</p>
       </div>
     </a>
@@ -491,7 +609,7 @@ section{padding:88px 0}
           <li><a href="wpaws/protocol-symbols/" data-i18n="navSymbols">Симболи</a></li>
           <li><a href="student-desk/">Student Desk Beta</a></li>
           <li><a href="#pricing" data-i18n="navPricing">Членство</a></li>
-          <li><a href="#founder" data-i18n="navFounder">Основач</a></li>
+          <li><a href="#platform creator" data-i18n="navPlatform Creator">Креатор на платформата</a></li>
           <li><a href="#sources-policy" data-i18n="a_nav.9">Политика</a></li>
         </ul>
       </nav>
@@ -515,8 +633,8 @@ section{padding:88px 0}
   <div class="container hero-grid">
     <div>
       <div class="hero-eyebrow" data-i18n="eyebrow">Независна дигитална образовна и авторска платформа во развој · Глобална перспектива</div>
-      <h2 data-i18n="heroH2">Каде што протоколот се среќава со <em>дипломатијата</em>, безбедноста и достоинството.</h2>
-      <p class="hero-sub" data-i18n="heroP">World Protocol Academy е независна дигитална образовна и авторска платформа во развој, фокусирана на протокол, дипломатија, безбедност, институционална комуникација и AI-поддржано учење.</p>
+      <h2 data-i18n="heroH2">Светска академија за протокол<br><em>World Protocol Academy</em></h2>
+      <p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Institute for Protocol, Diplomacy, Public Communication and Security Studies</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.</p>
       <div class="hero-actions">
         <a href="programmes.html" class="btn btn-gold" data-i18n="heroBtn1">Истражете ја WPA</a>
         <a href="#ai" class="btn btn-ghost" data-i18n="heroBtn2">Запознајте го Virtual Sande</a>
@@ -711,7 +829,7 @@ section{padding:88px 0}
         <ul class="card-list" style="margin-top:14px">
           <li data-i18n="a_platform.3">Независна дигитална образовна и авторска платформа во развој</li>
           <li data-i18n="a_platform.4">Мултислоен образовен систем</li>
-          <li data-i18n="a_platform.5">Основач-воден со 25+ години институционално искуство</li>
+          <li data-i18n="a_platform.5">Креирана и уредувана од авторот, со 25+ години институционално искуство со 25+ години институционално искуство</li>
         </ul>
       </div>
       <div class="platform-card" style="border-left:3px solid var(--gold)">
@@ -803,7 +921,7 @@ section{padding:88px 0}
           Нашата цел не е симболично присуство, туку мерлива професионална подготвеност. Затоа WPA работи со јасно структурирани програми, практични задачи, сценарио-базирано учење, оценување, верификација и постепена прогресија на знаење и компетенции.
         </p>
         <p style="font-size:15.5px;color:var(--muted);line-height:1.75;margin-bottom:18px" data-i18n="a_wpa_manifest.4">
-          WPA не се претставува како државна дипломатска академија или универзитетска институција што доделува академски степени. Таа се позиционира како институционално-образовна платформа во развој за професионално, извршно и институционално образование, со сопствен систем на certificate programmes, training pathways и јавна интелектуална основа.
+          WPA не се претставува како државна дипломатска академија или универзитетска институција што доделува академски степени. Таа се позиционира како независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 за професионално, извршно и институционално образование, со сопствен систем на certificate programmes, training pathways и јавна интелектуална основа.
         </p>
         <p style="font-size:15.5px;color:var(--muted);line-height:1.75;margin-bottom:24px" data-i18n="a_wpa_manifest.5">
           Во рамките на WPA, протоколот не се третира само како церемонија, туку како поредок, подготвеност, институционална интелигенција, дисциплина на комуникација и кредибилна јавна репрезентација.
@@ -1028,13 +1146,13 @@ section{padding:88px 0}
     <div class="sh">
       <div class="section-label" data-i18n="a_cert_faq.15">Certificates &amp; Recognition</div>
       <h3 class="section-title" data-i18n="a_cert_faq.1">Сертификација, верификација и институционална јасност</h3>
-      <p class="section-lead" data-i18n="a_cert_faq.2">WPA сертификатите се професионални сертификати од институционално-образовна платформа во развој. Тие не се универзитетски степени и не се претставуваат како автоматски државно или академски признаени во секоја земја.</p>
+      <p class="section-lead" data-i18n="a_cert_faq.2">WPA сертификатите се професионални сертификати од независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026. Тие не се универзитетски степени и не се претставуваат како автоматски државно или академски признаени во секоја земја.</p>
     </div>
     <div class="g2">
-      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.16">Прашање 01</div><h4 class="faq-q" data-i18n="a_cert_faq.3">Дали WPA програмите се додипломски, последипломски или докторски студии?</h4><p class="faq-a" data-i18n="a_cert_faq.4">Не. WPA програмите не се универзитетски студиски циклуси и не се претставуваат како bachelor, master или doctorate degrees. World Protocol Academy е институционално-образовна платформа во развој и професионална платформа која нуди structured non-degree professional education, certification pathways и institutional training.</p></div>
+      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.16">Прашање 01</div><h4 class="faq-q" data-i18n="a_cert_faq.3">Дали WPA програмите се додипломски, последипломски или докторски студии?</h4><p class="faq-a" data-i18n="a_cert_faq.4">Не. WPA програмите не се универзитетски студиски циклуси и не се претставуваат како bachelor, master или doctorate degrees. World Protocol Academy е независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 и професионална платформа која нуди structured non-degree professional education, certification pathways и institutional training.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.17">Прашање 02</div><h4 class="faq-q" data-i18n="a_cert_faq.5">Тогаш што претставуваат WPA програмите?</h4><p class="faq-a" data-i18n="a_cert_faq.6">WPA програмите претставуваат професионални certificate programmes со јасна структура, нивоа, learning outcomes, assessment logic, практична примена и верификација. Тие се наменети за индивидуален професионален развој, институционална подготвеност и извршно учење.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.18">Прашање 03</div><h4 class="faq-q" data-i18n="a_cert_faq.7">Како да се разберат четирите WPA нивоа?</h4><p class="faq-a" data-i18n="a_cert_faq.8">Четирите WPA нивоа треба да се разберат како структурирана професионална прогресија: Foundation, Professional, Advanced и Train-the-Trainer / Consultant. Тоа е certificate-based progression pathway, а не формален универзитетски degree system.</p></div>
-      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.19">Прашање 04</div><h4 class="faq-q" data-i18n="a_cert_faq.9">Дали WPA сертификатите се признаени во светот?</h4><p class="faq-a" data-i18n="a_cert_faq.10">WPA сертификатите се професионални сертификати од институционално-образовна платформа во развој. Нивната вредност произлегува од јасно дефинирани programme structures, learning outcomes, assessment logic, serial verification, дигитална проверка и реална професионална применливост.</p></div>
+      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.19">Прашање 04</div><h4 class="faq-q" data-i18n="a_cert_faq.9">Дали WPA сертификатите се признаени во светот?</h4><p class="faq-a" data-i18n="a_cert_faq.10">WPA сертификатите се професионални сертификати од независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026. Нивната вредност произлегува од јасно дефинирани programme structures, learning outcomes, assessment logic, serial verification, дигитална проверка и реална професионална применливост.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.20">Прашање 05</div><h4 class="faq-q" data-i18n="a_cert_faq.11">Што му кажува WPA сертификатот на работодавач или партнер?</h4><p class="faq-a" data-i18n="a_cert_faq.12">WPA сертификатот покажува дека носителот поминал низ структурирана обука, дефинирани содржини, ниво на оценување и јасно утврдена професионална патека — веродостоен доказ за завршена подготовка во протокол, дипломатија, институционална комуникација и јавна појава.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.21">Прашање 06</div><h4 class="faq-q" data-i18n="a_cert_faq.13">Дали WPA ќе има систем за верификација?</h4><p class="faq-a" data-i18n="a_cert_faq.14">Да. WPA се движи кон сертификациски модел со serial verification, digital verification и јасна programme traceability, со цел секој сертификат да биде проверлив, кредибилен и јасно врзан со конкретно ниво, програма и носител.</p></div>
     </div>
@@ -1146,7 +1264,7 @@ section{padding:88px 0}
     <div class="sh">
       <div class="section-label" data-i18n="a_bibliography.5">Официјална библиографија</div>
       <h3 class="section-title" data-i18n="a_bibliography.1">World Protocol Academy Bibliography</h3>
-      <p class="section-lead" data-i18n="a_bibliography.2">Доц. д-р Санде Смиљанов · Основач и програмски директор на WPA · Вонреден професор</p>
+      <p class="section-lead" data-i18n="a_bibliography.2">Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Вонреден професор</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px">
       <div style="padding:20px 22px;background:var(--navy);color:var(--goldl);border-radius:var(--r2);text-align:center">
@@ -1188,50 +1306,50 @@ section{padding:88px 0}
 </section>
 
 <!-- FOUNDER -->
-<section id="founder" class="accent">
+<section id="platform creator" class="accent">
   <div class="container">
     <div class="sh">
-      <div class="section-label" data-i18n="founderLabel">Основач</div>
-      <h3 class="section-title" data-i18n="founderH3">Водена од основач. Академска по дух. Професионална по изведба.</h3>
+      <div class="section-label" data-i18n="platform creatorLabel">Креатор на платформата</div>
+      <h3 class="section-title" data-i18n="platform creatorH3">Авторски креирана платформа. Академска по дух. Професионална по изведба.</h3>
     </div>
 
-    <div class="founder-grid">
-      <div class="founder-photo" style="position:relative;background:linear-gradient(135deg,#5f4716 0%,#9a7728 35%,#c9a84c 58%,#6f5418 100%);padding:12px;border:2px solid #7b5f1f;box-shadow:0 24px 80px rgba(111,84,24,.38);">
-        <img src="Founder.jpg" alt="Доц. д-р Санде Смиљанов" style="border-radius:6px;filter:contrast(1.02) saturate(1.03);">
+    <div class="platform-creator-grid">
+      <div class="platform-creator-photo" style="position:relative;background:linear-gradient(135deg,#5f4716 0%,#9a7728 35%,#c9a84c 58%,#6f5418 100%);padding:12px;border:2px solid #7b5f1f;box-shadow:0 24px 80px rgba(111,84,24,.38);">
+        <img src="Platform Creator.jpg" alt="Доц. д-р Санде Смиљанов" style="border-radius:6px;filter:contrast(1.02) saturate(1.03);">
       </div>
 
-      <div class="founder-content">
-        <div class="card-kicker" data-i18n="a_founder.4">Основач и програмски директор на WPA</div>
+      <div class="platform-creator-content">
+        <div class="card-kicker" data-i18n="a_platform_creator.4">Автор · Истражувач · Креатор на платформата</div>
 
-        <h3 style="font-family:var(--fp);font-size:40px;color:var(--navy);margin-bottom:8px" data-i18n="founderName">
+        <h3 style="font-family:var(--fp);font-size:40px;color:var(--navy);margin-bottom:8px" data-i18n="platformCreatorName">
           Доц. д-р Санде Смиљанов
         </h3>
 
-        <p class="founder-title" data-i18n="a_founder.1">
-          Основач и програмски директор на WPA
+        <p class="platform-creator-title" data-i18n="a_platform_creator.1">
+          Автор · Истражувач · Креатор на платформата
         </p>
 
-        <p data-i18n="founderBio">
-          Основач на World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (25 вкупно публикации).
+        <p data-i18n="platform creatorBio">
+          Креатор на платформата World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (25 вкупно публикации).
         </p>
 
-        <p data-i18n="founderDoc">
+        <p data-i18n="platform creatorDoc">
           25+ години практично дипломатско и протоколарно искуство.
         </p>
 
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0">
-          <div class="pill" style="justify-content:center" data-i18n="a_founder.5">25 публикации</div>
-          <div class="pill" style="justify-content:center" data-i18n="a_founder.6">25+ години</div>
-          <div class="pill" style="justify-content:center" data-i18n="a_founder.7">Founder-led WPA</div>
+          <div class="pill" style="justify-content:center" data-i18n="a_platform_creator.5">25 публикации</div>
+          <div class="pill" style="justify-content:center" data-i18n="a_platform_creator.6">25+ години</div>
+          <div class="pill" style="justify-content:center" data-i18n="a_platform_creator.7">Authorial WPA platform</div>
         </div>
 
         <div class="doctrine">
-          <p data-i18n-html="a_founder.2">„Преговарањето е опционално.<br>Протоколот е апсолутен.“</p>
-          <small data-i18n="a_founder.3">— Доктрина на Доц. д-р Санде Смиљанов</small>
+          <p data-i18n-html="a_platform_creator.2">„Преговарањето е опционално.<br>Протоколот е апсолутен.“</p>
+          <small data-i18n="a_platform_creator.3">— Доктрина на Доц. д-р Санде Смиљанов</small>
         </div>
 
-        <p data-i18n="founderModel" style="margin-top:18px">
-          WPA е изградена врз модел воден од основач кој комбинира реално институционално искуство, академски публикации, структурирано учење и архитектура насочена кон иднината.
+        <p data-i18n="platform creatorModel" style="margin-top:18px">
+          WPA е изградена врз модел воден од креатор на платформата кој комбинира реално институционално искуство, академски публикации, структурирано учење и архитектура насочена кон иднината.
         </p>
       </div>
     </div>
@@ -2197,16 +2315,24 @@ section{padding:88px 0}
 <!-- FOOTER -->
 
 
+
+<div class="wpa-legal-disclaimer">
+  <strong>Светска академија за протокол — World Protocol Academy</strong><br>
+  Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies<br>
+  Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.<br>
+  WPA is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. The views expressed in WPA publications are solely those of the respective authors and do not represent the views, policies or positions of any governmental institution, ministry, agency or employer.
+</div>
+
 <footer class="footer">
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <h4 data-i18n="a_footer.1">World Protocol Academy</h4>
-        <p data-i18n="ftWpaDesc">Независна дигитална образовна и авторска платформа во развој и професионална платформа фокусирана на протокол, дипломатија, сертификација, WPA Card, partnerships and member benefits, безбедност и институционална комуникација.</p>
+        <h4 data-i18n="a_footer.1">Светска академија за протокол<br>World Protocol Academy</h4>
+        <p data-i18n="ftWpaDesc">Независна дигитална образовна и авторска платформа во развој фокусирана на протокол, дипломатија, сертификација, WPA Card, partnerships and member benefits, безбедност и институционална комуникација.</p>
         <p style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3)" data-i18n="a_footer.2">
           WPA е програмската куќа и дигиталната рамка. Не се претставува како државна дипломатска академија. WPA сертификатите и записите се независни проверливи сертификатски записи — не се државни универзитетски степени, професионални лиценци, ниту автоматска замена за надворешни системи за индексирање и акредитација (ORCID · Scopus · Web of Science · Google Scholar · Crossref). WPA не продава рангирање и не гарантира академско признавање од трети институции.
         </p>
-<p data-wpa-lang-note="" style="margin-top:10px;font-size:11px;line-height:1.5;color:rgba(255,255,255,.45);max-width:560px" data-i18n="a_footer.3">Основните интерфејс-јазици се македонски и англиски. Проширената јазична поддршка постепено се активира.</p>
+<p data-wpa-lang-note="" style="margin-top:10px;font-size:11px;line-height:1.5;color:rgba(255,255,255,.45);max-width:560px" data-i18n="a_footer.3">Основните јазици на интерфејсот се македонски и англиски. Проширената јазична поддршка постепено се активира.</p>
       </div>
       <div class="footer-col">
         <h5 data-i18n="ftKeyAreas">Клучни области</h5>
@@ -3448,7 +3574,7 @@ if(document.readyState==='loading'){
           { href: "passive-revenue.html", label: "Partnerships & Member Benefits" },
           { href: "#ai", label: "AI" },
           { href: "#publications", label: "Publications" },
-          { href: "#founder", label: "Founder" },
+          { href: "#platform creator", label: "Platform Creator" },
           { href: "#contact", label: "Contact" }
         ];
       }
