@@ -526,10 +526,24 @@ body > *{position:relative;z-index:1}
 .wpa-test-phase-header strong{
   display:block;
   color:#e8d49a;
-  font-size:12px;
-  letter-spacing:.08em;
+  margin-bottom:6px;
   text-transform:uppercase;
-  margin-bottom:4px;
+}
+.wpa-test-phase-header .wpa-name-mk{
+  display:block;
+  font-size:15px;
+  line-height:1.25;
+  letter-spacing:.105em;
+  font-weight:800;
+}
+.wpa-test-phase-header .wpa-name-en{
+  display:block;
+  margin-top:2px;
+  font-size:12px;
+  line-height:1.25;
+  letter-spacing:.12em;
+  color:rgba(232,212,154,.92);
+  font-weight:700;
 }
 .wpa-test-phase-header span{
   display:block;
@@ -541,11 +555,45 @@ body > *{position:relative;z-index:1}
   font-style:normal;
   color:#e8d49a;
 }
+.wpa-test-phase-header .wpa-status-line{
+  margin-top:8px;
+  padding:7px 12px;
+  border:1px solid rgba(232,212,154,.42);
+  background:rgba(201,168,76,.10);
+  border-radius:999px;
+}
+.wpa-test-phase-header .wpa-status-mk,
+.wpa-test-phase-header .wpa-status-en{
+  display:block;
+  color:#f4e8c1;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.105em;
+  line-height:1.25;
+}
+.wpa-test-phase-header .wpa-status-mk{font-size:14px}
+.wpa-test-phase-header .wpa-status-en{font-size:11.5px;color:rgba(244,232,193,.90);margin-top:2px}
+.wpa-test-phase-header .wpa-platform-line{
+  margin-top:6px;
+  font-size:11px;
+  color:rgba(248,244,238,.72);
+}
 @media(max-width:640px){
   .wpa-test-phase-header{padding:10px 12px}
-  .wpa-test-phase-header strong{font-size:10.5px;letter-spacing:.05em}
+  .wpa-test-phase-header .wpa-name-mk{font-size:12px;letter-spacing:.06em}
+  .wpa-test-phase-header .wpa-name-en{font-size:10px;letter-spacing:.08em}
   .wpa-test-phase-header span{font-size:10.5px}
+  .wpa-test-phase-header .wpa-status-mk{font-size:11px;letter-spacing:.06em}
+  .wpa-test-phase-header .wpa-status-en{font-size:9.5px;letter-spacing:.06em}
 }
+
+
+
+/* WPA v3 brand visibility fix */
+.brand-text h1{line-height:1.08;font-size:17px}
+.brand-text h1 .wpa-brand-en{display:block;font-size:.78em;color:var(--goldd);letter-spacing:.02em;margin-top:2px}
+.brand-text p{max-width:360px;line-height:1.25}
+@media(max-width:760px){.brand-text h1{font-size:15px}.brand-text p{font-size:10px;max-width:280px}}
 
 </style>
 
@@ -554,9 +602,10 @@ body > *{position:relative;z-index:1}
 <body id="top" data-page="index">
 
 <div class="wpa-test-phase-header" role="note" aria-label="WPA development and test phase notice">
-  <strong>СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · WORLD PROTOCOL ACADEMY</strong>
+  <strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>
   <span>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии · Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>
-  <span>Независна дигитална образовна, истражувачка и авторска платформа · <em>Развојна, тест и пробна фаза — 2026</em> · Development, Testing and Pilot Phase — 2026</span>
+  <span class="wpa-status-line"><span class="wpa-status-mk">РАЗВОЈНА, ТЕСТ И ПРОБНА ФАЗА — 2026</span><span class="wpa-status-en">DEVELOPMENT, TESTING AND PILOT PHASE — 2026</span></span>
+  <span class="wpa-platform-line">Независна дигитална образовна, истражувачка и авторска платформа · Independent digital educational, research and authorial platform</span>
 </div>
 
 
@@ -578,8 +627,8 @@ body > *{position:relative;z-index:1}
         <img src="https://worldprotocolacademy-code.github.io/logo.png" alt="WPA" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--goldl);font-family:var(--fd);font-size:18px;font-weight:700&quot;>WPA</span>'">
       </div>
       <div class="brand-text">
-        <h1 data-i18n="a_header.1">Светска академија за протокол<br><span style="font-size:.82em;color:var(--goldd)">World Protocol Academy</span></h1>
-        <p data-i18n="brandSub">Протокол · Дипломатија · Безбедност · Комуникација</p>
+        <h1 data-i18n="a_header.1">Светска академија за протокол<span class="wpa-brand-en">World Protocol Academy</span></h1>
+        <p data-i18n="brandSub">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
       </div>
     </a>
     <div class="nav-center" id="siteNav">
@@ -632,7 +681,7 @@ body > *{position:relative;z-index:1}
 <section class="hero">
   <div class="container hero-grid">
     <div>
-      <div class="hero-eyebrow" data-i18n="eyebrow">Независна дигитална образовна и авторска платформа во развој · Глобална перспектива</div>
+      <div class="hero-eyebrow" data-i18n="eyebrow">Светска академија за протокол · World Protocol Academy · Тест фаза 2026</div>
       <h2 data-i18n="heroH2">Светска академија за протокол<br><em>World Protocol Academy</em></h2>
       <p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Institute for Protocol, Diplomacy, Public Communication and Security Studies</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.</p>
       <div class="hero-actions">
@@ -681,7 +730,7 @@ body > *{position:relative;z-index:1}
     <div style="text-align:center;margin-bottom:28px;position:relative;z-index:1">
       <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--goldl);font-family:var(--fb);margin-bottom:8px" data-i18n="a_top.20">◆ WPA Централна матрица-водилка ◆</div>
       <p style="color:rgba(255,255,255,.65);font-size:15px;font-weight:300;max-width:800px;margin:0 auto;line-height:1.7" data-i18n="a_top.2">
-        World Protocol Academy е централна матрица-водилка за целокупната платформа — за програмите, обуките, сертификатите, Virtual Sande, лабораториите, изданијата, question-bank логиката и идниот институционален развој.
+        Светска академија за протокол — World Protocol Academy е централна матрица-водилка за целокупната платформа — за програмите, обуките, сертификатите, Virtual Sande, лабораториите, изданијата, question-bank логиката и идниот институционален развој.
       </p>
     </div>
     <div class="matrix-band">
@@ -896,7 +945,7 @@ body > *{position:relative;z-index:1}
     <div class="sh">
       <div class="section-label" data-i18n="aboutLabel">За WPA</div>
       <h3 class="section-title" data-i18n="aboutH3">Нов стандард во образованието за протокол.</h3>
-      <p class="section-lead" data-i18n="aboutP">World Protocol Academy е замислена како премиум хибрид меѓу образовна и авторска платформа, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.</p>
+      <p class="section-lead" data-i18n="aboutP">Светска академија за протокол — World Protocol Academy е замислена како премиум хибрид меѓу образовна и авторска платформа, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.</p>
     </div>
     <div class="g3">
       <div class="card"><span class="card-kicker" data-i18n="about1Kick">Академска тежина</span><h4 data-i18n="about1H4">Авторитет поткрепен со истражување</h4><p data-i18n="about1P">5 монографии, 1 дисертација, 19 научни трудови и прилози и сериозна академска интелектуална база.</p></div>
@@ -912,10 +961,10 @@ body > *{position:relative;z-index:1}
       <div>
         <div class="sh">
           <div class="section-label" data-i18n="a_wpa_manifest.14">WPA Manifest</div>
-          <h3 class="section-title" data-i18n="a_wpa_manifest.1">Што е World Protocol Academy</h3>
+          <h3 class="section-title" data-i18n="a_wpa_manifest.1">Што е Светска академија за протокол — World Protocol Academy</h3>
         </div>
         <p style="font-size:17px;font-weight:300;color:var(--muted);line-height:1.75;margin-bottom:20px" data-i18n="a_wpa_manifest.2">
-          World Protocol Academy е независна дигитална образовна и авторска платформа во развој, посветена на протокол, дипломатија, безбедност, институционална комуникација, јавна појава и професионална подготвеност. WPA го спојува академскиот пристап, применетата практика, структурираното учење, сертификацијата и AI-поддржаната образовна логика во една кохерентна институционална архитектура.
+          Светска академија за протокол — World Protocol Academy е независна дигитална образовна и авторска платформа во развој, посветена на протокол, дипломатија, безбедност, институционална комуникација, јавна појава и професионална подготвеност. WPA го спојува академскиот пристап, применетата практика, структурираното учење, сертификацијата и AI-поддржаната образовна логика во една кохерентна институционална архитектура.
         </p>
         <p style="font-size:15.5px;color:var(--muted);line-height:1.75;margin-bottom:18px" data-i18n="a_wpa_manifest.3">
           Нашата цел не е симболично присуство, туку мерлива професионална подготвеност. Затоа WPA работи со јасно структурирани програми, практични задачи, сценарио-базирано учење, оценување, верификација и постепена прогресија на знаење и компетенции.
@@ -927,7 +976,7 @@ body > *{position:relative;z-index:1}
           Во рамките на WPA, протоколот не се третира само како церемонија, туку како поредок, подготвеност, институционална интелигенција, дисциплина на комуникација и кредибилна јавна репрезентација.
         </p>
         <div class="doctrine" style="margin-top:0">
-          <p style="font-size:17px" data-i18n="a_wpa_manifest.6">World Protocol Academy гради сериозна, современа и меѓународно ориентирана образовна платформа со структура, достоинство и јасна насока.</p>
+          <p style="font-size:17px" data-i18n="a_wpa_manifest.6">Светска академија за протокол — World Protocol Academy гради сериозна, современа и меѓународно ориентирана образовна платформа со структура, достоинство и јасна насока.</p>
         </div>
       </div>
       <div>
@@ -1149,7 +1198,7 @@ body > *{position:relative;z-index:1}
       <p class="section-lead" data-i18n="a_cert_faq.2">WPA сертификатите се професионални сертификати од независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026. Тие не се универзитетски степени и не се претставуваат како автоматски државно или академски признаени во секоја земја.</p>
     </div>
     <div class="g2">
-      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.16">Прашање 01</div><h4 class="faq-q" data-i18n="a_cert_faq.3">Дали WPA програмите се додипломски, последипломски или докторски студии?</h4><p class="faq-a" data-i18n="a_cert_faq.4">Не. WPA програмите не се универзитетски студиски циклуси и не се претставуваат како bachelor, master или doctorate degrees. World Protocol Academy е независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 и професионална платформа која нуди structured non-degree professional education, certification pathways и institutional training.</p></div>
+      <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.16">Прашање 01</div><h4 class="faq-q" data-i18n="a_cert_faq.3">Дали WPA програмите се додипломски, последипломски или докторски студии?</h4><p class="faq-a" data-i18n="a_cert_faq.4">Не. WPA програмите не се универзитетски студиски циклуси и не се претставуваат како bachelor, master или doctorate degrees. Светска академија за протокол — World Protocol Academy е независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 и професионална платформа која нуди structured non-degree professional education, certification pathways и institutional training.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.17">Прашање 02</div><h4 class="faq-q" data-i18n="a_cert_faq.5">Тогаш што претставуваат WPA програмите?</h4><p class="faq-a" data-i18n="a_cert_faq.6">WPA програмите претставуваат професионални certificate programmes со јасна структура, нивоа, learning outcomes, assessment logic, практична примена и верификација. Тие се наменети за индивидуален професионален развој, институционална подготвеност и извршно учење.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.18">Прашање 03</div><h4 class="faq-q" data-i18n="a_cert_faq.7">Како да се разберат четирите WPA нивоа?</h4><p class="faq-a" data-i18n="a_cert_faq.8">Четирите WPA нивоа треба да се разберат како структурирана професионална прогресија: Foundation, Professional, Advanced и Train-the-Trainer / Consultant. Тоа е certificate-based progression pathway, а не формален универзитетски degree system.</p></div>
       <div class="faq-item"><div class="faq-num" data-i18n="a_cert_faq.19">Прашање 04</div><h4 class="faq-q" data-i18n="a_cert_faq.9">Дали WPA сертификатите се признаени во светот?</h4><p class="faq-a" data-i18n="a_cert_faq.10">WPA сертификатите се професионални сертификати од независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026. Нивната вредност произлегува од јасно дефинирани programme structures, learning outcomes, assessment logic, serial verification, дигитална проверка и реална професионална применливост.</p></div>
