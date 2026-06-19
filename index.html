@@ -595,27 +595,1608 @@ body > *{position:relative;z-index:1}
 .brand-text p{max-width:360px;line-height:1.25}
 @media(max-width:760px){.brand-text h1{font-size:15px}.brand-text p{font-size:10px;max-width:280px}}
 
+
+/* ============================================================
+   WPA BILINGUAL BRAND VISIBILITY FIX + STRONG TEST PHASE — 2026
+   This block protects the Macedonian name from being visually hidden
+   or replaced by dynamic translation layers.
+   ============================================================ */
+.wpa-test-phase-header .wpa-name-mk,
+.wpa-test-phase-header .wpa-name-en,
+.wpa-test-phase-header .wpa-inst-mk,
+.wpa-test-phase-header .wpa-inst-en,
+.wpa-test-phase-header .wpa-status-mk,
+.wpa-test-phase-header .wpa-status-en{
+  display:block;
+  position:relative;
+  z-index:2;
+}
+.wpa-test-phase-header .wpa-name-mk{
+  color:#f5e6b8;
+  font-size:13.5px;
+  font-weight:900;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  line-height:1.35;
+}
+.wpa-test-phase-header .wpa-name-en{
+  color:#e8d49a;
+  font-size:11.5px;
+  font-weight:800;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  line-height:1.35;
+  margin-top:2px;
+}
+.wpa-test-phase-header .wpa-inst-mk{
+  color:rgba(248,244,238,.88);
+  font-size:11.7px;
+  font-weight:700;
+  line-height:1.45;
+  margin-top:5px;
+}
+.wpa-test-phase-header .wpa-inst-en{
+  color:rgba(248,244,238,.72);
+  font-size:11px;
+  font-style:italic;
+  line-height:1.45;
+}
+.wpa-test-phase-header .wpa-platform-line{
+  color:rgba(248,244,238,.78);
+  font-size:11.4px;
+  line-height:1.45;
+  margin-top:6px;
+}
+.wpa-test-phase-header .wpa-status-line{
+  margin-top:6px;
+  padding-top:6px;
+  border-top:1px solid rgba(201,168,76,.22);
+}
+.wpa-test-phase-header .wpa-status-mk{
+  color:#e8d49a;
+  font-size:14px;
+  font-weight:950;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  line-height:1.45;
+}
+.wpa-test-phase-header .wpa-status-en{
+  color:#f5e6b8;
+  font-size:11.5px;
+  font-weight:850;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  line-height:1.45;
+}
+.brand-name .wpa-brand-mk,
+.brand-name .wpa-brand-en{
+  display:block;
+  white-space:normal;
+}
+.brand-name .wpa-brand-mk{
+  color:var(--cream,#fbf8ee);
+  font-size:1em;
+  line-height:1.08;
+}
+.brand-name .wpa-brand-en{
+  color:var(--gold-soft,#e3c878);
+  font-size:.82em;
+  line-height:1.08;
+  margin-top:2px;
+}
+@media(max-width:640px){
+  .wpa-test-phase-header .wpa-name-mk{font-size:11.5px;letter-spacing:.07em}
+  .wpa-test-phase-header .wpa-name-en{font-size:10px;letter-spacing:.07em}
+  .wpa-test-phase-header .wpa-inst-mk,.wpa-test-phase-header .wpa-inst-en{font-size:10px}
+  .wpa-test-phase-header .wpa-status-mk{font-size:11.2px;letter-spacing:.05em}
+  .wpa-test-phase-header .wpa-status-en{font-size:9.8px;letter-spacing:.05em}
+}
+
+
+
+/* ============================================================
+   WPA v9 BILINGUAL BRAND VISIBILITY LOCK
+   Macedonian and English names are forced onto separate lines.
+   The English name can no longer overlay or visually cover the
+   Macedonian name on desktop or mobile.
+   ============================================================ */
+.wpa-test-phase-header.wpa-bilingual-locked{
+  position:relative !important;
+  z-index:1002 !important;
+  display:block !important;
+  width:100% !important;
+  overflow:visible !important;
+  background:linear-gradient(135deg,#071326,#0d1f3c,#162947) !important;
+  color:#f8f4ee !important;
+  border-bottom:1px solid rgba(201,168,76,.45) !important;
+  padding:14px 18px !important;
+  text-align:center !important;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif !important;
+  box-shadow:0 4px 22px rgba(0,0,0,.18) !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-header-inner{
+  max-width:1120px !important;
+  margin:0 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  overflow:visible !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked span,
+.wpa-test-phase-header.wpa-bilingual-locked div{
+  position:static !important;
+  transform:none !important;
+  float:none !important;
+  clear:both !important;
+  max-width:100% !important;
+  overflow:visible !important;
+  white-space:normal !important;
+  text-overflow:clip !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-brand-lines,
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-institute-lines,
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-status-line{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:2px !important;
+  width:100% !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-name-mk{
+  display:block !important;
+  color:#f5e6b8 !important;
+  font-size:15px !important;
+  font-weight:950 !important;
+  letter-spacing:.105em !important;
+  text-transform:uppercase !important;
+  line-height:1.28 !important;
+  z-index:2 !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-name-en{
+  display:block !important;
+  color:#e8d49a !important;
+  font-size:12px !important;
+  font-weight:850 !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  line-height:1.28 !important;
+  margin-top:1px !important;
+  z-index:1 !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-inst-mk{
+  display:block !important;
+  color:rgba(248,244,238,.9) !important;
+  font-size:12px !important;
+  font-weight:750 !important;
+  line-height:1.42 !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-inst-en{
+  display:block !important;
+  color:rgba(248,244,238,.72) !important;
+  font-size:11.2px !important;
+  font-style:italic !important;
+  line-height:1.42 !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-platform-line{
+  display:block !important;
+  color:rgba(248,244,238,.78) !important;
+  font-size:11.4px !important;
+  line-height:1.45 !important;
+  margin-top:2px !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-status-line{
+  margin-top:5px !important;
+  padding:7px 14px !important;
+  border:1px solid rgba(232,212,154,.42) !important;
+  background:rgba(201,168,76,.10) !important;
+  border-radius:999px !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-status-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  font-size:14px !important;
+  font-weight:950 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  line-height:1.35 !important;
+}
+.wpa-test-phase-header.wpa-bilingual-locked .wpa-status-en{
+  display:block !important;
+  color:#f5e6b8 !important;
+  font-size:11.5px !important;
+  font-weight:850 !important;
+  letter-spacing:.075em !important;
+  text-transform:uppercase !important;
+  line-height:1.35 !important;
+}
+.brand-text h1,
+.brand-name,
+.topbar-brand{
+  white-space:normal !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+.brand-text h1 .wpa-brand-mk,
+.brand-text h1 .wpa-brand-en,
+.brand-name .wpa-brand-mk,
+.brand-name .wpa-brand-en{
+  display:block !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  line-height:1.12 !important;
+}
+.brand-text h1 .wpa-brand-mk,
+.brand-name .wpa-brand-mk{color:var(--cream,#fbf8ee) !important;font-weight:800 !important;}
+.brand-text h1 .wpa-brand-en,
+.brand-name .wpa-brand-en{color:var(--gold-soft,#e3c878) !important;font-size:.82em !important;margin-top:2px !important;}
+@media(max-width:640px){
+  .wpa-test-phase-header.wpa-bilingual-locked{padding:11px 10px !important;}
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-name-mk{font-size:12px !important;letter-spacing:.055em !important;}
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-name-en{font-size:10px !important;letter-spacing:.065em !important;}
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-inst-mk,
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-inst-en{font-size:10px !important;}
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-status-mk{font-size:11px !important;letter-spacing:.04em !important;}
+  .wpa-test-phase-header.wpa-bilingual-locked .wpa-status-en{font-size:9.5px !important;letter-spacing:.04em !important;}
+}
+
+
+
+/* ============================================================
+   WPA BILINGUAL NO-OVERLAP LOCK v10
+   Purpose: Macedonian and English names are never rendered in the same line.
+   ============================================================ */
+.wpa-test-phase-header.wpa-bilingual-no-overlap-v10{
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+  position:relative !important;
+  z-index:1005 !important;
+  padding:16px 16px 15px !important;
+  background:linear-gradient(135deg,#071326,#0d1f3c,#162947) !important;
+  color:#f8f4ee !important;
+  text-align:center !important;
+  border-bottom:1px solid rgba(201,168,76,.45) !important;
+  box-shadow:0 4px 22px rgba(0,0,0,.18) !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-header-inner-v10,
+.wpa-bilingual-no-overlap-v10 .wpa-brand-lines-v10,
+.wpa-bilingual-no-overlap-v10 .wpa-institute-lines-v10,
+.wpa-bilingual-no-overlap-v10 .wpa-platform-lines-v10,
+.wpa-bilingual-no-overlap-v10 .wpa-status-line-v10{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:100% !important;
+  max-width:1180px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+  position:static !important;
+  transform:none !important;
+  white-space:normal !important;
+  word-break:normal !important;
+  overflow-wrap:anywhere !important;
+  clear:both !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-brand-lines-v10{gap:3px !important;margin:0 0 9px !important;}
+.wpa-bilingual-no-overlap-v10 .wpa-institute-lines-v10{gap:3px !important;margin:0 0 7px !important;}
+.wpa-bilingual-no-overlap-v10 .wpa-platform-lines-v10{gap:2px !important;margin:0 0 9px !important;}
+.wpa-bilingual-no-overlap-v10 .wpa-status-line-v10{
+  gap:3px !important;
+  margin-top:2px !important;
+  padding:8px 14px !important;
+  border:1px solid rgba(232,212,154,.42) !important;
+  border-radius:999px !important;
+  background:rgba(201,168,76,.10) !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-row-mk,
+.wpa-bilingual-no-overlap-v10 .wpa-row-en,
+.brand-text h1 .wpa-brand-mk,
+.brand-text h1 .wpa-brand-en,
+.brand-name .wpa-brand-mk,
+.brand-name .wpa-brand-en,
+.wpa-stack-brand .wpa-brand-mk,
+.wpa-stack-brand .wpa-brand-en,
+.wpa-stack-institute .wpa-inst-mk,
+.wpa-stack-institute .wpa-inst-en{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  min-height:0 !important;
+  clear:both !important;
+  float:none !important;
+  position:static !important;
+  transform:none !important;
+  white-space:normal !important;
+  overflow:visible !important;
+  text-align:center !important;
+  text-decoration:none !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-name-mk{
+  color:#f5e6b8 !important;
+  font-weight:950 !important;
+  font-size:clamp(15px,2.2vw,22px) !important;
+  line-height:1.35 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-name-en{
+  color:#e8d49a !important;
+  font-weight:800 !important;
+  font-size:clamp(11px,1.45vw,14px) !important;
+  line-height:1.45 !important;
+  letter-spacing:.09em !important;
+  text-transform:uppercase !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-inst-mk{
+  color:rgba(248,244,238,.92) !important;
+  font-weight:750 !important;
+  font-size:clamp(11.5px,1.55vw,14px) !important;
+  line-height:1.45 !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-inst-en{
+  color:rgba(248,244,238,.76) !important;
+  font-style:italic !important;
+  font-size:clamp(10.5px,1.35vw,12.5px) !important;
+  line-height:1.45 !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-platform-lines-v10 .wpa-row-mk,
+.wpa-bilingual-no-overlap-v10 .wpa-platform-lines-v10 .wpa-row-en{
+  color:rgba(248,244,238,.75) !important;
+  font-size:clamp(10.5px,1.25vw,12px) !important;
+  line-height:1.45 !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-status-mk{
+  color:#f5e6b8 !important;
+  font-weight:950 !important;
+  font-size:clamp(12px,1.75vw,16px) !important;
+  line-height:1.45 !important;
+  letter-spacing:.07em !important;
+  text-transform:uppercase !important;
+}
+.wpa-bilingual-no-overlap-v10 .wpa-status-en{
+  color:#e8d49a !important;
+  font-weight:850 !important;
+  font-size:clamp(9.5px,1.2vw,12px) !important;
+  line-height:1.45 !important;
+  letter-spacing:.065em !important;
+  text-transform:uppercase !important;
+}
+.brand,
+.nav .brand{
+  align-items:flex-start !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+}
+.brand-text,
+.brand-name{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  gap:2px !important;
+  height:auto !important;
+  min-height:0 !important;
+  max-width:min(520px,70vw) !important;
+  overflow:visible !important;
+  white-space:normal !important;
+}
+.brand-text h1{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:2px !important;
+  line-height:1.25 !important;
+  height:auto !important;
+  min-height:0 !important;
+  overflow:visible !important;
+  white-space:normal !important;
+}
+.brand-text h1 .wpa-brand-mk,
+.brand-name .wpa-brand-mk,
+.wpa-stack-brand .wpa-brand-mk{
+  color:var(--cream,#fbf8ee) !important;
+  font-weight:850 !important;
+  font-size:clamp(15px,1.65vw,21px) !important;
+  line-height:1.25 !important;
+  text-align:left !important;
+}
+.brand-text h1 .wpa-brand-en,
+.brand-name .wpa-brand-en,
+.wpa-stack-brand .wpa-brand-en{
+  color:var(--gold-soft,#e3c878) !important;
+  font-weight:700 !important;
+  font-size:clamp(11px,1.15vw,15px) !important;
+  line-height:1.25 !important;
+  margin-top:2px !important;
+  text-align:left !important;
+}
+.wpa-stack-brand,
+.wpa-stack-institute{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:2px !important;
+  line-height:1.25 !important;
+}
+.wpa-stack-brand .wpa-brand-mk,
+.wpa-stack-brand .wpa-brand-en,
+.wpa-stack-institute .wpa-inst-mk,
+.wpa-stack-institute .wpa-inst-en{
+  text-align:left !important;
+}
+.announce strong.wpa-stack-brand,
+.topbar .wpa-stack-institute,
+.topbar-brand.wpa-stack-brand{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:2px !important;
+  line-height:1.28 !important;
+  white-space:normal !important;
+  height:auto !important;
+  overflow:visible !important;
+}
+.topbar-brand.wpa-stack-brand{align-items:flex-end !important;}
+@media(max-width:760px){
+  .brand-text,.brand-name{max-width:calc(100vw - 120px) !important;}
+  .brand-text h1 .wpa-brand-mk,.brand-name .wpa-brand-mk{font-size:14px !important;}
+  .brand-text h1 .wpa-brand-en,.brand-name .wpa-brand-en{font-size:11px !important;}
+  .announce strong.wpa-stack-brand,.topbar .wpa-stack-institute,.topbar-brand.wpa-stack-brand{align-items:center !important;text-align:center !important;width:100% !important;}
+}
+
+
+/* ============================================================
+   WPA v11 HIGH-CONTRAST BILINGUAL VISIBILITY FIX
+   Macedonian name is intentionally gold-background / navy-text.
+   English name is secondary, smaller and visually separated.
+   ============================================================ */
+.wpa-test-phase-header{
+  background:linear-gradient(135deg,#06101f,#0d1f3c,#142642) !important;
+  color:#f8f4ee !important;
+  border-bottom:2px solid rgba(232,212,154,.70) !important;
+  padding:14px 16px 15px !important;
+  text-align:center !important;
+  overflow:visible !important;
+}
+.wpa-test-phase-header strong{
+  display:block !important;
+  margin:0 auto 8px !important;
+  color:inherit !important;
+  line-height:1.25 !important;
+}
+.wpa-test-phase-header .wpa-name-mk{
+  display:inline-block !important;
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border:1px solid rgba(255,255,255,.32) !important;
+  border-radius:999px !important;
+  padding:5px 14px !important;
+  font-size:14.5px !important;
+  font-weight:950 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  line-height:1.25 !important;
+  box-shadow:0 3px 14px rgba(0,0,0,.22) !important;
+  white-space:normal !important;
+  max-width:100% !important;
+}
+.wpa-test-phase-header .wpa-name-en{
+  display:block !important;
+  color:#f8f4ee !important;
+  background:transparent !important;
+  margin-top:6px !important;
+  font-size:11.2px !important;
+  font-weight:800 !important;
+  letter-spacing:.11em !important;
+  text-transform:uppercase !important;
+  line-height:1.3 !important;
+  opacity:.88 !important;
+  white-space:normal !important;
+}
+.wpa-test-phase-header .wpa-inst-mk{
+  display:block !important;
+  color:#ffffff !important;
+  font-size:12.2px !important;
+  font-weight:850 !important;
+  line-height:1.45 !important;
+  margin-top:7px !important;
+  opacity:.98 !important;
+  white-space:normal !important;
+}
+.wpa-test-phase-header .wpa-inst-en{
+  display:block !important;
+  color:#e8d49a !important;
+  font-size:10.8px !important;
+  font-style:italic !important;
+  font-weight:650 !important;
+  line-height:1.45 !important;
+  margin-top:2px !important;
+  opacity:.92 !important;
+  white-space:normal !important;
+}
+.wpa-test-phase-header .wpa-platform-line{
+  display:block !important;
+  color:rgba(248,244,238,.78) !important;
+  font-size:10.8px !important;
+  line-height:1.45 !important;
+  margin-top:7px !important;
+  white-space:normal !important;
+}
+.wpa-test-phase-header .wpa-status-line{
+  display:inline-block !important;
+  margin:9px auto 0 !important;
+  padding:7px 14px !important;
+  border:1px solid rgba(232,212,154,.50) !important;
+  border-radius:999px !important;
+  background:rgba(201,168,76,.12) !important;
+  max-width:100% !important;
+}
+.wpa-test-phase-header .wpa-status-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  font-size:13.2px !important;
+  font-weight:950 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  line-height:1.3 !important;
+}
+.wpa-test-phase-header .wpa-status-en{
+  display:block !important;
+  color:#ffffff !important;
+  font-size:10.5px !important;
+  font-weight:800 !important;
+  letter-spacing:.075em !important;
+  text-transform:uppercase !important;
+  line-height:1.3 !important;
+  margin-top:2px !important;
+  opacity:.82 !important;
+}
+
+/* Header/logo brand: Macedonian primary, English secondary */
+.brand-name .wpa-brand-mk,
+.brand-text .wpa-brand-mk,
+.topbar-brand .wpa-brand-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  font-weight:950 !important;
+  line-height:1.12 !important;
+  white-space:normal !important;
+}
+.brand-name .wpa-brand-en,
+.brand-text .wpa-brand-en,
+.topbar-brand .wpa-brand-en{
+  display:block !important;
+  color:#ffffff !important;
+  font-weight:750 !important;
+  line-height:1.12 !important;
+  opacity:.84 !important;
+  margin-top:2px !important;
+  white-space:normal !important;
+}
+.topbar-brand{
+  display:inline-block !important;
+  white-space:normal !important;
+  line-height:1.25 !important;
+  text-align:right !important;
+}
+
+@media(max-width:640px){
+  .wpa-test-phase-header{padding:12px 10px 13px !important}
+  .wpa-test-phase-header .wpa-name-mk{
+    font-size:11.8px !important;
+    letter-spacing:.045em !important;
+    padding:5px 10px !important;
+    border-radius:14px !important;
+  }
+  .wpa-test-phase-header .wpa-name-en{
+    font-size:9.8px !important;
+    letter-spacing:.055em !important;
+  }
+  .wpa-test-phase-header .wpa-inst-mk{
+    font-size:10.6px !important;
+  }
+  .wpa-test-phase-header .wpa-inst-en,
+  .wpa-test-phase-header .wpa-platform-line{
+    font-size:9.6px !important;
+  }
+  .wpa-test-phase-header .wpa-status-mk{
+    font-size:10.8px !important;
+    letter-spacing:.045em !important;
+  }
+  .wpa-test-phase-header .wpa-status-en{
+    font-size:9.2px !important;
+    letter-spacing:.045em !important;
+  }
+  .topbar-brand{text-align:left !important}
+}
+
+
+/* ============================================================
+   WPA v12 HEADER + NAVIGATION VISIBILITY FIX
+   Fixes the exact header/menu area where white letters were hard to see.
+   Makes the main WPA header dark, separates MK/EN brand lines, and
+   gives menu items visible gold/cream surfaces instead of white-on-light.
+   ============================================================ */
+
+/* Main dark header zones */
+.header,
+.site-header,
+.main-header,
+.wpa-header,
+.nav-wrap,
+nav,
+.topbar,
+.bib-hero,
+.bib-footer{
+  background-color:#071326 !important;
+}
+
+/* Brand/logo block: readable on every page */
+.brand,
+.logo,
+.site-logo,
+.brand-text,
+.topbar-brand{
+  color:#f8f4ee !important;
+  text-shadow:none !important;
+  overflow:visible !important;
+  white-space:normal !important;
+}
+.brand-mark{
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border-color:#e8d49a !important;
+  font-weight:950 !important;
+}
+.brand-name,
+.brand-name *,
+.site-title,
+.site-title *,
+.logo-text,
+.logo-text *{
+  color:#f8f4ee !important;
+  text-shadow:none !important;
+}
+
+/* Macedonian brand must be visibly primary */
+.wpa-brand-mk,
+.brand-name .wpa-brand-mk,
+.brand-text .wpa-brand-mk,
+.topbar-brand .wpa-brand-mk,
+.site-title .wpa-brand-mk{
+  display:block !important;
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border-radius:999px !important;
+  padding:4px 10px !important;
+  font-weight:950 !important;
+  line-height:1.22 !important;
+  letter-spacing:.02em !important;
+  white-space:normal !important;
+  max-width:100% !important;
+}
+
+/* English brand is visible, but secondary */
+.wpa-brand-en,
+.brand-name .wpa-brand-en,
+.brand-text .wpa-brand-en,
+.topbar-brand .wpa-brand-en,
+.site-title .wpa-brand-en{
+  display:block !important;
+  color:#f8f4ee !important;
+  background:transparent !important;
+  margin-top:4px !important;
+  font-weight:750 !important;
+  line-height:1.22 !important;
+  opacity:.90 !important;
+  white-space:normal !important;
+  max-width:100% !important;
+}
+
+/* Navigation links: no more white-on-light. */
+.nav-links,
+.menu,
+.menu-links,
+.nav-menu,
+.main-menu,
+.navbar-nav{
+  background:#071326 !important;
+  color:#f8f4ee !important;
+}
+.nav-links a,
+.menu a,
+.menu-links a,
+.nav-menu a,
+.main-menu a,
+.navbar-nav a,
+nav a:not(.brand):not(.back-link):not(.btn){
+  color:#071326 !important;
+  background:#f8f4ee !important;
+  border:1px solid rgba(232,212,154,.55) !important;
+  border-radius:999px !important;
+  padding:7px 12px !important;
+  font-weight:850 !important;
+  text-shadow:none !important;
+  box-shadow:0 2px 10px rgba(0,0,0,.12) !important;
+}
+.nav-links a:hover,
+.menu a:hover,
+.menu-links a:hover,
+.nav-menu a:hover,
+.main-menu a:hover,
+.navbar-nav a:hover,
+nav a:not(.brand):not(.back-link):not(.btn):hover{
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border-color:#e8d49a !important;
+}
+
+/* Mobile opened menu: dark container, light/gold pills */
+body.wpa-menu-open .wpa-mobile-nav-target,
+body.wpa-mobile-ready.wpa-menu-open .wpa-mobile-nav-target{
+  background:#071326 !important;
+  color:#f8f4ee !important;
+  border:2px solid rgba(232,212,154,.70) !important;
+  box-shadow:0 22px 60px rgba(0,0,0,.55) !important;
+}
+body.wpa-mobile-ready .wpa-mobile-nav-target a,
+body.wpa-mobile-ready .wpa-mobile-nav-target button,
+body.wpa-menu-open .wpa-mobile-nav-target a,
+body.wpa-menu-open .wpa-mobile-nav-target button{
+  color:#071326 !important;
+  background:#f8f4ee !important;
+  border:1px solid rgba(232,212,154,.65) !important;
+  text-shadow:none !important;
+  font-weight:900 !important;
+}
+body.wpa-mobile-ready .wpa-mobile-nav-target a:hover,
+body.wpa-mobile-ready .wpa-mobile-nav-target button:hover,
+body.wpa-menu-open .wpa-mobile-nav-target a:hover,
+body.wpa-menu-open .wpa-mobile-nav-target button:hover{
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border-color:#e8d49a !important;
+}
+
+/* Language label/select area */
+label,
+.lang-label,
+.language-label{
+  color:#e8d49a !important;
+}
+select,
+#langSelect,
+#instLangSelect{
+  color:#071326 !important;
+  background:#f8f4ee !important;
+  border:1px solid #e8d49a !important;
+  font-weight:800 !important;
+}
+
+/* Top test header remains strong and readable */
+.wpa-test-phase-header .wpa-name-mk{
+  color:#071326 !important;
+  background:#e8d49a !important;
+}
+.wpa-test-phase-header .wpa-name-en{
+  color:#f8f4ee !important;
+}
+
+/* On mobile, stack everything clearly */
+@media(max-width:860px){
+  nav,
+  .nav-wrap nav,
+  .header,
+  .site-header,
+  .main-header{
+    background:#071326 !important;
+    color:#f8f4ee !important;
+  }
+  .brand,
+  .logo,
+  .site-logo{
+    width:100% !important;
+    align-items:flex-start !important;
+  }
+  .brand-text,
+  .logo-text,
+  .site-title{
+    width:100% !important;
+    color:#f8f4ee !important;
+  }
+  .nav-links a,
+  .menu a,
+  .menu-links a,
+  .nav-menu a,
+  .main-menu a,
+  .navbar-nav a,
+  nav a:not(.brand):not(.back-link):not(.btn){
+    display:block !important;
+    width:100% !important;
+    margin:4px 0 !important;
+    text-align:left !important;
+    color:#071326 !important;
+    background:#f8f4ee !important;
+  }
+  .wpa-brand-mk,
+  .brand-name .wpa-brand-mk,
+  .brand-text .wpa-brand-mk{
+    display:inline-block !important;
+    font-size:13px !important;
+    letter-spacing:.01em !important;
+    border-radius:14px !important;
+  }
+  .wpa-brand-en,
+  .brand-name .wpa-brand-en,
+  .brand-text .wpa-brand-en{
+    font-size:11px !important;
+  }
+}
+
+
+/* ============================================================
+   WPA v13 — FINAL OVERRIDE: ACTUAL CLASS TARGETS
+   Patches index.html: bare <header>, .site-nav a, .brand-text
+   ============================================================ */
+
+/* 1. Make the sticky header dark navy */
+header:not(.hero):not(.bib-hero) {
+  background: #071326 !important;
+  border-bottom: 2px solid rgba(232,212,154,.60) !important;
+  box-shadow: 0 2px 18px rgba(0,0,0,.32) !important;
+  backdrop-filter: none !important;
+}
+
+/* 2. Brand text on dark header — cream/gold */
+header:not(.hero) .brand-text h1,
+header:not(.hero) .brand-text p {
+  color: #f8f4ee !important;
+  text-shadow: none !important;
+}
+
+/* 3. MK brand: gold pill, navy text — primary */
+header:not(.hero) .brand-text h1 .wpa-brand-mk {
+  display: block !important;
+  color: #071326 !important;
+  background: #e8d49a !important;
+  border-radius: 999px !important;
+  padding: 3px 10px !important;
+  font-size: clamp(13px,1.5vw,18px) !important;
+  font-weight: 900 !important;
+  letter-spacing: .02em !important;
+  line-height: 1.3 !important;
+  white-space: normal !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+}
+
+/* 4. EN brand: cream, smaller, secondary */
+header:not(.hero) .brand-text h1 .wpa-brand-en {
+  display: block !important;
+  color: #e8d49a !important;
+  background: transparent !important;
+  font-size: clamp(10px,1.1vw,13px) !important;
+  font-weight: 600 !important;
+  letter-spacing: .04em !important;
+  line-height: 1.3 !important;
+  margin-top: 4px !important;
+  opacity: .90 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* 5. Brand subtitle / institute line on header */
+header:not(.hero) .brand-text p {
+  color: rgba(248,244,238,.75) !important;
+  font-size: 10.5px !important;
+  line-height: 1.35 !important;
+  margin-top: 3px !important;
+}
+
+/* 6. Nav links: navy text on cream pills */
+header:not(.hero) .site-nav a {
+  color: #071326 !important;
+  background: rgba(248,244,238,.92) !important;
+  border: 1px solid rgba(232,212,154,.50) !important;
+  border-radius: 999px !important;
+  padding: 5px 11px !important;
+  font-weight: 700 !important;
+  font-size: 11.5px !important;
+  text-shadow: none !important;
+  box-shadow: 0 1px 6px rgba(0,0,0,.15) !important;
+  transition: background .16s, color .16s !important;
+}
+header:not(.hero) .site-nav a:hover {
+  background: #e8d49a !important;
+  color: #071326 !important;
+  border-color: #e8d49a !important;
+}
+
+/* 7. Menu toggle button on dark header */
+header:not(.hero) .menu-toggle {
+  background: rgba(248,244,238,.92) !important;
+  color: #071326 !important;
+  border-color: rgba(232,212,154,.60) !important;
+  font-weight: 800 !important;
+}
+
+/* 8. Mobile: opened nav panel dark */
+header:not(.hero) .nav-center.open {
+  background: #071326 !important;
+  border-top: 2px solid rgba(232,212,154,.60) !important;
+  padding: 10px 0 12px !important;
+}
+
+/* 9. Lang selector on dark header */
+header:not(.hero) .lang-sw {
+  background: rgba(248,244,238,.10) !important;
+  border-color: rgba(232,212,154,.55) !important;
+}
+header:not(.hero) .lang-sw label {
+  color: #e8d49a !important;
+}
+header:not(.hero) .lang-sw select {
+  color: #f8f4ee !important;
+  background: transparent !important;
+}
+
+/* 10. Brand logo container on dark header */
+header:not(.hero) .brand-logo {
+  background: rgba(232,212,154,.18) !important;
+  border: 1px solid rgba(232,212,154,.35) !important;
+}
+
+/* Mobile adjustments */
+@media(max-width:860px){
+  header:not(.hero):not(.bib-hero) {
+    background: #071326 !important;
+  }
+  header:not(.hero) .brand-text h1 .wpa-brand-mk {
+    font-size: 13px !important;
+    padding: 2px 8px !important;
+  }
+  header:not(.hero) .brand-text h1 .wpa-brand-en {
+    font-size: 10px !important;
+  }
+  header:not(.hero) .site-nav a {
+    font-size: 11px !important;
+    padding: 5px 9px !important;
+  }
+}
+
+
+
+/* ============================================================
+   WPA v13 ELEGANT HEADER + NAV + BUTTONS
+   Purpose: remove the "kitsch" pill-button look while keeping
+   Macedonian / English header text readable and dignified.
+   ============================================================ */
+
+/* Main header/nav surface: dark, calm, institutional */
+.header,
+.site-header,
+.main-header,
+.wpa-header,
+.nav-wrap,
+.site-nav,
+.navbar,
+.topbar{
+  background:#071326 !important;
+  color:#f8f4ee !important;
+  border-bottom:1px solid rgba(201,168,76,.34) !important;
+  box-shadow:0 6px 22px rgba(7,19,38,.18) !important;
+}
+
+/* Brand area: no flashy badges; MK primary, EN secondary */
+.brand,
+.logo,
+.site-logo,
+.brand-text,
+.topbar-brand{
+  color:#f8f4ee !important;
+  text-shadow:none !important;
+  overflow:visible !important;
+  white-space:normal !important;
+}
+
+.brand-mark,
+.brand-logo{
+  background:#071326 !important;
+  border:1px solid rgba(201,168,76,.70) !important;
+  box-shadow:none !important;
+}
+
+.brand-mark,
+.brand-logo,
+.brand-mark *,
+.brand-logo *{
+  color:#e8d49a !important;
+}
+
+/* Macedonian brand: strong gold text, not a large pill */
+.wpa-brand-mk,
+.brand-name .wpa-brand-mk,
+.brand-text .wpa-brand-mk,
+.topbar-brand .wpa-brand-mk,
+.site-title .wpa-brand-mk,
+.logo-text .wpa-brand-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  font-family:inherit !important;
+  font-weight:850 !important;
+  letter-spacing:.015em !important;
+  line-height:1.16 !important;
+  white-space:normal !important;
+  max-width:100% !important;
+  text-shadow:none !important;
+}
+
+/* English brand: smaller and calmer */
+.wpa-brand-en,
+.brand-name .wpa-brand-en,
+.brand-text .wpa-brand-en,
+.topbar-brand .wpa-brand-en,
+.site-title .wpa-brand-en,
+.logo-text .wpa-brand-en{
+  display:block !important;
+  color:rgba(248,244,238,.88) !important;
+  background:transparent !important;
+  border:none !important;
+  padding:0 !important;
+  margin-top:3px !important;
+  font-weight:600 !important;
+  letter-spacing:.025em !important;
+  line-height:1.14 !important;
+  white-space:normal !important;
+  max-width:100% !important;
+  text-shadow:none !important;
+}
+
+/* Header notice remains clear, but less flashy */
+.wpa-test-phase-header{
+  background:linear-gradient(135deg,#06101f,#0d1f3c,#142642) !important;
+  color:#f8f4ee !important;
+  border-bottom:1px solid rgba(201,168,76,.42) !important;
+  padding:12px 16px 13px !important;
+  text-align:center !important;
+  box-shadow:0 4px 18px rgba(0,0,0,.18) !important;
+}
+.wpa-test-phase-header .wpa-name-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:0 !important;
+  font-size:13.5px !important;
+  font-weight:900 !important;
+  letter-spacing:.075em !important;
+  text-transform:uppercase !important;
+  line-height:1.28 !important;
+}
+.wpa-test-phase-header .wpa-name-en{
+  display:block !important;
+  color:rgba(248,244,238,.86) !important;
+  background:transparent !important;
+  margin-top:3px !important;
+  font-size:10.8px !important;
+  font-weight:700 !important;
+  letter-spacing:.09em !important;
+  text-transform:uppercase !important;
+  line-height:1.26 !important;
+}
+.wpa-test-phase-header .wpa-inst-mk{
+  display:block !important;
+  color:#f8f4ee !important;
+  font-size:11.6px !important;
+  font-weight:700 !important;
+  line-height:1.42 !important;
+  margin-top:6px !important;
+}
+.wpa-test-phase-header .wpa-inst-en{
+  display:block !important;
+  color:rgba(232,212,154,.82) !important;
+  font-size:10.5px !important;
+  font-style:italic !important;
+  font-weight:500 !important;
+  line-height:1.42 !important;
+  margin-top:2px !important;
+}
+.wpa-test-phase-header .wpa-platform-line{
+  display:block !important;
+  color:rgba(248,244,238,.66) !important;
+  font-size:10.4px !important;
+  line-height:1.4 !important;
+  margin-top:6px !important;
+}
+.wpa-test-phase-header .wpa-status-line{
+  display:inline-block !important;
+  margin:8px auto 0 !important;
+  padding:5px 12px !important;
+  border:1px solid rgba(201,168,76,.40) !important;
+  border-radius:3px !important;
+  background:rgba(201,168,76,.07) !important;
+  max-width:100% !important;
+}
+.wpa-test-phase-header .wpa-status-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  font-size:12.2px !important;
+  font-weight:850 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  line-height:1.25 !important;
+}
+.wpa-test-phase-header .wpa-status-en{
+  display:block !important;
+  color:rgba(248,244,238,.80) !important;
+  font-size:9.7px !important;
+  font-weight:650 !important;
+  letter-spacing:.06em !important;
+  text-transform:uppercase !important;
+  line-height:1.25 !important;
+  margin-top:2px !important;
+}
+
+/* Navigation: elegant text links, no cream pills, no heavy shadows */
+.nav-links,
+.site-nav ul,
+.menu,
+.menu-links,
+.nav-menu,
+.main-menu,
+.navbar-nav{
+  background:transparent !important;
+  color:#f8f4ee !important;
+  gap:4px 6px !important;
+}
+
+.nav-links a,
+.site-nav a,
+.menu a,
+.menu-links a,
+.nav-menu a,
+.main-menu a,
+.navbar-nav a,
+nav a:not(.brand):not(.back-link):not(.btn){
+  color:rgba(248,244,238,.86) !important;
+  background:transparent !important;
+  border:1px solid transparent !important;
+  border-radius:3px !important;
+  padding:6px 9px !important;
+  font-weight:600 !important;
+  font-size:12px !important;
+  letter-spacing:.018em !important;
+  text-shadow:none !important;
+  box-shadow:none !important;
+  text-transform:none !important;
+  transition:color .18s ease, border-color .18s ease, background .18s ease !important;
+}
+
+.nav-links a:hover,
+.site-nav a:hover,
+.menu a:hover,
+.menu-links a:hover,
+.nav-menu a:hover,
+.main-menu a:hover,
+.navbar-nav a:hover,
+nav a:not(.brand):not(.back-link):not(.btn):hover{
+  color:#e8d49a !important;
+  background:rgba(201,168,76,.075) !important;
+  border-color:rgba(201,168,76,.34) !important;
+  transform:none !important;
+}
+
+/* CTA buttons: refined rectangles, not decorative capsules */
+.btn,
+button,
+.share-btn,
+.bib-link-btn,
+.topbar-icon-btn,
+.jump-link,
+.wpa-audio-engine-btn,
+.wpa-humanism-button{
+  border-radius:3px !important;
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+
+.btn,
+.btn-primary,
+.btn-gold,
+.btn-navy,
+.btn-outline,
+.btn-ghost{
+  min-height:auto !important;
+  padding:11px 20px !important;
+  font-size:12.4px !important;
+  font-weight:750 !important;
+  letter-spacing:.045em !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+  transform:none !important;
+  text-transform:uppercase !important;
+}
+
+.btn-primary,
+.btn-gold{
+  background:#c9a84c !important;
+  color:#071326 !important;
+  border:1px solid #c9a84c !important;
+}
+
+.btn-navy{
+  background:#071326 !important;
+  color:#f8f4ee !important;
+  border:1px solid rgba(201,168,76,.45) !important;
+}
+
+.btn-outline,
+.btn-ghost{
+  background:transparent !important;
+  color:inherit !important;
+  border:1px solid rgba(201,168,76,.45) !important;
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-gold:hover,
+.btn-navy:hover,
+.btn-outline:hover,
+.btn-ghost:hover{
+  box-shadow:none !important;
+  transform:none !important;
+  filter:none !important;
+  background:#e8d49a !important;
+  color:#071326 !important;
+  border-color:#e8d49a !important;
+}
+
+/* Jump/share/bibliography small links: calm, readable */
+.jump-link,
+.share-btn,
+.bib-link-btn{
+  background:transparent !important;
+  color:inherit !important;
+  border:1px solid rgba(201,168,76,.36) !important;
+  padding:5px 10px !important;
+  border-radius:3px !important;
+}
+.jump-link:hover,
+.share-btn:hover,
+.bib-link-btn:hover{
+  background:rgba(201,168,76,.09) !important;
+  color:#c9a84c !important;
+  border-color:rgba(201,168,76,.62) !important;
+}
+
+/* Mobile menu: dark panel with refined links */
+body.wpa-mobile-ready .wpa-mobile-nav-target,
+body.wpa-mobile-ready.wpa-menu-open .wpa-mobile-nav-target,
+body.wpa-menu-open .wpa-mobile-nav-target{
+  background:#071326 !important;
+  color:#f8f4ee !important;
+  border:1px solid rgba(201,168,76,.45) !important;
+  border-radius:8px !important;
+  box-shadow:0 18px 46px rgba(0,0,0,.45) !important;
+}
+body.wpa-mobile-ready .wpa-mobile-nav-target a,
+body.wpa-mobile-ready .wpa-mobile-nav-target button,
+body.wpa-menu-open .wpa-mobile-nav-target a,
+body.wpa-menu-open .wpa-mobile-nav-target button{
+  color:rgba(248,244,238,.90) !important;
+  background:transparent !important;
+  border:1px solid rgba(201,168,76,.18) !important;
+  border-radius:4px !important;
+  box-shadow:none !important;
+  font-weight:700 !important;
+}
+body.wpa-mobile-ready .wpa-mobile-nav-target a:hover,
+body.wpa-mobile-ready .wpa-mobile-nav-target button:hover,
+body.wpa-menu-open .wpa-mobile-nav-target a:hover,
+body.wpa-menu-open .wpa-mobile-nav-target button:hover{
+  color:#e8d49a !important;
+  background:rgba(201,168,76,.08) !important;
+  border-color:rgba(201,168,76,.42) !important;
+}
+
+.menu-toggle,
+.wpa-mobile-menu-button{
+  background:#071326 !important;
+  color:#e8d49a !important;
+  border:1px solid rgba(201,168,76,.55) !important;
+  border-radius:3px !important;
+  box-shadow:none !important;
+}
+
+/* Language selector */
+.lang-sw,
+select,
+#langSelect,
+#instLangSelect{
+  background:#071326 !important;
+  color:#e8d49a !important;
+  border:1px solid rgba(201,168,76,.42) !important;
+  box-shadow:none !important;
+  border-radius:3px !important;
+}
+.lang-sw label,
+label,
+.lang-label,
+.language-label{
+  color:#e8d49a !important;
+}
+
+/* Mobile tuning */
+@media(max-width:860px){
+  .brand,
+  .logo,
+  .site-logo{
+    width:100% !important;
+    align-items:flex-start !important;
+  }
+  .nav-links a,
+  .site-nav a,
+  .menu a,
+  .menu-links a,
+  .nav-menu a,
+  .main-menu a,
+  .navbar-nav a,
+  nav a:not(.brand):not(.back-link):not(.btn){
+    width:auto !important;
+    display:block !important;
+    margin:2px 0 !important;
+    padding:8px 10px !important;
+  }
+}
+
+@media(max-width:640px){
+  .wpa-test-phase-header{padding:11px 10px 12px !important}
+  .wpa-test-phase-header .wpa-name-mk{font-size:11.6px !important;letter-spacing:.045em !important}
+  .wpa-test-phase-header .wpa-name-en{font-size:9.4px !important;letter-spacing:.055em !important}
+  .wpa-test-phase-header .wpa-inst-mk{font-size:10.4px !important}
+  .wpa-test-phase-header .wpa-inst-en,
+  .wpa-test-phase-header .wpa-platform-line{font-size:9.3px !important}
+  .wpa-test-phase-header .wpa-status-mk{font-size:10.4px !important;letter-spacing:.04em !important}
+  .wpa-test-phase-header .wpa-status-en{font-size:8.9px !important;letter-spacing:.04em !important}
+}
+
 </style>
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална образовна и авторска платформа во развој и платформа за протокол, дипломатија, безбедност и институционална комуникација.","platform creator":{"@type":"Person","name":"Sande Smiljanov"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Светска академија за протокол — World Protocol Academy","alternateName":"World Protocol Academy","url":"https://worldprotocolacademy-code.github.io/","logo":"https://worldprotocolacademy-code.github.io/logo.png","description":"Независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026."}</script>
+<style>
+
+/* ============================================================
+   WPA INDEX v15 — MACEDONIAN BRAND RESTORE + FIELD TAGLINE FIX
+   Fixes home header: Macedonian WPA name is visible in the main
+   brand area and the subtitle is protocol/diplomacy/PR/security/
+   communication studies, not "professional preparedness".
+   ============================================================ */
+[translate="no"], [data-no-i18n="true"]{unicode-bidi:isolate !important;}
+
+/* Only one canonical test-phase header */
+.wpa-test-phase-header:not(.wpa-home-fixed){display:none !important;}
+.wpa-test-phase-header.wpa-home-fixed{
+  display:block !important; width:100% !important; position:relative !important; z-index:1002 !important;
+  background:linear-gradient(135deg,#06101f,#0d1f3c,#142642) !important;
+  color:#f8f4ee !important; border-bottom:1px solid rgba(201,168,76,.46) !important;
+  padding:13px 16px 14px !important; text-align:center !important;
+  box-shadow:0 4px 18px rgba(0,0,0,.20) !important;
+}
+.wpa-test-phase-header.wpa-home-fixed span{display:block !important; white-space:normal !important;}
+.wpa-test-phase-header .wpa-name-mk{color:#e8d49a !important;font-size:14px !important;font-weight:900 !important;letter-spacing:.075em !important;text-transform:uppercase !important;line-height:1.28 !important;}
+.wpa-test-phase-header .wpa-name-en{color:rgba(248,244,238,.86) !important;font-size:10.8px !important;font-weight:700 !important;letter-spacing:.09em !important;text-transform:uppercase !important;line-height:1.26 !important;margin-top:2px !important;}
+.wpa-test-phase-header .wpa-inst-mk{color:#fff !important;font-size:11.8px !important;font-weight:750 !important;line-height:1.42 !important;margin-top:5px !important;}
+.wpa-test-phase-header .wpa-inst-en{color:rgba(232,212,154,.84) !important;font-size:10.4px !important;font-style:italic !important;line-height:1.38 !important;margin-top:1px !important;}
+.wpa-test-phase-header .wpa-platform-line{margin-top:6px !important;}
+.wpa-test-phase-header .wpa-platform-mk{color:rgba(248,244,238,.76) !important;font-size:10.4px !important;line-height:1.35 !important;}
+.wpa-test-phase-header .wpa-platform-en{color:rgba(248,244,238,.62) !important;font-size:10.1px !important;line-height:1.35 !important;}
+.wpa-test-phase-header .wpa-status-line{display:inline-block !important;margin:8px auto 0 !important;padding:5px 12px !important;border:1px solid rgba(201,168,76,.38) !important;border-radius:3px !important;background:rgba(201,168,76,.07) !important;max-width:100% !important;}
+.wpa-test-phase-header .wpa-status-mk{color:#e8d49a !important;font-size:12.4px !important;font-weight:850 !important;letter-spacing:.06em !important;text-transform:uppercase !important;line-height:1.25 !important;}
+.wpa-test-phase-header .wpa-status-en{color:rgba(248,244,238,.80) !important;font-size:9.8px !important;font-weight:650 !important;letter-spacing:.06em !important;text-transform:uppercase !important;line-height:1.25 !important;margin-top:2px !important;}
+
+/* Main home header brand: Macedonian name restored and protected */
+.brand-text,
+.brand-text *{text-shadow:none !important;}
+.brand-text .wpa-home-brand-title,
+.brand-text h1{
+  display:block !important; line-height:1.12 !important; margin:0 !important; color:#f8f4ee !important;
+}
+.brand-text .wpa-brand-mk{
+  display:block !important; color:#e8d49a !important; background:transparent !important; border:none !important;
+  padding:0 !important; font-weight:900 !important; font-size:18px !important; letter-spacing:.01em !important; line-height:1.12 !important;
+}
+.brand-text .wpa-brand-en{
+  display:block !important; color:rgba(248,244,238,.88) !important; background:transparent !important; border:none !important;
+  padding:0 !important; margin-top:3px !important; font-weight:650 !important; font-size:13px !important; letter-spacing:.02em !important; line-height:1.12 !important;
+}
+.brand-text .wpa-home-brand-sub,
+.brand-text p.wpa-home-brand-sub{
+  display:block !important; color:rgba(248,244,238,.74) !important; margin-top:6px !important;
+  font-size:11.2px !important; font-weight:600 !important; line-height:1.30 !important; letter-spacing:.02em !important;
+  max-width:390px !important;
+}
+
+/* Announce bar: stop English duplication and old founder wording */
+.announce .wpa-stack-brand{display:inline-block !important;margin-right:8px !important;vertical-align:middle !important;}
+.announce .wpa-stack-brand .wpa-brand-mk{display:block !important;color:#e8d49a !important;font-weight:850 !important;line-height:1.15 !important;}
+.announce .wpa-stack-brand .wpa-brand-en{display:block !important;color:rgba(248,244,238,.82) !important;font-weight:600 !important;font-size:.86em !important;line-height:1.12 !important;margin-top:2px !important;}
+
+/* Preserve elegant menu style */
+.site-nav a{color:rgba(248,244,238,.86) !important;background:transparent !important;border:1px solid transparent !important;border-radius:3px !important;box-shadow:none !important;}
+.site-nav a:hover{color:#e8d49a !important;background:rgba(201,168,76,.075) !important;border-color:rgba(201,168,76,.34) !important;}
+
+@media(max-width:760px){
+  .brand-text .wpa-brand-mk{font-size:14px !important;}
+  .brand-text .wpa-brand-en{font-size:11px !important;}
+  .brand-text .wpa-home-brand-sub{font-size:10px !important;max-width:280px !important;}
+}
+
+</style>
+<style>
+
+/* ============================================================
+   WPA v16 HERO ACTIONS VISIBILITY + DISCREET BACKGROUND WATERMARK
+   Fixes the exact hero buttons that were too invisible after the
+   elegant header/button pass. Keeps them readable, not kitschy.
+   ============================================================ */
+
+/* Direct background watermark: discreet protective mark */
+body::before{
+  content:"WPA · СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · TEST PHASE 2026" !important;
+  position:fixed !important;
+  inset:-18% !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-family:Georgia,'Times New Roman',serif !important;
+  font-size:clamp(26px,5.4vw,78px) !important;
+  font-weight:800 !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase !important;
+  color:#0d1f3c !important;
+  opacity:.026 !important;
+  transform:rotate(-28deg) !important;
+  white-space:nowrap !important;
+}
+body > *{position:relative;z-index:1}
+
+/* Hero buttons: clear institutional buttons, not decorative capsules */
+.hero .hero-actions{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:10px !important;
+  align-items:center !important;
+  margin-top:26px !important;
+  position:relative !important;
+  z-index:5 !important;
+}
+.hero .hero-actions .btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:42px !important;
+  padding:11px 18px !important;
+  border-radius:4px !important;
+  font-family:var(--fb,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif) !important;
+  font-size:12px !important;
+  line-height:1.15 !important;
+  font-weight:800 !important;
+  letter-spacing:.035em !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  box-shadow:none !important;
+  transform:none !important;
+  backdrop-filter:none !important;
+}
+.hero .hero-actions .btn-gold,
+.hero .hero-actions .btn-primary{
+  color:#071326 !important;
+  background:#e8d49a !important;
+  border:1px solid #e8d49a !important;
+}
+.hero .hero-actions .btn-ghost,
+.hero .hero-actions .btn-outline,
+.hero .hero-actions .btn-navy{
+  color:#f8f4ee !important;
+  background:rgba(7,19,38,.58) !important;
+  border:1px solid rgba(232,212,154,.58) !important;
+}
+.hero .hero-actions .btn:hover,
+.hero .hero-actions .btn:focus-visible{
+  color:#071326 !important;
+  background:#f8f4ee !important;
+  border-color:#f8f4ee !important;
+  outline:2px solid rgba(232,212,154,.35) !important;
+  outline-offset:2px !important;
+}
+.hero .hero-actions .btn span[style*="font-size:9px"]{
+  color:inherit !important;
+  opacity:.78 !important;
+  border-color:currentColor !important;
+  border-radius:3px !important;
+  padding:1px 5px !important;
+}
+
+/* Keep brand and requested discipline line visible */
+.wpa-home-brand-sub,
+.brand-text p,
+.brand-sub{
+  color:rgba(248,244,238,.78) !important;
+  opacity:1 !important;
+}
+.wpa-home-brand-title .wpa-brand-mk,
+.brand-name .wpa-brand-mk,
+.wpa-stack-brand .wpa-brand-mk{
+  display:block !important;
+  color:#e8d49a !important;
+  font-weight:900 !important;
+}
+.wpa-home-brand-title .wpa-brand-en,
+.brand-name .wpa-brand-en,
+.wpa-stack-brand .wpa-brand-en{
+  display:block !important;
+  color:rgba(248,244,238,.88) !important;
+  font-weight:650 !important;
+  margin-top:2px !important;
+}
+
+@media(max-width:640px){
+  .hero .hero-actions{gap:8px !important}
+  .hero .hero-actions .btn{
+    width:100% !important;
+    justify-content:center !important;
+    text-align:center !important;
+    padding:12px 14px !important;
+    font-size:11.2px !important;
+    white-space:normal !important;
+  }
+  body::before{
+    font-size:clamp(22px,9vw,46px) !important;
+    letter-spacing:.08em !important;
+    opacity:.022 !important;
+  }
+}
+
+</style>
 </head>
 <body id="top" data-page="index">
 
-<div class="wpa-test-phase-header" role="note" aria-label="WPA development and test phase notice">
+<div class="wpa-test-phase-header wpa-home-fixed" role="note" aria-label="WPA development and test phase notice" translate="no" data-no-i18n="true">
   <strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>
-  <span>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии · Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>
+  <span class="wpa-inst-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>
+  <span class="wpa-inst-en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>
+  <span class="wpa-platform-line"><span class="wpa-platform-mk">Независна дигитална образовна, истражувачка и авторска платформа</span><span class="wpa-platform-en">Independent digital educational, research and authorial platform</span></span>
   <span class="wpa-status-line"><span class="wpa-status-mk">РАЗВОЈНА, ТЕСТ И ПРОБНА ФАЗА — 2026</span><span class="wpa-status-en">DEVELOPMENT, TESTING AND PILOT PHASE — 2026</span></span>
-  <span class="wpa-platform-line">Независна дигитална образовна, истражувачка и авторска платформа · Independent digital educational, research and authorial platform</span>
 </div>
 
 
 <div id="tbar"></div>
 
 <!-- ANNOUNCE BAR -->
-<div class="announce">
+<div class="announce" translate="no" data-no-i18n="true">
   <div class="container announce-inner">
-    <div><strong data-i18n="a_top.1">Светска академија за протокол · World Protocol Academy</strong> — <span data-i18n="topbar1">независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026 за протокол, дипломатија, безбедност и институционална комуникација.</span></div>
-    <div data-i18n="topbar2">Авторски креирана платформа · AI-поддржана · WPAWS · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></div>
+    <div><strong class="wpa-stack-brand"><span class="wpa-brand-mk">Светска академија за протокол</span><span class="wpa-brand-en">World Protocol Academy</span></strong><span> независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза — 2026.</span></div>
+    <div>Авторски креирана платформа · Поткрепена со публикации · AI-поддржана · WPAWS · WPA Card · Партнерства и членски придобивки</div>
   </div>
 </div>
 
@@ -626,9 +2207,9 @@ body > *{position:relative;z-index:1}
       <div class="brand-logo">
         <img src="https://worldprotocolacademy-code.github.io/logo.png" alt="WPA" onerror="this.parentElement.innerHTML='<span style=&quot;color:var(--goldl);font-family:var(--fd);font-size:18px;font-weight:700&quot;>WPA</span>'">
       </div>
-      <div class="brand-text">
-        <h1 data-i18n="a_header.1">Светска академија за протокол<span class="wpa-brand-en">World Protocol Academy</span></h1>
-        <p data-i18n="brandSub">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+      <div class="brand-text" translate="no" data-no-i18n="true">
+        <h1 class="wpa-home-brand-title"><span class="wpa-brand-mk">Светска академија за протокол</span><span class="wpa-brand-en">World Protocol Academy</span></h1>
+        <p class="wpa-home-brand-sub">Протокол · Дипломатија · Односи со јавност · Безбедност · Комуникологија</p>
       </div>
     </a>
     <div class="nav-center" id="siteNav">
@@ -658,7 +2239,7 @@ body > *{position:relative;z-index:1}
           <li><a href="wpaws/protocol-symbols/" data-i18n="navSymbols">Симболи</a></li>
           <li><a href="student-desk/">Student Desk Beta</a></li>
           <li><a href="#pricing" data-i18n="navPricing">Членство</a></li>
-          <li><a href="#platform creator" data-i18n="navPlatform Creator">Креатор на платформата</a></li>
+          <li><a href="#platform-creator" >Креатор на платформата</a></li>
           <li><a href="#sources-policy" data-i18n="a_nav.9">Политика</a></li>
         </ul>
       </nav>
@@ -681,8 +2262,8 @@ body > *{position:relative;z-index:1}
 <section class="hero">
   <div class="container hero-grid">
     <div>
-      <div class="hero-eyebrow" data-i18n="eyebrow">Светска академија за протокол · World Protocol Academy · Тест фаза 2026</div>
-      <h2 data-i18n="heroH2">Светска академија за протокол<br><em>World Protocol Academy</em></h2>
+      <div class="hero-eyebrow" data-i18n="eyebrow"><span class="wpa-stack-brand"><span class="wpa-brand-mk">Светска академија за протокол</span><span class="wpa-brand-en">World Protocol Academy</span></span><span>Тест фаза 2026</span></div>
+      <h2>Светска академија за протокол<br><em>World Protocol Academy</em></h2>
       <p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Institute for Protocol, Diplomacy, Public Communication and Security Studies</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.</p>
       <div class="hero-actions">
         <a href="programmes.html" class="btn btn-gold" data-i18n="heroBtn1">Истражете ја WPA</a>
@@ -1355,11 +2936,11 @@ body > *{position:relative;z-index:1}
 </section>
 
 <!-- FOUNDER -->
-<section id="platform creator" class="accent">
+<section id="platform-creator" class="accent">
   <div class="container">
     <div class="sh">
-      <div class="section-label" data-i18n="platform creatorLabel">Креатор на платформата</div>
-      <h3 class="section-title" data-i18n="platform creatorH3">Авторски креирана платформа. Академска по дух. Професионална по изведба.</h3>
+      <div class="section-label" >Креатор на платформата</div>
+      <h3 class="section-title" >Авторски креирана платформа. Академска по дух. Професионална по изведба.</h3>
     </div>
 
     <div class="platform-creator-grid">
@@ -1378,11 +2959,11 @@ body > *{position:relative;z-index:1}
           Автор · Истражувач · Креатор на платформата
         </p>
 
-        <p data-i18n="platform creatorBio">
+        <p >
           Креатор на платформата World Protocol Academy. Доктор на науки (Ss. Cyril and Methodius University). Вонреден професор на International University Europa Prima. Автор на 5 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (25 вкупно публикации).
         </p>
 
-        <p data-i18n="platform creatorDoc">
+        <p >
           25+ години практично дипломатско и протоколарно искуство.
         </p>
 
@@ -1397,7 +2978,7 @@ body > *{position:relative;z-index:1}
           <small data-i18n="a_platform_creator.3">— Доктрина на Доц. д-р Санде Смиљанов</small>
         </div>
 
-        <p data-i18n="platform creatorModel" style="margin-top:18px">
+        <p  style="margin-top:18px">
           WPA е изградена врз модел воден од креатор на платформата кој комбинира реално институционално искуство, академски публикации, структурирано учење и архитектура насочена кон иднината.
         </p>
       </div>
@@ -2876,7 +4457,63 @@ if(document.readyState==='loading'){
 <!-- =========================================================
      WPA Responsive Mobile Navigation + Bot Visibility Patch v1.0
      Works for mobile, tablet, laptop and PC
-     Insert before final </body>
+     Insert before final 
+
+
+
+
+
+
+
+
+<script id="wpa-index-v15-brand-lock">
+(function(){
+  var NOTICE_HTML =
+    '<strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>'+ 
+    '<span class="wpa-inst-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>'+ 
+    '<span class="wpa-inst-en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>'+ 
+    '<span class="wpa-platform-line"><span class="wpa-platform-mk">Независна дигитална образовна, истражувачка и авторска платформа</span><span class="wpa-platform-en">Independent digital educational, research and authorial platform</span></span>'+ 
+    '<span class="wpa-status-line"><span class="wpa-status-mk">РАЗВОЈНА, ТЕСТ И ПРОБНА ФАЗА — 2026</span><span class="wpa-status-en">DEVELOPMENT, TESTING AND PILOT PHASE — 2026</span></span>';
+  var BRAND_HTML = '<h1 class="wpa-home-brand-title"><span class="wpa-brand-mk">Светска академија за протокол</span><span class="wpa-brand-en">World Protocol Academy</span></h1><p class="wpa-home-brand-sub">Протокол · Дипломатија · Односи со јавност · Безбедност · Комуникологија</p>';
+  function nt(el){ if(el){ el.setAttribute('translate','no'); el.setAttribute('data-no-i18n','true'); } }
+  function run(){
+    var notices = Array.prototype.slice.call(document.querySelectorAll('.wpa-test-phase-header'));
+    if(notices.length){
+      var first = notices[0]; first.className='wpa-test-phase-header wpa-home-fixed'; nt(first); first.innerHTML=NOTICE_HTML;
+      notices.slice(1).forEach(function(n){n.remove();});
+    }
+    var bt = document.querySelector('.brand-text');
+    if(bt){ nt(bt); bt.innerHTML=BRAND_HTML; }
+    var announce = document.querySelector('.announce');
+    if(announce){ nt(announce); }
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);} else {run();}
+  window.addEventListener('load',run);
+  document.addEventListener('wpa:lang-changed', function(){ setTimeout(run,50); setTimeout(run,300); });
+  var lang=document.getElementById('langSelect'); if(lang){ lang.addEventListener('change', function(){ setTimeout(run,80); setTimeout(run,400); }); }
+  setTimeout(run,500); setTimeout(run,1500); setTimeout(run,3500);
+})();
+</script>
+
+
+<script id="wpa-index-v16-hero-visibility-lock">
+(function(){
+  function run(){
+    var sub=document.querySelector('.wpa-home-brand-sub');
+    if(sub){ sub.textContent='Протокол · Дипломатија · Односи со јавност · Безбедност · Комуникологија'; sub.setAttribute('translate','no'); }
+    var brand=document.querySelector('.brand-name');
+    if(brand && !brand.querySelector('.wpa-brand-mk')){
+      brand.innerHTML='<span class="wpa-brand-mk">Светска академија за протокол</span><span class="wpa-brand-en">World Protocol Academy</span>';
+      brand.setAttribute('translate','no'); brand.setAttribute('data-no-i18n','true');
+    }
+    document.querySelectorAll('.hero .hero-actions .btn').forEach(function(a){ a.style.visibility='visible'; a.style.opacity='1'; });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',run);}else{run();}
+  setTimeout(run,400); setTimeout(run,1400);
+})();
+</script>
+
+</body>
      ========================================================= -->
 
 <style id="wpa-responsive-mobile-patch">
@@ -3303,7 +4940,9 @@ if(document.readyState==='loading'){
      Uses existing mobile button: #mToggle
      Adds internal ✕ Затвори button
      No yellow floating button
-     Insert before final </body>
+     Insert before final 
+
+</body>
      ========================================================= -->
 
 <style id="wpa-mobile-drawer-v14">
@@ -3623,7 +5262,7 @@ if(document.readyState==='loading'){
           { href: "passive-revenue.html", label: "Partnerships & Member Benefits" },
           { href: "#ai", label: "AI" },
           { href: "#publications", label: "Publications" },
-          { href: "#platform creator", label: "Platform Creator" },
+          { href: "#platform-creator", label: "Креатор" },
           { href: "#contact", label: "Contact" }
         ];
       }
@@ -3759,6 +5398,8 @@ if(document.readyState==='loading'){
     document.addEventListener("wpa:lang-changed", function () { try { buildDrawer(); } catch (e) {} });
   })();
 </script>
+
+
 
 
 </body></html>
