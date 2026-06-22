@@ -1,78 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="author" content="Sande Smiljanov · World Protocol Academy">
+<meta name="description" content="WPA Protocol Notes — applied protocolometry records by Sande Smiljanov and the World Protocol Academy, including WPA-PN-001 and WPA-PN-002 with Zenodo DOI records.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="WPA Protocol Notes — Applied Protocolometry Records">
+<meta property="og:description" content="Official WPA Protocol Notes index: applied protocolometry records with Zenodo DOI identifiers.">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/protocol-notes/">
+<link rel="icon" href="https://worldprotocolacademy-code.github.io/logo.png" type="image/png">
 <title>WPA Protocol Notes — Applied Protocolometry Records</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",Arial,sans-serif;background:#F9FAFB;color:#111827;line-height:1.75}
-.wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem}
-.badge{background:#1B2A4A;color:#B8982A;padding:.3rem 1rem;font-size:.77rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;display:inline-block;margin-bottom:1rem}
-h1{font-size:1.75rem;font-weight:700;color:#1B2A4A;margin-bottom:.35rem}
-.sub{font-size:.97rem;font-style:italic;color:#374151;margin-bottom:1rem}
-.rule{height:3px;background:linear-gradient(90deg,#1B2A4A,#B8982A);margin:1.2rem 0;border:none}
-.def{background:#fff;border-left:4px solid #B8982A;padding:1rem 1.3rem;border-radius:0 6px 6px 0;margin:1.2rem 0;font-size:.92rem;color:#374151}
-.matrix{background:#F2F4F7;border:1px solid #D1D5DB;border-radius:6px;padding:1rem 1.3rem;margin:1rem 0;font-size:.87rem}
-.matrix h4{color:#B8982A;font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.5rem;font-weight:700}
-.matrix ol{padding-left:1.2rem;color:#1B2A4A;line-height:1.8}
-.entry{background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:1.4rem 1.6rem;margin:1.5rem 0;border-left:4px solid #1B2A4A}
-.ecd{font-size:.78rem;font-weight:700;color:#B8982A;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.4rem}
-.entry h2{font-size:1.08rem;font-weight:700;color:#1B2A4A;margin-bottom:.2rem}
-.entry .mkt{font-size:.9rem;font-style:italic;color:#374151;margin-bottom:.8rem}
-.emeta{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0;font-size:.81rem}
-.tag{background:#F2F4F7;border:1px solid #D1D5DB;padding:.15rem .55rem;border-radius:3px;color:#374151}
-.tag.ok{background:#D1FAE5;border-color:#6EE7B7;color:#065F46;font-weight:700}
-.elinks{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.9rem}
-.btn{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .9rem;border-radius:4px;text-decoration:none;font-size:.83rem;font-weight:600}
-.p{background:#1B2A4A;color:#fff}.s{background:#B8982A;color:#fff}.o{border:1px solid #1B2A4A;color:#1B2A4A}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI",Arial,sans-serif;background:#F9FAFB;color:#111827;line-height:1.75;-webkit-font-smoothing:antialiased}
+a{color:inherit}.wrap{max-width:900px;margin:0 auto;padding:2.5rem 1.5rem}.topbar{background:#1B2A4A;border-bottom:1px solid rgba(184,152,42,.32);padding:.8rem 0}.topbar-inner{max-width:900px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}.brand{color:#E8D49A;font-weight:700;font-size:.88rem}.toplinks{display:flex;gap:.9rem;flex-wrap:wrap}.toplinks a{color:rgba(255,255,255,.72);font-size:.82rem;text-decoration:none}.toplinks a:hover{color:#E8D49A}.badge{background:#1B2A4A;color:#B8982A;padding:.3rem 1rem;font-size:.77rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;display:inline-block;margin-bottom:1rem}.hero{background:linear-gradient(135deg,#071326,#1B2A4A,#22375f);color:#fff;border-bottom:3px solid #B8982A}.hero .wrap{padding-top:3rem;padding-bottom:2.4rem}h1{font-size:clamp(1.75rem,4vw,2.55rem);font-weight:800;color:#fff;margin-bottom:.35rem;line-height:1.12}.sub{font-size:1rem;font-style:italic;color:#E8D49A;margin-bottom:1rem}.hero-note{background:rgba(255,255,255,.07);border-left:4px solid #B8982A;padding:1rem 1.25rem;border-radius:0 6px 6px 0;color:rgba(255,255,255,.78);font-size:.92rem;max-width:820px}.rule{height:3px;background:linear-gradient(90deg,#1B2A4A,#B8982A);margin:1.2rem 0;border:none}.def{background:#fff;border-left:4px solid #B8982A;padding:1rem 1.3rem;border-radius:0 6px 6px 0;margin:1.2rem 0;font-size:.92rem;color:#374151;box-shadow:0 4px 18px rgba(27,42,74,.06)}.matrix{background:#F2F4F7;border:1px solid #D1D5DB;border-radius:6px;padding:1rem 1.3rem;margin:1rem 0;font-size:.87rem}.matrix h4{color:#B8982A;font-size:.78rem;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.5rem;font-weight:700}.matrix ol{padding-left:1.2rem;color:#1B2A4A;line-height:1.8}.section-title{color:#1B2A4A;margin:1.8rem 0 .8rem;font-size:1.15rem;border-bottom:2px solid #B8982A;padding-bottom:.45rem}.entry{background:#fff;border:1px solid #D1D5DB;border-radius:8px;padding:1.4rem 1.6rem;margin:1.5rem 0;border-left:4px solid #1B2A4A;box-shadow:0 4px 18px rgba(27,42,74,.06)}.entry:hover{box-shadow:0 10px 36px rgba(27,42,74,.12)}.ecd{font-size:.78rem;font-weight:700;color:#B8982A;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.4rem}.entry h2{font-size:1.08rem;font-weight:700;color:#1B2A4A;margin-bottom:.2rem;line-height:1.35}.entry .mkt{font-size:.9rem;font-style:italic;color:#374151;margin-bottom:.8rem}.emeta{display:flex;flex-wrap:wrap;gap:.55rem;margin:.8rem 0;font-size:.81rem}.tag{background:#F2F4F7;border:1px solid #D1D5DB;padding:.15rem .55rem;border-radius:3px;color:#374151}.tag.ok{background:#D1FAE5;border-color:#6EE7B7;color:#065F46;font-weight:700}.tag.blue{background:#DBEAFE;border-color:#93C5FD;color:#1E3A8A;font-weight:700}.tag.gold{background:#FEF3C7;border-color:#FCD34D;color:#92400E;font-weight:700}.elinks{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.9rem}.btn{display:inline-flex;align-items:center;gap:.3rem;padding:.45rem .95rem;border-radius:4px;text-decoration:none;font-size:.83rem;font-weight:700}.p{background:#1B2A4A;color:#fff}.s{background:#B8982A;color:#fff}.o{border:1px solid #1B2A4A;color:#1B2A4A;background:#fff}.btn:hover{filter:brightness(.96);transform:translateY(-1px)}.note{font-size:.82rem;color:#6B7280;background:#fff;border:1px solid #E5E7EB;border-left:4px solid #B8982A;border-radius:0 6px 6px 0;padding:.85rem 1rem;margin-top:1rem}.footer{background:#1B2A4A;color:rgba(255,255,255,.62);padding:1.8rem 0;margin-top:2rem}.footer .wrap{padding-top:0;padding-bottom:0}.footer strong{color:#E8D49A}@media(max-width:640px){.topbar-inner{align-items:flex-start}.elinks{gap:.5rem}.btn{width:100%;justify-content:center}.entry{padding:1.15rem}.hero .wrap{padding-top:2.2rem}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="badge">World Protocol Academy · Publication Series 02</div>
-<h1>WPA Protocol Notes</h1>
-<p class="sub">Applied Protocolometry Records / Применети записи од протоколометрија</p>
-<hr class="rule">
-
-<div class="def">
-  <strong>WPA Protocol Notes</strong> are short, source-disciplined, citation-ready analytical records for concrete protocol, ceremonial and diplomatic-procedural events. They are linked to the WPA protocolometry matrix (PSPI / Protocol State Performance Index) and remain open to correction.<br><br>
-  <strong>WPA Протоколарни белешки</strong> се кратки, изворно дисциплинирани, цитатно подготвени аналитички записи за конкретни протоколарни, церемонијални и дипломатско-процедурални настани. Тие се поврзани со WPA матрицата на протоколометрија (ИПММ / PSPI) и остануваат отворени за исправка.
-</div>
-
-<div class="matrix">
-  <h4>WPA Matrix · WPA Матрица</h4>
-  <ol>
-    <li>Protocol is absolute. · Протоколот е апсолутен.</li>
-    <li>What is absolute can be measured. · Тоа што е апсолутно — може да се мери.</li>
-    <li>What is measured must be shown. · Тоа што се мери — мора да се покаже.</li>
-    <li>What is shown remains open to correction. · Тоа што се покажува — отворено е за исправка.</li>
-  </ol>
-</div>
-
-<hr class="rule">
-<h2 style="color:#1B2A4A;margin:1rem 0 .5rem;font-size:1.1rem">Published Notes / Објавени белешки</h2>
-
-<div class="entry">
-  <div class="ecd">WPA-PN-001 · 2026</div>
-  <h2>Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</h2>
-  <div class="mkt">Протоколарна белешка: 52. Самит на Групата Г7 — Евијан ле Бен, Француска Република, 15–17 јуни 2026</div>
-  <div class="emeta">
-    <span class="tag">Smiljanov, Sande</span>
-    <span class="tag">2026</span>
-    <span class="tag ok">v1.4 · Final Public Release</span>
-    <span class="tag">CC BY-NC-ND 4.0</span>
-    <span class="tag">DOI: 10.5281/zenodo.20727210</span>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">World Protocol Academy · Skopje</div>
+    <nav class="toplinks" aria-label="Top navigation">
+      <a href="https://worldprotocolacademy-code.github.io/">Home</a>
+      <a href="https://worldprotocolacademy-code.github.io/bibliography/">Bibliography</a>
+      <a href="https://worldprotocolacademy-code.github.io/working-papers/">Working Papers</a>
+      <a href="mailto:worldprotocolacademy@gmail.com">Contact</a>
+    </nav>
   </div>
-  <div class="elinks">
-    <a href="wpa-pn-001.pdf" class="btn p">⬇ PDF</a>
-    <a href="wpa-pn-001.html" class="btn s">Record Page</a>
-    <a href="../scholar/wpa-pn-001.html" class="btn o">Scholar Page</a>
-    <a href="https://doi.org/10.5281/zenodo.20727210" class="btn o">DOI</a>
-  </div>
-</div>
+</header>
 
-<p style="font-size:.78rem;color:#6B7280;margin-top:2rem">© 2026 World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies · Skopje</p>
-</div>
+<section class="hero">
+  <div class="wrap">
+    <div class="badge">World Protocol Academy · Publication Series 02</div>
+    <h1>WPA Protocol Notes</h1>
+    <p class="sub">Applied Protocolometry Records / Применети записи од протоколометрија</p>
+    <div class="hero-note">
+      <strong>WPA Protocol Notes</strong> are short, source-disciplined, citation-ready analytical records for concrete protocol, ceremonial and diplomatic-procedural events. They are issued as author-reviewed final releases and remain open to correction through future versions.
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="def">
+    <strong>WPA Protocol Notes</strong> are short, source-disciplined, citation-ready analytical records for concrete protocol, ceremonial and diplomatic-procedural events. They are linked to the WPA protocolometry matrix, including PSPI, V-PSPI, Protocol Impact Assessment and protocol-register analysis, and remain open to correction.<br><br>
+    <strong>WPA Протоколарни белешки</strong> се кратки, изворно дисциплинирани, цитатно подготвени аналитички записи за конкретни протоколарни, церемонијални и дипломатско-процедурални настани. Тие се поврзани со WPA матрицата на протоколометријата, вклучувајќи PSPI, V-PSPI, проценка на протоколарно влијание и анализа на протоколарни регистри, и остануваат отворени за исправка.
+  </div>
+
+  <div class="matrix">
+    <h4>WPA Matrix · WPA Матрица</h4>
+    <ol>
+      <li>Protocol is absolute. · Протоколот е апсолутен.</li>
+      <li>What is absolute can be measured. · Тоа што е апсолутно — може да се мери.</li>
+      <li>What is measured must be shown. · Тоа што се мери — мора да се покаже.</li>
+      <li>What is shown remains open to correction. · Тоа што се покажува — отворено е за исправка.</li>
+    </ol>
+  </div>
+
+  <h2 class="section-title">Published Notes / Објавени белешки</h2>
+
+  <article class="entry" id="wpa-pn-001">
+    <div class="ecd">WPA-PN-001 · 2026</div>
+    <h2>Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</h2>
+    <div class="mkt">Протоколарна белешка: 52. Самит на Групата Г7 — Евијан ле Бен, Француска Република, 15–17 јуни 2026</div>
+    <div class="emeta">
+      <span class="tag">Smiljanov, Sande</span>
+      <span class="tag">2026</span>
+      <span class="tag ok">v1.4 · Final Public Release</span>
+      <span class="tag">CC BY-NC-ND 4.0</span>
+      <span class="tag blue">Applied Protocolometry</span>
+      <span class="tag gold">DOI: 10.5281/zenodo.20727210</span>
+    </div>
+    <div class="elinks">
+      <a href="wpa-pn-001.pdf" class="btn p">PDF</a>
+      <a href="wpa-pn-001.html" class="btn s">Record Page</a>
+      <a href="../scholar/wpa-pn-001.html" class="btn o">Scholar Page</a>
+      <a href="https://doi.org/10.5281/zenodo.20727210" target="_blank" rel="noopener" class="btn o">DOI</a>
+    </div>
+  </article>
+
+  <article class="entry" id="wpa-pn-002">
+    <div class="ecd">WPA-PN-002 · 2026</div>
+    <h2>Negative Public Diplomatic Register and Digital Protocol-Diplomatic Demarche — Trump–Meloni Dispute after the 52nd G7 Summit, Évian-les-Bains, 15–17 June 2026</h2>
+    <div class="mkt">Негативен јавен дипломатски регистар и дигитален протоколарно-дипломатски демарш — спорот Трамп–Мелони по 52. Самит на Г7, Евијан ле Бен, 15–17 јуни 2026</div>
+    <div class="emeta">
+      <span class="tag">Smiljanov, Sande</span>
+      <span class="tag">2026</span>
+      <span class="tag ok">v1.3 · Final Reconciled Version</span>
+      <span class="tag">CC BY-NC-ND 4.0</span>
+      <span class="tag blue">Digital Demarche</span>
+      <span class="tag blue">Protocolometry</span>
+      <span class="tag gold">DOI: 10.5281/zenodo.20777938</span>
+    </div>
+    <div class="elinks">
+      <a href="wpa-pn-002.pdf" class="btn p">PDF</a>
+      <a href="wpa-pn-002.html" class="btn s">Record Page</a>
+      <a href="../scholar/wpa-pn-002.html" class="btn o">Scholar Page</a>
+      <a href="https://doi.org/10.5281/zenodo.20777938" target="_blank" rel="noopener" class="btn o">DOI</a>
+    </div>
+  </article>
+
+  <div class="note">
+    <strong>Technical note:</strong> Add the local PDF, record page and scholar-page links to the sitemap only after the corresponding files are physically present in the repository and allowed by the site quality checker.
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p><strong>World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</strong> · Skopje</p>
+    <p>© 2026 World Protocol Academy. Author-reviewed publication series. Last updated: 22 June 2026.</p>
+  </div>
+</footer>
 </body>
 </html>
