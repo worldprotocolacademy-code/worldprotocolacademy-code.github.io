@@ -1,19 +1,19 @@
 <!DOCTYPE html>
+
 <html lang="mk">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Официјална библиографија | Светска академија за протокол — World Protocol Academy</title>
-<meta name="description" content="Официјална библиографија на Доц. д-р Санде Смиљанов — Светска академија за протокол — World Protocol Academy. 5 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози, плус 11 WPA Working Papers и 2 WPA Protocol Notes со Zenodo DOI записи."/>
-<meta property="og:title" content="WPA Официјална библиографија"/>
-<meta property="og:description" content="Официјална библиографија — World Protocol Academy"/>
-<meta property="og:type" content="website"/>
-<link rel="icon" href="https://worldprotocolacademy-code.github.io/logo.png" type="image/png"/>
-<link rel="canonical" href="https://worldprotocolacademy-code.github.io/bibliography/"/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet"/>
-
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<title>WPA-BIB-001 v1.1 Interactive | Официјална библиографија · Official Bibliography</title>
+<meta content="WPA-BIB-001 v1.1 Interactive — Официјална библиографија / Official Bibliography на Доц. д-р Санде Смиљанов и World Protocol Academy, со пребарување, филтри, DOI записи и цитирање." name="description"/>
+<meta content="WPA Официјална библиографија" property="og:title"/>
+<meta content="Официјална библиографија — World Protocol Academy" property="og:description"/>
+<meta content="website" property="og:type"/>
+<link href="https://worldprotocolacademy-code.github.io/logo.png" rel="icon" type="image/png"/>
+<link href="https://worldprotocolacademy-code.github.io/bibliography/" rel="canonical"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&amp;family=Jost:wght@300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
 <style>
 :root {
   --navy:   #0d1f3c;
@@ -434,776 +434,1030 @@ body > *{position:relative;z-index:1}
   .wpa-test-phase-header .wpa-status-en{font-size:9.8px;letter-spacing:.05em}
 }
 
+
+
+/* ============================================================
+   WPA-BIB-001 v1.1 INTERACTIVE LAYER
+   Smart search, filters, live result counter, APA copy, print CSS.
+   No external libraries. GitHub Pages safe.
+   ============================================================ */
+.bib-tools{background:var(--white);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;box-shadow:var(--sh);padding:20px 22px;margin:0 0 28px}
+.bib-tools-title{font-family:var(--fp);font-size:22px;color:var(--navy);line-height:1.2;margin-bottom:5px}
+.bib-tools-sub{font-family:var(--fb);font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.55}
+.bib-tools-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;align-items:end}
+.bib-field label{display:block;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.75px;color:var(--goldd);margin-bottom:5px;font-family:var(--fb)}
+.bib-field input,.bib-field select{width:100%;border:1px solid var(--line);border-radius:6px;background:var(--cream);color:var(--text);font-family:var(--fb);font-size:13px;padding:10px 11px;outline:none}
+.bib-field input:focus,.bib-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.16);background:#fff}
+.bib-tools-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.bib-mini-btn{border:1px solid var(--line);background:var(--cream);color:var(--navy);border-radius:4px;padding:8px 11px;font-family:var(--fb);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.bib-mini-btn:hover{background:rgba(201,168,76,.12);border-color:var(--gold);transform:translateY(-1px)}
+.bib-result-count{margin-left:auto;color:var(--muted);font-size:12.5px;font-family:var(--fb)}
+.bib-entry[hidden]{display:none!important}
+.bib-entry mark{background:#fff2a8;color:inherit;padding:0 .12em;border-radius:2px}
+.bib-entry.is-focus{outline:2px solid rgba(201,168,76,.45);outline-offset:4px}
+.bib-entry-tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;padding-top:10px;border-top:1px solid rgba(216,205,184,.7)}
+.bib-copy-status{font-size:11.5px;color:var(--muted);align-self:center}
+#backToTop{position:fixed;right:18px;bottom:18px;z-index:9999;border:none;border-radius:999px;background:var(--navy);color:var(--goldl);width:46px;height:46px;box-shadow:var(--shm);font-size:18px;cursor:pointer;display:none}
+#backToTop.show{display:block}
+@media(max-width:720px){.bib-tools-grid{grid-template-columns:1fr 1fr}.bib-field.search-field{grid-column:1/-1}.bib-result-count{width:100%;margin-left:0}}
+@media(max-width:460px){.bib-tools-grid{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff;color:#000}.wpa-test-phase-header,.topbar,.share-row,.jump-menu,.bib-tools,.bib-entry-tools,#backToTop,.btn,.bib-links,.zenodo-hero-badge{display:none!important}
+  .bib-hero{background:#fff!important;color:#000!important;padding:20px 0}.bib-hero h1,.bib-hero h2,.bib-hero p{color:#000!important}.bib-hero::before,body::before{display:none!important}
+  .bib-main{padding:20px 0}.bib-entry,.zenodo-graph{box-shadow:none;break-inside:avoid;page-break-inside:avoid;border-color:#999}.part-heading{break-after:avoid;color:#000;border-bottom:1px solid #000}
+  a{color:#000!important;text-decoration:none}.wpa-legal-disclaimer,.bib-footer{background:#fff!important;color:#000!important;border-top:1px solid #999}.bib-footer p{color:#000!important}
+}
 </style>
+
+<!-- WPA-BIB-001 v1.1 Interactive generated with smart search, filters, live counter, APA citation copy, deep links, print CSS and back-to-top. -->
 </head>
 <body>
-
-<div class="wpa-test-phase-header" role="note" aria-label="WPA development and test phase notice">
-  <strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>
-  <span class="wpa-inst-mk">Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>
-  <span class="wpa-inst-en">World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</span>
-  <span class="wpa-platform-line">Независна дигитална образовна, истражувачка и авторска платформа · Independent digital educational, research and authorial platform</span>
-  <span class="wpa-status-line"><span class="wpa-status-mk">РАЗВОЈНА, ТЕСТ И ПРОБНА ФАЗА — 2026</span><span class="wpa-status-en">DEVELOPMENT, TESTING AND PILOT PHASE — 2026</span></span>
+<div aria-label="WPA development and test phase notice" class="wpa-test-phase-header" role="note">
+<strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>
+<span class="wpa-inst-mk">Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>
+<span class="wpa-inst-en">World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</span>
+<span class="wpa-platform-line">Независна дигитална образовна, истражувачка и авторска платформа · Independent digital educational, research and authorial platform</span>
+<span class="wpa-status-line"><span class="wpa-status-mk">РАЗВОЈНА, ТЕСТ И ПРОБНА ФАЗА — 2026</span><span class="wpa-status-en">DEVELOPMENT, TESTING AND PILOT PHASE — 2026</span></span>
 </div>
-
 <!-- TOPBAR WITH BACK LINK -->
 <div class="topbar">
-  <div class="container topbar-inner">
-    <a href="https://worldprotocolacademy-code.github.io/" class="back-link">Назад кон WPA</a>
-    <span class="topbar-brand">Светска академија за протокол · World Protocol Academy</span>
-  </div>
+<div class="container topbar-inner">
+<a class="back-link" href="https://worldprotocolacademy-code.github.io/">Назад кон WPA</a>
+<span class="topbar-brand">Светска академија за протокол · World Protocol Academy</span>
 </div>
-
+</div>
 <!-- HERO -->
 <div class="bib-hero">
-  <div class="container bib-hero-inner">
-    <div class="bib-eyebrow">◆ Официјална библиографија</div>
-    <h1>Светска академија за протокол<br><span style="color:var(--goldl)">World Protocol Academy</span><br><small style="font-size:.45em">Bibliography</small></h1>
-    <h2>Доц. д-р Санде Смиљанов</h2><p style="color:var(--goldl);margin:6px 0 4px">Автор · Истражувач · Основач и директор на WPA</p><p style="color:rgba(255,255,255,.62);margin-bottom:6px">Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии<br>World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</p>
-    <p>Доц. д-р Санде Смиљанов &nbsp;|&nbsp; Автор · Истражувач · Основач и директор на WPA</p>
-
-    <!-- COUNTERS -->
-    
-    <!-- SHARE BLOCK -->
-    <div class="share-row">
-      <span class="share-label">Сподели ја страницата:</span>
-      <a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F" target="_blank" rel="noopener">LinkedIn</a>
-      <a class="share-btn" href="mailto:?subject=WPA%20Официјална%20библиографија&amp;body=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F">Email</a>
-      <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(function(){this.textContent='✓ Копирано'}.bind(this))">Копирај линк</button>
-    </div>
-    <!-- ACADEMIC PROFILES -->
-    <div class="share-row" style="margin-top:10px">
-      <span class="share-label">Академски профили:</span>
-      <a class="share-btn" href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener">ORCID</a>
-      <a class="share-btn" href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" target="_blank" rel="noopener">Google Scholar</a>
-      <a class="share-btn" href="https://www.researchgate.net/profile/Sande-Smiljanov-2" target="_blank" rel="noopener">ResearchGate</a>
-    </div>
-
-    <!-- JUMP MENU -->
-    <nav class="jump-menu" aria-label="Скокај на дел">
-      <span class="jump-menu-label">Скокај на:</span>
-      <a class="jump-link" href="#monographs">Монографии</a>
-      <a class="jump-link" href="#dissertation">Дисертација</a>
-      <a class="jump-link" href="#papers-section">Научни трудови</a>
-      <a class="jump-link" href="#zenodo-working-papers">Zenodo Working Papers</a>
-      <a class="jump-link" href="#protocol-notes">Protocol Notes</a>
-      <a class="jump-link" href="#research-programme">Истражувачка програма</a>
-      <a class="jump-link" href="#academic-profiles">Академски профили</a>
-    </nav>
-    <div class="counters">
-      <div class="counter">
-        <div class="counter-num">25</div>
-        <div class="counter-label">Вкупно публикации</div>
-      </div>
-      <div class="counter">
-        <div class="counter-num">5</div>
-        <div class="counter-label">Монографии и прирачници</div>
-      </div>
-      <div class="counter">
-        <div class="counter-num">1</div>
-        <div class="counter-label">Докторска дисертација</div>
-      </div>
-      <div class="counter">
-        <div class="counter-num">19</div>
-        <div class="counter-label">Научни трудови и прилози</div>
-      </div>
-    </div>
-
-    <a href="https://worldprotocolacademy-code.github.io/working-papers/" target="_blank" rel="noopener" class="zenodo-hero-badge">
-      <strong>&#9670; 13 WPA Zenodo DOI Records · 11 Working Papers + 2 Protocol Notes</strong>
-      <span>Посебен WPA Zenodo корпус · не се бројат во 25 академски публикации</span>
-    </a>
-
-  </div>
+<div class="container bib-hero-inner">
+<div class="bib-eyebrow">◆ Официјална библиографија · Official Bibliography</div>
+<h1>Светска академија за протокол<br/><span style="color:var(--goldl)">World Protocol Academy</span><br/><small style="font-size:.42em">Официјална библиографија · Official Bibliography</small></h1>
+<h2>Доц. д-р Санде Смиљанов</h2><p style="color:var(--goldl);margin:6px 0 4px">Автор · Истражувач · Основач и директор на WPA</p><p style="color:rgba(255,255,255,.62);margin-bottom:6px">Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии<br/>World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</p>
+<p>Доц. д-р Санде Смиљанов  |  Автор · Истражувач · Основач и директор на WPA</p>
+<!-- COUNTERS -->
+<!-- SHARE BLOCK -->
+<div class="share-row">
+<span class="share-label">Сподели ја страницата:</span>
+<a class="share-btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F" rel="noopener" target="_blank">LinkedIn</a>
+<a class="share-btn" href="mailto:?subject=WPA%20Официјална%20библиографија&amp;body=https%3A%2F%2Fworldprotocolacademy-code.github.io%2Fbibliography%2F">Email</a>
+<button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href).then(function(){this.textContent='✓ Копирано'}.bind(this))">Копирај линк</button>
 </div>
+<!-- ACADEMIC PROFILES -->
+<div class="share-row" style="margin-top:10px">
+<span class="share-label">Академски профили:</span>
+<a class="share-btn" href="https://orcid.org/0009-0008-3219-394X" rel="noopener" target="_blank">ORCID</a>
+<a class="share-btn" href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" rel="noopener" target="_blank">Google Scholar</a>
+<a class="share-btn" href="https://www.researchgate.net/profile/Sande-Smiljanov-2" rel="noopener" target="_blank">ResearchGate</a>
+</div>
+<!-- JUMP MENU -->
+<nav aria-label="Скокај на дел" class="jump-menu">
+<span class="jump-menu-label">Скокај на:</span>
+<a class="jump-link" href="#monographs">Монографии / Monographs</a>
+<a class="jump-link" href="#dissertation">Дисертација / Dissertation</a>
+<a class="jump-link" href="#papers-section">Трудови / Papers</a>
+<a class="jump-link" href="#zenodo-working-papers">Zenodo Working Papers</a>
+<a class="jump-link" href="#protocol-notes">Protocol Notes</a>
+<a class="jump-link" href="#research-programme">Програма / Programme</a>
+<a class="jump-link" href="#academic-profiles">Профили / Profiles</a>
+</nav>
+<div class="counters">
+<div class="counter">
+<div class="counter-num">25</div>
+<div class="counter-label">Вкупно публикации<br/>Total Publications</div>
+</div>
+<div class="counter">
+<div class="counter-num">5</div>
+<div class="counter-label">Монографии и прирачници<br/>Monographs &amp; Handbooks</div>
+</div>
+<div class="counter">
+<div class="counter-num">1</div>
+<div class="counter-label">Докторска дисертација<br/>Doctoral Dissertation</div>
+</div>
+<div class="counter">
+<div class="counter-num">19</div>
+<div class="counter-label">Научни трудови и прилози<br/>Scientific Papers &amp; Contributions</div>
+</div>
+</div>
+<div class="bib-note">
+<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br/><br/>
+      • 25 Academic Publications / Академски публикации<br/>
+      • 11 WPA Working Papers (Zenodo DOI)<br/>
+      • 2 WPA Protocol Notes (Zenodo DOI)<br/>
+      • 13 Total Zenodo DOI Records<br/>
+      • 5 Monographs and Handbooks<br/>
+      • 1 Doctoral Dissertation<br/>
+      • Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Sacred Diplomacy · Security Studies · Digital Protocol · AI Governance
+    </div>
+<a class="zenodo-hero-badge" href="https://worldprotocolacademy-code.github.io/working-papers/" rel="noopener" target="_blank">
+<strong>◆ 13 WPA Zenodo DOI Records · 11 Working Papers + 2 Protocol Notes</strong>
+<span>Посебен WPA Zenodo корпус · не се бројат во 25 академски публикации</span>
+</a>
+</div>
+</div>
+<section class="bib-main" style="padding:28px 0 0">
+<div class="container">
+<div aria-label="WPA Bibliography search and filters" class="bib-tools" id="bib-tools" role="search">
+<div class="bib-tools-title">Интелигентно пребарување · Smart Search</div>
+<div class="bib-tools-sub">Пребарување и филтрирање по македонски/англиски наслов, година, тип, DOI, ISBN, ISSN, COBISS и клучни зборови. Search and filter by MK/EN title, year, type, DOI, ISBN, ISSN, COBISS and keywords.</div>
+<div class="bib-tools-grid">
+<div class="bib-field search-field">
+<label for="bibSearch">Пребарај · Search</label>
+<input autocomplete="off" id="bibSearch" placeholder="Пр. Vatican, протокол, DOI, 2026, EBSCO..." type="search"/>
+</div>
+<div class="bib-field">
+<label for="bibType">Тип · Type</label>
+<select id="bibType">
+<option value="all">Сите типови · All types</option>
+<option value="monograph">Монографии · Monographs</option>
+<option value="handbook">Прирачници · Handbooks</option>
+<option value="dissertation">Дисертација · Dissertation</option>
+<option value="scientific">Научни трудови · Scientific papers</option>
+<option value="conference">Конференциски трудови · Conference papers</option>
+<option value="working-paper">WPA Working Papers</option>
+<option value="protocol-note">WPA Protocol Notes</option>
+</select>
+</div>
+<div class="bib-field">
+<label for="bibYear">Година · Year</label>
+<select id="bibYear">
+<option value="all">Сите години · All years</option>
+</select>
+</div>
+<div class="bib-field">
+<label for="bibIndex">Индекс · Index</label>
+<select id="bibIndex">
+<option value="all">Сите · All</option>
+<option value="doi">DOI</option>
+<option value="isbn">ISBN</option>
+<option value="issn">ISSN</option>
+<option value="ebsco">EBSCO</option>
+<option value="cobiss">COBISS</option>
+<option value="zenodo">Zenodo</option>
+</select>
+</div>
+</div>
+<div class="bib-tools-actions">
+<button class="bib-mini-btn" id="bibReset" type="button">Reset · Ресет</button>
+<button class="bib-mini-btn" id="bibPrint" type="button">Print · Печати</button>
+<button class="bib-mini-btn" id="bibCopyLink" type="button">Copy page link · Копирај линк</button>
+<span class="bib-result-count" id="bibResultCount">Loading records...</span>
+</div>
+</div>
+</div>
+</section>
 
 <!-- MAIN BIBLIOGRAPHY CONTENT -->
 <main class="bib-main">
-  <div class="container">
-
-    <!-- ═══════════════════════════════════════════
+<div class="container">
+<!-- ═══════════════════════════════════════════
          I. МОНОГРАФИИ И ПРИРАЧНИЦИ
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading" id="monographs">I. Монографии и прирачници</h2>
-
-    <!-- 01 -->
-    <div class="bib-entry">
-      <div class="bib-num">01</div>
-      <div class="bib-mk">Воспоставување на единствен државен протокол на ниво на Република Македонија</div>
-      <div class="bib-en">Establishing a Single State Protocol in Republic of Macedonia</div>
-      <div class="bib-meta">
-        <strong>2018</strong> &nbsp;|&nbsp; Стручна монографија &nbsp;|&nbsp; Скопје: С. Смиљанов<br>
+<h2 class="part-heading" id="monographs">I. Монографии и прирачници · Monographs and Handbooks</h2>
+<!-- 01 -->
+<div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="01 воспоставување на единствен државен протокол на ниво на република македонија establishing a single state protocol in republic of macedonia 2018 | стручна монографија | скопје: с. смиљанов isbn 978-608-66168-0-9 монографија 1. издание cobiss / library record →" data-title="Воспоставување на единствен државен протокол на ниво на Република Македонија" data-type="monograph" data-year="2018" id="pub-01">
+<div class="bib-num">01</div>
+<div class="bib-mk">Воспоставување на единствен државен протокол на ниво на Република Македонија</div>
+<div class="bib-en">Establishing a Single State Protocol in Republic of Macedonia</div>
+<div class="bib-meta">
+<strong>2018</strong>  |  Стручна монографија  |  Скопје: С. Смиљанов<br/>
         ISBN 978-608-66168-0-9
       </div>
-      <div class="bib-tags"><span class="bib-tag">Монографија</span><span class="bib-tag green">1. издание</span></div>
-      <div class="bib-links">
-        <a href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/105949706" target="_blank" rel="noopener" class="bib-link-btn">COBISS / Library record →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Монографија</span><span class="bib-tag green">1. издание</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/105949706" rel="noopener" target="_blank">COBISS / Library record →</a>
+</div>
 
-    <!-- 02 -->
-    <div class="bib-entry">
-      <div class="bib-num">02</div>
-      <div class="bib-mk">Воспоставување на единствен државен протокол на ниво на Република Македонија</div>
-      <div class="bib-en">Establishing a Single State Protocol in Republic of Macedonia</div>
-      <div class="bib-meta">
-        <strong>2020</strong> &nbsp;|&nbsp; Стручна монографија (второ издание) &nbsp;|&nbsp; Пелинце: С. Смиљанов (Битола: Киро Дандаро)<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- 02 -->
+<div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="02 воспоставување на единствен државен протокол на ниво на република македонија establishing a single state protocol in republic of macedonia 2020 | стручна монографија (второ издание) | пелинце: с. смиљанов (битола: киро дандаро) isbn 978-608-66168-2-3 монографија 2. издание cobiss / library record →" data-title="Воспоставување на единствен државен протокол на ниво на Република Македонија" data-type="monograph" data-year="2020" id="pub-02">
+<div class="bib-num">02</div>
+<div class="bib-mk">Воспоставување на единствен државен протокол на ниво на Република Македонија</div>
+<div class="bib-en">Establishing a Single State Protocol in Republic of Macedonia</div>
+<div class="bib-meta">
+<strong>2020</strong>  |  Стручна монографија (второ издание)  |  Пелинце: С. Смиљанов (Битола: Киро Дандаро)<br/>
         ISBN 978-608-66168-2-3
       </div>
-      <div class="bib-tags"><span class="bib-tag">Монографија</span><span class="bib-tag green">2. издание</span></div>
-      <div class="bib-links">
-        <a href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/112449546" target="_blank" rel="noopener" class="bib-link-btn">COBISS / Library record →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Монографија</span><span class="bib-tag green">2. издание</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/112449546" rel="noopener" target="_blank">COBISS / Library record →</a>
+</div>
 
-    <!-- 03 -->
-    <div class="bib-entry">
-      <div class="bib-num">03</div>
-      <div class="bib-mk">Прирачник за организирање на конференции и настани во јавна/државна институција: од А до Ш — Како до совршена конференција?</div>
-      <div class="bib-en">Handbook on the Organization of Conferences and Events by a Public/State Institution: from A to Z</div>
-      <div class="bib-meta">
-        <strong>2020</strong> &nbsp;|&nbsp; Прирачник &nbsp;|&nbsp; Пелинце: С. Смиљанов (Битола: Киро Дандаро)<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- 03 -->
+<div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="03 прирачник за организирање на конференции и настани во јавна/државна институција: од а до ш — како до совршена конференција? handbook on the organization of conferences and events by a public/state institution: from a to z 2020 | прирачник | пелинце: с. смиљанов (битола: киро дандаро) isbn 978-608-66168-1-6 прирачник cobiss / library record →" data-title="Прирачник за организирање на конференции и настани во јавна/државна институција: од А до Ш — Како до совршена конференција?" data-type="handbook" data-year="2020" id="pub-03">
+<div class="bib-num">03</div>
+<div class="bib-mk">Прирачник за организирање на конференции и настани во јавна/државна институција: од А до Ш — Како до совршена конференција?</div>
+<div class="bib-en">Handbook on the Organization of Conferences and Events by a Public/State Institution: from A to Z</div>
+<div class="bib-meta">
+<strong>2020</strong>  |  Прирачник  |  Пелинце: С. Смиљанов (Битола: Киро Дандаро)<br/>
         ISBN 978-608-66168-1-6
       </div>
-      <div class="bib-tags"><span class="bib-tag">Прирачник</span></div>
-      <div class="bib-links">
-        <a href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/112303114" target="_blank" rel="noopener" class="bib-link-btn">COBISS / Library record →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Прирачник</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/112303114" rel="noopener" target="_blank">COBISS / Library record →</a>
+</div>
 
-    <!-- 04 -->
-    <div class="bib-entry">
-      <div class="bib-num">04</div>
-      <div class="bib-mk">Дипломатијата, протоколот и безбедноста</div>
-      <div class="bib-en">Diplomacy, Protocol and Safety</div>
-      <div class="bib-meta">
-        <strong>2021</strong> &nbsp;|&nbsp; Монографија &nbsp;|&nbsp; Пелинце: С. Смиљанов (Скопје: Винсент Графика)<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- 04 -->
+<div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="04 дипломатијата, протоколот и безбедноста diplomacy, protocol and safety 2021 | монографија | пелинце: с. смиљанов (скопје: винсент графика) isbn 978-608-66168-3-0 монографија cobiss / library record →" data-title="Дипломатијата, протоколот и безбедноста" data-type="monograph" data-year="2021" id="pub-04">
+<div class="bib-num">04</div>
+<div class="bib-mk">Дипломатијата, протоколот и безбедноста</div>
+<div class="bib-en">Diplomacy, Protocol and Safety</div>
+<div class="bib-meta">
+<strong>2021</strong>  |  Монографија  |  Пелинце: С. Смиљанов (Скопје: Винсент Графика)<br/>
         ISBN 978-608-66168-3-0
       </div>
-      <div class="bib-tags"><span class="bib-tag">Монографија</span></div>
-      <div class="bib-links">
-        <a href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/55249925" target="_blank" rel="noopener" class="bib-link-btn">COBISS / Library record →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Монографија</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/55249925" rel="noopener" target="_blank">COBISS / Library record →</a>
+</div>
 
-    <!-- 05 -->
-    <div class="bib-entry">
-      <div class="bib-num">05</div>
-      <div class="bib-mk">Дигитална ера: трансформација, безбедност, протокол, дипломатија, етикеција</div>
-      <div class="bib-en">Digital Era: Transformation, Security, Protocol, Diplomacy, Etiquette</div>
-      <div class="bib-meta">
-        <strong>2023</strong> &nbsp;|&nbsp; Стручна монографија &nbsp;|&nbsp; Пелинце: С. Смиљанов<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- 05 -->
+<div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="05 дигитална ера: трансформација, безбедност, протокол, дипломатија, етикеција digital era: transformation, security, protocol, diplomacy, etiquette 2023 | стручна монографија | пелинце: с. смиљанов isbn 978-608-66168-4-7 монографија cobiss / library record →" data-title="Дигитална ера: трансформација, безбедност, протокол, дипломатија, етикеција" data-type="monograph" data-year="2023" id="pub-05">
+<div class="bib-num">05</div>
+<div class="bib-mk">Дигитална ера: трансформација, безбедност, протокол, дипломатија, етикеција</div>
+<div class="bib-en">Digital Era: Transformation, Security, Protocol, Diplomacy, Etiquette</div>
+<div class="bib-meta">
+<strong>2023</strong>  |  Стручна монографија  |  Пелинце: С. Смиљанов<br/>
         ISBN 978-608-66168-4-7
       </div>
-      <div class="bib-tags"><span class="bib-tag">Монографија</span></div>
-      <div class="bib-links">
-        <a href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/62525701" target="_blank" rel="noopener" class="bib-link-btn">COBISS / Library record →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Монографија</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://plus-legacy.cobiss.net/cobiss/mk/mk/bib/62525701" rel="noopener" target="_blank">COBISS / Library record →</a>
+</div>
 
-    <!-- ═══════════════════════════════════════════
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- ═══════════════════════════════════════════
          II. ДОКТОРСКА ДИСЕРТАЦИЈА
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading" id="dissertation">II. Докторска дисертација</h2>
+<h2 class="part-heading" id="dissertation">II. Докторска дисертација · Doctoral Dissertation</h2>
+<!-- D01 -->
+<div class="bib-entry diss" data-doi="" data-index="none" data-search="06 улогата на протоколот и одбранбената дипломатија во остварувањето на безбедноста на република македонија the role of protocol and defence diplomacy in achieving the security of the republic of macedonia 2021 | докторска дисертација | уким, филозофски факултет, скопје repository: repository.ukim.mk | orcid: 0009-0008-3219-394x докторска дисертација уким repository →" data-title="Улогата на протоколот и одбранбената дипломатија во остварувањето на безбедноста на Република Македонија" data-type="dissertation" data-year="2021" id="pub-06">
+<div class="bib-num">06</div>
+<div class="bib-mk">Улогата на протоколот и одбранбената дипломатија во остварувањето на безбедноста на Република Македонија</div>
+<div class="bib-en">The Role of Protocol and Defence Diplomacy in Achieving the Security of the Republic of Macedonia</div>
+<div class="bib-meta">
+<strong>2021</strong>  |  Докторска дисертација  |  УКИМ, Филозофски факултет, Скопје<br/>
+        Repository: <a class="bib-link" href="https://repository.ukim.mk/entities/publication/46ee52d0-a3f6-413b-b49d-3bb2b0d6b136/details" rel="noopener" target="_blank">repository.ukim.mk</a>
+         |  ORCID: <a class="bib-link" href="https://orcid.org/0009-0008-3219-394X" rel="noopener" target="_blank">0009-0008-3219-394X</a>
+</div>
+<div class="bib-tags"><span class="bib-tag">Докторска дисертација</span><span class="bib-tag blue">УКИМ</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://repository.ukim.mk/entities/publication/46ee52d0-a3f6-413b-b49d-3bb2b0d6b136/details" rel="noopener" target="_blank">Repository →</a>
+</div>
 
-    <!-- D01 -->
-    <div class="bib-entry diss">
-      <div class="bib-num">06</div>
-      <div class="bib-mk">Улогата на протоколот и одбранбената дипломатија во остварувањето на безбедноста на Република Македонија</div>
-      <div class="bib-en">The Role of Protocol and Defence Diplomacy in Achieving the Security of the Republic of Macedonia</div>
-      <div class="bib-meta">
-        <strong>2021</strong> &nbsp;|&nbsp; Докторска дисертација &nbsp;|&nbsp; УКИМ, Филозофски факултет, Скопје<br>
-        Repository: <a href="https://repository.ukim.mk/entities/publication/46ee52d0-a3f6-413b-b49d-3bb2b0d6b136/details" target="_blank" rel="noopener" class="bib-link">repository.ukim.mk</a>
-        &nbsp;|&nbsp; ORCID: <a href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener" class="bib-link">0009-0008-3219-394X</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag">Докторска дисертација</span><span class="bib-tag blue">УКИМ</span></div>
-      <div class="bib-links">
-        <a href="https://repository.ukim.mk/entities/publication/46ee52d0-a3f6-413b-b49d-3bb2b0d6b136/details" target="_blank" rel="noopener" class="bib-link-btn">Repository →</a>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- ═══════════════════════════════════════════
          III. НАУЧНИ ТРУДОВИ И КОНФЕРЕНЦИСКИ ПРИЛОЗИ
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading" id="papers-section">III. Научни трудови и конференциски прилози</h2>
-
-    <!-- T07 -->
-    <div class="bib-entry">
-      <div class="bib-num">07</div>
-      <div class="bib-mk">Државниот протокол во Република Македонија преку организациска интеграција до поголема ефикасност</div>
-      <div class="bib-en">State Protocol in the Republic of Macedonia Through Organizational Integration Toward Greater Efficiency</div>
-      <div class="bib-meta">
-        <strong>2014</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; Fourth International Science Conference: Contemporary Management Challenges and Organizational Sciences &nbsp;|&nbsp; pp. 525–538<br>
+<h2 class="part-heading" id="papers-section">III. Научни трудови и конференциски прилози · Scientific Papers and Conference Contributions</h2>
+<!-- T07 -->
+<div class="bib-entry" data-doi="" data-index="isbn" data-search="07 државниот протокол во република македонија преку организациска интеграција до поголема ефикасност state protocol in the republic of macedonia through organizational integration toward greater efficiency 2014 | конференциски труд | fourth international science conference: contemporary management challenges and organizational sciences | pp. 525–538 isbn 978-608-4729-06-8 конференциски труд pdf →" data-title="Државниот протокол во Република Македонија преку организациска интеграција до поголема ефикасност" data-type="conference" data-year="2014" id="pub-07">
+<div class="bib-num">07</div>
+<div class="bib-mk">Државниот протокол во Република Македонија преку организациска интеграција до поголема ефикасност</div>
+<div class="bib-en">State Protocol in the Republic of Macedonia Through Organizational Integration Toward Greater Efficiency</div>
+<div class="bib-meta">
+<strong>2014</strong>  |  Конференциски труд  |  Fourth International Science Conference: Contemporary Management Challenges and Organizational Sciences  |  pp. 525–538<br/>
         ISBN 978-608-4729-06-8
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p13-drzaven-protokol-mk.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p13-drzaven-protokol-mk.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T08 -->
-    <div class="bib-entry">
-      <div class="bib-num">08</div>
-      <div class="bib-mk">Лидерски карактеристики на одговорните лица во протоколот</div>
-      <div class="bib-en">Leadership Characteristics of Responsible Persons in Protocol</div>
-      <div class="bib-meta">
-        <strong>2016</strong> &nbsp;|&nbsp; Стручен напис во магазин &nbsp;|&nbsp; ШТИТ / SHIELD &nbsp;|&nbsp; pp. 20–21<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T08 -->
+<div class="bib-entry" data-doi="" data-index="issn" data-search="08 лидерски карактеристики на одговорните лица во протоколот leadership characteristics of responsible persons in protocol 2016 | стручен напис во магазин | штит / shield | pp. 20–21 issn 1857-6710 стручен напис pdf →" data-title="Лидерски карактеристики на одговорните лица во протоколот" data-type="scientific" data-year="2016" id="pub-08">
+<div class="bib-num">08</div>
+<div class="bib-mk">Лидерски карактеристики на одговорните лица во протоколот</div>
+<div class="bib-en">Leadership Characteristics of Responsible Persons in Protocol</div>
+<div class="bib-meta">
+<strong>2016</strong>  |  Стручен напис во магазин  |  ШТИТ / SHIELD  |  pp. 20–21<br/>
         ISSN 1857-6710
       </div>
-      <div class="bib-tags"><span class="bib-tag purple">Стручен напис</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p17-protokol-liderski-karakteristiki.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag purple">Стручен напис</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p17-protokol-liderski-karakteristiki.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T09 -->
-    <div class="bib-entry">
-      <div class="bib-num">09</div>
-      <div class="bib-mk">Протоколот како практична алатка во одбранбената дипломатија</div>
-      <div class="bib-en">Protocol as a Practical Tool in Defense Diplomacy</div>
-      <div class="bib-meta">
-        <strong>2016</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; Security Concepts and Policies — New Generation of Risks and Threats &nbsp;|&nbsp; pp. 311–318
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T09 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="09 протоколот како практична алатка во одбранбената дипломатија protocol as a practical tool in defense diplomacy 2016 | конференциски труд | security concepts and policies — new generation of risks and threats | pp. 311–318 конференциски труд pdf →" data-title="Протоколот како практична алатка во одбранбената дипломатија" data-type="conference" data-year="2016" id="pub-09">
+<div class="bib-num">09</div>
+<div class="bib-mk">Протоколот како практична алатка во одбранбената дипломатија</div>
+<div class="bib-en">Protocol as a Practical Tool in Defense Diplomacy</div>
+<div class="bib-meta">
+<strong>2016</strong>  |  Конференциски труд  |  Security Concepts and Policies — New Generation of Risks and Threats  |  pp. 311–318
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p08-protocol-defense-diplomacy.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p08-protocol-defense-diplomacy.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T10 -->
-    <div class="bib-entry">
-      <div class="bib-num">10</div>
-      <div class="bib-mk">Конституирање и трансформација на УБК низ историјата</div>
-      <div class="bib-en">Constitution and Transformation of Directorate for Security and Counterintelligence (UBK) Through Its History</div>
-      <div class="bib-meta">
-        <strong>2018</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; EKOB 2018 — Economy in Transformed Security Environment &nbsp;|&nbsp; pp. 330–342<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T10 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="10 конституирање и трансформација на убк низ историјата constitution and transformation of directorate for security and counterintelligence (ubk) through its history 2018 | конференциски труд | ekob 2018 — economy in transformed security environment | pp. 330–342 со / with agim nuhiu конференциски труд pdf →" data-title="Конституирање и трансформација на УБК низ историјата" data-type="conference" data-year="2018" id="pub-10">
+<div class="bib-num">10</div>
+<div class="bib-mk">Конституирање и трансформација на УБК низ историјата</div>
+<div class="bib-en">Constitution and Transformation of Directorate for Security and Counterintelligence (UBK) Through Its History</div>
+<div class="bib-meta">
+<strong>2018</strong>  |  Конференциски труд  |  EKOB 2018 — Economy in Transformed Security Environment  |  pp. 330–342<br/>
         Со / With Agim Nuhiu
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p03-ubk-history.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p03-ubk-history.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T11 -->
-    <div class="bib-entry">
-      <div class="bib-num">11</div>
-      <div class="bib-mk">Лидерство и протокол — студија за случај Република Македонија</div>
-      <div class="bib-en">Leadership and Protocol — Study Regarding Case Republic of Macedonia</div>
-      <div class="bib-meta">
-        <strong>2018</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; The Education at the Crossroads — Conditions, Challenges, Solutions and Perspectives &nbsp;|&nbsp; pp. 156–159<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T11 -->
+<div class="bib-entry" data-doi="" data-index="isbn" data-search="11 лидерство и протокол — студија за случај република македонија leadership and protocol — study regarding case republic of macedonia 2018 | конференциски труд | the education at the crossroads — conditions, challenges, solutions and perspectives | pp. 156–159 isbn 978-608-4616-89-4 конференциски труд pdf →" data-title="Лидерство и протокол — студија за случај Република Македонија" data-type="conference" data-year="2018" id="pub-11">
+<div class="bib-num">11</div>
+<div class="bib-mk">Лидерство и протокол — студија за случај Република Македонија</div>
+<div class="bib-en">Leadership and Protocol — Study Regarding Case Republic of Macedonia</div>
+<div class="bib-meta">
+<strong>2018</strong>  |  Конференциски труд  |  The Education at the Crossroads — Conditions, Challenges, Solutions and Perspectives  |  pp. 156–159<br/>
         ISBN 978-608-4616-89-4
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p04-leadership-protocol.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p04-leadership-protocol.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T12 -->
-    <div class="bib-entry">
-      <div class="bib-num">12</div>
-      <div class="bib-mk">Менаџментот и современите практики во организирање и фасилитирање на дводневна планирачка конференција</div>
-      <div class="bib-en">Management and Contemporary Practices in Organizing and Facilitating a Two-Day Planning Conference of an Expert Team</div>
-      <div class="bib-meta">
-        <strong>2018</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; Зборник на трудови — Актуелни менаџерски практики &nbsp;|&nbsp; pp. 95–100
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T12 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="12 менаџментот и современите практики во организирање и фасилитирање на дводневна планирачка конференција management and contemporary practices in organizing and facilitating a two-day planning conference of an expert team 2018 | конференциски труд | зборник на трудови — актуелни менаџерски практики | pp. 95–100 конференциски труд pdf →" data-title="Менаџментот и современите практики во организирање и фасилитирање на дводневна планирачка конференција" data-type="conference" data-year="2018" id="pub-12">
+<div class="bib-num">12</div>
+<div class="bib-mk">Менаџментот и современите практики во организирање и фасилитирање на дводневна планирачка конференција</div>
+<div class="bib-en">Management and Contemporary Practices in Organizing and Facilitating a Two-Day Planning Conference of an Expert Team</div>
+<div class="bib-meta">
+<strong>2018</strong>  |  Конференциски труд  |  Зборник на трудови — Актуелни менаџерски практики  |  pp. 95–100
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p05-planning-conference.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p05-planning-conference.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T13 -->
-    <div class="bib-entry">
-      <div class="bib-num">13</div>
-      <div class="bib-mk">Единствен државен протокол — Потреба и норма за правилно функционирање на државните институции</div>
-      <div class="bib-en">A Unified State Protocol: Necessity and Norm for the Proper Functioning of State Institutions</div>
-      <div class="bib-meta">
-        <strong>2019</strong> &nbsp;|&nbsp; Стручен напис во магазин &nbsp;|&nbsp; ШТИТ / SHIELD, No. 67 &nbsp;|&nbsp; pp. 34–35
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T13 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="13 единствен државен протокол — потреба и норма за правилно функционирање на државните институции a unified state protocol: necessity and norm for the proper functioning of state institutions 2019 | стручен напис во магазин | штит / shield, no. 67 | pp. 34–35 стручен напис pdf →" data-title="Единствен државен протокол — Потреба и норма за правилно функционирање на државните институции" data-type="scientific" data-year="2019" id="pub-13">
+<div class="bib-num">13</div>
+<div class="bib-mk">Единствен државен протокол — Потреба и норма за правилно функционирање на државните институции</div>
+<div class="bib-en">A Unified State Protocol: Necessity and Norm for the Proper Functioning of State Institutions</div>
+<div class="bib-meta">
+<strong>2019</strong>  |  Стручен напис во магазин  |  ШТИТ / SHIELD, No. 67  |  pp. 34–35
       </div>
-      <div class="bib-tags"><span class="bib-tag purple">Стручен напис</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p15-edinstven-drzaven-protokol.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag purple">Стручен напис</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p15-edinstven-drzaven-protokol.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T14 -->
-    <div class="bib-entry">
-      <div class="bib-num">14</div>
-      <div class="bib-mk">Протокол на Министерството за внатрешни работи</div>
-      <div class="bib-en">Protocol of the Ministry of Interior</div>
-      <div class="bib-meta">
-        <strong>2019</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Безбедност / Security, LIX(1) &nbsp;|&nbsp; pp. 55–68<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T14 -->
+<div class="bib-entry" data-doi="" data-index="issn" data-search="14 протокол на министерството за внатрешни работи protocol of the ministry of interior 2019 | научен труд | безбедност / security, lix(1) | pp. 55–68 issn 0351-0220 научен труд pdf →" data-title="Протокол на Министерството за внатрешни работи" data-type="scientific" data-year="2019" id="pub-14">
+<div class="bib-num">14</div>
+<div class="bib-mk">Протокол на Министерството за внатрешни работи</div>
+<div class="bib-en">Protocol of the Ministry of Interior</div>
+<div class="bib-meta">
+<strong>2019</strong>  |  Научен труд  |  Безбедност / Security, LIX(1)  |  pp. 55–68<br/>
         ISSN 0351-0220
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p02-protocol-mvr.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p02-protocol-mvr.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T15 -->
-    <div class="bib-entry">
-      <div class="bib-num">15</div>
-      <div class="bib-mk">Протокол и традиции: E pluribus unum</div>
-      <div class="bib-en">Protocol and Traditions: E pluribus unum</div>
-      <div class="bib-meta">
-        <strong>2019</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Современа македонска одбрана / Contemporary Macedonian Defence, XIX(36) &nbsp;|&nbsp; pp. 93–106<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T15 -->
+<div class="bib-entry" data-doi="" data-index="issn" data-search="15 протокол и традиции: e pluribus unum protocol and traditions: e pluribus unum 2019 | научен труд | современа македонска одбрана / contemporary macedonian defence, xix(36) | pp. 93–106 issn 1409-8199 научен труд pdf →" data-title="Протокол и традиции: E pluribus unum" data-type="scientific" data-year="2019" id="pub-15">
+<div class="bib-num">15</div>
+<div class="bib-mk">Протокол и традиции: E pluribus unum</div>
+<div class="bib-en">Protocol and Traditions: E pluribus unum</div>
+<div class="bib-meta">
+<strong>2019</strong>  |  Научен труд  |  Современа македонска одбрана / Contemporary Macedonian Defence, XIX(36)  |  pp. 93–106<br/>
         ISSN 1409-8199
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p09-protocol-traditions.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p09-protocol-traditions.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T16 -->
-    <div class="bib-entry">
-      <div class="bib-num">16</div>
-      <div class="bib-mk">Западно-балканска миграторна рута: предизвик за Република Северна Македонија и безбедноста на урбаните средини</div>
-      <div class="bib-en">West Balkans Migratory Route: Challenge for the Republic of North Macedonia and the Security of Urban Environments</div>
-      <div class="bib-meta">
-        <strong>2019</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Безбедносни дијалози / Security Dialogues, 10(1–2) &nbsp;|&nbsp; pp. 217–230<br>
-        ISSN 1857-7172 &nbsp;|&nbsp; eISSN 1857-8055 &nbsp;|&nbsp; EBSCO
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T16 -->
+<div class="bib-entry" data-doi="" data-index="issn ebsco" data-search="16 западно-балканска миграторна рута: предизвик за република северна македонија и безбедноста на урбаните средини west balkans migratory route: challenge for the republic of north macedonia and the security of urban environments 2019 | научен труд | безбедносни дијалози / security dialogues, 10(1–2) | pp. 217–230 issn 1857-7172 | eissn 1857-8055 | ebsco научен труд ebsco pdf →" data-title="Западно-балканска миграторна рута: предизвик за Република Северна Македонија и безбедноста на урбаните средини" data-type="scientific" data-year="2019" id="pub-16">
+<div class="bib-num">16</div>
+<div class="bib-mk">Западно-балканска миграторна рута: предизвик за Република Северна Македонија и безбедноста на урбаните средини</div>
+<div class="bib-en">West Balkans Migratory Route: Challenge for the Republic of North Macedonia and the Security of Urban Environments</div>
+<div class="bib-meta">
+<strong>2019</strong>  |  Научен труд  |  Безбедносни дијалози / Security Dialogues, 10(1–2)  |  pp. 217–230<br/>
+        ISSN 1857-7172  |  eISSN 1857-8055  |  EBSCO
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">EBSCO</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p12-west-balkans-migration.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">EBSCO</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p12-west-balkans-migration.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T17 -->
-    <div class="bib-entry">
-      <div class="bib-num">17</div>
-      <div class="bib-mk">(Не)намерни грешки во протоколот: Прашалник за светската дипломатија</div>
-      <div class="bib-en">(Un)intentional Mistakes in the Field of Protocol: A Question Mark for World Diplomacy</div>
-      <div class="bib-meta">
-        <strong>2020</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Безбедност / Security, LXI(5) &nbsp;|&nbsp; pp. 56–71<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T17 -->
+<div class="bib-entry" data-doi="" data-index="issn" data-search="17 (не)намерни грешки во протоколот: прашалник за светската дипломатија (un)intentional mistakes in the field of protocol: a question mark for world diplomacy 2020 | научен труд | безбедност / security, lxi(5) | pp. 56–71 issn 2671-3764 научен труд pdf →" data-title="(Не)намерни грешки во протоколот: Прашалник за светската дипломатија" data-type="scientific" data-year="2020" id="pub-17">
+<div class="bib-num">17</div>
+<div class="bib-mk">(Не)намерни грешки во протоколот: Прашалник за светската дипломатија</div>
+<div class="bib-en">(Un)intentional Mistakes in the Field of Protocol: A Question Mark for World Diplomacy</div>
+<div class="bib-meta">
+<strong>2020</strong>  |  Научен труд  |  Безбедност / Security, LXI(5)  |  pp. 56–71<br/>
         ISSN 2671-3764
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p01-unintentional-mistakes-protocol.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p01-unintentional-mistakes-protocol.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T18 -->
-    <div class="bib-entry">
-      <div class="bib-num">18</div>
-      <div class="bib-mk">Официјална апостолска посета на Папата Франциско на Република Северна Македонија</div>
-      <div class="bib-en">Official Apostolic Visit of Pope Francis to Republic of North Macedonia</div>
-      <div class="bib-meta">
-        <strong>2021</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Religious Dialogue and Cooperation, II(2) &nbsp;|&nbsp; pp. 179–188<br>
-        DOI <a href="https://doi.org/10.47054/RDC212179s" target="_blank" rel="noopener" class="bib-link">10.47054/RDC212179s</a> &nbsp;|&nbsp; ISSN 2671-3594
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T18 -->
+<div class="bib-entry" data-doi="10.47054/RDC212179s" data-index="doi issn" data-search="18 официјална апостолска посета на папата франциско на република северна македонија official apostolic visit of pope francis to republic of north macedonia 2021 | научен труд | religious dialogue and cooperation, ii(2) | pp. 179–188 doi 10.47054/rdc212179s | issn 2671-3594 научен труд doi pdf →" data-title="Официјална апостолска посета на Папата Франциско на Република Северна Македонија" data-type="scientific" data-year="2021" id="pub-18">
+<div class="bib-num">18</div>
+<div class="bib-mk">Официјална апостолска посета на Папата Франциско на Република Северна Македонија</div>
+<div class="bib-en">Official Apostolic Visit of Pope Francis to Republic of North Macedonia</div>
+<div class="bib-meta">
+<strong>2021</strong>  |  Научен труд  |  Religious Dialogue and Cooperation, II(2)  |  pp. 179–188<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.47054/RDC212179s" rel="noopener" target="_blank">10.47054/RDC212179s</a>  |  ISSN 2671-3594
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">DOI</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p11-pope-francis-rdc-2021.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p11-pope-francis-rdc-2021.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T19 -->
-    <div class="bib-entry">
-      <div class="bib-num">19</div>
-      <div class="bib-mk">Влијанието на протоколот низ призмата на политиката</div>
-      <div class="bib-en">The Influence of the Protocol Through the Prism of Policy</div>
-      <div class="bib-meta">
-        <strong>2022</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; Security Horizons, III(7) &nbsp;|&nbsp; pp. 201–208<br>
-        DOI <a href="https://doi.org/10.20544/ICP.3.7.22.P17" target="_blank" rel="noopener" class="bib-link">10.20544/ICP.3.7.22.P17</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span><span class="bib-tag green">DOI</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p07-protocol-policy.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T19 -->
+<div class="bib-entry" data-doi="10.20544/ICP.3.7.22.P17" data-index="doi" data-search="19 влијанието на протоколот низ призмата на политиката the influence of the protocol through the prism of policy 2022 | конференциски труд | security horizons, iii(7) | pp. 201–208 doi 10.20544/icp.3.7.22.p17 конференциски труд doi pdf →" data-title="Влијанието на протоколот низ призмата на политиката" data-type="conference" data-year="2022" id="pub-19">
+<div class="bib-num">19</div>
+<div class="bib-mk">Влијанието на протоколот низ призмата на политиката</div>
+<div class="bib-en">The Influence of the Protocol Through the Prism of Policy</div>
+<div class="bib-meta">
+<strong>2022</strong>  |  Конференциски труд  |  Security Horizons, III(7)  |  pp. 201–208<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.20544/ICP.3.7.22.P17" rel="noopener" target="_blank">10.20544/ICP.3.7.22.P17</a>
+</div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span><span class="bib-tag green">DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p07-protocol-policy.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T20 -->
-    <div class="bib-entry">
-      <div class="bib-num">20</div>
-      <div class="bib-mk">Протокол и односи со јавноста: А и Ω на добро организирана активност</div>
-      <div class="bib-en">Protocol and Public Relations: A and Omega of a Well-Organized Activity</div>
-      <div class="bib-meta">
-        <strong>2022</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; International Scientific Conference &nbsp;|&nbsp; pp. 135–141
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T20 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="20 протокол и односи со јавноста: а и ω на добро организирана активност protocol and public relations: a and omega of a well-organized activity 2022 | конференциски труд | international scientific conference | pp. 135–141 конференциски труд pdf →" data-title="Протокол и односи со јавноста: А и Ω на добро организирана активност" data-type="conference" data-year="2022" id="pub-20">
+<div class="bib-num">20</div>
+<div class="bib-mk">Протокол и односи со јавноста: А и Ω на добро организирана активност</div>
+<div class="bib-en">Protocol and Public Relations: A and Omega of a Well-Organized Activity</div>
+<div class="bib-meta">
+<strong>2022</strong>  |  Конференциски труд  |  International Scientific Conference  |  pp. 135–141
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p18-protocol-public-relations.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p18-protocol-public-relations.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T21 -->
-    <div class="bib-entry">
-      <div class="bib-num">21</div>
-      <div class="bib-mk">Аспектите на дипломатскиот протокол низ призмата на руско-украинскиот конфликт</div>
-      <div class="bib-en">The Aspects of the Diplomatic Protocol Through the Prism of the Russo-Ukrainian Conflict</div>
-      <div class="bib-meta">
-        <strong>2022</strong> &nbsp;|&nbsp; Конференциски труд &nbsp;|&nbsp; International Conference on Security and Crisis Management &nbsp;|&nbsp; pp. 317–324
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T21 -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="21 аспектите на дипломатскиот протокол низ призмата на руско-украинскиот конфликт the aspects of the diplomatic protocol through the prism of the russo-ukrainian conflict 2022 | конференциски труд | international conference on security and crisis management | pp. 317–324 конференциски труд pdf →" data-title="Аспектите на дипломатскиот протокол низ призмата на руско-украинскиот конфликт" data-type="conference" data-year="2022" id="pub-21">
+<div class="bib-num">21</div>
+<div class="bib-mk">Аспектите на дипломатскиот протокол низ призмата на руско-украинскиот конфликт</div>
+<div class="bib-en">The Aspects of the Diplomatic Protocol Through the Prism of the Russo-Ukrainian Conflict</div>
+<div class="bib-meta">
+<strong>2022</strong>  |  Конференциски труд  |  International Conference on Security and Crisis Management  |  pp. 317–324
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p10-protocol-russo-ukraine.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p10-protocol-russo-ukraine.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T22 -->
-    <div class="bib-entry">
-      <div class="bib-num">22</div>
-      <div class="bib-mk">Corona Virus Handling — Namaste</div>
-      <div class="bib-en">Corona Virus Handling — Namaste</div>
-      <div class="bib-meta">
-        <strong>2022</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Безбедносни дијалози / Security Dialogues, 13(1) &nbsp;|&nbsp; pp. 155–164<br>
-        ISSN 1857-7172 &nbsp;|&nbsp; eISSN 1857-8055 &nbsp;|&nbsp; EBSCO
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T22 -->
+<div class="bib-entry" data-doi="" data-index="issn ebsco" data-search="22 corona virus handling — namaste corona virus handling — namaste 2022 | научен труд | безбедносни дијалози / security dialogues, 13(1) | pp. 155–164 issn 1857-7172 | eissn 1857-8055 | ebsco научен труд ebsco pdf →" data-title="Corona Virus Handling — Namaste" data-type="scientific" data-year="2022" id="pub-22">
+<div class="bib-num">22</div>
+<div class="bib-mk">Corona Virus Handling — Namaste</div>
+<div class="bib-en">Corona Virus Handling — Namaste</div>
+<div class="bib-meta">
+<strong>2022</strong>  |  Научен труд  |  Безбедносни дијалози / Security Dialogues, 13(1)  |  pp. 155–164<br/>
+        ISSN 1857-7172  |  eISSN 1857-8055  |  EBSCO
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">EBSCO</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p14-corona-namaste-full.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">EBSCO</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p14-corona-namaste-full.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T23 -->
-    <div class="bib-entry">
-      <div class="bib-num">23</div>
-      <div class="bib-mk">Протокол и лична безбедност: корелација, координација и соработка за максимален ефект</div>
-      <div class="bib-en">Protocol and Personal Security: Correlation, Coordination and Cooperation for Maximum Effect</div>
-      <div class="bib-meta">
-        <strong>2023</strong> &nbsp;|&nbsp; Научен труд &nbsp;|&nbsp; Безбедносни дијалози / Security Dialogues, 14(1) &nbsp;|&nbsp; pp. 213–223<br>
-        ISSN 1857-7172 &nbsp;|&nbsp; eISSN 1857-8055 &nbsp;|&nbsp; DOI <a href="https://doi.org/10.47054/SD23141213s" target="_blank" rel="noopener" class="bib-link">10.47054/SD23141213s</a> &nbsp;|&nbsp; EBSCO
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T23 -->
+<div class="bib-entry" data-doi="10.47054/SD23141213s" data-index="doi issn ebsco" data-search="23 протокол и лична безбедност: корелација, координација и соработка за максимален ефект protocol and personal security: correlation, coordination and cooperation for maximum effect 2023 | научен труд | безбедносни дијалози / security dialogues, 14(1) | pp. 213–223 issn 1857-7172 | eissn 1857-8055 | doi 10.47054/sd23141213s | ebsco научен труд doi ebsco pdf →" data-title="Протокол и лична безбедност: корелација, координација и соработка за максимален ефект" data-type="scientific" data-year="2023" id="pub-23">
+<div class="bib-num">23</div>
+<div class="bib-mk">Протокол и лична безбедност: корелација, координација и соработка за максимален ефект</div>
+<div class="bib-en">Protocol and Personal Security: Correlation, Coordination and Cooperation for Maximum Effect</div>
+<div class="bib-meta">
+<strong>2023</strong>  |  Научен труд  |  Безбедносни дијалози / Security Dialogues, 14(1)  |  pp. 213–223<br/>
+        ISSN 1857-7172  |  eISSN 1857-8055  |  DOI <a class="bib-link" href="https://doi.org/10.47054/SD23141213s" rel="noopener" target="_blank">10.47054/SD23141213s</a>  |  EBSCO
       </div>
-      <div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">DOI</span><span class="bib-tag green">EBSCO</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p06-protocol-security.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag">Научен труд</span><span class="bib-tag green">DOI</span><span class="bib-tag green">EBSCO</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p06-protocol-security.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T24 — IMCSM26 (2026) -->
-    <div class="bib-entry">
-      <div class="bib-num">24</div>
-      <div class="bib-mk">Дигитален протокол во ерата на вештачката интелигенција: трансформација, предизвици и стратешки препораки за управување во јавниот сектор</div>
-      <div class="bib-en">Digital Protocol in the Age of Artificial Intelligence: Transformation, Challenges and Strategic Recommendations for Public Sector Management</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Конференциски труд (Research Article) &nbsp;|&nbsp; XXII International May Conference on Strategic Management — IMCSM26, Belgrade, Republic of Serbia &nbsp;|&nbsp; Volume XXII, Issue (1) (2026), pp. 144–150<br>
-        ORCID: <a href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener" class="bib-link">0009-0008-3219-394X</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span><span class="bib-tag green">2026</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p19-digital-protocol-ai-public-sector.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T24 — IMCSM26 (2026) -->
+<div class="bib-entry" data-doi="" data-index="none" data-search="24 дигитален протокол во ерата на вештачката интелигенција: трансформација, предизвици и стратешки препораки за управување во јавниот сектор digital protocol in the age of artificial intelligence: transformation, challenges and strategic recommendations for public sector management 2026 | конференциски труд (research article) | xxii international may conference on strategic management — imcsm26, belgrade, republic of serbia | volume xxii, issue (1) (2026), pp. 144–150 orcid: 0009-0008-3219-394x конференциски труд 2026 pdf →" data-title="Дигитален протокол во ерата на вештачката интелигенција: трансформација, предизвици и стратешки препораки за управување во јавниот сектор" data-type="conference" data-year="2026" id="pub-24">
+<div class="bib-num">24</div>
+<div class="bib-mk">Дигитален протокол во ерата на вештачката интелигенција: трансформација, предизвици и стратешки препораки за управување во јавниот сектор</div>
+<div class="bib-en">Digital Protocol in the Age of Artificial Intelligence: Transformation, Challenges and Strategic Recommendations for Public Sector Management</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Конференциски труд (Research Article)  |  XXII International May Conference on Strategic Management — IMCSM26, Belgrade, Republic of Serbia  |  Volume XXII, Issue (1) (2026), pp. 144–150<br/>
+        ORCID: <a class="bib-link" href="https://orcid.org/0009-0008-3219-394X" rel="noopener" target="_blank">0009-0008-3219-394X</a>
+</div>
+<div class="bib-tags"><span class="bib-tag blue">Конференциски труд</span><span class="bib-tag green">2026</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p19-digital-protocol-ai-public-sector.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- T25 — ШТИТ бр.200 (2026) -->
-    <div class="bib-entry">
-      <div class="bib-num">25</div>
-      <div class="bib-mk">Воен протокол, одбранбена дипломатија и воена дипломатија — Три лица на еден систем</div>
-      <div class="bib-en">Military Protocol, Defence Diplomacy and Military Diplomacy — Three Faces of One System</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Стручен прилог &nbsp;|&nbsp; ШТИТ — Магазин на Министерството за одбрана на Република Северна Македонија, број 200 (јуни 2026) &nbsp;|&nbsp; стр. 20–21<br>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- T25 — ШТИТ бр.200 (2026) -->
+<div class="bib-entry" data-doi="" data-index="issn" data-search="25 воен протокол, одбранбена дипломатија и воена дипломатија — три лица на еден систем military protocol, defence diplomacy and military diplomacy — three faces of one system 2026 | стручен прилог | штит — магазин на министерството за одбрана на република северна македонија, број 200 (јуни 2026) | стр. 20–21 issn 1857-6710 стручен прилог 2026 pdf →" data-title="Воен протокол, одбранбена дипломатија и воена дипломатија — Три лица на еден систем" data-type="scientific" data-year="2026" id="pub-25">
+<div class="bib-num">25</div>
+<div class="bib-mk">Воен протокол, одбранбена дипломатија и воена дипломатија — Три лица на еден систем</div>
+<div class="bib-en">Military Protocol, Defence Diplomacy and Military Diplomacy — Three Faces of One System</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Стручен прилог  |  ШТИТ — Магазин на Министерството за одбрана на Република Северна Македонија, број 200 (јуни 2026)  |  стр. 20–21<br/>
         ISSN 1857-6710
       </div>
-      <div class="bib-tags"><span class="bib-tag blue">Стручен прилог</span><span class="bib-tag green">2026</span></div>
-      <div class="bib-links">
-        <a href="https://worldprotocolacademy-code.github.io/papers/p20-military-protocol-defence-diplomacy-military-diplomacy.pdf" target="_blank" rel="noopener" class="bib-link-btn">PDF →</a>
-      </div>
-    </div>
+<div class="bib-tags"><span class="bib-tag blue">Стручен прилог</span><span class="bib-tag green">2026</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://worldprotocolacademy-code.github.io/papers/p20-military-protocol-defence-diplomacy-military-diplomacy.pdf" rel="noopener" target="_blank">PDF →</a>
+</div>
 
-    <!-- ===== Section IV: WPA Working Papers · Zenodo DOI записи ===== -->
-    <!-- Separate category · Author-Reviewed Final Releases · NOT counted among the 25 academic publications above -->
-    <!-- DOI links use canonical https://doi.org/ format. A temporary DOI-resolver redirect error is an external service issue, not a malformed link. -->
-
-    <h2 class="part-heading" id="zenodo-working-papers">IV. WPA Working Papers · Zenodo DOI записи</h2>
-
-    <div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
-      Следните единаесет working papers се јавно достапни како поединечни Zenodo записи со трајни DOI идентификатори. Тие се издадени како <strong style="color:var(--text)">WPA Working Papers / Author-Reviewed Final Releases</strong> и <strong style="color:var(--text)">не се претставени како формални рецензирани журнални трудови</strong>. Се наведуваат како посебна категорија и не се вклучени во бројката од 25 академски публикации погоре. &nbsp;|&nbsp; <a href="https://worldprotocolacademy-code.github.io/working-papers/" target="_blank" rel="noopener" class="bib-link">Целосен Working Papers DOI индекс →</a>
-    </div>
-
-    <div style="margin-bottom:20px;padding:12px 16px;background:rgba(31,111,120,.07);border-left:3px solid #1f6f78;border-radius:0 var(--r2) var(--r2) 0;font-size:12.5px;color:var(--muted);line-height:1.65">
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- ===== Section IV: WPA Working Papers · Zenodo DOI записи ===== -->
+<!-- Separate category · Author-Reviewed Final Releases · NOT counted among the 25 academic publications above -->
+<!-- DOI links use canonical https://doi.org/ format. A temporary DOI-resolver redirect error is an external service issue, not a malformed link. -->
+<h2 class="part-heading" id="zenodo-working-papers">IV. WPA Working Papers · Zenodo DOI Records</h2>
+<div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
+      Следните единаесет working papers се јавно достапни како поединечни Zenodo записи со трајни DOI идентификатори. Тие се издадени како <strong style="color:var(--text)">WPA Working Papers / Author-Reviewed Final Releases</strong> и <strong style="color:var(--text)">не се претставени како формални рецензирани журнални трудови</strong>. Се наведуваат како посебна категорија и не се вклучени во бројката од 25 академски публикации погоре.  |  <a class="bib-link" href="https://worldprotocolacademy-code.github.io/working-papers/" rel="noopener" target="_blank">Целосен Working Papers DOI индекс →</a>
+</div>
+<div style="margin-bottom:20px;padding:12px 16px;background:rgba(31,111,120,.07);border-left:3px solid #1f6f78;border-radius:0 var(--r2) var(--r2) 0;font-size:12.5px;color:var(--muted);line-height:1.65">
 <strong style="color:var(--text)">Терминолошка напомена · Index terminology:</strong> WPA користи два поврзани, но различни индекси. <strong style="color:var(--text)">PSPI</strong> (WPA Protocol Soft Power Index) е општата протоколометриска рамка применувана низ корпусот за државни посети (на пр. WP-005, WP-007, WP-008). <strong style="color:var(--text)">V-PSPI</strong> (Vatican Protocol Symbolic Presence Index) е специфичната, <em>предложена и експлораторна</em> варијанта воведена во WP-011 за ватиканскиот контекст. Двата се концептуални WPA аналитички алатки и не се претставени како статистички валидирани.
 </div>
 <!-- ===== Zenodo Working Papers · Visual Summary ===== -->
-    <section class="zenodo-graph" aria-labelledby="zenodo-graph-title">
-      <h3 id="zenodo-graph-title">Визуелен преглед на WPA Working Papers на Zenodo</h3>
-      <div class="zenodo-sub">Zenodo Working Papers · Visual Summary</div>
-
-      <div class="zenodo-stats">
-        <div class="zenodo-stat">
-          <strong>11</strong>
-          <span>Zenodo DOI записи</span>
-        </div>
-        <div class="zenodo-stat">
-          <strong>001–011</strong>
-          <span>WPA Working Papers Series</span>
-        </div>
-        <div class="zenodo-stat">
-          <strong>11/11</strong>
-          <span>DOI coverage</span>
-        </div>
-        <div class="zenodo-stat">
-          <strong>Посебна категорија</strong>
-          <span>Не се бројат во 25 академски публикации</span>
-        </div>
-      </div>
-
-      <div class="zenodo-bars">
-        <div class="zenodo-bars-title">Дистрибуција по тип / Research distribution</div>
-        <div class="zenodo-bar-segmented" aria-label="Distribution of WPA Working Papers by type">
-          <div class="zenodo-seg seg-thematic" style="width:18.18%" title="Thematic Working Papers: 2">2</div>
-          <div class="zenodo-seg seg-china" style="width:36.36%" title="China / PRC Protocol Case-Study Corpus: 4">4</div>
-          <div class="zenodo-seg seg-ceremonial" style="width:9.09%" title="Ceremonial Diplomacy Case Study: 1">1</div>
-          <div class="zenodo-seg seg-regional" style="width:9.09%" title="Regional Summit / Enlargement Protocol Case Study: 1">1</div>
-          <div class="zenodo-seg seg-dprk" style="width:9.09%" title="DPRK / PRC Protocol and Visual Statecraft Case Study: 1">1</div>
-          <div class="zenodo-seg seg-bilateral" style="width:9.09%" title="Thematic Bilateral / India-France Case Study: 1">1</div>
-          <div class="zenodo-seg seg-vatican" style="width:9.09%" title="Vatican / Holy See Protocol Case Study: 1">1</div>
-        </div>
-
-        <div class="zenodo-legend">
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-thematic"></span>
-            <span><strong>Thematic Working Papers · 2</strong><br><span class="leg-papers">WP-001 Dress Code · WP-002 Plan B / Contingency Protocol</span></span>
-          </div>
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-china"></span>
-            <span><strong>China / PRC Protocol Case-Study Corpus · 4</strong><br><span class="leg-papers">WP-003 Beijing Summit 2026 · WP-004 Trump vs Putin · WP-005 Aleksandar Vučić state visit / PSPI · WP-007 Beijing Convergence</span></span>
-          </div>
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-ceremonial"></span>
-            <span><strong>Ceremonial Diplomacy &amp; Soft Power Case Study · 1</strong><br><span class="leg-papers">WP-006 King Charles III state visit to USA</span></span>
-          </div>
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-regional"></span>
-            <span><strong>Regional Summit / Enlargement Protocol Case Study · 1</strong><br><span class="leg-papers">WP-008 EU-Western Balkans Summit in Tivat 2026</span></span>
-          </div>
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-dprk"></span>
-            <span><strong>DPRK / PRC Protocol and Visual Statecraft Case Study · 1</strong><br><span class="leg-papers">WP-009 Pyongyang Reception / Xi Jinping visit to the DPRK</span></span>
-          </div>
-        </div>
-
-          <div class="zenodo-legend-item">
-            <span class="zenodo-legend-swatch sw-bilateral"></span>
-            <span><strong>Thematic Bilateral / India-France Case Study · 1</strong><br><span class="leg-papers">WP-010 Modi–Macron Nice engagement / Bharat Innovates 2026</span></span>
-          </div>
-        <div class="zenodo-legend-item">
+<section aria-labelledby="zenodo-graph-title" class="zenodo-graph">
+<h3 id="zenodo-graph-title">Визуелен преглед на WPA Working Papers на Zenodo</h3>
+<div class="zenodo-sub">Zenodo Working Papers · Visual Summary</div>
+<div class="zenodo-stats">
+<div class="zenodo-stat">
+<strong>11</strong>
+<span>Zenodo DOI записи</span>
+</div>
+<div class="zenodo-stat">
+<strong>001–011</strong>
+<span>WPA Working Papers Series</span>
+</div>
+<div class="zenodo-stat">
+<strong>11/11</strong>
+<span>DOI coverage</span>
+</div>
+<div class="zenodo-stat">
+<strong>Посебна категорија</strong>
+<span>Не се бројат во 25 академски публикации</span>
+</div>
+</div>
+<div class="zenodo-bars">
+<div class="zenodo-bars-title">Дистрибуција по тип / Research distribution</div>
+<div aria-label="Distribution of WPA Working Papers by type" class="zenodo-bar-segmented">
+<div class="zenodo-seg seg-thematic" style="width:18.18%" title="Thematic Working Papers: 2">2</div>
+<div class="zenodo-seg seg-china" style="width:36.36%" title="China / PRC Protocol Case-Study Corpus: 4">4</div>
+<div class="zenodo-seg seg-ceremonial" style="width:9.09%" title="Ceremonial Diplomacy Case Study: 1">1</div>
+<div class="zenodo-seg seg-regional" style="width:9.09%" title="Regional Summit / Enlargement Protocol Case Study: 1">1</div>
+<div class="zenodo-seg seg-dprk" style="width:9.09%" title="DPRK / PRC Protocol and Visual Statecraft Case Study: 1">1</div>
+<div class="zenodo-seg seg-bilateral" style="width:9.09%" title="Thematic Bilateral / India-France Case Study: 1">1</div>
+<div class="zenodo-seg seg-vatican" style="width:9.09%" title="Vatican / Holy See Protocol Case Study: 1">1</div>
+</div>
+<div class="zenodo-legend">
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-thematic"></span>
+<span><strong>Thematic Working Papers · 2</strong><br/><span class="leg-papers">WP-001 Dress Code · WP-002 Plan B / Contingency Protocol</span></span>
+</div>
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-china"></span>
+<span><strong>China / PRC Protocol Case-Study Corpus · 4</strong><br/><span class="leg-papers">WP-003 Beijing Summit 2026 · WP-004 Trump vs Putin · WP-005 Aleksandar Vučić state visit / PSPI · WP-007 Beijing Convergence</span></span>
+</div>
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-ceremonial"></span>
+<span><strong>Ceremonial Diplomacy &amp; Soft Power Case Study · 1</strong><br/><span class="leg-papers">WP-006 King Charles III state visit to USA</span></span>
+</div>
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-regional"></span>
+<span><strong>Regional Summit / Enlargement Protocol Case Study · 1</strong><br/><span class="leg-papers">WP-008 EU-Western Balkans Summit in Tivat 2026</span></span>
+</div>
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-dprk"></span>
+<span><strong>DPRK / PRC Protocol and Visual Statecraft Case Study · 1</strong><br/><span class="leg-papers">WP-009 Pyongyang Reception / Xi Jinping visit to the DPRK</span></span>
+</div>
+</div>
+<div class="zenodo-legend-item">
+<span class="zenodo-legend-swatch sw-bilateral"></span>
+<span><strong>Thematic Bilateral / India-France Case Study · 1</strong><br/><span class="leg-papers">WP-010 Modi–Macron Nice engagement / Bharat Innovates 2026</span></span>
+</div>
+<div class="zenodo-legend-item">
 <span class="zenodo-legend-swatch sw-vatican"></span>
-<span><strong>Vatican / Holy See Protocol Case Study · 1</strong><br><span class="leg-papers">WP-011 The Vatican Protocol — Sacred Space, Ceremonial Hierarchy &amp; Diplomatic Liturgy</span></span>
+<span><strong>Vatican / Holy See Protocol Case Study · 1</strong><br/><span class="leg-papers">WP-011 The Vatican Protocol — Sacred Space, Ceremonial Hierarchy &amp; Diplomatic Liturgy</span></span>
 </div>
 <div class="zenodo-doi-line">
-          <strong>DOI coverage: 11 Zenodo records</strong> · Сите записи се Author-Reviewed Final Releases со трајни Zenodo DOI идентификатори.
+<strong>DOI coverage: 11 Zenodo records</strong> · Сите записи се Author-Reviewed Final Releases со трајни Zenodo DOI идентификатори.
         </div>
-      </div>
-    </section>
+</div>
+</section>
+<!-- WP-001 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20383554" data-index="doi zenodo" data-search="wp-001 кодекс на облекување — во дипломатскиот, бизнис и воен протокол dress code — in diplomatic, business and military protocol 2026 | thematic working paper | 58 стр. · author-reviewed final release doi 10.5281/zenodo.20383554 working paper zenodo doi" data-title="Кодекс на облекување — во дипломатскиот, бизнис и воен протокол" data-type="working-paper" data-year="2026" id="wp-001">
+<div class="bib-num">WP-001</div>
+<div class="bib-mk">Кодекс на облекување — во дипломатскиот, бизнис и воен протокол</div>
+<div class="bib-en">Dress Code — In Diplomatic, Business and Military Protocol</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Thematic Working Paper  |  58 стр. · Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20383554" rel="noopener" target="_blank">10.5281/zenodo.20383554</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-001 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-001</div>
-      <div class="bib-mk">Кодекс на облекување — во дипломатскиот, бизнис и воен протокол</div>
-      <div class="bib-en">Dress Code — In Diplomatic, Business and Military Protocol</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Thematic Working Paper &nbsp;|&nbsp; 58 стр. · Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20383554" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20383554</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-002 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20385777" data-index="doi zenodo" data-search="wp-002 план б во протоколот — контингенциски процедури во дипломатската пракса plan b in protocol — contingency procedures in diplomatic practice 2026 | thematic working paper | 65 стр. · author-reviewed final release doi 10.5281/zenodo.20385777 working paper zenodo doi" data-title="План Б во протоколот — контингенциски процедури во дипломатската пракса" data-type="working-paper" data-year="2026" id="wp-002">
+<div class="bib-num">WP-002</div>
+<div class="bib-mk">План Б во протоколот — контингенциски процедури во дипломатската пракса</div>
+<div class="bib-en">Plan B in Protocol — Contingency Procedures in Diplomatic Practice</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Thematic Working Paper  |  65 стр. · Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20385777" rel="noopener" target="_blank">10.5281/zenodo.20385777</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-002 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-002</div>
-      <div class="bib-mk">План Б во протоколот — контингенциски процедури во дипломатската пракса</div>
-      <div class="bib-en">Plan B in Protocol — Contingency Procedures in Diplomatic Practice</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Thematic Working Paper &nbsp;|&nbsp; 65 стр. · Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20385777" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20385777</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-003 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20386152" data-index="doi zenodo" data-search="wp-003 самит во пекинг 2026 — сеопфатна протоколарна анализа на државната посета на претседателот трамп на нр кина beijing summit 2026 — comprehensive protocol analysis of president trump's state visit to the prc 2026 | flagship case study | 81 стр. · author-reviewed final release doi 10.5281/zenodo.20386152 working paper zenodo doi" data-title="Самит во Пекинг 2026 — сеопфатна протоколарна анализа на државната посета на претседателот Трамп на НР Кина" data-type="working-paper" data-year="2026" id="wp-003">
+<div class="bib-num">WP-003</div>
+<div class="bib-mk">Самит во Пекинг 2026 — сеопфатна протоколарна анализа на државната посета на претседателот Трамп на НР Кина</div>
+<div class="bib-en">Beijing Summit 2026 — Comprehensive Protocol Analysis of President Trump's State Visit to the PRC</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Flagship Case Study  |  81 стр. · Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20386152" rel="noopener" target="_blank">10.5281/zenodo.20386152</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-003 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-003</div>
-      <div class="bib-mk">Самит во Пекинг 2026 — сеопфатна протоколарна анализа на државната посета на претседателот Трамп на НР Кина</div>
-      <div class="bib-en">Beijing Summit 2026 — Comprehensive Protocol Analysis of President Trump's State Visit to the PRC</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Flagship Case Study &nbsp;|&nbsp; 81 стр. · Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20386152" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20386152</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-004 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20386692" data-index="doi zenodo" data-search="wp-004 посетите на кина: трамп vs путин — протоколарно-дипломатска 360° компаративна анализа visits to china: trump vs putin — protocol-diplomatic 360° comparative analysis 2026 | comparative companion paper (to wp-003) | 89 стр. · author-reviewed final release doi 10.5281/zenodo.20386692 working paper zenodo doi" data-title="Посетите на Кина: Трамп vs Путин — протоколарно-дипломатска 360° компаративна анализа" data-type="working-paper" data-year="2026" id="wp-004">
+<div class="bib-num">WP-004</div>
+<div class="bib-mk">Посетите на Кина: Трамп vs Путин — протоколарно-дипломатска 360° компаративна анализа</div>
+<div class="bib-en">Visits to China: Trump vs Putin — Protocol-Diplomatic 360° Comparative Analysis</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Comparative Companion Paper (to WP-003)  |  89 стр. · Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20386692" rel="noopener" target="_blank">10.5281/zenodo.20386692</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-004 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-004</div>
-      <div class="bib-mk">Посетите на Кина: Трамп vs Путин — протоколарно-дипломатска 360° компаративна анализа</div>
-      <div class="bib-en">Visits to China: Trump vs Putin — Protocol-Diplomatic 360° Comparative Analysis</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Comparative Companion Paper (to WP-003) &nbsp;|&nbsp; 89 стр. · Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20386692" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20386692</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-005 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20434477" data-index="doi zenodo" data-search="wp-005 дипломатскиот протокол како инструмент на меѓународната соработка — емпириска протоколарна анализа на државната посета на претседателот александар вучиќ на нр кина (24–28 мај 2026) an empirical protocol analysis of the state visit of president aleksandar vučić to the people's republic of china (24–28 may 2026) 2026 | empirical case study · bilingual mk/en · v1.0 | воведува wpa protocol soft power index (pspi) doi 10.5281/zenodo.20434477 working paper zenodo doi" data-title="Дипломатскиот протокол како инструмент на меѓународната соработка — емпириска протоколарна анализа на државната посета на претседателот Александар Вучиќ на НР Кина (24–28 мај 2026)" data-type="working-paper" data-year="2026" id="wp-005">
+<div class="bib-num">WP-005</div>
+<div class="bib-mk">Дипломатскиот протокол како инструмент на меѓународната соработка — емпириска протоколарна анализа на државната посета на претседателот Александар Вучиќ на НР Кина (24–28 мај 2026)</div>
+<div class="bib-en">An Empirical Protocol Analysis of the State Visit of President Aleksandar Vučić to the People's Republic of China (24–28 May 2026)</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Empirical Case Study · Bilingual MK/EN · v1.0  |  воведува WPA Protocol Soft Power Index (PSPI)<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20434477" rel="noopener" target="_blank">10.5281/zenodo.20434477</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-005 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-005</div>
-      <div class="bib-mk">Дипломатскиот протокол како инструмент на меѓународната соработка — емпириска протоколарна анализа на државната посета на претседателот Александар Вучиќ на НР Кина (24–28 мај 2026)</div>
-      <div class="bib-en">An Empirical Protocol Analysis of the State Visit of President Aleksandar Vučić to the People's Republic of China (24–28 May 2026)</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Empirical Case Study · Bilingual MK/EN · v1.0 &nbsp;|&nbsp; воведува WPA Protocol Soft Power Index (PSPI)<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20434477" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20434477</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-006 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20528224" data-index="doi zenodo" data-search="wp-006 државната посета на кралот чарлс iii на соединетите американски држави — анатомија на церемонијалната дипломатија и меката моќ низ призмата на протоколот the state visit of king charles iii to the united states of america (2026): an anatomy of ceremonial diplomacy and soft power through the prism of protocol 2026 | ceremonial diplomacy case study · bilingual mk/en · v1.3 | 48 стр. · author-reviewed final release doi 10.5281/zenodo.20528224 working paper zenodo doi" data-title="Државната посета на Кралот Чарлс III на Соединетите Американски Држави — анатомија на церемонијалната дипломатија и меката моќ низ призмата на протоколот" data-type="working-paper" data-year="2026" id="wp-006">
+<div class="bib-num">WP-006</div>
+<div class="bib-mk">Државната посета на Кралот Чарлс III на Соединетите Американски Држави — анатомија на церемонијалната дипломатија и меката моќ низ призмата на протоколот</div>
+<div class="bib-en">The State Visit of King Charles III to the United States of America (2026): An Anatomy of Ceremonial Diplomacy and Soft Power through the Prism of Protocol</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Ceremonial Diplomacy Case Study · Bilingual MK/EN · v1.3  |  48 стр. · Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20528224" rel="noopener" target="_blank">10.5281/zenodo.20528224</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
 
-    <!-- WP-006 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-006</div>
-      <div class="bib-mk">Државната посета на Кралот Чарлс III на Соединетите Американски Држави — анатомија на церемонијалната дипломатија и меката моќ низ призмата на протоколот</div>
-      <div class="bib-en">The State Visit of King Charles III to the United States of America (2026): An Anatomy of Ceremonial Diplomacy and Soft Power through the Prism of Protocol</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Ceremonial Diplomacy Case Study · Bilingual MK/EN · v1.3 &nbsp;|&nbsp; 48 стр. · Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20528224" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20528224</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-007 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20597429" data-index="doi zenodo" data-search="wp-007 пекиншка конвергенција: државни и официјални посети на западни лидери на народна република кина (2025–2026) the beijing convergence: western leaders' state and official visits to the people's republic of china (2025–2026): a protocol analysis through the wpa protocol soft power index 2026 | china / prc protocol case-study corpus · bilingual en/mk · v1.0 | author-reviewed final release doi 10.5281/zenodo.20597429 working paper zenodo doi zenodo record →" data-title="Пекиншка конвергенција: државни и официјални посети на западни лидери на Народна Република Кина (2025–2026)" data-type="working-paper" data-year="2026" id="wp-007">
+<div class="bib-num">WP-007</div>
+<div class="bib-mk">Пекиншка конвергенција: државни и официјални посети на западни лидери на Народна Република Кина (2025–2026)</div>
+<div class="bib-en">The Beijing Convergence: Western Leaders' State and Official Visits to the People's Republic of China (2025–2026): A Protocol Analysis through the WPA Protocol Soft Power Index</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  China / PRC Protocol Case-Study Corpus · Bilingual EN/MK · v1.0  |  Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20597429" rel="noopener" target="_blank">10.5281/zenodo.20597429</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20597429" rel="noopener" target="_blank">Zenodo record →</a>
+</div>
 
-    
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-008 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20599172" data-index="doi zenodo" data-search="wp-008 самитот еу — западен балкан во тиват, црна гора (5 јуни 2026): протоколарна архитектура на проширувањето, постепената интеграција и регионалната безбедност the eu-western balkans summit in tivat, montenegro (5 june 2026): protocol architecture of enlargement, gradual integration and regional security 2026 | regional summit / enlargement protocol case study · bilingual en/mk · v1.0 | author-reviewed final release doi 10.5281/zenodo.20599172 working paper zenodo doi zenodo record →" data-title="Самитот ЕУ — Западен Балкан во Тиват, Црна Гора (5 јуни 2026): протоколарна архитектура на проширувањето, постепената интеграција и регионалната безбедност" data-type="working-paper" data-year="2026" id="wp-008">
+<div class="bib-num">WP-008</div>
+<div class="bib-mk">Самитот ЕУ — Западен Балкан во Тиват, Црна Гора (5 јуни 2026): протоколарна архитектура на проширувањето, постепената интеграција и регионалната безбедност</div>
+<div class="bib-en">The EU-Western Balkans Summit in Tivat, Montenegro (5 June 2026): Protocol Architecture of Enlargement, Gradual Integration and Regional Security</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  Regional Summit / Enlargement Protocol Case Study · Bilingual EN/MK · v1.0  |  Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20599172" rel="noopener" target="_blank">10.5281/zenodo.20599172</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20599172" rel="noopener" target="_blank">Zenodo record →</a>
+</div>
 
-    <!-- WP-007 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-007</div>
-      <div class="bib-mk">Пекиншка конвергенција: државни и официјални посети на западни лидери на Народна Република Кина (2025–2026)</div>
-      <div class="bib-en">The Beijing Convergence: Western Leaders' State and Official Visits to the People's Republic of China (2025–2026): A Protocol Analysis through the WPA Protocol Soft Power Index</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; China / PRC Protocol Case-Study Corpus · Bilingual EN/MK · v1.0 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20597429" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20597429</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-      <div class="bib-links">
-        <a href="https://doi.org/10.5281/zenodo.20597429" target="_blank" rel="noopener" class="bib-link-btn">Zenodo record →</a>
-      </div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-009 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20641841" data-index="doi zenodo" data-search="wp-009 приемот во пјонгјанг: протокол, церемонија и визуелна државност во посетата на си џинпинг во днр кореја the pyongyang reception: protocol, ceremony and visual statecraft in xi jinping's visit to the dprk 2026 | dprk / prc protocol and visual statecraft case study · english with macedonian abstract · v1.0 | author-reviewed final release doi 10.5281/zenodo.20641841 working paper zenodo doi zenodo record →" data-title="Приемот во Пјонгјанг: протокол, церемонија и визуелна државност во посетата на Си Џинпинг во ДНР Кореја" data-type="working-paper" data-year="2026" id="wp-009">
+<div class="bib-num">WP-009</div>
+<div class="bib-mk">Приемот во Пјонгјанг: протокол, церемонија и визуелна државност во посетата на Си Џинпинг во ДНР Кореја</div>
+<div class="bib-en">The Pyongyang Reception: Protocol, Ceremony and Visual Statecraft in Xi Jinping's Visit to the DPRK</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  DPRK / PRC Protocol and Visual Statecraft Case Study · English with Macedonian abstract · v1.0  |  Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20641841" rel="noopener" target="_blank">10.5281/zenodo.20641841</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20641841" rel="noopener" target="_blank">Zenodo record →</a>
+</div>
 
-    <!-- WP-008 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-008</div>
-      <div class="bib-mk">Самитот ЕУ — Западен Балкан во Тиват, Црна Гора (5 јуни 2026): протоколарна архитектура на проширувањето, постепената интеграција и регионалната безбедност</div>
-      <div class="bib-en">The EU-Western Balkans Summit in Tivat, Montenegro (5 June 2026): Protocol Architecture of Enlargement, Gradual Integration and Regional Security</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; Regional Summit / Enlargement Protocol Case Study · Bilingual EN/MK · v1.0 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20599172" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20599172</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-      <div class="bib-links">
-        <a href="https://doi.org/10.5281/zenodo.20599172" target="_blank" rel="noopener" class="bib-link-btn">Zenodo record →</a>
-      </div>
-    </div>
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-010 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20706913" data-index="doi zenodo" data-search="wp-010 протоколарна анатомија на тематска билатерала: моди, макрон и bharat innovates 2026 — ница, 14 јуни 2026 a protocol anatomy of a thematic bilateral: modi, macron and bharat innovates 2026 — nice, 14 june 2026 2026 | india–france strategic partnership case study · english with macedonian abstract · v1.0 | author-reviewed final release doi 10.5281/zenodo.20706913 working paper zenodo doi zenodo record →" data-title="Протоколарна анатомија на тематска билатерала: Моди, Макрон и Bharat Innovates 2026 — Ница, 14 јуни 2026" data-type="working-paper" data-year="2026" id="wp-010">
+<div class="bib-num">WP-010</div>
+<div class="bib-mk">Протоколарна анатомија на тематска билатерала: Моди, Макрон и Bharat Innovates 2026 — Ница, 14 јуни 2026</div>
+<div class="bib-en">A Protocol Anatomy of a Thematic Bilateral: Modi, Macron and Bharat Innovates 2026 — Nice, 14 June 2026</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  India–France Strategic Partnership Case Study · English with Macedonian abstract · v1.0  |  Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20706913" rel="noopener" target="_blank">10.5281/zenodo.20706913</a>
+</div>
+<div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
+<div class="bib-links">
+<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20706913" rel="noopener" target="_blank">Zenodo record →</a>
+</div>
 
-
-    <!-- WP-009 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-009</div>
-      <div class="bib-mk">Приемот во Пјонгјанг: протокол, церемонија и визуелна државност во посетата на Си Џинпинг во ДНР Кореја</div>
-      <div class="bib-en">The Pyongyang Reception: Protocol, Ceremony and Visual Statecraft in Xi Jinping's Visit to the DPRK</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; DPRK / PRC Protocol and Visual Statecraft Case Study · English with Macedonian abstract · v1.0 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20641841" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20641841</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-      <div class="bib-links">
-        <a href="https://doi.org/10.5281/zenodo.20641841" target="_blank" rel="noopener" class="bib-link-btn">Zenodo record →</a>
-      </div>
-    </div>
-
-
-    <!-- WP-010 -->
-    <div class="bib-entry">
-      <div class="bib-num">WP-010</div>
-      <div class="bib-mk">Протоколарна анатомија на тематска билатерала: Моди, Макрон и Bharat Innovates 2026 — Ница, 14 јуни 2026</div>
-      <div class="bib-en">A Protocol Anatomy of a Thematic Bilateral: Modi, Macron and Bharat Innovates 2026 — Nice, 14 June 2026</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; India–France Strategic Partnership Case Study · English with Macedonian abstract · v1.0 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20706913" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20706913</a>
-      </div>
-      <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span></div>
-      <div class="bib-links">
-        <a href="https://doi.org/10.5281/zenodo.20706913" target="_blank" rel="noopener" class="bib-link-btn">Zenodo record →</a>
-      </div>
-    </div>
-
-    <!-- WP-011 -->
-<div class="bib-entry">
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
+<!-- WP-011 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20800187" data-index="doi zenodo" data-search="wp-011 ватикански протокол: свет простор, церемонијална хиерархија и дипломатска литургија — во папските државни посети и аудиенции the vatican protocol: sacred space, ceremonial hierarchy and diplomatic liturgy in papal state visits and audiences 2026 | vatican / holy see protocol case study · bilingual mk/en · v2.5 final zenodo edition | воведува vatican protocol symbolic presence index (v-pspi) doi 10.5281/zenodo.20800187 working paper zenodo doi v-pspi sacred space zenodo record →" data-title="Ватикански протокол: Свет простор, церемонијална хиерархија и дипломатска литургија — во папските државни посети и аудиенции" data-type="working-paper" data-year="2026" id="wp-011">
 <div class="bib-num">WP-011</div>
 <div class="bib-mk">Ватикански протокол: Свет простор, церемонијална хиерархија и дипломатска литургија — во папските државни посети и аудиенции</div>
 <div class="bib-en">The Vatican Protocol: Sacred Space, Ceremonial Hierarchy and Diplomatic Liturgy in Papal State Visits and Audiences</div>
 <div class="bib-meta">
-<strong>2026</strong> &nbsp;|&nbsp; Vatican / Holy See Protocol Case Study · Bilingual MK/EN · v2.5 Final Zenodo Edition &nbsp;|&nbsp; воведува Vatican Protocol Symbolic Presence Index (V-PSPI)<br>
-DOI <a href="https://doi.org/10.5281/zenodo.20800187" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20800187</a>
+<strong>2026</strong>  |  Vatican / Holy See Protocol Case Study · Bilingual MK/EN · v2.5 Final Zenodo Edition  |  воведува Vatican Protocol Symbolic Presence Index (V-PSPI)<br/>
+DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20800187" rel="noopener" target="_blank">10.5281/zenodo.20800187</a>
 </div>
 <div class="bib-tags"><span class="bib-tag purple">Working Paper</span><span class="bib-tag green">Zenodo DOI</span><span class="bib-tag blue">V-PSPI</span><span class="bib-tag">Sacred Space</span></div>
 <div class="bib-links">
-<a href="https://doi.org/10.5281/zenodo.20800187" target="_blank" rel="noopener" class="bib-link-btn">Zenodo record →</a>
-</div>
+<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20800187" rel="noopener" target="_blank">Zenodo record →</a>
 </div>
 
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
 <!-- Publications in preparation -->
-    <div style="margin-top:32px;padding:20px 24px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream2);display:flex;align-items:flex-start;gap:14px">
-      <div style="flex-shrink:0;margin-top:2px">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--goldl)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--goldd);font-family:var(--fb);margin-bottom:6px">Публикации во подготовка</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.7">Единаесетте WPA Working Papers (Zenodo) се веќе објавени и наведени во дел IV погоре. Во рамките на WPA во подготовка се уште дополнителни книги и научни трудови, кои ќе бидат вклучени во официјалната библиографија по нивното финализирање и објавување.</p>
-      </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════
+<div style="margin-top:32px;padding:20px 24px;border:1px solid var(--line);border-radius:var(--r2);background:var(--cream2);display:flex;align-items:flex-start;gap:14px">
+<div style="flex-shrink:0;margin-top:2px">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center">
+<svg fill="none" height="14" stroke="var(--goldl)" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24" width="14"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+</div>
+</div>
+<div>
+<div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--goldd);font-family:var(--fb);margin-bottom:6px">Публикации во подготовка</div>
+<p style="font-size:14px;color:var(--muted);line-height:1.7">Единаесетте WPA Working Papers (Zenodo) се веќе објавени и наведени во дел IV погоре. Во рамките на WPA во подготовка се уште дополнителни книги и научни трудови, кои ќе бидат вклучени во официјалната библиографија по нивното финализирање и објавување.</p>
+</div>
+</div>
+<!-- ═══════════════════════════════════════════
          V. WPA PROTOCOL NOTES SERIES · Zenodo DOI
          (distinct WPA series — NOT merged into Working Papers)
          ═══════════════════════════════════════════ -->
-    <h2 class="part-heading" id="protocol-notes">V. WPA Protocol Notes Series · Zenodo DOI записи</h2>
+<h2 class="part-heading" id="protocol-notes">V. WPA Protocol Notes Series · Zenodo DOI Records</h2>
+<div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
+      WPA Protocol Notes се кратки, применети протоколометриски записи посветени на конкретни дипломатски настани. Тие сочинуваат <strong style="color:var(--text)">посебна WPA серија</strong>, одделна од WPA Working Papers, издадени како Author-Reviewed Final Releases со трајни Zenodo DOI идентификатори, и не се вклучени во бројката од 25 академски публикации погоре.  |  <a class="bib-link" href="https://worldprotocolacademy-code.github.io/protocol-notes/" rel="noopener" target="_blank">Protocol Notes индекс →</a>
+</div>
+<!-- WPA-PN-001 -->
+<div class="bib-entry" data-doi="10.5281/zenodo.20727210" data-index="doi zenodo" data-search="wpa-pn-001 протоколарна белешка: 52. самит на групата г7 — евијан ле бен, француска република, 15–17 јуни 2026 protocol note: 52nd g7 leaders' summit — évian-les-bains, french republic, 15–17 june 2026 2026 | wpa protocol note no. 001 · applied protocolometry record · bilingual en/mk · v1.4 | author-reviewed final release doi 10.5281/zenodo.20727210 citation: smiljanov, s. (2026). protocol note: 52nd g7 leaders' summit — évian-les-bains, french republic, 15–17 june 2026 (wpa protocol note no. 001, version 1.4). world protocol academy. https://doi.org/10.5281/zenodo.20727210 protocol note zenodo doi protocolometry g7 summit visual statecraft protocol note page → · scholar record → · zenodo record →" data-title="Протоколарна белешка: 52. Самит на Групата Г7 — Евијан ле Бен, Француска Република, 15–17 јуни 2026" data-type="protocol-note" data-year="2026" id="pn-001">
+<div class="bib-num">WPA-PN-001</div>
+<div class="bib-mk">Протоколарна белешка: 52. Самит на Групата Г7 — Евијан ле Бен, Француска Република, 15–17 јуни 2026</div>
+<div class="bib-en">Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</div>
+<div class="bib-meta">
+<strong>2026</strong>  |  WPA Protocol Note No. 001 · Applied Protocolometry Record · Bilingual EN/MK · v1.4  |  Author-Reviewed Final Release<br/>
+        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20727210" rel="noopener" target="_blank">10.5281/zenodo.20727210</a>
+</div>
+<div class="bib-meta" style="margin-top:8px">
+<strong>Citation:</strong> Smiljanov, S. (2026). <em>Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</em> (WPA Protocol Note No. 001, Version 1.4). World Protocol Academy. <a class="bib-link" href="https://doi.org/10.5281/zenodo.20727210" rel="noopener" target="_blank">https://doi.org/10.5281/zenodo.20727210</a>
+</div>
+<div class="bib-tags">
+<span class="bib-tag">Protocol Note</span>
+<span class="bib-tag green">Zenodo DOI</span>
+<span class="bib-tag blue">Protocolometry</span>
+<span class="bib-tag purple">G7 Summit</span>
+<span class="bib-tag">Visual Statecraft</span>
+</div>
+<div class="bib-links" style="margin-top:8px">
+<a class="bib-link" href="https://worldprotocolacademy-code.github.io/protocol-notes/wpa-pn-001.html" rel="noopener" target="_blank">Protocol Note page →</a>  · 
+        <a class="bib-link" href="https://worldprotocolacademy-code.github.io/scholar/wpa-pn-001.html" rel="noopener" target="_blank">Scholar record →</a>  · 
+        <a class="bib-link" href="https://doi.org/10.5281/zenodo.20727210" rel="noopener" target="_blank">Zenodo record →</a>
+</div>
 
-    <div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
-      WPA Protocol Notes се кратки, применети протоколометриски записи посветени на конкретни дипломатски настани. Тие сочинуваат <strong style="color:var(--text)">посебна WPA серија</strong>, одделна од WPA Working Papers, издадени како Author-Reviewed Final Releases со трајни Zenodo DOI идентификатори, и не се вклучени во бројката од 25 академски публикации погоре. &nbsp;|&nbsp; <a href="https://worldprotocolacademy-code.github.io/protocol-notes/" target="_blank" rel="noopener" class="bib-link">Protocol Notes индекс →</a>
-    </div>
-
-    <!-- WPA-PN-001 -->
-    <div class="bib-entry">
-      <div class="bib-num">WPA-PN-001</div>
-      <div class="bib-mk">Протоколарна белешка: 52. Самит на Групата Г7 — Евијан ле Бен, Француска Република, 15–17 јуни 2026</div>
-      <div class="bib-en">Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</div>
-      <div class="bib-meta">
-        <strong>2026</strong> &nbsp;|&nbsp; WPA Protocol Note No. 001 · Applied Protocolometry Record · Bilingual EN/MK · v1.4 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-        DOI <a href="https://doi.org/10.5281/zenodo.20727210" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20727210</a>
-      </div>
-      <div class="bib-meta" style="margin-top:8px">
-        <strong>Citation:</strong> Smiljanov, S. (2026). <em>Protocol Note: 52nd G7 Leaders' Summit — Évian-les-Bains, French Republic, 15–17 June 2026</em> (WPA Protocol Note No. 001, Version 1.4). World Protocol Academy. <a href="https://doi.org/10.5281/zenodo.20727210" target="_blank" rel="noopener" class="bib-link">https://doi.org/10.5281/zenodo.20727210</a>
-      </div>
-      <div class="bib-tags">
-        <span class="bib-tag">Protocol Note</span>
-        <span class="bib-tag green">Zenodo DOI</span>
-        <span class="bib-tag blue">Protocolometry</span>
-        <span class="bib-tag purple">G7 Summit</span>
-        <span class="bib-tag">Visual Statecraft</span>
-      </div>
-      <div class="bib-links" style="margin-top:8px">
-        <a href="https://worldprotocolacademy-code.github.io/protocol-notes/wpa-pn-001.html" target="_blank" rel="noopener" class="bib-link">Protocol Note page →</a> &nbsp;·&nbsp;
-        <a href="https://worldprotocolacademy-code.github.io/scholar/wpa-pn-001.html" target="_blank" rel="noopener" class="bib-link">Scholar record →</a> &nbsp;·&nbsp;
-        <a href="https://doi.org/10.5281/zenodo.20727210" target="_blank" rel="noopener" class="bib-link">Zenodo record →</a>
-      </div>
-    </div>
-
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
 <!-- WPA-PN-002 -->
-<div class="bib-entry">
+<div class="bib-entry" data-doi="10.5281/zenodo.20777938" data-index="doi zenodo" data-search="wpa-pn-002 негативен јавен дипломатски регистар и дигитален протоколарно-дипломатски демарш — спорот трамп–мелони по 52. самит на г7, евијан ле бен, 15–17 јуни 2026 negative public diplomatic register and digital protocol-diplomatic demarche — trump–meloni dispute after the 52nd g7 summit, évian-les-bains, 15–17 june 2026 2026 | wpa protocol note no. 002 · applied protocolometry record · bilingual en/mk · v1.3 | author-reviewed final release doi 10.5281/zenodo.20777938 citation: smiljanov, s. (2026). negative public diplomatic register and digital protocol-diplomatic demarche — trump–meloni dispute after the 52nd g7 summit, évian-les-bains, 15–17 june 2026 (wpa protocol note no. 002, version 1.3). world protocol academy. https://doi.org/10.5281/zenodo.20777938 protocol note zenodo doi protocolometry g7 / bilateral digital demarche protocol notes индекс → · zenodo record →" data-title="Негативен јавен дипломатски регистар и дигитален протоколарно-дипломатски демарш — спорот Трамп–Мелони по 52. Самит на Г7, Евијан ле Бен, 15–17 јуни 2026" data-type="protocol-note" data-year="2026" id="pn-002">
 <div class="bib-num">WPA-PN-002</div>
 <div class="bib-mk">Негативен јавен дипломатски регистар и дигитален протоколарно-дипломатски демарш — спорот Трамп–Мелони по 52. Самит на Г7, Евијан ле Бен, 15–17 јуни 2026</div>
 <div class="bib-en">Negative Public Diplomatic Register and Digital Protocol-Diplomatic Demarche — Trump–Meloni Dispute after the 52nd G7 Summit, Évian-les-Bains, 15–17 June 2026</div>
 <div class="bib-meta">
-<strong>2026</strong> &nbsp;|&nbsp; WPA Protocol Note No. 002 · Applied Protocolometry Record · Bilingual EN/MK · v1.3 &nbsp;|&nbsp; Author-Reviewed Final Release<br>
-DOI <a href="https://doi.org/10.5281/zenodo.20777938" target="_blank" rel="noopener" class="bib-link">10.5281/zenodo.20777938</a>
+<strong>2026</strong>  |  WPA Protocol Note No. 002 · Applied Protocolometry Record · Bilingual EN/MK · v1.3  |  Author-Reviewed Final Release<br/>
+DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20777938" rel="noopener" target="_blank">10.5281/zenodo.20777938</a>
 </div>
 <div class="bib-meta" style="margin-top:8px">
-<strong>Citation:</strong> Smiljanov, S. (2026). <em>Negative Public Diplomatic Register and Digital Protocol-Diplomatic Demarche — Trump–Meloni Dispute after the 52nd G7 Summit, Évian-les-Bains, 15–17 June 2026</em> (WPA Protocol Note No. 002, Version 1.3). World Protocol Academy. <a href="https://doi.org/10.5281/zenodo.20777938" target="_blank" rel="noopener" class="bib-link">https://doi.org/10.5281/zenodo.20777938</a>
+<strong>Citation:</strong> Smiljanov, S. (2026). <em>Negative Public Diplomatic Register and Digital Protocol-Diplomatic Demarche — Trump–Meloni Dispute after the 52nd G7 Summit, Évian-les-Bains, 15–17 June 2026</em> (WPA Protocol Note No. 002, Version 1.3). World Protocol Academy. <a class="bib-link" href="https://doi.org/10.5281/zenodo.20777938" rel="noopener" target="_blank">https://doi.org/10.5281/zenodo.20777938</a>
 </div>
 <div class="bib-tags">
 <span class="bib-tag">Protocol Note</span>
@@ -1213,83 +1467,215 @@ DOI <a href="https://doi.org/10.5281/zenodo.20777938" target="_blank" rel="noope
 <span class="bib-tag">Digital Demarche</span>
 </div>
 <div class="bib-links" style="margin-top:8px">
-<a href="https://worldprotocolacademy-code.github.io/protocol-notes/" target="_blank" rel="noopener" class="bib-link">Protocol Notes индекс →</a> &nbsp;·&nbsp;
-<a href="https://doi.org/10.5281/zenodo.20777938" target="_blank" rel="noopener" class="bib-link">Zenodo record →</a>
-</div>
+<a class="bib-link" href="https://worldprotocolacademy-code.github.io/protocol-notes/" rel="noopener" target="_blank">Protocol Notes индекс →</a>  · 
+<a class="bib-link" href="https://doi.org/10.5281/zenodo.20777938" rel="noopener" target="_blank">Zenodo record →</a>
 </div>
 
+<div class="bib-entry-tools">
+<button class="bib-mini-btn cite-btn" type="button">Copy APA Citation</button>
+<button class="bib-mini-btn link-btn" type="button">Copy Deep Link</button>
+<span aria-live="polite" class="bib-copy-status"></span>
+</div>
+</div>
 <!-- ═══════════ VI. WPA RESEARCH PROGRAMME ═══════════ -->
-<h2 class="part-heading" id="research-programme">VI. WPA Истражувачка програма · Research Programme</h2>
+<h2 class="part-heading" id="research-programme">VI. WPA Истражувачка програма · WPA Research Programme</h2>
 <div style="margin-bottom:20px;padding:12px 16px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;font-size:13px;color:var(--muted);line-height:1.65">
 Истражувачката програма на WPA е организирана околу неколку поврзани домени. Секој домен е застапен со веќе објавени трудови наведени погоре; ова мапирање служи само за прегледност и не воведува нови публикации. / The WPA research programme is organised around several connected domains, each represented by works already listed above.
 </div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:8px">
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Протоколометрија · Protocolometry</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Мерливи протоколарни индикатори, PSPI и V-PSPI, Protocol Impact Assessment.<br><span style="color:var(--goldd);font-weight:600">WP-005 · WP-007 · WP-008 · WP-011 · PN-001 · PN-002</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Мерливи протоколарни индикатори, PSPI и V-PSPI, Protocol Impact Assessment.<br/><span style="color:var(--goldd);font-weight:600">WP-005 · WP-007 · WP-008 · WP-011 · PN-001 · PN-002</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Церемонијална дипломатија · Ceremonial Diplomacy</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Анатомија на државни посети, церемонијална секвенца, реципроцитет и престиж.<br><span style="color:var(--goldd);font-weight:600">WP-006 · WP-009 · WP-011</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Анатомија на државни посети, церемонијална секвенца, реципроцитет и престиж.<br/><span style="color:var(--goldd);font-weight:600">WP-006 · WP-009 · WP-011</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Визуелна државност · Visual Statecraft</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Семиотика на сликата, проксемика, family-photo и медиумска хореографија.<br><span style="color:var(--goldd);font-weight:600">WP-009 · WP-010 · PN-001</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Семиотика на сликата, проксемика, family-photo и медиумска хореографија.<br/><span style="color:var(--goldd);font-weight:600">WP-009 · WP-010 · PN-001</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Сакрална и религиска дипломатија · Sacred &amp; Religious Protocol</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Свето пространство и свето време, дипломатска литургија, канонска граница.<br><span style="color:var(--goldd);font-weight:600">WP-011</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Свет простор и свето време, дипломатска литургија, канонска граница.<br/><span style="color:var(--goldd);font-weight:600">WP-011</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Компаративна анализа на државни посети · Comparative State-Visit Analysis</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Споредбени и 360° формати, China / PRC корпус, билатерали.<br><span style="color:var(--goldd);font-weight:600">WP-003 · WP-004 · WP-007 · WP-010</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Споредбени и 360° формати, China / PRC корпус, билатерали.<br/><span style="color:var(--goldd);font-weight:600">WP-003 · WP-004 · WP-007 · WP-010</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Протоколарна теорија и пракса · Protocol Theory &amp; Practice</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Дрес-код, контингенциски протокол (Plan B), институционална симболика.<br><span style="color:var(--goldd);font-weight:600">WP-001 · WP-002</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Дрес-код, контингенциски протокол (Plan B), институционална симболика.<br/><span style="color:var(--goldd);font-weight:600">WP-001 · WP-002</span></div>
 </div>
 <div style="padding:16px 18px;background:var(--cream2);border:1px solid var(--line);border-radius:var(--r2)">
 <div style="font-family:var(--fb);font-weight:700;color:var(--navy);font-size:14px;margin-bottom:6px">Дигитален протокол и управување со ВИ · Digital Protocol &amp; AI Governance</div>
-<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Истражување на дигиталниот протокол, управувањето со вештачка интелигенција, дигиталната трансформација на јавниот сектор и иднината на протоколарните системи.<br><span style="color:var(--goldd);font-weight:600">Digital Era (2023) · IMCSM26 (2026)</span></div>
+<div style="font-size:12.5px;color:var(--muted);line-height:1.6">Истражување на дигиталниот протокол, управувањето со вештачка интелигенција, дигиталната трансформација на јавниот сектор и иднината на протоколарните системи.<br/><span style="color:var(--goldd);font-weight:600">Digital Era (2023) · IMCSM26 (2026)</span></div>
 </div>
 </div>
-
-<!-- ACADEMIC PRESENCE LINKS -->
-    <div style="margin-top:48px;padding:28px 30px;background:var(--navy);border-radius:var(--r2);color:var(--white)">
-      <div id="academic-profiles" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:16px">◆ Академски профили на авторот</div>
-      <div class="profiles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
-        <a href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">Google Scholar →</a>
-        <a href="https://orcid.org/0009-0008-3219-394X" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">ORCID 0009-0008-3219-394X →</a>
-        <a href="https://www.researchgate.net/profile/Sande-Smiljanov-2" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">ResearchGate →</a>
-        <a href="https://independent.academia.edu/SandeSmiljanov" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">Academia.edu →</a>
-        <a href="https://worldprotocolacademy-code.github.io/papers.html" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">WPA Papers page →</a>
-        <a href="https://adscientificindex.com/scientist/-sande-smiljanov/5285340/" target="_blank" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.07)'">AD Scientific Index →</a>
-      </div>
-    </div>
-
+<!-- ═══════════ VII. ACADEMIC PROFILES AND IDENTIFIERS ═══════════ -->
+<h2 class="part-heading" id="academic-profiles">VII. Академски профили и истражувачки идентификатори · Academic Profiles and Research Identifiers</h2>
+<div class="bib-entry" data-doi="" data-index="zenodo" data-search="доц. д-р санде смиљанов assoc. prof. dr. sande smiljanov researcher identity: orcid 0009-0008-3219-394x academic visibility: google scholar · researchgate · academia.edu · zenodo · ad scientific index core research areas: protocol studies, protocolometry, diplomatic protocol, ceremonial diplomacy, visual statecraft, sacred diplomacy, security studies, digital protocol and artificial intelligence governance. orcid google scholar zenodo research identity" data-title="Доц. д-р Санде Смиљанов" data-type="scientific" data-year="" id="record">
+<div class="bib-mk">Доц. д-р Санде Смиљанов</div>
+<div class="bib-en">Assoc. Prof. Dr. Sande Smiljanov</div>
+<div class="bib-meta">
+<strong>Researcher identity:</strong> ORCID 0009-0008-3219-394X<br/>
+<strong>Academic visibility:</strong> Google Scholar · ResearchGate · Academia.edu · Zenodo · AD Scientific Index<br/>
+<strong>Core research areas:</strong> Protocol Studies, Protocolometry, Diplomatic Protocol, Ceremonial Diplomacy, Visual Statecraft, Sacred Diplomacy, Security Studies, Digital Protocol and Artificial Intelligence Governance.
   </div>
+<div class="bib-tags"><span class="bib-tag green">ORCID</span><span class="bib-tag blue">Google Scholar</span><span class="bib-tag purple">Zenodo</span><span class="bib-tag">Research Identity</span></div>
+</div>
+<!-- ACADEMIC PRESENCE LINKS -->
+<div style="margin-top:18px;padding:28px 30px;background:var(--navy);border-radius:var(--r2);color:var(--white)">
+<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:16px">◆ Академски профили на авторот · Author Academic Profiles</div>
+<div class="profiles-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+<a href="https://scholar.google.com/citations?user=5XDYIA0AAAAJ" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">Google Scholar →</a>
+<a href="https://orcid.org/0009-0008-3219-394X" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">ORCID 0009-0008-3219-394X →</a>
+<a href="https://www.researchgate.net/profile/Sande-Smiljanov-2" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">ResearchGate →</a>
+<a href="https://zenodo.org/search?q=metadata.creators.person_or_org.name:%22Smiljanov%2C%20Sande%22" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">Zenodo →</a>
+<a href="https://independent.academia.edu/SandeSmiljanov" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">Academia.edu →</a>
+<a href="https://worldprotocolacademy-code.github.io/papers.html" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">WPA Papers page →</a>
+<a href="https://adscientificindex.com/scientist/-sande-smiljanov/5285340/" onmouseout="this.style.background='rgba(255,255,255,.07)'" onmouseover="this.style.background='rgba(255,255,255,.12)'" rel="noopener" style="padding:12px 14px;background:rgba(255,255,255,.07);border-radius:var(--r2);color:var(--goldl);font-size:13px;font-family:var(--fb);transition:background .18s;display:block" target="_blank">AD Scientific Index →</a>
+</div>
+</div>
+</div>
 </main>
-
 <!-- FOOTER -->
-
 <div class="wpa-legal-disclaimer">
-  <strong>Светска академија за протокол — World Protocol Academy</strong><br>
-  Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies<br>
-  Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.<br>
+<strong>Светска академија за протокол — World Protocol Academy</strong><br/>
+  Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies<br/>
+  Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br/>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.<br/>
   WPA is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. The views expressed in WPA publications are solely those of the respective authors and do not represent the views, policies or positions of any governmental institution, ministry, agency or employer.
 </div>
-
 <footer class="bib-footer">
-  <div class="container bib-footer-inner">
-    <div>
-      <p style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">Светска академија за протокол — World Protocol Academy — Официјална библиографија</p>
-      <p>© <span id="year"></span> Светска академија за протокол — World Protocol Academy. Сите права се задржани.</p>
-    </div>
-    <a href="https://worldprotocolacademy-code.github.io/" class="btn btn-ghost">← Назад кон WPA</a>
-  </div>
-  <p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;font-family:var(--fb)">Последно ажурирано: 22 јуни 2026 · Last updated: 22 June 2026</p>
+<div class="container bib-footer-inner">
+<div>
+<p style="color:rgba(255,255,255,.7);font-size:14px;margin-bottom:4px">Светска академија за протокол — World Protocol Academy — Официјална библиографија</p>
+<p>© <span id="year"></span> Светска академија за протокол — World Protocol Academy. Сите права се задржани.</p>
+</div>
+<a class="btn btn-ghost" href="https://worldprotocolacademy-code.github.io/">← Назад кон WPA</a>
+</div>
+<p style="font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;font-family:var(--fb)">Последно ажурирано: 23 јуни 2026 · Last updated: 23 June 2026 · WPA-BIB-001 v1.1 Interactive</p>
 </footer>
-
 <script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+
+<script>
+(function(){
+  const q = document.getElementById('bibSearch');
+  const type = document.getElementById('bibType');
+  const year = document.getElementById('bibYear');
+  const idx = document.getElementById('bibIndex');
+  const reset = document.getElementById('bibReset');
+  const printBtn = document.getElementById('bibPrint');
+  const copyPage = document.getElementById('bibCopyLink');
+  const count = document.getElementById('bibResultCount');
+  const records = Array.from(document.querySelectorAll('.bib-entry[data-search]'));
+  const back = document.createElement('button');
+  back.id = 'backToTop';
+  back.type = 'button';
+  back.title = 'Back to top';
+  back.textContent = '↑';
+  document.body.appendChild(back);
+
+  const years = Array.from(new Set(records.map(r => r.dataset.year).filter(Boolean))).sort();
+  years.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    year.appendChild(opt);
+  });
+
+  function norm(s){ return (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  function escapeRegExp(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function clearMarks(el){
+    el.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+    el.normalize();
+  }
+  function highlightText(node, term){
+    if(!term || !node || !node.childNodes) return;
+    const rx = new RegExp('(' + escapeRegExp(term) + ')','ig');
+    Array.from(node.childNodes).forEach(child => {
+      if(child.nodeType === Node.TEXT_NODE){
+        const txt = child.nodeValue;
+        if(rx.test(txt)){
+          const span = document.createElement('span');
+          span.innerHTML = txt.replace(rx, '<mark>$1</mark>');
+          child.replaceWith(span);
+        }
+      } else if(child.nodeType === Node.ELEMENT_NODE && !['A','BUTTON','SCRIPT','STYLE','MARK'].includes(child.tagName)) {
+        highlightText(child, term);
+      }
+    });
+  }
+  function apply(){
+    const termRaw = q.value.trim();
+    const term = norm(termRaw);
+    const t = type.value;
+    const y = year.value;
+    const index = idx.value;
+    let visible = 0;
+    records.forEach(r => {
+      clearMarks(r);
+      const matchTerm = !term || norm(r.dataset.search).includes(term);
+      const matchType = t === 'all' || r.dataset.type === t;
+      const matchYear = y === 'all' || r.dataset.year === y;
+      const matchIndex = index === 'all' || (r.dataset.index || '').split(' ').includes(index);
+      const show = matchTerm && matchType && matchYear && matchIndex;
+      r.hidden = !show;
+      if(show){
+        visible++;
+        if(termRaw.length >= 2) {
+          const mk = r.querySelector('.bib-mk');
+          const en = r.querySelector('.bib-en');
+          const meta = r.querySelector('.bib-meta');
+          [mk,en,meta].forEach(el => highlightText(el, termRaw));
+        }
+      }
+    });
+    count.textContent = 'Прикажани ' + visible + ' од ' + records.length + ' записи · Showing ' + visible + ' of ' + records.length + ' records';
+  }
+  [q,type,year,idx].forEach(el => el && el.addEventListener('input', apply));
+  reset && reset.addEventListener('click', () => { q.value=''; type.value='all'; year.value='all'; idx.value='all'; apply(); q.focus(); });
+  printBtn && printBtn.addEventListener('click', () => window.print());
+  copyPage && copyPage.addEventListener('click', async () => { try{ await navigator.clipboard.writeText(location.href.split('#')[0]); copyPage.textContent='Copied · Копирано'; setTimeout(()=>copyPage.textContent='Copy page link · Копирај линк',1600);}catch(e){} });
+
+  function apaFor(record){
+    const year = record.dataset.year || '2026';
+    const title = record.dataset.title || 'Untitled record';
+    const doi = record.dataset.doi;
+    let series = 'World Protocol Academy.';
+    if(record.dataset.type === 'working-paper') series = 'World Protocol Academy Working Paper Series.';
+    if(record.dataset.type === 'protocol-note') series = 'World Protocol Academy Protocol Notes Series.';
+    let out = 'Smiljanov, S. (' + year + '). ' + title + '. ' + series;
+    if(doi) out += ' https://doi.org/' + doi.replace(/^https?:\/\/doi\.org\//,'');
+    return out;
+  }
+  document.querySelectorAll('.cite-btn').forEach(btn => btn.addEventListener('click', async () => {
+    const r = btn.closest('.bib-entry');
+    const status = r.querySelector('.bib-copy-status');
+    try { await navigator.clipboard.writeText(apaFor(r)); status.textContent = 'APA copied · APA цитатот е копиран'; }
+    catch(e) { status.textContent = 'Copy failed · Не се копираше'; }
+    setTimeout(()=>status.textContent='',2200);
+  }));
+  document.querySelectorAll('.link-btn').forEach(btn => btn.addEventListener('click', async () => {
+    const r = btn.closest('.bib-entry');
+    const status = r.querySelector('.bib-copy-status');
+    const url = location.href.split('#')[0] + '#' + r.id;
+    try { await navigator.clipboard.writeText(url); status.textContent = 'Link copied · Линкот е копиран'; }
+    catch(e) { status.textContent = 'Copy failed · Не се копираше'; }
+    setTimeout(()=>status.textContent='',2200);
+  }));
+  window.addEventListener('scroll', () => { back.classList.toggle('show', window.scrollY > 600); });
+  back.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+  window.addEventListener('keydown', (e) => {
+    if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); q.focus(); }
+    if(e.key === 'Escape'){ q.value=''; type.value='all'; year.value='all'; idx.value='all'; apply(); }
+  });
+  if(location.hash){
+    const target = document.querySelector(location.hash);
+    if(target){ target.classList.add('is-focus'); setTimeout(()=>target.classList.remove('is-focus'),2800); }
+  }
+  apply();
+})();
+</script>
 </body>
 </html>
