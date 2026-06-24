@@ -2216,6 +2216,118 @@ body > *{position:relative;z-index:1}
 }
 
 </style>
+
+<style>
+/* ============================================================
+   WPA FINAL MAIN INDEX — GOLD/YELLOW TEXT VISIBILITY FIX
+   Purpose: on the main homepage, replace low-contrast white header
+   and navigation lettering with WPA gold/yellow where needed.
+   Added after all previous CSS so it wins the cascade.
+   ============================================================ */
+:root{
+  --wpa-visible-gold:#e8d49a;
+  --wpa-visible-gold-strong:#f4e8c1;
+}
+
+/* Main top test-phase identity */
+.wpa-test-phase-header .wpa-name-mk,
+.wpa-test-phase-header .wpa-name-en,
+.wpa-test-phase-header .wpa-status-mk,
+.wpa-test-phase-header .wpa-status-en{
+  color:var(--wpa-visible-gold) !important;
+}
+.wpa-test-phase-header .wpa-inst-mk,
+.wpa-test-phase-header .wpa-inst-en,
+.wpa-test-phase-header .wpa-platform-mk,
+.wpa-test-phase-header .wpa-platform-en,
+.wpa-test-phase-header .wpa-platform-line{
+  color:var(--wpa-visible-gold-strong) !important;
+}
+
+/* Announcement bar and main brand */
+.announce,
+.announce span,
+.announce div{
+  color:var(--wpa-visible-gold-strong) !important;
+}
+.announce strong,
+.announce .wpa-brand-mk,
+.announce .wpa-brand-en,
+.brand-text .wpa-brand-mk,
+.brand-text .wpa-brand-en,
+.brand-text .wpa-home-brand-sub{
+  color:var(--wpa-visible-gold) !important;
+}
+
+/* Main navigation */
+header:not(.hero) .site-nav a,
+.site-nav a,
+.nav-links a,
+nav a:not(.brand):not(.back-link):not(.btn){
+  color:var(--wpa-visible-gold) !important;
+}
+header:not(.hero) .site-nav a:hover,
+.site-nav a:hover,
+.nav-links a:hover,
+nav a:not(.brand):not(.back-link):not(.btn):hover{
+  color:#071326 !important;
+  background:var(--wpa-visible-gold) !important;
+  border-color:var(--wpa-visible-gold) !important;
+}
+
+/* Header utility controls */
+.lang-sw label,
+.lang-sw select,
+.menu-toggle{
+  color:var(--wpa-visible-gold) !important;
+}
+.lang-sw select option{
+  color:#071326 !important;
+  background:#f8f4ee !important;
+}
+
+/* Hero text and ghost buttons that were too pale */
+.hero,
+.hero .hero-eyebrow,
+.hero .hero-sub,
+.hero .hero-sub strong,
+.hero .hero-sub em{
+  color:var(--wpa-visible-gold-strong) !important;
+}
+.hero h2,
+.hero h2 em{
+  color:var(--wpa-visible-gold) !important;
+}
+.hero .hero-actions .btn-ghost,
+.hero .hero-actions .btn-outline,
+.hero .hero-actions .btn-navy{
+  color:var(--wpa-visible-gold) !important;
+  border-color:rgba(232,212,154,.72) !important;
+  background:rgba(7,19,38,.72) !important;
+}
+.hero .hero-actions .btn-ghost:hover,
+.hero .hero-actions .btn-outline:hover,
+.hero .hero-actions .btn-navy:hover{
+  color:#071326 !important;
+  background:var(--wpa-visible-gold) !important;
+  border-color:var(--wpa-visible-gold) !important;
+}
+
+/* Mobile menu */
+body.wpa-mobile-ready .wpa-mobile-nav-target a,
+body.wpa-menu-open .wpa-mobile-nav-target a,
+body.wpa-mobile-ready .wpa-mobile-nav-target button,
+body.wpa-menu-open .wpa-mobile-nav-target button{
+  color:var(--wpa-visible-gold) !important;
+}
+body.wpa-mobile-ready .wpa-mobile-nav-target a:hover,
+body.wpa-menu-open .wpa-mobile-nav-target a:hover,
+body.wpa-mobile-ready .wpa-mobile-nav-target button:hover,
+body.wpa-menu-open .wpa-mobile-nav-target button:hover{
+  color:#071326 !important;
+  background:var(--wpa-visible-gold) !important;
+}
+</style>
 </head>
 <body id="top" data-page="index">
 
@@ -2254,6 +2366,7 @@ body > *{position:relative;z-index:1}
       <nav class="site-nav" aria-label="Главна навигација" data-i18n-attr="aria-label:navAria">
         <ul>
           <li><a href="https://worldprotocolacademy-code.github.io/">Главна WPA</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/languages/">🌐 Languages</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/strategy/">Strategy</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html">Master Strategy</a></li>
           <li><a href="https://worldprotocolacademy-code.github.io/bibliography/">Bibliography</a></li>
@@ -2288,9 +2401,24 @@ body > *{position:relative;z-index:1}
     </div>
     <div class="nav-right">
       <button type="button" class="menu-toggle" id="mToggle" data-i18n="menuBtn">Мени</button>
-      <div class="lang-sw">
-        <label for="pageLang" data-i18n="langLabel">Јазик</label>
-        <select id="pageLang" aria-label="Select language" title="Core languages: Macedonian / English"><option value="mk">Македонски</option><option value="en">English</option></select>
+      <div class="lang-sw" translate="no" data-no-i18n="true">
+        <label for="pageLang">🌐 Јазик</label>
+        <select id="pageLang" aria-label="Select WPA language" title="WPA Languages" onchange="if(this.value){ window.location.href=this.value; }">
+          <option value="">Languages</option>
+          <option value="https://worldprotocolacademy-code.github.io/">🇲🇰 Македонски</option>
+          <option value="https://worldprotocolacademy-code.github.io/en/">🇬🇧 English</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/zh/">🇨🇳 中文</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/ru/">🇷🇺 Русский</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/hi/">🇮🇳 हिन्दी</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/af/">🇿🇦 Afrikaans</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/ar/">🇸🇦 العربية</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/fr/">🇫🇷 Français</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/de/">🇩🇪 Deutsch</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/it/">🇮🇹 Italiano</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/sq/">🇦🇱 Shqip</option>
+          <option value="https://worldprotocolacademy-code.github.io/languages/sr/">🇷🇸 Српски</option>
+        </select>
+        <a href="https://worldprotocolacademy-code.github.io/languages/" style="margin-left:8px;color:#e8d49a;font-weight:800;font-size:12px;text-decoration:none;white-space:nowrap;">All languages</a>
       </div>
     </div>
   </div>
@@ -2317,6 +2445,7 @@ body > *{position:relative;z-index:1}
         <a href="wpaws/protocol-symbols/index.html" class="btn btn-ghost" data-i18n="heroBtn4">Отвори Protocol Symbols Lab</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/index.html" class="btn btn-ghost" data-i18n="heroBtn5"> Отвори WPA Diplomatic Analysis Lab <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;border:1px solid currentColor;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle">Beta</span></a>
          <a href="institute.html" class="btn btn-ghost" data-i18n="a_hero.3">🏛️ Отвори WPA Institute</a>
+         <a href="https://worldprotocolacademy-code.github.io/languages/" class="btn btn-gold" translate="no" data-no-i18n="true">🌐 WPA Languages</a>
          <a href="https://worldprotocolacademy-code.github.io/strategy/" class="btn btn-gold">🗺 WPA Strategy</a>
          <a href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html" class="btn btn-ghost">📘 Master Strategy 2026–2030</a>
          <a href="https://worldprotocolacademy-code.github.io/bibliography/" class="btn btn-ghost">📚 WPA-BIB-001</a>
