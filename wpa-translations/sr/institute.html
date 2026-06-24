@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="sr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><span data-no-i18n="true" translate="no">WPA</span> WPA Институт · v2.0 | <span data-no-i18n="true" translate="no">World Protocol Academy</span></title>
+    <meta name="description" content="World Protocol Academy повезује академску теорију са професионалном праксом, етиком и мерљивошћу у области протокола, дипломатије, јавне комуникације, безбедносних студија и комуникацијских вештина।">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c9a227; --gold-light: #e0c158; --dark: #0a0e1a;
+            --dark-secondary: #121829; --text: #e0e0e0; --text-muted: #8892a8;
+            --border: rgba(201, 162, 39, 0.3); --card-bg: rgba(18, 24, 41, 0.8);
+            --navy: #1a2744;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--dark); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .top-bar { background: linear-gradient(135deg, var(--dark-secondary) 0%, var(--dark) 100%); border-bottom: 1px solid var(--border); padding: 8px 0; text-align: center; font-size: 11px; letter-spacing: 1px; }
+        .top-bar .gold { color: var(--gold); }
+        .phase-bar { background: rgba(201, 162, 39, 0.1); border: 1px solid var(--border); border-radius: 20px; padding: 6px 20px; display: inline-block; margin: 8px 0; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; }
+        .disclaimer-bar { background: rgba(255, 80, 80, 0.08); border: 1px solid rgba(255, 80, 80, 0.2); border-radius: 8px; padding: 10px 16px; margin: 8px auto; max-width: 900px; font-size: 10px; color: #c08080; line-height: 1.5; }
+        nav { background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; flex-wrap: wrap; gap: 10px; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .nav-links a { color: var(--text); text-decoration: none; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px; transition: all 0.3s; white-space: nowrap; }
+        .nav-links a:hover { background: rgba(201, 162, 39, 0.15); color: var(--gold); }
+        .lang-select { background: rgba(201, 162, 39, 0.1); border: 1px solid var(--border); color: var(--gold); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .hero { padding: 80px 0; background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 50%, var(--dark) 100%); position: relative; text-align: center; }
+        .hero::before { content: ''; position: absolute; top: -30%; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(201, 162, 39, 0.06) 0%, transparent 70%); border-radius: 50%; }
+        .hero-content { position: relative; z-index: 1; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 42px; line-height: 1.2; margin-bottom: 20px; }
+        .hero p { color: var(--text-muted); font-size: 16px; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .formula { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px 40px; display: inline-block; margin-top: 20px; }
+        .formula-label { color: var(--gold); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .formula-text { font-size: 18px; font-style: italic; }
+        .section { padding: 60px 0; }
+        .section-alt { background: linear-gradient(135deg, #0d1321 0%, #121829 100%); }
+        .section-header { margin-bottom: 40px; text-align: center; }
+        .section-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 12px; }
+        .section-header p { max-width: 700px; margin: 0 auto; color: var(--text-muted); }
+        .section-label { color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; display: block; }
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .pillar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px; border-top: 3px solid var(--gold); }
+        .pillar-num { font-size: 36px; font-weight: 700; color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 12px; }
+        .pillar h3 { font-size: 16px; margin-bottom: 12px; }
+        .pillar p { font-size: 13px; color: var(--text-muted); }
+        .domains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .domain { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px; transition: all 0.3s; }
+        .domain:hover { transform: translateY(-4px); border-color: var(--gold); }
+        .domain-num { font-size: 11px; color: var(--gold); letter-spacing: 2px; margin-bottom: 12px; }
+        .domain h3 { font-size: 18px; margin-bottom: 12px; }
+        .domain p { font-size: 13px; color: var(--text-muted); }
+        .instruments { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .instrument { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 40px; }
+        .instrument h3 { font-size: 22px; margin-bottom: 8px; color: var(--gold); }
+        .instrument .subtitle { font-size: 14px; color: var(--text-muted); font-style: italic; margin-bottom: 16px; }
+        .instrument p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+        .instrument .status { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px; }
+        .quote { text-align: center; padding: 60px 0; font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--gold); }
+        .quote-author { font-size: 12px; color: var(--text-muted); margin-top: 16px; font-family: 'Noto Sans', sans-serif; font-style: normal; }
+        footer { background: var(--dark-secondary); border-top: 1px solid var(--border); padding: 40px 0 20px; text-align: center; }
+        footer .footer-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap; }
+        footer a { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        footer a:hover { color: var(--gold); }
+        footer p { color: var(--text-muted); font-size: 12px; }
+        .btn { padding: 12px 28px; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; display: inline-block; }
+        .btn-primary { background: var(--gold); color: var(--dark); }
+        .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 28px; } .pillars { grid-template-columns: 1fr; } .domains { grid-template-columns: 1fr; }
+            .instruments { grid-template-columns: 1fr; } .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <span class="gold">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span> — <span data-no-i18n="true" translate="no">World Protocol Academy</span><br>
+            <small style="color: var(--text-muted);">Институт за протокол, дипломатију, јавну комуникацију и безбедносне студије</small>
+            <div><span class="phase-bar">ФАЗА РАЗВОЈА, ТЕСТИРАЊА И ПРОБЕ — 2026</span></div>
+            <div class="disclaimer-bar"><span data-no-i18n="true" translate="no">WPA</span> WPA није универзитет, државна институција, акредитационо тело, регистрована академија или институција која додељује дипломе. WPA сертификати су професионални/неакадемски записи и нису академске дипломе, професионалне лиценце или аутоматско признање од стране трећих институција.</div>
+        </div>
+    </div>
+    <nav>
+        <div class="container">
+            <div class="nav-inner">
+                <a href="./index.html" class="logo">
+                    <span style="font-size: 28px;">W</span>
+                    <span style="font-size: 11px; line-height: 1.2; color: var(--text-muted);">
+                        <span data-no-i18n="true" translate="no">World Protocol Academy</span><br>
+                        <span style="color: var(--gold);"><span data-no-i18n="true" translate="no">WPA</span> Институт · 2026</span>
+                    </span>
+                </a>
+                <div class="nav-links">
+                    <a href="./index.html">Главна</a>
+                    <a href="#charter">Повеља</a>
+                    <a href="#domains">Институт</a>
+                    <a href="#instruments">Аналитика</a>
+                    <a href="#methodology">Методологија</a>
+                </div>
+                <select class="lang-select" onchange="window.location.href='./' + this.value + '/institute.html'">
+                    <option value="zh" >中文</option>
+                    <option value="ru" >Русский</option>
+                    <option value="hi" >हिन्दी</option>
+                    <option value="af" >Afrikaans</option>
+                    <option value="ar" >العربية</option>
+                    <option value="fr" >Français</option>
+                    <option value="de" >Deutsch</option>
+                    <option value="it" >Italiano</option>
+                    <option value="sq" >Shqip</option>
+                    <option value="sr" selected>Српски</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="section-label"><span data-no-i18n="true" translate="no">WPA</span> WPA Институт · v2.0</span>
+                <h1>Институт за протокол, дипломатију, јавну комуникацију и безбедносне студије</h1>
+                <p>World Protocol Academy повезује академску теорију са професионалном праксом, етиком и мерљивошћу у области протокола, дипломатије, јавне комуникације, безбедносних студија и комуникацијских вештина।</p>
+                <div class="formula">
+                    <div class="formula-label">Институционална формула</div>
+                    <div class="formula-text">Теорија + пракса + етика + мерљивост = жива школа за протокол, дипломатију, јавну комуникацију и безбедност।</div>
+                </div>
+                <div style="margin-top: 24px;">
+                    <a href="#charter" class="btn btn-primary">Прочитајте Повељу →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section-alt" id="charter">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Повеља Института</span>
+                <h2>Шест стубова Повеље</h2>
+                <p>Повеља артикулише основне принципе под којима функционише Институт — без преговора, без уступака, без посебних случајева।</p>
+            </div>
+            <div class="pillars">
+                <div class="pillar"><div class="pillar-num">I</div><h3>I Академски интегритет</h3><p>Сви истраживачки и образовни материјали су оригиналне креације WPA-а или коректно атрибуирани извори।</p></div>
+                <div class="pillar"><div class="pillar-num">II</div><h3>II Професионална мерљивост</h3><p>Сваки програм, сертификат и аналитички показатељ има јасне критеријуме, транспарентну методологију и проверљиве доказе।</p></div>
+                <div class="pillar"><div class="pillar-num">III</div><h3>III Етичка независност</h3><p>WPA не дозвољава плаћање за бољи резултат, не врши акредитацију и не додељује државна признања।</p></div>
+                <div class="pillar"><div class="pillar-num">IV</div><h3>IV Дисциплина језика</h3><p>Институт не користи речи као што су „партнер", „акредитован" или „подржан" без посебног писаног уговора।</p></div>
+                <div class="pillar"><div class="pillar-num">V</div><h3>V Транспарентни извори</h3><p>9-пољева шема цитирања, отвореност методологије и право на корекцију од институција које се мере।</p></div>
+                <div class="pillar"><div class="pillar-num">VI</div><h3>VI Доктрина оснивача</h3><p>"Преговарање је опционално. Протокол је апсолутан." — оперативна логика свих институтских активности।</p></div>
+            </div>
+        </div>
+    </section>
+    <section class="section" id="domains">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Институтски домени</span>
+                <h2>Шест домена специјализације</h2>
+            </div>
+            <div class="domains">
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">01 · ПРОТОКОЛ</div><h3>ПРОТОКОЛ</h3><p>Државни, дипломатски, институционални, церемонијални и међународни протокол।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">02 · ДИПЛОМАТИЈА</div><h3>ДИПЛОМАТИЈА</h3><p>Дипломатска пракса, међународни односи, јавна дипломатија и међународно право।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">03 · КОМУНИКАЦИЈА</div><h3>КОМУНИКАЦИЈА</h3><p>Јавни наступ, односи са јавношћу, стратешка комуникација и институционални углед।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">04 · БЕЗБЕДНОСТ</div><h3>БЕЗБЕДНОСТ</h3><p>Безбедносне студије, одбрамбена дипломатија, кризне процедуре и јавни догађаји।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">05 · ИСТРАЖИВАЊЕ</div><h3>Истраживање и референтна анализа</h3><p>Радни трудови, студије случаја, краткорочне препоруке за политике, индекси, методологије и годишњи извештаји।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">06 · ПРАКСА</div><h3>Практична професионална мудрост</h3><p>WPA цени и академске изворе и дугогодишње документовано практично искуство।</p></div>
+            </div>
+        </div>
+    </section>
+    <section class="section section-alt" id="instruments">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Породица алата</span>
+                <h2><span data-no-i18n="true" translate="no">WPA</span> WPA АЛАТИ</h2>
+            </div>
+            <div class="instruments">
+                <div class="instrument">
+                    <h3 data-no-i18n="true" translate="no">ИНСТРУМЕНТ I PSPI · ИППМ</h3>
+                    <div class="subtitle">Индекс перформанси државног протокола</div>
+                    <p>Мери догађаје</p>
+                    <div class="status" data-no-i18n="true" translate="no">ВЕРЗИОНИРАН ИНСТРУМЕНТ · DOI ГДЕ ЈЕ ПРИМЕЊИВО · ПРЕГЛЕД ОД ААБ У ТОКУ</div>
+                </div>
+                <div class="instrument">
+                    <h3 data-no-i18n="true" translate="no">ИНСТРУМЕНТ II Индекс Института</h3>
+                    <div class="subtitle" data-no-i18n="true" translate="no">WPA Индекс Института</div>
+                    <p>Мери институције</p>
+                    <p>Четири димензије: истраживање и публикације, програми и сертификација, професионална пракса, транспарентност и сарадња।</p>
+                    <div class="status" data-no-i18n="true" translate="no">НАЦРТ-ИНСТРУМЕНТ · УНУТРАШЊА МЕТОДОЛОГИЈА · ПРЕГЛЕД ОД ААБ У ТОКУ</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="quote">"Преговарање је опционално. Протокол је апсолутан."<div class="quote-author">— Доктрина оснивача | World Protocol Academy</div></div>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <div class="disclaimer-bar" style="margin-bottom: 20px;"><span data-no-i18n="true" translate="no">WPA</span> WPA није универзитет, државна институција, акредитационо тело, регистрована академија или институција која додељује дипломе. WPA сертификати су професионални/неакадемски записи и нису академске дипломе, професионалне лиценце или аутоматско признање од стране трећих институција.</div>
+            <div class="footer-links">
+                <a href="#">Политика приватности</a>
+                <a href="#">Услови за коришћење</a>
+                <a href="#">Контакт</a>
+            </div>
+            <p>© 2026 <span data-no-i18n="true" translate="no">World Protocol Academy</span> Институт. Сва права задржана।</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><span data-no-i18n="true" translate="no">WPA</span> WPA Institute · v2.0 | <span data-no-i18n="true" translate="no">World Protocol Academy</span></title>
+    <meta name="description" content="World Protocol Academy relie la théorie académique à la pratique professionnelle, à l'éthique et à la mesurabilité dans les domaines du protocole, de la diplomatie, de la communication publique, des études de sécurité et des compétences en communication।">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c9a227; --gold-light: #e0c158; --dark: #0a0e1a;
+            --dark-secondary: #121829; --text: #e0e0e0; --text-muted: #8892a8;
+            --border: rgba(201, 162, 39, 0.3); --card-bg: rgba(18, 24, 41, 0.8);
+            --navy: #1a2744;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--dark); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .top-bar { background: linear-gradient(135deg, var(--dark-secondary) 0%, var(--dark) 100%); border-bottom: 1px solid var(--border); padding: 8px 0; text-align: center; font-size: 11px; letter-spacing: 1px; }
+        .top-bar .gold { color: var(--gold); }
+        .phase-bar { background: rgba(201, 162, 39, 0.1); border: 1px solid var(--border); border-radius: 20px; padding: 6px 20px; display: inline-block; margin: 8px 0; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; }
+        .disclaimer-bar { background: rgba(255, 80, 80, 0.08); border: 1px solid rgba(255, 80, 80, 0.2); border-radius: 8px; padding: 10px 16px; margin: 8px auto; max-width: 900px; font-size: 10px; color: #c08080; line-height: 1.5; }
+        nav { background: rgba(10, 14, 26, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; flex-wrap: wrap; gap: 10px; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .nav-links { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .nav-links a { color: var(--text); text-decoration: none; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 6px; transition: all 0.3s; white-space: nowrap; }
+        .nav-links a:hover { background: rgba(201, 162, 39, 0.15); color: var(--gold); }
+        .lang-select { background: rgba(201, 162, 39, 0.1); border: 1px solid var(--border); color: var(--gold); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+        .hero { padding: 80px 0; background: linear-gradient(135deg, var(--dark) 0%, var(--navy) 50%, var(--dark) 100%); position: relative; text-align: center; }
+        .hero::before { content: ''; position: absolute; top: -30%; left: 50%; transform: translateX(-50%); width: 500px; height: 500px; background: radial-gradient(circle, rgba(201, 162, 39, 0.06) 0%, transparent 70%); border-radius: 50%; }
+        .hero-content { position: relative; z-index: 1; }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 42px; line-height: 1.2; margin-bottom: 20px; }
+        .hero p { color: var(--text-muted); font-size: 16px; margin-bottom: 30px; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .formula { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px 40px; display: inline-block; margin-top: 20px; }
+        .formula-label { color: var(--gold); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+        .formula-text { font-size: 18px; font-style: italic; }
+        .section { padding: 60px 0; }
+        .section-alt { background: linear-gradient(135deg, #0d1321 0%, #121829 100%); }
+        .section-header { margin-bottom: 40px; text-align: center; }
+        .section-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; margin-bottom: 12px; }
+        .section-header p { max-width: 700px; margin: 0 auto; color: var(--text-muted); }
+        .section-label { color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; display: block; }
+        .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .pillar { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px; border-top: 3px solid var(--gold); }
+        .pillar-num { font-size: 36px; font-weight: 700; color: var(--gold); font-family: 'Playfair Display', serif; margin-bottom: 12px; }
+        .pillar h3 { font-size: 16px; margin-bottom: 12px; }
+        .pillar p { font-size: 13px; color: var(--text-muted); }
+        .domains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .domain { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 32px; transition: all 0.3s; }
+        .domain:hover { transform: translateY(-4px); border-color: var(--gold); }
+        .domain-num { font-size: 11px; color: var(--gold); letter-spacing: 2px; margin-bottom: 12px; }
+        .domain h3 { font-size: 18px; margin-bottom: 12px; }
+        .domain p { font-size: 13px; color: var(--text-muted); }
+        .instruments { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+        .instrument { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 40px; }
+        .instrument h3 { font-size: 22px; margin-bottom: 8px; color: var(--gold); }
+        .instrument .subtitle { font-size: 14px; color: var(--text-muted); font-style: italic; margin-bottom: 16px; }
+        .instrument p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+        .instrument .status { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); border-top: 1px solid var(--border); padding-top: 16px; margin-top: 20px; }
+        .quote { text-align: center; padding: 60px 0; font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--gold); }
+        .quote-author { font-size: 12px; color: var(--text-muted); margin-top: 16px; font-family: 'Noto Sans', sans-serif; font-style: normal; }
+        footer { background: var(--dark-secondary); border-top: 1px solid var(--border); padding: 40px 0 20px; text-align: center; }
+        footer .footer-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; flex-wrap: wrap; }
+        footer a { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.3s; }
+        footer a:hover { color: var(--gold); }
+        footer p { color: var(--text-muted); font-size: 12px; }
+        .btn { padding: 12px 28px; border-radius: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; display: inline-block; }
+        .btn-primary { background: var(--gold); color: var(--dark); }
+        .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 28px; } .pillars { grid-template-columns: 1fr; } .domains { grid-template-columns: 1fr; }
+            .instruments { grid-template-columns: 1fr; } .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="container">
+            <span class="gold">ACADÉMIE MONDIALE DU PROTOCOLE</span> — <span data-no-i18n="true" translate="no">World Protocol Academy</span><br>
+            <small style="color: var(--text-muted);">Institut du Protocole, de la Diplomatie, de la Communication Publique et des Études de Sécurité</small>
+            <div><span class="phase-bar">PHASE DE DÉVELOPPEMENT, DE TEST ET DE PILOTAGE — 2026</span></div>
+            <div class="disclaimer-bar"><span data-no-i18n="true" translate="no">WPA</span> WPA n'est pas une université, une institution gouvernementale, un organisme d'accréditation, une académie enregistrée ou un établissement délivrant des diplômes. Les certificats WPA sont des dossiers professionnels/non universitaires et ne sont pas des diplômes académiques, des licences professionnelles ou une reconnaissance automatique par des institutions tierces.</div>
+        </div>
+    </div>
+    <nav>
+        <div class="container">
+            <div class="nav-inner">
+                <a href="./index.html" class="logo">
+                    <span style="font-size: 28px;">W</span>
+                    <span style="font-size: 11px; line-height: 1.2; color: var(--text-muted);">
+                        <span data-no-i18n="true" translate="no">World Protocol Academy</span><br>
+                        <span style="color: var(--gold);"><span data-no-i18n="true" translate="no">WPA</span> Institut · 2026</span>
+                    </span>
+                </a>
+                <div class="nav-links">
+                    <a href="./index.html">Accueil</a>
+                    <a href="#charter">Charte</a>
+                    <a href="#domains">Institut</a>
+                    <a href="#instruments">Analytique</a>
+                    <a href="#methodology">Méthodologie</a>
+                </div>
+                <select class="lang-select" onchange="window.location.href='./' + this.value + '/institute.html'">
+                    <option value="zh" >中文</option>
+                    <option value="ru" >Русский</option>
+                    <option value="hi" >हिन्दी</option>
+                    <option value="af" >Afrikaans</option>
+                    <option value="ar" >العربية</option>
+                    <option value="fr" selected>Français</option>
+                    <option value="de" >Deutsch</option>
+                    <option value="it" >Italiano</option>
+                    <option value="sq" >Shqip</option>
+                    <option value="sr" >Српски</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="section-label"><span data-no-i18n="true" translate="no">WPA</span> WPA Institute · v2.0</span>
+                <h1>Institut du Protocole, de la Diplomatie, de la Communication Publique et des Études de Sécurité</h1>
+                <p>World Protocol Academy relie la théorie académique à la pratique professionnelle, à l'éthique et à la mesurabilité dans les domaines du protocole, de la diplomatie, de la communication publique, des études de sécurité et des compétences en communication।</p>
+                <div class="formula">
+                    <div class="formula-label">Formule institutionnelle</div>
+                    <div class="formula-text">Théorie + pratique + éthique + mesurabilité = école vivante du protocole, de la diplomatie, de la communication publique et de la sécurité।</div>
+                </div>
+                <div style="margin-top: 24px;">
+                    <a href="#charter" class="btn btn-primary">Lire la Charte →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section section-alt" id="charter">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Charte de l'Institut</span>
+                <h2>Six piliers de la Charte</h2>
+                <p>La Charte articule les principes fondamentaux sous lesquels l'Institut fonctionne — sans négociation, sans concessions, sans cas particuliers।</p>
+            </div>
+            <div class="pillars">
+                <div class="pillar"><div class="pillar-num">I</div><h3>I Intégrité académique</h3><p>Tous les matériaux de recherche et d'éducation sont des créations originales de WPA ou des sources correctement attribuées।</p></div>
+                <div class="pillar"><div class="pillar-num">II</div><h3>II Mesurabilité professionnelle</h3><p>Chaque programme, certificat et indicateur analytique a des critères clairs, une méthodologie transparente et des preuves vérifiables।</p></div>
+                <div class="pillar"><div class="pillar-num">III</div><h3>III Indépendance éthique</h3><p>WPA n'autorise pas le paiement pour un meilleur résultat, n'effectue pas d'accréditation et n'attribue pas de reconnaissances étatiques।</p></div>
+                <div class="pillar"><div class="pillar-num">IV</div><h3>IV Discipline du langage</h3><p>L'Institut n'utilise pas des mots comme « partenaire », « accrédité » ou « soutenu » sans accord écrit spécifique।</p></div>
+                <div class="pillar"><div class="pillar-num">V</div><h3>V Sources transparentes</h3><p>Schéma de citation à 9 champs, ouverture de la méthodologie et droit de correction des institutions mesurées।</p></div>
+                <div class="pillar"><div class="pillar-num">VI</div><h3>VI Doctrine du fondateur</h3><p>"La négociation est optionnelle. Le protocole est absolu." — logique opérationnelle de toutes les activités de l'Institut।</p></div>
+            </div>
+        </div>
+    </section>
+    <section class="section" id="domains">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Domaines de l'Institut</span>
+                <h2>Six domaines de spécialisation</h2>
+            </div>
+            <div class="domains">
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">01 · PROTOCOLE</div><h3>PROTOCOLE</h3><p>Protocole d'État, diplomatique, institutionnel, cérémonial et international।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">02 · DIPLOMATIE</div><h3>DIPLOMATIE</h3><p>Pratique diplomatique, relations internationales, diplomatie publique et droit international।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">03 · COMMUNICATION</div><h3>COMMUNICATION</h3><p>Discours public, relations publiques, communication stratégique et réputation institutionnelle।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">04 · SÉCURITÉ</div><h3>SÉCURITÉ</h3><p>Études de sécurité, diplomatie de défense, procédures de crise et événements publics।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">05 · RECHERCHE</div><h3>Recherche et analyse de référence</h3><p>Travaux de recherche, études de cas, recommandations politiques à court terme, indices, méthodologies et rapports annuels।</p></div>
+                <div class="domain"><div class="domain-num" data-no-i18n="true" translate="no">06 · PRATIQUE</div><h3>Sagesse professionnelle pratique</h3><p>WPA valorise à la fois les sources académiques et l'expérience pratique documentée à long terme।</p></div>
+            </div>
+        </div>
+    </section>
+    <section class="section section-alt" id="instruments">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">Famille d'outils</span>
+                <h2><span data-no-i18n="true" translate="no">WPA</span> LES OUTILS WPA</h2>
+            </div>
+            <div class="instruments">
+                <div class="instrument">
+                    <h3 data-no-i18n="true" translate="no">INSTRUMENT I PSPI · ИППМ</h3>
+                    <div class="subtitle">Indice de performance protocolaire de l'État</div>
+                    <p>Mesure les événements</p>
+                    <div class="status" data-no-i18n="true" translate="no">INSTRUMENT VERSIONNÉ · DOI LORSQUE APPLICABLE · EXAMEN AAB EN COURS</div>
+                </div>
+                <div class="instrument">
+                    <h3 data-no-i18n="true" translate="no">INSTRUMENT II Indice de l'Institut</h3>
+                    <div class="subtitle" data-no-i18n="true" translate="no">Indice de l'Institut WPA</div>
+                    <p>Mesure les institutions</p>
+                    <p>Quatre dimensions : recherche et publications, programmes et certification, pratique professionnelle, transparence et collaboration।</p>
+                    <div class="status" data-no-i18n="true" translate="no">INSTRUMENT-PROJET · MÉTHODOLOGIE INTERNE · EXAMEN AAB EN COURS</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+        <div class="container">
+            <div class="quote">"La négociation est optionnelle. Le protocole est absolu."<div class="quote-author">— Doctrine du fondateur | World Protocol Academy</div></div>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <div class="disclaimer-bar" style="margin-bottom: 20px;"><span data-no-i18n="true" translate="no">WPA</span> WPA n'est pas une université, une institution gouvernementale, un organisme d'accréditation, une académie enregistrée ou un établissement délivrant des diplômes. Les certificats WPA sont des dossiers professionnels/non universitaires et ne sont pas des diplômes académiques, des licences professionnelles ou une reconnaissance automatique par des institutions tierces.</div>
+            <div class="footer-links">
+                <a href="#">Politique de confidentialité</a>
+                <a href="#">Conditions d'utilisation</a>
+                <a href="#">Contact</a>
+            </div>
+            <p>© 2026 <span data-no-i18n="true" translate="no">World Protocol Academy</span> Institut. Tous droits réservés।</p>
+        </div>
+    </footer>
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
