@@ -345,6 +345,44 @@ section{padding:88px 0}
 .hub .pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .hub-link{color:var(--goldd);font-weight:600;font-size:13.5px;font-family:var(--fb)}
 
+
+
+/* ============================================================
+   WPA FINAL CORE DOCUMENTS HUB — visible homepage strategy links
+   ============================================================ */
+.wpa-core-docs-hub{
+  margin:0 0 34px;
+  padding:30px;
+  border:2px solid var(--gold);
+  border-radius:var(--r2);
+  background:linear-gradient(135deg,#071326,#0d1f3c,#162947);
+  color:var(--white);
+  box-shadow:var(--shm);
+  position:relative;
+  overflow:hidden;
+}
+.wpa-core-docs-hub::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(rgba(232,212,154,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(232,212,154,.055) 1px,transparent 1px);
+  background-size:56px 56px;
+  pointer-events:none;
+}
+.wpa-core-docs-hub > *{position:relative;z-index:1}
+.wpa-core-docs-kicker{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:var(--goldl);font-family:var(--fb);margin-bottom:8px}
+.wpa-core-docs-hub h3{font-family:var(--fp);font-size:clamp(26px,3.2vw,40px);color:var(--white);margin-bottom:10px;line-height:1.12}
+.wpa-core-docs-hub p{color:rgba(255,255,255,.72);font-size:15px;line-height:1.7;max-width:900px;margin-bottom:22px}
+.wpa-core-docs-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.wpa-core-doc-card{display:block;height:100%;padding:20px 18px;border:1px solid rgba(232,212,154,.42);border-radius:var(--r2);background:rgba(248,244,238,.96);color:var(--navy);transition:transform .18s,background .18s,border-color .18s;text-decoration:none}
+.wpa-core-doc-card:hover{transform:translateY(-3px);background:#fff;border-color:var(--gold)}
+.wpa-core-doc-icon{font-size:28px;line-height:1;margin-bottom:10px}
+.wpa-core-doc-card strong{display:block;font-family:var(--fd);font-size:19px;color:var(--navy);line-height:1.15;margin-bottom:7px}
+.wpa-core-doc-card span{display:block;color:var(--muted);font-size:13px;line-height:1.55;margin-bottom:12px;font-weight:400}
+.wpa-core-doc-card em{font-style:normal;color:var(--goldd);font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+@media(max-width:980px){.wpa-core-docs-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.wpa-core-docs-hub{padding:22px 18px}.wpa-core-docs-grid{grid-template-columns:1fr}}
+
 /* MATRIX BAND */
 .matrix-band{background:linear-gradient(135deg,#0a1828,#0d1f3c,#162947);border:1px solid rgba(201,168,76,.2);border-radius:var(--r2);padding:36px 40px;position:relative;overflow:hidden;margin-bottom:0}
 .matrix-band::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);background-size:60px 60px}
@@ -2215,8 +2253,10 @@ body > *{position:relative;z-index:1}
     <div class="nav-center" id="siteNav">
       <nav class="site-nav" aria-label="Главна навигација" data-i18n-attr="aria-label:navAria">
         <ul>
-          <li><a href="https://worldprotocolacademy-code.github.io/" data-i18n="navHome">Главна WPA</a></li>
-          <li><a href="https://worldprotocolacademy-code.github.io/strategy/" data-i18n="navStrategy">Strategy</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/">Главна WPA</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/strategy/">Strategy</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html">Master Strategy</a></li>
+          <li><a href="https://worldprotocolacademy-code.github.io/bibliography/">Bibliography</a></li>
           <li><a href="#about" data-i18n="navAbout">За нас</a></li>
           <li><a href="#wpa-manifest" data-i18n="a_nav.1">Манифест</a></li>
           <li><a href="programmes.html" data-i18n="navProgrammes">Програми</a></li>
@@ -2268,8 +2308,6 @@ body > *{position:relative;z-index:1}
       <h2>Светска академија за протокол<br><em>World Protocol Academy</em></h2>
       <p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Institute for Protocol, Diplomacy, Public Communication and Security Studies</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.</p>
       <div class="hero-actions">
-        <a href="https://worldprotocolacademy-code.github.io/" class="btn btn-gold">🏠 Главна WPA</a>
-        <a href="https://worldprotocolacademy-code.github.io/strategy/" class="btn btn-ghost">🗺 WPA Strategy</a>
         <a href="programmes.html" class="btn btn-gold" data-i18n="heroBtn1">Истражете ја WPA</a>
         <a href="#ai" class="btn btn-ghost" data-i18n="heroBtn2">Запознајте го Virtual Sande</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/index.html" class="btn btn-ghost" data-i18n="heroBtn3">Отвори WPAWS</a>
@@ -2279,6 +2317,9 @@ body > *{position:relative;z-index:1}
         <a href="wpaws/protocol-symbols/index.html" class="btn btn-ghost" data-i18n="heroBtn4">Отвори Protocol Symbols Lab</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/index.html" class="btn btn-ghost" data-i18n="heroBtn5"> Отвори WPA Diplomatic Analysis Lab <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;border:1px solid currentColor;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle">Beta</span></a>
          <a href="institute.html" class="btn btn-ghost" data-i18n="a_hero.3">🏛️ Отвори WPA Institute</a>
+         <a href="https://worldprotocolacademy-code.github.io/strategy/" class="btn btn-gold">🗺 WPA Strategy</a>
+         <a href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html" class="btn btn-ghost">📘 Master Strategy 2026–2030</a>
+         <a href="https://worldprotocolacademy-code.github.io/bibliography/" class="btn btn-ghost">📚 WPA-BIB-001</a>
          <a href="wpa-services.html" class="btn btn-gold">Services / Услуги</a>
          <a href="wpa-briefings.html" class="btn btn-ghost">Briefings / Брифинзи</a>
          <a href="wpa-one-page-service-profile.html" class="btn btn-ghost">Institutional Profile</a>
@@ -2354,51 +2395,38 @@ body > *{position:relative;z-index:1}
 </div>
 <section id="core-pages" class="accent">
   <div class="container">
-    <div class="sh">
-      <div class="section-label" data-i18n="a_core_pages.32">Клучни WPA страници</div>
-      <h3 class="section-title">Главна WPA, Strategy, Master Strategy и Bibliography — јасно видливи линкови.</h3>
-      <p class="section-lead">Овој блок е поправен со чист HTML, без вгнездени линкови. Секое копче е самостоен линк и треба јасно да се гледа на страницата.</p>
+    <div class="wpa-core-docs-hub" aria-label="WPA Core Documents Hub">
+      <div class="wpa-core-docs-kicker">⚜️ WPA Core Documents Hub · Клучни WPA документи</div>
+      <h3>Главна WPA, Strategy, Master Strategy и WPA-BIB-001</h3>
+      <p>Централен и јасно видлив влез кон основните институционални документи на World Protocol Academy. Секое копче е самостоен линк — без вгнездени линкови, без скриен текст и без 404 намери.</p>
+      <div class="wpa-core-docs-grid">
+        <a class="wpa-core-doc-card" href="https://worldprotocolacademy-code.github.io/">
+          <div class="wpa-core-doc-icon">🏠</div>
+          <strong>Главна WPA</strong>
+          <span>Почетна страница на World Protocol Academy.</span>
+          <em>Отвори Главна WPA →</em>
+        </a>
+        <a class="wpa-core-doc-card" href="https://worldprotocolacademy-code.github.io/strategy/">
+          <div class="wpa-core-doc-icon">🗺</div>
+          <strong>WPA Implementation Roadmap</strong>
+          <span>Оперативна патека за институционален развој 2026–2030.</span>
+          <em>Отвори Roadmap →</em>
+        </a>
+        <a class="wpa-core-doc-card" href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html">
+          <div class="wpa-core-doc-icon">📘</div>
+          <strong>WPA Master Strategy</strong>
+          <span>Основачка стратегија: протоколот како социолошка дисциплина.</span>
+          <em>Отвори Master Strategy →</em>
+        </a>
+        <a class="wpa-core-doc-card" href="https://worldprotocolacademy-code.github.io/bibliography/">
+          <div class="wpa-core-doc-icon">📚</div>
+          <strong>WPA-BIB-001</strong>
+          <span>Официјална библиографија и публикациска основа на WPA.</span>
+          <em>Отвори Bibliography →</em>
+        </a>
+      </div>
     </div>
-
     <div class="g4">
-      <article class="card">
-        <span class="card-kicker">Main Platform</span>
-        <h4>🏠 Главна WPA</h4>
-        <p>Главната почетна страница на World Protocol Academy.</p>
-        <a class="btn btn-gold btn-sm" href="https://worldprotocolacademy-code.github.io/">
-          Отвори Главна WPA
-        </a>
-      </article>
-
-      <article class="card">
-        <span class="card-kicker">Implementation Roadmap</span>
-        <h4>🗺 WPA Implementation Roadmap</h4>
-        <p>Оперативна патека за институционален развој на WPA 2026–2030.</p>
-        <a class="btn btn-outline btn-sm" href="https://worldprotocolacademy-code.github.io/strategy/">
-          Отвори Roadmap 2026–2030
-        </a>
-      </article>
-
-      <article class="card">
-        <span class="card-kicker">Founding Strategy</span>
-        <h4>📘 WPA Master Strategy</h4>
-        <p>Основачка стратегија на WPA со протоколот како социолошка дисциплина.</p>
-        <a class="btn btn-outline btn-sm" href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html">
-          Отвори Master Strategy 2026–2030
-        </a>
-      </article>
-
-      <article class="card">
-        <span class="card-kicker">Official Bibliography</span>
-        <h4>📚 WPA-BIB-001</h4>
-        <p>Официјална библиографија и публикациска основа на WPA.</p>
-        <a class="btn btn-outline btn-sm" href="https://worldprotocolacademy-code.github.io/bibliography/">
-          Отвори WPA-BIB-001
-        </a>
-      </article>
-    </div>
-
-    <div class="g4" style="margin-top:24px">
       <div class="card">
         <span class="card-kicker" data-i18n="a_core_pages.3">Programme Architecture</span>
         <h4 data-i18n="a_core_pages.4">Programmes Page</h4>
@@ -2410,7 +2438,6 @@ body > *{position:relative;z-index:1}
         </ul>
         <a class="card-link" href="programmes.html" data-i18n="a_core_pages.9">Отвори programmes.html</a>
       </div>
-
       <div class="card">
         <span class="card-kicker" data-i18n="a_core_pages.10">Certification Logic</span>
         <h4 data-i18n="a_core_pages.11">Certification Page</h4>
@@ -2422,7 +2449,6 @@ body > *{position:relative;z-index:1}
         </ul>
         <a class="card-link" href="certification.html" data-i18n="a_core_pages.16">Отвори certification.html</a>
       </div>
-
       <div class="card">
         <span class="card-kicker" data-i18n="a_core_pages.17">Membership &amp; Access</span>
         <h4 data-i18n="a_core_pages.18">WPA Card Page</h4>
@@ -2434,11 +2460,10 @@ body > *{position:relative;z-index:1}
         </ul>
         <a class="card-link" href="wpa-card.html" data-i18n="a_core_pages.23">Отвори wpa-card.html</a>
       </div>
-
       <div class="card">
         <span class="card-kicker" data-i18n="a_core_pages.24">Partner &amp; Growth Logic</span>
         <h4 data-i18n="a_core_pages.25">Partnerships &amp; Member Benefits</h4>
-        <p data-i18n="a_core_pages.26">Страницата Partnerships &amp; Member Benefits ја поврзува WPA Card логиката со 17+3 партнерскиот модел, member benefits, recurring value и одржлив раст.</p>
+        <p data-i18n="a_core_pages.26">Страницата Partnerships &amp; Member Benefits ја поврзува WPA Card логиката со 17+3 партнерскиот модел (етички модел на монетизација · партнерски екосистем · ненаметлив приход), member benefits, recurring value и одржлив раст на платформата.</p>
         <ul class="card-list">
           <li data-i18n="a_core_pages.27">17+3 partner architecture</li>
           <li data-i18n="a_core_pages.28">Member benefits and recurring value</li>
@@ -2447,14 +2472,12 @@ body > *{position:relative;z-index:1}
         <a class="card-link" href="passive-revenue.html" data-i18n="a_core_pages.30">Отвори passive-revenue.html</a>
       </div>
     </div>
-
     <div style="margin-top:24px;padding:20px 24px;border:1px solid var(--line);border-radius:var(--r2);background:var(--white);box-shadow:var(--sh)">
-      <p style="font-family:var(--fd);font-style:italic;font-size:16px;color:var(--navy);line-height:1.6;margin:0">
-        Проверено: линкот до главната WPA е <strong>https://worldprotocolacademy-code.github.io/</strong>, а Strategy линковите се поставени како посебни копчиња.
-      </p>
+      <p style="font-family:var(--fd);font-style:italic;font-size:16px;color:var(--navy);line-height:1.6;margin:0" data-i18n-html="a_core_pages.31">Овие четири страници не се одделни острови. Тие го сочинуваат јавниот квадрат на WPA: <strong>Programmes → Certification → WPA Card → Partnerships &amp; Member Benefits</strong>.</p>
     </div>
   </div>
 </section>
+
 
 <!-- ═══════════════════════════════════════════════════════
      WPA INSTITUTIONAL SERVICES & BRIEFINGS
