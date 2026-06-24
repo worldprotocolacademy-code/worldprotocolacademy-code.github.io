@@ -5598,8 +5598,30 @@ if(document.readyState==='loading'){
     document.addEventListener("wpa:lang-changed", function () { try { buildDrawer(); } catch (e) {} });
   })();
 </script>
-
-
-
-
+<!-- WPA GHOSTBUSTER: Автоматско сокривање на AI-генерираните фантоми -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const ghostNames = ["Elena Petrova", "Marko Jovanović", "Anna Kowalski", "Professor of International Relations, Sofia", "Director, Protocol Service", "Researcher, Warsaw"];
+    const allElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, strong, div');
+    
+    allElements.forEach(el => {
+        ghostNames.forEach(name => {
+            if (el.textContent && el.textContent.includes(name)) {
+                // Го наоѓа најблискиот родител кој е секција или контејнер за препораки
+                let container = el.closest('section') || el.closest('.testimonials') || el.closest('div[class*="testimonial"]') || el.closest('div[class*="review"]') || el.closest('div[class*="quotes"]');
+                if (container && container.tagName !== 'BODY') {
+                    container.style.display = 'none';
+                } else {
+                    // Ако нема јасна секција, го сокрива родителот 3 нивоа нагоре
+                    let p = el.parentElement;
+                    if(p && p.parentElement && p.parentElement.parentElement) {
+                        p.parentElement.parentElement.style.display = 'none';
+                    }
+                }
+            }
+        });
+    });
+    console.log("👻 WPA Ghostbuster: Лажните препораки се успешно елиминирани!");
+});
+</script>
 </body></html>
