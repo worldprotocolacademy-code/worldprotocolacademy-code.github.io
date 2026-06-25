@@ -2016,70 +2016,45 @@ label,
 
 
 /* ============================================================
-   WPA PROTOCOLOMETRY CTA PATCH v1.0
-   Adds public Protocolometry Center visibility.
+   WPA PROTOCOLOMETRY BUTTON CLEAN PATCH v1.1
+   Protocolometry appears only as a polished normal button.
+   No top card. No floating button.
    ============================================================ */
-.wpa-protocolometry-cta-card{
-  margin:22px auto;
-  max-width:1180px;
-  padding:22px 24px;
-  border:1px solid rgba(201,168,76,.48);
-  border-left:5px solid #c9a84c;
-  border-radius:10px;
-  background:linear-gradient(135deg,rgba(13,31,60,.96),rgba(22,41,71,.94));
-  color:#f8f4ee;
-  box-shadow:0 12px 42px rgba(13,31,60,.18);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-}
-.wpa-protocolometry-cta-card strong{
-  display:block;
-  color:#e8d49a;
-  font-family:Georgia,'Times New Roman',serif;
-  font-size:24px;
-  line-height:1.2;
-  margin-bottom:8px;
-}
-.wpa-protocolometry-cta-card p{
-  margin:0 0 14px;
-  color:rgba(248,244,238,.82);
-  line-height:1.65;
-  font-size:14.5px;
-}
-.wpa-protocolometry-cta-card a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:11px 17px;
-  border-radius:999px;
-  background:#c9a84c;
+.wpa-protocolometry-main-btn,
+a.wpa-protocolometry-main-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:9px !important;
+  padding:13px 22px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(232,212,154,.95) !important;
+  background:linear-gradient(135deg,#c9a84c,#e8d49a) !important;
   color:#071326 !important;
-  font-weight:900;
-  text-decoration:none;
-  border:1px solid #e8d49a;
-  box-shadow:0 6px 20px rgba(0,0,0,.18);
+  font-weight:950 !important;
+  letter-spacing:.045em !important;
+  text-decoration:none !important;
+  text-transform:uppercase !important;
+  box-shadow:0 10px 28px rgba(13,31,60,.24), inset 0 1px 0 rgba(255,255,255,.35) !important;
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease !important;
 }
-.wpa-protocolometry-floating-cta{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:99999;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:12px 16px;
-  border-radius:999px;
-  background:#c9a84c;
-  color:#071326 !important;
-  font:900 13px system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-  text-decoration:none;
-  border:1px solid #e8d49a;
-  box-shadow:0 12px 34px rgba(0,0,0,.28);
+.wpa-protocolometry-main-btn:hover,
+a.wpa-protocolometry-main-btn:hover{
+  transform:translateY(-2px) !important;
+  filter:saturate(1.08) !important;
+  box-shadow:0 14px 38px rgba(13,31,60,.30), 0 0 0 3px rgba(201,168,76,.22) !important;
+}
+.wpa-protocolometry-main-btn .wpa-protocolometry-icon{
+  font-size:1.12em !important;
+  line-height:1 !important;
 }
 @media(max-width:640px){
-  .wpa-protocolometry-cta-card{margin:16px 12px;padding:18px 16px}
-  .wpa-protocolometry-cta-card strong{font-size:20px}
-  .wpa-protocolometry-floating-cta{right:12px;bottom:12px;padding:10px 13px;font-size:12px}
+  .wpa-protocolometry-main-btn,
+  a.wpa-protocolometry-main-btn{
+    width:100% !important;
+    padding:12px 16px !important;
+    font-size:12px !important;
+  }
 }
 
 </style>
@@ -2399,15 +2374,6 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
 </head>
 <body id="top" data-page="index">
 
-<!-- WPA Protocolometry Center CTA patch v1.0 -->
-<section class="wpa-protocolometry-cta-card" aria-label="WPA Protocolometry Center">
-  <strong>📐 WPA Protocolometry Center</strong>
-  <p>Методолошки центар за мерење, анализа и споредбено истражување во протоколот, дипломатијата, комуникологијата и безбедносните студии.</p>
-  <a href="/protocolometry-center.html">Отвори Protocolometry Center →</a>
-</section>
-
-
-
 <div class="wpa-test-phase-header wpa-home-fixed" role="note" aria-label="WPA development and test phase notice" translate="no" data-no-i18n="true">
   <strong><span class="wpa-name-mk">СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ</span><span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span></strong>
   <span class="wpa-inst-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>
@@ -2513,6 +2479,7 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
       <h2>Светска академија за протокол<br><em>World Protocol Academy</em></h2>
       <p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Institute for Protocol, Diplomacy, Public Communication and Security Studies</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.</p>
       <div class="hero-actions">
+<a class="btn btn-gold wpa-protocolometry-main-btn" href="/protocolometry-center.html"><span class="wpa-protocolometry-icon">📐</span>Protocolometry Center</a>
         <a href="programmes.html" class="btn btn-gold" data-i18n="heroBtn1">Истражете ја WPA</a>
         <a href="#ai" class="btn btn-ghost" data-i18n="heroBtn2">Запознајте го Virtual Sande</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/index.html" class="btn btn-ghost" data-i18n="heroBtn3">Отвори WPAWS</a>
@@ -2522,7 +2489,6 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
         <a href="wpaws/protocol-symbols/index.html" class="btn btn-ghost" data-i18n="heroBtn4">Отвори Protocol Symbols Lab</a>
         <a href="https://worldprotocolacademy-code.github.io/wpaws/diplomatic-analysis-lab/index.html" class="btn btn-ghost" data-i18n="heroBtn5"> Отвори WPA Diplomatic Analysis Lab <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;border:1px solid currentColor;border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle">Beta</span></a>
          <a href="institute.html" class="btn btn-ghost" data-i18n="a_hero.3">🏛️ Отвори WPA Institute</a>
-<a href="/protocolometry-center.html">📐 Protocolometry</a>
          <a href="https://worldprotocolacademy-code.github.io/languages/" class="btn btn-gold" translate="no" data-no-i18n="true">🌐 WPA Languages</a>
          <a href="https://worldprotocolacademy-code.github.io/strategy/" class="btn btn-gold">🗺 WPA Strategy</a>
          <a href="https://worldprotocolacademy-code.github.io/strategy/master-strategy-2026-2030.html" class="btn btn-ghost">📘 Master Strategy 2026–2030</a>
