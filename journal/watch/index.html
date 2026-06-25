@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="mk" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WPA Journal Watch · Editorial Intelligence</title>
+<meta name="description" content="WPA Journal Watch — daily editorial topic intelligence for protocol, diplomacy, public communication, security and communicology.">
+<style>
+:root{
+  --paper:#E8EBEF; --panel:#FBFBF9; --panel2:#F3F2ED;
+  --ink:#15233F; --soft:#2A3852; --muted:#5C6675;
+  --line:#CFD3DA; --seal:#7A1F2B; --brass:#9A7320; --green:#2F6B3A;
+  --teal:#2E6B66; --plum:#574A78;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px 70px}
+header{padding:42px 0 24px}
+.rule{border:0;border-top:3px solid var(--ink);margin:0}
+.rule:after{content:"";display:block;height:2px;background:var(--brass);margin-top:3px}
+.eyebrow{margin-top:22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--seal);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--seal)}
+h1{font-family:Georgia,serif;font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.05;margin:.38em 0 .2em}
+.lead{max-width:860px;color:var(--soft);font-size:1.04rem}
+.badge{display:inline-block;border:1px solid var(--brass);color:var(--brass);padding:6px 11px;border-radius:999px;font-weight:800;font-size:.78rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:16px;margin:20px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px}
+.card h3{margin:.1em 0 .3em;color:var(--seal)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:24px 0 12px}
+input,select{padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:15px}
+input{flex:1;min-width:240px}
+button,.btn{padding:11px 14px;border:1px solid var(--brass);border-radius:10px;background:var(--brass);color:#fff;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}
+button.secondary,.btn.secondary{background:transparent;color:var(--seal);border-color:var(--seal)}
+.note{border-left:4px solid var(--brass);background:rgba(154,115,32,.10);padding:14px 16px;border-radius:8px;margin:18px 0}
+.topic{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;margin:14px 0}
+.topic h2{font-family:Georgia,serif;margin:.1em 0 .35em}
+.meta{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.76rem;color:var(--muted);display:flex;gap:8px 14px;flex-wrap:wrap;margin-bottom:8px}
+.pill{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--ink);padding:3px 8px;border-radius:999px}
+.pill.protocol{background:var(--ink)} .pill.diplomacy{background:var(--brass)} .pill.pr{background:var(--teal)}
+.pill.security{background:var(--seal)} .pill.communicology{background:var(--plum)}
+.pill.status{background:var(--green)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+small{color:var(--muted)}
+footer{font-size:.86rem;color:var(--muted);border-top:1px solid var(--line);padding-top:18px;margin-top:34px}
+a{color:var(--seal)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <hr class="rule">
+  <div class="eyebrow"><span class="dot"></span> WPA Journal · Editorial Intelligence · Phase 0/1</div>
+  <h1>WPA Journal Watch</h1>
+  <p class="lead">Дневна уредничка интелигенција за теми од протокол, дипломатија, јавна комуникација, безбедност и комуникологија. Овој модул не објавува автоматски научни статии; создава кандидати за теми и editorial briefs за човечка проверка.</p>
+  <span class="badge">STAGING READY — Editorial review required</span>
+</header>
+
+<section class="grid">
+  <div class="card"><h3>Daily Topics</h3><p>Собира кандидати од јавни RSS/Atom извори и ги групира по дисциплина.</p></div>
+  <div class="card"><h3>Editorial Queue</h3><p>Секој кандидат има статус: detected, candidate, under review, approved, rejected.</p></div>
+  <div class="card"><h3>Journal Safe</h3><p>Не заменува submission, peer review, ethics review или уредничка одлука.</p></div>
+  <div class="card"><h3>WPA Connected</h3><p>Се поврзува со WPA Watch, Academic Search Hub и WPA Journal Charter.</p></div>
+</section>
+
+<section class="note">
+  <strong>Policy:</strong> WPA Journal Watch does not automatically publish articles. It generates topic candidates and editorial briefs only. All journal articles require author submission, editorial screening, peer review and human approval.
+</section>
+
+<section class="toolbar">
+  <input id="q" type="search" placeholder="Пребарај тема, извор, дисциплина…">
+  <select id="discipline">
+    <option value="all">All disciplines</option>
+    <option value="protocol">Protocol</option>
+    <option value="diplomacy">Diplomacy</option>
+    <option value="pr">Public Communication / PR</option>
+    <option value="security">Security</option>
+    <option value="communicology">Communicology</option>
+  </select>
+  <button onclick="loadTopics()">Refresh</button>
+  <a class="btn secondary" href="../../tools/wpa-watch/">Open WPA Watch</a>
+  <a class="btn secondary" href="../">Open WPA Journal</a>
+</section>
+
+<div id="status" class="note">Loading editorial topics…</div>
+<main id="topics"></main>
+
+<footer>
+  World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies.  
+  Journal Watch is an editorial intelligence layer, not a journal publication engine.
+</footer>
+</div>
+
+<script>
+let allTopics = [];
+
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function label(d){
+  return {protocol:"Protocol", diplomacy:"Diplomacy", pr:"Public Communication / PR", security:"Security", communicology:"Communicology"}[d] || d;
+}
+function render(){
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const d = document.getElementById("discipline").value;
+  const box = document.getElementById("topics");
+  const shown = allTopics.filter(t => {
+    const text = [t.title,t.summary,t.source,t.research_angle,t.article_type].join(" ").toLowerCase();
+    return (d==="all" || t.discipline===d) && (!q || text.includes(q));
+  });
+  document.getElementById("status").innerHTML = "<strong>Shown:</strong> " + shown.length + " / " + allTopics.length + " topic candidates · Manual editorial review required.";
+  if(!shown.length){box.innerHTML='<div class="topic">No topic candidates match this filter.</div>';return;}
+  box.innerHTML = shown.map(t => `
+    <article class="topic">
+      <div class="meta">
+        <span class="pill ${esc(t.discipline)}">${esc(label(t.discipline))}</span>
+        <span class="pill status">${esc(t.status || "candidate")}</span>
+        <span>${esc(t.date || "")}</span>
+        <span>Source: ${esc(t.source || "public RSS")}</span>
+      </div>
+      <h2>${esc(t.title)}</h2>
+      <p>${esc(t.summary)}</p>
+      <p><strong>Suggested article type:</strong> ${esc(t.article_type)}</p>
+      <p><strong>Research angle:</strong> ${esc(t.research_angle)}</p>
+      <p><strong>Verification:</strong> ${esc(t.verification)}</p>
+      <div class="actions">
+        <a class="btn secondary" href="${esc(t.source_url || "#")}" target="_blank" rel="noopener">Open source</a>
+        <button class="secondary" onclick="copyTopic('${esc(t.id)}')">Copy editorial note</button>
+      </div>
+    </article>
+  `).join("");
+}
+function copyTopic(id){
+  const t = allTopics.find(x=>x.id===id);
+  if(!t)return;
+  const text = `WPA Journal Watch Topic\n\nTitle: ${t.title}\nDiscipline: ${label(t.discipline)}\nArticle type: ${t.article_type}\nResearch angle: ${t.research_angle}\nVerification: ${t.verification}\nSource: ${t.source_url || ""}`;
+  navigator.clipboard.writeText(text).then(()=>alert("Editorial note copied."));
+}
+async function loadTopics(){
+  try{
+    const res = await fetch("topics.json?ts="+Date.now());
+    allTopics = await res.json();
+  }catch(e){
+    allTopics = [];
+  }
+  render();
+}
+document.getElementById("q").addEventListener("input", render);
+document.getElementById("discipline").addEventListener("change", render);
+loadTopics();
+</script>
+</body>
+</html>
