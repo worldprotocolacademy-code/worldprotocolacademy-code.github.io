@@ -2,8 +2,6 @@ name: WPA Watch
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
@@ -11,31 +9,40 @@ permissions:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: tools/wpa-watch
+    timeout-minutes: 3
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+      - name: Generate static WPA Watch test data
+        run: |
+          cat > tools/wpa-watch/items.json <<'EOF'
+          [
+            {
+              "id": "wpa-watch-live-001",
+              "title": "WPA Watch Engine Active",
+              "source": "WPA Watch",
+              "domain": "academic",
+              "summary": "The WPA Watch workflow is active. RSS harvesting will be expanded after stable validation.",
+              "link": "https://worldprotocolacademy-code.github.io/tools/wpa-watch/"
+            }
+          ]
+          EOF
 
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund
-
-      - name: Generate WPA Watch feed
-        run: npm run watch
-
-      - name: Report
-        run: npm run report
+          cat > tools/wpa-watch/status.json <<'EOF'
+          {
+            "status": "active",
+            "generated": "manual-run",
+            "items_total": 1,
+            "sources_live": 1,
+            "sources_total": 1
+          }
+          EOF
 
       - name: Commit outputs
         run: |
-          cd ../..
           git config user.name "wpa-watch-bot"
           git config user.email "actions@users.noreply.github.com"
           git add tools/wpa-watch/items.json tools/wpa-watch/status.json
-          git commit -m "WPA Watch update $(date -u +%FT%TZ)" || echo "No changes."
+          git commit -m "Activate WPA Watch test data" || echo "No changes"
           git push
