@@ -2,6 +2,8 @@ name: WPA Watch
 
 on:
   workflow_dispatch: {}
+  schedule:
+    - cron: "17 */6 * * *"
 
 permissions:
   contents: write
@@ -9,40 +11,37 @@ permissions:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        working-directory: tools/wpa-watch
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate static WPA Watch test data
-        run: |
-          mkdir -p tools/wpa-watch
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
 
-          cat > tools/wpa-watch/items.json <<'EOF'
-          [
-            {
-              "id": "wpa-watch-live-001",
-              "title": "WPA Watch Engine Active",
-              "source": "WPA Watch",
-              "domain": "academic",
-              "summary": "The WPA Watch workflow is active. RSS harvesting will be expanded after stable validation.",
-              "link": "https://worldprotocolacademy-code.github.io/tools/wpa-watch/"
-            }
-          ]
-          EOF
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
 
-          cat > tools/wpa-watch/status.json <<'EOF'
-          {
-            "status": "active",
-            "generated": "manual-run",
-            "items_total": 1,
-            "sources_live": 1,
-            "sources_total": 1
-          }
-          EOF
+      - name: Generate WPA Watch feed
+        run: npm run watch
+
+      - name: Report
+        run: npm run report
 
       - name: Commit outputs
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Activate WPA Watch test data
-          file_pattern: tools/wpa-watch/items.json tools/wpa-watch/status.json
+        run: |
+          cd ../..
+          git config user.name "wpa-watch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "WPA Watch update"
+            git push origin main
+          fi
