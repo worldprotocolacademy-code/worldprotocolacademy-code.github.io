@@ -2251,6 +2251,171 @@ footer{display:none;}
   .page06-raise .page06-domains li{font-size:9px;}
 }
 
+
+
+/* ============================================================
+   WPA GLOBAL NAVIGATION v5.0
+   Unified cross-module navigation for WPA platform.
+   ============================================================ */
+.wpa-global-nav-v5{
+  position:relative;
+  z-index:5000;
+  background:linear-gradient(135deg,#071326,#0d1f3c,#162947);
+  border-bottom:2px solid #c9a84c;
+  box-shadow:0 6px 24px rgba(0,0,0,.18);
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+.wpa-global-nav-v5-inner{
+  width:min(1280px,calc(100% - 36px));
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:10px 0;
+}
+.wpa-global-nav-v5-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#f8f4ee;
+  text-decoration:none;
+  min-width:210px;
+}
+.wpa-global-nav-v5-mark{
+  width:36px;
+  height:36px;
+  border:1.5px solid #c9a84c;
+  display:grid;
+  place-items:center;
+  color:#e8d49a;
+  font-family:Georgia,"Times New Roman",serif;
+  font-weight:700;
+  font-size:18px;
+  background:rgba(255,255,255,.04);
+}
+.wpa-global-nav-v5-title{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+.wpa-global-nav-v5-title strong{
+  color:#fff;
+  font-size:13px;
+  letter-spacing:.04em;
+}
+.wpa-global-nav-v5-title span{
+  color:#e8d49a;
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.wpa-global-nav-v5-links{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.wpa-global-nav-v5-links a{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 11px;
+  border:1px solid rgba(232,212,154,.30);
+  border-radius:999px;
+  color:#f8f4ee;
+  text-decoration:none;
+  font-size:11.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+  background:rgba(255,255,255,.035);
+  transition:background .18s,border-color .18s,color .18s,transform .18s;
+  white-space:nowrap;
+}
+.wpa-global-nav-v5-links a:hover{
+  background:#c9a84c;
+  border-color:#c9a84c;
+  color:#071326;
+  transform:translateY(-1px);
+}
+.wpa-global-nav-v5-links a.is-active{
+  background:#c9a84c;
+  border-color:#e8d49a;
+  color:#071326;
+  box-shadow:0 0 0 2px rgba(232,212,154,.16);
+}
+@media(max-width:860px){
+  .wpa-global-nav-v5-inner{
+    flex-direction:column;
+    align-items:flex-start;
+    padding:12px 0;
+  }
+  .wpa-global-nav-v5-brand{min-width:0;}
+  .wpa-global-nav-v5-links{
+    width:100%;
+    justify-content:flex-start;
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    padding-bottom:4px;
+  }
+  .wpa-global-nav-v5-links a{
+    flex:0 0 auto;
+  }
+}
+
+
+
+/* WPA Journal Watch CTA under charter status */
+.wpa-journal-watch-cta-v1{
+  position:relative;
+  z-index:4;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:14px auto 4px;
+  padding:0 20px;
+}
+.wpa-journal-watch-cta-v1 a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 17px;
+  border-radius:999px;
+  border:1px solid rgba(184,137,59,.72);
+  background:rgba(184,137,59,.16);
+  color:var(--gold-bright,#d4a64a);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all .22s ease;
+}
+.wpa-journal-watch-cta-v1 a:hover{
+  background:var(--gold,#b8893b);
+  color:var(--ink,#0a0e1a);
+  border-color:var(--gold-bright,#d4a64a);
+  transform:translateY(-1px);
+}
+.wpa-journal-watch-cta-v1 a.primary{
+  background:var(--gold,#b8893b);
+  color:var(--ink,#0a0e1a);
+}
+.wpa-journal-watch-cta-v1 a.primary:hover{
+  background:var(--gold-bright,#d4a64a);
+}
+@media(max-width:560px){
+  .wpa-journal-watch-cta-v1 a{
+    width:100%;
+    max-width:330px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2266,7 +2431,14 @@ footer{display:none;}
 
 <!-- JOURNAL STATUS BANNER (spec G) -->
 <div style="background:rgba(180,135,55,0.13);border-bottom:1px solid rgba(180,135,55,0.3);padding:10px 20px;text-align:center;font-size:13px;font-family:'Inter',sans-serif;color:rgba(212,166,74,0.95);letter-spacing:.01em;position:relative;z-index:20">
-  🚧 <strong>Во подготовка</strong> — повикот за трудови е отворен. Финалниот број и издавачкиот календар ќе бидат објавени посебно. Датумот Септември 2026 е планиран / индикативен, предмет на финалниот уредувачки календар. &nbsp;|&nbsp;
+  🚧 <strong>Во подготовка</strong>
+
+<div class="wpa-journal-watch-cta-v1" aria-label="WPA Journal Watch quick links">
+  <a class="primary" href="/journal/watch/">🧭 WPA Journal Watch</a>
+  <a href="/tools/wpa-watch/">📡 WPA Watch</a>
+</div>
+
+ — повикот за трудови е отворен. Финалниот број и издавачкиот календар ќе бидат објавени посебно. Датумот Септември 2026 е планиран / индикативен, предмет на финалниот уредувачки календар. &nbsp;|&nbsp;
   <em>In preparation. September 2026 is planned / intended, subject to final editorial calendar.</em>
 </div>
 
@@ -2296,9 +2468,6 @@ footer{display:none;}
 
   <!-- Zoom controls (top-right corner of stage) -->
   <div class="zoom-controls" id="zoomControls" role="group" aria-label="Zoom controls">
-  <a class="ctrl-btn primary" href="/journal/watch/" title="Open WPA Journal Watch">🧭 WPA Journal Watch</a>
-  <a class="ctrl-btn" href="/tools/wpa-watch/" title="Open WPA Watch">📡 WPA Watch</a>
-
     <button class="zoom-btn" id="zoomOutBtn" type="button" title="Намали зум · Zoom out" aria-label="Zoom out">−</button>
     <div class="zoom-level-display" id="zoomLevel" aria-live="polite">90%</div>
     <button class="zoom-btn" id="zoomInBtn" type="button" title="Зголеми зум · Zoom in" aria-label="Zoom in">+</button>
