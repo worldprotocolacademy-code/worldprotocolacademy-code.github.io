@@ -1,0 +1,35 @@
+name: WPA Journal Watch
+
+on:
+  schedule:
+    - cron: "42 5 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wpa-journal-watch
+  cancel-in-progress: false
+
+jobs:
+  journal-watch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate Journal Watch topics
+        run: node generate-journal-watch.mjs
+
+      - name: Commit Journal Watch updates
+        run: |
+          git config user.name "wpa-journal-watch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add journal/watch/topics.json journal/watch/editorial-queue.json
+          git commit -m "WPA Journal Watch update $(date -u +%FT%TZ)" || echo "No changes."
+          git push
