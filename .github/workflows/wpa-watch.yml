@@ -8,10 +8,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: wpa-watch
+  cancel-in-progress: false
+
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 7
 
     defaults:
       run:
@@ -19,6 +23,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -39,9 +45,11 @@ jobs:
           git config user.name "wpa-watch-bot"
           git config user.email "actions@users.noreply.github.com"
           git add tools/wpa-watch/items.json tools/wpa-watch/status.json
+
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "WPA Watch update"
+            git commit -m "WPA Watch update $(date -u +%FT%TZ)"
+            git pull --rebase origin main
             git push origin main
           fi
