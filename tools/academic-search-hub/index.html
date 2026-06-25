@@ -138,56 +138,139 @@
       style="padding:14px 20px;border-radius:10px;border:1px solid #c9a24a;background:#c9a24a;color:#07111f;font-weight:bold;cursor:pointer;">
       Search Sources
     </button>
+    <button onclick="wpaOpenAllCoreSources()"
+      style="padding:14px 20px;border-radius:10px;border:1px solid #c9a24a;background:transparent;color:#f5d37a;font-weight:bold;cursor:pointer;">
+      Open All Core Sources
+    </button>
   </div>
 
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 28px;">
+    <button onclick="wpaSetFilter('all')" class="btn secondary" type="button">All</button>
+    <button onclick="wpaSetFilter('open')" class="btn secondary" type="button">Open Sources</button>
+    <button onclick="wpaSetFilter('restricted')" class="btn secondary" type="button">Restricted</button>
+    <button onclick="wpaSetFilter('regional')" class="btn secondary" type="button">Regional</button>
+    <button onclick="wpaSetFilter('supplementary')" class="btn secondary" type="button">Supplementary</button>
+  </div>
+
+  <div id="wpaSearchStatus" class="note" style="display:none;"></div>
   <div id="wpaSearchResults" class="grid"></div>
 </section>
 
 <script>
+let wpaCurrentFilter = "all";
+
 const wpaSources = [
-  ["OpenAlex", "https://openalex.org/works?search="],
-  ["Crossref", "https://search.crossref.org/?q="],
-  ["Zenodo", "https://zenodo.org/search?q="],
-  ["DOAJ", "https://doaj.org/search/articles?q="],
-  ["OpenAIRE", "https://explore.openaire.eu/search/find?keyword="],
-  ["Google Scholar", "https://scholar.google.com/scholar?q="],
-  ["COBISS", "https://plus.cobiss.net/cobiss/si/en/bib/search?q="],
-  ["CEEOL", "https://www.ceeol.com/search?q="],
-  ["PhilPapers", "https://philpapers.org/s/"],
-  ["CNKI", "https://kns.cnki.net/kns8s/defaultResult/index?sw="],
-  ["Baidu Scholar", "https://xueshu.baidu.com/s?wd="],
-  ["CyberLeninka", "https://cyberleninka.org/search?q="],
-  ["eLIBRARY.RU", "https://elibrary.ru/search_results.asp?searchword="],
-  ["Shodhganga", "https://shodhganga.inflibnet.ac.in/simple-search?query="],
-  ["AJOL", "https://www.ajol.info/index.php/ajol/search?query="],
-  ["Shamaa", "https://www.shamaa.org/en/search?query="],
-  ["SciELO", "https://search.scielo.org/?q="],
-  ["Redalyc", "https://www.redalyc.org/buscarArticuloFiltros.do?q="],
-  ["Trove", "https://trove.nla.gov.au/search/advanced/category/journals?keyword="],
-  ["Scribd Supplementary", "https://www.scribd.com/search?query="]
+  ["OpenAlex", "https://openalex.org/works?search=", "open", "Open metadata / academic index"],
+  ["Crossref", "https://search.crossref.org/?q=", "open", "DOI and publication metadata"],
+  ["Zenodo", "https://zenodo.org/search?q=", "open", "Open science repository"],
+  ["DOAJ", "https://doaj.org/search/articles?q=", "open", "Open access journals"],
+  ["OpenAIRE", "https://explore.openaire.eu/search/find?keyword=", "open", "European open science discovery"],
+  ["CORE", "https://core.ac.uk/search?q=", "open", "Open access research aggregator"],
+
+  ["Google Scholar", "https://scholar.google.com/scholar?q=", "restricted", "External search only"],
+  ["COBISS", "https://plus.cobiss.net/cobiss/si/en/bib/search?q=", "restricted", "Catalogue search only"],
+  ["CEEOL", "https://www.ceeol.com/search?q=", "restricted", "Restricted/paywalled source"],
+  ["JSTOR", "https://www.jstor.org/action/doBasicSearch?Query=", "restricted", "Restricted/paywalled source"],
+  ["Project MUSE", "https://muse.jhu.edu/search?q=", "restricted", "Restricted/paywalled source"],
+  ["CNKI", "https://kns.cnki.net/kns8s/defaultResult/index?sw=", "restricted", "Restricted China academic database"],
+  ["eLIBRARY.RU", "https://elibrary.ru/search_results.asp?searchword=", "restricted", "Restricted Russian academic database"],
+
+  ["PhilPapers", "https://philpapers.org/s/", "regional", "Philosophy and theory"],
+  ["Baidu Scholar", "https://xueshu.baidu.com/s?wd=", "regional", "China regional academic search"],
+  ["CyberLeninka", "https://cyberleninka.org/search?q=", "regional", "Russian open-access discovery"],
+  ["Shodhganga", "https://shodhganga.inflibnet.ac.in/simple-search?query=", "regional", "India theses repository"],
+  ["AJOL", "https://www.ajol.info/index.php/ajol/search?query=", "regional", "African Journals Online"],
+  ["Shamaa", "https://www.shamaa.org/en/search?query=", "regional", "Arabic educational research"],
+  ["SciELO", "https://search.scielo.org/?q=", "regional", "Latin America open science"],
+  ["Redalyc", "https://www.redalyc.org/buscarArticuloFiltros.do?q=", "regional", "Latin America academic network"],
+  ["Trove", "https://trove.nla.gov.au/search/advanced/category/journals?keyword=", "regional", "Australian library discovery"],
+
+  ["Scribd Supplementary", "https://www.scribd.com/search?query=", "supplementary", "Supplementary non-authority source"],
+  ["ResearchGate", "https://www.researchgate.net/search?q=", "supplementary", "External profile/document discovery"],
+  ["Academia.edu", "https://www.academia.edu/search?q=", "supplementary", "External profile/document discovery"]
 ];
 
+function wpaGetQuery() {
+  return document.getElementById("wpaSearchQuery").value.trim();
+}
+
+function wpaSetFilter(filter) {
+  wpaCurrentFilter = filter;
+  wpaRunSearch();
+}
+
+function wpaCategoryLabel(category) {
+  if (category === "open") return "Open Sources";
+  if (category === "restricted") return "Restricted / External Only";
+  if (category === "regional") return "Regional";
+  if (category === "supplementary") return "Supplementary";
+  return "All";
+}
+
 function wpaRunSearch() {
-  const q = document.getElementById("wpaSearchQuery").value.trim();
+  const q = wpaGetQuery();
   const box = document.getElementById("wpaSearchResults");
+  const status = document.getElementById("wpaSearchStatus");
 
   if (!q) {
-    box.innerHTML = "<p>Please enter a search term.</p>";
+    status.style.display = "block";
+    status.innerHTML = "Please enter a search term first.";
+    box.innerHTML = "";
     return;
   }
 
   const encoded = encodeURIComponent(q);
 
-  box.innerHTML = wpaSources.map(([name, url]) => `
+  const filteredSources = wpaSources.filter(source => {
+    return wpaCurrentFilter === "all" || source[2] === wpaCurrentFilter;
+  });
+
+  status.style.display = "block";
+  status.innerHTML = "<strong>Active filter:</strong> " + wpaCategoryLabel(wpaCurrentFilter) +
+    " · <strong>Search term:</strong> " + q +
+    " · Manual academic verification required.";
+
+  box.innerHTML = filteredSources.map(([name, url, category, note]) => `
     <div class="card">
       <h3>${name}</h3>
-      <p>Legal-safe external search link. Manual academic verification required.</p>
+      <p><strong>Category:</strong> ${wpaCategoryLabel(category)}</p>
+      <p>${note}. Legal-safe external search link. Manual academic verification required.</p>
       <a class="btn secondary" href="${url}${encoded}" target="_blank" rel="noopener noreferrer">
         Search ${name}
       </a>
     </div>
   `).join("");
 }
+
+function wpaOpenAllCoreSources() {
+  const q = wpaGetQuery();
+
+  if (!q) {
+    alert("Please enter a search term first.");
+    return;
+  }
+
+  const encoded = encodeURIComponent(q);
+  const coreSources = wpaSources.filter(source => source[2] === "open").slice(0, 6);
+
+  coreSources.forEach(([name, url], index) => {
+    setTimeout(() => {
+      window.open(url + encoded, "_blank", "noopener,noreferrer");
+    }, index * 450);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.getElementById("wpaSearchQuery");
+  if (input) {
+    input.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        wpaRunSearch();
+      }
+    });
+  }
+});
 </script>
     <section>
       <h2>Official Research Infrastructure</h2>
