@@ -125,6 +125,71 @@
 
   <main>
     <section>
+  <h2>Live Academic Search</h2>
+  <p>
+    Внеси термин и WPA Academic Search Hub ќе отвори безбедни external-search линкови
+    кон академски и регионални бази. Restricted/paywalled извори не се scrape-уваат.
+  </p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
+    <input id="wpaSearchQuery" type="text" placeholder="protocol diplomacy, state protocol, ceremonial diplomacy..."
+      style="flex:1;min-width:260px;padding:14px 16px;border-radius:10px;border:1px solid #c9a24a;background:#fff;color:#07111f;font-size:16px;">
+    <button onclick="wpaRunSearch()"
+      style="padding:14px 20px;border-radius:10px;border:1px solid #c9a24a;background:#c9a24a;color:#07111f;font-weight:bold;cursor:pointer;">
+      Search Sources
+    </button>
+  </div>
+
+  <div id="wpaSearchResults" class="grid"></div>
+</section>
+
+<script>
+const wpaSources = [
+  ["OpenAlex", "https://openalex.org/works?search="],
+  ["Crossref", "https://search.crossref.org/?q="],
+  ["Zenodo", "https://zenodo.org/search?q="],
+  ["DOAJ", "https://doaj.org/search/articles?q="],
+  ["OpenAIRE", "https://explore.openaire.eu/search/find?keyword="],
+  ["Google Scholar", "https://scholar.google.com/scholar?q="],
+  ["COBISS", "https://plus.cobiss.net/cobiss/si/en/bib/search?q="],
+  ["CEEOL", "https://www.ceeol.com/search?q="],
+  ["PhilPapers", "https://philpapers.org/s/"],
+  ["CNKI", "https://kns.cnki.net/kns8s/defaultResult/index?sw="],
+  ["Baidu Scholar", "https://xueshu.baidu.com/s?wd="],
+  ["CyberLeninka", "https://cyberleninka.org/search?q="],
+  ["eLIBRARY.RU", "https://elibrary.ru/search_results.asp?searchword="],
+  ["Shodhganga", "https://shodhganga.inflibnet.ac.in/simple-search?query="],
+  ["AJOL", "https://www.ajol.info/index.php/ajol/search?query="],
+  ["Shamaa", "https://www.shamaa.org/en/search?query="],
+  ["SciELO", "https://search.scielo.org/?q="],
+  ["Redalyc", "https://www.redalyc.org/buscarArticuloFiltros.do?q="],
+  ["Trove", "https://trove.nla.gov.au/search/advanced/category/journals?keyword="],
+  ["Scribd Supplementary", "https://www.scribd.com/search?query="]
+];
+
+function wpaRunSearch() {
+  const q = document.getElementById("wpaSearchQuery").value.trim();
+  const box = document.getElementById("wpaSearchResults");
+
+  if (!q) {
+    box.innerHTML = "<p>Please enter a search term.</p>";
+    return;
+  }
+
+  const encoded = encodeURIComponent(q);
+
+  box.innerHTML = wpaSources.map(([name, url]) => `
+    <div class="card">
+      <h3>${name}</h3>
+      <p>Legal-safe external search link. Manual academic verification required.</p>
+      <a class="btn secondary" href="${url}${encoded}" target="_blank" rel="noopener noreferrer">
+        Search ${name}
+      </a>
+    </div>
+  `).join("");
+}
+</script>
+    <section>
       <h2>Official Research Infrastructure</h2>
       <p>
         WPA Academic Search Hub v3.1 е staging-ready академска инфраструктура за
