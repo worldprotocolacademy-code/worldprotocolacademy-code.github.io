@@ -1,53 +1,32 @@
-# WPA New 10 Languages — Upload INSIDE /languages/
+# WPA Languages Hub Link Fix v1.0
 
-## Важно
+## Што поправа
 
-Овој ZIP е направен специјално за случај кога веќе си внатре во GitHub папката:
+Ако директните URL работат, но клик од `/languages/` дава 404, проблемот е во hub страницата `/languages/index.html`.
+
+Овој пакет дава replacement `index.html` за `/languages/`, со директни линкови:
+
+- `/languages/fr/index.html`
+- `/languages/de/index.html`
+- `/languages/ar/index.html`
+- итн.
+
+## Каде да се качи
+
+Оди во GitHub папката:
 
 `/languages/`
 
-Тогаш НЕ треба да качуваш папка `languages`.
+и качи го само:
 
-Качи ги директно овие items:
+`index.html`
 
-- af
-- ar
-- de
-- fr
-- hi
-- it
-- ru
-- sq
-- sr
-- zh
-- LANGUAGE_HUB_SNIPPET_NEW10.html
-- NEW_10_LANGUAGE_STATUS_v1.json
+како replacement.
 
-## Проблемот што го видовме
+## Не качувај во root
 
-Сега имаш:
+Овој `index.html` НЕ оди во главниот root. Оди само во `/languages/`.
 
-`/languages/languages/fr/index.html`
+## Commit message
 
-а треба:
-
-`/languages/fr/index.html`
-
-## Како да поправиш
-
-1. Оди во GitHub → `/languages/`
-2. Upload files
-3. Од овој ZIP качи ги директно папките `af ar de fr hi it ru sq sr zh`
-4. Commit
-5. Тестирај:
-
-`https://worldprotocolacademy-code.github.io/languages/fr/`
-
-## Опционално чистење
-
-Папката:
-
-`/languages/languages/`
-
-е погрешно вгнездена и може подоцна да се избрише.
-Не мора веднаш, но подобро е да не остане.
+`Fix WPA languages hub links`
