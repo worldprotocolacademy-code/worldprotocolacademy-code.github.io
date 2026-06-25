@@ -1,251 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="mk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WPA Watch | World Protocol Academy</title>
-
 <style>
-body{
-margin:0;
-font-family:Segoe UI,Arial,sans-serif;
-background:#081423;
-color:white;
-}
-
-header{
-background:#0d2238;
-padding:25px;
-text-align:center;
-border-bottom:3px solid gold;
-}
-
-header h1{
-margin:0;
-font-size:34px;
-color:gold;
-}
-
-header p{
-color:#d8d8d8;
-font-size:18px;
-}
-
-nav{
-display:flex;
-justify-content:center;
-flex-wrap:wrap;
-gap:12px;
-margin-top:20px;
-}
-
-nav a{
-background:gold;
-color:#081423;
-padding:12px 22px;
-border-radius:30px;
-font-weight:bold;
-text-decoration:none;
-transition:.25s;
-}
-
-nav a:hover{
-background:white;
-}
-
-.hero{
-max-width:1200px;
-margin:auto;
-padding:50px 30px;
-text-align:center;
-}
-
-.hero h2{
-font-size:34px;
-color:gold;
-}
-
-.hero p{
-font-size:19px;
-line-height:1.8;
-color:#d9d9d9;
-}
-
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:25px;
-margin-top:40px;
-}
-
-.card{
-background:#102945;
-padding:25px;
-border-radius:14px;
-border:1px solid #29527a;
-}
-
-.card h3{
-color:gold;
-margin-top:0;
-}
-
-.card p{
-line-height:1.7;
-}
-
-.button{
-display:inline-block;
-margin-top:15px;
-padding:12px 20px;
-background:gold;
-color:#081423;
-text-decoration:none;
-border-radius:30px;
-font-weight:bold;
-}
-
-.button:hover{
-background:white;
-}
-
-footer{
-margin-top:70px;
-padding:25px;
-text-align:center;
-background:#091522;
-color:#bcbcbc;
-font-size:14px;
-}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#081423;color:white}
+header{background:#0d2238;padding:28px;text-align:center;border-bottom:3px solid #d4af37}
+h1{color:#f3d77a;margin:0}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}
+a.btn,nav a{background:#d4af37;color:#081423;padding:11px 18px;border-radius:999px;font-weight:800;text-decoration:none}
+main{max-width:1100px;margin:auto;padding:38px 20px}
+.card{background:#102945;border:1px solid #29527a;border-radius:14px;padding:22px;margin:16px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+input,select{padding:12px;border-radius:10px;border:1px solid #29527a}
+.item{background:#102945;border:1px solid #29527a;border-radius:14px;padding:18px;margin:12px 0}
+.badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#29527a;color:white;font-size:12px;font-weight:800}
+footer{text-align:center;background:#091522;color:#bcbcbc;padding:24px;margin-top:40px}
 </style>
-
 </head>
-
 <body>
-
 <header>
-
 <h1>📡 WPA Watch</h1>
-
-<p>
-Global monitoring for Protocol, Diplomacy,
-Public Communication, Security &
-Communicology
-</p>
-
+<p>Legal-safe RSS/Atom monitoring for protocol, diplomacy, public communication, security and communicology.</p>
 <nav>
-
 <a href="/">🏛 WPA</a>
-
 <a href="/institute.html">🏢 Institute</a>
-
 <a href="/journal/">📚 Journal</a>
-
 <a href="/journal/watch/">🧭 Journal Watch</a>
-
 <a href="/tools/academic-search-hub/">🔎 Academic Search Hub</a>
-
 </nav>
-
 </header>
-
-<section class="hero">
-
-<h2>Editorial Intelligence & Global Monitoring</h2>
-
-<p>
-
-WPA Watch continuously follows publicly available
-sources related to protocol,
-diplomacy,
-public communication,
-security,
-international relations,
-institutional reputation,
-ceremonial affairs
-and communicology.
-
-</p>
-
-<div class="cards">
-
-<div class="card">
-
-<h3>🧭 Journal Watch</h3>
-
-<p>
-
-Editorial topic candidates for the WPA Journal.
-
-</p>
-
-<a class="button"
-href="/journal/watch/">
-
-Open Journal Watch
-
-</a>
-
+<main>
+<section class="card">
+<h2>Live Feed Console</h2>
+<p id="status">Loading WPA Watch data...</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<input id="q" type="search" placeholder="Search...">
+<select id="domain">
+<option value="all">All domains</option>
+<option value="protocol">Protocol</option>
+<option value="diplomacy">Diplomacy</option>
+<option value="pr">Public Communication / PR</option>
+<option value="security">Security</option>
+<option value="communicology">Communicology</option>
+<option value="academic">Academic</option>
+<option value="general">General</option>
+</select>
 </div>
-
-<div class="card">
-
-<h3>🔎 Academic Search Hub</h3>
-
-<p>
-
-Search OpenAlex,
-Crossref,
-CORE,
-Zenodo,
-DOAJ,
-CyberLeninka,
-SciELO
-and many more.
-
-</p>
-
-<a class="button"
-href="/tools/academic-search-hub/">
-
-Open Search Hub
-
-</a>
-
-</div>
-
-<div class="card">
-
-<h3>🏛 World Protocol Academy</h3>
-
-<p>
-
-Official institutional portal.
-
-</p>
-
-<a class="button"
-href="/">
-
-Open WPA
-
-</a>
-
-</div>
-
-</div>
-
+<div id="feed"></div>
 </section>
-
-<footer>
-
-© 2026 World Protocol Academy
-
-<br><br>
-
-Protocol is absolute.
-
-</footer>
-
+<section class="grid">
+<div class="card"><h3>🧭 Journal Watch</h3><p>Editorial topic candidates.</p><a class="btn" href="/journal/watch/">Open Journal Watch</a></div>
+<div class="card"><h3>🔎 Academic Search Hub</h3><p>Academic verification.</p><a class="btn" href="/tools/academic-search-hub/">Open Search Hub</a></div>
+<div class="card"><h3>🏛 WPA</h3><p>Official portal.</p><a class="btn" href="/">Open WPA</a></div>
+</section>
+</main>
+<footer>© 2026 World Protocol Academy · Protocol is absolute. Data must be verified.</footer>
+<script>
+let allItems=[];
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function matches(i){const q=document.getElementById("q").value.toLowerCase();const d=document.getElementById("domain").value;const text=[i.title,i.summary,i.source].join(" ").toLowerCase();return (d==="all"||i.domain===d)&&(!q||text.includes(q))}
+function render(){const shown=allItems.filter(matches);document.getElementById("feed").innerHTML=shown.length?shown.map(i=>`<article class="item"><span class="badge">${esc(i.domain||"general")}</span><h3>${esc(i.title)}</h3><p>${esc(i.summary||"")}</p><a class="btn" href="${esc(i.link||"#")}" target="_blank" rel="noopener">Open source</a></article>`).join(""):"<div class='item'>No items yet. Run the WPA Watch workflow.</div>"}
+async function load(){try{const r=await fetch("items.json?ts="+Date.now());allItems=r.ok?await r.json():[];document.getElementById("status").textContent="Loaded "+allItems.length+" public-source candidates. Manual verification required.";render()}catch(e){document.getElementById("status").textContent="items.json not found yet. Run Actions → WPA Watch.";render()}}
+document.getElementById("q").addEventListener("input",render);document.getElementById("domain").addEventListener("change",render);load();
+</script>
 </body>
 </html>
