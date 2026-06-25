@@ -15,20 +15,27 @@ concurrency:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 20
 
     defaults:
       run:
         working-directory: tools/wpa-watch
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
         with:
           node-version: "24"
+
+      - name: Verify Node and npm
+        run: |
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
