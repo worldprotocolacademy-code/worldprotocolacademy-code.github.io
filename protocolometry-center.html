@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WPA Protocolometry Center · World Protocol Academy</title>
+<meta name="description" content="WPA Protocolometry Center — Methodological Center for Measurement, Analysis and Comparative Research in Protocol, Diplomacy, Communicology and Security Studies.">
+<style>
+:root{
+  --navy:#081423;
+  --navy2:#0d2238;
+  --card:#102945;
+  --card2:#0d2036;
+  --gold:#d4af37;
+  --gold2:#f3d77a;
+  --line:#29527a;
+  --muted:#dce4ee;
+  --soft:#aebed1;
+  --ok:#9fe6b8;
+  --warn:#f5d78a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top right,rgba(212,175,55,.16),transparent 34%),
+    radial-gradient(circle at 10% 20%,rgba(56,111,161,.20),transparent 28%),
+    var(--navy);
+  color:#fff;
+}
+a{color:var(--gold2)}
+header{
+  padding:34px 20px 42px;
+  text-align:center;
+  background:linear-gradient(135deg,#071326,#0d2238,#102945);
+  border-bottom:3px solid var(--gold);
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border:1px solid rgba(212,175,55,.5);
+  border-radius:999px;
+  color:var(--gold2);
+  background:rgba(212,175,55,.08);
+  font-weight:800;
+  margin-bottom:18px;
+}
+h1{
+  margin:0;
+  color:var(--gold2);
+  font-size:clamp(34px,5.2vw,58px);
+  letter-spacing:.2px;
+}
+.subtitle{
+  max-width:1000px;
+  margin:16px auto 0;
+  color:#e8eef6;
+  font-size:18px;
+  line-height:1.68;
+}
+nav{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:26px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  background:var(--gold);
+  color:#081423;
+  padding:12px 18px;
+  border-radius:999px;
+  font-weight:850;
+  text-decoration:none;
+  border:1px solid var(--gold);
+  min-height:44px;
+}
+.btn.secondary{
+  background:transparent;
+  color:var(--gold2);
+  border-color:rgba(212,175,55,.55);
+}
+.btn.dark{
+  background:#0b1f35;
+  color:#fff;
+  border-color:var(--line);
+}
+main{max-width:1200px;margin:auto;padding:38px 20px 76px}
+.section-title{
+  color:var(--gold2);
+  margin:0 0 14px;
+  font-size:clamp(25px,3vw,36px);
+}
+.lead{
+  color:#e7edf5;
+  line-height:1.78;
+  font-size:18px;
+  max-width:980px;
+}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+.card,.panel,.note,.livebox{
+  background:rgba(16,41,69,.94);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:24px;
+  box-shadow:0 12px 36px rgba(0,0,0,.18);
+}
+.card h3,.panel h3,.livebox h3{
+  color:var(--gold2);
+  margin:0 0 10px;
+  font-size:22px;
+}
+.card p,.panel p,.livebox p,li{
+  color:var(--muted);
+  line-height:1.66;
+}
+.kicker{
+  color:var(--gold2);
+  font-weight:850;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+  font-size:13px;
+}
+.hero-formula{
+  margin:30px auto 0;
+  max-width:1050px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:12px;
+}
+.formula-item{
+  background:rgba(8,20,35,.70);
+  border:1px solid rgba(212,175,55,.35);
+  border-radius:16px;
+  padding:18px;
+}
+.formula-item strong{display:block;color:var(--gold2);font-size:20px;margin-bottom:8px}
+.formula-item span{color:#e8eef6;line-height:1.55}
+section{margin-top:44px}
+.pillars .card{position:relative;overflow:hidden}
+.pillars .card:before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:var(--gold);
+}
+.sublist{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.tag{
+  display:inline-flex;
+  border:1px solid rgba(212,175,55,.45);
+  color:#fff;
+  background:#0d2238;
+  border-radius:999px;
+  padding:8px 11px;
+  font-weight:700;
+  font-size:14px;
+}
+.flow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+}
+.step{
+  background:#0d2238;
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:10px 14px;
+  color:#fff;
+  font-weight:800;
+}
+.note{
+  border-left:5px solid var(--gold);
+  background:rgba(212,175,55,.10);
+}
+.note strong{color:var(--gold2)}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:12px;
+  margin-top:18px;
+}
+.metric{
+  background:#0b1f35;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px;
+  text-align:center;
+}
+.metric .num{font-size:32px;color:var(--gold2);font-weight:900}
+.metric .label{color:var(--soft);margin-top:4px}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
+  overflow:hidden;
+  border-radius:12px;
+}
+th,td{
+  border:1px solid var(--line);
+  padding:12px;
+  text-align:left;
+  vertical-align:top;
+}
+th{background:#0d2238;color:var(--gold2)}
+td{color:#dce4ee;background:rgba(9,21,34,.38)}
+.small{font-size:14px;color:var(--soft)}
+.footer-links{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+  margin-top:16px;
+}
+footer{
+  text-align:center;
+  background:#091522;
+  color:#bcbcbc;
+  padding:28px 18px;
+  border-top:1px solid rgba(212,175,55,.35);
+}
+.status-ok{color:var(--ok);font-weight:850}
+.status-warn{color:var(--warn);font-weight:850}
+@media (max-width:640px){
+  nav{justify-content:flex-start}
+  .btn{width:100%}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="badge">📐 WPA Protocolometry Center · 2026</div>
+  <h1>WPA Protocolometry Center</h1>
+  <p class="subtitle">
+    Методолошки центар за мерење, анализа и споредбено истражување во протоколот,
+    дипломатијата, комуникологијата и безбедносните студии.
+    <br>
+    <em>Methodological Center for Measurement, Analysis and Comparative Research in Protocol, Diplomacy, Communicology and Security Studies.</em>
+  </p>
+
+  <nav aria-label="Main navigation">
+    <a class="btn" href="/">🏛 WPA</a>
+    <a class="btn" href="/institute.html">🏢 Institute</a>
+    <a class="btn" href="/tools/wpa-watch/">📡 WPA Watch</a>
+    <a class="btn" href="/tools/academic-search-hub/">🔎 Academic Search Hub</a>
+    <a class="btn" href="/journal/watch/">🧭 Journal Watch</a>
+    <a class="btn" href="/journal/">📚 WPA Journal</a>
+    <a class="btn secondary" href="/tools/virtual-sande/bot-connector-manifest.json">🤖 Bot Manifest</a>
+  </nav>
+
+  <div class="hero-formula">
+    <div class="formula-item"><strong>01 · Апсолутно</strong><span>Протоколот е апсолутен. Protocol is absolute.</span></div>
+    <div class="formula-item"><strong>02 · Мерливо</strong><span>Тоа што е апсолутно — може да се мери. What is absolute can be measured.</span></div>
+    <div class="formula-item"><strong>03 · Јавно</strong><span>Тоа што се мери — мора да се покаже. What is measured must be shown.</span></div>
+    <div class="formula-item"><strong>04 · Исправливо</strong><span>Тоа што се покажува — отворено е за исправка. What is shown remains open to correction.</span></div>
+  </div>
+</header>
+
+<main>
+  <section id="definition">
+    <div class="kicker">Official WPA working concept</div>
+    <h2 class="section-title">Што е Протоколометрија?</h2>
+    <p class="lead">
+      <strong>Протоколометријата</strong> е WPA методолошка рамка за мерење, анализа,
+      споредување и унапредување на протоколот, дипломатијата, комуникологијата
+      и безбедносните студии преку транспарентни, проверливи и етички управувани рамки.
+    </p>
+    <p class="lead">
+      <em>Protocolometry is the WPA methodological framework for measuring, analysing,
+      comparing and improving Protocol, Diplomacy, Communicology and Security Studies
+      through transparent, evidence-based and ethically governed frameworks.</em>
+    </p>
+
+    <div class="note">
+      <strong>Важно:</strong> Протоколометријата не ги заменува дисциплините. Таа ги поврзува,
+      ги прави мерливи и создава заедничка методологија за споредбена анализа,
+      јавна проверка, корекција и човечка ревизија.
+    </div>
+  </section>
+
+  <section id="pillars" class="pillars">
+    <div class="kicker">Academic ecosystem</div>
+    <h2 class="section-title">Четири главни столба</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>🏛 Протокол · Protocol</h3>
+        <p>Државен, дипломатски, институционален, церемонијален и меѓународен протокол; пресеанс, симболи, протоколарна изведба и официјален ред.</p>
+      </div>
+      <div class="card">
+        <h3>🤝 Дипломатија · Diplomacy</h3>
+        <p>Меѓународни односи, дипломатска практика, јавна дипломатија, одбранбена дипломатија, билатерални и мултилатерални формати.</p>
+      </div>
+      <div class="card">
+        <h3>💬 Комуникологија · Communicology</h3>
+        <p>Комуникологијата е главниот научен покрив за јавната комуникација, односите со јавност и институционалната репутација.</p>
+        <div class="sublist">
+          <span class="tag">Односи со јавност</span>
+          <span class="tag">Јавна комуникација</span>
+          <span class="tag">Кризна комуникација</span>
+          <span class="tag">Институционална комуникација</span>
+          <span class="tag">Стратегиска комуникација</span>
+          <span class="tag">Медиумска комуникација</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🛡 Безбедносни студии · Security Studies</h3>
+        <p>Безбедносна култура, јавни настани, кризни процедури, институционален ризик, event security и заштита на достоинството на официјалниот настан.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="instruments">
+    <div class="kicker">The WPA Instruments</div>
+    <h2 class="section-title">Инструменти на Протоколометријата</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Инструмент I · PSPI / ИПММ</h3>
+        <p><strong>Protocol State Performance Index</strong> мери протоколарна изведба на конкретни настани: државни посети, церемонии, пречек, визуелна дипломатска режија, пресеанс и протоколарна коректност.</p>
+      </div>
+      <div class="card">
+        <h3>Инструмент II · WPA Institute Index</h3>
+        <p>Мери институции преку четири димензии: истражување и публикации, програми и сертификација, професионална практика, транспарентност и соработка.</p>
+      </div>
+      <div class="card">
+        <h3>Инструмент III · Protocolometry Watch</h3>
+        <p>Јавен monitoring на RSS/Atom сигнали преку WPA Watch, без scraping, без paywall bypass и без тајни извори. Сите записи се candidates за проверка.</p>
+      </div>
+      <div class="card">
+        <h3>Инструмент IV · Journal Pipeline</h3>
+        <p>Journal Watch ги претвора јавните сигнали во topic candidates, research angles и editorial queue. Ниту еден кандидат не е автоматска научна публикација.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline">
+    <div class="kicker">Connected ecosystem</div>
+    <h2 class="section-title">Систем на врзани садови</h2>
+    <p class="lead">
+      Protocolometry Center е методолошкиот центар што ги поврзува јавните извори,
+      академското пребарување, уредничката подготовка и Virtual Sande.
+    </p>
+    <div class="flow">
+      <span class="step">Public Sources</span>
+      <span class="step">→ WPA Watch</span>
+      <span class="step">→ Protocolometry Center</span>
+      <span class="step">→ Academic Search Hub</span>
+      <span class="step">→ Traceability</span>
+      <span class="step">→ Journal Watch</span>
+      <span class="step">→ WPA Journal</span>
+      <span class="step">→ Virtual Sande</span>
+    </div>
+  </section>
+
+  <section id="live">
+    <div class="kicker">Live connector</div>
+    <h2 class="section-title">Live Protocolometry Digest</h2>
+    <div class="livebox">
+      <h3>🤖 Virtual Sande v35 Protocolometry Connector</h3>
+      <p>
+        Овој дел чита јавен live digest од Cloudflare Worker endpoint-от на Virtual Sande.
+        Ако бројките не се појават веднаш, системот сепак може да се отвори преку копчињата подолу.
+      </p>
+
+      <div class="metrics">
+        <div class="metric"><div class="num" id="watchCount">—</div><div class="label">WPA Watch items</div></div>
+        <div class="metric"><div class="num" id="topicCount">—</div><div class="label">Journal topics</div></div>
+        <div class="metric"><div class="num" id="queueCount">—</div><div class="label">Editorial queue</div></div>
+        <div class="metric"><div class="num" id="sourceCount">—</div><div class="label">Live sources</div></div>
+      </div>
+
+      <p id="liveStatus" class="small">Loading live digest…</p>
+
+      <div class="footer-links">
+        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry">Open /protocolometry</a>
+        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry/live">Open /protocolometry/live</a>
+        <a class="btn secondary" href="/tools/virtual-sande/bot-connector-manifest.json">Open Bot Manifest</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="governance">
+    <div class="kicker">Governance and boundaries</div>
+    <h2 class="section-title">Етички и методолошки граници</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>✅ Што прави центарот</h3>
+        <ul>
+          <li>користи јавни и проверливи извори;</li>
+          <li>создава структуриран аналитички процес;</li>
+          <li>овозможува академска проверка и право на исправка;</li>
+          <li>поврзува WPA Watch, Academic Search Hub, Journal Watch и Virtual Sande;</li>
+          <li>ја задржува човечката ревизија како финална одговорност.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>⛔ Што не прави центарот</h3>
+        <ul>
+          <li>не е државна разузнавачка служба;</li>
+          <li>не врши надзор врз приватни лица;</li>
+          <li>не користи тајни извори, cyber intrusion или приватни бази;</li>
+          <li>не создава автоматски journal статии;</li>
+          <li>не измислува DOI, ISSN, ISBN, рангови, партнерства или акредитации.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Protocolometry public-brand rule:</strong> Поранешни формулации како
+      “Intelligence Center” се третираат како legacy wording. Јавниот, долгорочен и
+      академски прецизен термин е <strong>Protocolometry Center</strong>.
+    </div>
+  </section>
+
+  <section id="taxonomy">
+    <div class="kicker">Academic taxonomy</div>
+    <h2 class="section-title">Односи со јавност во рамки на комуникологијата</h2>
+    <p class="lead">
+      Во WPA академската архитектура, <strong>Комуникологијата</strong> е главниот научен
+      столб. <strong>Односите со јавност</strong>, јавната комуникација, кризното комуницирање,
+      институционалната комуникација, стратегиската комуникација и медиумската комуникација
+      се третираат како специјализирани полиња во рамки на тој столб.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Главен столб</th>
+          <th>Подполиња</th>
+          <th>Protocolometry application</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Комуникологија</td>
+          <td>Односи со јавност, јавна комуникација, кризна комуникација, институционална комуникација, стратегиска комуникација, медиумска комуникација</td>
+          <td>Мерење на јасност, репутациски ризици, јавна видливост, институционална нарација и комуникациски пропусти.</td>
+        </tr>
+        <tr>
+          <td>Протокол</td>
+          <td>Пресеанс, церемонијал, државни посети, симболи, официјален ред</td>
+          <td>Мерење на протоколарна изведба спрема јасен стандард и проверлив доказ.</td>
+        </tr>
+        <tr>
+          <td>Дипломатија</td>
+          <td>Јавна дипломатија, билатерални односи, мултилатерални формати, одбранбена дипломатија</td>
+          <td>Анализа на институционални сигнали, дипломатски формати и јавна дипломатска комуникација.</td>
+        </tr>
+        <tr>
+          <td>Безбедносни студии</td>
+          <td>Event security, кризни процедури, јавни настани, безбедносна култура</td>
+          <td>Мерење на јавни индикатори за ризик, организациска подготвеност и кризна комуникација.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="links">
+    <div class="kicker">Open WPA systems</div>
+    <h2 class="section-title">Поврзани системи</h2>
+    <div class="grid">
+      <div class="card"><h3>📡 WPA Watch</h3><p>Public RSS/Atom candidate monitoring.</p><a class="btn secondary" href="/tools/wpa-watch/">Open WPA Watch</a></div>
+      <div class="card"><h3>🔎 Academic Search Hub</h3><p>Academic discovery and source verification.</p><a class="btn secondary" href="/tools/academic-search-hub/">Open Academic Search Hub</a></div>
+      <div class="card"><h3>🧭 Journal Watch</h3><p>Editorial topic candidates and research angles.</p><a class="btn secondary" href="/journal/watch/">Open Journal Watch</a></div>
+      <div class="card"><h3>📚 WPA Journal</h3><p>Journal process, calls, policies and future issues.</p><a class="btn secondary" href="/journal/">Open WPA Journal</a></div>
+      <div class="card"><h3>🏢 Institute</h3><p>Institutional identity and academic domains.</p><a class="btn secondary" href="/institute.html">Open Institute</a></div>
+      <div class="card"><h3>🤖 Virtual Sande</h3><p>Protocolometry-aware AI assistant connector manifest.</p><a class="btn secondary" href="/tools/virtual-sande/bot-connector-manifest.json">Open Manifest</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong>World Protocol Academy</strong><br>
+  Institute for Protocol, Diplomacy, Public Communication & Security Studies<br>
+  <span class="small">Development, testing and pilot phase — 2026 · Public-source only · Human review required</span>
+  <div class="footer-links">
+    <a class="btn dark" href="/public-disclaimer.html">Public Disclaimer</a>
+    <a class="btn dark" href="/correction-request.html">Correction Request</a>
+    <a class="btn dark" href="/rights-takedown.html">Rights & Takedown</a>
+  </div>
+  <p class="small">„Преговарањето е опционално. Протоколот е апсолутен.“ · “Negotiation is optional. Protocol is absolute.”</p>
+</footer>
+
+<script>
+(function(){
+  const endpoint = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry/live";
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+  fetch(endpoint, {headers: {"Accept":"application/json"}})
+    .then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+    .then(data => {
+      const live = data && data.live ? data.live : {};
+      const status = live.wpa_watch_status || {};
+      setText("watchCount", live.wpa_watch_count ?? "—");
+      setText("topicCount", live.journal_topic_count ?? "—");
+      setText("queueCount", live.editorial_queue_count ?? "—");
+      setText("sourceCount", status.sources_live ?? "—");
+      const st = document.getElementById("liveStatus");
+      if (st) {
+        st.innerHTML = '<span class="status-ok">Live connector active.</span> Generated: ' + (data.generated_at || "unknown") + '. Sources live: ' + (status.sources_live ?? "—") + ' / ' + (status.sources_total ?? "—") + '.';
+      }
+    })
+    .catch(err => {
+      const st = document.getElementById("liveStatus");
+      if (st) st.innerHTML = '<span class="status-warn">Live preview unavailable.</span> Open the Worker endpoint directly if needed.';
+    });
+})();
+</script>
+</body>
+</html>
