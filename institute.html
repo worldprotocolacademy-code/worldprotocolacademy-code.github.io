@@ -940,70 +940,54 @@ body > *{position:relative;z-index:1}
 
 
 /* ============================================================
-   WPA PROTOCOLOMETRY CTA PATCH v1.0
-   Adds public Protocolometry Center visibility.
+   WPA INSTITUTE PROTOCOLOMETRY SAFE PATCH v1.2
+   SAFE MODE: no structural deletion. Original page content preserved.
+   Old public Intelligence/Live buttons are hidden only in topbar/nav/hero.
    ============================================================ */
-.wpa-protocolometry-cta-card{
-  margin:22px auto;
-  max-width:1180px;
-  padding:22px 24px;
-  border:1px solid rgba(201,168,76,.48);
-  border-left:5px solid #c9a84c;
-  border-radius:10px;
-  background:linear-gradient(135deg,rgba(13,31,60,.96),rgba(22,41,71,.94));
-  color:#f8f4ee;
-  box-shadow:0 12px 42px rgba(13,31,60,.18);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-}
-.wpa-protocolometry-cta-card strong{
-  display:block;
-  color:#e8d49a;
-  font-family:Georgia,'Times New Roman',serif;
-  font-size:24px;
-  line-height:1.2;
-  margin-bottom:8px;
-}
-.wpa-protocolometry-cta-card p{
-  margin:0 0 14px;
-  color:rgba(248,244,238,.82);
-  line-height:1.65;
-  font-size:14.5px;
-}
-.wpa-protocolometry-cta-card a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  padding:11px 17px;
-  border-radius:999px;
-  background:#c9a84c;
+.wpa-protocolometry-main-btn,
+a.wpa-protocolometry-main-btn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:9px !important;
+  padding:13px 22px !important;
+  border-radius:999px !important;
+  border:1px solid rgba(232,212,154,.95) !important;
+  background:linear-gradient(135deg,#c9a84c,#e8d49a) !important;
   color:#071326 !important;
-  font-weight:900;
-  text-decoration:none;
-  border:1px solid #e8d49a;
-  box-shadow:0 6px 20px rgba(0,0,0,.18);
+  font-weight:950 !important;
+  letter-spacing:.045em !important;
+  text-decoration:none !important;
+  text-transform:uppercase !important;
+  box-shadow:0 10px 28px rgba(13,31,60,.24), inset 0 1px 0 rgba(255,255,255,.35) !important;
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease !important;
 }
-.wpa-protocolometry-floating-cta{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:99999;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:12px 16px;
-  border-radius:999px;
-  background:#c9a84c;
-  color:#071326 !important;
-  font:900 13px system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-  text-decoration:none;
-  border:1px solid #e8d49a;
-  box-shadow:0 12px 34px rgba(0,0,0,.28);
+.wpa-protocolometry-main-btn:hover,
+a.wpa-protocolometry-main-btn:hover{
+  transform:translateY(-2px) !important;
+  filter:saturate(1.08) !important;
+  box-shadow:0 14px 38px rgba(13,31,60,.30), 0 0 0 3px rgba(201,168,76,.22) !important;
+}
+.wpa-protocolometry-main-btn .wpa-protocolometry-icon{
+  font-size:1.12em !important;
+  line-height:1 !important;
+}
+/* Hide old public legacy buttons visually without deleting their code */
+.topbar-quicklinks a[href="intelligence-center.html"],
+.topbar-quicklinks a[href="wpa-live-intelligence-feed.html"],
+.nav-links a[href="intelligence-center.html"],
+.nav-links a[href="wpa-live-intelligence-feed.html"],
+.hero-cta a[href="intelligence-center.html"],
+.hero-cta a[href="wpa-live-intelligence-feed.html"]{
+  display:none !important;
 }
 @media(max-width:640px){
-  .wpa-protocolometry-cta-card{margin:16px 12px;padding:18px 16px}
-  .wpa-protocolometry-cta-card strong{font-size:20px}
-  .wpa-protocolometry-floating-cta{right:12px;bottom:12px;padding:10px 13px;font-size:12px}
+  .wpa-protocolometry-main-btn,
+  a.wpa-protocolometry-main-btn{
+    width:100% !important;
+    padding:12px 16px !important;
+    font-size:12px !important;
+  }
 }
 
 </style>
@@ -1021,8 +1005,8 @@ body > *{position:relative;z-index:1}
 <div class="topbar">
 <span data-i18n="institute.topbar.text">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии · Institute for Protocol, Diplomacy, Public Communication and Security Studies</span> · <a data-i18n="a_main.1" href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
 <span class="topbar-quicklinks">
-<a class="topbar-icon-btn" href="/protocolometry-center.html" title="WPA Protocolometry Center" aria-label="WPA Protocolometry Center"><span aria-hidden="true">📐</span><span>Protocolometry Center</span></a>
-<a class="topbar-icon-btn" href="/protocolometry-center.html#live" title="WPA Protocolometry Live Digest" aria-label="WPA Protocolometry Live Digest"><span aria-hidden="true">📡</span><span>Protocolometry Live</span></a>
+<a class="topbar-icon-btn" href="intelligence-center.html" title="WPA Intelligence Center" aria-label="WPA Intelligence Center"><span aria-hidden="true">🛡️</span><span>Intelligence Center</span></a>
+<a class="topbar-icon-btn" href="wpa-live-intelligence-feed.html" title="WPA Live Feed" aria-label="WPA Live Feed"><span aria-hidden="true">📡</span><span>Live Feed</span></a>
 </span>
 <span style="display:inline-block;margin-left:14px;vertical-align:middle;">
 <label for="instLangSelect" style="font-size:11px;letter-spacing:.08em;color:var(--gold-soft);margin-right:6px;text-transform:uppercase;">🌐</label>
@@ -1061,7 +1045,6 @@ body > *{position:relative;z-index:1}
 <a href="wpa-services.html">Services</a>
 <a href="wpa-briefings.html">Briefings</a>
 <a data-i18n="institute.nav.identity" href="#identity">Институт</a>
-<a href="/protocolometry-center.html">📐 Protocolometry Center</a>
 <a data-i18n="institute.nav.charter" href="#charter">Charter</a>
 <a data-i18n="institute.nav.research" href="#research-pillars">Истражување</a>
 <a data-i18n="institute.nav.analytics" href="#analytics-centre">Аналитика</a>
@@ -1070,8 +1053,8 @@ body > *{position:relative;z-index:1}
 <a data-i18n="institute.nav.practitioners" href="#practitioner-lectures">Практичари</a>
 <a data-i18n="institute.nav.aab" href="#aab">AAB</a>
 <a data-i18n="institute.nav.tools_hub" href="#wpa-public-tools-hub">Центар за алатки</a>
-<a href="/protocolometry-center.html">📐 Protocolometry Center</a>
-<a href="/protocolometry-center.html#live">📡 Protocolometry Live</a>
+<a href="intelligence-center.html">🛡️ Intelligence Center</a>
+<a href="wpa-live-intelligence-feed.html">📡 Live Feed</a>
 <a data-i18n="institute.nav.trust" href="#trust-corrections">Доверба</a>
 <a data-i18n="institute.nav.index_tools" href="#index-tools">Индексни алатки</a>
 <a data-i18n="institute.nav.student_desk" href="/student-desk/">Student Desk</a>
@@ -1105,23 +1088,15 @@ body > *{position:relative;z-index:1}
 <a class="btn btn-primary" data-i18n="institute.hero.cta_tools_hub" href="#wpa-public-tools-hub">Центар за алатки на WPA →</a>
 <a class="btn btn-primary" href="https://worldprotocolacademy-code.github.io/languages/" translate="no" data-no-i18n="true">🌐 WPA Languages</a>
 <a class="btn btn-ghost" href="https://worldprotocolacademy-code.github.io/">🏠 Главна WPA</a>
+<a class="btn btn-primary wpa-protocolometry-main-btn" href="/protocolometry-center.html"><span class="wpa-protocolometry-icon">📐</span>Protocolometry Center</a>
 
 <a class="btn btn-primary" href="wpa-services.html">Institutional Services →</a>
 <a class="btn btn-ghost" href="wpa-briefings.html">Premium Briefings</a>
 
-<a class="btn btn-ghost" href="/protocolometry-center.html">📐 Protocolometry Center</a>
-<a class="btn btn-ghost" href="/protocolometry-center.html#live">📡 Protocolometry Live</a></div>
+<a class="btn btn-ghost" href="intelligence-center.html">🛡️ Intelligence Center</a>
+<a class="btn btn-ghost" href="wpa-live-intelligence-feed.html">📡 Live Feed</a></div>
 </div>
 </header>
-
-
-
-<!-- WPA Protocolometry Center CTA patch v1.0 -->
-<section class="wpa-protocolometry-cta-card" aria-label="WPA Protocolometry Center">
-  <strong>📐 WPA Protocolometry Center</strong>
-  <p>Методолошки центар за мерење, анализа и споредбено истражување во протоколот, дипломатијата, комуникологијата и безбедносните студии.</p>
-  <a href="/protocolometry-center.html">Отвори Protocolometry Center →</a>
-</section>
 
 <!-- JUMP MENU (spec E) -->
 <nav style="background:rgba(13,31,60,0.6);border-bottom:1px solid rgba(201,168,76,0.15);padding:0 0">
@@ -1134,7 +1109,7 @@ body > *{position:relative;z-index:1}
       <a class="jump-link" href="#analytics-centre">Аналитика</a>
       <a class="jump-link" href="#wpa-public-tools-hub">Ресурси</a>
       <a class="jump-link" href="intelligence-center.html">Intelligence</a>
-      <a class="jump-link" href="wpa-live-intelligence-feed.html">Protocolometry Live</a>
+      <a class="jump-link" href="wpa-live-intelligence-feed.html">Live Feed</a>
       <a class="jump-link" href="#institute-publications">Публикации</a>
       <a class="jump-link" href="#opc-banner">OPC 2026</a>
       <a class="jump-link" href="wpa-services.html">Services</a>
@@ -1399,10 +1374,10 @@ body > *{position:relative;z-index:1}
 
 <div class="domain-card">
 <div class="domain-tag" data-i18n="institute.tools_hub.tag.intel">Intelligence</div>
-<h3 data-i18n="institute.tools_hub.intel.title">WPA Protocolometry Center</h3>
+<h3 data-i18n="institute.tools_hub.intel.title">WPA Intelligence Center</h3>
 <p data-i18n="institute.tools_hub.intel.text">Јавен аналитички центар за институционални сигнали, протоколарни настани, дипломатска комуникација, јавни извори и методолошка проверка.</p>
 <p style="margin-top: 18px;">
-<a class="btn btn-primary" data-i18n="institute.tools_hub.intel.cta" href="intelligence-center.html">Open Protocolometry Center →</a>
+<a class="btn btn-primary" data-i18n="institute.tools_hub.intel.cta" href="intelligence-center.html">Open Intelligence Center →</a>
 </p>
 </div>
 </div>
@@ -2045,7 +2020,7 @@ body > *{position:relative;z-index:1}
   <section id="wpa-intelligence-systems" class="section">
     <div class="container">
       <div class="section-label">WPA Intelligence &amp; Editorial Systems</div>
-      <h2 class="section-title">Academic Search, Protocolometry Live and Journal Watch</h2>
+      <h2 class="section-title">Academic Search, Live Intelligence and Journal Watch</h2>
       <p class="section-lead">
         Институтот ги поврзува академското пребарување, јавниот RSS/Atom monitoring и
         уредничката интелигенција за идни теми, брифови и научни прилози.
@@ -2116,7 +2091,7 @@ body > *{position:relative;z-index:1}
 <a data-i18n="institute.footer.link_disclaimer" href="public-disclaimer.html">Public Disclaimer</a>
 <a data-i18n="institute.footer.link_correction" href="correction-request.html">Correction Request</a>
 <a data-i18n="institute.footer.link_opc" href="#opc-banner">OPC 2026</a>
-<a data-i18n="institute.footer.link_intel" href="intelligence-center.html">WPA Protocolometry Center</a>
+<a data-i18n="institute.footer.link_intel" href="intelligence-center.html">WPA Intelligence Center</a>
 </div>
 <div class="footer-col">
 <h4 data-i18n="institute.footer.contact_label">Контакт</h4>
