@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WPA National Days Dataset Schema",
+  "type": "object",
+  "required": [
+    "dataset_id",
+    "version",
+    "entries"
+  ],
+  "properties": {
+    "dataset_id": {
+      "const": "wpa-national-days-197"
+    },
+    "version": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string"
+    },
+    "canonical_languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "entity_id",
+          "mk_name",
+          "en_name",
+          "national_day_date_display_mk",
+          "national_day_date_iso",
+          "national_day_name_mk",
+          "commemorates_mk",
+          "verification_status"
+        ],
+        "properties": {
+          "entity_id": {
+            "type": "string"
+          },
+          "mk_name": {
+            "type": "string"
+          },
+          "en_name": {
+            "type": "string"
+          },
+          "official_name_mk": {
+            "type": "string"
+          },
+          "official_name_en": {
+            "type": "string"
+          },
+          "continent": {
+            "type": "string"
+          },
+          "capital": {
+            "type": "string"
+          },
+          "national_day_date_display_mk": {
+            "type": "string"
+          },
+          "national_day_date_iso": {
+            "type": "string",
+            "description": "MM-DD for fixed dates, YYYY-MM-DD for year-specific variable holidays, or 'requires_verification'"
+          },
+          "national_day_name_mk": {
+            "type": "string"
+          },
+          "national_day_name_en": {
+            "type": "string"
+          },
+          "commemorates_mk": {
+            "type": "string"
+          },
+          "commemorates_en": {
+            "type": "string"
+          },
+          "holiday_type": {
+            "type": "string"
+          },
+          "fixed_or_variable": {
+            "type": "string"
+          },
+          "protocol_note_mk": {
+            "type": "string"
+          },
+          "anthem_protocol_note_mk": {
+            "type": "string"
+          },
+          "flag_protocol_note_mk": {
+            "type": "string"
+          },
+          "sensitive_status_note_required": {
+            "type": "boolean"
+          },
+          "verification_status": {
+            "enum": [
+              "verified",
+              "pending_verification",
+              "needs_update"
+            ]
+          },
+          "last_verified": {
+            "type": "string"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "module_id": "wpa-national-days-knowledge-layer",
+  "parent_module_id": "wpa-symbols-protocol-lab",
+  "version": "1.1",
+  "generated_at": "2026-06-25T22:31:24.113944+00:00",
+  "status": "ready-for-main-bot-integration",
+  "name": "WPA National Days Knowledge Layer",
+  "description": "Specialized national days layer for all countries and protocol entities in the WPA Symbols & Protocol Lab.",
+  "coverage_goal": {
+    "target": "all countries and protocol entities in the WPA Symbols & Protocol Lab",
+    "expected_count": "197 entries in the public module context",
+    "coverage_note": "National day data must be treated as a dedicated verified dataset, not as free-form generated knowledge."
+  },
+  "primary_language": "mk",
+  "language_rules": {
+    "use_clean_macedonian_cyrillic": true,
+    "avoid_latin_transliteration": true,
+    "english_secondary_reference_allowed": true,
+    "date_format_mk": "DD Month, e.g. 8 Септември",
+    "date_format_iso": "MM-DD when year-independent; YYYY-MM-DD when current-year specific"
+  },
+  "data_fields_required_per_entity": [
+    "entity_id",
+    "mk_name",
+    "en_name",
+    "official_name_mk",
+    "official_name_en",
+    "continent",
+    "capital",
+    "national_day_date_display_mk",
+    "national_day_date_iso",
+    "national_day_name_mk",
+    "national_day_name_en",
+    "commemorates_mk",
+    "commemorates_en",
+    "holiday_type",
+    "fixed_or_variable",
+    "protocol_note_mk",
+    "anthem_protocol_note_mk",
+    "flag_protocol_note_mk",
+    "sensitive_status_note_required",
+    "verification_status",
+    "last_verified",
+    "sources"
+  ],
+  "holiday_type_values": [
+    "independence_day",
+    "constitution_day",
+    "republic_day",
+    "statehood_day",
+    "national_foundation_day",
+    "liberation_day",
+    "monarch_official_birthday",
+    "unification_day",
+    "religious_or_cultural_state_day",
+    "other_official_national_day",
+    "requires_verification"
+  ],
+  "fixed_or_variable_values": [
+    "fixed_date",
+    "variable_date",
+    "multiple_official_days",
+    "requires_verification"
+  ],
+  "answer_rule": {
+    "when_user_asks_specific_country": [
+      "Give the national day date",
+      "Give the official name of the day",
+      "Briefly explain what it commemorates",
+      "Add protocol note for ceremony use",
+      "Mention if anthem/flag use is customary",
+      "Add sensitivity disclaimer if relevant",
+      "Mark as pending verification if not verified"
+    ],
+    "when_user_asks_today": [
+      "Use current date",
+      "List countries/entities whose national day is today",
+      "If none in verified dataset, say none found in verified dataset",
+      "Do not invent matches"
+    ],
+    "when_user_asks_upcoming": [
+      "List upcoming national days by date",
+      "Include next 7/30 days depending on query",
+      "Use verified dataset only or mark pending verification"
+    ],
+    "when_user_asks_all": [
+      "Return a clean table grouped by month or continent",
+      "Include date, country/entity, national day name, and verification status"
+    ]
+  },
+  "accuracy_rule": {
+    "do_not_guess_national_days": true,
+    "if_uncertain": "Потребна е проверка од официјален или авторитетен извор.",
+    "variable_holidays": "Variable holidays must be verified for the requested year.",
+    "multiple_national_days": "If a country has multiple official national/state days, list all verified official days and identify the main protocol day when known.",
+    "current_year_check": "For today's and upcoming national days, verify date logic against the current year."
+  },
+  "sensitive_entities_rule": {
+    "mandatory_disclaimer_mk": "Овој модул е образовна и протоколарно-референтна алатка. Не претставува официјален акт на дипломатско признавање или правно утврдување на статус.",
+    "entities_requiring_caution": [
+      "Косово",
+      "Палестина",
+      "Тајван",
+      "Ватикан / Света Столица",
+      "Западна Сахара",
+      "други чувствителни ентитети"
+    ]
+  },
+  "source_priority": [
+    "official government calendar or ministry page",
+    "embassy / foreign ministry official pages",
+    "United Nations protocol references where applicable",
+    "official national statistics or government portal",
+    "WPA verified dataset",
+    "authoritative encyclopedic references only for stable background"
+  ],
+  "bot_behavior": {
+    "default_style": "professional, academic, diplomatic",
+    "quiz_mode_allowed": true,
+    "no_game_style_outside_quiz": true,
+    "mk_primary": true,
+    "table_style_allowed": true
+  }
+}
