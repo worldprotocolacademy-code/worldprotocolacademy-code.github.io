@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0f1f" />
+<title>WPA Audio Media Engine · World Protocol Academy</title>
+<meta name="description" content="WPA Audio Media Engine — a governed command deck for audiobooks, voice production, protocol scenarios, live room floor control, viral media, delivery and monetization workflows." />
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-audio-media-engine/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="WPA Audio Media Engine · World Protocol Academy" />
+<meta property="og:description" content="Governed audio and media production in one command deck: audiobooks, protocol scenarios, live-room floor control, delivery and monetization." />
+<meta property="og:url" content="https://worldprotocolacademy-code.github.io/tools/wpa-audio-media-engine/" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="WPA Audio Media Engine" />
+<meta name="twitter:description" content="Governed audio and media production command deck." />
+<style>
+:root{
+  --navy:#0a0f1f; --navy2:#111936; --navy3:#16234c;
+  --gold:#d4af37; --gold2:#f2d675;
+  --text:#f8f7f2; --muted:#b8b3a7;
+  --line:rgba(212,175,55,.24); --soft:rgba(255,255,255,.055);
+  --ok:#5df2a9; --warn:#ffd166; --danger:#ff6b6b; --blue:#78d7ff;
+  --mono:"SF Mono",ui-monospace,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; color:var(--text);
+  font-family:Inter,"Segoe UI",Arial,sans-serif; min-height:100vh;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(212,175,55,.13), transparent 28%),
+    radial-gradient(circle at 85% 10%, rgba(120,215,255,.13), transparent 30%),
+    linear-gradient(180deg,#060911 0%, var(--navy) 48%, #070910 100%);
+}
+a{color:inherit}
+.skip-link{position:absolute;left:-9999px;top:0;z-index:80;background:var(--gold);color:#111;padding:10px 16px;border-radius:0 0 12px 0;font-weight:800;text-decoration:none}
+.skip-link:focus{left:0}
+:focus-visible{outline:2px solid var(--gold2);outline-offset:2px;border-radius:6px}
+.wpa-shell{max-width:1280px;margin:0 auto;padding:20px}
+
+/* command bar */
+.cmdbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:12px 0 18px;border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:12px;align-items:center}
+.mark{width:46px;height:46px;border-radius:14px;border:1px solid var(--line);display:grid;place-items:center;background:linear-gradient(135deg,rgba(212,175,55,.22),rgba(120,215,255,.06));font-family:Georgia,serif;color:var(--gold2);font-weight:900;box-shadow:0 16px 60px rgba(0,0,0,.25)}
+.brand strong{font-family:Georgia,serif;font-size:17px;color:var(--gold2);letter-spacing:.3px;display:block}
+.brand small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.cmdcluster{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+
+/* signature: FLOOR lamp + EQ */
+.floor-lamp{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:rgba(0,0,0,.22)}
+.floor-dot{width:10px;height:10px;border-radius:50%;background:var(--muted);flex:none}
+.floor-lamp.live{color:var(--ok);border-color:rgba(93,242,169,.4)}
+.floor-lamp.live .floor-dot{background:var(--ok);animation:pulse 1.7s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(93,242,169,.55)}70%{box-shadow:0 0 0 7px rgba(93,242,169,0)}100%{box-shadow:0 0 0 0 rgba(93,242,169,0)}}
+.eq{display:inline-flex;gap:3px;align-items:flex-end;height:18px}
+.eq i{width:3px;height:6px;border-radius:2px;background:linear-gradient(var(--gold2),var(--gold));animation:eq 1.1s ease-in-out infinite}
+.eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}.eq i:nth-child(4){animation-delay:.45s}.eq i:nth-child(5){animation-delay:.6s}
+@keyframes eq{0%,100%{height:6px}50%{height:18px}}
+
+/* chips + buttons */
+.chips{display:flex;gap:5px;border:1px solid var(--line);border-radius:999px;padding:4px;background:rgba(0,0,0,.2)}
+.chip{border:0;border-radius:999px;background:transparent;color:var(--muted);padding:6px 11px;cursor:pointer;font-weight:800;font-size:12px;letter-spacing:.04em}
+.chip.active{background:rgba(212,175,55,.18);color:var(--gold2)}
+button,.btn{border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.055);color:var(--text);padding:9px 13px;cursor:pointer;text-decoration:none;font-weight:700;font-size:13px}
+button:hover,.btn:hover{border-color:var(--gold);background:rgba(212,175,55,.1)}
+.btn-primary{background:linear-gradient(135deg,var(--gold),#a97818);color:#111;border-color:rgba(242,214,117,.55)}
+
+/* hero */
+.hero{padding:34px 0 24px;display:grid;grid-template-columns:1.3fr .7fr;gap:22px;align-items:stretch}
+.card,.panel,.module-card,.hero-card{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.hero-card{padding:32px;position:relative;overflow:hidden}
+.hero-card:before{content:"";position:absolute;inset:-40% -10% auto auto;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.18),transparent 60%)}
+.kicker{color:var(--gold2);font-weight:900;text-transform:uppercase;letter-spacing:.13em;font-size:12px}
+.hero-eq{position:absolute;right:26px;top:26px;height:34px}
+.hero-eq i{height:8px}
+@keyframes eqh{0%,100%{height:8px}50%{height:30px}}
+.hero-eq i{animation:eqh 1.2s ease-in-out infinite}
+h1{font-family:Georgia,serif;font-size:clamp(30px,4.4vw,56px);line-height:1.0;margin:14px 0}
+.hero-card p{color:var(--muted);line-height:1.7;font-size:15.5px;max-width:760px}
+.doctrine{margin-top:16px;padding:13px 16px;border-left:3px solid var(--gold);background:rgba(212,175,55,.08);color:#fff6d7;border-radius:0 14px 14px 0;font-family:Georgia,serif;font-size:17px}
+.hero-side{display:grid;gap:11px}
+.metric{padding:16px;border-radius:18px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
+.metric b{display:block;color:var(--gold2);font-size:24px;font-family:Georgia,serif}
+.metric span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* doctrine strip */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:6px 0 4px}
+.strip .card{padding:16px}
+.strip h4{margin:0 0 6px;color:var(--gold2);font-family:Georgia,serif;font-size:15px}
+.strip p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.55}
+
+/* modules */
+.section-label{color:var(--gold2);font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:12px;margin:22px 2px 10px}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px}
+.module-card{padding:14px;cursor:pointer;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.module-card:hover{border-color:var(--gold)}
+.module-card .mnum{font-family:var(--mono);color:var(--muted);font-size:11px}
+.module-card h3{margin:6px 0 2px;color:var(--gold2);font-family:Georgia,serif;font-size:14px}
+.module-card small{color:var(--muted);font-size:11.5px;line-height:1.4}
+.badge{font-size:10px;padding:3px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.12);color:var(--muted);align-self:flex-start;margin-top:8px}
+.badge.ready{color:var(--ok);border-color:rgba(93,242,169,.35)}
+.badge.prototype{color:var(--warn);border-color:rgba(255,209,102,.35)}
+.badge.guard{color:var(--blue);border-color:rgba(120,215,255,.35)}
+
+/* tabs */
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:18px 0}
+.tab{border-radius:13px;padding:9px 12px;font-size:13px}
+.tab.active{background:rgba(212,175,55,.16);border-color:var(--gold);color:var(--gold2)}
+.section{display:none}
+.section.active{display:block}
+.panel{padding:20px;margin:12px 0}
+.panel h2{font-family:Georgia,serif;margin:0 0 10px;color:var(--gold2)}
+.panel p,.panel li{color:var(--muted);line-height:1.62}
+
+/* forms + outputs */
+input,select,textarea{width:100%;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.23);color:var(--text);border-radius:13px;padding:11px 12px;font:inherit}
+textarea{min-height:90px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label span{display:block;margin-bottom:6px;font-size:12px;color:var(--muted)}
+.output{white-space:pre-wrap;font-family:var(--mono);font-size:12.5px;line-height:1.6;min-height:120px;background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px;margin-top:12px}
+
+/* tables */
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th,.table td{padding:10px;border-bottom:1px solid rgba(255,255,255,.09);text-align:left}
+.table th{color:var(--gold2)}
+
+/* room */
+.room-modes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 14px}
+.room-mode{border:1px solid var(--line);border-radius:16px;padding:13px;cursor:pointer;background:rgba(0,0,0,.18)}
+.room-mode.active{border-color:var(--gold);background:rgba(212,175,55,.12)}
+.room-mode b{color:var(--gold2);font-family:Georgia,serif;font-size:14px;display:block}
+.room-mode .caps{font-family:var(--mono);font-size:11px;color:var(--muted);margin:5px 0}
+.room-mode small{color:var(--muted);font-size:11.5px;line-height:1.45;display:block}
+.room-layout{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.queue{min-height:160px;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:14px}
+.queue h3{color:var(--gold2);font-family:Georgia,serif;font-size:15px;margin:0 0 8px}
+.participant{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.participant:last-child{border-bottom:0}
+.status{font-family:var(--mono);font-size:11px;color:var(--warn)}
+.status.floor{color:var(--ok);font-weight:800}
+
+/* notices + stages */
+.notice{border:1px solid rgba(120,215,255,.25);background:rgba(120,215,255,.07);border-radius:16px;padding:13px;color:#dff6ff;font-size:13px}
+.warning{border-color:rgba(255,209,102,.32);background:rgba(255,209,102,.08);color:#fff3c8}
+.stages{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.stage{padding:7px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:var(--muted);font-size:12px;font-weight:700;font-family:var(--mono)}
+.stage.done{color:var(--ok);border-color:rgba(93,242,169,.4);background:rgba(93,242,169,.08)}
+.stage.current{color:var(--gold2);border-color:var(--gold);background:rgba(212,175,55,.14)}
+
+/* console (always-on instrument panel) */
+.console{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}
+.console .panel{margin:0}
+.console h2{font-size:18px}
+.kv{font-family:var(--mono);font-size:12.5px;color:var(--text);line-height:1.8}
+.kv b{color:var(--gold2)}
+.preview-box{background:rgba(0,0,0,.26);border:1px solid var(--line);border-radius:14px;padding:14px;font-family:var(--mono);font-size:12.5px;color:#dff6ff;line-height:1.6}
+
+/* footer */
+.footer{margin-top:26px;padding:22px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+.footer strong{display:block;color:var(--gold2);font-family:Georgia,serif;font-size:15px;margin-bottom:4px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--navy3);border:1px solid var(--gold);color:var(--text);padding:12px 18px;border-radius:14px;font-size:14px;font-weight:700;box-shadow:0 18px 50px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:90}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,1fr)}.room-modes{grid-template-columns:repeat(2,1fr)}.strip{grid-template-columns:1fr}}
+@media(max-width:920px){.hero,.room-layout,.console,.form-grid{grid-template-columns:1fr}.cmdbar{flex-direction:column;align-items:flex-start}.cmdcluster{justify-content:flex-start}}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{animation:none !important;transition:none !important}.eq i{height:12px}}
+@media print{body{background:#fff;color:#000}.cmdbar,.tabs,.cmdcluster,button,.btn,.skip-link,.toast,.eq,.hero-eq{display:none !important}.section{display:block !important}*{color:#000 !important}.card,.panel,.module-card,.metric,.queue,.output{box-shadow:none;border-color:#bbb}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#dashboard" data-i18n="skip">Кон содржината</a>
+<div class="wpa-shell">
+
+  <header class="cmdbar">
+    <div class="brand">
+      <div class="mark">WPA</div>
+      <div>
+        <strong>World Protocol Academy</strong>
+        <small data-i18n="brand_inst">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</small>
+      </div>
+    </div>
+    <div class="cmdcluster">
+      <div class="floor-lamp" id="floorLamp" title="Floor status">
+        <span class="floor-dot"></span><span id="floorText">FLOOR</span>
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      </div>
+      <div class="chips" id="langChips" role="group" aria-label="Language">
+        <button class="chip" data-lang="mk" type="button">MK</button>
+        <button class="chip" data-lang="en" type="button">EN</button>
+        <button class="chip" data-lang="sq" type="button">SQ</button>
+      </div>
+      <div class="chips" id="modeChips" role="group" aria-label="Register">
+        <button class="chip" data-mode="academic" type="button" data-i18n="mode_academic">Академски</button>
+        <button class="chip" data-mode="formal" type="button" data-i18n="mode_formal">Формален</button>
+        <button class="chip" data-mode="executive" type="button" data-i18n="mode_executive">Извршен</button>
+        <button class="chip" data-mode="viral" type="button" data-i18n="mode_viral">Вирален</button>
+      </div>
+      <button id="saveBtn" type="button" data-i18n="ctl_save">Зачувај</button>
+      <button id="exportBtn" type="button" data-i18n="ctl_export">Извези JSON</button>
+      <button id="resetBtn" type="button" data-i18n="ctl_reset">Ресетирај</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-card">
+      <span class="eq hero-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <div class="kicker" data-i18n="hero_kicker">WPA Audio Media Engine · Командна палуба</div>
+      <h1 data-i18n="hero_h1">Управувана аудио и медиумска продукција — една командна палуба.</h1>
+      <p data-i18n="hero_lead">Аудио книги, Sande гласовен workflow, протоколарни сценарија, governance на живи соби, viral media, испорака и монетизација — со видлива протоколарна дисциплина и јасни Phase 2 граници за biometric/Web3.</p>
+      <div class="doctrine">Преговарањето е опционално. Протоколот е апсолутен.</div>
+    </div>
+    <aside class="hero-side">
+      <div class="metric"><b>10</b><span data-i18n="m_modules">Основни модули</span></div>
+      <div class="metric"><b>MK · EN · SQ</b><span data-i18n="m_lang">Тријазичен интерфејс</span></div>
+      <div class="metric"><b>Phase 1</b><span data-i18n="m_phase1">Статичен GitHub Pages мотор</span></div>
+      <div class="metric"><b>Phase 2</b><span>WebRTC · consent · backend · Web3</span></div>
+    </aside>
+  </section>
+
+  <section class="strip" aria-label="Room doctrine">
+    <div class="card"><h4 data-i18n="rd_admin_t">Контрола на зборот</h4><p data-i18n="rd_admin_d">Администраторот доделува збор на еден учесник во даден момент. Останатите се исклучени додека не се одобри.</p></div>
+    <div class="card"><h4 data-i18n="rd_anti_t">Анти-хаос правило</h4><p data-i18n="rd_anti_d">Без преклопување гласови. Ред со кревање рака, одобрување од домаќин, mute-all и еден активен говорник.</p></div>
+    <div class="card"><h4 data-i18n="rd_phase2_t">Phase 2 насока</h4><p data-i18n="rd_phase2_d">Проучување на структурни обрасци од водечки аудио/видео платформи — само како истражувачка насока, без копирање.</p></div>
+  </section>
+
+  <div class="section-label" data-i18n="lbl_modules">Основни модули</div>
+  <div class="grid" id="moduleGrid"></div>
+
+  <nav class="tabs" id="tabBar" role="tablist" aria-label="WPA Audio Media Engine">
+    <button class="tab active" id="tab-dashboard" role="tab" aria-selected="true" aria-controls="dashboard" data-tab="dashboard" data-i18n="tab_dashboard">Контролна табла</button>
+    <button class="tab" id="tab-studio" role="tab" aria-selected="false" aria-controls="studio" tabindex="-1" data-tab="studio">Audiobook Studio</button>
+    <button class="tab" id="tab-voice" role="tab" aria-selected="false" aria-controls="voice" tabindex="-1" data-tab="voice">Sande Voice Engine</button>
+    <button class="tab" id="tab-content" role="tab" aria-selected="false" aria-controls="content" tabindex="-1" data-tab="content" data-i18n="tab_content">Генератор содржина</button>
+    <button class="tab" id="tab-viral" role="tab" aria-selected="false" aria-controls="viral" tabindex="-1" data-tab="viral">Viral Studio</button>
+    <button class="tab" id="tab-protocol" role="tab" aria-selected="false" aria-controls="protocol" tabindex="-1" data-tab="protocol" data-i18n="tab_protocol">Протоколарна лаб.</button>
+    <button class="tab" id="tab-production" role="tab" aria-selected="false" aria-controls="production" tabindex="-1" data-tab="production" data-i18n="tab_production">Аудио продукција</button>
+    <button class="tab" id="tab-room" role="tab" aria-selected="false" aria-controls="room" tabindex="-1" data-tab="room" data-i18n="tab_room">Живи соби</button>
+    <button class="tab" id="tab-delivery" role="tab" aria-selected="false" aria-controls="delivery" tabindex="-1" data-tab="delivery" data-i18n="tab_delivery">Испорака</button>
+    <button class="tab" id="tab-monetization" role="tab" aria-selected="false" aria-controls="monetization" tabindex="-1" data-tab="monetization" data-i18n="tab_monetization">Монетизација</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="section active" role="tabpanel" aria-labelledby="tab-dashboard" tabindex="0">
+      <div class="strip" style="grid-template-columns:repeat(4,1fr)">
+        <div class="metric"><b>10</b><span data-i18n="st_projects">Активни демо проекти</span></div>
+        <div class="metric"><b>4</b><span data-i18n="st_books">Книги во аудио библиотека</span></div>
+        <div class="metric"><b>12</b><span data-i18n="st_scenarios">Протоколарни сценарија</span></div>
+        <div class="metric"><b>EUR 4,820</b><span data-i18n="st_value">Проектиран демо приказ</span></div>
+      </div>
+      <p class="notice" data-i18n="dash_value_note" style="margin:12px 0">Бројките се демо приказ за интерфејсот, не финансиско ветување.</p>
+      <div class="panel">
+        <h2 data-i18n="rp_title">Скорешни проекти</h2>
+        <table class="table" aria-label="Recent projects">
+          <thead><tr><th data-i18n="col_project">Проект</th><th data-i18n="col_module">Модул</th><th data-i18n="col_status">Статус</th><th data-i18n="col_updated">Ажурирано</th></tr></thead>
+          <tbody id="projectRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="studio" class="section" role="tabpanel" aria-labelledby="tab-studio" tabindex="0">
+      <div class="panel">
+        <h2>Audiobook Studio</h2>
+        <p data-i18n="studio_p">Од книга/поглавје до аудио пакет: narrator notes, lesson hooks, статус на поглавје и export package.</p>
+        <div class="form-grid">
+          <label><span data-i18n="lbl_book">Книга / Проект</span><input id="bookName" value="Гафови во протоколот и дипломатијата" /></label>
+          <label><span data-i18n="lbl_chapter">Поглавје</span><input id="chapterName" value="Сценарио 001 · Преседан и преседанс" /></label>
+          <label><span data-i18n="lbl_output">Излез</span><select id="outputType"><option>Audiobook chapter</option><option>Lecture narration</option><option>Short explainer</option><option>PPP voiceover</option></select></label>
+        </div>
+        <p><button id="genBook" type="button" data-i18n="btn_genbook">Генерирај аудио пакет</button></p>
+        <div class="output" id="bookOutput" aria-live="polite" data-i18n="out_default">Излезот ќе се појави тука.</div>
+      </div>
+    </section>
+
+    <section id="voice" class="section" role="tabpanel" aria-labelledby="tab-voice" tabindex="0">
+      <div class="panel">
+        <h2>Sande Voice Engine · Consent-first</h2>
+        <p data-i18n="voice_p">Ова не е voice-cloning production систем. Ова е governance workflow за идно аудио производство: consent, disclosure, watermarking, review и approval.</p>
+        <div class="notice warning" data-i18n="voice_notice">Phase 1: текст + workflow + disclosure. Phase 2: лиценциран гласовен модел само со изречна согласност, watermarking/provenance, политика за складирање и правна ревизија.</div>
+        <ul>
+          <li data-i18n="voice_li1">Човечко одобрување пред објавување.</li>
+          <li data-i18n="voice_li2">Без неовластено клонирање или скриен синтетички глас.</li>
+          <li data-i18n="voice_li3">Секој генериран аудио производ бара disclosure/provenance запис.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="content" class="section" role="tabpanel" aria-labelledby="tab-content" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="content_h">Генератор на содржина</h2>
+        <p data-i18n="content_p">Брз draft за лекции, описи и говори — со disclosure и човечка ревизија пред објава. Тонот се менува според избраниот режим.</p>
+        <div class="form-grid">
+          <label><span data-i18n="lbl_topic">Тема</span><input id="contentTopic" value="Редослед на седење на официјална вечера" /></label>
+          <label><span data-i18n="lbl_format">Формат</span><select id="contentFormat"><option>Lesson outline</option><option>Caption set</option><option>Speech draft</option><option>Newsletter blurb</option></select></label>
+          <label><span data-i18n="lbl_audience">Публика</span><select id="contentAudience"><option>Students</option><option>Officials</option><option>General public</option></select></label>
+        </div>
+        <p><button id="genContent" type="button" data-i18n="btn_gencontent">Генерирај draft</button></p>
+        <div class="output" id="contentOutput" aria-live="polite" data-i18n="out_default">Излезот ќе се појави тука.</div>
+      </div>
+    </section>
+
+    <section id="viral" class="section" role="tabpanel" aria-labelledby="tab-viral" tabindex="0">
+      <div class="panel">
+        <h2>Viral Media Studio</h2>
+        <p data-i18n="viral_p">Кратки, едукативни и достоинствени hooks — без манипулативни тврдења.</p>
+        <div class="form-grid">
+          <label><span data-i18n="lbl_topic">Тема</span><input id="viralTopic" value="Дипломатски гаф на свечена вечера" /></label>
+          <label><span data-i18n="lbl_platform">Платформа</span><select id="viralPlatform"><option>YouTube Shorts</option><option>Instagram Reels</option><option>TikTok</option><option>Rumble</option></select></label>
+          <label><span data-i18n="lbl_tone">Тон</span><select id="viralTone"><option>Academic</option><option>Public education</option><option>Premium</option><option>Student-friendly</option></select></label>
+        </div>
+        <p><button id="genViral" type="button" data-i18n="btn_genviral">Генерирај краток скрипт</button></p>
+        <div class="output" id="viralOutput" aria-live="polite" data-i18n="out_default">Излезот ќе се појави тука.</div>
+      </div>
+    </section>
+
+    <section id="protocol" class="section" role="tabpanel" aria-labelledby="tab-protocol" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="proto_h">Протоколарна лабораторија за сценарија</h2>
+        <p data-i18n="proto_p">Секој случај станува сцена: улоги, протоколарна грешка, последица и правилно решение.</p>
+        <textarea id="scenarioInput">Амбасадор е прекинат од учесник за време на официјално обраќање.</textarea>
+        <p><button id="genScenario" type="button" data-i18n="btn_genscenario">Генерирај лекција од сценарио</button></p>
+        <div class="output" id="scenarioOutput" aria-live="polite" data-i18n="out_default">Излезот ќе се појави тука.</div>
+      </div>
+    </section>
+
+    <section id="production" class="section" role="tabpanel" aria-labelledby="tab-production" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="prod_h">Лабораторија за аудио продукција</h2>
+        <p data-i18n="prod_p">Следи го еден пакет низ фазите. Менаџер на работен тек, не реален audio renderer.</p>
+        <div class="stages" id="stageTrack" aria-live="polite"></div>
+        <p><button id="advanceStage" type="button" data-i18n="btn_advance">Следна фаза</button> <button id="resetStage" type="button" data-i18n="btn_resetstage">Врати фази</button></p>
+        <div class="notice" data-i18n="prod_check">Контролна листа: скрипта одобрена · изговор проверен · disclosure додаден · мастер преслушан · човечка ревизија завршена.</div>
+      </div>
+    </section>
+
+    <section id="room" class="section" role="tabpanel" aria-labelledby="tab-room" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="room_h">Живи видео соби · контрола на зборот</h2>
+        <p data-i18n="room_p">Статичка governance симулација. Реален WebRTC/biometric floor control е Phase 2 со consent, backend, privacy review и audit logs.</p>
+        <div class="room-modes" id="roomModes"></div>
+        <div class="room-layout">
+          <div class="queue">
+            <h3 data-i18n="participants_h">Учесници</h3>
+            <div id="participantList"></div>
+            <p><button id="raiseHand" type="button" data-i18n="btn_raise">Студент крева рака</button> <button id="muteAll" type="button" data-i18n="btn_muteall">Исклучи ги сите</button></p>
+          </div>
+          <div class="queue">
+            <h3 data-i18n="doctrine_h">Доктрина на собата</h3>
+            <ul>
+              <li data-i18n="rdoc1">Публиката влегува исклучена.</li>
+              <li data-i18n="rdoc2">Домаќин/админ доделува збор еден по еден.</li>
+              <li data-i18n="rdoc3">Без преклопување на гласови.</li>
+              <li data-i18n="rdoc4">Чекај ред пред прекин.</li>
+              <li data-i18n="rdoc5">Секоја сесија води протоколарна белешка.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="delivery" class="section" role="tabpanel" aria-labelledby="tab-delivery" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="del_h">Центар за испорака</h2>
+        <p data-i18n="del_p">Ред за финални пакети: audio, video, PPP, lesson, course item, product note.</p>
+        <table class="table">
+          <thead><tr><th data-i18n="col_package">Пакет</th><th data-i18n="col_type">Тип</th><th data-i18n="col_status">Статус</th><th data-i18n="col_action">Дејство</th></tr></thead>
+          <tbody id="deliveryRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="monetization" class="section" role="tabpanel" aria-labelledby="tab-monetization" tabindex="0">
+      <div class="panel">
+        <h2 data-i18n="mon_h">Мотор за монетизација · безбедна патоказ</h2>
+        <p data-i18n="mon_p">Revenue ideas се третираат како product roadmap, не како правно/финансиско ветување.</p>
+        <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="module-card" style="cursor:default"><h3>Starter Lessons</h3><small data-i18n="mon1_d">Бесплатни едукативни клипови, јавна протоколарна писменост, newsletter funnel.</small><span class="badge ready">Phase 1</span></div>
+          <div class="module-card" style="cursor:default"><h3>Premium Courses</h3><small data-i18n="mon2_d">Аудио книги, работилници, протоколарни сценарија, институционални пакети за обука.</small><span class="badge prototype">Phase 1–2</span></div>
+          <div class="module-card" style="cursor:default"><h3>Web3 Certificates</h3><small data-i18n="mon3_d">Само по правна, privacy и accreditation-language ревизија. Стандардно останува обична web верификација прво.</small><span class="badge guard">Phase 2 optional</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="section-label" data-i18n="con_title">WPA Конзола</div>
+  <div class="console">
+    <div class="panel">
+      <h2 data-i18n="con_current">Тековен проект</h2>
+      <label><span data-i18n="con_project_lbl">Име на проект</span><input id="projName" value="WPA Media Engine Master Project" /></label>
+      <div class="kv" style="margin-top:12px">
+        <div><b data-i18n="meta_lang">Јазик</b>: <span id="metaLang">mk</span></div>
+        <div><b data-i18n="meta_mode">Режим</b>: <span id="metaMode">academic</span></div>
+        <div><b data-i18n="meta_status">Статус</b>: <span id="metaStatus">draft</span></div>
+        <div><b data-i18n="con_policy">Политика на соба</b>: <span id="metaPolicy"></span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2 data-i18n="con_notes">Белешки</h2>
+      <textarea id="notes" data-i18n-ph="notes_ph" placeholder="Внеси белешки за сесијата..."></textarea>
+      <h2 style="margin-top:14px" data-i18n="con_preview">Жив преглед</h2>
+      <div class="preview-box" id="previewBox"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>Светска академија за протокол · World Protocol Academy</strong>
+    Институт за протокол, дипломатија, јавна комуникација и безбедносни студии<br>
+    Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies<br><br>
+    Образовна, истражувачка и авторска дигитална платформа. Не претставува државна, официјална или правно акредитирана институција.<br>
+    Educational, research and authoring digital platform. It does not represent a state, official or legally accredited institution.<br><br>
+    © <span id="year"></span> World Protocol Academy. All rights reserved.
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STR = {
+    mk:{
+      skip:"Кон содржината",
+      brand_inst:"Институт за протокол, дипломатија, јавна комуникација и безбедносни студии",
+      mode_academic:"Академски",mode_formal:"Формален",mode_executive:"Извршен",mode_viral:"Вирален",
+      ctl_save:"Зачувај",ctl_export:"Извези JSON",ctl_reset:"Ресетирај",
+      hero_kicker:"WPA Audio Media Engine · Командна палуба",
+      hero_h1:"Управувана аудио и медиумска продукција — една командна палуба.",
+      hero_lead:"Аудио книги, Sande гласовен workflow, протоколарни сценарија, governance на живи соби, viral media, испорака и монетизација — со видлива протоколарна дисциплина и јасни Phase 2 граници за biometric/Web3.",
+      m_modules:"Основни модули",m_lang:"Тријазичен интерфејс",m_phase1:"Статичен GitHub Pages мотор",
+      rd_admin_t:"Контрола на зборот",rd_admin_d:"Администраторот доделува збор на еден учесник во даден момент. Останатите се исклучени додека не се одобри.",
+      rd_anti_t:"Анти-хаос правило",rd_anti_d:"Без преклопување гласови. Ред со кревање рака, одобрување од домаќин, mute-all и еден активен говорник.",
+      rd_phase2_t:"Phase 2 насока",rd_phase2_d:"Проучување на структурни обрасци од водечки аудио/видео платформи — само како истражувачка насока, без копирање.",
+      lbl_modules:"Основни модули",
+      tab_dashboard:"Контролна табла",tab_content:"Генератор содржина",tab_protocol:"Протоколарна лаб.",tab_production:"Аудио продукција",tab_room:"Живи соби",tab_delivery:"Испорака",tab_monetization:"Монетизација",
+      st_projects:"Активни демо проекти",st_books:"Книги во аудио библиотека",st_scenarios:"Протоколарни сценарија",st_value:"Проектиран демо приказ",
+      dash_value_note:"Бројките се демо приказ за интерфејсот, не финансиско ветување.",
+      rp_title:"Скорешни проекти",col_project:"Проект",col_module:"Модул",col_status:"Статус",col_updated:"Ажурирано",
+      studio_p:"Од книга/поглавје до аудио пакет: narrator notes, lesson hooks, статус на поглавје и export package.",
+      lbl_book:"Книга / Проект",lbl_chapter:"Поглавје",lbl_output:"Излез",btn_genbook:"Генерирај аудио пакет",out_default:"Излезот ќе се појави тука.",
+      voice_p:"Ова не е voice-cloning production систем. Ова е governance workflow за идно аудио производство: consent, disclosure, watermarking, review и approval.",
+      voice_notice:"Phase 1: текст + workflow + disclosure. Phase 2: лиценциран гласовен модел само со изречна согласност, watermarking/provenance, политика за складирање и правна ревизија.",
+      voice_li1:"Човечко одобрување пред објавување.",voice_li2:"Без неовластено клонирање или скриен синтетички глас.",voice_li3:"Секој генериран аудио производ бара disclosure/provenance запис.",
+      content_h:"Генератор на содржина",content_p:"Брз draft за лекции, описи и говори — со disclosure и човечка ревизија пред објава. Тонот се менува според избраниот режим.",
+      lbl_topic:"Тема",lbl_format:"Формат",lbl_audience:"Публика",btn_gencontent:"Генерирај draft",
+      viral_p:"Кратки, едукативни и достоинствени hooks — без манипулативни тврдења.",lbl_platform:"Платформа",lbl_tone:"Тон",btn_genviral:"Генерирај краток скрипт",
+      proto_h:"Протоколарна лабораторија за сценарија",proto_p:"Секој случај станува сцена: улоги, протоколарна грешка, последица и правилно решение.",btn_genscenario:"Генерирај лекција од сценарио",
+      prod_h:"Лабораторија за аудио продукција",prod_p:"Следи го еден пакет низ фазите. Менаџер на работен тек, не реален audio renderer.",btn_advance:"Следна фаза",btn_resetstage:"Врати фази",
+      prod_check:"Контролна листа: скрипта одобрена · изговор проверен · disclosure додаден · мастер преслушан · човечка ревизија завршена.",
+      room_h:"Живи видео соби · контрола на зборот",room_p:"Статичка governance симулација. Реален WebRTC/biometric floor control е Phase 2 со consent, backend, privacy review и audit logs.",
+      participants_h:"Учесници",btn_raise:"Студент крева рака",btn_muteall:"Исклучи ги сите",doctrine_h:"Доктрина на собата",
+      rdoc1:"Публиката влегува исклучена.",rdoc2:"Домаќин/админ доделува збор еден по еден.",rdoc3:"Без преклопување на гласови.",rdoc4:"Чекај ред пред прекин.",rdoc5:"Секоја сесија води протоколарна белешка.",
+      del_h:"Центар за испорака",del_p:"Ред за финални пакети: audio, video, PPP, lesson, course item, product note.",col_package:"Пакет",col_type:"Тип",col_action:"Дејство",
+      mon_h:"Мотор за монетизација · безбедна патоказ",mon_p:"Revenue ideas се третираат како product roadmap, не како правно/финансиско ветување.",
+      mon1_d:"Бесплатни едукативни клипови, јавна протоколарна писменост, newsletter funnel.",mon2_d:"Аудио книги, работилници, протоколарни сценарија, институционални пакети за обука.",mon3_d:"Само по правна, privacy и accreditation-language ревизија. Стандардно останува обична web верификација прво.",
+      con_title:"WPA Конзола",con_current:"Тековен проект",con_project_lbl:"Име на проект",con_policy:"Политика на соба",con_notes:"Белешки",con_preview:"Жив преглед",notes_ph:"Внеси белешки за сесијата...",
+      meta_lang:"Јазик",meta_mode:"Режим",meta_status:"Статус",
+      rm_class_t:"Класа",rm_workshop_t:"Работилница",rm_webinar_t:"Вебинар",rm_inst_t:"Институционална",
+      rm_class_d:"Аудиториумот влегува исклучен. Домаќинот доделува збор еден по еден.",rm_workshop_d:"Дозволена модерирана интеракција со host-контролирани права на говор.",rm_webinar_d:"Голема публика, само презентери зборуваат, Q&A низ ред.",rm_inst_d:"Затворена институционална сесија со строга протоколарна дисциплина.",
+      attendees:"учесници",grant:"Дај збор",status_floor:"збор",status_muted:"исклучен",
+      toast_saved:"Состојбата е зачувана локално.",toast_reset:"Состојбата е вратена на почетна.",raised:"Студент крена рака",
+      flavor_academic:"академски, прецизен",flavor_formal:"формален, церемонијален",flavor_executive:"извршен, концизен",flavor_viral:"достоинствено вирален",
+      preview_tpl:function(p,m,s){return "WPA Audio Media Engine · режим: "+m+" · статус: "+s+"\nПроект: "+p+"\nProduction polish pass — подготвено.";}
+    },
+    en:{
+      skip:"Skip to content",
+      brand_inst:"Institute for Protocol, Diplomacy, Public Communication & Security Studies",
+      mode_academic:"Academic",mode_formal:"Formal",mode_executive:"Executive",mode_viral:"Viral",
+      ctl_save:"Save",ctl_export:"Export JSON",ctl_reset:"Reset",
+      hero_kicker:"WPA Audio Media Engine · Command Deck",
+      hero_h1:"Governed audio and media production — one command deck.",
+      hero_lead:"Audiobooks, the Sande voice workflow, protocol scenarios, live-room governance, viral media, delivery and monetization — with visible protocol discipline and clear Phase 2 boundaries for biometric/Web3.",
+      m_modules:"Core modules",m_lang:"Trilingual interface",m_phase1:"Static GitHub Pages engine",
+      rd_admin_t:"Admin Floor Control",rd_admin_d:"The administrator grants the floor to one participant at a time. Others stay muted unless approved.",
+      rd_anti_t:"Anti-Chaos Rule",rd_anti_d:"No overlapping voices. Raise-hand queue, host approval, mute-all and one active speaker.",
+      rd_phase2_t:"Phase 2 Direction",rd_phase2_d:"Studying structural patterns from leading audio/video platforms — as research direction only, not replication.",
+      lbl_modules:"Core modules",
+      tab_dashboard:"Dashboard",tab_content:"Content Generator",tab_protocol:"Protocol Lab",tab_production:"Audio Production",tab_room:"Live Video Rooms",tab_delivery:"Delivery",tab_monetization:"Monetization",
+      st_projects:"Active demo projects",st_books:"Books in audiobook library",st_scenarios:"Protocol scenarios",st_value:"Projected demo snapshot",
+      dash_value_note:"These figures are a demo snapshot of the interface, not a financial promise.",
+      rp_title:"Recent Projects",col_project:"Project",col_module:"Module",col_status:"Status",col_updated:"Updated",
+      studio_p:"From book/chapter to an audio package: narrator notes, lesson hooks, chapter status and export package.",
+      lbl_book:"Book / Project",lbl_chapter:"Chapter",lbl_output:"Output",btn_genbook:"Generate Audiobook Pack",out_default:"Output will appear here.",
+      voice_p:"This is not a voice-cloning production system. It is a governance workflow for future audio production: consent, disclosure, watermarking, review and approval.",
+      voice_notice:"Phase 1: text + workflow + disclosure. Phase 2: licensed voice model only with explicit consent, watermarking/provenance, storage policy and legal review.",
+      voice_li1:"Human approval before publishing.",voice_li2:"No unauthorized cloning or hidden synthetic voice.",voice_li3:"Every generated audio product needs a disclosure/provenance record.",
+      content_h:"Content Generator",content_p:"Quick draft for lessons, captions and speeches — with disclosure and human review before publishing. The tone follows the selected register.",
+      lbl_topic:"Topic",lbl_format:"Format",lbl_audience:"Audience",btn_gencontent:"Generate Draft",
+      viral_p:"Short, educational and dignified hooks — without manipulative claims.",lbl_platform:"Platform",lbl_tone:"Tone",btn_genviral:"Generate Short Script",
+      proto_h:"Protocol Scenario Lab",proto_p:"Every case becomes a scene: roles, the protocol breach, the consequence and the correct response.",btn_genscenario:"Generate Scenario Lesson",
+      prod_h:"Audio Production Lab",prod_p:"Track one package through the pipeline. A workflow tracker, not a real audio renderer.",btn_advance:"Advance stage",btn_resetstage:"Reset stages",
+      prod_check:"Checklist: script approved · pronunciation checked · disclosure added · master reviewed · human review completed.",
+      room_h:"Live Video Rooms · Floor Control",room_p:"A static governance simulation. Real WebRTC/biometric floor control is Phase 2 with consent, backend, privacy review and audit logs.",
+      participants_h:"Participants",btn_raise:"Student raises hand",btn_muteall:"Mute all",doctrine_h:"Room Doctrine",
+      rdoc1:"Audience enters muted.",rdoc2:"Host/admin grants floor one by one.",rdoc3:"No overlapping voices.",rdoc4:"Queue before interruption.",rdoc5:"Every session keeps a protocol note.",
+      del_h:"Delivery Center",del_p:"Queue for final packages: audio, video, PPP, lesson, course item, product note.",col_package:"Package",col_type:"Type",col_action:"Action",
+      mon_h:"Monetization Engine · Safe Roadmap",mon_p:"Revenue ideas are treated as a product roadmap, not as a legal/financial promise.",
+      mon1_d:"Free educational clips, public protocol literacy, newsletter funnel.",mon2_d:"Audiobooks, workshops, protocol scenarios, institutional training packages.",mon3_d:"Only after legal, privacy and accreditation-language review. Default stays ordinary web verification first.",
+      con_title:"WPA Console",con_current:"Current Project",con_project_lbl:"Project name",con_policy:"Live Room Policy",con_notes:"Notes",con_preview:"Live Preview",notes_ph:"Enter session notes...",
+      meta_lang:"Lang",meta_mode:"Mode",meta_status:"Status",
+      rm_class_t:"Class",rm_workshop_t:"Workshop",rm_webinar_t:"Webinar",rm_inst_t:"Institutional",
+      rm_class_d:"Audience enters muted. Host grants the floor one by one.",rm_workshop_d:"Moderated interaction allowed with host-controlled speaking rights.",rm_webinar_d:"Large audience, only presenters speak, Q&A through queue.",rm_inst_d:"Closed institutional session with strict protocol discipline.",
+      attendees:"attendees",grant:"Grant floor",status_floor:"floor",status_muted:"muted",
+      toast_saved:"State saved locally.",toast_reset:"State reset to defaults.",raised:"Student raised hand",
+      flavor_academic:"academic, precise",flavor_formal:"formal, ceremonial",flavor_executive:"executive, concise",flavor_viral:"dignified, shareable",
+      preview_tpl:function(p,m,s){return "WPA Audio Media Engine · mode: "+m+" · status: "+s+"\nProject: "+p+"\nProduction polish pass — ready.";}
+    },
+    sq:{
+      skip:"Kalo te përmbajtja",
+      brand_inst:"Instituti për protokoll, diplomaci, komunikim publik dhe studime sigurie",
+      mode_academic:"Akademik",mode_formal:"Formal",mode_executive:"Ekzekutiv",mode_viral:"Viral",
+      ctl_save:"Ruaj",ctl_export:"Eksporto JSON",ctl_reset:"Rivendos",
+      hero_kicker:"WPA Audio Media Engine · Pult komandues",
+      hero_h1:"Prodhim i qeverisur audio dhe media — një pult i vetëm.",
+      hero_lead:"Audiolibra, rrjedha e zërit Sande, skenarë protokolli, qeverisje e dhomave live, media virale, dorëzim dhe monetizim — me disiplinë të dukshme protokolli dhe kufij të qartë të Fazës 2 për biometrik/Web3.",
+      m_modules:"Module bazë",m_lang:"Ndërfaqe trigjuhëshe",m_phase1:"Motor statik GitHub Pages",
+      rd_admin_t:"Kontrolli i fjalës",rd_admin_d:"Administratori i jep fjalën një pjesëmarrësi në çdo moment. Të tjerët mbeten të heshtur derisa të miratohen.",
+      rd_anti_t:"Rregulli anti-kaos",rd_anti_d:"Pa zëra mbivendosës. Radhë me ngritje dore, miratim i mikpritësit, heshtje e të gjithëve dhe një folës aktiv.",
+      rd_phase2_t:"Drejtimi i Fazës 2",rd_phase2_d:"Studim i modeleve strukturore nga platformat kryesore audio/video — vetëm si drejtim kërkimor, jo riprodhim.",
+      lbl_modules:"Module bazë",
+      tab_dashboard:"Paneli",tab_content:"Gjenerues përmbajtjeje",tab_protocol:"Laboratori i protokollit",tab_production:"Prodhim audio",tab_room:"Dhoma live",tab_delivery:"Dorëzim",tab_monetization:"Monetizim",
+      st_projects:"Projekte demo aktive",st_books:"Libra në bibliotekë audio",st_scenarios:"Skenarë protokolli",st_value:"Vlerësim demo",
+      dash_value_note:"Këto shifra janë një pamje demo e ndërfaqes, jo premtim financiar.",
+      rp_title:"Projekte të fundit",col_project:"Projekti",col_module:"Moduli",col_status:"Statusi",col_updated:"Përditësuar",
+      studio_p:"Nga libri/kapitulli te një paketë audio: shënime narratori, hooks mësimi, statusi i kapitullit dhe paketa eksportimi.",
+      lbl_book:"Libri / Projekti",lbl_chapter:"Kapitulli",lbl_output:"Dalja",btn_genbook:"Gjenero paketë audio",out_default:"Dalja do të shfaqet këtu.",
+      voice_p:"Ky nuk është sistem prodhimi me klonim zëri. Është një rrjedhë qeverisjeje për prodhim audio të ardhshëm: pëlqim, disclosure, watermarking, rishikim dhe miratim.",
+      voice_notice:"Faza 1: tekst + rrjedhë + disclosure. Faza 2: model zëri i licencuar vetëm me pëlqim të shprehur, watermarking/provenance, politikë ruajtjeje dhe rishikim ligjor.",
+      voice_li1:"Miratim njerëzor para botimit.",voice_li2:"Pa klonim të paautorizuar ose zë sintetik të fshehur.",voice_li3:"Çdo produkt audio i gjeneruar kërkon një regjistrim disclosure/provenance.",
+      content_h:"Gjenerues përmbajtjeje",content_p:"Draft i shpejtë për mësime, përshkrime dhe fjalime — me disclosure dhe rishikim njerëzor para botimit. Toni ndjek regjistrin e zgjedhur.",
+      lbl_topic:"Tema",lbl_format:"Formati",lbl_audience:"Audienca",btn_gencontent:"Gjenero draft",
+      viral_p:"Hooks të shkurtra, edukative dhe dinjitoze — pa pretendime manipuluese.",lbl_platform:"Platforma",lbl_tone:"Toni",btn_genviral:"Gjenero skript të shkurtër",
+      proto_h:"Laboratori i skenarëve të protokollit",proto_p:"Çdo rast bëhet skenë: rolet, shkelja e protokollit, pasoja dhe përgjigjja e saktë.",btn_genscenario:"Gjenero mësim nga skenari",
+      prod_h:"Laboratori i prodhimit audio",prod_p:"Ndiq një paketë nëpër faza. Një ndjekës rrjedhe, jo një renderues i vërtetë audio.",btn_advance:"Faza tjetër",btn_resetstage:"Rivendos fazat",
+      prod_check:"Listë kontrolli: skript i miratuar · shqiptim i kontrolluar · disclosure i shtuar · master i dëgjuar · rishikim njerëzor i përfunduar.",
+      room_h:"Dhoma live · kontrolli i fjalës",room_p:"Simulim statik qeverisjeje. Kontrolli real WebRTC/biometrik i fjalës është Faza 2 me pëlqim, backend, rishikim privatësie dhe audit logs.",
+      participants_h:"Pjesëmarrësit",btn_raise:"Studenti ngre dorën",btn_muteall:"Heshti të gjithë",doctrine_h:"Doktrina e dhomës",
+      rdoc1:"Audienca hyn e heshtur.",rdoc2:"Mikpritësi/admin jep fjalën një nga një.",rdoc3:"Pa zëra mbivendosës.",rdoc4:"Prit radhën para ndërprerjes.",rdoc5:"Çdo sesion mban një shënim protokolli.",
+      del_h:"Qendra e dorëzimit",del_p:"Radhë për paketat finale: audio, video, PPP, mësim, artikull kursi, shënim produkti.",col_package:"Paketa",col_type:"Lloji",col_action:"Veprimi",
+      mon_h:"Motori i monetizimit · udhërrëfyes i sigurt",mon_p:"Idetë e të ardhurave trajtohen si udhërrëfyes produkti, jo si premtim ligjor/financiar.",
+      mon1_d:"Klipe edukative falas, shkrim-lexim publik i protokollit, newsletter funnel.",mon2_d:"Audiolibra, punëtori, skenarë protokolli, paketa trajnimi institucionale.",mon3_d:"Vetëm pas rishikimit ligjor, të privatësisë dhe gjuhës së akreditimit. Si parazgjedhje mbetet verifikim i zakonshëm web fillimisht.",
+      con_title:"Konsola WPA",con_current:"Projekti aktual",con_project_lbl:"Emri i projektit",con_policy:"Politika e dhomës",con_notes:"Shënime",con_preview:"Pamje live",notes_ph:"Shkruaj shënime sesioni...",
+      meta_lang:"Gjuha",meta_mode:"Regjimi",meta_status:"Statusi",
+      rm_class_t:"Klasë",rm_workshop_t:"Punëtori",rm_webinar_t:"Webinar",rm_inst_t:"Institucionale",
+      rm_class_d:"Audienca hyn e heshtur. Mikpritësi jep fjalën një nga një.",rm_workshop_d:"Lejohet ndërveprim i moderuar me të drejta fjale të kontrolluara nga mikpritësi.",rm_webinar_d:"Audiencë e madhe, vetëm prezantuesit flasin, Q&A me radhë.",rm_inst_d:"Sesion institucional i mbyllur me disiplinë të rreptë protokolli.",
+      attendees:"pjesëmarrës",grant:"Jep fjalën",status_floor:"fjala",status_muted:"i heshtur",
+      toast_saved:"Gjendja u ruajt lokalisht.",toast_reset:"Gjendja u rivendos.",raised:"Studenti ngriti dorën",
+      flavor_academic:"akademik, i saktë",flavor_formal:"formal, ceremonial",flavor_executive:"ekzekutiv, koncize",flavor_viral:"dinjitoz, i shpërndarshëm",
+      preview_tpl:function(p,m,s){return "WPA Audio Media Engine · regjimi: "+m+" · statusi: "+s+"\nProjekti: "+p+"\nProduction polish pass — gati.";}
+    }
+  };
+
+  var lang = localStorage.getItem("wpa.ame.lang") || "mk";
+  var mode = localStorage.getItem("wpa.ame.mode") || "academic";
+  if(!STR[lang]) lang = "mk";
+
+  var modules = [
+    ["Dashboard","dashboard","ready"],["Audiobook Studio","studio","ready"],
+    ["Sande Voice Engine","voice","guard"],["Content Generator","content","ready"],
+    ["Viral Media Studio","viral","prototype"],["Protocol Scenario Lab","protocol","ready"],
+    ["Audio Production Lab","production","prototype"],["Live Video Rooms","room","prototype"],
+    ["Delivery Center","delivery","ready"],["Monetization Engine","monetization","guard"]
+  ];
+
+  var ROOM_MODES = {
+    class:{min:90,att:100,host:1,co:2}, workshop:{min:120,att:150,host:1,co:4},
+    webinar:{min:60,att:500,host:1,co:2}, institutional:{min:60,att:80,host:1,co:3}
+  };
+
+  var STAGES = [["Скрипта","Script","Skript"],["Снимање","Record","Regjistrim"],["Монтажа","Edit","Montazh"],["Мастер","Master","Master"],["Ревизија","Review","Rishikim"],["Извоз","Export","Eksport"]];
+
+  var DEFAULTS = {
+    projects:[
+      ["Protocol Authority Audio Pack","Audiobook Studio","Draft","Today"],
+      ["Sande Executive Intro","Voice Engine","Ready","Today"],
+      ["Official Visit Package","Protocol Lab","Revision","Yesterday"],
+      ["Viral Clip · Protocol Myth","Viral Studio","Draft","Yesterday"],
+      ["Class Room Policy · Protocol 101","Live Rooms","Ready","Yesterday"],
+      ["Executive Presence Workshop","Live Rooms","Draft","2 days ago"],
+      ["Audiobook Chapter Export","Production","Draft","2 days ago"],
+      ["Institutional Product Map","Monetization","Draft","2 days ago"],
+      ["Diplomatic Dinner Pack","Protocol Lab","Ready","3 days ago"],
+      ["Voiceover Prestige Pack","Voice Engine","Draft","3 days ago"]
+    ],
+    delivery:[
+      ["Protocol Authority Pack","Audio + PDF","Draft"],
+      ["Diplomatic Dinner Scene","Scenario + Video","Ready"],
+      ["Class Room Policy","Live Room Doctrine","Ready"],
+      ["Sande Voice Disclaimer","Trust Layer","Review"]
+    ],
+    participants:[
+      {id:"host",name:"Host · Санде",status:"floor"},
+      {id:"student-1",name:"Student 01",status:"muted"},
+      {id:"student-2",name:"Student 02",status:"muted"},
+      {id:"observer",name:"Observer",status:"muted"}
+    ],
+    stage:0, roomMode:"class", status:"draft", project:"WPA Media Engine Master Project", notes:""
+  };
+
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  var projects=clone(DEFAULTS.projects), delivery=clone(DEFAULTS.delivery), participants=clone(DEFAULTS.participants);
+  var stageIndex=DEFAULTS.stage, roomMode=DEFAULTS.roomMode;
+
+  function t(k){ return (STR[lang] && STR[lang][k]!=null) ? STR[lang][k] : (STR.en[k]!=null?STR.en[k]:k); }
+  function q(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }
+
+  var toastTimer;
+  function toast(msg){ var el=q("toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(function(){el.classList.remove("show");},2500); }
+
+  function loadSaved(){
+    try{
+      var s=JSON.parse(localStorage.getItem("wpa.ame.state")||"null");
+      if(!s) return;
+      if(Array.isArray(s.projects)&&s.projects.length) projects=s.projects;
+      if(Array.isArray(s.delivery)&&s.delivery.length) delivery=s.delivery;
+      if(Array.isArray(s.participants)&&s.participants.length) participants=s.participants;
+      if(typeof s.stage==="number") stageIndex=Math.max(0,Math.min(STAGES.length,s.stage));
+      if(s.roomMode&&ROOM_MODES[s.roomMode]) roomMode=s.roomMode;
+      if(typeof s.project==="string") q("projName").value=s.project;
+      if(typeof s.notes==="string") q("notes").value=s.notes;
+      if(typeof s.status==="string") q("metaStatus").textContent=s.status;
+    }catch(e){}
+  }
+
+  function renderModules(){
+    q("moduleGrid").innerHTML = modules.map(function(m,i){
+      var kls = m[2]==="ready"?"ready":(m[2]==="guard"?"guard":"prototype");
+      var title = (m[1]==="dashboard")?t("tab_dashboard"):(m[1]==="content")?t("tab_content"):(m[1]==="protocol")?t("tab_protocol"):(m[1]==="production")?t("tab_production"):(m[1]==="room")?t("tab_room"):(m[1]==="delivery")?t("tab_delivery"):(m[1]==="monetization")?t("tab_monetization"):m[0];
+      return '<article class="module-card" data-tab="'+m[1]+'" role="button" tabindex="0"><div><span class="mnum">'+String(i+1).padStart(2,"0")+'</span><h3>'+esc(title)+'</h3></div><span class="badge '+kls+'">'+esc(m[2])+'</span></article>';
+    }).join("");
+  }
+
+  function renderProjects(){
+    q("projectRows").innerHTML = projects.map(function(p){ return "<tr><td>"+esc(p[0])+"</td><td>"+esc(p[1])+"</td><td>"+esc(p[2])+"</td><td>"+esc(p[3])+"</td></tr>"; }).join("");
+  }
+  function renderDelivery(){
+    q("deliveryRows").innerHTML = delivery.map(function(d,i){ return "<tr><td>"+esc(d[0])+"</td><td>"+esc(d[1])+"</td><td>"+esc(d[2])+"</td><td><button data-delivery='"+i+"' type='button'>"+esc(lang==="mk"?"Означи готово":lang==="sq"?"Shëno gati":"Mark ready")+"</button></td></tr>"; }).join("");
+  }
+  function renderParticipants(){
+    q("participantList").innerHTML = participants.map(function(p){
+      var st = p.status==="floor"?t("status_floor"):t("status_muted");
+      var btn = p.id==="host"?"":'<button data-grant="'+p.id+'" type="button">'+esc(t("grant"))+'</button>';
+      return '<div class="participant"><div><strong>'+esc(p.name)+'</strong> <span class="status '+p.status+'">'+esc(st)+'</span></div>'+btn+'</div>';
+    }).join("");
+    renderFloor();
+  }
+  function renderFloor(){
+    var holder = participants.filter(function(p){return p.status==="floor";})[0];
+    var lamp=q("floorLamp"), txt=q("floorText");
+    if(holder){ lamp.classList.add("live"); txt.textContent=t("status_floor").toUpperCase()+": "+holder.name; }
+    else{ lamp.classList.remove("live"); txt.textContent=t("status_floor").toUpperCase()+": —"; }
+  }
+  function renderStages(){
+    q("stageTrack").innerHTML = STAGES.map(function(s,i){
+      var c = i<stageIndex?"done":(i===stageIndex?"current":"");
+      var label = lang==="mk"?s[0]:(lang==="sq"?s[2]:s[1]);
+      return '<span class="stage '+c+'">'+(i+1)+'. '+esc(label)+'</span>';
+    }).join("");
+  }
+  function policyText(m){
+    var r=ROOM_MODES[m]; return r.min+" min · "+r.att+" "+t("attendees")+" · "+r.host+" host + "+r.co+" co-hosts";
+  }
+  function renderRoomModes(){
+    q("roomModes").innerHTML = Object.keys(ROOM_MODES).map(function(k){
+      var act = k===roomMode?" active":"";
+      return '<div class="room-mode'+act+'" data-room="'+k+'" role="button" tabindex="0"><b>'+esc(t("rm_"+k+"_t"))+'</b><div class="caps">'+esc(policyText(k))+'</div><small>'+esc(t("rm_"+k+"_d"))+'</small></div>';
+    }).join("");
+  }
+  function renderConsole(){
+    q("metaLang").textContent=lang; q("metaMode").textContent=mode; q("metaPolicy").textContent=policyText(roomMode);
+    var status=q("metaStatus").textContent||"draft";
+    q("previewBox").textContent = STR[lang].preview_tpl(q("projName").value.trim(), t("mode_"+mode), status);
+  }
+
+  function activateTab(id){
+    document.querySelectorAll(".tab").forEach(function(b){ var on=b.dataset.tab===id; b.classList.toggle("active",on); b.setAttribute("aria-selected",on?"true":"false"); b.tabIndex=on?0:-1; });
+    document.querySelectorAll(".section").forEach(function(s){ s.classList.toggle("active",s.id===id); });
+  }
+
+  function applyLang(){
+    document.documentElement.setAttribute("lang",lang);
+    document.querySelectorAll("[data-i18n]").forEach(function(el){ var k=el.getAttribute("data-i18n"); if(STR[lang][k]!=null && typeof STR[lang][k]!=="function") el.textContent=STR[lang][k]; });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ var k=el.getAttribute("data-i18n-ph"); if(STR[lang][k]!=null) el.setAttribute("placeholder",STR[lang][k]); });
+    document.querySelectorAll("#langChips .chip").forEach(function(c){ c.classList.toggle("active",c.dataset.lang===lang); });
+    document.querySelectorAll("#modeChips .chip").forEach(function(c){ c.classList.toggle("active",c.dataset.mode===mode); });
+    renderModules(); renderProjects(); renderDelivery(); renderParticipants(); renderStages(); renderRoomModes(); renderConsole();
+  }
+
+  function flavor(){ return t("flavor_"+mode); }
+
+  function genBook(){
+    var b=q("bookName").value.trim(), ch=q("chapterName").value.trim(), ty=q("outputType").value;
+    var L={mk:["WPA аудио пакет","Книга: "+b,"Поглавје: "+ch,"Излез: "+ty,"Регистар: "+flavor(),"Белешка за нарација: достоинствен глас на протоколарен авторитет.","Disclosure: AI-помогнато; човечка ревизија пред објава.","Следен чекор: скрипта, листа за изговор, корична белешка, метаподатоци."],
+           en:["WPA Audiobook Pack","Book: "+b,"Chapter: "+ch,"Output: "+ty,"Register: "+flavor(),"Narration note: dignified protocol-authority voice.","Disclosure: AI-assisted; human review before publishing.","Next step: script, pronunciation list, cover note, metadata."],
+           sq:["Paketë audio WPA","Libri: "+b,"Kapitulli: "+ch,"Dalja: "+ty,"Regjistri: "+flavor(),"Shënim narracioni: zë dinjitoz autoriteti protokolli.","Disclosure: i ndihmuar nga AI; rishikim njerëzor para botimit.","Hapi tjetër: skript, listë shqiptimi, shënim kopertine, metadata."]};
+    q("bookOutput").textContent=L[lang].join("\n");
+  }
+  function genContent(){
+    var tp=q("contentTopic").value.trim(), f=q("contentFormat").value, a=q("contentAudience").value;
+    var L={mk:["WPA draft за содржина","Формат: "+f,"Публика: "+a,"Регистар: "+flavor(),"Тема: "+tp,"1. Hook: зошто темата е важна сега.","2. Главна поента: едно јасно правило.","3. Пример: краток случај.","4. Грешка + правилен одговор.","5. Заклучок: едукативен CTA.","Disclosure: AI-помогнат draft; бара човечка ревизија."],
+           en:["WPA Content Draft","Format: "+f,"Audience: "+a,"Register: "+flavor(),"Topic: "+tp,"1. Hook: why this matters now.","2. Main point: one clear rule.","3. Example: a short case.","4. Mistake + correct response.","5. Close: educational CTA.","Disclosure: AI-assisted draft; requires human review."],
+           sq:["Draft përmbajtjeje WPA","Formati: "+f,"Audienca: "+a,"Regjistri: "+flavor(),"Tema: "+tp,"1. Hook: pse ka rëndësi tani.","2. Pika kryesore: një rregull i qartë.","3. Shembull: një rast i shkurtër.","4. Gabimi + përgjigjja e saktë.","5. Mbyllja: CTA edukative.","Disclosure: draft i ndihmuar nga AI; kërkon rishikim njerëzor."]};
+    q("contentOutput").textContent=L[lang].join("\n");
+  }
+  function genViral(){
+    var tp=q("viralTopic").value.trim(), pl=q("viralPlatform").value;
+    var L={mk:["Краток скрипт · "+pl,"Тема: "+tp,"Регистар: "+flavor(),"Hook: „Еден протоколарен гаф може да смени цел дипломатски впечаток.“","Сцена 1: прикажи ја грешката.","Сцена 2: објасни зошто е важна.","Сцена 3: дај правилен протоколарен одговор.","CTA: Учи протокол со WPA."],
+           en:["Short Script · "+pl,"Topic: "+tp,"Register: "+flavor(),"Hook: one protocol gaffe can change an entire diplomatic impression.","Scene 1: show the mistake.","Scene 2: explain why it matters.","Scene 3: give the correct protocol response.","CTA: Learn protocol with WPA."],
+           sq:["Skript i shkurtër · "+pl,"Tema: "+tp,"Regjistri: "+flavor(),"Hook: një gabim protokolli mund të ndryshojë gjithë përshtypjen diplomatike.","Skena 1: trego gabimin.","Skena 2: shpjego pse ka rëndësi.","Skena 3: jep përgjigjen e saktë të protokollit.","CTA: Mëso protokoll me WPA."]};
+    q("viralOutput").textContent=L[lang].join("\n");
+  }
+  function genScenario(){
+    var x=q("scenarioInput").value.trim();
+    var L={mk:["Протоколарна лекција","Случај: "+x,"Регистар: "+flavor(),"Повреда: говорење без збор / прекин на официјално обраќање.","Ризик: непочит, губење ред, репутациска штета.","Решение: крени рака, домаќинот доделува збор, еден говорник, завршна белешка.","Лекција: управувањето со собата е протоколарно достоинство."],
+           en:["Protocol Scenario Lesson","Case: "+x,"Register: "+flavor(),"Breach: speaking without floor / interrupting an official address.","Risk: disrespect, loss of order, reputational harm.","Solution: raise hand, host recognition, one speaker, closing note.","Lesson: room governance is protocol dignity."],
+           sq:["Mësim skenari protokolli","Rasti: "+x,"Regjistri: "+flavor(),"Shkelja: të flasësh pa fjalën / ndërprerje e fjalimit zyrtar.","Rreziku: mosrespekt, humbje rendi, dëm reputacioni.","Zgjidhja: ngri dorën, mikpritësi jep fjalën, një folës, shënim mbyllës.","Mësimi: qeverisja e dhomës është dinjitet protokolli."]};
+    q("scenarioOutput").textContent=L[lang].join("\n");
+  }
+
+  function saveState(){
+    var s={lang:lang,mode:mode,projects:projects,delivery:delivery,participants:participants,stage:stageIndex,roomMode:roomMode,project:q("projName").value,notes:q("notes").value,status:q("metaStatus").textContent,savedAt:new Date().toISOString()};
+    localStorage.setItem("wpa.ame.state",JSON.stringify(s)); toast(t("toast_saved"));
+  }
+  function resetState(){
+    localStorage.removeItem("wpa.ame.state");
+    projects=clone(DEFAULTS.projects); delivery=clone(DEFAULTS.delivery); participants=clone(DEFAULTS.participants);
+    stageIndex=DEFAULTS.stage; roomMode=DEFAULTS.roomMode;
+    q("projName").value=DEFAULTS.project; q("notes").value=DEFAULTS.notes; q("metaStatus").textContent=DEFAULTS.status;
+    applyLang(); toast(t("toast_reset"));
+  }
+  function exportState(){
+    var s={engine:"WPA Audio Media Engine",version:"3.0",lang:lang,mode:mode,projects:projects,delivery:delivery,participants:participants,stage:stageIndex,roomMode:roomMode,project:q("projName").value,notes:q("notes").value,exportedAt:new Date().toISOString()};
+    var blob=new Blob([JSON.stringify(s,null,2)],{type:"application/json"}); var u=URL.createObjectURL(blob);
+    var a=document.createElement("a"); a.href=u; a.download="wpa-audio-media-engine-state.json"; a.click(); URL.revokeObjectURL(u);
+  }
+
+  document.addEventListener("click",function(e){
+    var langC=e.target.closest("#langChips .chip"); if(langC){ lang=langC.dataset.lang; localStorage.setItem("wpa.ame.lang",lang); applyLang(); return; }
+    var modeC=e.target.closest("#modeChips .chip"); if(modeC){ mode=modeC.dataset.mode; localStorage.setItem("wpa.ame.mode",mode); applyLang(); return; }
+    var tab=e.target.closest(".tab"); if(tab){ activateTab(tab.dataset.tab); return; }
+    var card=e.target.closest(".module-card[data-tab]"); if(card){ activateTab(card.dataset.tab); q("tabBar").scrollIntoView({block:"nearest"}); return; }
+    var rm=e.target.closest(".room-mode[data-room]"); if(rm){ roomMode=rm.dataset.room; renderRoomModes(); renderConsole(); return; }
+    var g=e.target.getAttribute("data-grant"); if(g){ participants.forEach(function(p){p.status=p.id===g?"floor":"muted";}); renderParticipants(); renderConsole(); return; }
+    if(e.target.hasAttribute("data-delivery")){ delivery[e.target.getAttribute("data-delivery")][2]="Ready"; renderDelivery(); }
+  });
+  document.addEventListener("keydown",function(e){
+    var c=e.target.closest&&e.target.closest(".module-card[data-tab], .room-mode[data-room]");
+    if(c&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); if(c.dataset.tab){activateTab(c.dataset.tab);} else if(c.dataset.room){roomMode=c.dataset.room;renderRoomModes();renderConsole();} }
+  });
+  q("tabBar").addEventListener("keydown",function(e){
+    var tabs=Array.prototype.slice.call(document.querySelectorAll(".tab")); var i=tabs.indexOf(document.activeElement); if(i<0)return; var n=null;
+    if(e.key==="ArrowRight"||e.key==="ArrowDown")n=tabs[(i+1)%tabs.length];
+    else if(e.key==="ArrowLeft"||e.key==="ArrowUp")n=tabs[(i-1+tabs.length)%tabs.length];
+    else if(e.key==="Home")n=tabs[0]; else if(e.key==="End")n=tabs[tabs.length-1];
+    if(n){e.preventDefault();n.focus();activateTab(n.dataset.tab);}
+  });
+
+  q("saveBtn").addEventListener("click",saveState);
+  q("exportBtn").addEventListener("click",exportState);
+  q("resetBtn").addEventListener("click",resetState);
+  q("genBook").addEventListener("click",genBook);
+  q("genContent").addEventListener("click",genContent);
+  q("genViral").addEventListener("click",genViral);
+  q("genScenario").addEventListener("click",genScenario);
+  q("advanceStage").addEventListener("click",function(){ if(stageIndex<STAGES.length){stageIndex++;renderStages();} });
+  q("resetStage").addEventListener("click",function(){ stageIndex=0;renderStages(); });
+  q("raiseHand").addEventListener("click",function(){ participants.push({id:"student-"+Date.now(),name:t("raised"),status:"muted"}); renderParticipants(); });
+  q("muteAll").addEventListener("click",function(){ participants.forEach(function(p){p.status=p.id==="host"?"floor":"muted";}); renderParticipants(); renderConsole(); });
+  q("projName").addEventListener("input",renderConsole);
+  q("notes").addEventListener("input",function(){});
+
+  q("year").textContent=new Date().getFullYear();
+  loadSaved();
+  applyLang();
+})();
+</script>
+</body>
+</html>
