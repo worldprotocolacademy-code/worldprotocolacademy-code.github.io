@@ -330,6 +330,206 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .wpa-org-svg svg .eu-star { fill:#ffcc00; }
 .wpa-org-svg svg .eu-blue { fill:#003399; }
 
+
+/* WPA v1.7 Bot Badge — replaces generic robot with WPA Institute identity */
+.wpa-bot-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(201,168,76,.22), transparent 56%),
+    linear-gradient(135deg, var(--wpa-navy), var(--wpa-navy-lighter));
+  border: 1px solid rgba(201,168,76,.62);
+  box-shadow: 0 4px 16px rgba(0,0,0,.24), inset 0 0 0 2px rgba(255,255,255,.04);
+  color: var(--accent3);
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 800;
+  letter-spacing: .8px;
+  line-height: 1;
+}
+.wpa-bot-badge::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,.35);
+}
+.wpa-bot-badge-main {
+  font-size: 17px;
+  transform: translateY(-1px);
+}
+.wpa-bot-badge-sub {
+  position: absolute;
+  bottom: 9px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 6px;
+  color: rgba(244,241,236,.82);
+  letter-spacing: .7px;
+}
+.wpa-chat-title .wpa-chat-title-sub {
+  display:block;
+  margin-top:2px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:9px;
+  color:var(--text3);
+  letter-spacing:.45px;
+  font-weight:400;
+}
+.wpa-chat-btn {
+  background: transparent !important;
+  padding: 0;
+  overflow: visible;
+}
+.wpa-chat-btn:hover .wpa-bot-badge {
+  transform: scale(1.05);
+  border-color: var(--accent3);
+}
+
+
+
+/* WPA v2.0 final clean footer MK/EN - single source of truth */
+#wpaFooterFinal,
+.wpa-footer {
+  padding: 30px 18px 34px !important;
+  text-align: center !important;
+  background: var(--bg, #05070d) !important;
+}
+.wpa-footer-final {
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  gap: 7px;
+}
+.wpa-footer-line-mk {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gold, #c9a84c);
+  letter-spacing: .35px;
+}
+.wpa-footer-line-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text, #f4f1ec);
+  letter-spacing: .25px;
+}
+.wpa-footer-inst-mk,
+.wpa-footer-inst-en {
+  font-family: 'Inter', sans-serif;
+  color: var(--text2, #c9c2b8);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.wpa-footer-status-mk,
+.wpa-footer-status-en {
+  max-width: 850px;
+  margin: 2px auto 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--text3, #8e867b);
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+.wpa-footer-status-mk {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(184,148,31,.22);
+}
+.wpa-footer-copy {
+  margin-top: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text3, #8e867b);
+  font-size: 10.5px;
+}
+.wpa-chat-lang-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 0;
+}
+.wpa-chat-lang-label {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--text3);
+  font-size: 9px;
+  letter-spacing: .45px;
+  text-transform: uppercase;
+}
+.wpa-chat-lang-buttons { display: flex; gap: 5px; }
+.wpa-chat-lang-btn {
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text2);
+  border-radius: 999px;
+  padding: 4px 9px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+}
+.wpa-chat-lang-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(184,148,31,.09);
+}
+
+
+/* WPA v2.1 HARD RESET footer MK/EN */
+#wpaFooterFinal,
+.wpa-footer {
+  padding: 30px 18px 34px !important;
+  text-align: center !important;
+  background: var(--bg, #05070d) !important;
+}
+.wpa-footer-final {
+  max-width: 980px !important;
+  margin: 0 auto !important;
+  display: grid !important;
+  gap: 7px !important;
+}
+.wpa-footer-line-mk {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  color: var(--gold, #c9a84c) !important;
+}
+.wpa-footer-line-en {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--text, #f4f1ec) !important;
+}
+.wpa-footer-inst-mk,
+.wpa-footer-inst-en {
+  font-family: 'Inter', sans-serif !important;
+  color: var(--text2, #c9c2b8) !important;
+  font-size: 11px !important;
+  line-height: 1.55 !important;
+}
+.wpa-footer-status-mk,
+.wpa-footer-status-en {
+  max-width: 850px !important;
+  margin: 2px auto 0 !important;
+  font-family: 'Inter', sans-serif !important;
+  color: var(--text3, #8e867b) !important;
+  font-size: 10.5px !important;
+  line-height: 1.6 !important;
+}
+.wpa-footer-status-mk {
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(184,148,31,.22) !important;
+}
+.wpa-footer-copy {
+  margin-top: 8px !important;
+  font-family: 'IBM Plex Mono', monospace !important;
+  color: var(--text3, #8e867b) !important;
+  font-size: 10.5px !important;
+}
+
 </style>
 <link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpaws/protocol-symbols/">
 </head>
@@ -534,7 +734,17 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 </section>
 
 <!-- FOOTER -->
-<footer class="wpa-footer">&copy; World Protocol Academy. All rights reserved.</footer>
+<footer class="wpa-footer" id="wpaFooterFinal">
+  <div class="wpa-footer-final">
+    <div class="wpa-footer-line-mk">Светска академија за протокол</div>
+    <div class="wpa-footer-line-en">World Protocol Academy</div>
+    <div class="wpa-footer-inst-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</div>
+    <div class="wpa-footer-inst-en">Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</div>
+    <div class="wpa-footer-status-mk">Образовна, истражувачка и авторска дигитална платформа. Не претставува државна, официјална или правно акредитирана институција.</div>
+    <div class="wpa-footer-status-en">Educational, research and authoring digital platform. It does not represent a state, official or legally accredited institution.</div>
+    <div class="wpa-footer-copy">&copy; World Protocol Academy. All rights reserved.</div>
+  </div>
+</footer>
 
 <!-- COUNTRY MODAL -->
 <div class="wpa-modal" id="countryModal" onclick="closeModalOnBg(event)">
@@ -572,26 +782,33 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 <div class="wpa-chat-widget">
   <div class="wpa-chat-panel" id="chatPanel">
     <div class="wpa-chat-header">
-      <span class="wpa-chat-title">&#129302; WPA Assistant</span>
+      <span class="wpa-chat-title">WPA Protocol Assistant<span class="wpa-chat-title-sub">Светска академија за протокол · World Protocol Academy</span></span>
       <button class="wpa-chat-close" onclick="toggleChat()">&times;</button>
     </div>
     <div class="wpa-chat-body" id="chatBody">
-      <div class="wpa-chat-msg bot">Hello! I am your WPA assistant. Ask me about any country, flags with eagles, instrumental anthems, today&#39;s holidays, or random facts!</div>
+      <div class="wpa-chat-msg bot">Добредојдовте во WPA Protocol Assistant. Прашајте на македонски или англиски за држави, знамиња, химни, главни градови, географија, меѓународни организации и национални денови.</div>
     </div>
     <div style="padding:8px 12px 0;">
-      <div class="wpa-chat-chips">
-        <button class="wpa-chat-chip" onclick="sendQuick('Flags with eagles')">&#129413; Eagles</button>
-        <button class="wpa-chat-chip" onclick="sendQuick('Instrumental anthems')">&#127925; Instrumental</button>
-        <button class="wpa-chat-chip" onclick="sendQuick('Todays holidays')">&#128197; Today</button>
-        <button class="wpa-chat-chip" onclick="sendQuick('Random fun fact')">&#128161; Fact</button>
+      <div class="wpa-chat-lang-row">
+      <span class="wpa-chat-lang-label">Јазик / Language</span>
+      <div class="wpa-chat-lang-buttons">
+        <button class="wpa-chat-lang-btn active" id="chatLangMk" onclick="setChatLang('mk')" type="button">МК</button>
+        <button class="wpa-chat-lang-btn" id="chatLangEn" onclick="setChatLang('en')" type="button">EN</button>
+      </div>
+    </div>
+    <div class="wpa-chat-chips">
+        <button class="wpa-chat-chip" onclick="sendQuick('Кои знамиња имаат орел?')">&#129413; Орли на знамиња</button>
+        <button class="wpa-chat-chip" onclick="sendQuick('Кои химни се инструментални?')">&#127925; Химни</button>
+        <button class="wpa-chat-chip" onclick="sendQuick('Кои национални денови има денес?')">&#128197; Денес</button>
+        <button class="wpa-chat-chip" onclick="sendQuick('Кажи интересен факт')">&#128161; Факт</button>
       </div>
     </div>
     <div class="wpa-chat-input-wrap">
-      <input type="text" class="wpa-chat-input" id="chatInput" placeholder="Ask about any country..." onkeydown="if(event.key==='Enter')sendChat()">
-      <button class="wpa-chat-send" onclick="sendChat()">Send</button>
+      <input type="text" class="wpa-chat-input" id="chatInput" placeholder="Прашај за држава, знаме, химна..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="wpa-chat-send" onclick="sendChat()">Испрати</button>
     </div>
   </div>
-  <button class="wpa-chat-btn" id="chatToggleBtn" onclick="toggleChat()">&#129302;</button>
+  <button class="wpa-chat-btn" id="chatToggleBtn" onclick="toggleChat()" aria-label="Open WPA Protocol Assistant" title="WPA Protocol Assistant"><span class="wpa-bot-badge"><span class="wpa-bot-badge-main">WPA</span><span class="wpa-bot-badge-sub">AI</span></span></button>
 </div>
 
 <script>
@@ -2025,5 +2242,287 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <script src="./national-days-integration.js" defer></script>
+
+<script id="wpa-bot-mk-en-layer-v20">
+(function(){
+  "use strict";
+
+  window.WPA_CHAT_LANG = localStorage.getItem("wpaChatLang") || "mk";
+
+  function byId(id){ return document.getElementById(id); }
+  function lines(parts){ return parts.join("\n"); }
+
+  function setButtons(){
+    var mk = byId("chatLangMk");
+    var en = byId("chatLangEn");
+    if(mk) mk.classList.toggle("active", window.WPA_CHAT_LANG === "mk");
+    if(en) en.classList.toggle("active", window.WPA_CHAT_LANG === "en");
+  }
+
+  window.setChatLang = function(lang){
+    window.WPA_CHAT_LANG = lang === "en" ? "en" : "mk";
+    localStorage.setItem("wpaChatLang", window.WPA_CHAT_LANG);
+    setButtons();
+    addBotMsg(window.WPA_CHAT_LANG === "mk" ? "Јазикот е поставен на македонски." : "Language set to English.");
+  };
+
+  function wantsEnglish(text){
+    var s = (text || "").toLowerCase();
+    if (/[А-Яа-яЃѓЌќЅѕЈјЉљЊњЏџ]/.test(text || "")) return false;
+    return window.WPA_CHAT_LANG === "en" || /(english|capital|flag|anthem|country|population|area|organization|national day|holiday|today)/.test(s);
+  }
+
+  function getCountry(q){
+    if (typeof worldData === "undefined") return null;
+    var s = (q || "").toLowerCase();
+    return worldData.find(function(c){
+      return s.indexOf((c.n || "").toLowerCase()) >= 0 ||
+             s.indexOf((c.cap || "").toLowerCase()) >= 0 ||
+             s.indexOf((c.id || "").toLowerCase()) >= 0;
+    }) || null;
+  }
+
+  function getOrg(q){
+    if (typeof orgs === "undefined") return null;
+    var s = (q || "").toLowerCase();
+    return orgs.find(function(o){
+      return s.indexOf((o.shortName || "").toLowerCase()) >= 0 ||
+             s.indexOf((o.fullName || "").toLowerCase()) >= 0;
+    }) || null;
+  }
+
+  function mkCountry(c){
+    return lines([
+      "📍 " + c.n,
+      "Главен град: " + c.cap,
+      "Континент: " + c.continent,
+      "Население: " + c.pop,
+      "Површина: " + c.area,
+      "Координати: " + c.g,
+      "Знаме: " + c.f,
+      "Химна: WPA anthem code „" + c.anthem + "“.",
+      "Статус: образовна и протоколарно-референтна информација."
+    ]);
+  }
+
+  function enCountry(c){
+    return lines([
+      "📍 " + c.n,
+      "Capital: " + c.cap,
+      "Continent: " + c.continent,
+      "Population: " + c.pop,
+      "Area: " + c.area,
+      "Coordinates: " + c.g,
+      "Flag: " + c.f,
+      "Anthem: WPA anthem code “" + c.anthem + "”.",
+      "Status: educational and protocol-reference information."
+    ]);
+  }
+
+  function mkOrg(o){
+    return lines([
+      "🏛 " + o.shortName + " — " + o.fullName,
+      "Основана: " + o.founded,
+      "Членство: " + o.members,
+      "Опис: " + o.desc,
+      "Забелешка: за официјална протоколарна употреба провери и официјални извори."
+    ]);
+  }
+
+  function enOrg(o){
+    return lines([
+      "🏛 " + o.shortName + " — " + o.fullName,
+      "Founded: " + o.founded,
+      "Membership: " + o.members,
+      "Description: " + o.desc,
+      "Note: for official protocol use, verify with official sources."
+    ]);
+  }
+
+  function nationalDays(q, en){
+    var seed = window.WPA_NATIONAL_DAYS_SEED || [];
+    var s = (q || "").toLowerCase();
+    if (s.indexOf("денес") >= 0 || s.indexOf("today") >= 0) {
+      var today = [];
+      if (typeof nationalHolidays !== "undefined") {
+        var now = new Date();
+        today = nationalHolidays.filter(function(h){ return h.month === now.getMonth()+1 && h.day === now.getDate(); });
+      }
+      if(today.length){
+        return today.map(function(h){
+          var c = (typeof worldData !== "undefined") ? worldData.find(function(x){ return x.id === h.countryId; }) : null;
+          return (c ? c.n : h.countryId) + " — " + (h.titleMk || h.title || "National Day");
+        }).join("\n");
+      }
+      return en
+        ? "No national day is recorded for today in the active WPA seed. Formal use requires verification."
+        : "Денес нема евидентиран национален ден во активниот WPA seed. За формална употреба потребна е дополнителна верификација.";
+    }
+    return en
+      ? "The national-days module is active. The seed database contains " + seed.length + " entries."
+      : "Модулот за национални денови е активен. Seed базата содржи " + seed.length + " записи.";
+  }
+
+  window.wpaBotAnswer = function(q){
+    var en = wantsEnglish(q);
+    var s = (q || "").toLowerCase();
+
+    var c = getCountry(q);
+    if(c) return en ? enCountry(c) : mkCountry(c);
+
+    var o = getOrg(q);
+    if(o) return en ? enOrg(o) : mkOrg(o);
+
+    if(s.indexOf("национал") >= 0 || s.indexOf("ден") >= 0 || s.indexOf("holiday") >= 0 || s.indexOf("national day") >= 0 || s.indexOf("today") >= 0) return nationalDays(q, en);
+
+    if(s.indexOf("знаме") >= 0 || s.indexOf("flag") >= 0) return en
+      ? "Ask for a country name and I will answer about its flag, symbols and protocol notes."
+      : "Напиши име на држава и ќе одговорам за нејзиното знаме, симболи и протоколарни белешки.";
+
+    if(s.indexOf("химн") >= 0 || s.indexOf("anthem") >= 0) return en
+      ? "Ask for a country name and I will answer with the WPA anthem code and available audio reference."
+      : "Напиши име на држава и ќе одговорам со WPA anthem code и достапната аудио-референца.";
+
+    return en
+      ? "I am the WPA Protocol Assistant. Ask about countries, flags, anthems, capitals, geography, international organizations or national days."
+      : "Јас сум WPA Protocol Assistant на Светската академија за протокол. Прашај за држава, знаме, химна, главен град, географија, меѓународна организација или национален ден.";
+  };
+
+  function addBotMsg(msg){
+    var body = byId("chatBody");
+    if(!body) return;
+    var div = document.createElement("div");
+    div.className = "wpa-chat-msg bot";
+    div.textContent = msg;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function addUserMsg(msg){
+    var body = byId("chatBody");
+    if(!body) return;
+    var div = document.createElement("div");
+    div.className = "wpa-chat-msg user";
+    div.textContent = msg;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  window.sendChat = function(){
+    var input = byId("chatInput");
+    if(!input) return;
+    var q = input.value.trim();
+    if(!q) return;
+    addUserMsg(q);
+    input.value = "";
+    setTimeout(function(){ addBotMsg(window.wpaBotAnswer(q)); }, 120);
+  };
+
+  window.sendQuick = function(q){
+    addUserMsg(q);
+    setTimeout(function(){ addBotMsg(window.wpaBotAnswer(q)); }, 120);
+  };
+
+  document.addEventListener("DOMContentLoaded", setButtons);
+  setButtons();
+})();
+</script>
+
+
+<script id="wpa-footer-hard-reset-v21">
+(function(){
+  "use strict";
+
+  var finalFooterHtml =
+    '<div class="wpa-footer-final">' +
+      '<div class="wpa-footer-line-mk">Светска академија за протокол</div>' +
+      '<div class="wpa-footer-line-en">World Protocol Academy</div>' +
+      '<div class="wpa-footer-inst-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</div>' +
+      '<div class="wpa-footer-inst-en">Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</div>' +
+      '<div class="wpa-footer-status-mk">Образовна, истражувачка и авторска дигитална платформа. Не претставува државна, официјална или правно акредитирана институција.</div>' +
+      '<div class="wpa-footer-status-en">Educational, research and authoring digital platform. It does not represent a state, official or legally accredited institution.</div>' +
+      '<div class="wpa-footer-copy">&copy; World Protocol Academy. All rights reserved.</div>' +
+    '</div>';
+
+  function isOldFooterText(text){
+    text = (text || "").replace(/\s+/g, " ").trim();
+    return text.indexOf("World " + "Academy " + "of Protocol") >= 0 ||
+           text.indexOf("Institute for Protocol, Diplomacy, Public Communication " + "and Security Studies") >= 0 ||
+           text.indexOf("An educational, research and author " + "digital platform") >= 0 ||
+           (
+             text.indexOf("Institute for Protocol, Diplomacy, Public Communication & Security Studies") >= 0 &&
+             text.indexOf("Educational, research and authoring digital platform") >= 0 &&
+             text.indexOf("All rights reserved") >= 0
+           );
+  }
+
+  function removeOldFooterBlocks(){
+    var all = Array.prototype.slice.call(document.body.querySelectorAll("footer, div, section, p"));
+    all.forEach(function(el){
+      if (el.id === "wpaFooterFinal" || el.closest("#wpaFooterFinal")) return;
+      var text = el.innerText || el.textContent || "";
+      if (!isOldFooterText(text)) return;
+      var smallEnough = text.length < 900;
+      var footerLike = /footer|copy|rights|academy/i.test(el.className || "") || el.tagName.toLowerCase() === "footer";
+      if (smallEnough || footerLike) el.remove();
+    });
+  }
+
+  function ensureFinalFooter(){
+    removeOldFooterBlocks();
+
+    var footers = Array.prototype.slice.call(document.querySelectorAll("footer"));
+    footers.forEach(function(f){
+      if (f.id !== "wpaFooterFinal") f.remove();
+    });
+
+    var finalFooter = document.getElementById("wpaFooterFinal");
+    if (!finalFooter) {
+      finalFooter = document.createElement("footer");
+      finalFooter.className = "wpa-footer";
+      finalFooter.id = "wpaFooterFinal";
+      document.body.appendChild(finalFooter);
+    }
+    finalFooter.className = "wpa-footer";
+    finalFooter.innerHTML = finalFooterHtml;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureFinalFooter);
+  } else {
+    ensureFinalFooter();
+  }
+  window.addEventListener("load", ensureFinalFooter);
+  setTimeout(ensureFinalFooter, 600);
+})();
+</script>
+
+
+<script id="wpa-cache-reset-v23">
+(function(){
+  "use strict";
+  function resetWpaCache(){
+    try {
+      if ("caches" in window) {
+        caches.keys().then(function(keys){
+          return Promise.all(keys.map(function(k){ return caches.delete(k); }));
+        });
+      }
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs){
+          regs.forEach(function(reg){ reg.unregister(); });
+        });
+      }
+    } catch(e) {}
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", resetWpaCache);
+  } else {
+    resetWpaCache();
+  }
+  window.addEventListener("load", resetWpaCache);
+})();
+</script>
+
 </body>
 </html>
