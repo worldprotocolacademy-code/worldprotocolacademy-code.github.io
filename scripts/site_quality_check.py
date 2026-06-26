@@ -7,6 +7,8 @@ Checks:
 - sitemap contains only public/search-intended URLs
 - sitemap does not contain Student Desk or WPAWS workspace
 - robots.txt points to sitemap.xml
+- robots.txt does not block the whole public site via User-agent: * + Disallow: /
+- targeted AI-bot Disallow: / groups are allowed for WPA IP/TDM protection
 - homepage does not link to ai/student-desk.html
 - ai/student-desk.html has noindex if present
 - wpaws/index.html has noindex and data-nosnippet if present
@@ -14,7 +16,6 @@ Checks:
 
 from __future__ import annotations
 
-import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import urlparse, unquote
@@ -75,6 +76,17 @@ FORBIDDEN_IN_SITEMAP = [
     "/promotion-playbook.html",
     "/forms/thanks.html",
 ]
+
+PUBLIC_SEARCH_USER_AGENTS = {
+    "*",
+    "googlebot",
+    "bingbot",
+    "duckduckbot",
+    "applebot",
+    "slurp",
+    "yandexbot",
+    "baiduspider",
+}
 
 
 def read_text(path: Path) -> str:
@@ -151,6 +163,56 @@ def check_sitemap(errors: list[str]) -> None:
             add_error(errors, f"Sitemap URL does not map to an existing local file/index: {loc}")
 
 
+def parse_robots_groups(text: str) -> list[dict[str, list[str]]]:
+    """Parse robots.txt into basic user-agent groups for CI.
+
+    The old CI rejected every Disallow: /, including targeted AI bot rules.
+    This parser allows a more accurate check:
+    - fail when User-agent: * blocks /
+    - fail when a public search bot blocks /
+    - allow targeted AI training bot blocks
+    """
+    groups: list[dict[str, list[str]]] = []
+    current: dict[str, list[str]] | None = None
+
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line or ":" not in line:
+            continue
+
+        key, value = line.split(":", 1)
+        key = key.strip().lower()
+        value = value.strip()
+
+        if key == "user-agent":
+            if current is None or current.get("rules"):
+                current = {"agents": [], "rules": []}
+                groups.append(current)
+            current["agents"].append(value.lower())
+            continue
+
+        if key in {"allow", "disallow"}:
+            if current is None:
+                current = {"agents": ["*"], "rules": []}
+                groups.append(current)
+            current["rules"].append(f"{key}:{value}")
+
+    return groups
+
+
+def group_has_disallow_slash(group: dict[str, list[str]]) -> bool:
+    return any(rule.lower().strip() == "disallow:/" for rule in group.get("rules", []))
+
+
+def group_blocks_path(group: dict[str, list[str]], path: str) -> bool:
+    wanted = f"disallow:{path}".lower().rstrip("/")
+    for rule in group.get("rules", []):
+        normalized = rule.lower().rstrip("/")
+        if normalized == wanted:
+            return True
+    return False
+
+
 def check_robots(errors: list[str]) -> None:
     robots = ROOT / "robots.txt"
 
@@ -164,11 +226,22 @@ def check_robots(errors: list[str]) -> None:
     if expected not in text:
         add_error(errors, "robots.txt does not point to the canonical sitemap.xml")
 
-    if re.search(r"(?im)^\s*Disallow:\s*/\s*$", text):
-        add_error(errors, "robots.txt blocks the whole site with Disallow: /")
+    groups = parse_robots_groups(text)
 
-    if re.search(r"(?im)^\s*Disallow:\s*/wpaws/?\s*$", text):
-        add_error(errors, "robots.txt should not block /wpaws/; use noindex meta/header instead")
+    for group in groups:
+        agents = set(group.get("agents", []))
+        has_disallow_all = group_has_disallow_slash(group)
+
+        if has_disallow_all and "*" in agents:
+            add_error(errors, "robots.txt blocks the whole public site with User-agent: * + Disallow: /")
+
+        public_agents = agents & (PUBLIC_SEARCH_USER_AGENTS - {"*"})
+        if has_disallow_all and public_agents:
+            add_error(errors, f"robots.txt blocks public search agent(s): {', '.join(sorted(public_agents))}")
+
+        if group_blocks_path(group, "/wpaws"):
+            if "*" in agents or (agents & PUBLIC_SEARCH_USER_AGENTS):
+                add_error(errors, "robots.txt should not block /wpaws/ for public crawlers; use noindex meta/header instead")
 
 
 def check_privacy_hotfixes(errors: list[str]) -> None:

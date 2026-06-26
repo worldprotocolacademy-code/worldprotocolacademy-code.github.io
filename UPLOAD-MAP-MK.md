@@ -1,68 +1,64 @@
-# 📦 WPA — Мапа за качување (UPLOAD MAP)
+# WPA Institute Maximum Protection — Upload Map MK
 
-**Светска академија за протокол · World Protocol Academy**
-Репозиториум: `worldprotocolacademy-code.github.io`
+## Каде да се качи
 
----
+Оди во главниот root на repo:
 
-## Од ZIP → Во GitHub repo
+`worldprotocolacademy-code.github.io/`
 
-```text
-.well-known/                          → /.well-known/
-ai.txt                                → /ai.txt
-robots.txt                            → /robots.txt
-LICENSE                               → /LICENSE
-tools/wpa-ip-protection/index.html    → /tools/wpa-ip-protection/index.html
-docs/README-WPA-IP-ZASHTITA.md        → /docs/README-WPA-IP-ZASHTITA.md
-docs/html-copyright-header-snippet.html → /docs/html-copyright-header-snippet.html
-```
-
-Помошни (за тебе, не задолжителни на сајтот):
+Качи ги сите елементи од ZIP-от:
 
 ```text
-UPLOAD-MAP-MK.md         → референца
-SAFE_UPLOAD_CHECKS.json  → валидациски извештај
+robots.txt
+ai.txt
+.well-known/
+LICENSE
+scripts/
+tools/
+docs/
+UPLOAD-MAP-MK.md
+BUILD_REPORT.json
 ```
 
----
-
-## ⛔ ВАЖНО — БЕЗБЕДНОСНИ ПРАВИЛА
+## Правилни патеки после upload
 
 ```text
-НЕ КАЧУВАЈ root index.html.
-НЕ ЗАМЕНУВАЈ главна WPA почетна страница.
-НЕ ЗАМЕНУВАЈ institute.html.
+/robots.txt
+/ai.txt
+/.well-known/ai.txt
+/LICENSE
+/scripts/site_quality_check.py
+/tools/wpa-ip-protection/index.html
+/docs/WPA_INSTITUTE_MAX_PROTECTION_DOCTRINE_MK.md
+/docs/robots-strict-lockdown-NOT-FOR-UPLOAD.txt
+/UPLOAD-MAP-MK.md
+/BUILD_REPORT.json
 ```
 
-Овој пакет **намерно не содржи** ниедна почетна страница. Алатката за заштита
-оди само во `/tools/wpa-ip-protection/` и **не е** почетна страница.
+## Не качувај / не заменувај
 
----
+Овој пакет НЕ содржи:
 
-## Како да качиш (GitHub веб-интерфејс)
+```text
+/index.html
+/institute.html
+/privacy.html
+/disclaimer.html
+```
 
-1. На github.com во репото: **Add file → Upload files**.
-2. Повлечи ги папките/фајловите од отпакуваниот ZIP. Структурата (`tools/`,
-   `docs/`, `.well-known/`) се задржува.
-3. Commit message:
+## Commit message
 
-   ```text
-   Add WPA IP protection and AI training reservation layer
-   ```
+`Add maximum WPA institute protection layer`
 
-4. **Commit directly to the main branch** → почекај 1–2 мин за деплој.
+## По upload
 
-> 💡 Ако веб-интерфејсот не дозволува повлекување на `.well-known` (скриена папка):
-> **Add file → Create new file**, име `.well-known/ai.txt`, и залепи ја содржината од `ai.txt`.
+Провери:
 
----
+```text
+https://worldprotocolacademy-code.github.io/robots.txt
+https://worldprotocolacademy-code.github.io/ai.txt
+https://worldprotocolacademy-code.github.io/.well-known/ai.txt
+https://worldprotocolacademy-code.github.io/tools/wpa-ip-protection/
+```
 
-## Тест по деплој
-
-- `https://worldprotocolacademy-code.github.io/robots.txt`
-- `https://worldprotocolacademy-code.github.io/ai.txt`
-- `https://worldprotocolacademy-code.github.io/.well-known/ai.txt`
-- `https://worldprotocolacademy-code.github.io/LICENSE`
-- `https://worldprotocolacademy-code.github.io/tools/wpa-ip-protection/`
-
-Сето ова треба да се отвора → заштитата е активна. 🟢
+Потоа пушти Actions rerun за WPA Site Quality CI.
