@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="mk" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WPA · IP Protection Tool · Алатка за заштита</title>
+<!-- World Protocol Academy — IP Protection Tool. Single file, no external dependencies. -->
+<meta name="description" content="World Protocol Academy — IP protection layer status tool (robots.txt, ai.txt, TDM reservation, LICENSE).">
+<meta name="robots" content="noai, noimageai">
+<meta name="tdm-reservation" content="1">
+<meta name="tdm-policy" content="https://worldprotocolacademy-code.github.io/LICENSE">
+<link rel="license" href="https://worldprotocolacademy-code.github.io/LICENSE">
+<style>
+  :root{
+    --navy-900:#0A1A2A; --navy-800:#0F2335; --navy-700:#163049;
+    --ivory:#F4EFE4; --ivory-dim:#E6DECB; --ink:#16202E; --ink-soft:#3C4A5C;
+    --brass:#C9A24B; --brass-bright:#E6C684; --brass-deep:#9C7B2E;
+    --ok:#43A06B; --warn:#D6A23A; --bad:#C4543C;
+    --line:rgba(201,162,75,.28);
+    --serif:Georgia,"Times New Roman",Times,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    --mono:ui-monospace,"Cascadia Code",Consolas,"Courier New",monospace;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.7); --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1100px 650px at 80% -10%, rgba(201,162,75,.10), transparent 60%),
+      radial-gradient(900px 600px at -8% 112%, rgba(22,48,73,.5), transparent 55%),
+      var(--navy-900);
+    color:var(--ivory); font-family:var(--sans); line-height:1.55;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:24px 22px 64px}
+
+  /* top */
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:14px}
+  .crest{width:48px;height:48px;border-radius:50%;flex:0 0 auto;
+    background:radial-gradient(circle at 35% 30%, var(--brass-bright), var(--brass-deep));
+    display:grid;place-items:center;color:var(--navy-900);font-family:var(--serif);
+    font-weight:700;font-size:21px;box-shadow:0 0 0 2px var(--navy-900),0 0 0 3px var(--brass)}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2.4px;text-transform:uppercase;
+    color:var(--brass-bright);margin:0 0 3px}
+  .brand h1{font-family:var(--serif);font-weight:700;font-size:18px;margin:0;letter-spacing:.2px;line-height:1.15}
+  .controls{display:flex;align-items:center;gap:12px}
+  .clock{font-family:var(--mono);font-size:12px;color:var(--ivory-dim);opacity:.8}
+  .lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .lang button{background:transparent;color:var(--ivory-dim);border:0;padding:6px 13px;
+    font-family:var(--mono);font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px}
+  .lang button.on{background:var(--brass);color:var(--navy-900)}
+  .lang button:focus-visible{outline:2px solid var(--brass-bright);outline-offset:2px}
+
+  /* identity bar */
+  .ident{margin:16px 0 4px;padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--brass);
+    border-radius:11px;background:rgba(15,35,53,.55)}
+  .ident .name{font-family:var(--serif);font-size:14.5px;color:var(--ivory);font-weight:700}
+  .ident .sub{font-size:12.5px;color:var(--ivory-dim);margin-top:2px}
+  .ident .guard{font-size:11.5px;color:var(--brass-bright);margin-top:7px;font-style:italic}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:210px 1fr;gap:30px;align-items:center;margin:24px 0 8px;padding:6px 2px}
+  .sealwrap{position:relative;width:210px;height:210px;justify-self:center}
+  .seal-status{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+  .seal-pct{font-family:var(--serif);font-size:50px;font-weight:700;line-height:1;color:var(--brass-bright)}
+  .seal-word{font-family:var(--mono);font-size:10.5px;letter-spacing:3px;text-transform:uppercase;margin-top:7px;color:var(--ivory-dim)}
+  .seal-ring text{fill:var(--brass);font-family:var(--mono);font-size:7.8px;letter-spacing:2.9px;text-transform:uppercase}
+  .arc-bg{fill:none;stroke:rgba(244,239,228,.12);stroke-width:9}
+  .arc-fg{fill:none;stroke:url(#g);stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+  .htitle{font-family:var(--serif);font-size:23px;font-weight:700;line-height:1.3;margin:0 0 10px;color:var(--ivory)}
+  .htitle b{color:var(--brass-bright)}
+  .lede{color:var(--ivory-dim);font-size:14px;max-width:52ch;margin:0 0 14px}
+  .hstats{display:flex;gap:24px;flex-wrap:wrap}
+  .hstat .n{font-family:var(--serif);font-size:24px;font-weight:700;color:var(--brass-bright);line-height:1}
+  .hstat .l{font-family:var(--mono);font-size:9.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ivory-dim);margin-top:5px}
+
+  /* panels */
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:20px}
+  .panel{background:linear-gradient(180deg,var(--ivory),var(--ivory-dim));color:var(--ink);
+    border-radius:var(--r);padding:20px;box-shadow:var(--shadow);border:1px solid rgba(156,123,46,.22)}
+  .col-7{grid-column:span 7}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-12{grid-column:span 12}
+  .ptitle{display:flex;align-items:baseline;gap:10px;margin:0 0 4px}
+  .ptitle .num{font-family:var(--mono);font-size:12px;color:var(--brass-deep);font-weight:600}
+  .ptitle h2{font-family:var(--serif);font-size:17px;font-weight:700;margin:0;color:var(--ink)}
+  .pnote{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px}
+
+  /* checklist */
+  .check{display:flex;gap:11px;align-items:flex-start;padding:8px 9px;border-radius:9px;cursor:pointer;border:1px solid transparent;transition:background .15s}
+  .check:hover{background:rgba(156,123,46,.08)}
+  .check input{appearance:none;-webkit-appearance:none;width:19px;height:19px;flex:0 0 auto;margin-top:1px;
+    border:1.6px solid var(--brass-deep);border-radius:5px;cursor:pointer;position:relative;background:#fff}
+  .check input:checked{background:var(--ok);border-color:var(--ok)}
+  .check input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:13px;font-weight:700}
+  .check input:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .check span{font-size:13px;color:var(--ink);line-height:1.4}
+  .check input:checked + span{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:rgba(67,160,107,.6)}
+
+  /* file list */
+  .files{display:flex;flex-direction:column;gap:0}
+  .file{display:flex;align-items:center;gap:11px;padding:10px 2px;border-bottom:1px dashed rgba(22,32,46,.13)}
+  .file:last-child{border-bottom:0}
+  .file .dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:0 0 auto}
+  .file code{font-family:var(--mono);font-size:12.5px;color:var(--ink);font-weight:600}
+  .file small{display:block;font-size:11.5px;color:var(--ink-soft);font-family:var(--sans);font-weight:400}
+
+  /* allow/forbid */
+  .af{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .af h3{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;font-weight:600;margin:0 0 9px}
+  .af .allow h3{color:var(--ok)} .af .forbid h3{color:var(--bad)}
+  .af li{font-size:12.5px;color:var(--ink);padding:5px 0;list-style:none;display:flex;gap:7px;align-items:flex-start}
+  .af ul{margin:0;padding:0}
+  .af .mk-allow::before{content:"✓";color:var(--ok);font-weight:700}
+  .af .mk-forbid::before{content:"✕";color:var(--bad);font-weight:700}
+
+  /* bots */
+  .bots2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .botcol-h{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;font-weight:600;margin:0 0 9px}
+  .botcol-h.block{color:var(--bad)} .botcol-h.allow{color:var(--ok)}
+  .bot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:var(--mono);font-size:12px;
+    padding:6px 4px;border-bottom:1px dashed rgba(22,32,46,.13)}
+  .bot:last-child{border-bottom:0}
+  .pill{font-size:9px;letter-spacing:.7px;padding:3px 8px;border-radius:999px;font-weight:700;text-transform:uppercase;white-space:nowrap}
+  .pill.block{background:rgba(196,84,60,.14);color:var(--bad);border:1px solid rgba(196,84,60,.35)}
+  .pill.allow{background:rgba(67,160,107,.14);color:var(--ok);border:1px solid rgba(67,160,107,.35)}
+
+  /* contact */
+  .contact{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+  .contact a{font-family:var(--mono);font-size:14px;color:var(--ink);font-weight:600;text-decoration:none;
+    border-bottom:2px solid var(--brass)}
+  .contact a:hover{color:var(--brass-deep)}
+  .copybtn{background:var(--brass);color:var(--navy-900);border:0;border-radius:8px;padding:9px 16px;
+    font-weight:700;font-size:12.5px;cursor:pointer;font-family:var(--sans)}
+  .copybtn:hover{background:var(--brass-bright)}
+  .copybtn:focus-visible{outline:2px solid var(--navy-900);outline-offset:2px}
+
+  /* disclaimer + footer */
+  .disclaimer{margin-top:24px;background:var(--navy-800);border:1px solid var(--line);border-left:4px solid var(--brass);
+    border-radius:11px;padding:14px 18px;display:flex;gap:12px;align-items:flex-start}
+  .disclaimer .ic{font-size:17px;flex:0 0 auto}
+  .disclaimer p{margin:0;font-size:12.5px;color:var(--ivory-dim);line-height:1.55}
+  footer{margin-top:20px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--ivory-dim);opacity:.65;letter-spacing:.4px}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;gap:20px;text-align:center}
+    .hstats{justify-content:center}
+    .col-7,.col-5,.col-6{grid-column:span 12}
+    .af,.bots2{grid-template-columns:1fr}
+  }
+  @media (prefers-reduced-motion:reduce){.arc-fg{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <div class="crest">W</div>
+      <div>
+        <p class="eyebrow" data-mk="Алатка за заштита на ИС" data-en="IP Protection Tool">Алатка за заштита на ИС</p>
+        <h1>World Protocol Academy</h1>
+      </div>
+    </div>
+    <div class="controls">
+      <span class="clock" id="clock"></span>
+      <div class="lang" role="group" aria-label="Language">
+        <button id="mk" class="on" onclick="setLang('mk')">МК</button>
+        <button id="en" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- IDENTITY GUARDRAIL -->
+  <section class="ident">
+    <div class="name" data-mk="Светска академија за протокол" data-en="World Protocol Academy">Светска академија за протокол</div>
+    <div class="sub" data-mk="Институт за протокол, дипломатија, јавна комуникација и безбедносни студии"
+         data-en="Institute for Protocol, Diplomacy, Public Communication & Security Studies">
+         Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</div>
+    <div class="guard" data-mk="Образовна, истражувачка и авторска дигитална платформа. Не претставува државна, официјална или правно акредитирана институција."
+         data-en="Educational, research and authoring digital platform. It does not represent a state, official or legally accredited institution.">
+         Образовна, истражувачка и авторска дигитална платформа. Не претставува државна, официјална или правно акредитирана институција.</div>
+  </section>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="sealwrap" aria-hidden="true">
+      <svg class="seal-ring" viewBox="0 0 210 210" width="210" height="210">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#E6C684"/><stop offset="1" stop-color="#9C7B2E"/>
+          </linearGradient>
+          <path id="ringpath" d="M105,105 m-86,0 a86,86 0 1,1 172,0 a86,86 0 1,1 -172,0"/>
+        </defs>
+        <circle class="arc-bg" cx="105" cy="105" r="72"/>
+        <circle class="arc-fg" id="arc" cx="105" cy="105" r="72" transform="rotate(-90 105 105)" stroke-dasharray="452" stroke-dashoffset="452"/>
+        <text><textPath href="#ringpath" startOffset="0%">· WORLD PROTOCOL ACADEMY · IP PROTECTION LAYER ·</textPath></text>
+      </svg>
+      <div class="seal-status">
+        <div class="seal-pct" id="pct">0%</div>
+        <div class="seal-word" id="word">—</div>
+      </div>
+    </div>
+    <div>
+      <p class="htitle" data-mk="Слој за заштита на интелектуална сопственост и забрана за AI-обука"
+         data-en="Intellectual-property protection layer & AI-training reservation">
+         Слој за заштита на интелектуална сопственост и забрана за AI-обука</p>
+      <p class="lede" data-mk="Оваа страница е алатка за статусот на заштитата: контрола на пребарувачите, забрана за AI-обука и рударење, и авторско известување. Не е почетна страница."
+         data-en="This page is a status tool for the protection layer: crawler control, AI-training and mining reservation, and copyright notice. It is not a homepage.">
+         Оваа страница е алатка за статусот на заштитата: контрола на пребарувачите, забрана за AI-обука и рударење, и авторско известување. Не е почетна страница.</p>
+      <div class="hstats">
+        <div class="hstat"><div class="n" id="hDone">0/9</div><div class="l" data-mk="Чекори завршени" data-en="Steps complete">Чекори завршени</div></div>
+        <div class="hstat"><div class="n">16</div><div class="l" data-mk="Блокирани AI-ботови" data-en="AI bots blocked">Блокирани AI-ботови</div></div>
+        <div class="hstat"><div class="n">2</div><div class="l" data-mk="Дозволени пребарувачи" data-en="Search engines allowed">Дозволени пребарувачи</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid">
+
+    <!-- 01 upload checklist -->
+    <section class="panel col-7">
+      <div class="ptitle"><span class="num">01</span><h2 data-mk="Чек-листа за качување" data-en="Upload checklist">Чек-листа за качување</h2></div>
+      <p class="pnote" data-mk="Чекирај штом го завршиш чекорот. Печатот горе го покажува статусот. Се памти на твојот уред."
+         data-en="Tick each step as you complete it. The seal above shows status. Saved on your device.">
+         Чекирај штом го завршиш чекорот. Печатот горе го покажува статусот. Се памти на твојот уред.</p>
+      <div id="checklist"></div>
+    </section>
+
+    <!-- 02 file list -->
+    <section class="panel col-5">
+      <div class="ptitle"><span class="num">02</span><h2 data-mk="Фајлови на заштитата" data-en="Protection files">Фајлови на заштитата</h2></div>
+      <p class="pnote" data-mk="Овие фајлови го прават слојот за заштита." data-en="These files make up the protection layer.">Овие фајлови го прават слојот за заштита.</p>
+      <div class="files">
+        <div class="file"><span class="dot"></span><div><code>/robots.txt</code><small data-mk="Контрола на пребарувачи и AI-ботови" data-en="Search-engine & AI-bot control">Контрола на пребарувачи и AI-ботови</small></div></div>
+        <div class="file"><span class="dot"></span><div><code>/ai.txt</code><small data-mk="AI политика + TDM резервација" data-en="AI policy + TDM reservation">AI политика + TDM резервација</small></div></div>
+        <div class="file"><span class="dot"></span><div><code>/.well-known/ai.txt</code><small data-mk="Стандардна локација (копија)" data-en="Standard location (copy)">Стандардна локација (копија)</small></div></div>
+        <div class="file"><span class="dot"></span><div><code>/LICENSE</code><small data-mk="Сите права задржани" data-en="All rights reserved">Сите права задржани</small></div></div>
+      </div>
+    </section>
+
+    <!-- 03 allowed / forbidden -->
+    <section class="panel col-6">
+      <div class="ptitle"><span class="num">03</span><h2 data-mk="Дозволено и забрането" data-en="Allowed & forbidden">Дозволено и забрането</h2></div>
+      <div class="af">
+        <div class="allow">
+          <h3>✓ <span data-mk="Дозволено" data-en="Allowed">Дозволено</span></h3>
+          <ul>
+            <li class="mk-allow"><span data-mk="Нормално читање во браузер" data-en="Normal reading in a browser">Нормално читање во браузер</span></li>
+            <li class="mk-allow"><span data-mk="Цитирање со наведување извор" data-en="Quoting with attribution">Цитирање со наведување извор</span></li>
+            <li class="mk-allow"><span data-mk="Академска/образовна употреба (fair use)" data-en="Academic/educational use (fair use)">Академска/образовна употреба (fair use)</span></li>
+            <li class="mk-allow"><span data-mk="Индексирање од Google и Bing" data-en="Indexing by Google and Bing">Индексирање од Google и Bing</span></li>
+          </ul>
+        </div>
+        <div class="forbid">
+          <h3>✕ <span data-mk="Забрането" data-en="Forbidden">Забрането</span></h3>
+          <ul>
+            <li class="mk-forbid"><span data-mk="Копирање/редистрибуција без дозвола" data-en="Copying/redistribution without permission">Копирање/редистрибуција без дозвола</span></li>
+            <li class="mk-forbid"><span data-mk="Scraping / собирање содржина" data-en="Scraping / content harvesting">Scraping / собирање содржина</span></li>
+            <li class="mk-forbid"><span data-mk="Обука на AI модели (AI training)" data-en="AI model training">Обука на AI модели (AI training)</span></li>
+            <li class="mk-forbid"><span data-mk="Рударење и dataset ingestion (TDM)" data-en="Mining & dataset ingestion (TDM)">Рударење и dataset ingestion (TDM)</span></li>
+            <li class="mk-forbid"><span data-mk="Комерцијална употреба без лиценца" data-en="Commercial use without a license">Комерцијална употреба без лиценца</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 bot control -->
+    <section class="panel col-6">
+      <div class="ptitle"><span class="num">04</span><h2 data-mk="Контрола на ботови" data-en="Bot control">Контрола на ботови</h2></div>
+      <p class="pnote" data-mk="Од robots.txt: ботовите за обука/собирање се блокирани; пребарувачите остануваат."
+         data-en="From robots.txt: training/scraping bots blocked; search engines kept.">
+         Од robots.txt: ботовите за обука/собирање се блокирани; пребарувачите остануваат.</p>
+      <div class="bots2">
+        <div>
+          <div class="botcol-h block">⛔ <span data-mk="Блокирани · AI-обука/собирање" data-en="Blocked · AI training/scraping">Блокирани · AI-обука/собирање</span></div>
+          <div id="blocked"></div>
+        </div>
+        <div>
+          <div class="botcol-h allow">✓ <span data-mk="Дозволени · пребарување" data-en="Allowed · search indexing">Дозволени · пребарување</span></div>
+          <div id="allowed"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 contact -->
+    <section class="panel col-12">
+      <div class="ptitle"><span class="num">05</span><h2 data-mk="Контакт за дозволи" data-en="Contact for permissions">Контакт за дозволи</h2></div>
+      <p class="pnote" data-mk="За дозвола за употреба надвор од дозволеното погоре, обрати се на:"
+         data-en="For permission to use beyond what is allowed above, contact:">
+         За дозвола за употреба надвор од дозволеното погоре, обрати се на:</p>
+      <div class="contact">
+        <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
+        <button class="copybtn" id="copyBtn" onclick="copyMail()" data-mk="Копирај е-пошта" data-en="Copy email">Копирај е-пошта</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="disclaimer">
+    <span class="ic" aria-hidden="true">⚖️</span>
+    <p data-mk="Ова е оперативна контролна табла за внатрешна организација и јавна транспарентност. Не претставува правен совет."
+       data-en="This is an operational control panel for internal organisation and public transparency. It does not constitute legal advice.">
+       Ова е оперативна контролна табла за внатрешна организација и јавна транспарентност. Не претставува правен совет.</p>
+  </div>
+
+  <footer>
+    <span data-mk="World Protocol Academy · Алатка за заштита на ИС · единечна датотека, без надворешни зависности"
+          data-en="World Protocol Academy · IP protection tool · single file, no external dependencies">
+      World Protocol Academy · Алатка за заштита на ИС · единечна датотека, без надворешни зависности</span>
+  </footer>
+</div>
+
+<script>
+var CHECK=[
+  {mk:"Качи robots.txt во /robots.txt",en:"Upload robots.txt to /robots.txt"},
+  {mk:"Качи ai.txt во /ai.txt",en:"Upload ai.txt to /ai.txt"},
+  {mk:"Качи .well-known/ai.txt во /.well-known/ai.txt",en:"Upload .well-known/ai.txt to /.well-known/ai.txt"},
+  {mk:"Качи LICENSE во /LICENSE",en:"Upload LICENSE to /LICENSE"},
+  {mk:"Качи ја оваа алатка во /tools/wpa-ip-protection/index.html",en:"Upload this tool to /tools/wpa-ip-protection/index.html"},
+  {mk:"Качи docs/README-WPA-IP-ZASHTITA.md",en:"Upload docs/README-WPA-IP-ZASHTITA.md"},
+  {mk:"Потврди: root index.html НЕ е качен/заменет",en:"Confirm: root index.html NOT uploaded/replaced"},
+  {mk:"Потврди: institute.html е недопрена",en:"Confirm: institute.html untouched"},
+  {mk:"Тест: отвори robots.txt, ai.txt и LICENSE како текст",en:"Test: open robots.txt, ai.txt and LICENSE as text"}
+];
+var BLOCKED=["GPTBot","ChatGPT-User","ClaudeBot","Claude-Web","Google-Extended","CCBot","PerplexityBot","FacebookBot","anthropic-ai","Applebot-Extended","Bytespider","Amazonbot","meta-externalagent","cohere-ai","Diffbot","Omgilibot"];
+var ALLOWED=["Googlebot","Bingbot"];
+var TOTAL=CHECK.length, lang="mk", state={};
+
+function load(){try{var s=localStorage.getItem("wpa_ip_tool");if(s)state=JSON.parse(s);}catch(e){}}
+function save(){try{localStorage.setItem("wpa_ip_tool",JSON.stringify(state));}catch(e){}}
+
+function buildChecklist(){
+  var h="";
+  CHECK.forEach(function(it,i){
+    var id="c"+i,on=state[id]?"checked":"";
+    h+='<label class="check"><input type="checkbox" id="'+id+'" '+on+' onchange="toggle(\''+id+'\')">'
+      +'<span data-mk="'+it.mk+'" data-en="'+it.en+'">'+it[lang]+'</span></label>';
+  });
+  document.getElementById("checklist").innerHTML=h;
+}
+function buildBots(){
+  document.getElementById("blocked").innerHTML=BLOCKED.map(function(b){
+    return '<div class="bot"><span>'+b+'</span><span class="pill block" data-mk="Блокиран" data-en="Blocked">Блокиран</span></div>';}).join("");
+  document.getElementById("allowed").innerHTML=ALLOWED.map(function(b){
+    return '<div class="bot"><span>'+b+'</span><span class="pill allow" data-mk="Дозволен" data-en="Allowed">Дозволен</span></div>';}).join("");
+}
+function toggle(id){state[id]=document.getElementById(id).checked;save();render();}
+function render(){
+  var done=0;for(var i=0;i<TOTAL;i++){if(state["c"+i])done++;}
+  var pct=Math.round(done/TOTAL*100);
+  document.getElementById("pct").textContent=pct+"%";
+  document.getElementById("hDone").textContent=done+"/"+TOTAL;
+  var C=2*Math.PI*72;
+  var arc=document.getElementById("arc");
+  arc.style.strokeDasharray=C; arc.style.strokeDashoffset=C*(1-done/TOTAL);
+  var w;
+  if(pct===0)w={mk:"НЕАКТИВНА",en:"INACTIVE"};
+  else if(pct<100)w={mk:"ВО ТЕК",en:"IN PROGRESS"};
+  else w={mk:"АКТИВНА",en:"ACTIVE"};
+  var el=document.getElementById("word");el.setAttribute("data-mk",w.mk);el.setAttribute("data-en",w.en);el.textContent=w[lang];
+}
+function setLang(l){
+  lang=l;document.documentElement.lang=l;
+  document.getElementById("mk").classList.toggle("on",l==="mk");
+  document.getElementById("en").classList.toggle("on",l==="en");
+  document.querySelectorAll("[data-mk]").forEach(function(n){var t=n.getAttribute("data-"+l);if(t!==null)n.textContent=t;});
+  render();
+  try{localStorage.setItem("wpa_ip_lang",l);}catch(e){}
+}
+function copyMail(){
+  var txt="worldprotocolacademy@gmail.com",btn=document.getElementById("copyBtn");
+  var done=function(){var o=btn.textContent;btn.textContent=lang==="mk"?"Копирано ✓":"Copied ✓";setTimeout(function(){btn.textContent=o;},1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,done);}
+  else{var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}
+}
+function tick(){
+  var d=new Date();
+  document.getElementById("clock").textContent=
+    d.toLocaleDateString(lang==="mk"?"mk-MK":"en-GB",{day:"2-digit",month:"short",year:"numeric"})+
+    " · "+d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
+}
+load();
+try{var sl=localStorage.getItem("wpa_ip_lang");if(sl)lang=sl;}catch(e){}
+buildChecklist();buildBots();setLang(lang);render();tick();setInterval(tick,30000);
+</script>
+</body>
+</html>
