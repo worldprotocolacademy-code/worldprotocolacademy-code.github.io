@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📖 WPA Симболичен Речник | World Protocol Academy</title>
+<meta name="description" content="WPA Symbolic Glossary — интерактивен речник на протоколарни, дипломатски и институционални термини">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/symbolic-glossary.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    padding: 30px 20px;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1em;
+    font-style: italic;
+}
+.search-box {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    position: relative;
+}
+.search-input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    background: rgba(20,20,40,0.8);
+    border: 2px solid rgba(212,175,55,0.3);
+    border-radius: 30px;
+    color: #e0d5c1;
+    font-family: 'Georgia', serif;
+    font-size: 1em;
+    outline: none;
+    transition: all 0.3s ease;
+}
+.search-input:focus {
+    border-color: #d4af37;
+    box-shadow: 0 0 20px rgba(212,175,55,0.2);
+}
+.search-input::placeholder {
+    color: #605040;
+}
+.search-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2em;
+    color: #d4af37;
+}
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.filter-btn {
+    padding: 8px 18px;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 20px;
+    color: #a09070;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-size: 0.85em;
+    transition: all 0.3s ease;
+}
+.filter-btn:hover, .filter-btn.active {
+    background: rgba(212,175,55,0.2);
+    border-color: #d4af37;
+    color: #d4af37;
+}
+.glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.term-card {
+    background: rgba(20,20,40,0.7);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 15px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.term-card:hover {
+    border-color: rgba(212,175,55,0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(212,175,55,0.1);
+}
+.term-card.hidden {
+    display: none;
+}
+.term-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+.term-word {
+    font-size: 1.3em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.term-word-en {
+    font-size: 0.9em;
+    color: #a09070;
+    font-style: italic;
+}
+.term-category {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+}
+.cat-protocol { background: rgba(231,76,60,0.15); color: #f1948a; border: 1px solid rgba(231,76,60,0.3); }
+.cat-diplomacy { background: rgba(52,152,219,0.15); color: #85c1e9; border: 1px solid rgba(52,152,219,0.3); }
+.cat-communication { background: rgba(155,89,182,0.15); color: #bb8fce; border: 1px solid rgba(155,89,182,0.3); }
+.cat-security { background: rgba(26,188,156,0.15); color: #76d7c4; border: 1px solid rgba(26,188,156,0.3); }
+.cat-general { background: rgba(212,175,55,0.15); color: #d4af37; border: 1px solid rgba(212,175,55,0.3); }
+.term-definition {
+    font-size: 0.95em;
+    line-height: 1.7;
+    color: #c0b090;
+    margin-bottom: 12px;
+}
+.term-definition-en {
+    font-size: 0.85em;
+    line-height: 1.6;
+    color: #807060;
+    font-style: italic;
+    margin-bottom: 12px;
+    padding-left: 15px;
+    border-left: 2px solid rgba(212,175,55,0.2);
+}
+.term-origin {
+    font-size: 0.8em;
+    color: #a09070;
+    margin-bottom: 10px;
+}
+.term-origin strong {
+    color: #d4af37;
+}
+.term-related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+.related-tag {
+    background: rgba(212,175,55,0.08);
+    border: 1px solid rgba(212,175,55,0.2);
+    color: #a09070;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.related-tag:hover {
+    background: rgba(212,175,55,0.15);
+    color: #d4af37;
+}
+.stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.stat-box {
+    text-align: center;
+    padding: 15px 25px;
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 12px;
+}
+.stat-box-number {
+    font-size: 1.8em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.stat-box-label {
+    font-size: 0.8em;
+    color: #a09070;
+    margin-top: 5px;
+}
+.wpa-footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    .glossary-grid { grid-template-columns: 1fr; }
+    .term-header { flex-direction: column; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>📖 WPA Симболичен Речник</h1>
+    <p>Интерактивен речник на протоколарни, дипломатски и институционални термини</p>
+    <p style="font-size:0.9em;">Symbolic Glossary — Protocol, Diplomatic & Institutional Terms</p>
+</div>
+
+<div class="stats-bar">
+    <div class="stat-box">
+        <div class="stat-box-number" id="totalTerms">25</div>
+        <div class="stat-box-label">Термини</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-box-number">5</div>
+        <div class="stat-box-label">Категории</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-box-number">🇲🇰+🇬🇧</div>
+        <div class="stat-box-label">Двојазичен</div>
+    </div>
+</div>
+
+<div class="search-box">
+    <input type="text" class="search-input" id="searchInput" placeholder="Пребарај термин... / Search term...">
+    <span class="search-icon">🔍</span>
+</div>
+
+<div class="category-filters">
+    <button class="filter-btn active" onclick="filterCategory('all')">Сите</button>
+    <button class="filter-btn" onclick="filterCategory('protocol')">Протокол</button>
+    <button class="filter-btn" onclick="filterCategory('diplomacy')">Дипломатија</button>
+    <button class="filter-btn" onclick="filterCategory('communication')">Комуникација</button>
+    <button class="filter-btn" onclick="filterCategory('security')">Безбедност</button>
+    <button class="filter-btn" onclick="filterCategory('general')">Општи</button>
+</div>
+
+<div class="glossary-grid" id="glossaryGrid"></div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a>
+    </p>
+</div>
+
+<script>
+const glossary = [
+    {
+        word: "Протокол",
+        wordEn: "Protocol",
+        category: "protocol",
+        definition: "Систем од правила, процедури и обичаи што го регулираат официјалното однесување, церемониите и комуникацијата во државни, дипломатски и институционални средини. Во WPA, протоколот се третира како мерлива институционална дисциплина.",
+        definitionEn: "A system of rules, procedures and customs regulating official behaviour, ceremonies and communication in state, diplomatic and institutional environments. In WPA, protocol is treated as a measurable institutional discipline.",
+        origin: "Грчки: πρωτόκολλον (prōtókollon) — 'прв лепенка' (на свиток)",
+        related: ["Церемонијал", "Предимство", "Дипломатија"]
+    },
+    {
+        word: "Дипломатија",
+        wordEn: "Diplomacy",
+        category: "diplomacy",
+        definition: "Уметност и практика на водење преговори, одржување меѓународни односи и претставување на државни интереси пред други држави и меѓународни организации. Вклучува билатерални, мултилатерални и јавна дипломатија.",
+        definitionEn: "The art and practice of conducting negotiations, maintaining international relations and representing state interests before other states and international organizations. Includes bilateral, multilateral and public diplomacy.",
+        origin: "Грчки: δίπλωμα (díplōma) — 'официјален документ, овластување'",
+        related: ["Протокол", "Преговарање", "Меѓународни односи"]
+    },
+    {
+        word: "Предимство",
+        wordEn: "Precedence",
+        category: "protocol",
+        definition: "Редот по кој се рангираат лица или држави според нивниот ранг, функција или старешинство во официјални прилики. Клучен елемент на протоколарната логика за организација на настани, седење и процесии.",
+        definitionEn: "The order in which persons or states are ranked according to their rank, function or seniority in official occasions. A key element of protocol logic for organizing events, seating and processions.",
+        origin: "Латински: praecedere — 'оди напред, води'",
+        related: ["Протокол", "Церемонијал", "Ранг"]
+    },
+    {
+        word: "Церемонијал",
+        wordEn: "Ceremonial",
+        category: "protocol",
+        definition: "Формални ритуали, обреди и симболични дејства што се изведуваат во официјални прилики за да се изрази почит, важност или државна/институционална достоинство. Секоја церемонија има своја внатрешна логика и симболика.",
+        definitionEn: "Formal rituals, rites and symbolic actions performed on official occasions to express respect, importance or state/institutional dignity. Every ceremony has its own internal logic and symbolism.",
+        origin: "Латински: caerimonia — 'свет ритуал, обред'",
+        related: ["Протокол", "Ритуал", "Симболика"]
+    },
+    {
+        word: "Прецеданс",
+        wordEn: "Precedence (French: Précédence)",
+        category: "protocol",
+        definition: "Француски термин што во дипломатскиот јазик означува ред на предимство. Често се користи во мултилатерални рамки (ОН, ЕУ, НАТО) за дефинирање на редот на седење, говорење или пристигнување.",
+        definitionEn: "French term in diplomatic language denoting order of precedence. Often used in multilateral frameworks (UN, EU, NATO) to define the order of seating, speaking or arrival.",
+        origin: "Француски: précédence — 'предност, приоритет'",
+        related: ["Предимство", "Протокол", "Дипломатија"]
+    },
+    {
+        word: "Аташе",
+        wordEn: "Attaché",
+        category: "diplomacy",
+        definition: "Дипломатски службеник со специјализирана надлежност (одбрана, економија, култура, наука) во состав на амбасада или дипломатска мисија. Не е амбасадор, туку експерт за конкретна област.",
+        definitionEn: "A diplomatic officer with specialized competence (defence, economy, culture, science) within an embassy or diplomatic mission. Not an ambassador, but an expert in a specific field.",
+        origin: "Француски: attaché — 'закачен, назначен'",
+        related: ["Дипломатија", "Амбасада", "Мисија"]
+    },
+    {
+        word: "Амбасада",
+        wordEn: "Embassy",
+        category: "diplomacy",
+        definition: "Главна дипломатска мисија на една држава во друга држава, предводена од амбасадор. Амбасадата е екстериторијална — просторот ѝ припаѓа на државата што ја испраќа, а не на државата-домаќин.",
+        definitionEn: "The principal diplomatic mission of one state in another state, headed by an ambassador. The embassy is extraterritorial — the space belongs to the sending state, not the host state.",
+        origin: "Старофранцуски: ambassade — 'мисија, служба'",
+        related: ["Дипломатија", "Амбасадор", "Мисија"]
+    },
+    {
+        word: "Екстериторијалност",
+        wordEn: "Extraterritoriality",
+        category: "diplomacy",
+        definition: "Правен принцип според кој одредени простори (амбасади, конзулати, резиденции на шефови на држави) не потпаѓаат под јурисдикција на државата-домаќин, туку на државата што ги поседува.",
+        definitionEn: "Legal principle whereby certain premises (embassies, consulates, residences of heads of state) do not fall under the jurisdiction of the host state, but of the owning state.",
+        origin: "Латински: extra — 'надвор' + territorium — 'територија'",
+        related: ["Амбасада", "Дипломатски имунитет", "Меѓународно право"]
+    },
+    {
+        word: "Дипломатски имунитет",
+        wordEn: "Diplomatic Immunity",
+        category: "diplomacy",
+        definition: "Привилегија на дипломатскиот персонал да не биде подложен на кривично гонење, цивилен судски процес или даночни обврзувања во државата-домаќин. Основана на Виенската конвенција за дипломатски односи (1961).",
+        definitionEn: "Privilege of diplomatic personnel not to be subject to criminal prosecution, civil judicial process or tax obligations in the host state. Based on the Vienna Convention on Diplomatic Relations (1961).",
+        origin: "Латински: immunitas — 'ослободување, заштита'",
+        related: ["Амбасада", "Екстериторијалност", "Виенска конвенција"]
+    },
+    {
+        word: "Виенска конвенција",
+        wordEn: "Vienna Convention",
+        category: "diplomacy",
+        definition: "Клучен меѓународен договор за дипломатски односи (1961) и конзуларни односи (1963). Ја дефинира дипломатската имунитет, екстериторијалноста, класите на дипломатски персонал и протоколарните права.",
+        definitionEn: "Key international treaty on diplomatic relations (1961) and consular relations (1963). Defines diplomatic immunity, extraterritoriality, classes of diplomatic personnel and protocol rights.",
+        origin: "Именувана по Виена, каде што е усвоена",
+        related: ["Дипломатски имунитет", "Екстериторијалност", "Меѓународно право"]
+    },
+    {
+        word: "Стратегиска комуникација",
+        wordEn: "Strategic Communication",
+        category: "communication",
+        definition: "Планирана и координирана комуникација што ги усогласува пораките, дејствата и сликите со стратегиските цели на институцијата или државата. Вклучува јавни односи, медиумски односи, кризна комуникација и дигитална репутација.",
+        definitionEn: "Planned and coordinated communication that aligns messages, actions and images with the strategic goals of the institution or state. Includes public relations, media relations, crisis communication and digital reputation.",
+        origin: "Латински: communicare — 'да споделам, да направам заедничко'",
+        related: ["Јавни односи", "Кризна комуникација", "Репутација"]
+    },
+    {
+        word: "Кризна комуникација",
+        wordEn: "Crisis Communication",
+        category: "communication",
+        definition: "Специјализиран протокол за комуникација во итни, непредвидени или дестабилизирачки ситуации. Целта е да се зачува институционалната репутација, да се обезбеди точна информација и да се контролира наративот.",
+        definitionEn: "Specialized protocol for communication in emergency, unforeseen or destabilizing situations. The goal is to preserve institutional reputation, provide accurate information and control the narrative.",
+        origin: "Грчки: κρίσις (krisis) — 'пресуден момент, одлука'",
+        related: ["Стратегиска комуникација", "Репутација", "Медиуми"]
+    },
+    {
+        word: "Јавни односи",
+        wordEn: "Public Relations (PR)",
+        category: "communication",
+        definition: "Стратешки менаџмент на односите меѓу институцијата и јавноста. Целта е да се изгради и одржува позитивна јавна слика преку транспарентност, достапност и професионална комуникација.",
+        definitionEn: "Strategic management of relations between the institution and the public. The goal is to build and maintain a positive public image through transparency, accessibility and professional communication.",
+        origin: "Англиски: public relations — 'јавни односи' (првпат користено 1903)",
+        related: ["Стратегиска комуникација", "Медиуми", "Репутација"]
+    },
+    {
+        word: "Безбедност на настан",
+        wordEn: "Event Security",
+        category: "security",
+        definition: "Комплексен систем на мерки, процедури и персонал за заштита на учесници, имот и институционален имиџ на официјални настани. Вклучува проценка на ризици, контрола на пристап, евакуациски планови и медицинска поддршка.",
+        definitionEn: "Complex system of measures, procedures and personnel for protecting participants, property and institutional image at official events. Includes risk assessment, access control, evacuation plans and medical support.",
+        origin: "Латински: securitas — 'без грижа, безбедност'",
+        related: ["Кризна координација", "VIP заштита", "Протокол"]
+    },
+    {
+        word: "VIP заштита",
+        wordEn: "VIP Protection",
+        category: "security",
+        definition: "Специјализирани мерки за безбедност на високи личности ( Very Important Persons) — шефови на држави, амбасадори, министри, делегации. Вклучува лична охрана, безбедносна проценка на рути и локации, и координација со локалните служби.",
+        definitionEn: "Specialized security measures for Very Important Persons — heads of state, ambassadors, ministers, delegations. Includes personal protection, security assessment of routes and locations, and coordination with local services.",
+        origin: "Акроним: VIP = Very Important Person (првпат користен во Втората светска војна)",
+        related: ["Безбедност на настан", "Кризна координација", "Протокол"]
+    },
+    {
+        word: "Кризна координација",
+        wordEn: "Crisis Coordination",
+        category: "security",
+        definition: "Институционален процес на координирано дејствување во кризни ситуации. Бара јасен ланец на команди, дефинирани улоги, комуникациски протоколи и резервни планови (Plan B).",
+        definitionEn: "Institutional process of coordinated action in crisis situations. Requires a clear chain of command, defined roles, communication protocols and backup plans (Plan B).",
+        origin: "Грчки: κρίσις + латински: coordinare — 'реди во ред'",
+        related: ["Безбедност на настан", "VIP заштита", "Инцидент-протокол"]
+    },
+    {
+        word: "Инцидент-протокол",
+        wordEn: "Incident Protocol",
+        category: "security",
+        definition: "Предодреден постапковен модел за реагирање на безбедносни инциденти за време на официјални настани. Вклучува идентификација, ескалација, задржување (containment) и документирање.",
+        definitionEn: "Predetermined procedural model for responding to security incidents during official events. Includes identification, escalation, containment and documentation.",
+        origin: "Латински: incidere — 'паѓа врз, се случува'",
+        related: ["Кризна координација", "Безбедност на настан", "План Б"]
+    },
+    {
+        word: "Мерливост",
+        wordEn: "Measurability",
+        category: "general",
+        definition: "WPA-централен концепт: способноста на протоколарната изведба да се квантифицира, спореди и верификува спрема јасен стандард. Противставена на субјективното 'рангирање' — WPA мери, не рангира.",
+        definitionEn: "WPA-central concept: the ability of protocol performance to be quantified, compared and verified against a clear standard. Opposed to subjective 'ranking' — WPA measures, does not rank.",
+        origin: "Латински: mensura — 'мера, мерка'",
+        related: ["Протоколометрија", "PSPI", "Индекс"]
+    },
+    {
+        word: "Протоколометрија",
+        wordEn: "Protocolometry",
+        category: "general",
+        definition: "Работен поим скован од WPA за мерењето на протоколарната изведба спрема стандард. Не е универзално воспоставена дисциплина, туку методолошки поим во настанување. Претставува еден од столбовите на WPA методологијата.",
+        definitionEn: "Working term coined by WPA for the measurement of protocol performance against a standard. Not a universally established discipline, but an emerging methodological term. Represents one of the pillars of WPA methodology.",
+        origin: "WPA-coined: protocol + -metry (грчки: μέτρον — 'мера')",
+        related: ["Мерливост", "PSPI", "Индекс"]
+    },
+    {
+        word: "Бон-тон",
+        wordEn: "Bon ton / Good manners",
+        category: "general",
+        definition: "Француски израз за 'добар тон' — општоприфатени норми на учтиво, пристојно и соодветно однесување во социјални и професионални средини. Во WPA, бон-тонот е темел на Foundation нивото.",
+        definitionEn: "French expression for 'good tone' — generally accepted norms of polite, decent and appropriate behaviour in social and professional environments. In WPA, bon ton is the foundation of the Foundation level.",
+        origin: "Француски: bon ton — 'добар тон, добар вкус'",
+        related: ["Етикеција", "Протокол", "Foundation"]
+    },
+    {
+        word: "Етикеција",
+        wordEn: "Etiquette",
+        category: "general",
+        definition: "Формален кодекс на однесување во определени средини или прилики. Во протоколарниот контекст, етикецијата ги дефинира правилата за седење, јадење, обраќање, облекување и социјална интеракција.",
+        definitionEn: "Formal code of behaviour in certain environments or occasions. In the protocol context, etiquette defines rules for seating, dining, addressing, dressing and social interaction.",
+        origin: "Француски: étiquette — 'етикета, натпис' (првично: 'табла со упатства' на дворот)",
+        related: ["Бон-тон", "Протокол", "Церемонијал"]
+    },
+    {
+        word: "Ранг",
+        wordEn: "Rank",
+        category: "protocol",
+        definition: "Хиерархиска позиција на лице или држава во официјална структура. Во дипломатијата, рангот го одредува редот на предимство, протоколарните права и обврски. Не смее да се меша со лична вредност или достоинство.",
+        definitionEn: "Hierarchical position of a person or state in an official structure. In diplomacy, rank determines the order of precedence, protocol rights and obligations. Must not be confused with personal worth or dignity.",
+        origin: "Француски: rang — 'ред, редица'",
+        related: ["Предимство", "Протокол", "Церемонијал"]
+    },
+    {
+        word: "Самит",
+        wordEn: "Summit",
+        category: "diplomacy",
+        definition: "Високо ниво на средба на шефови на држави или влади, или нивни претставници, за разговор за клучни меѓународни прашања. Самитите имаат строг протоколарен режим, вклучувајќи ред на предимство, седење, фотографирање и изјави.",
+        definitionEn: "High-level meeting of heads of state or government, or their representatives, to discuss key international issues. Summits have strict protocol regimes, including precedence order, seating, photography and statements.",
+        origin: "Англиски: summit — 'врв' (метафорично: врвот на државното водство)",
+        related: ["Дипломатија", "Протокол", "Мултилатерални"]
+    },
+    {
+        word: "Мултилатерални односи",
+        wordEn: "Multilateral Relations",
+        category: "diplomacy",
+        definition: "Меѓународни односи што вклучуваат повеќе држави или меѓународни организации истовремено. Споредени со билатералните (две држави), мултилатералните бараат покомплексен протоколарен менаџмент.",
+        definitionEn: "International relations involving multiple states or international organizations simultaneously. Compared to bilateral (two states), multilateral relations require more complex protocol management.",
+        origin: "Латински: multi- — 'многу' + lateralis — 'страничен'",
+        related: ["Билатерални", "Дипломатија", "Самит"]
+    },
+    {
+        word: "Билатерални односи",
+        wordEn: "Bilateral Relations",
+        category: "diplomacy",
+        definition: "Меѓународни односи меѓу две држави. Билатералните средби имаат поедноставен протоколарен режим од мултилатералните, но бараат длабоко познавање на специфичните културни и дипломатски норми на двете држави.",
+        definitionEn: "International relations between two states. Bilateral meetings have a simpler protocol regime than multilateral ones, but require deep knowledge of the specific cultural and diplomatic norms of both states.",
+        origin: "Латински: bi- — 'два' + lateralis — 'страничен'",
+        related: ["Мултилатерални", "Дипломатија", "Амбасада"]
+    },
+    {
+        word: "План Б",
+        wordEn: "Plan B",
+        category: "security",
+        definition: "Резервен план за алтернативно дејствување кога основниот план (Plan A) не може да се реализира. Во протоколарната и безбедносна пракса, План Б е задолжителен за секој настан со висок ризик.",
+        definitionEn: "Backup plan for alternative action when the main plan (Plan A) cannot be realized. In protocol and security practice, Plan B is mandatory for every high-risk event.",
+        origin: "Англиски: plan B — 'резервен план' (во употреба од 20 век)",
+        related: ["Кризна координација", "Безбедност", "Инцидент-протокол"]
+    },
+    {
+        word: "Акредитација",
+        wordEn: "Accreditation",
+        category: "general",
+        definition: "Формален процес на признавање квалитетот или компетентноста на институција или програма од страна на овластено тело. Во WPA контекст, акредитацијата не е автоматска — секоја институција мора да ги докаже своите стандарди.",
+        definitionEn: "Formal process of recognizing the quality or competence of an institution or programme by an authorized body. In the WPA context, accreditation is not automatic — each institution must prove its standards.",
+        origin: "Латински: accreditare — 'да се довери, да се овласти'",
+        related: ["Сертификација", "Стандарди", "Мерливост"]
+    },
+    {
+        word: "Сертификација",
+        wordEn: "Certification",
+        category: "general",
+        definition: "Процес на потврдување дека лице или институција ги исполнува одредени стандарди или компетенции. WPA сертификатите се професионални, не академски степени, и се базираат на мерлива подготвеност.",
+        definitionEn: "Process of confirming that a person or institution meets certain standards or competencies. WPA certificates are professional, not academic degrees, and are based on measurable preparedness.",
+        origin: "Латински: certificare — 'да се потврди, да се завери'",
+        related: ["Акредитација", "Мерливост", "Програми"]
+    }
+];
+
+let currentFilter = 'all';
+
+function renderGlossary(filter = 'all', search = '') {
+    const grid = document.getElementById('glossaryGrid');
+    grid.innerHTML = '';
+    let count = 0;
+
+    glossary.forEach(term => {
+        if (filter !== 'all' && term.category !== filter) return;
+        if (search && !term.word.toLowerCase().includes(search.toLowerCase()) && 
+            !term.wordEn.toLowerCase().includes(search.toLowerCase()) &&
+            !term.definition.toLowerCase().includes(search.toLowerCase())) return;
+
+        count++;
+        const card = document.createElement('div');
+        card.className = 'term-card';
+        card.innerHTML = `
+            <div class="term-header">
+                <div>
+                    <div class="term-word">${term.word}</div>
+                    <div class="term-word-en">${term.wordEn}</div>
+                </div>
+                <span class="term-category cat-${term.category}">${term.category}</span>
+            </div>
+            <div class="term-definition">${term.definition}</div>
+            <div class="term-definition-en">${term.definitionEn}</div>
+            <div class="term-origin"><strong>📖 Потекло:</strong> ${term.origin}</div>
+            <div class="term-related">
+                <strong style="color:#a09070; font-size:0.8em;">🔗 Поврзано:</strong>
+                ${term.related.map(r => `<span class="related-tag">${r}</span>`).join('')}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    document.getElementById('totalTerms').textContent = count;
+}
+
+function filterCategory(cat) {
+    currentFilter = cat;
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    renderGlossary(cat, document.getElementById('searchInput').value);
+}
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    renderGlossary(currentFilter, e.target.value);
+});
+
+renderGlossary();
+</script>
+
+</body>
+</html>

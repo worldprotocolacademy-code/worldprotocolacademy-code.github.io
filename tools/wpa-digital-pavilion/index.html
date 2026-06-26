@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚜️ WPA Дигитален Павилјон | World Protocol Academy</title>
+<meta name="description" content="WPA Digital Pavilion — една влезна точка кон сите дигитални инструменти на Светска академија за протокол: часовник, хронометар, календар, речник, мапа, компас, квиз, пасош и виртуелна шетница.">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+    --gold: #d4af37;
+    --gold-soft: #a09070;
+    --ink: #e0d5c1;
+    --ink-dim: #c0b090;
+    --line: rgba(212,175,55,0.2);
+}
+html { scroll-behavior: smooth; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: var(--ink);
+    padding: 40px 20px 0;
+}
+
+/* ── Hero ───────────────────────────────────────────── */
+.hero {
+    max-width: 1100px;
+    margin: 0 auto 20px;
+    text-align: center;
+    padding: 30px 20px 50px;
+    position: relative;
+}
+.hero::before {
+    content: "";
+    position: absolute;
+    top: -10%; left: 50%;
+    width: 520px; height: 520px;
+    max-width: 90vw;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 65%);
+    z-index: 0;
+    animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+.crest { position: relative; z-index: 1; font-size: 3.4em; line-height: 1; }
+.hero h1 {
+    position: relative; z-index: 1;
+    font-size: 2.5em;
+    color: var(--gold);
+    text-shadow: 0 0 24px rgba(212,175,55,0.3);
+    margin: 14px 0 6px;
+    letter-spacing: 0.5px;
+}
+.hero .eyebrow {
+    position: relative; z-index: 1;
+    font-size: 0.8em;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-soft);
+}
+.hero .institute {
+    position: relative; z-index: 1;
+    color: var(--ink-dim);
+    font-size: 1.05em;
+    font-style: italic;
+    margin-bottom: 22px;
+}
+.doctrine {
+    position: relative; z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 22px 30px;
+    border-left: 3px solid var(--gold);
+    border-right: 3px solid var(--gold);
+    background: rgba(212,175,55,0.04);
+    border-radius: 8px;
+}
+.doctrine .mk { font-size: 1.15em; color: var(--gold); }
+.doctrine .en { font-size: 0.85em; color: var(--gold-soft); font-style: italic; margin-top: 6px; }
+.doctrine .sep { height: 1px; background: var(--line); margin: 14px auto; width: 60%; }
+
+.stats {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;
+    margin-top: 28px;
+}
+.stat {
+    background: rgba(212,175,55,0.08);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 18px;
+    min-width: 110px;
+}
+.stat b { display: block; font-size: 1.5em; color: var(--gold); }
+.stat span { font-size: 0.72em; color: var(--gold-soft); letter-spacing: 0.5px; }
+
+/* ── Wings ──────────────────────────────────────────── */
+.wing { max-width: 1100px; margin: 0 auto 46px; }
+.wing-head {
+    display: flex; align-items: baseline; gap: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 26px;
+}
+.wing-num {
+    font-size: 1.6em; color: var(--gold); font-weight: bold;
+    min-width: 42px;
+}
+.wing-title { font-size: 1.35em; color: var(--gold); }
+.wing-title .en { display: block; font-size: 0.62em; color: var(--gold-soft); font-style: italic; letter-spacing: 0.5px; margin-top: 2px; }
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
+}
+.card {
+    display: flex; flex-direction: column;
+    background: rgba(20,20,40,0.7);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 26px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+.card::after {
+    content: "";
+    position: absolute; inset: 0;
+    border-radius: 16px;
+    box-shadow: inset 0 0 0 1px transparent;
+    pointer-events: none;
+}
+.card:hover, .card:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--gold);
+    box-shadow: 0 14px 36px rgba(212,175,55,0.14);
+    outline: none;
+}
+.card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.card-icon { font-size: 2.3em; margin-bottom: 12px; }
+.card-title { font-size: 1.2em; color: var(--gold); margin-bottom: 2px; }
+.card-title-en { font-size: 0.82em; color: var(--gold-soft); font-style: italic; margin-bottom: 12px; }
+.card-desc { font-size: 0.9em; color: var(--ink-dim); line-height: 1.6; flex: 1; }
+.card-enter {
+    margin-top: 16px;
+    font-size: 0.85em;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+    transition: letter-spacing 0.25s ease;
+}
+.card:hover .card-enter { letter-spacing: 2px; }
+
+/* ── Integrity strip ────────────────────────────────── */
+.integrity {
+    max-width: 1100px;
+    margin: 0 auto 46px;
+    background: rgba(212,175,55,0.05);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 30px;
+    text-align: center;
+}
+.integrity h3 { color: var(--gold); font-size: 1.05em; margin-bottom: 12px; }
+.integrity p { color: var(--gold-soft); font-size: 0.85em; line-height: 1.7; max-width: 760px; margin: 0 auto; }
+
+/* ── Footer ─────────────────────────────────────────── */
+.wpa-footer {
+    text-align: center;
+    padding: 34px 20px 40px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.wpa-footer strong { color: var(--gold-soft); }
+.wpa-footer a { color: var(--gold); text-decoration: none; }
+.wpa-footer a:hover { text-decoration: underline; }
+.wpa-footer .small { font-size: 0.8em; color: #504030; margin-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+}
+@media (max-width: 600px) {
+    .hero h1 { font-size: 1.9em; }
+    .wing-head { gap: 10px; }
+    .wing-num { font-size: 1.3em; min-width: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<header class="hero">
+    <div class="crest">⚜️</div>
+    <div class="eyebrow">World Protocol Academy</div>
+    <h1>Дигитален Павилјон</h1>
+    <div class="institute">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</div>
+
+    <div class="doctrine">
+        <div class="mk">„Преговарањето е опционално. Протоколот е апсолутен.“</div>
+        <div class="en">Negotiation is optional. Protocol is absolute.</div>
+        <div class="sep"></div>
+        <div class="mk">„Не рангираме. Мериме.“</div>
+        <div class="en">We do not rank. We measure.</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat"><b>10</b><span>ИНСТРУМЕНТИ</span></div>
+        <div class="stat"><b>3</b><span>КРИЛА</span></div>
+        <div class="stat"><b>🇲🇰+🇬🇧</b><span>ДВОЈАЗИЧНО</span></div>
+    </div>
+</header>
+
+<!-- ── WING I — IDENTITY & ORIENTATION ── -->
+<section class="wing">
+    <div class="wing-head">
+        <div class="wing-num">I</div>
+        <div class="wing-title">Идентитет и ориентација<span class="en">Identity &amp; Orientation</span></div>
+    </div>
+    <div class="cards">
+        <a class="card" href="protocol-compass.html">
+            <div class="card-icon">⚜️</div>
+            <div class="card-title">Протоколарен Компас</div>
+            <div class="card-title-en">Protocol Compass</div>
+            <div class="card-desc">Четирите столба на Академијата — протокол, дипломатија, комуникација, безбедност — поставени на една стрелка.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="institute-passport.html">
+            <div class="card-icon">🛂</div>
+            <div class="card-title">Институтски Пасош</div>
+            <div class="card-title-en">Institute Passport</div>
+            <div class="card-desc">Повелбата, домените, истражувачките правци и инструментите на Институтот — во документ за печатење.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="virtual-tour.html">
+            <div class="card-icon">🏛️</div>
+            <div class="card-title">Виртуелна Шетница</div>
+            <div class="card-title-en">Virtual Tour</div>
+            <div class="card-desc">Шест простории, едно поминување — од влезот низ библиотеката до канцеларијата на Институтот.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+    </div>
+</section>
+
+<!-- ── WING II — TIME & CHRONOLOGY ── -->
+<section class="wing">
+    <div class="wing-head">
+        <div class="wing-num">II</div>
+        <div class="wing-title">Време и хронологија<span class="en">Time &amp; Chronology</span></div>
+    </div>
+    <div class="cards">
+        <a class="card" href="protocol-clock.html">
+            <div class="card-icon">🕐</div>
+            <div class="card-title">Протоколарен Часовник</div>
+            <div class="card-title-en">Protocol Clock</div>
+            <div class="card-desc">Тековно време во главните дипломатски центри — Њујорк, Женева, Виена, Брисел, Скопје — во еден поглед.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="academic-chronometer.html">
+            <div class="card-icon">⏱️</div>
+            <div class="card-title">Академски Хронометар</div>
+            <div class="card-title-en">Academic Chronometer</div>
+            <div class="card-desc">Колку постои WPA, колку остана до WPA Journal, и временска линија на институционалните пресвртници.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="protocol-calendar.html">
+            <div class="card-icon">📅</div>
+            <div class="card-title">Протоколарен Календар</div>
+            <div class="card-title-en">Protocol Calendar</div>
+            <div class="card-desc">Дипломатски, државни и институционални датуми — со следните настани истакнати по ред.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+    </div>
+</section>
+
+<!-- ── WING III — KNOWLEDGE & PRACTICE ── -->
+<section class="wing">
+    <div class="wing-head">
+        <div class="wing-num">III</div>
+        <div class="wing-title">Знаење и пракса<span class="en">Knowledge &amp; Practice</span></div>
+    </div>
+    <div class="cards">
+        <a class="card" href="symbolic-glossary.html">
+            <div class="card-icon">📖</div>
+            <div class="card-title">Симболичен Речник</div>
+            <div class="card-title-en">Symbolic Glossary</div>
+            <div class="card-desc">Протоколарни, дипломатски и безбедносни термини со дефиниции, потекло и поврзани поими — со пребарување.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="daily-tip.html">
+            <div class="card-icon">💡</div>
+            <div class="card-title">Дневен Совет</div>
+            <div class="card-title-en">Daily Protocol Tip</div>
+            <div class="card-desc">Една применлива протоколарна лекција дневно — од ракување до трпезарски ред и институционална е-пошта.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="daily-quiz.html">
+            <div class="card-icon">❓</div>
+            <div class="card-title">Протоколарен Квиз</div>
+            <div class="card-title-en">Daily Protocol Quiz</div>
+            <div class="card-desc">Десет прашања со објаснувања — проверете го знаењето за предимство, симболи, безбедност и доктрина.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+        <a class="card" href="global-map.html">
+            <div class="card-icon">🗺️</div>
+            <div class="card-title">Светска Мапа</div>
+            <div class="card-title-en">Global Institutions Map</div>
+            <div class="card-desc">Институции од областа на протокол и дипломатија на интерактивна мапа, групирани по фер категории.</div>
+            <div class="card-enter">Влези →</div>
+        </a>
+    </div>
+</section>
+
+<!-- ── INTEGRITY STRIP ── -->
+<section class="integrity">
+    <h3>⚖️ Принцип на интегритет / Integrity Principle</h3>
+    <p>
+        Сите бројки, датуми и тврдења во овие инструменти се проверливи и подложни на корекција.
+        Овие алатки се информативни, не претставуваат акредитација, официјално признавање или конечна ранг-листа.
+        <br><span style="font-style:italic;">Every figure, date and claim across these instruments is verifiable and open to correction. These tools are informational; they are not accreditation, official recognition, or a final ranking.</span>
+    </p>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p>Независна дигитална образовна, истражувачка и авторска платформа · Развојна фаза 2026</p>
+    <p style="margin-top:14px;">
+        <a href="/">Главна страница</a> ·
+        <a href="/institute.html">Институт</a>
+    </p>
+    <p class="small">© 2026 World Protocol Academy · Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Светска академија за протокол · World Protocol Academy · Сите права задржани.</p>
+</footer>
+
+</body>
+</html>

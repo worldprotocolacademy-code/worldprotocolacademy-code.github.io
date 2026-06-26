@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚜️ WPA Протоколарен Компас | World Protocol Academy</title>
+<meta name="description" content="WPA Протоколарен Компас — четири столба на Светска академија за протокол: Протокол, Дипломатија, Комуникација, Безбедност">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/protocol-compass.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2.2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1.1em;
+    font-style: italic;
+}
+.compass-container {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    margin: 30px auto;
+}
+.compass-outer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(212,175,55,0.3);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%);
+}
+.compass-inner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border: 2px solid #d4af37;
+    border-radius: 50%;
+    background: rgba(10,10,10,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 10;
+}
+.compass-inner .logo {
+    font-size: 2em;
+    color: #d4af37;
+}
+.compass-inner .text {
+    font-size: 0.7em;
+    color: #d4af37;
+    margin-top: 5px;
+    text-align: center;
+}
+.direction {
+    position: absolute;
+    width: 180px;
+    padding: 20px;
+    background: rgba(20,20,35,0.9);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    text-align: center;
+}
+.direction:hover {
+    transform: scale(1.08);
+    border-color: #d4af37;
+    box-shadow: 0 0 30px rgba(212,175,55,0.2);
+    background: rgba(30,30,50,0.95);
+}
+.direction .icon {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+.direction .title {
+    font-size: 1.3em;
+    color: #d4af37;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+.direction .title-en {
+    font-size: 0.9em;
+    color: #a09070;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+.direction .desc {
+    font-size: 0.85em;
+    color: #c0b090;
+    line-height: 1.5;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+.direction:hover .desc {
+    opacity: 1;
+    max-height: 200px;
+    margin-top: 10px;
+}
+/* Positions */
+.north {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-top: 3px solid #d4af37;
+}
+.north:hover {
+    transform: translateX(-50%) scale(1.08);
+}
+.east {
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-right: 3px solid #d4af37;
+}
+.east:hover {
+    transform: translateY(-50%) scale(1.08);
+}
+.south {
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-bottom: 3px solid #d4af37;
+}
+.south:hover {
+    transform: translateX(-50%) scale(1.08);
+}
+.west {
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 3px solid #d4af37;
+}
+.west:hover {
+    transform: translateY(-50%) scale(1.08);
+}
+/* Connecting lines */
+.line-h {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+}
+.line-v {
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    bottom: 10%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(212,175,55,0.3), transparent);
+}
+.compass-labels {
+    position: absolute;
+    font-size: 1.2em;
+    color: rgba(212,175,55,0.4);
+    font-weight: bold;
+}
+.label-n { top: 5px; left: 50%; transform: translateX(-50%); }
+.label-s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.label-e { right: 5px; top: 50%; transform: translateY(-50%); }
+.label-w { left: 5px; top: 50%; transform: translateY(-50%); }
+
+.wpa-footer {
+    margin-top: 50px;
+    text-align: center;
+    color: #706050;
+    font-size: 0.9em;
+    padding: 20px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    width: 100%;
+    max-width: 800px;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+.wpa-footer a:hover {
+    text-decoration: underline;
+}
+.quote-box {
+    margin-top: 30px;
+    padding: 25px 40px;
+    background: rgba(212,175,55,0.05);
+    border-left: 4px solid #d4af37;
+    border-radius: 0 10px 10px 0;
+    max-width: 700px;
+    font-style: italic;
+    font-size: 1.1em;
+    color: #d4c4a0;
+}
+.quote-author {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #a09070;
+    font-style: normal;
+}
+
+@media (max-width: 600px) {
+    .compass-container { width: 350px; height: 350px; }
+    .direction { width: 130px; padding: 12px; }
+    .direction .icon { font-size: 1.8em; }
+    .direction .title { font-size: 1em; }
+    .compass-inner { width: 90px; height: 90px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>⚜️ WPA Протоколарен Компас</h1>
+    <p>Четири столба на Светска академија за протокол — World Protocol Academy</p>
+    <p style="font-size:0.9em; margin-top:8px;">Four Pillars of the World Protocol Academy</p>
+</div>
+
+<div class="compass-container">
+    <div class="compass-outer"></div>
+    <div class="line-h"></div>
+    <div class="line-v"></div>
+
+    <div class="compass-labels label-n">N</div>
+    <div class="compass-labels label-s">S</div>
+    <div class="compass-labels label-e">E</div>
+    <div class="compass-labels label-w">W</div>
+
+    <div class="compass-inner">
+        <div class="logo">⚜️</div>
+        <div class="text">WPA<br>CORE</div>
+    </div>
+
+    <!-- NORTH: Protocol -->
+    <div class="direction north">
+        <div class="icon">🏛️</div>
+        <div class="title">ПРОТОКОЛ</div>
+        <div class="title-en">Protocol</div>
+        <div class="desc">
+            Државен, дипломатски, институционален, церемонијален и меѓународен протокол. Ред на предимство, знамиња, симболи и церемонијална логика.
+        </div>
+    </div>
+
+    <!-- EAST: Diplomacy -->
+    <div class="direction east">
+        <div class="icon">🤝</div>
+        <div class="title">ДИПЛОМАТИЈА</div>
+        <div class="title-en">Diplomacy</div>
+        <div class="desc">
+            Билатерални и мултилатерални односи, јавна дипломатија, одбранбена дипломатија, конференциски менаџмент и преговарачки методи.
+        </div>
+    </div>
+
+    <!-- SOUTH: Communication -->
+    <div class="direction south">
+        <div class="icon">📢</div>
+        <div class="title">КОМУНИКАЦИЈА</div>
+        <div class="title-en">Communication</div>
+        <div class="desc">
+            Јавен настап, односи со јавност, стратегиска комуникација, кризно комуницирање и институционална репутација.
+        </div>
+    </div>
+
+    <!-- WEST: Security -->
+    <div class="direction west">
+        <div class="icon">🛡️</div>
+        <div class="title">БЕЗБЕДНОСТ</div>
+        <div class="title-en">Security</div>
+        <div class="desc">
+            Безбедност на јавни настани, кризна координација, безбедност на високи личности, инцидент-протокол и заштита на дипломатскиот персонал.
+        </div>
+    </div>
+</div>
+
+<div class="quote-box">
+    "Преговарањето е опционално. Протоколот е апсолутен."
+    <div class="quote-author">— Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Светска академија за протокол · World Protocol Academy · Доктрина на WPA</div>
+</div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p>Независна дигитална образовна, истражувачка и авторска платформа · Развојна фаза 2026</p>
+    <p style="margin-top:15px;">
+        <a href="/">← Назад на главната страница</a> | 
+        <a href="/institute.html">Институт →</a>
+    </p>
+    <p style="margin-top:10px; font-size:0.8em; color:#504030;">
+        © 2026 World Protocol Academy. Сите права задржани.
+    </p>
+</div>
+
+</body>
+</html>

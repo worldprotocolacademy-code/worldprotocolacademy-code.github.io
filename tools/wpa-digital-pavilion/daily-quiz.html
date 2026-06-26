@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>❓ WPA Протоколарен Квиз | World Protocol Academy</title>
+<meta name="description" content="WPA Daily Protocol Quiz — секојдневен протоколарен квиз за тестирање на знаење">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/daily-quiz.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1em;
+    font-style: italic;
+}
+.quiz-container {
+    max-width: 700px;
+    width: 100%;
+    background: rgba(20,20,40,0.8);
+    border: 2px solid rgba(212,175,55,0.2);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.quiz-container::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212,175,55,0.03) 0%, transparent 70%);
+}
+.quiz-badge {
+    display: inline-block;
+    padding: 8px 20px;
+    background: rgba(212,175,55,0.15);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 20px;
+    color: #d4af37;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+.quiz-question-number {
+    font-size: 0.9em;
+    color: #a09070;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+.quiz-question {
+    font-size: 1.3em;
+    color: #e0d5c1;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+}
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+.quiz-option {
+    background: rgba(20,20,40,0.8);
+    border: 2px solid rgba(212,175,55,0.15);
+    border-radius: 12px;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.quiz-option:hover {
+    border-color: rgba(212,175,55,0.4);
+    background: rgba(212,175,55,0.05);
+}
+.quiz-option.selected {
+    border-color: #d4af37;
+    background: rgba(212,175,55,0.1);
+}
+.quiz-option.correct {
+    border-color: #2ecc71;
+    background: rgba(46,204,113,0.1);
+}
+.quiz-option.wrong {
+    border-color: #e74c3c;
+    background: rgba(231,76,60,0.1);
+}
+.option-letter {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+.option-text {
+    font-size: 1em;
+    color: #c0b090;
+}
+.quiz-result {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    display: none;
+}
+.quiz-result.show {
+    display: block;
+}
+.result-correct {
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.3);
+}
+.result-wrong {
+    background: rgba(231,76,60,0.1);
+    border: 1px solid rgba(231,76,60,0.3);
+}
+.result-icon {
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+.result-title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+.result-correct .result-title { color: #2ecc71; }
+.result-wrong .result-title { color: #e74c3c; }
+.result-explanation {
+    font-size: 0.95em;
+    color: #c0b090;
+    line-height: 1.6;
+}
+.quiz-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    position: relative;
+    z-index: 1;
+}
+.quiz-btn {
+    padding: 12px 25px;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+.quiz-btn:hover {
+    background: rgba(212,175,55,0.2);
+    transform: translateY(-2px);
+}
+.quiz-btn.primary {
+    background: #d4af37;
+    color: #0a0a0a;
+    border-color: #d4af37;
+    font-weight: bold;
+}
+.quiz-btn.primary:hover {
+    background: #e5c048;
+}
+.score-board {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.score-item {
+    text-align: center;
+    padding: 15px 25px;
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 12px;
+}
+.score-value {
+    font-size: 2em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.score-label {
+    font-size: 0.8em;
+    color: #a09070;
+    margin-top: 5px;
+}
+.streak-display {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: #d4af37;
+}
+.streak-display .fire {
+    font-size: 1.5em;
+}
+.archive-section {
+    max-width: 700px;
+    width: 100%;
+    margin-top: 40px;
+}
+.archive-title {
+    font-size: 1.3em;
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+.archive-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.archive-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.1);
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.archive-item:hover {
+    border-color: rgba(212,175,55,0.3);
+}
+.archive-status {
+    font-size: 1.2em;
+}
+.archive-question {
+    flex: 1;
+    font-size: 0.9em;
+    color: #c0b090;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.archive-date {
+    font-size: 0.75em;
+    color: #a09070;
+}
+.wpa-footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+    width: 100%;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    .quiz-container { padding: 25px 20px; }
+    .quiz-question { font-size: 1.1em; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>❓ WPA Протоколарен Квиз</h1>
+    <p>Тестирајте го вашето протоколарно знаење — секојдневно ново прашање</p>
+    <p style="font-size:0.9em;">Daily Protocol Quiz — Test your protocol knowledge</p>
+</div>
+
+<div class="score-board">
+    <div class="score-item">
+        <div class="score-value" id="totalAnswered">0</div>
+        <div class="score-label">Одговорени</div>
+    </div>
+    <div class="score-item">
+        <div class="score-value" id="totalCorrect">0</div>
+        <div class="score-label">Точни</div>
+    </div>
+    <div class="score-item">
+        <div class="score-value" id="accuracy">0%</div>
+        <div class="score-label">Точност</div>
+    </div>
+</div>
+
+<div class="streak-display" id="streakDisplay"></div>
+
+<div class="quiz-container" id="quizContainer">
+    <div class="quiz-badge" id="quizBadge">📅 Денешно прашање</div>
+    <div class="quiz-question-number" id="questionNumber">Прашање 1 од 10</div>
+    <div class="quiz-question" id="quizQuestion"></div>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="quiz-result" id="quizResult"></div>
+    <div class="quiz-actions" id="quizActions">
+        <button class="quiz-btn primary" onclick="checkAnswer()" id="checkBtn">✓ Провери одговор</button>
+        <button class="quiz-btn" onclick="nextQuestion()" id="nextBtn" style="display:none;">Следно прашање →</button>
+    </div>
+</div>
+
+<div class="archive-section">
+    <div class="archive-title">📚 Архива на прашања</div>
+    <div class="archive-list" id="archiveList"></div>
+</div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a>
+    </p>
+</div>
+
+<script>
+const quizData = [
+    {
+        question: "Кој е редот на предимство на самитот G7?",
+        questionEn: "What is the precedence order at a G7 summit?",
+        options: [
+            "Алфабетски ред на држави",
+            "Домаќин прв, потоа алфабетски",
+            "Старешинство по функција",
+            "Ред на пристигнување"
+        ],
+        correct: 1,
+        explanation: "На G7 самит, домаќинот (годинешниот претседател) е прв, а останатите држави следуваат по алфабетски ред на англиски јазик. Ова е стандардна мултилатерална пракса.",
+        explanationEn: "At a G7 summit, the host (current president) is first, and the other states follow in alphabetical order in English. This is standard multilateral practice.",
+        category: "Протокол"
+    },
+    {
+        question: "Колку суверени држави имаат официјална химна без текст (инструментална)?",
+        questionEn: "How many sovereign states have an official anthem with no lyrics (instrumental)?",
+        options: [
+            "2 држави",
+            "4 држави",
+            "7 држави",
+            "10 држави"
+        ],
+        correct: 1,
+        explanation: "Четири суверени држави имаат официјално химна без усвоен текст: Шпанија („Marcha Real“), Босна и Херцеговина („Intermeco“), Косово („Europa“) и Сан Марино. Во сите четири случаи отсуството на текст е резултат на јазична или етничка нерешливост, а не на естетски избор.",
+        explanationEn: "Four sovereign states have an officially lyric-less anthem: Spain (\"Marcha Real\"), Bosnia and Herzegovina (\"Intermeco\"), Kosovo (\"Europa\") and San Marino. In all four cases the absence of words reflects linguistic or ethnic irreconcilability rather than aesthetic choice.",
+        category: "Симболи"
+    },
+    {
+        question: "Што значи 'прецеданс' во дипломатијата?",
+        questionEn: "What does 'précédence' mean in diplomacy?",
+        options: [
+            "Претходен договор",
+            "Ред на предимство",
+            "Дипломатска имунитет",
+            "Акредитација"
+        ],
+        correct: 1,
+        explanation: "'Прецеданс' (précédence) е француски термин што во дипломатскиот јазик означува ред на предимство — редот по кој се рангираат лица или држави во официјални прилики.",
+        explanationEn: "'Précédence' is a French term in diplomatic language denoting order of precedence — the rank in which persons or states are arranged in official occasions.",
+        category: "Дипломатија"
+    },
+    {
+        question: "Кој ја потпишува Виенската конвенција за дипломатски односи?",
+        questionEn: "Who signed the Vienna Convention on Diplomatic Relations?",
+        options: [
+            "1919 · Версај",
+            "1961 · Виена",
+            "1945 · Сан Франциско",
+            "1951 · Женева"
+        ],
+        correct: 1,
+        explanation: "Виенската конвенција за дипломатски односи е усвоена на 18 април 1961 во Виена, Австрија. Ја дефинира дипломатската имунитет, екстериторијалноста и класите на дипломатски персонал.",
+        explanationEn: "The Vienna Convention on Diplomatic Relations was adopted on 18 April 1961 in Vienna, Austria. It defines diplomatic immunity, extraterritoriality and classes of diplomatic personnel.",
+        category: "Меѓународно право"
+    },
+    {
+        question: "Колку поместувања се доволни при ракување со амбасадор?",
+        questionEn: "How many movements are sufficient when shaking hands with an ambassador?",
+        options: [
+            "1-2 поместувања",
+            "3 поместувања",
+            "5 поместувања",
+            "Колку што сака амбасадорот"
+        ],
+        correct: 1,
+        explanation: "При ракување со дипломатски претставник, три поместувања се доволни и соодветни. Повеќе од тоа може да делува непрофесионално или премногу интимно.",
+        explanationEn: "When shaking hands with a diplomatic representative, three movements are sufficient and appropriate. More than that may appear unprofessional or overly intimate.",
+        category: "Протокол"
+    },
+    {
+        question: "Што е 'План Б' во безбедносната терминологија?",
+        questionEn: "What is 'Plan B' in security terminology?",
+        options: [
+            "Основен безбедносен план",
+            "Резервен план за алтернативно дејствување",
+            "План за евакуација",
+            "План за медицинска помош"
+        ],
+        correct: 1,
+        explanation: "План Б е резервен план за алтернативно дејствување кога основниот план (План А) не може да се реализира. Во протоколарната и безбедносна пракса, План Б е задолжителен за секој настан со висок ризик.",
+        explanationEn: "Plan B is a backup plan for alternative action when the main plan (Plan A) cannot be realized. In protocol and security practice, Plan B is mandatory for every high-risk event.",
+        category: "Безбедност"
+    },
+    {
+        question: "Која е разликата помеѓу 'акредитација' и 'сертификација'?",
+        questionEn: "What is the difference between 'accreditation' and 'certification'?",
+        options: [
+            "Нема разлика — синоними се",
+            "Акредитација = институција, Сертификација = лице",
+            "Акредитација = државно, Сертификација = приватно",
+            "Акредитација = признавање, Сертификација = потврда на компетенции"
+        ],
+        correct: 3,
+        explanation: "Акредитација е формален процес на признавање квалитет на институција од овластено тело. Сертификација е потврда дека лице или институција ги исполнува одредени стандарди. WPA нуди сертификација, не акредитација.",
+        explanationEn: "Accreditation is a formal process of recognizing an institution's quality by an authorized body. Certification confirms that a person or institution meets certain standards. WPA offers certification, not accreditation.",
+        category: "Општо"
+    },
+    {
+        question: "Која е WPA доктрината?",
+        questionEn: "What is the WPA doctrine?",
+        options: [
+            "Протоколот е опционален",
+            "Преговарањето е опционално. Протоколот е апсолутен.",
+            "Сè е предмет на преговори",
+            "Протоколот е релативен"
+        ],
+        correct: 1,
+        explanation: "WPA доктрината гласи: 'Преговарањето е опционално. Протоколот е апсолутен.' Ова е оперативна логика на сите институтски активности и еден од шесте столбови на Повелбата.",
+        explanationEn: "The WPA doctrine states: 'Negotiation is optional. Protocol is absolute.' This is the operational logic of all institute activities and one of the six pillars of the Charter.",
+        category: "WPA"
+    },
+    {
+        question: "Што е 'протоколометрија'?",
+        questionEn: "What is 'protocolometry'?",
+        options: [
+            "Универзална научна дисциплина",
+            "WPA-скован поим за мерење на протоколарна изведба",
+            "Метод за мерење на химни",
+            "Стар грчки термин"
+        ],
+        correct: 1,
+        explanation: "Протоколометрија е работен поим скован од WPA за мерењето на протоколарната изведба спрема стандард. Не е универзално воспоставена дисциплина, туку методолошки поим во настанување.",
+        explanationEn: "Protocolometry is a working term coined by WPA for the measurement of protocol performance against a standard. Not a universally established discipline, but an emerging methodological term.",
+        category: "WPA"
+    },
+    {
+        question: "Кој е првиот столб на WPA Повелбата?",
+        questionEn: "What is the first pillar of the WPA Charter?",
+        options: [
+            "Професионална мерливост",
+            "Академски интегритет",
+            "Етичка независност",
+            "Транспарентни извори"
+        ],
+        correct: 1,
+        explanation: "Првиот столб на WPA Повелбата е 'Академски интегритет' — сите истражувачки и образовни материјали се оригинални креации на WPA или коректно атрибуирани извори.",
+        explanationEn: "The first pillar of the WPA Charter is 'Academic Integrity' — all research and educational materials are original WPA creations or correctly attributed sources.",
+        category: "WPA"
+    }
+];
+
+let currentQuestion = 0;
+let selectedOption = -1;
+let answered = false;
+let score = { correct: 0, total: 0 };
+let streak = 0;
+
+function loadQuestion(index) {
+    currentQuestion = index;
+    selectedOption = -1;
+    answered = false;
+
+    const q = quizData[index];
+    document.getElementById('quizBadge').textContent = `📅 Прашање ${index + 1} · ${q.category}`;
+    document.getElementById('questionNumber').textContent = `Прашање ${index + 1} од ${quizData.length}`;
+    document.getElementById('quizQuestion').textContent = q.question;
+
+    const optionsContainer = document.getElementById('quizOptions');
+    optionsContainer.innerHTML = '';
+    q.options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.className = 'quiz-option';
+        div.onclick = () => selectOption(i);
+        div.innerHTML = `
+            <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+            <div class="option-text">${opt}</div>
+        `;
+        optionsContainer.appendChild(div);
+    });
+
+    document.getElementById('quizResult').className = 'quiz-result';
+    document.getElementById('quizResult').innerHTML = '';
+    document.getElementById('checkBtn').style.display = 'inline-block';
+    document.getElementById('nextBtn').style.display = 'none';
+}
+
+function selectOption(index) {
+    if (answered) return;
+    selectedOption = index;
+    document.querySelectorAll('.quiz-option').forEach((opt, i) => {
+        opt.classList.toggle('selected', i === index);
+    });
+}
+
+function checkAnswer() {
+    if (selectedOption === -1) {
+        alert('Изберете одговор!');
+        return;
+    }
+    answered = true;
+    score.total++;
+
+    const q = quizData[currentQuestion];
+    const options = document.querySelectorAll('.quiz-option');
+
+    options[q.correct].classList.add('correct');
+    if (selectedOption !== q.correct) {
+        options[selectedOption].classList.add('wrong');
+        streak = 0;
+    } else {
+        score.correct++;
+        streak++;
+    }
+
+    const resultDiv = document.getElementById('quizResult');
+    resultDiv.className = 'quiz-result show ' + (selectedOption === q.correct ? 'result-correct' : 'result-wrong');
+    resultDiv.innerHTML = `
+        <div class="result-icon">${selectedOption === q.correct ? '✅' : '❌'}</div>
+        <div class="result-title">${selectedOption === q.correct ? 'Точно!' : 'Неточно'}</div>
+        <div class="result-explanation">${q.explanation}</div>
+    `;
+
+    document.getElementById('checkBtn').style.display = 'none';
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    updateScore();
+    updateStreak();
+}
+
+function nextQuestion() {
+    if (currentQuestion < quizData.length - 1) {
+        loadQuestion(currentQuestion + 1);
+    } else {
+        // Show completion
+        document.getElementById('quizContainer').innerHTML = `
+            <div style="text-align:center; padding:40px;">
+                <div style="font-size:4em; margin-bottom:20px;">🏆</div>
+                <div style="font-size:1.5em; color:#d4af37; margin-bottom:15px;">Квизот е завршен!</div>
+                <div style="font-size:1.1em; color:#c0b090; margin-bottom:20px;">
+                    Точни: ${score.correct} / ${score.total} · Точност: ${score.total > 0 ? Math.round((score.correct/score.total)*100) : 0}%
+                </div>
+                <button class="quiz-btn primary" onclick="location.reload()">🔄 Почни одново</button>
+            </div>
+        `;
+    }
+}
+
+function updateScore() {
+    document.getElementById('totalAnswered').textContent = score.total;
+    document.getElementById('totalCorrect').textContent = score.correct;
+    document.getElementById('accuracy').textContent = score.total > 0 ? Math.round((score.correct/score.total)*100) + '%' : '0%';
+}
+
+function updateStreak() {
+    const display = document.getElementById('streakDisplay');
+    if (streak > 0) {
+        display.innerHTML = `<span class="fire">🔥</span> Серија: ${streak} точни одговори по ред!`;
+    } else {
+        display.innerHTML = '';
+    }
+}
+
+function buildArchive() {
+    const list = document.getElementById('archiveList');
+    quizData.forEach((q, i) => {
+        const item = document.createElement('div');
+        item.className = 'archive-item';
+        item.onclick = () => loadQuestion(i);
+        item.innerHTML = `
+            <span class="archive-status">❓</span>
+            <span class="archive-question">${q.question}</span>
+            <span class="archive-date">${q.category}</span>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// Initialize
+loadQuestion(0);
+buildArchive();
+</script>
+
+</body>
+</html>

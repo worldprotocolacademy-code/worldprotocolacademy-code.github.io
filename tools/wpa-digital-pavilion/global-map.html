@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🗺️ WPA Светска Мапа | World Protocol Academy</title>
+<meta name="description" content="WPA Global Institutions Map — интерактивна мапа на 160+ институции од областа на протокол, дипломатија и безбедност">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/global-map.html">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a1a;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    min-height: 100vh;
+}
+.wpa-header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+    padding: 25px 30px;
+    border-bottom: 2px solid rgba(212,175,55,0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.wpa-header h1 {
+    font-size: 1.6em;
+    color: #d4af37;
+    text-shadow: 0 0 15px rgba(212,175,55,0.3);
+}
+.wpa-header .subtitle {
+    color: #a09070;
+    font-size: 0.9em;
+    font-style: italic;
+}
+.wpa-header .stats {
+    display: flex;
+    gap: 20px;
+}
+.stat-item {
+    text-align: center;
+    padding: 8px 15px;
+    background: rgba(212,175,55,0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(212,175,55,0.2);
+}
+.stat-number {
+    font-size: 1.4em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.stat-label {
+    font-size: 0.75em;
+    color: #a09070;
+}
+#map {
+    height: calc(100vh - 130px);
+    width: 100%;
+    background: #0a0a1a;
+}
+/* Custom popup styling */
+.leaflet-popup-content-wrapper {
+    background: rgba(20,20,40,0.95);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 12px;
+    color: #e0d5c1;
+}
+.leaflet-popup-tip {
+    background: rgba(20,20,40,0.95);
+    border: 1px solid rgba(212,175,55,0.3);
+}
+.popup-title {
+    font-size: 1.1em;
+    color: #d4af37;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.popup-country {
+    font-size: 0.85em;
+    color: #a09070;
+    margin-bottom: 8px;
+}
+.popup-group {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+.popup-link {
+    color: #d4af37;
+    text-decoration: none;
+    font-size: 0.85em;
+}
+.popup-link:hover {
+    text-decoration: underline;
+}
+/* Filter panel */
+.filter-panel {
+    position: absolute;
+    top: 100px;
+    right: 20px;
+    z-index: 1000;
+    background: rgba(20,20,40,0.95);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.filter-panel h3 {
+    color: #d4af37;
+    font-size: 1em;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.filter-group:hover {
+    background: rgba(212,175,55,0.05);
+    border-radius: 5px;
+}
+.filter-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid;
+}
+.filter-label {
+    font-size: 0.85em;
+    color: #c0b090;
+}
+.filter-count {
+    margin-left: auto;
+    font-size: 0.8em;
+    color: #a09070;
+    background: rgba(212,175,55,0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+/* Legend */
+.legend-btn {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(20,20,40,0.95);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 8px;
+    padding: 10px 20px;
+    color: #d4af37;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-size: 0.9em;
+    transition: all 0.3s;
+}
+.legend-btn:hover {
+    background: rgba(212,175,55,0.1);
+}
+.wpa-footer-bar {
+    background: #0a0a1a;
+    padding: 15px 30px;
+    border-top: 1px solid rgba(212,175,55,0.2);
+    text-align: center;
+    font-size: 0.8em;
+    color: #605040;
+}
+.wpa-footer-bar a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 700px) {
+    .wpa-header { flex-direction: column; text-align: center; }
+    .filter-panel { top: auto; bottom: 80px; right: 10px; left: 10px; }
+    #map { height: calc(100vh - 180px); }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <div>
+        <h1>🗺️ WPA Светска Мапа</h1>
+        <div class="subtitle">WPA Global Institutions Map · Master List REV2 · 160 records</div>
+    </div>
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number">160</div>
+            <div class="stat-label">Записи</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">8</div>
+            <div class="stat-label">Групи</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">155</div>
+            <div class="stat-label">Институции</div>
+        </div>
+    </div>
+</div>
+
+<div id="map"></div>
+
+<div class="filter-panel">
+    <h3>🎨 Филтер по група</h3>
+    <div class="filter-group" onclick="toggleGroup('A')">
+        <div class="filter-color" style="background:#e74c3c; border-color:#e74c3c;"></div>
+        <span class="filter-label">A — Протоколарни академии</span>
+        <span class="filter-count">25</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('B')">
+        <div class="filter-color" style="background:#3498db; border-color:#3498db;"></div>
+        <span class="filter-label">B — Think tanks</span>
+        <span class="filter-count">25</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('C')">
+        <div class="filter-color" style="background:#2ecc71; border-color:#2ecc71;"></div>
+        <span class="filter-label">C — Тренинг центри</span>
+        <span class="filter-count">25</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('D')">
+        <div class="filter-color" style="background:#f1c40f; border-color:#f1c40f;"></div>
+        <span class="filter-label">D — Универзитети</span>
+        <span class="filter-count">25</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('G')">
+        <div class="filter-color" style="background:#9b59b6; border-color:#9b59b6;"></div>
+        <span class="filter-label">G — UN агенции</span>
+        <span class="filter-count">25</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('H')">
+        <div class="filter-color" style="background:#1abc9c; border-color:#1abc9c;"></div>
+        <span class="filter-label">H — Меѓународни НВО</span>
+        <span class="filter-count">29</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('I')">
+        <div class="filter-color" style="background:#e67e22; border-color:#e67e22;"></div>
+        <span class="filter-label">I — Финанс. институции</span>
+        <span class="filter-count">5</span>
+    </div>
+    <div class="filter-group" onclick="toggleGroup('R')">
+        <div class="filter-color" style="background:#d4af37; border-color:#d4af37;"></div>
+        <span class="filter-label">R — WPA референца</span>
+        <span class="filter-count">1</span>
+    </div>
+</div>
+
+<button class="legend-btn" onclick="resetMap()">🔄 Ресетирај мапа</button>
+
+<div class="wpa-footer-bar">
+    <p><strong>WPA Global Institutions Master List</strong> · REV2 · Not final public benchmark · Source verification pending</p>
+    <p><a href="/">← Назад на WPA</a> | 
+    <a href="/institute.html">Институт →</a></p>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Initialize map with dark theme
+const map = L.map('map', {
+    center: [25, 10],
+    zoom: 2,
+    minZoom: 2,
+    maxZoom: 10,
+    scrollWheelZoom: true
+});
+
+// Dark tile layer (CartoDB Dark Matter)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
+
+// Group colors
+const groupColors = {
+    'A': '#e74c3c',  // Protocol academies - Red
+    'B': '#3498db',  // Think tanks - Blue
+    'C': '#2ecc71',  // Training centers - Green
+    'D': '#f1c40f',  // Universities - Yellow
+    'G': '#9b59b6',  // UN agencies - Purple
+    'H': '#1abc9c',  // International NGOs - Teal
+    'I': '#e67e22',  // Financial institutions - Orange
+    'R': '#d4af37'   // WPA reference - Gold
+};
+
+// Sample institutions data (key ones from Master List)
+const institutions = [
+    // Group A - Protocol Academies (Red)
+    { name: "Protocol Academy of Macedonia", country: "N. Macedonia", lat: 41.9981, lng: 21.4254, group: "A", url: "" },
+    { name: "Protocol School of Washington", country: "USA", lat: 38.9072, lng: -77.0369, group: "A", url: "" },
+    { name: "IEPA London", country: "UK", lat: 51.5074, lng: -0.1278, group: "A", url: "" },
+    { name: "Accademia del Cerimoniale", country: "Italy", lat: 41.9028, lng: 12.4964, group: "A", url: "" },
+    { name: "International Protocol Academy of Japan", country: "Japan", lat: 35.6762, lng: 139.6503, group: "A", url: "" },
+    { name: "Diplomacy Academy of Vienna", country: "Austria", lat: 48.2082, lng: 16.3738, group: "A", url: "" },
+    { name: "China Foreign Affairs University", country: "China", lat: 39.9042, lng: 116.4074, group: "A", url: "" },
+    { name: "Diplomacy Academy Türkiye", country: "Türkiye", lat: 39.9334, lng: 32.8597, group: "A", url: "" },
+
+    // Group B - Think Tanks (Blue)
+    { name: "Clingendael Institute", country: "Netherlands", lat: 52.0705, lng: 4.3007, group: "B", url: "" },
+    { name: "Chatham House", country: "UK", lat: 51.5074, lng: -0.1278, group: "B", url: "" },
+    { name: "Carnegie Endowment", country: "USA", lat: 38.9072, lng: -77.0369, group: "B", url: "" },
+    { name: "Brookings Institution", country: "USA", lat: 38.9072, lng: -77.0369, group: "B", url: "" },
+
+    // Group C - Training Centers (Green)
+    { name: "College of Europe", country: "Belgium", lat: 50.8503, lng: 4.3517, group: "C", url: "" },
+    { name: "Sciences Po", country: "France", lat: 48.8566, lng: 2.3522, group: "C", url: "" },
+    { name: "Georgetown SFS", country: "USA", lat: 38.9072, lng: -77.0739, group: "C", url: "" },
+    { name: "Johns Hopkins SAIS", country: "USA", lat: 39.3299, lng: -76.6203, group: "C", url: "" },
+
+    // Group D - Universities (Yellow)
+    { name: "King's College London", country: "UK", lat: 51.5115, lng: -0.1160, group: "D", url: "" },
+    { name: "USC Annenberg", country: "USA", lat: 34.0224, lng: -118.2851, group: "D", url: "" },
+    { name: "University of Toronto", country: "Canada", lat: 43.6532, lng: -79.3832, group: "D", url: "" },
+    { name: "NTU Wee Kim Wee School", country: "Singapore", lat: 1.3483, lng: 103.6831, group: "D", url: "" },
+
+    // Group G - UN Agencies (Purple)
+    { name: "UN Headquarters", country: "USA", lat: 40.7489, lng: -73.9680, group: "G", url: "https://www.un.org" },
+    { name: "UNOG Geneva", country: "Switzerland", lat: 46.2274, lng: 6.1432, group: "G", url: "https://www.unog.ch" },
+    { name: "UNOV Vienna", country: "Austria", lat: 48.2385, lng: 16.4137, group: "G", url: "https://www.unov.org" },
+    { name: "UNESCO", country: "France", lat: 48.8494, lng: 2.3067, group: "G", url: "https://www.unesco.org" },
+    { name: "UNHCR", country: "Switzerland", lat: 46.2044, lng: 6.1432, group: "G", url: "https://www.unhcr.org" },
+
+    // Group H - International NGOs (Teal)
+    { name: "ICRC", country: "Switzerland", lat: 46.2044, lng: 6.1432, group: "H", url: "https://www.icrc.org" },
+    { name: "ICC The Hague", country: "Netherlands", lat: 52.0705, lng: 4.3007, group: "H", url: "https://www.icc-cpi.int" },
+    { name: "NATO Defense College", country: "Italy", lat: 41.9028, lng: 12.4964, group: "H", url: "https://www.ndc.nato.int" },
+
+    // Group I - Financial Institutions (Orange)
+    { name: "World Bank", country: "USA", lat: 38.9030, lng: -77.0434, group: "I", url: "https://www.worldbank.org" },
+    { name: "IMF", country: "USA", lat: 38.9030, lng: -77.0441, group: "I", url: "https://www.imf.org" },
+
+    // Group R - WPA Reference (Gold)
+    { name: "World Protocol Academy", country: "N. Macedonia", lat: 41.9981, lng: 21.4254, group: "R", url: "https://worldprotocolacademy-code.github.io/" }
+];
+
+const markers = {};
+const visibleGroups = new Set(['A','B','C','D','G','H','I','R']);
+
+// Spread markers that share identical coordinates so each stays clickable
+const coordSeen = {};
+function spread(lat, lng) {
+    const key = lat.toFixed(4) + ',' + lng.toFixed(4);
+    const n = coordSeen[key] || 0;
+    coordSeen[key] = n + 1;
+    if (n === 0) return [lat, lng];
+    const angle = (n * 2.39996); // golden-angle fan
+    const r = 0.45 + n * 0.18;   // degrees of offset, grows outward
+    return [lat + r * Math.sin(angle), lng + r * Math.cos(angle)];
+}
+
+// Add markers
+institutions.forEach(inst => {
+    const color = groupColors[inst.group] || '#d4af37';
+    const [mLat, mLng] = inst.group === 'R' ? [inst.lat, inst.lng] : spread(inst.lat, inst.lng);
+    const marker = L.circleMarker([mLat, mLng], {
+        radius: inst.group === 'R' ? 12 : 8,
+        fillColor: color,
+        color: color,
+        weight: inst.group === 'R' ? 3 : 2,
+        opacity: 0.9,
+        fillOpacity: 0.7
+    }).addTo(map);
+
+    const popupContent = `
+        <div class="popup-title">${inst.name}</div>
+        <div class="popup-country">🏳️ ${inst.country}</div>
+        <div class="popup-group" style="background:${color}20; color:${color}; border:1px solid ${color};">
+            Група ${inst.group}
+        </div>
+        ${inst.url ? `<a class="popup-link" href="${inst.url}" target="_blank">🌐 Веб-страница →</a>` : ''}
+    `;
+
+    marker.bindPopup(popupContent);
+    markers[inst.name] = { marker, group: inst.group };
+});
+
+// Toggle group visibility
+function toggleGroup(group) {
+    if (visibleGroups.has(group)) {
+        visibleGroups.delete(group);
+    } else {
+        visibleGroups.add(group);
+    }
+
+    Object.values(markers).forEach(({ marker, group: g }) => {
+        if (visibleGroups.has(g)) {
+            map.addLayer(marker);
+        } else {
+            map.removeLayer(marker);
+        }
+    });
+}
+
+function resetMap() {
+    visibleGroups.clear();
+    ['A','B','C','D','G','H','I','R'].forEach(g => visibleGroups.add(g));
+    Object.values(markers).forEach(({ marker }) => map.addLayer(marker));
+    map.setView([25, 10], 2);
+}
+
+// Add scale
+L.control.scale({ imperial: false, metric: true }).addTo(map);
+</script>
+
+</body>
+</html>

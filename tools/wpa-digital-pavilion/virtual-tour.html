@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏛️ WPA Виртуелна Шетница | World Protocol Academy</title>
+<meta name="description" content="WPA Virtual Tour — интерактивна шетница низ Институтот за протокол, дипломатија, јавна комуникација и безбедносни студии">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/virtual-tour.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    background: #0a0a1a;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    overflow-x: hidden;
+}
+.progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #d4af37, #f0d78c);
+    z-index: 1000;
+    transition: width 0.1s;
+}
+.nav-dots {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(212,175,55,0.3);
+    border: 2px solid rgba(212,175,55,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.nav-dot:hover, .nav-dot.active {
+    background: #d4af37;
+    border-color: #d4af37;
+    transform: scale(1.3);
+}
+.section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 30px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+}
+.section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.section-content {
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+.section-number {
+    font-size: 6em;
+    color: rgba(212,175,55,0.1);
+    font-weight: bold;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    line-height: 1;
+}
+.section-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+}
+.section-title {
+    font-size: 2.5em;
+    color: #d4af37;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+}
+.section-title-en {
+    font-size: 1.1em;
+    color: #a09070;
+    font-style: italic;
+    margin-bottom: 30px;
+}
+.section-text {
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #c0b090;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+/* Section 1: Entrance */
+#entrance {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+}
+#entrance .section-title {
+    font-size: 3em;
+}
+/* Section 2: Hall - 6 Domains */
+#hall {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+.domains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+.domain-card {
+    background: rgba(20,20,40,0.7);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.domain-card:hover {
+    transform: translateY(-5px);
+    border-color: #d4af37;
+    box-shadow: 0 10px 30px rgba(212,175,55,0.15);
+}
+.domain-number {
+    font-size: 2em;
+    color: #d4af37;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.domain-name {
+    font-size: 1.1em;
+    color: #e0d5c1;
+    margin-bottom: 5px;
+}
+.domain-name-en {
+    font-size: 0.85em;
+    color: #a09070;
+    font-style: italic;
+}
+/* Section 3: Library - Research */
+#library {
+    background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+}
+.research-pillars {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+.research-card {
+    background: rgba(20,20,40,0.7);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+.research-card:hover {
+    border-color: #d4af37;
+    transform: scale(1.03);
+}
+.research-roman {
+    font-size: 2.5em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.research-title {
+    font-size: 1em;
+    color: #e0d5c1;
+    margin-top: 10px;
+}
+.research-tags {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+}
+.research-tag {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.75em;
+}
+/* Section 4: Laboratory - Instruments */
+#laboratory {
+    background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+}
+.instrument-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 30px;
+}
+.instrument-item {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    background: rgba(20,20,40,0.7);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+.instrument-item:hover {
+    border-color: #d4af37;
+    transform: translateX(10px);
+}
+.instrument-icon {
+    font-size: 3em;
+    min-width: 60px;
+    text-align: center;
+}
+.instrument-info h3 {
+    color: #d4af37;
+    font-size: 1.3em;
+    margin-bottom: 5px;
+}
+.instrument-info .en {
+    color: #a09070;
+    font-size: 0.9em;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+.instrument-info p {
+    color: #c0b090;
+    line-height: 1.6;
+}
+/* Section 5: Auditorium - Lectures */
+#auditorium {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+.lecture-path {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+.lecture-step {
+    background: rgba(20,20,40,0.7);
+    border: 2px solid rgba(212,175,55,0.2);
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.lecture-step:hover {
+    border-color: #d4af37;
+    transform: scale(1.1);
+}
+.lecture-step::after {
+    content: "→";
+    position: absolute;
+    right: -25px;
+    color: rgba(212,175,55,0.3);
+    font-size: 1.5em;
+}
+.lecture-step:last-child::after {
+    content: none;
+}
+.lecture-step-number {
+    font-size: 1.5em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.lecture-step-name {
+    font-size: 0.75em;
+    color: #a09070;
+    margin-top: 5px;
+    text-align: center;
+    padding: 0 10px;
+}
+/* Section 6: Office - Contact */
+#office {
+    background: linear-gradient(135deg, #16213e 0%, #0d1b2a 100%);
+}
+.contact-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+.contact-item {
+    background: rgba(20,20,40,0.7);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 15px;
+    padding: 25px;
+    transition: all 0.3s ease;
+}
+.contact-item:hover {
+    border-color: #d4af37;
+    transform: translateY(-5px);
+}
+.contact-icon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+}
+.contact-label {
+    font-size: 0.9em;
+    color: #a09070;
+    margin-bottom: 8px;
+}
+.contact-value {
+    font-size: 1em;
+    color: #e0d5c1;
+    word-break: break-all;
+}
+.tour-complete {
+    margin-top: 40px;
+    padding: 30px;
+    background: rgba(212,175,55,0.05);
+    border: 2px solid rgba(212,175,55,0.3);
+    border-radius: 15px;
+}
+.tour-complete h3 {
+    color: #d4af37;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+.tour-complete p {
+    color: #c0b090;
+    line-height: 1.8;
+}
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    font-size: 2em;
+    color: #d4af37;
+    cursor: pointer;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+    40% { transform: translateX(-50%) translateY(-15px); }
+    60% { transform: translateX(-50%) translateY(-8px); }
+}
+.wpa-footer {
+    text-align: center;
+    padding: 30px;
+    background: #0a0a1a;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 700px) {
+    .section-number { font-size: 3em; top: 20px; left: 20px; }
+    .section-title { font-size: 1.8em; }
+    .nav-dots { display: none; }
+    .instrument-item { flex-direction: column; text-align: center; }
+    .lecture-step { width: 100px; height: 100px; }
+    .lecture-step::after { content: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="nav-dots">
+    <div class="nav-dot active" onclick="scrollToSection('entrance')" title="Влез"></div>
+    <div class="nav-dot" onclick="scrollToSection('hall')" title="Хол"></div>
+    <div class="nav-dot" onclick="scrollToSection('library')" title="Библиотека"></div>
+    <div class="nav-dot" onclick="scrollToSection('laboratory')" title="Лабораторија"></div>
+    <div class="nav-dot" onclick="scrollToSection('auditorium')" title="Аудиториум"></div>
+    <div class="nav-dot" onclick="scrollToSection('office')" title="Канцеларија"></div>
+</div>
+
+<!-- SECTION 1: ENTRANCE -->
+<section class="section visible" id="entrance">
+    <div class="section-number">01</div>
+    <div class="section-content">
+        <div class="section-icon">🚪</div>
+        <h2 class="section-title">Влез</h2>
+        <div class="section-title-en">Entrance — The Institute Charter</div>
+        <div class="section-text">
+            Добредојдовте во Светска академија за протокол — World Protocol Academy. 
+            Пред да влезете, запознајте се со шестте столбови на Повелбата што ја дефинираат 
+            институционалниот идентитет и етичка рамка на овој простор.
+        </div>
+        <div class="section-text" style="font-style:italic; color:#d4af37;">
+            "Преговарањето е опционално. Протоколот е апсолутен."
+        </div>
+        <div class="scroll-indicator" onclick="scrollToSection('hall')">↓</div>
+    </div>
+</section>
+
+<!-- SECTION 2: HALL - 6 DOMAINS -->
+<section class="section" id="hall">
+    <div class="section-number">02</div>
+    <div class="section-content">
+        <div class="section-icon">🏛️</div>
+        <h2 class="section-title">Хол</h2>
+        <div class="section-title-en">Hall — Six Domains of Specialisation</div>
+        <div class="section-text">
+            Овој хол ги претставува шесте домени на специјализација на Институтот. 
+            Секој домен е столб на знаење, истражување и професионална пракса.
+        </div>
+        <div class="domains-grid">
+            <div class="domain-card">
+                <div class="domain-number">01</div>
+                <div class="domain-name">Протоколарни студии</div>
+                <div class="domain-name-en">Protocol Studies</div>
+            </div>
+            <div class="domain-card">
+                <div class="domain-number">02</div>
+                <div class="domain-name">Дипломатија и меѓународни односи</div>
+                <div class="domain-name-en">Diplomacy & International Relations</div>
+            </div>
+            <div class="domain-card">
+                <div class="domain-number">03</div>
+                <div class="domain-name">Јавна комуникација</div>
+                <div class="domain-name-en">Public Communication</div>
+            </div>
+            <div class="domain-card">
+                <div class="domain-number">04</div>
+                <div class="domain-name">Безбедносни студии</div>
+                <div class="domain-name-en">Security Studies</div>
+            </div>
+            <div class="domain-card">
+                <div class="domain-number">05</div>
+                <div class="domain-name">Истражување и референтна анализа</div>
+                <div class="domain-name-en">Research & Reference Analysis</div>
+            </div>
+            <div class="domain-card">
+                <div class="domain-number">06</div>
+                <div class="domain-name">Практична професионална мудрост</div>
+                <div class="domain-name-en">Practical Professional Wisdom</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 3: LIBRARY - RESEARCH -->
+<section class="section" id="library">
+    <div class="section-number">03</div>
+    <div class="section-content">
+        <div class="section-icon">📚</div>
+        <h2 class="section-title">Библиотека</h2>
+        <div class="section-title-en">Library — Four Research Pillars</div>
+        <div class="section-text">
+            Во библиотеката на Институтот се чуваат четирите главни истражувачки правци. 
+            Секој столб носи специјализирана методологија, јасна тематска територија и идентификувани резултати.
+        </div>
+        <div class="research-pillars">
+            <div class="research-card">
+                <div class="research-roman">I</div>
+                <div class="research-title">Протоколарна теорија и пракса</div>
+                <div class="research-title-en" style="font-size:0.85em; color:#a09070; font-style:italic;">Protocol Theory & Practice</div>
+                <div class="research-tags">
+                    <span class="research-tag">State Protocol</span>
+                    <span class="research-tag">Ceremonial</span>
+                    <span class="research-tag">Precedence</span>
+                </div>
+            </div>
+            <div class="research-card">
+                <div class="research-roman">II</div>
+                <div class="research-title">Дипломатија и меѓународни односи</div>
+                <div class="research-title-en" style="font-size:0.85em; color:#a09070; font-style:italic;">Diplomacy & International Relations</div>
+                <div class="research-tags">
+                    <span class="research-tag">Bilateral</span>
+                    <span class="research-tag">Multilateral</span>
+                    <span class="research-tag">Public Diplomacy</span>
+                </div>
+            </div>
+            <div class="research-card">
+                <div class="research-roman">III</div>
+                <div class="research-title">Безбедност и одбранбена дипломатија</div>
+                <div class="research-title-en" style="font-size:0.85em; color:#a09070; font-style:italic;">Security & Defence Diplomacy</div>
+                <div class="research-tags">
+                    <span class="research-tag">Event Security</span>
+                    <span class="research-tag">Crisis</span>
+                    <span class="research-tag">VIP Protection</span>
+                </div>
+            </div>
+            <div class="research-card">
+                <div class="research-roman">IV</div>
+                <div class="research-title">Јавна комуникација и репутација</div>
+                <div class="research-title-en" style="font-size:0.85em; color:#a09070; font-style:italic;">Public Communication & Reputation</div>
+                <div class="research-tags">
+                    <span class="research-tag">Strategic Comms</span>
+                    <span class="research-tag">Crisis Comms</span>
+                    <span class="research-tag">Reputation</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 4: LABORATORY - INSTRUMENTS -->
+<section class="section" id="laboratory">
+    <div class="section-number">04</div>
+    <div class="section-content">
+        <div class="section-icon">🔬</div>
+        <h2 class="section-title">Лабораторија</h2>
+        <div class="section-title-en">Laboratory — Institute Instruments</div>
+        <div class="section-text">
+            Во лабораторијата се развиваат и тестираат инструментите за мерливост. 
+            Овде се раѓаат методологиите што ја прават WPA уникатна: не рангираме, мериме.
+        </div>
+        <div class="instrument-showcase">
+            <div class="instrument-item">
+                <div class="instrument-icon">📊</div>
+                <div class="instrument-info">
+                    <h3>PSPI · ИПММ</h3>
+                    <div class="en">Protocol State Performance Index</div>
+                    <p>Мери настани — државни посети, церемонии, протоколарна изведба. Емпириски применет во WPA working-paper case studies.</p>
+                </div>
+            </div>
+            <div class="instrument-item">
+                <div class="instrument-icon">📈</div>
+                <div class="instrument-info">
+                    <h3>Индекс на Институтот</h3>
+                    <div class="en">WPA Institute Index</div>
+                    <p>Мери институции — четири димензии: истражување, програми, пракса, транспарентност. Методологија со јавно проверливи докази.</p>
+                </div>
+            </div>
+            <div class="instrument-item">
+                <div class="instrument-icon">🌍</div>
+                <div class="instrument-info">
+                    <h3>WPA Global Institutions Master List</h3>
+                    <div class="en">Master List REV2 · 160 records · 8 groups</div>
+                    <p>Работна листа на институции за фер споредба, не конечна ранг-листа. JSON + CSV + Markdown.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 5: AUDITORIUM - LECTURES -->
+<section class="section" id="auditorium">
+    <div class="section-number">05</div>
+    <div class="section-content">
+        <div class="section-icon">🎓</div>
+        <h2 class="section-title">Аудиториум</h2>
+        <div class="section-title-en">Auditorium — Practitioner Lecture Series</div>
+        <div class="section-text">
+            Во аудиторимот се одржуваат специјализирани предавања од искусни практичари. 
+            Секое предавање следи пет чекори: покана, договор, лекција, архива, признание.
+        </div>
+        <div class="lecture-path">
+            <div class="lecture-step">
+                <div class="lecture-step-number">1</div>
+                <div class="lecture-step-name">Покана</div>
+            </div>
+            <div class="lecture-step">
+                <div class="lecture-step-number">2</div>
+                <div class="lecture-step-name">Договор</div>
+            </div>
+            <div class="lecture-step">
+                <div class="lecture-step-number">3</div>
+                <div class="lecture-step-name">Лекција</div>
+            </div>
+            <div class="lecture-step">
+                <div class="lecture-step-number">4</div>
+                <div class="lecture-step-name">Архива</div>
+            </div>
+            <div class="lecture-step">
+                <div class="lecture-step-number">5</div>
+                <div class="lecture-step-name">Признание</div>
+            </div>
+        </div>
+        <div class="section-text" style="margin-top:30px; font-size:0.95em;">
+            <strong>Категории предавачи:</strong> Протокол и дипломатија · Одбрана и безбедност · 
+            Јавна комуникација и медиуми · Визуелна дипломатија и документација
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 6: OFFICE - CONTACT -->
+<section class="section" id="office">
+    <div class="section-number">06</div>
+    <div class="section-content">
+        <div class="section-icon">🚪</div>
+        <h2 class="section-title">Канцеларија</h2>
+        <div class="section-title-en">Office — Contact & Next Steps</div>
+        <div class="section-text">
+            Ви благодариме што ја завршивте виртуелната шетница низ WPA Институтот. 
+            За понатамошна соработка, контакт или информации, користете ги следните канали.
+        </div>
+        <div class="contact-showcase">
+            <div class="contact-item">
+                <div class="contact-icon">📧</div>
+                <div class="contact-label">Е-пошта</div>
+                <div class="contact-value">worldprotocolacademy@gmail.com</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">🌐</div>
+                <div class="contact-label">Веб-страница</div>
+                <div class="contact-value">worldprotocolacademy-code.github.io</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">👤</div>
+                <div class="contact-label">Креатор</div>
+                <div class="contact-value">Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Светска академија за протокол · World Protocol Academy</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">📍</div>
+                <div class="contact-label">Локација</div>
+                <div class="contact-value">Република Северна Македонија</div>
+            </div>
+        </div>
+        <div class="tour-complete">
+            <h3>⚜️ Шетницата е завршена</h3>
+            <p>
+                Светска академија за протокол — World Protocol Academy е независна дигитална образовна, 
+                истражувачка и авторска платформа во развојна фаза 2026. Не е универзитет, државна институција 
+                или акредитациско тело. Секој чекор напред е мерлив, проверлив и отворен за корекција.
+            </p>
+            <p style="margin-top:15px; font-style:italic; color:#d4af37;">
+                „Не рангираме. Мериме."
+            </p>
+        </div>
+    </div>
+</section>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a> | 
+        <a href="/institute.html">Институт →</a>
+    </p>
+</div>
+
+<script>
+// Progress bar
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+}
+
+// Scroll-triggered visibility
+const sections = document.querySelectorAll('.section');
+const navDots = document.querySelectorAll('.nav-dot');
+
+function checkVisibility() {
+    sections.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.7 && rect.bottom > 0) {
+            section.classList.add('visible');
+            navDots.forEach(d => d.classList.remove('active'));
+            if (navDots[index]) navDots[index].classList.add('active');
+        }
+    });
+}
+
+function scrollToSection(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+    updateProgress();
+    checkVisibility();
+});
+
+checkVisibility();
+</script>
+
+</body>
+</html>

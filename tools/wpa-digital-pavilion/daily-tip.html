@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💡 WPA Дневен Протоколарен Совет | World Protocol Academy</title>
+<meta name="description" content="WPA Daily Protocol Tip — секојдневен протоколарен совет од Светска академија за протокол">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/daily-tip.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1em;
+    font-style: italic;
+}
+.tip-container {
+    max-width: 800px;
+    width: 100%;
+    background: rgba(20,20,40,0.8);
+    border: 2px solid rgba(212,175,55,0.3);
+    border-radius: 20px;
+    padding: 50px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.tip-container::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+.tip-date {
+    font-size: 0.9em;
+    color: #a09070;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+.tip-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+.tip-title {
+    font-size: 1.3em;
+    color: #d4af37;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+.tip-content {
+    font-size: 1.2em;
+    line-height: 1.8;
+    color: #e0d5c1;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+.tip-source {
+    font-size: 0.85em;
+    color: #a09070;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+}
+.tip-tags {
+    margin-top: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+.tip-tag {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8em;
+}
+.nav-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.nav-btn {
+    padding: 12px 25px;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: 'Georgia', serif;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+.nav-btn:hover {
+    background: rgba(212,175,55,0.2);
+    transform: translateY(-2px);
+}
+.nav-btn.active {
+    background: #d4af37;
+    color: #0a0a0a;
+}
+.archive-section {
+    margin-top: 50px;
+    max-width: 800px;
+    width: 100%;
+}
+.archive-title {
+    font-size: 1.3em;
+    color: #d4af37;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+.archive-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+.archive-item {
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.archive-item:hover {
+    border-color: rgba(212,175,55,0.4);
+    transform: translateY(-2px);
+}
+.archive-item-date {
+    font-size: 0.75em;
+    color: #a09070;
+    margin-bottom: 5px;
+}
+.archive-item-title {
+    font-size: 0.95em;
+    color: #e0d5c1;
+}
+.wpa-footer {
+    margin-top: 50px;
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+    width: 100%;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    .tip-container { padding: 30px 20px; }
+    .tip-content { font-size: 1em; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>💡 WPA Дневен Протоколарен Совет</h1>
+    <p>Секојдневна доза на протоколарна мудрост</p>
+    <p style="font-size:0.9em;">Daily Protocol Tip from the World Protocol Academy</p>
+</div>
+
+<div class="tip-container" id="tipContainer">
+    <div class="tip-date" id="tipDate"></div>
+    <div class="tip-icon" id="tipIcon">💡</div>
+    <div class="tip-title" id="tipTitle"></div>
+    <div class="tip-content" id="tipContent"></div>
+    <div class="tip-source" id="tipSource"></div>
+    <div class="tip-tags" id="tipTags"></div>
+</div>
+
+<div class="nav-buttons">
+    <button class="nav-btn" onclick="prevTip()">← Претходен</button>
+    <button class="nav-btn active" onclick="todayTip()">📅 Денес</button>
+    <button class="nav-btn" onclick="nextTip()">Следен →</button>
+</div>
+
+<div class="archive-section">
+    <div class="archive-title">📚 Архива на совети</div>
+    <div class="archive-list" id="archiveList"></div>
+</div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a>
+    </p>
+</div>
+
+<script>
+const tips = [
+    {
+        icon: "🤝",
+        title: "Ракување со амбасадори",
+        titleEn: "Handshaking with Ambassadors",
+        content: "При ракување со амбасадор, секогаш почекајте тој/таа да ја подигне раката прв/а. Ако сте домаќин, понудете ја раката прв, но не инсистирајте. Ракувањето треба да биде цврсто, но не агресивно — три поместувања се доволни.",
+        contentEn: "When shaking hands with an ambassador, always wait for them to extend their hand first. If you are the host, offer your hand first, but do not insist. The handshake should be firm but not aggressive — three movements are sufficient.",
+        source: "WPA Protocol Studies · Foundation Level",
+        tags: ["Протокол", "Дипломатија", "Ракување"],
+        tagsEn: ["Protocol", "Diplomacy", "Handshake"]
+    },
+    {
+        icon: "🏛️",
+        title: "Ред на предимство на самит",
+        titleEn: "Summit Precedence Order",
+        content: "На мултилатерален самит, редот на предимство обично следи: 1) Домаќин држава, 2) Алфабетски ред на држави (според официјалниот јазик на организацијата), 3) Старешинство по функција (претседател, премиер, министер). Не мешајте го редот на пристигнување со редот на предимство.",
+        contentEn: "At a multilateral summit, precedence usually follows: 1) Host state, 2) Alphabetical order of states (per the organization's official language), 3) Seniority by function (President, PM, Minister). Do not confuse arrival order with precedence order.",
+        source: "WPA Protocol Studies · Professional Level",
+        tags: ["Протокол", "Самит", "Предимство"],
+        tagsEn: ["Protocol", "Summit", "Precedence"]
+    },
+    {
+        icon: "🏳️",
+        title: "Боите на државното знаме",
+        titleEn: "National Flag Colours",
+        content: "Секое државно знаме има точно дефинирани Pantone бои. При подготовка на протоколарен настан, секогаш проверете ги официјалните спецификации — не се потпирајте на екранските бои. Знамето на Северна Македонија, на пример, користи Pantone 1795 C (црвена) и Pantone Process Yellow C (жолта).",
+        contentEn: "Every national flag has precisely defined Pantone colours. When preparing a protocol event, always check official specifications — do not rely on screen colours. The flag of North Macedonia, for example, uses Pantone 1795 C (red) and Pantone Process Yellow C (yellow).",
+        source: "WPA Protocol Symbols Lab · Verified Database",
+        tags: ["Знамиња", "Симболи", "Протокол"],
+        tagsEn: ["Flags", "Symbols", "Protocol"]
+    },
+    {
+        icon: "🍽️",
+        title: "Трпезарски ред на дипломатски прием",
+        titleEn: "Diplomatic Dinner Seating",
+        content: "На дипломатски прием со трпезарски формат, домаќинот седи на средина, а највисокиот гостин од десна страна. Алтернативниот принцип (машко/женско) се применува само ако не е во спротивност со протоколарниот ред на предимство. Секогаш проверете го религиозниот и диететскиот режим на гостите однапред.",
+        contentEn: "At a diplomatic dinner, the host sits in the centre, with the highest-ranking guest to their right. The alternating principle (male/female) applies only if it does not conflict with protocol precedence. Always check guests' religious and dietary requirements in advance.",
+        source: "WPA Protocol Studies · Advanced Level",
+        tags: ["Трпеза", "Дипломатија", "Протокол"],
+        tagsEn: ["Dining", "Diplomacy", "Protocol"]
+    },
+    {
+        icon: "📢",
+        title: "Јавен настап под притисок",
+        titleEn: "Public Speaking Under Pressure",
+        content: "Кога мора да одговорите на неочекувано прашање на јавен настап, користете го 'Bridge' техниката: 'Тоа е важно прашање, а клучната точка е...' (This is an important question, and the key point is...). Ова ви дава 2-3 секунди за размислување и го контролира текот на разговорот.",
+        contentEn: "When you must answer an unexpected question during a public appearance, use the 'Bridge' technique: 'That is an important question, and the key point is...' This gives you 2-3 seconds to think and controls the conversation flow.",
+        source: "WPA Communication Studies · Professional English",
+        tags: ["Комуникација", "Јавен настап", "Криза"],
+        tagsEn: ["Communication", "Public Speaking", "Crisis"]
+    },
+    {
+        icon: "🛡️",
+        title: "Безбедносна координација на настан",
+        titleEn: "Event Security Coordination",
+        content: "При организација на настан со високи личности, безбедносната координација мора да вклучува: 1) Рана проценка на ризици, 2) Комуникациски план (радио, телефон, резервен), 3) Евакуациска рута (примарна и секундарна), 4) Медицинска поддршка на точка, 5) Јасно дефинирана команда и ланец на одговорност.",
+        contentEn: "When organizing an event with VIPs, security coordination must include: 1) Early risk assessment, 2) Communication plan (radio, phone, backup), 3) Evacuation route (primary and secondary), 4) On-site medical support, 5) Clearly defined command and chain of responsibility.",
+        source: "WPA Security Studies · Advanced Level",
+        tags: ["Безбедност", "Настани", "Координација"],
+        tagsEn: ["Security", "Events", "Coordination"]
+    },
+    {
+        icon: "📧",
+        title: "Институционална е-пошта",
+        titleEn: "Institutional Email Protocol",
+        content: "Институционалната е-пошта мора да содржи: јасна тема (Subject), формален поздрав, структурирана содржина со параграфи, јасен повик на акција (CTA), и професионална потписна линија со име, титула, институција и контакт. Избегнувајте CAPS LOCK, емотикони и неформален тон во прва комуникација.",
+        contentEn: "Institutional email must contain: clear subject line, formal greeting, structured content with paragraphs, clear call to action (CTA), and professional signature with name, title, institution and contact. Avoid CAPS LOCK, emojis and informal tone in first communication.",
+        source: "WPA Professional English · Institutional Email Module",
+        tags: ["Комуникација", "Е-пошта", "Институција"],
+        tagsEn: ["Communication", "Email", "Institution"]
+    }
+];
+
+let currentTipIndex = 0;
+
+function getDayOfYear() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now - start;
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+}
+
+function showTip(index) {
+    currentTipIndex = ((index % tips.length) + tips.length) % tips.length;
+    const tip = tips[currentTipIndex];
+    const date = new Date();
+    date.setDate(date.getDate() + (index - getDayOfYear() % tips.length));
+
+    document.getElementById('tipDate').textContent = `📅 ${date.toLocaleDateString('mk-MK', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+    document.getElementById('tipIcon').textContent = tip.icon;
+    document.getElementById('tipTitle').textContent = tip.title;
+    document.getElementById('tipContent').textContent = tip.content;
+    document.getElementById('tipSource').textContent = `📚 ${tip.source}`;
+
+    const tagsContainer = document.getElementById('tipTags');
+    tagsContainer.innerHTML = '';
+    tip.tags.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'tip-tag';
+        span.textContent = tag;
+        tagsContainer.appendChild(span);
+    });
+}
+
+function todayTip() {
+    showTip(getDayOfYear() % tips.length);
+}
+
+function prevTip() {
+    showTip(currentTipIndex - 1);
+}
+
+function nextTip() {
+    showTip(currentTipIndex + 1);
+}
+
+// Build archive
+function buildArchive() {
+    const list = document.getElementById('archiveList');
+    tips.forEach((tip, i) => {
+        const item = document.createElement('div');
+        item.className = 'archive-item';
+        item.onclick = () => showTip(i);
+        item.innerHTML = `
+            <div class="archive-item-date">${tip.icon} Совет #${i + 1}</div>
+            <div class="archive-item-title">${tip.title}</div>
+        `;
+        list.appendChild(item);
+    });
+}
+
+// Initialize
+todayTip();
+buildArchive();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⏱️ WPA Академски Хронометар | World Protocol Academy</title>
+<meta name="description" content="WPA Academic Chronometer — време од основањето и до клучни настани на Светска академија за протокол">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/academic-chronometer.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1em;
+    font-style: italic;
+}
+.chronometers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    width: 100%;
+    margin-bottom: 40px;
+}
+.chrono-card {
+    background: rgba(20,20,40,0.8);
+    border: 2px solid rgba(212,175,55,0.2);
+    border-radius: 20px;
+    padding: 35px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.chrono-card:hover {
+    border-color: rgba(212,175,55,0.4);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(212,175,55,0.15);
+}
+.chrono-card.active {
+    border-color: #d4af37;
+    background: rgba(212,175,55,0.08);
+}
+.chrono-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+.chrono-title {
+    font-size: 1.3em;
+    color: #d4af37;
+    margin-bottom: 8px;
+}
+.chrono-title-en {
+    font-size: 0.9em;
+    color: #a09070;
+    font-style: italic;
+    margin-bottom: 25px;
+}
+.timer-display {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.time-unit {
+    background: rgba(10,10,30,0.8);
+    border: 1px solid rgba(212,175,55,0.2);
+    border-radius: 12px;
+    padding: 15px 20px;
+    min-width: 80px;
+}
+.time-value {
+    font-size: 2em;
+    color: #d4af37;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+}
+.time-label {
+    font-size: 0.75em;
+    color: #a09070;
+    margin-top: 5px;
+}
+.chrono-desc {
+    font-size: 0.9em;
+    color: #c0b090;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+.milestones-section {
+    max-width: 900px;
+    width: 100%;
+    margin-bottom: 40px;
+}
+.milestones-title {
+    font-size: 1.4em;
+    color: #d4af37;
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #d4af37, rgba(212,175,55,0.2));
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+.timeline-item:hover {
+    border-color: rgba(212,175,55,0.3);
+    transform: translateX(5px);
+}
+.timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -26px;
+    top: 25px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d4af37;
+    border: 2px solid #0a0a1a;
+}
+.timeline-item.completed::before {
+    background: #2ecc71;
+}
+.timeline-item.upcoming::before {
+    background: #3498db;
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(52,152,219,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(52,152,219,0); }
+}
+.timeline-date {
+    font-size: 0.85em;
+    color: #d4af37;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.timeline-event {
+    font-size: 1.1em;
+    color: #e0d5c1;
+    margin-bottom: 5px;
+}
+.timeline-desc {
+    font-size: 0.85em;
+    color: #a09070;
+}
+.timeline-status {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 12px;
+    border-radius: 10px;
+    font-size: 0.75em;
+    font-weight: bold;
+}
+.status-completed { background: rgba(46,204,113,0.2); color: #2ecc71; border: 1px solid rgba(46,204,113,0.3); }
+.status-active { background: rgba(212,175,55,0.2); color: #d4af37; border: 1px solid rgba(212,175,55,0.3); }
+.status-upcoming { background: rgba(52,152,219,0.2); color: #3498db; border: 1px solid rgba(52,152,219,0.3); }
+
+.wpa-footer {
+    margin-top: 40px;
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+    width: 100%;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    .time-value { font-size: 1.5em; }
+    .time-unit { padding: 10px 15px; min-width: 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>⏱️ WPA Академски Хронометар</h1>
+    <p>Време, идентитет и очекување — во реално време</p>
+    <p style="font-size:0.9em;">Academic Chronometer — Time, Identity & Expectation in Real-Time</p>
+</div>
+
+<div class="chronometers-container">
+    <!-- WPA Existence Timer -->
+    <div class="chrono-card active">
+        <div class="chrono-icon">⚜️</div>
+        <div class="chrono-title">WPA постои</div>
+        <div class="chrono-title-en">WPA Has Existed For</div>
+        <div class="timer-display" id="existenceTimer">
+            <div class="time-unit">
+                <div class="time-value" id="existDays">0</div>
+                <div class="time-label">Дена</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="existHours">0</div>
+                <div class="time-label">Часа</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="existMinutes">0</div>
+                <div class="time-label">Минути</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="existSeconds">0</div>
+                <div class="time-label">Секунди</div>
+            </div>
+        </div>
+        <div class="chrono-desc">
+            Од 1 јануари 2026, кога WPA официјално ја започна својата развојна фаза. Секој момент е чекор кон глобална институционална зрелост.
+        </div>
+    </div>
+
+    <!-- WPA Journal Countdown -->
+    <div class="chrono-card">
+        <div class="chrono-icon">📚</div>
+        <div class="chrono-title">До WPA Journal</div>
+        <div class="chrono-title-en">Until WPA Journal Launch</div>
+        <div class="timer-display" id="journalTimer">
+            <div class="time-unit">
+                <div class="time-value" id="journalDays">0</div>
+                <div class="time-label">Дена</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="journalHours">0</div>
+                <div class="time-label">Часа</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="journalMinutes">0</div>
+                <div class="time-label">Минути</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="journalSeconds">0</div>
+                <div class="time-label">Секунди</div>
+            </div>
+        </div>
+        <div class="chrono-desc">
+            Инаугуралниот број на WPA Journal of Protocol, Diplomacy, Public Communication, Security & Communicology — планиран за 1 декември 2026.
+        </div>
+    </div>
+</div>
+
+<div class="milestones-section">
+    <div class="milestones-title">📍 WPA Временска линија / WPA Timeline</div>
+    <div class="timeline">
+        <div class="timeline-item completed">
+            <div class="timeline-date">📅 2024 — 2025</div>
+            <div class="timeline-event">Концепција и истражување</div>
+            <div class="timeline-desc">Развој на методологија, првични трудови, формирање на институционална визија</div>
+            <span class="timeline-status status-completed">✓ Завршено</span>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-date">📅 1 јануари 2026</div>
+            <div class="timeline-event">WPA Развојна фаза</div>
+            <div class="timeline-desc">Официјален почеток на развојната, тест и пробна фаза на World Protocol Academy</div>
+            <span class="timeline-status status-active">● Активно</span>
+        </div>
+        <div class="timeline-item completed">
+            <div class="timeline-date">📅 јануари — јуни 2026</div>
+            <div class="timeline-event">WPA Working Papers 001–009</div>
+            <div class="timeline-desc">Објавување на првите девет работни трудови како јавни Zenodo DOI записи</div>
+            <span class="timeline-status status-completed">✓ Завршено</span>
+        </div>
+        <div class="timeline-item completed">
+            <div class="timeline-date">📅 јуни 2026</div>
+            <div class="timeline-event">WPA Global Institutions Master List REV2</div>
+            <div class="timeline-desc">160 записи, 8 групи, JSON+CSV+Markdown — прва јавна институционална мапа</div>
+            <span class="timeline-status status-completed">✓ Завршено</span>
+        </div>
+        <div class="timeline-item upcoming">
+            <div class="timeline-date">📅 1 септември 2026</div>
+            <div class="timeline-event">WPA Protocol Symbols Lab v2.0</div>
+            <div class="timeline-desc">Надградба на симболичната лабораторија со проширена верифицирана база</div>
+            <span class="timeline-status status-upcoming">◉ Претстојно</span>
+        </div>
+        <div class="timeline-item upcoming">
+            <div class="timeline-date">📅 1 октомври 2026</div>
+            <div class="timeline-event">WPA Annual Report 2026</div>
+            <div class="timeline-desc">Прв годишен институционален преглед на активности, резултати и идни насоки</div>
+            <span class="timeline-status status-upcoming">◉ Претстојно</span>
+        </div>
+        <div class="timeline-item upcoming">
+            <div class="timeline-date">📅 1 декември 2026</div>
+            <div class="timeline-event">WPA Journal — Инаугурален број</div>
+            <div class="timeline-desc">Специјализиран меѓународен интердисциплинарен журнал — прво издание</div>
+            <span class="timeline-status status-upcoming">◉ Претстојно</span>
+        </div>
+        <div class="timeline-item upcoming">
+            <div class="timeline-date">📅 2027</div>
+            <div class="timeline-event">WPA Global Benchmark v1.0</div>
+            <div class="timeline-desc">Прв специјализиран benchmark за протокол, дипломатија, комуникација и безбедност</div>
+            <span class="timeline-status status-upcoming">◉ Претстојно</span>
+        </div>
+    </div>
+</div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a>
+    </p>
+</div>
+
+<script>
+const wpaStartDate = new Date('2026-01-01T00:00:00');
+const journalLaunchDate = new Date('2026-12-01T00:00:00');
+
+function updateTimers() {
+    const now = new Date();
+
+    // Existence timer
+    const existDiff = now - wpaStartDate;
+    const existDays = Math.floor(existDiff / (1000 * 60 * 60 * 24));
+    const existHours = Math.floor((existDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const existMinutes = Math.floor((existDiff % (1000 * 60 * 60)) / (1000 * 60));
+    const existSeconds = Math.floor((existDiff % (1000 * 60)) / 1000);
+
+    document.getElementById('existDays').textContent = existDays;
+    document.getElementById('existHours').textContent = existHours.toString().padStart(2, '0');
+    document.getElementById('existMinutes').textContent = existMinutes.toString().padStart(2, '0');
+    document.getElementById('existSeconds').textContent = existSeconds.toString().padStart(2, '0');
+
+    // Journal countdown
+    const journalDiff = journalLaunchDate - now;
+    if (journalDiff > 0) {
+        const journalDays = Math.floor(journalDiff / (1000 * 60 * 60 * 24));
+        const journalHours = Math.floor((journalDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const journalMinutes = Math.floor((journalDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const journalSeconds = Math.floor((journalDiff % (1000 * 60)) / 1000);
+
+        document.getElementById('journalDays').textContent = journalDays;
+        document.getElementById('journalHours').textContent = journalHours.toString().padStart(2, '0');
+        document.getElementById('journalMinutes').textContent = journalMinutes.toString().padStart(2, '0');
+        document.getElementById('journalSeconds').textContent = journalSeconds.toString().padStart(2, '0');
+    } else {
+        document.getElementById('journalDays').textContent = "0";
+        document.getElementById('journalHours').textContent = "00";
+        document.getElementById('journalMinutes').textContent = "00";
+        document.getElementById('journalSeconds').textContent = "00";
+    }
+}
+
+updateTimers();
+setInterval(updateTimers, 1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📅 WPA Протоколарен Календар | World Protocol Academy</title>
+<meta name="description" content="WPA Protocol Calendar — важни дипломатски и протоколарни датуми ширум светот">
+
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-digital-pavilion/protocol-calendar.html">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    font-family: 'Georgia', serif;
+    color: #e0d5c1;
+    padding: 30px 20px;
+}
+.wpa-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.wpa-header h1 {
+    font-size: 2em;
+    color: #d4af37;
+    text-shadow: 0 0 20px rgba(212,175,55,0.3);
+    margin-bottom: 10px;
+}
+.wpa-header p {
+    color: #a09070;
+    font-size: 1em;
+    font-style: italic;
+}
+.calendar-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.nav-arrow {
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    color: #d4af37;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+.nav-arrow:hover {
+    background: rgba(212,175,55,0.2);
+}
+.month-title {
+    font-size: 1.5em;
+    color: #d4af37;
+    min-width: 200px;
+    text-align: center;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    max-width: 900px;
+    margin: 0 auto 30px;
+}
+.day-header {
+    text-align: center;
+    padding: 12px 5px;
+    color: #d4af37;
+    font-weight: bold;
+    font-size: 0.9em;
+    border-bottom: 2px solid rgba(212,175,55,0.2);
+}
+.day-cell {
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.1);
+    border-radius: 10px;
+    min-height: 100px;
+    padding: 8px;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.day-cell:hover {
+    border-color: rgba(212,175,55,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212,175,55,0.1);
+}
+.day-cell.other-month {
+    opacity: 0.3;
+}
+.day-cell.today {
+    border: 2px solid #d4af37;
+    background: rgba(212,175,55,0.1);
+}
+.day-number {
+    font-size: 0.9em;
+    color: #a09070;
+    margin-bottom: 5px;
+}
+.day-cell.today .day-number {
+    color: #d4af37;
+    font-weight: bold;
+}
+.day-event {
+    font-size: 0.75em;
+    padding: 3px 6px;
+    border-radius: 5px;
+    margin-bottom: 3px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.event-un { background: rgba(155,89,182,0.2); color: #bb8fce; border: 1px solid rgba(155,89,182,0.3); }
+.event-diplomatic { background: rgba(52,152,219,0.2); color: #85c1e9; border: 1px solid rgba(52,152,219,0.3); }
+.event-national { background: rgba(231,76,60,0.2); color: #f1948a; border: 1px solid rgba(231,76,60,0.3); }
+.event-wpa { background: rgba(212,175,55,0.2); color: #d4af37; border: 1px solid rgba(212,175,55,0.3); }
+.event-cultural { background: rgba(26,188,156,0.2); color: #76d7c4; border: 1px solid rgba(26,188,156,0.3); }
+
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85em;
+    color: #a09070;
+}
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1px solid;
+}
+.upcoming-events {
+    max-width: 900px;
+    margin: 0 auto 30px;
+}
+.upcoming-title {
+    font-size: 1.3em;
+    color: #d4af37;
+    margin-bottom: 20px;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212,175,55,0.2);
+}
+.event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.event-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(20,20,40,0.6);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 10px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+}
+.event-row:hover {
+    border-color: rgba(212,175,55,0.3);
+    transform: translateX(5px);
+}
+.event-date-box {
+    text-align: center;
+    min-width: 60px;
+}
+.event-day {
+    font-size: 1.5em;
+    color: #d4af37;
+    font-weight: bold;
+}
+.event-month {
+    font-size: 0.75em;
+    color: #a09070;
+}
+.event-details {
+    flex: 1;
+}
+.event-name {
+    font-size: 1em;
+    color: #e0d5c1;
+    margin-bottom: 3px;
+}
+.event-desc {
+    font-size: 0.85em;
+    color: #a09070;
+}
+.event-type-badge {
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+}
+.wpa-footer {
+    margin-top: 40px;
+    text-align: center;
+    padding: 25px;
+    border-top: 1px solid rgba(212,175,55,0.1);
+    color: #605040;
+    font-size: 0.85em;
+}
+.wpa-footer a {
+    color: #d4af37;
+    text-decoration: none;
+}
+@media (max-width: 700px) {
+    .calendar-grid { gap: 3px; }
+    .day-cell { min-height: 60px; padding: 4px; }
+    .day-event { font-size: 0.65em; padding: 2px 4px; }
+    .day-header { padding: 8px 2px; font-size: 0.75em; }
+}
+</style>
+</head>
+<body>
+
+<div class="wpa-header">
+    <h1>📅 WPA Протоколарен Календар</h1>
+    <p>Важни дипломатски, протоколарни и институционални датуми</p>
+    <p style="font-size:0.9em;">Protocol Calendar — Diplomatic, Protocol & Institutional Dates</p>
+    <p style="font-size:0.78em; color:#807060; margin-top:10px;">Национални празници по официјалната листа на МНР на РСМ — Директорат за дипломатски протокол · International observances per UN/UNESCO</p>
+</div>
+
+<div class="calendar-nav">
+    <button class="nav-arrow" onclick="changeMonth(-1)">◀</button>
+    <div class="month-title" id="monthTitle"></div>
+    <button class="nav-arrow" onclick="changeMonth(1)">▶</button>
+</div>
+
+<div class="calendar-grid" id="calendarGrid"></div>
+
+<div class="legend">
+    <div class="legend-item">
+        <div class="legend-color" style="background:rgba(155,89,182,0.2); border-color:rgba(155,89,182,0.3);"></div>
+        <span>ОН / UN</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background:rgba(52,152,219,0.2); border-color:rgba(52,152,219,0.3);"></div>
+        <span>Дипломатски</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background:rgba(231,76,60,0.2); border-color:rgba(231,76,60,0.3);"></div>
+        <span>Државни празници</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background:rgba(212,175,55,0.2); border-color:rgba(212,175,55,0.3);"></div>
+        <span>WPA настани</span>
+    </div>
+    <div class="legend-item">
+        <div class="legend-color" style="background:rgba(26,188,156,0.2); border-color:rgba(26,188,156,0.3);"></div>
+        <span>Културни</span>
+    </div>
+</div>
+
+<div class="upcoming-events">
+    <div class="upcoming-title">📌 Следни настани / Upcoming Events</div>
+    <div class="event-list" id="eventList"></div>
+</div>
+
+<div class="wpa-footer">
+    <p><strong>Светска академија за протокол — World Protocol Academy</strong></p>
+    <p>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</p>
+    <p style="margin-top:8px; font-size:0.8em; color:#605040;">Извор за национални празници: МНР на РСМ — Директорат за дипломатски протокол. Записите за Велика Британија и Данска се ажурирани по престолонаследувањата (Чарлс III, 2022; Фредерик X, 2024); подвижните датуми (на пр. Израел) се означени.</p>
+    <p style="margin-top:10px;">
+        <a href="/">← Назад на WPA</a>
+    </p>
+</div>
+
+<script>
+const monthNames = ["Јануари", "Февруари", "Март", "Април", "Мај", "Јуни", "Јули", "Август", "Септември", "Октомври", "Ноември", "Декември"];
+const dayNames = ["Пон", "Вто", "Сре", "Чет", "Пет", "Саб", "Нед"];
+
+const events = [
+// ── National holidays · Source: МНР на РСМ — Директорат за дипломатски протокол (official list) ──
+// Integrity layer (WPA): UK & Denmark monarchs updated post-succession; Kosovo 17 March duplicate removed; Israel date noted as movable.
+    { day: 13, month: 2, name: "Света Столица — Ден на Папата", type: "diplomatic", desc: "Holy See — Pontiff\u2019s Day" },
+    { day: 21, month: 6, name: "Белгија — Национален ден", type: "national", desc: "Belgium — Accession of King Leopold I (1831)" },
+    { day: 23, month: 6, name: "Египет — Ден на револуцијата", type: "national", desc: "Egypt — Anniversary of the Revolution of 23 July 1952" },
+    { day: 30, month: 6, name: "Мароко — Ден на тронот", type: "national", desc: "Morocco — Throne Day (King Mohammed VI)" },
+    { day: 24, month: 5, name: "Суверен Малтешки Ред — Национален ден", type: "diplomatic", desc: "Sovereign Military Order of Malta — National Day" },
+    { day: 23, month: 9, name: "Унгарија — Ден на сеќавање", type: "national", desc: "Hungary — Revolution Memorial Day" },
+    { day: 28, month: 9, name: "Чешка — Ден на државноста", type: "national", desc: "Czech Republic — Independent Czechoslovak State Day" },
+    { day: 1, month: 10, name: "Алжир — Годишнина од револуцијата", type: "national", desc: "Algeria — Anniversary of the Revolution of 1 November 1954" },
+    { day: 1, month: 0, name: "Куба — Национален ден", type: "national", desc: "Cuba — National Day" },
+    { day: 1, month: 0, name: "Судан — Национален ден", type: "national", desc: "Sudan — National Day" },
+    { day: 26, month: 0, name: "Австралија — Национален ден", type: "national", desc: "Australia — National Day" },
+    { day: 26, month: 0, name: "Индија — Ден на Републиката", type: "national", desc: "India — Republic Day" },
+    { day: 4, month: 1, name: "Шри Ланка — Ден на независноста", type: "national", desc: "Sri Lanka — Independence Day" },
+    { day: 6, month: 1, name: "Нов Зеланд — Национален ден", type: "national", desc: "New Zealand — National Day" },
+    { day: 11, month: 1, name: "Иран — Национален ден", type: "national", desc: "Iran — National Day" },
+    { day: 15, month: 1, name: "Србија — Ден на државноста", type: "national", desc: "Serbia — Statehood Day" },
+    { day: 16, month: 1, name: "Литванија — Ден на независноста", type: "national", desc: "Lithuania — Independence Day" },
+    { day: 17, month: 1, name: "Косово — Ден на независноста", type: "national", desc: "Kosovo — Independence Day" },
+    { day: 23, month: 1, name: "Јапонија — Национален ден", type: "national", desc: "Japan — National Day" },
+    { day: 24, month: 1, name: "Естонија — Национален ден", type: "national", desc: "Estonia — National Day" },
+    { day: 25, month: 1, name: "Кувајт — Ден на независноста", type: "national", desc: "Kuwait — Independence Day" },
+    { day: 3, month: 2, name: "Бугарија — Национален ден", type: "national", desc: "Bulgaria — National Day" },
+    { day: 6, month: 2, name: "Гана — Ден на независноста", type: "national", desc: "Ghana — Independence Day" },
+    { day: 15, month: 2, name: "Унгарија — Национален празник", type: "national", desc: "Hungary — National Holiday" },
+    { day: 17, month: 2, name: "Ирска — Ден на Св. Патрик", type: "national", desc: "Ireland — St. Patricks Day" },
+    { day: 23, month: 2, name: "Пакистан — Ден на Пакистан", type: "national", desc: "Pakistan — Pakistan Day" },
+    { day: 25, month: 2, name: "Грција — Ден на независноста", type: "national", desc: "Greece — Independence Day" },
+    { day: 1, month: 3, name: "Кипар — Национален ден", type: "national", desc: "Cyprus — National Day" },
+    { day: 9, month: 3, name: "Косово — Ден на Уставот", type: "national", desc: "Kosovo — Constitution Day" },
+    { day: 27, month: 3, name: "Холандија — Ден на Кралот", type: "national", desc: "Netherlands — Kings Day" },
+    { day: 3, month: 4, name: "Полска — Ден на Уставот", type: "national", desc: "Poland — Constitution Day" },
+    { day: 12, month: 4, name: "Израел — Ден на независноста", type: "national", desc: "Israel — Independence Day (date varies — Hebrew calendar)" },
+    { day: 17, month: 4, name: "Норвешка — Ден на Уставот", type: "national", desc: "Norway — Constitution Day" },
+    { day: 21, month: 4, name: "Црна Гора — Ден на независноста", type: "national", desc: "Montenegro — Independence Day" },
+    { day: 25, month: 4, name: "Аргентина — Национален празник", type: "national", desc: "Argentina — National Holiday" },
+    { day: 25, month: 4, name: "Јордан — Национален празник", type: "national", desc: "Jordan — National Holiday" },
+    { day: 26, month: 4, name: "Грузија — Ден на независноста", type: "national", desc: "Georgia — Independence Day" },
+    { day: 28, month: 4, name: "Азербејџан — Национален празник", type: "national", desc: "Azerbaijan — National Holiday" },
+    { day: 30, month: 4, name: "Хрватска — Ден на државноста", type: "national", desc: "Croatia — Statehood Day" },
+    { day: 2, month: 5, name: "Италија — Национален ден", type: "national", desc: "Italy — National Day" },
+    { day: 5, month: 5, name: "Данска — Ден на Уставот", type: "national", desc: "Denmark — Constitution Day" },
+    { day: 6, month: 5, name: "Шведска — Национален ден", type: "national", desc: "Sweden — National Day" },
+    { day: 10, month: 5, name: "Португалија — Национален ден", type: "national", desc: "Portugal — National Day" },
+    { day: 12, month: 5, name: "Руска Федерација — Национален ден", type: "national", desc: "Russian Federation — National Day" },
+    { day: 17, month: 5, name: "Исланд — Национален празник", type: "national", desc: "Iceland — National Holiday" },
+    { day: 23, month: 5, name: "Луксембург — Национален ден", type: "national", desc: "Luxembourg — National Day" },
+    { day: 25, month: 5, name: "Словенија — Ден на државноста", type: "national", desc: "Slovenia — Statehood Day" },
+    { day: 1, month: 6, name: "Канада — Ден на Канада", type: "national", desc: "Canada — Canada Day" },
+    { day: 1, month: 6, name: "Гана — Ден на Републиката", type: "national", desc: "Ghana — Republic Day" },
+    { day: 4, month: 6, name: "САД — Ден на независноста", type: "national", desc: "USA — Independence Day" },
+    { day: 6, month: 6, name: "Малави — Национален ден", type: "national", desc: "Malawi — National Day" },
+    { day: 13, month: 6, name: "Црна Гора — Ден на државноста", type: "national", desc: "Montenegro — Statehood Day" },
+    { day: 14, month: 6, name: "Франција — Национален ден", type: "national", desc: "France — National Day" },
+    { day: 1, month: 7, name: "Швајцарија — Национален ден", type: "national", desc: "Switzerland — National Day" },
+    { day: 15, month: 7, name: "Лихтенштајн — Национален ден", type: "national", desc: "Liechtenstein — National Day" },
+    { day: 15, month: 7, name: "Кореја — Национален празник", type: "national", desc: "Korea — National Holiday" },
+    { day: 17, month: 7, name: "Индонезија — Национален празник", type: "national", desc: "Indonesia — National Holiday" },
+    { day: 19, month: 7, name: "Авганистан — Национален празник", type: "national", desc: "Afghanistan — National Holiday" },
+    { day: 20, month: 7, name: "Унгарија — Национален ден", type: "national", desc: "Hungary — National Day" },
+    { day: 24, month: 7, name: "Украина — Ден на независноста", type: "national", desc: "Ukraine — Independence Day" },
+    { day: 25, month: 7, name: "Уругвај — Ден на независноста", type: "national", desc: "Uruguay — Independence Day" },
+    { day: 27, month: 7, name: "Молдавија — Национален ден", type: "national", desc: "Moldova — National Day" },
+    { day: 31, month: 7, name: "Малезија — Национален ден", type: "national", desc: "Malaysia — National Day" },
+    { day: 31, month: 7, name: "Киргистан — Национален ден", type: "national", desc: "Kyrgyzstan — National Day" },
+    { day: 1, month: 8, name: "Словачка — Ден на Уставот", type: "national", desc: "Slovakia — Constitution Day" },
+    { day: 2, month: 8, name: "Виетнам — Ден на независноста", type: "national", desc: "Vietnam — Independence Day" },
+    { day: 3, month: 8, name: "Сан Марино — Национален ден", type: "national", desc: "San Marino — National Day" },
+    { day: 7, month: 8, name: "Бразил — Ден на независноста", type: "national", desc: "Brazil — Independence Day" },
+    { day: 8, month: 8, name: "Андора — Национален ден", type: "national", desc: "Andorra — National Day" },
+    { day: 9, month: 8, name: "Кореја — Ден на Републиката", type: "national", desc: "Korea — Republic Day" },
+    { day: 8, month: 8, name: "Северна Македонија — Ден на независноста", type: "national", desc: "N. Macedonia — Independence Day" },
+    { day: 16, month: 8, name: "Мексико — Национален ден", type: "national", desc: "Mexico — National Day" },
+    { day: 21, month: 8, name: "Малта — Ден на независноста", type: "national", desc: "Malta — Independence Day" },
+    { day: 23, month: 8, name: "Саудиска Арабија — Национален ден", type: "national", desc: "Saudi Arabia — National Day" },
+    { day: 1, month: 9, name: "Кина — Национален ден", type: "national", desc: "China — National Day" },
+    { day: 1, month: 9, name: "Кипар — Ден на независноста", type: "national", desc: "Cyprus — Independence Day" },
+    { day: 3, month: 9, name: "Германија — Национален ден", type: "national", desc: "Germany — National Day" },
+    { day: 12, month: 9, name: "Шпанија — Национален ден", type: "national", desc: "Spain — National Day" },
+    { day: 24, month: 9, name: "Замбија — Национален празник", type: "national", desc: "Zambia — National Holiday" },
+    { day: 25, month: 9, name: "Казахстан — Ден на Републиката", type: "national", desc: "Kazakhstan — Republic Day" },
+    { day: 26, month: 9, name: "Австрија — Национален ден", type: "national", desc: "Austria — National Day" },
+    { day: 29, month: 9, name: "Турција — Ден на Републиката", type: "national", desc: "Turkey — Republic Day" },
+    { day: 11, month: 10, name: "Полска — Ден на независноста", type: "national", desc: "Poland — Independence Day" },
+    { day: 18, month: 10, name: "Латвија — Ден на независноста", type: "national", desc: "Latvia — Independence Day" },
+    { day: 19, month: 10, name: "Монако — Национален ден", type: "national", desc: "Monaco — National Day" },
+    { day: 25, month: 10, name: "Босна и Херцеговина — Ден на независноста", type: "national", desc: "Bosnia and Herzegovina — Independence Day" },
+    { day: 28, month: 10, name: "Албанија — Национален ден", type: "national", desc: "Albania — National Day" },
+    { day: 1, month: 11, name: "Романија — Национален ден", type: "national", desc: "Romania — National Day" },
+    { day: 2, month: 11, name: "ОАЕ — Национален ден", type: "national", desc: "UAE — National Day" },
+    { day: 6, month: 11, name: "Финска — Ден на независноста", type: "national", desc: "Finland — Independence Day" },
+    { day: 16, month: 11, name: "Бахреин — Национален ден", type: "national", desc: "Bahrain — National Day" },
+    { day: 16, month: 11, name: "Казахстан — Ден на независноста", type: "national", desc: "Kazakhstan — Independence Day" },
+    { day: 18, month: 11, name: "Катар — Национален ден", type: "national", desc: "Qatar — National Day" },
+    { day: 26, month: 11, name: "Словенија — Ден на независноста", type: "national", desc: "Slovenia — Independence Day" },
+    // — Corrected after succession (official document predates these) —
+    { day: 13, month: 5, name: "Велика Британија — Официјален роденден на Кралот", type: "national", desc: "United Kingdom — His Majesty The King\u2019s Official Birthday (a Saturday in June; 13 June 2026). Charles III since 2022." },
+    { day: 26, month: 4, name: "Данска — Роденден на Кралот", type: "national", desc: "Denmark — Birthday of H.M. King Frederik X (since 14 Jan 2024; replaces Queen Margrethe II)." },
+    // ── International observances (UN) & cultural ──
+    { day: 1, month: 0, name: "Нова Година", type: "cultural", desc: "New Year's Day — worldwide" },
+    { day: 24, month: 0, name: "Меѓ. ден на образованието", type: "un", desc: "International Day of Education" },
+    { day: 20, month: 1, name: "Светски ден на социјалната правда", type: "un", desc: "World Day of Social Justice" },
+    { day: 8, month: 2, name: "Меѓ. ден на жената", type: "un", desc: "International Women's Day" },
+    { day: 21, month: 2, name: "Меѓ. ден за елиминација на расната дискриминација", type: "un", desc: "Int'l Day for the Elimination of Racial Discrimination" },
+    { day: 7, month: 3, name: "Светски ден на здравјето", type: "un", desc: "World Health Day" },
+    { day: 23, month: 3, name: "Светски ден на книгата", type: "cultural", desc: "World Book Day — UNESCO" },
+    { day: 24, month: 3, name: "Меѓ. ден на мултилатерализмот и дипломатијата", type: "diplomatic", desc: "Int'l Day of Multilateralism & Diplomacy for Peace — UN" },
+    { day: 3, month: 4, name: "Светски ден на слободата на печатот", type: "un", desc: "World Press Freedom Day" },
+    { day: 15, month: 4, name: "Меѓ. ден на семејството", type: "un", desc: "International Day of Families" },
+    { day: 21, month: 4, name: "Светски ден на културната разновидност", type: "cultural", desc: "World Day for Cultural Diversity — UNESCO" },
+    { day: 5, month: 5, name: "Светски ден на животната средина", type: "un", desc: "World Environment Day" },
+    { day: 26, month: 5, name: "Меѓ. ден против злоупотреба на дроги", type: "un", desc: "International Day Against Drug Abuse" },
+    { day: 18, month: 6, name: "Ден на Нелсон Мандела", type: "un", desc: "Nelson Mandela International Day" },
+    { day: 9, month: 7, name: "Меѓ. ден на домородните народи", type: "un", desc: "Int'l Day of the World's Indigenous Peoples" },
+    { day: 19, month: 7, name: "Светски хуманитарен ден", type: "un", desc: "World Humanitarian Day" },
+    { day: 8, month: 8, name: "Меѓ. ден на писменоста", type: "un", desc: "International Literacy Day" },
+    { day: 21, month: 8, name: "Меѓ. ден на мирот", type: "un", desc: "International Day of Peace" },
+    { day: 24, month: 9, name: "Ден на Обединетите нации", type: "un", desc: "UN Day — founding anniversary 1945" },
+    { day: 16, month: 10, name: "Меѓ. ден на толеранцијата", type: "un", desc: "International Day for Tolerance" },
+    { day: 20, month: 10, name: "Светски ден на детето", type: "un", desc: "World Children's Day" },
+    { day: 3, month: 11, name: "Меѓ. ден на лицата со попреченост", type: "un", desc: "Int'l Day of Persons with Disabilities" },
+    { day: 10, month: 11, name: "Меѓ. ден на човековите права", type: "un", desc: "Human Rights Day" },
+    { day: 18, month: 11, name: "Светски ден на арапскиот јазик", type: "cultural", desc: "World Arabic Language Day — UNESCO" },
+    { day: 10, month: 1, name: "Ден на дипломатот — Русија", type: "diplomatic", desc: "Diplomat's Day — Russia" },
+    // ── WPA institutional milestones (2026) ──
+    { day: 7, month: 6, name: "WPA WP-012 — Набљудувачки прозорец (Анкара)", type: "wpa", desc: "36th NATO Summit, Ankara — WPA-WP-012 observation window (7–8 July)" },
+    { day: 1, month: 8, name: "WPA Journal — Повик за трудови", type: "wpa", desc: "Inaugural issue call for submissions" },
+    { day: 15, month: 8, name: "WPA Institute Index v1.0", type: "wpa", desc: "Planned release of Institute Index methodology" },
+    { day: 1, month: 9, name: "WPA Annual Report 2026", type: "wpa", desc: "First annual institutional report" },
+    { day: 1, month: 11, name: "WPA Journal — Инаугурален број", type: "wpa", desc: "Inaugural issue of the WPA Journal" },
+];
+
+let currentDate = new Date();
+
+function getEventsForDay(day, month) {
+    return events.filter(e => e.day === day && e.month === month);
+}
+
+function getEventTypeClass(type) {
+    const map = { 'un': 'event-un', 'diplomatic': 'event-diplomatic', 'national': 'event-national', 'wpa': 'event-wpa', 'cultural': 'event-cultural' };
+    return map[type] || 'event-un';
+}
+
+function getEventTypeBadge(type) {
+    const map = { 'un': 'event-un', 'diplomatic': 'event-diplomatic', 'national': 'event-national', 'wpa': 'event-wpa', 'cultural': 'event-cultural' };
+    return map[type] || 'event-un';
+}
+
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    document.getElementById('monthTitle').textContent = `${monthNames[month]} ${year}`;
+
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+
+    // Day headers
+    dayNames.forEach(d => {
+        const header = document.createElement('div');
+        header.className = 'day-header';
+        header.textContent = d;
+        grid.appendChild(header);
+    });
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+
+    // Previous month days
+    for (let i = firstDay === 0 ? 6 : firstDay - 1; i > 0; i--) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell other-month';
+        cell.innerHTML = `<div class="day-number">${daysInPrevMonth - i + 1}</div>`;
+        grid.appendChild(cell);
+    }
+
+    // Current month days
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+            cell.classList.add('today');
+        }
+
+        let html = `<div class="day-number">${day}</div>`;
+        const dayEvents = getEventsForDay(day, month);
+        dayEvents.forEach(ev => {
+            html += `<div class="day-event ${getEventTypeClass(ev.type)}">${ev.name}</div>`;
+        });
+
+        cell.innerHTML = html;
+        grid.appendChild(cell);
+    }
+
+    // Next month days
+    const remainingCells = 42 - (firstDay === 0 ? 6 : firstDay - 1) - daysInMonth;
+    for (let i = 1; i <= remainingCells; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell other-month';
+        cell.innerHTML = `<div class="day-number">${i}</div>`;
+        grid.appendChild(cell);
+    }
+
+    renderUpcomingEvents();
+}
+
+function renderUpcomingEvents() {
+    const list = document.getElementById('eventList');
+    list.innerHTML = '';
+
+    const today = new Date();
+    const upcoming = events.filter(e => {
+        const eventDate = new Date(today.getFullYear(), e.month, e.day);
+        return eventDate >= today;
+    }).sort((a, b) => {
+        const dateA = new Date(today.getFullYear(), a.month, a.day);
+        const dateB = new Date(today.getFullYear(), b.month, b.day);
+        return dateA - dateB;
+    }).slice(0, 8);
+
+    upcoming.forEach(ev => {
+        const row = document.createElement('div');
+        row.className = 'event-row';
+        row.innerHTML = `
+            <div class="event-date-box">
+                <div class="event-day">${ev.day}</div>
+                <div class="event-month">${monthNames[ev.month].substring(0, 3)}</div>
+            </div>
+            <div class="event-details">
+                <div class="event-name">${ev.name}</div>
+                <div class="event-desc">${ev.desc}</div>
+            </div>
+            <div class="event-type-badge ${getEventTypeBadge(ev.type)}">${ev.type.toUpperCase()}</div>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function changeMonth(delta) {
+    currentDate.setMonth(currentDate.getMonth() + delta);
+    renderCalendar();
+}
+
+renderCalendar();
+</script>
+
+</body>
+</html>
