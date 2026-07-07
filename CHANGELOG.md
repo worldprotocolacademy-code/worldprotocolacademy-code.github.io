@@ -14,6 +14,21 @@
 - Concept DOI: `10.5281/zenodo.20434476`
 - Version DOI: `10.5281/zenodo.20434477`
 
+- ### WPA-WP-006 — Metadata harmonised on Zenodo
+
+* The Zenodo record for WPA Working Paper No. 006 was harmonised with the WPA Working Paper Series naming convention.
+* The title was updated to explicitly include: `WPA Working Paper No. 006`.
+* The description was updated to clarify that the record contains WPA Working Paper No. 006, published by the World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies.
+* The metadata note was corrected to state that this was a metadata update, not a substantive analytical revision.
+* Keywords were cleaned and expanded.
+* The license text was aligned with the Zenodo metadata license: Creative Commons Attribution–NonCommercial–NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+* The copyright field was harmonised as: `Copyright (C) 2026 Dr. Sande Smiljanov / World Protocol Academy.`
+* No substantive analytical claims, conclusions, source base or files were changed.
+* Current version: `v1.3`
+* Concept DOI: `10.5281/zenodo.20528223`
+* Version DOI: `10.5281/zenodo.20528224`
+
+
 ---
 
 ## Academic 10+++ Final Repository Integration Package · 10 June 2026
