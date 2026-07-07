@@ -1,13 +1,11 @@
-```html
 <!DOCTYPE html>
 <html lang="mk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2</title>
-  <meta name="description" content="WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2 — URL-restored internal pre-publication institutional audit and full dataset table by World Protocol Academy." />
-<link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpa-global-institutions-master-list.html" />
+  <meta name="description" content="WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2 with D001/A010 live clarification patch — internal pre-publication institutional audit and full dataset table by World Protocol Academy." />
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/wpa-global-institutions-master-list.html" />
   <style>
     :root {
       --navy: #0d1f3c;
@@ -24,13 +22,11 @@
       --amber-text: #7a5a00;
       --green-bg: #e8f4ec;
       --green-text: #1d5c36;
+      --blue-bg: #eaf1fb;
+      --blue-text: #173b68;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -39,9 +35,7 @@
       line-height: 1.6;
     }
 
-    a {
-      color: inherit;
-    }
+    a { color: inherit; }
 
     .topnav {
       background: var(--navy-deep);
@@ -66,9 +60,7 @@
       font-weight: 600;
     }
 
-    .topnav a:hover {
-      text-decoration: underline;
-    }
+    .topnav a:hover { text-decoration: underline; }
 
     .hero {
       background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
@@ -95,7 +87,7 @@
     }
 
     .hero p {
-      max-width: 940px;
+      max-width: 980px;
       margin: 0 auto;
       font-size: 16px;
       opacity: 0.94;
@@ -119,6 +111,12 @@
       padding: 6px 12px;
       margin: 4px;
       font-size: 13px;
+    }
+
+    .status-strip span.patch-ok {
+      background: var(--green-bg);
+      color: var(--green-text);
+      border-color: #badcc6;
     }
 
     .container {
@@ -175,30 +173,18 @@
       margin-bottom: 12px;
     }
 
-    .section p {
-      margin-bottom: 12px;
-      color: #30343c;
-    }
+    .section p { margin-bottom: 12px; color: #30343c; }
 
-    .note {
-      background: var(--amber-bg);
-      color: var(--amber-text);
-      border: 1px solid #ecd37a;
+    .note, .ok-note, .patch-note {
       border-radius: 10px;
       padding: 14px 16px;
       margin-top: 16px;
       font-size: 14px;
     }
 
-    .ok-note {
-      background: var(--green-bg);
-      color: var(--green-text);
-      border: 1px solid #badcc6;
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-top: 16px;
-      font-size: 14px;
-    }
+    .note { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #ecd37a; }
+    .ok-note { background: var(--green-bg); color: var(--green-text); border: 1px solid #badcc6; }
+    .patch-note { background: var(--blue-bg); color: var(--blue-text); border: 1px solid #bfd3ec; }
 
     .download-grid {
       display: grid;
@@ -214,24 +200,10 @@
       padding: 18px;
     }
 
-    .download-card h3 {
-      margin-bottom: 8px;
-      color: var(--navy);
-      font-size: 17px;
-    }
+    .download-card h3 { margin-bottom: 8px; color: var(--navy); font-size: 17px; }
+    .download-card p { color: var(--muted); font-size: 14px; min-height: 44px; }
 
-    .download-card p {
-      color: var(--muted);
-      font-size: 14px;
-      min-height: 44px;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 
     .btn {
       display: inline-flex;
@@ -246,33 +218,12 @@
       cursor: pointer;
     }
 
-    .btn-primary {
-      background: var(--navy);
-      color: var(--cream);
-      border-color: var(--navy);
-    }
-
-    .btn-primary:hover {
-      background: var(--navy-deep);
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: var(--navy-deep);
-    }
-
-    .btn-gold:hover {
-      background: var(--gold-soft);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--navy);
-    }
-
-    .btn-ghost:hover {
-      background: var(--parchment);
-    }
+    .btn-primary { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+    .btn-primary:hover { background: var(--navy-deep); }
+    .btn-gold { background: var(--gold); color: var(--navy-deep); }
+    .btn-gold:hover { background: var(--gold-soft); }
+    .btn-ghost { background: transparent; color: var(--navy); }
+    .btn-ghost:hover { background: var(--parchment); }
 
     .meta-table {
       width: 100%;
@@ -291,11 +242,7 @@
       vertical-align: top;
     }
 
-    .meta-table th {
-      width: 34%;
-      background: var(--parchment);
-      color: var(--navy);
-    }
+    .meta-table th { width: 34%; background: var(--parchment); color: var(--navy); }
 
     .controls {
       display: grid;
@@ -322,12 +269,7 @@
       background: var(--white);
     }
 
-    table.data-table {
-      width: 100%;
-      min-width: 1100px;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
+    table.data-table { width: 100%; min-width: 1100px; border-collapse: collapse; font-size: 13px; }
 
     .data-table th {
       position: sticky;
@@ -341,74 +283,23 @@
       white-space: nowrap;
     }
 
-    .data-table td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-      vertical-align: top;
-    }
+    .data-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+    .data-table tr:hover { background: #faf8f3; }
+    .id-cell { font-family: "Courier New", monospace; color: var(--gold); font-weight: 700; white-space: nowrap; }
+    .name-cell { color: var(--navy); font-weight: 700; min-width: 240px; }
+    .notes-cell { max-width: 380px; color: #555; line-height: 1.45; }
 
-    .data-table tr:hover {
-      background: #faf8f3;
-    }
-
-    .id-cell {
-      font-family: "Courier New", monospace;
-      color: var(--gold);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .name-cell {
-      color: var(--navy);
-      font-weight: 700;
-      min-width: 240px;
-    }
-
-    .notes-cell {
-      max-width: 380px;
-      color: #555;
-      line-height: 1.45;
-    }
-
-    .pill {
-      display: inline-block;
-      border-radius: 999px;
-      padding: 3px 9px;
-      font-size: 11px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
+    .pill { display: inline-block; border-radius: 999px; padding: 3px 9px; font-size: 11px; font-weight: 800; white-space: nowrap; }
     .level-a { background: #d4edda; color: #155724; }
     .level-b { background: #fff3cd; color: #856404; }
     .level-c { background: #d1ecf1; color: #0c5460; }
     .level-d { background: #f8d7da; color: #721c24; }
+    .verification { color: #755a00; font-size: 12px; white-space: nowrap; }
+    .verification.verified { color: #1d5c36; font-weight: 700; }
+    .website { color: var(--navy); font-weight: 700; text-decoration: none; }
+    .website:hover { color: var(--gold); text-decoration: underline; }
 
-    .verification {
-      color: #755a00;
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .website {
-      color: var(--navy);
-      font-weight: 700;
-      text-decoration: none;
-    }
-
-    .website:hover {
-      color: var(--gold);
-      text-decoration: underline;
-    }
-
-    .list-status {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 10px 0 15px;
-      font-size: 13px;
-      color: var(--muted);
-    }
+    .list-status { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0 15px; font-size: 13px; color: var(--muted); }
 
     .footer {
       background: var(--navy-deep);
@@ -419,47 +310,18 @@
       margin-top: 30px;
     }
 
-    .footer a {
-      color: var(--gold-soft);
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      text-decoration: underline;
-    }
-
-    .motto {
-      margin-top: 15px;
-      opacity: 0.82;
-      font-style: italic;
-      font-size: 14px;
-    }
+    .footer a { color: var(--gold-soft); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    .motto { margin-top: 15px; opacity: 0.82; font-style: italic; font-size: 14px; }
 
     @media (max-width: 900px) {
-      .stats,
-      .download-grid,
-      .controls {
-        grid-template-columns: 1fr;
-      }
-
-      .section {
-        padding: 22px 18px;
-      }
-
-      .meta-table th,
-      .meta-table td {
-        display: block;
-        width: 100%;
-      }
-
-      .meta-table tr {
-        display: block;
-        margin-bottom: 12px;
-      }
+      .stats, .download-grid, .controls { grid-template-columns: 1fr; }
+      .section { padding: 22px 18px; }
+      .meta-table th, .meta-table td { display: block; width: 100%; }
+      .meta-table tr { display: block; margin-bottom: 12px; }
     }
   </style>
 </head>
-
 <body>
   <nav class="topnav" aria-label="Top navigation">
     <div class="topnav-inner">
@@ -476,24 +338,24 @@
     <h1>WPA Global Institutions Master List<br>v1.0-CORRECTED-4F-REV2</h1>
     <p>
       Internal pre-publication dataset and institutional audit package for protocol, diplomacy,
-      public communication and security studies institutions. This version restores official or
-      safely resolvable website URLs where available, while keeping source verification pending.
+      public communication and security studies institutions. The live presentation includes the
+      D001/A010 entity-resolution clarification while preserving the 4F-REV2 archival download package.
     </p>
   </header>
 
   <div class="status-strip">
     <span>Pre-publication candidate / internal review</span>
     <span>Not final public benchmark</span>
-    <span>Source verification pending</span>
-    <span>URL restoration does not equal source verification</span>
+    <span>Source verification pending for the wider dataset</span>
+    <span class="patch-ok">D001/A010 live clarification applied</span>
   </div>
 
   <main class="container">
     <section class="stats" aria-label="Dataset statistics">
-      <div class="stat"><strong>160</strong><span>Total records</span></div>
-      <div class="stat"><strong>159</strong><span>External records</span></div>
-      <div class="stat"><strong>155</strong><span>Unique external institutions</span></div>
-      <div class="stat"><strong>156</strong><span>Records with URL</span></div>
+      <div class="stat"><strong id="statTotal">160</strong><span>Total records</span></div>
+      <div class="stat"><strong id="statExternal">159</strong><span>External records</span></div>
+      <div class="stat"><strong id="statUnique">155</strong><span>Unique external institutions</span></div>
+      <div class="stat"><strong id="statUrls">156</strong><span>Records with URL</span></div>
     </section>
 
     <section class="section">
@@ -511,13 +373,21 @@
 
       <div class="note">
         <strong>Status:</strong> Pre-publication candidate / internal review. Not final public
-        benchmark until source verification and institutional review are completed.
+        benchmark until wider source verification and institutional review are completed.
       </div>
 
       <div class="ok-note">
         <strong>Key correction:</strong> v1.0-CORRECTED-4F-REV2 restores website URL fields where
-        safely resolvable. A010 remains Level B / Verification pending / no URL. A005 and B008
-        remain reported cooperation-model observations with no URL and no source-verified status.
+        safely resolvable. A005 and B008 remain reported cooperation-model observations with no URL
+        and no source-verified institutional-entity status.
+      </div>
+
+      <div class="patch-note">
+        <strong>D001/A010 live clarification:</strong> D001 — Protocol Academy of Macedonia is shown
+        as <strong>VERIFIED — primary source</strong> and retained as the canonical institutional entity.
+        A010 — Protocol Academy of Kosovo is retained as an audit-visible child / branch / brand-presence
+        record under D001 and is not counted as a separate independent institution pending the next full
+        entity-resolution pass. Public counts remain unchanged.
       </div>
     </section>
 
@@ -525,13 +395,13 @@
       <h2>Download files</h2>
       <p>
         Use JSON for technical loading, CSV for spreadsheet review, Markdown for public-readable
-        inspection, and the QA/URL logs for validation.
+        inspection, and the QA/URL logs for validation. The 4F-REV3 D001/A010 patch is also linked below.
       </p>
 
       <div class="download-grid">
         <article class="download-card">
           <h3>JSON Dataset</h3>
-          <p>Structured master dataset used to generate the full list below.</p>
+          <p>Structured 4F-REV2 master dataset used for archival loading and review.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV2.json">Open JSON</a>
             <a class="btn btn-ghost" href="data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV2.json" download>Download</a>
@@ -575,11 +445,11 @@
         </article>
 
         <article class="download-card">
-          <h3>Changelog</h3>
-          <p>Correction history for the 4F-REV2 URL restoration package.</p>
+          <h3>4F-REV3 D001/A010 Patch</h3>
+          <p>Audit-visible entity-resolution patch for Protocol Academy of Macedonia and Protocol Academy of Kosovo.</p>
           <div class="btn-row">
-            <a class="btn btn-gold" href="data/global-institutions/v1.0-corrected-4f-rev2/CHANGELOG_v1.0-CORRECTED-4F-REV2.md">Open Changelog</a>
-            <a class="btn btn-ghost" href="data/global-institutions/v1.0-corrected-4f-rev2/CHANGELOG_v1.0-CORRECTED-4F-REV2.md" download>Download</a>
+            <a class="btn btn-primary" href="data/global-institutions/patches/4f-rev3/CHANGELOG_ENTRY_D001_A010.md">Open Patch Note</a>
+            <a class="btn btn-ghost" href="data/global-institutions/patches/4f-rev3/WPA_MasterList_PATCH_D001_A010.json">Open Patch JSON</a>
           </div>
         </article>
       </div>
@@ -588,7 +458,7 @@
     <section class="section">
       <h2>Dataset summary</h2>
       <table class="meta-table">
-        <tr><th>Version</th><td>v1.0-CORRECTED-4F-REV2</td></tr>
+        <tr><th>Version</th><td>v1.0-CORRECTED-4F-REV2 + live D001/A010 clarification layer</td></tr>
         <tr><th>Total records</th><td>160</td></tr>
         <tr><th>External records</th><td>159</td></tr>
         <tr><th>Unique external institutions</th><td>155 canonical methodological count</td></tr>
@@ -599,8 +469,8 @@
         <tr><th>Level D records</th><td>0</td></tr>
         <tr><th>Records with website</th><td>156</td></tr>
         <tr><th>Records without website</th><td>4: A005, A010, B008, C011</td></tr>
-        <tr><th>R001 / WPA established</th><td>2026</td></tr>
-        <tr><th>A010 status</th><td>Level B · Verification pending · Reported affiliated branch / historical branded training presence · No URL</td></tr>
+        <tr><th>D001 status</th><td>VERIFIED — primary source · Canonical institutional entity</td></tr>
+        <tr><th>A010 status</th><td>VERIFIED — primary source, branch/de facto presence of D001 · Audit-visible child / branch / brand-presence record · No URL · Not counted separately as an independent institution after next entity-resolution pass</td></tr>
         <tr><th>A005 / B008 status</th><td>Reported cooperation-model observations · Verification pending · No URL · Not verified institutional entities</td></tr>
         <tr><th>QA status</th><td>URL-restoration dataset checks pass. Website URL restoration does not equal source verification.</td></tr>
       </table>
@@ -609,15 +479,13 @@
     <section class="section" id="full-list">
       <h2>Full institutional list</h2>
       <p>
-        The table below is generated directly from the CORRECTED-4F-REV2 JSON dataset. Use search
-        and filters to inspect all records.
+        The table below is generated from the CORRECTED-4F-REV2 JSON dataset, with the D001/A010
+        live clarification applied at display time. Use search and filters to inspect all records.
       </p>
 
       <div class="controls">
         <input type="search" id="searchInput" placeholder="Search by institution, country, type, notes..." />
-        <select id="groupFilter">
-          <option value="">All groups</option>
-        </select>
+        <select id="groupFilter"><option value="">All groups</option></select>
         <select id="levelFilter">
           <option value="">All relevance levels</option>
           <option value="A">Level A</option>
@@ -629,12 +497,12 @@
 
       <div class="list-status">
         <span id="recordCount">Loading records...</span>
-        <span>Source: CORRECTED-4F-REV2 JSON</span>
-        <span>Verification: pending</span>
+        <span>Source: CORRECTED-4F-REV2 JSON + D001/A010 live clarification</span>
+        <span>Verification: broader dataset pending</span>
       </div>
 
       <div class="table-wrap">
-        <table class="data-table" aria-label="WPA Global Institutions full list">
+        <table class="data-table" aria-label="WPA Global Institutions Master List">
           <thead>
             <tr>
               <th>ID</th>
@@ -649,17 +517,10 @@
               <th>Notes</th>
             </tr>
           </thead>
-          <tbody id="recordsBody">
-            <tr>
-              <td colspan="10">Loading dataset...</td>
-            </tr>
+          <tbody id="tableBody">
+            <tr><td colspan="10">Loading dataset...</td></tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="note">
-        <strong>Important:</strong> This is not a final public benchmark. All external records remain
-        subject to source verification. Website links are restored for navigation and review only.
       </div>
     </section>
 
@@ -674,168 +535,146 @@
         It should not be cited as a final public benchmark, official accreditation list, governmental
         recognition list or fully verified institutional ranking.
       </p>
-
       <div class="note">
-        <strong>Verification notice:</strong> All external records remain subject to source verification.
-        URL restoration does not mean that an institution or record has been fully source-verified.
+        <strong>Verification notice:</strong> The wider external dataset remains subject to source
+        verification. URL restoration does not mean that an institution or record has been fully source-verified.
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <p>© 2026 World Protocol Academy · Institute for Protocol, Diplomacy, Public Communication & Security Studies</p>
-    <p style="margin-top: 10px; font-size: 13px;">
-      <a href="index.html">World Protocol Academy</a> ·
-      <a href="institute.html">Institute</a> ·
-      <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a>
-    </p>
-    <p class="motto">
-      „Преговарањето е опционално. Протоколот е апсолутен.“<br>
-      “Negotiation is optional. Protocol is absolute.”
-    </p>
+    <p>© 2026 World Protocol Academy · Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies</p>
+    <p><a href="institute.html">World Protocol Academy · Institute</a> · <a href="mailto:worldprotocolacademy@gmail.com">worldprotocolacademy@gmail.com</a></p>
+    <p class="motto">„Преговарањето е опционално. Протоколот е апсолутен.“<br />“Negotiation is optional. Protocol is absolute.”</p>
   </footer>
 
   <script>
-    const DATA_URL = "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV2.json";
-
+    const DATASET_URL = "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV2.json";
     let allRecords = [];
 
-    function escapeHTML(value) {
+    function escapeHtml(value) {
       return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    function normalizeLevel(level) {
-      return String(level || "").trim().toUpperCase();
+    function applyD001A010Patch(records) {
+      return records.map((record) => {
+        if (record.id === "D001") {
+          return {
+            ...record,
+            verification_status: "VERIFIED — primary source",
+            notes: "Canonical institutional entity. Protocol Academy of Macedonia is verified by primary source. The relationship with The Protocol School of Washington is recorded as curriculum-license / certification-based training relationship, not ownership or franchise unless separately evidenced."
+          };
+        }
+
+        if (record.id === "A010") {
+          return {
+            ...record,
+            name: "Protocol Academy of Kosovo — audit-visible branch / brand-presence record under D001",
+            institution_type: "Audit-visible child / branch / brand-presence record under D001",
+            protocol_relevance_level: "B",
+            verification_status: "VERIFIED — primary source, branch/de facto presence of D001",
+            website: "",
+            website_status: "no_url_audit_visible_branch_record",
+            notes: "Non-canonical child / branch / brand-presence record retained for audit visibility. It shall not be counted as a separate independent institution after the next full entity-resolution pass. D001 remains the canonical institutional entity."
+          };
+        }
+
+        return record;
+      });
     }
 
-    function levelClass(level) {
-      const l = normalizeLevel(level).toLowerCase();
-      return ["a", "b", "c", "d"].includes(l) ? "level-" + l : "level-c";
-    }
-
-    function getRecordsFromPayload(payload) {
-      if (Array.isArray(payload)) return payload;
-      if (Array.isArray(payload.institutions)) return payload.institutions;
-      if (Array.isArray(payload.records)) return payload.records;
-      if (Array.isArray(payload.data)) return payload.data;
-      return [];
-    }
-
-    function recordSearchText(record) {
-      return [
-        record.id,
-        record.name,
-        record.country,
-        record.group,
-        record.institution_type,
-        record.protocol_relevance_level,
-        record.established,
-        record.verification_status,
-        record.website,
-        record.website_status,
-        record.notes
-      ].join(" ").toLowerCase();
-    }
-
-    function populateGroupFilter(records) {
-      const select = document.getElementById("groupFilter");
-      const groups = [...new Set(records.map(r => String(r.group || "").trim()).filter(Boolean))].sort();
-
-      groups.forEach(group => {
+    function renderGroups(records) {
+      const groupFilter = document.getElementById("groupFilter");
+      const groups = [...new Set(records.map((record) => record.group).filter(Boolean))].sort();
+      groups.forEach((group) => {
         const option = document.createElement("option");
         option.value = group;
-        option.textContent = "Group " + group;
-        select.appendChild(option);
+        option.textContent = `Group ${group}`;
+        groupFilter.appendChild(option);
       });
     }
 
-    function renderRecords() {
-      const search = document.getElementById("searchInput").value.trim().toLowerCase();
+    function renderTable() {
+      const search = document.getElementById("searchInput").value.toLowerCase().trim();
       const group = document.getElementById("groupFilter").value;
       const level = document.getElementById("levelFilter").value;
-      const tbody = document.getElementById("recordsBody");
+      const body = document.getElementById("tableBody");
+      const recordCount = document.getElementById("recordCount");
 
-      const filtered = allRecords.filter(record => {
-        const matchSearch = !search || recordSearchText(record).includes(search);
-        const matchGroup = !group || String(record.group || "") === group;
-        const matchLevel = !level || normalizeLevel(record.protocol_relevance_level) === level;
-        return matchSearch && matchGroup && matchLevel;
+      const filtered = allRecords.filter((record) => {
+        const haystack = [
+          record.id,
+          record.name,
+          record.country,
+          record.group,
+          record.institution_type,
+          record.protocol_relevance_level,
+          record.verification_status,
+          record.notes
+        ].join(" ").toLowerCase();
+
+        return (!search || haystack.includes(search)) &&
+          (!group || record.group === group) &&
+          (!level || record.protocol_relevance_level === level);
       });
 
-      document.getElementById("recordCount").textContent =
-        "Showing " + filtered.length + " of " + allRecords.length + " records";
+      recordCount.textContent = `Showing ${filtered.length} of ${allRecords.length} records`;
 
       if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="10">No records found.</td></tr>';
+        body.innerHTML = '<tr><td colspan="10">No matching records found.</td></tr>';
         return;
       }
 
-      tbody.innerHTML = filtered.map(record => {
+      body.innerHTML = filtered.map((record) => {
+        const levelClass = `level-${String(record.protocol_relevance_level || "").toLowerCase()}`;
+        const verifiedClass = String(record.verification_status || "").startsWith("VERIFIED") ? " verified" : "";
         const website = record.website
-          ? '<a class="website" href="' + escapeHTML(record.website) + '" target="_blank" rel="noopener noreferrer">Open</a>'
+          ? `<a class="website" href="${escapeHtml(record.website)}" target="_blank" rel="noopener noreferrer">Open</a>`
           : "—";
-
-        const level = normalizeLevel(record.protocol_relevance_level) || "—";
 
         return `
           <tr>
-            <td class="id-cell">${escapeHTML(record.id)}</td>
-            <td class="name-cell">${escapeHTML(record.name)}</td>
-            <td>${escapeHTML(record.country)}</td>
-            <td>${escapeHTML(record.group)}</td>
-            <td>${escapeHTML(record.institution_type)}</td>
-            <td><span class="pill ${levelClass(level)}">${escapeHTML(level)}</span></td>
-            <td>${escapeHTML(record.established || "—")}</td>
-            <td class="verification">${escapeHTML(record.verification_status || "Verification pending")}</td>
+            <td class="id-cell">${escapeHtml(record.id)}</td>
+            <td class="name-cell">${escapeHtml(record.name)}</td>
+            <td>${escapeHtml(record.country)}</td>
+            <td>${escapeHtml(record.group)}</td>
+            <td>${escapeHtml(record.institution_type)}</td>
+            <td><span class="pill ${levelClass}">${escapeHtml(record.protocol_relevance_level)}</span></td>
+            <td>${escapeHtml(record.established || "—")}</td>
+            <td><span class="verification${verifiedClass}">${escapeHtml(record.verification_status)}</span></td>
             <td>${website}</td>
-            <td class="notes-cell">${escapeHTML(record.notes)}</td>
+            <td class="notes-cell">${escapeHtml(record.notes)}</td>
           </tr>
         `;
       }).join("");
     }
 
-    async function loadDataset() {
-      const tbody = document.getElementById("recordsBody");
-
+    async function init() {
+      const body = document.getElementById("tableBody");
       try {
-        const response = await fetch(DATA_URL, { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP " + response.status);
-
-        const payload = await response.json();
-        allRecords = getRecordsFromPayload(payload);
-
-        if (!allRecords.length) {
-          tbody.innerHTML = '<tr><td colspan="10">Dataset loaded, but no records were found.</td></tr>';
-          document.getElementById("recordCount").textContent = "No records found";
-          return;
-        }
-
-        populateGroupFilter(allRecords);
-        renderRecords();
+        const response = await fetch(DATASET_URL);
+        if (!response.ok) throw new Error(`Dataset HTTP ${response.status}`);
+        const dataset = await response.json();
+        const rawRecords = Array.isArray(dataset.institutions) ? dataset.institutions : [];
+        allRecords = applyD001A010Patch(rawRecords);
+        renderGroups(allRecords);
+        renderTable();
       } catch (error) {
-        console.error("Dataset loading failed:", error);
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="10">
-              Dataset could not be loaded automatically. Please open the JSON dataset from the download section.
-            </td>
-          </tr>
-        `;
-        document.getElementById("recordCount").textContent = "Dataset loading failed";
+        body.innerHTML = `<tr><td colspan="10">Dataset could not be loaded: ${escapeHtml(error.message)}</td></tr>`;
+        document.getElementById("recordCount").textContent = "Dataset load error";
       }
     }
 
-    document.getElementById("searchInput").addEventListener("input", renderRecords);
-    document.getElementById("groupFilter").addEventListener("change", renderRecords);
-    document.getElementById("levelFilter").addEventListener("change", renderRecords);
+    document.getElementById("searchInput").addEventListener("input", renderTable);
+    document.getElementById("groupFilter").addEventListener("change", renderTable);
+    document.getElementById("levelFilter").addEventListener("change", renderTable);
 
-    loadDataset();
+    init();
   </script>
 </body>
 </html>
-```
