@@ -1,4 +1,5 @@
 # WPA Institute Ecosystem — CHANGELOG
+
 ## Zenodo Metadata Harmonisation · 7 July 2026
 
 ### WPA-WP-005 — Metadata harmonised on Zenodo
@@ -12,7 +13,9 @@
 - Current version: `v1.1`
 - Concept DOI: `10.5281/zenodo.20434476`
 - Version DOI: `10.5281/zenodo.20434477`
+
 ---
+
 ## Academic 10+++ Final Repository Integration Package · 10 June 2026
 
 ---
