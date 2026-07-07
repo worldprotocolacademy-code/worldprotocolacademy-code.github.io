@@ -1,69 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="mk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WPA Watch | World Protocol Academy</title>
+<meta name="description" content="WPA Watch — legal-safe public RSS and Atom candidate monitoring console for protocol, diplomacy, public communication, security, communicology and academic metadata." />
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/wpa-watch/" />
 <style>
-body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:#081423;color:white}
-header{background:#0d2238;padding:28px;text-align:center;border-bottom:3px solid #d4af37}
-h1{color:#f3d77a;margin:0}
-nav{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}
-a.btn,nav a{background:#d4af37;color:#081423;padding:11px 18px;border-radius:999px;font-weight:800;text-decoration:none}
-main{max-width:1100px;margin:auto;padding:38px 20px}
-.card{background:#102945;border:1px solid #29527a;border-radius:14px;padding:22px;margin:16px 0}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
-input,select{padding:12px;border-radius:10px;border:1px solid #29527a}
-.item{background:#102945;border:1px solid #29527a;border-radius:14px;padding:18px;margin:12px 0}
-.badge{display:inline-block;padding:4px 9px;border-radius:999px;background:#29527a;color:white;font-size:12px;font-weight:800}
-footer{text-align:center;background:#091522;color:#bcbcbc;padding:24px;margin-top:40px}
+:root{--navy:#081423;--card:#102945;--card2:#0b1f35;--gold:#d4af37;--gold2:#f3d77a;--line:#29527a;--muted:#dce4ee;--soft:#aebed1;--ok:#9fe6b8;--warn:#f5d78a;--danger:#ffb8b8}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:radial-gradient(circle at top right,rgba(212,175,55,.13),transparent 34%),var(--navy);color:white;line-height:1.62}
+a{color:var(--gold2)}
+header{background:linear-gradient(135deg,#071326,#0d2238,#102945);padding:34px 20px 42px;text-align:center;border-bottom:3px solid var(--gold)}
+h1{color:var(--gold2);margin:0;font-size:clamp(34px,5vw,56px)}
+.subtitle{max-width:920px;margin:14px auto 0;color:#e8eef6;font-size:18px}
+nav,.actions,.footer-links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn,button.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#081423;padding:11px 16px;border-radius:999px;font-weight:850;text-decoration:none;border:1px solid var(--gold);min-height:42px;cursor:pointer;font-family:inherit;font-size:14px}
+.btn.secondary,button.btn.secondary{background:transparent;color:var(--gold2);border-color:rgba(212,175,55,.55)}
+.btn.dark{background:#0b1f35;color:#fff;border-color:var(--line)}
+main{max-width:1180px;margin:auto;padding:38px 20px 70px}
+.card,.item,.note,.console{background:rgba(16,41,69,.94);border:1px solid var(--line);border-radius:16px;padding:22px;margin:16px 0;box-shadow:0 12px 34px rgba(0,0,0,.18)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:15px;padding:18px;text-align:center}.stat strong{display:block;color:var(--gold2);font-size:30px}.stat span{display:block;color:var(--soft);margin-top:7px;font-size:13px;font-weight:750;text-transform:uppercase}
+h2,h3{color:var(--gold2)}
+.toolbar{display:grid;grid-template-columns:1.5fr .8fr .8fr .8fr;gap:10px;margin:18px 0}
+input,select{width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--line);background:#fff;color:#081423;font-size:15px}
+.badge,.meta-chip{display:inline-flex;padding:4px 9px;border-radius:999px;background:#29527a;color:white;font-size:12px;font-weight:800}.badge.diplomacy{background:#876a21}.badge.academic{background:#2f6b3a}.badge.protocol{background:#4a6890}.badge.pr{background:#2e6b66}.badge.security{background:#7a1f2b}.badge.communicology{background:#574a78}.badge.general{background:#495465}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px;color:var(--soft);font-size:13px}.meta-chip{background:#0b1f35;border:1px solid var(--line);color:var(--soft)}
+.item h3{margin:10px 0 8px;font-size:22px}.item p{color:var(--muted)}.item-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.status-ok{color:var(--ok);font-weight:850}.status-warn{color:var(--warn);font-weight:850}.status-danger{color:var(--danger);font-weight:850}.note{border-left:5px solid var(--gold);background:rgba(212,175,55,.10);color:var(--muted)}.small{font-size:14px;color:var(--soft)}
+footer{text-align:center;background:#091522;color:#bcbcbc;padding:26px 18px;margin-top:40px;border-top:1px solid rgba(212,175,55,.35)}
+@media(max-width:820px){.toolbar{grid-template-columns:1fr}.btn,button.btn{width:100%}nav,.actions,.footer-links{justify-content:flex-start}}
 </style>
 </head>
 <body>
 <header>
 <h1>📡 WPA Watch</h1>
-<p>Legal-safe RSS/Atom monitoring for protocol, diplomacy, public communication, security and communicology.</p>
-<nav>
-<a href="/">🏛 WPA</a>
-<a href="/institute.html">🏢 Institute</a>
-<a href="/journal/">📚 Journal</a>
-<a href="/journal/watch/">🧭 Journal Watch</a>
-<a href="/tools/academic-search-hub/">🔎 Academic Search Hub</a>
+<p class="subtitle">Legal-safe public RSS/Atom candidate monitoring for protocol, diplomacy, public communication, security, communicology and academic metadata.</p>
+<nav aria-label="WPA Watch navigation">
+<a class="btn" href="/">🏛 WPA</a><a class="btn" href="/institute.html">🏢 Institute</a><a class="btn" href="/journal/">📚 Journal</a><a class="btn" href="/journal/watch/">🧭 Journal Watch</a><a class="btn" href="/tools/academic-search-hub/">🔎 Academic Search Hub</a><a class="btn secondary" href="/protocolometry-center.html">📐 Protocolometry Center</a>
 </nav>
 </header>
 <main>
-<section class="card">
+<section class="console">
 <h2>Live Feed Console</h2>
-<p id="status">Loading WPA Watch data...</p>
-<div style="display:flex;gap:10px;flex-wrap:wrap">
-<input id="q" type="search" placeholder="Search...">
-<select id="domain">
-<option value="all">All domains</option>
-<option value="protocol">Protocol</option>
-<option value="diplomacy">Diplomacy</option>
-<option value="pr">Public Communication / PR</option>
-<option value="security">Security</option>
-<option value="communicology">Communicology</option>
-<option value="academic">Academic</option>
-<option value="general">General</option>
-</select>
-</div>
-<div id="feed"></div>
+<p id="status"><span class="status-warn">Loading WPA Watch data...</span></p>
+<div class="grid" aria-label="WPA Watch statistics"><div class="stat"><strong id="totalCount">—</strong><span>Total candidates</span></div><div class="stat"><strong id="shownCount">—</strong><span>Shown now</span></div><div class="stat"><strong id="sourceCount">—</strong><span>Sources</span></div><div class="stat"><strong id="latestDate">—</strong><span>Latest item</span></div></div>
+<div class="toolbar"><input id="q" type="search" placeholder="Search title, source, summary..." /><select id="domain"><option value="all">All domains</option><option value="protocol">Protocol</option><option value="diplomacy">Diplomacy</option><option value="pr">Public Communication / PR</option><option value="security">Security</option><option value="communicology">Communicology</option><option value="academic">Academic</option><option value="general">General</option></select><select id="sourceFilter"><option value="all">All sources</option></select><select id="sortBy"><option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="domain">Domain A-Z</option><option value="source">Source A-Z</option><option value="title">Title A-Z</option></select></div>
+<div class="actions"><button class="btn" id="refreshBtn" type="button">Refresh feed</button><button class="btn secondary" id="resetBtn" type="button">Reset filters</button><button class="btn secondary" id="copyBtn" type="button">Copy visible candidates</button></div>
+<div class="note"><strong>Governance:</strong> every entry below is a public-source candidate only. It is not a verified WPA finding, not an automatic journal article and not a replacement for human academic review.</div>
+<div id="feed" aria-live="polite"></div>
 </section>
-<section class="grid">
-<div class="card"><h3>🧭 Journal Watch</h3><p>Editorial topic candidates.</p><a class="btn" href="/journal/watch/">Open Journal Watch</a></div>
-<div class="card"><h3>🔎 Academic Search Hub</h3><p>Academic verification.</p><a class="btn" href="/tools/academic-search-hub/">Open Search Hub</a></div>
-<div class="card"><h3>🏛 WPA</h3><p>Official portal.</p><a class="btn" href="/">Open WPA</a></div>
-</section>
+<section class="grid"><div class="card"><h3>🧭 Journal Watch</h3><p>Editorial topic candidates after human review.</p><a class="btn secondary" href="/journal/watch/">Open Journal Watch</a></div><div class="card"><h3>🔎 Academic Search Hub</h3><p>Academic verification and source traceability.</p><a class="btn secondary" href="/tools/academic-search-hub/">Open Search Hub</a></div><div class="card"><h3>📐 Protocolometry Center</h3><p>Methodological integration and digest overview.</p><a class="btn secondary" href="/protocolometry-center.html">Open Protocolometry</a></div><div class="card"><h3>🏛 WPA</h3><p>Official WPA portal.</p><a class="btn secondary" href="/">Open WPA</a></div></section>
 </main>
-<footer>© 2026 World Protocol Academy · Protocol is absolute. Data must be verified.</footer>
+<footer>© 2026 World Protocol Academy · Protocol is absolute. Data must be verified.<br><span class="small">Public-source only · Human review required</span><div class="footer-links"><a class="btn dark" href="/public-disclaimer.html">Public Disclaimer</a><a class="btn dark" href="/correction-request.html">Correction Request</a><a class="btn dark" href="/rights-takedown.html">Rights &amp; Takedown</a><a class="btn dark" href="/privacy.html">Privacy Policy</a></div></footer>
 <script>
-let allItems=[];
-function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function matches(i){const q=document.getElementById("q").value.toLowerCase();const d=document.getElementById("domain").value;const text=[i.title,i.summary,i.source].join(" ").toLowerCase();return (d==="all"||i.domain===d)&&(!q||text.includes(q))}
-function render(){const shown=allItems.filter(matches);document.getElementById("feed").innerHTML=shown.length?shown.map(i=>`<article class="item"><span class="badge">${esc(i.domain||"general")}</span><h3>${esc(i.title)}</h3><p>${esc(i.summary||"")}</p><a class="btn" href="${esc(i.link||"#")}" target="_blank" rel="noopener">Open source</a></article>`).join(""):"<div class='item'>No items yet. Run the WPA Watch workflow.</div>"}
-async function load(){try{const r=await fetch("items.json?ts="+Date.now());allItems=r.ok?await r.json():[];document.getElementById("status").textContent="Loaded "+allItems.length+" public-source candidates. Manual verification required.";render()}catch(e){document.getElementById("status").textContent="items.json not found yet. Run Actions → WPA Watch.";render()}}
-document.getElementById("q").addEventListener("input",render);document.getElementById("domain").addEventListener("change",render);load();
+(function(){
+let allItems=[];let visibleItems=[];const DATA_URL="items.json";const qs=(id)=>document.getElementById(id);const esc=(s)=>String(s||"").replace(/[&<>\"']/g,(m)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));const fmtDate=(v)=>{if(!v)return"—";const d=new Date(v);return Number.isNaN(d.getTime())?"—":d.toISOString().slice(0,10)};
+function normalize(i,n){return{id:i.id||i.link||("candidate-"+n),title:i.title||"Untitled candidate",link:i.link||"#",source:i.source||"Unknown source",domain:i.domain||"general",summary:i.summary||"",isoDate:i.isoDate||i.date||""}}
+async function loadItems(){qs("status").innerHTML='<span class="status-warn">Loading WPA Watch data...</span>';try{const r=await fetch(DATA_URL+"?ts="+Date.now(),{headers:{"Accept":"application/json"}});if(!r.ok)throw new Error("HTTP "+r.status);const data=await r.json();if(!Array.isArray(data))throw new Error("items.json is not an array");allItems=data.map(normalize);updateSourceFilter();qs("status").innerHTML='<span class="status-ok">Loaded '+allItems.length+' public-source candidates.</span> Manual verification required.';render()}catch(e){allItems=[];qs("status").innerHTML='<span class="status-danger">items.json unavailable.</span> Run the WPA Watch workflow. '+esc(e.message||e);render()}}
+function filters(){return{q:(qs("q").value||"").toLowerCase().trim(),domain:qs("domain").value,source:qs("sourceFilter").value,sortBy:qs("sortBy").value}}
+function match(i,f){const text=[i.title,i.summary,i.source,i.domain].join(" ").toLowerCase();return(f.domain==="all"||i.domain===f.domain)&&(f.source==="all"||i.source===f.source)&&(!f.q||text.includes(f.q))}
+function sortItems(items,by){return[...items].sort((a,b)=>{if(by==="oldest")return new Date(a.isoDate||0)-new Date(b.isoDate||0);if(by==="domain")return String(a.domain).localeCompare(String(b.domain))||String(a.title).localeCompare(String(b.title));if(by==="source")return String(a.source).localeCompare(String(b.source))||String(a.title).localeCompare(String(b.title));if(by==="title")return String(a.title).localeCompare(String(b.title));return new Date(b.isoDate||0)-new Date(a.isoDate||0)})}
+function updateSourceFilter(){const s=qs("sourceFilter");const cur=s.value||"all";const sources=[...new Set(allItems.map(i=>i.source).filter(Boolean))].sort();s.innerHTML='<option value="all">All sources</option>'+sources.map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join("");if(sources.includes(cur))s.value=cur}
+function updateStats(){const sources=new Set(allItems.map(i=>i.source).filter(Boolean));const dates=allItems.map(i=>new Date(i.isoDate)).filter(d=>!Number.isNaN(d.getTime()));const latest=dates.length?new Date(Math.max(...dates.map(d=>d.getTime()))):null;qs("totalCount").textContent=allItems.length;qs("shownCount").textContent=visibleItems.length;qs("sourceCount").textContent=sources.size;qs("latestDate").textContent=latest?latest.toISOString().slice(0,10):"—"}
+function render(){const f=filters();visibleItems=sortItems(allItems.filter(i=>match(i,f)),f.sortBy);updateStats();const feed=qs("feed");if(!visibleItems.length){feed.innerHTML='<div class="item"><strong>No matching candidates.</strong><p>Try another keyword, domain or source filter.</p></div>';return}feed.innerHTML=visibleItems.map(i=>'<article class="item"><span class="badge '+esc(i.domain)+'">'+esc(i.domain)+'</span><h3>'+esc(i.title)+'</h3><div class="meta"><span class="meta-chip">Source: '+esc(i.source)+'</span><span class="meta-chip">Date: '+esc(fmtDate(i.isoDate))+'</span><span class="meta-chip">Status: candidate / unverified</span></div><p>'+esc(i.summary)+'</p><div class="item-actions"><a class="btn" href="'+esc(i.link)+'" target="_blank" rel="noopener noreferrer">Open source</a><a class="btn secondary" href="/journal/watch/">Journal Watch</a><a class="btn secondary" href="/tools/academic-search-hub/">Verify source</a></div></article>').join("")}
+function reset(){qs("q").value="";qs("domain").value="all";qs("sourceFilter").value="all";qs("sortBy").value="newest";render()}
+function copyVisible(){const text=visibleItems.map((i,n)=>(n+1)+". "+i.title+"\nDomain: "+i.domain+"\nSource: "+i.source+"\nDate: "+fmtDate(i.isoDate)+"\nURL: "+i.link+"\nStatus: public-source candidate / manual verification required").join("\n\n")||"No visible WPA Watch candidates.";if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert("Visible WPA Watch candidates copied."))}else{prompt("Copy visible candidates:",text)}}
+document.addEventListener("DOMContentLoaded",()=>{qs("q").addEventListener("input",render);qs("domain").addEventListener("change",render);qs("sourceFilter").addEventListener("change",render);qs("sortBy").addEventListener("change",render);qs("refreshBtn").addEventListener("click",loadItems);qs("resetBtn").addEventListener("click",reset);qs("copyBtn").addEventListener("click",copyVisible);loadItems()});
+})();
 </script>
 </body>
 </html>
