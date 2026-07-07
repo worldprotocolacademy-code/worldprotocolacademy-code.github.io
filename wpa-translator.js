@@ -1,192 +1,103 @@
-/* WPA Global Translator + WPAWS Heart Patch
-   Phase 1 safe local engine for /wpaws/. No external API keys required.
-   It only activates on pages with data-wpa-page="wpaws". */
+/* WPA shared page tools: translator stubs, WPAWS local engine, Institute command layer. */
 (function(){
   'use strict';
-  const IS_WPAWS = document.documentElement && document.documentElement.getAttribute('data-wpa-page') === 'wpaws';
+  const PAGE=(document.documentElement&&document.documentElement.getAttribute('data-wpa-page'))||'';
+  function $(id){return document.getElementById(id)}
+  function q(s,r){return (r||document).querySelector(s)}
+  function qa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+  function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function val(id,d){const e=$(id);return e?String(e.value||e.textContent||d||'').trim():(d||'')}
+  function copy(text){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert('Copied.'));}else{prompt('Copy:',text)}}
+  window.WPA_TRANSLATOR_LOADED=true;
+  if(typeof window.setUILang!=='function') window.setUILang=function(lang){try{localStorage.setItem('wpa.language',lang||'mk')}catch(e){} document.documentElement.lang=lang||'mk'; document.dispatchEvent(new CustomEvent('wpa:lang-changed'));};
+  if(typeof window.setAILang!=='function') window.setAILang=function(lang){try{localStorage.setItem('wpaws_ai_lang',lang||'mk')}catch(e){} window.curLang=lang||'mk';};
 
-  function $(id){ return document.getElementById(id); }
-  function val(id, fallback){
-    const el = $(id); if(!el) return fallback || '';
-    return String(el.value || el.textContent || fallback || '').trim();
-  }
-  function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-  function md(text){
-    let s = esc(text || '');
-    s = s.replace(/^### (.*)$/gm,'<h3>$1</h3>').replace(/^## (.*)$/gm,'<h2>$1</h2>').replace(/^# (.*)$/gm,'<h1>$1</h1>');
-    s = s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-    s = s.replace(/^- (.*)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g,'');
-    return s.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
-  }
-  function toast(icon,msg){
-    try{ if(typeof window.toast === 'function'){ window.toast(icon||'⚜️', msg||'Готово'); return; } }catch(e){}
-    console.log('[WPAWS]', icon||'', msg||'');
-  }
-
-  // Small compatibility translator stub. The full site translator may override this elsewhere.
-  window.WPA_TRANSLATOR_LOADED = true;
-  if(typeof window.setUILang !== 'function'){
-    window.setUILang = function(lang){ try{localStorage.setItem('wpaws_ui_lang', lang || 'mk');}catch(e){} document.documentElement.lang = lang || 'mk'; };
-  }
-  if(typeof window.setAILang !== 'function'){
-    window.setAILang = function(lang){ try{localStorage.setItem('wpaws_ai_lang', lang || 'mk');}catch(e){} window.curLang = lang || 'mk'; };
-  }
-  if(!IS_WPAWS) return;
-
-  const AGENTS = {
-    architect:['🏛️ Архитект','Концепт • теза • методологија'],
-    structure:['📐 Структура','Хиерархија • поглавја • логика'],
-    book:['📚 Книга','Монографија • поглавје • издаваштво'],
-    analyze:['🔬 Анализа','Документ • синтеза • цитати'],
-    semantic:['🧠 Семантика','Кохерентност • арка • логика'],
-    ppp:['📊 PPP','Слајдови • белешки • Q&A'],
-    protocol:['🎩 Протокол','Пресеанс • церемонијал • Виенска конвенција'],
-    diplomacy:['🌍 Дипломатија','Билатерално • мултилатерално • стратегија'],
-    security:['🛡️ Безбедност','SWOT • ризик • одбранбена дипломатија'],
-    stylist:['✨ Стилист','Јазик • стил • Санде глас'],
-    citations:['📖 Цитати','APA • Chicago • Smiljanov'],
-    editor:['✍️ Уредник','Финален слој • полирање'],
-    reviewer:['🧐 Рецензент','Академска рецензија • вердикт'],
-    plagiat:['🔍 Плагијат','Интегритет • атрибуција'],
-    press:['📰 WPA Press','Соопштение • медиумски пакет'],
-    sandeai:['👑 Санде AI','Виртуелен протоколарен асистент'],
-    mentor:['🧠🏛️ Ментор-Архитект','Конзистентност • ризик • финален суд']
-  };
-
-  const OUTBOX = { ppp:'r-ppp-create' };
-  function boxFor(agent){ return $(OUTBOX[agent] || ('r-' + agent)); }
-  function show(agent, text){
-    const r = boxFor(agent); if(!r) return;
-    r.innerHTML = md(text);
-    const oa = $('oa-' + agent) || $('oa-ppp-create'); if(oa) oa.style.display = 'flex';
-    try{ saveLast(agent, text); }catch(e){}
-  }
-  function currentTopic(){ return val('topic') || val('stopic') || val('bkTitle') || val('pppTitle') || val('protDet') || val('dipDet') || val('secDet') || val('saiq') || 'WPA тема'; }
-  function pastedText(){ return val('edText') || val('revText') || val('plagText') || val('stText') || val('analyzeQ') || val('concept') || val('bkKeyPoints') || ''; }
-  function bullets(lines){ return lines.map(x => '- ' + x).join('\n'); }
-  function doctrine(){ return '„Преговарањето е опционално. Протоколот е апсолутен.“'; }
-
-  function localEngine(agent, action){
-    const topic = currentTopic();
-    const text = pastedText();
-    const [name, role] = AGENTS[agent] || [agent, 'WPA агент'];
-    const head = `# ${name}\n*${role} · WPAWS Local Heart Engine · Human review required*\n\n`;
-    if(agent === 'architect') return head + `## Академска поставеност\n**Тема:** ${topic}\n\n**Работна теза:** темата треба да се постави како однос меѓу протоколарен ред, институционална комуникација и проверлива јавна практика.\n\n## Истражувачки прашања\n${bullets(['Кој е централниот протоколарен или дипломатски проблем?','Кои јавни извори ја потврдуваат анализата?','Кој е научниот придонес во однос на постојната литература?','Како резултатот може да се примени во институционална практика?'])}\n\n## Методологија\nКомбинирај анализа на јавни извори, компаративна протоколарна анализа, студија на случај и нормативна рамка.\n\n## Следен чекор\nПренеси го концептот во агентот „Структура“.\n\n${doctrine()}`;
-    if(agent === 'structure') return head + `## Предложена структура за: ${topic}\n\n1. Вовед: проблем, цел, методологија\n2. Теоретска рамка: протокол, дипломатија, комуникација, безбедност\n3. Институционален контекст и јавни извори\n4. Аналитички дел: клучни случаи и протоколарна логика\n5. Македонска и компаративна перспектива\n6. Ризици, ограничувања и human-review белешка\n7. Заклучок\n8. Единствена библиографија\n\n## QA\nСекоја глава треба да има теза, докази, пример и заклучок.`;
-    if(agent === 'book') return head + `## Книжевно-академски draft\n**Наслов:** ${topic}\n\n### Вовед\nОва поглавје ја поставува темата како дел од WPA доктрината: протоколот не е декоративен додаток, туку систем на ред, достоинство и институционална предвидливост.\n\n### Главна разработка\n${text ? text.slice(0,900) : 'Поглавјето треба да се развие преку дефиниции, историски контекст, современи примери, македонска перспектива и применлива методологија.'}\n\n### Заклучок\nФиналната верзија треба да се прошири со јавни извори, цитати и унифицирана библиографија на крајот.`;
-    if(agent === 'analyze') return head + `## Аналитички извештај\n**Фокус:** ${topic}\n\n${bullets(['Главна тема: утврди ја централната теза и контекстот.','Клучни поими: протокол, јавна комуникација, дипломатски сигнал, институционална дисциплина.','Силни страни: систематичност, практична применливост, WPA перспектива.','Празнини: потребни се прецизни извори, датуми и ограничувања.','Препорака: додади резиме, методолошка белешка и библиографија.'])}`;
-    if(agent === 'semantic') return head + `## Семантичка мапа\n**Тема:** ${topic}\n\n### Јадро\nПротоколарниот ред создава институционална смисла преку симболи, редослед и јазик.\n\n### Логичка нишка\nВовед → дефиниции → јавни извори → анализа → практична препорака → заклучок.\n\n### Потенцијални празнини\n${bullets(['Нејасно разграничување меѓу протокол и етикета.','Недоволно објаснета врска со дипломатија/безбедност.','Потреба од повеќе примери и транзиции.'])}`;
-    if(agent === 'ppp') return buildPPP(action);
-    if(agent === 'protocol') return head + `## Протоколарна анализа\n**Ситуација:** ${val('protDet') || topic}\n\n1. **Протоколарен факт:** утврди домаќин, гостин, ранг, формат и место.\n2. **Пресеанс:** провери функција, редослед на говорници, седење и симболи.\n3. **Ризик:** погрешен ред, симболичка нерамнотежа, медиумска погрешна порака.\n4. **Правилна постапка:** писмен протоколарен план, Plan B и одобрена церемонијална матрица.\n\n${doctrine()}`;
-    if(agent === 'diplomacy') return head + `## Дипломатска анализа\n**Ситуација:** ${val('dipDet') || topic}\n\n${bullets(['Актери: идентификувај институции, претставници и ниво на контакт.','Интереси: што се сигнализира јавно и што се избегнува да се каже.','Формат: билатерален, мултилатерален, кризен или економски.','Препорака: неутрален дипломатски речник, јавни извори и проверка на датумите.'])}`;
-    if(agent === 'security') return head + `## Безбедносно-протоколарна матрица\n**Контекст:** ${val('secDet') || topic}\n\n| Ризик | Веројатност | Последица | Мерка |\n|---|---:|---:|---|\n| Протоколарен пропуст | Средна | Репутациска штета | Check-list и rehearsal |\n| Погрешна јавна порака | Средна | Дипломатска чувствителност | Unified statement |\n| Настан без Plan B | Ниска/средна | Оперативен прекин | Contingency protocol |\n\n**Граница:** само јавна, наставна и институционална анализа; без класифицирани податоци.`;
-    if(agent === 'stylist') return head + `## Стилска преработка\n${text ? text : 'Внеси текст за преработка.'}\n\n### WPA стилска насока\nТекстот треба да биде јасен, достоинствен, академски, без непотребно самофалење и со силна протоколарна реченица.\n\n### Подигната верзија\nВо протоколот, редот не е технички детал, туку јазик на институционална зрелост. Секој збор, симбол и редослед создаваат порака што мора да биде проверлива, прецизна и достоинствена.`;
-    if(agent === 'citations') return head + `## Библиографски пакет · APA style\n\n- Smiljanov, S. (2021). *Дипломатијата, протоколот и безбедноста*.\n- Smiljanov, S. (2023). *Дигитална ера*.\n- Smiljanov, S. (2021). *Улогата на протоколот и одбранбената дипломатија...* Докторска дисертација, УКИМ.\n- Vienna Convention on Diplomatic Relations. (1961). United Nations.\n\n## Проверка\nНе измислувај DOI/ISBN. Секој запис мора да се верификува пред финална објава.`;
-    if(agent === 'editor') return head + `## Уреднички слој\n${text ? text : 'Внеси текст за уредување.'}\n\n### Уреднички забелешки\n${bullets(['Скрати повторувања.','Додај транзиции меѓу пасуси.','Премести библиографија на крај.','Раздели личен тон од општа академска перспектива.'])}`;
-    if(agent === 'reviewer') return head + `## Академска рецензија\n**Предмет:** ${topic}\n\n| Критериум | Оценка | Забелешка |\n|---|---:|---|\n| Теза | 4/5 | Потребна е поостра формулација |\n| Структура | 4/5 | Добра, но бара подлабоки глави |\n| Методологија | 3/5 | Да се објасни корпус и извори |\n| Научен придонес | 4/5 | Применливо во WPA рамка |\n\n**Вердикт:** доработка пред финална академска објава.`;
-    if(agent === 'plagiat') return head + `## Извештај за интегритет\nОва е локална проверка, не вистинска споредба со Scholar/JSTOR/интернет бази.\n\n${bullets(['Провери дали секој директен цитат има извор.','Провери парафрази без атрибуција.','Означи сопствени претходни трудови за да се избегне само-плагијат.','Не тврди процент на плагијат без надворешна алатка.'])}\n\n**Препорака:** користи human review и вистинска база пред финален submission.`;
-    if(agent === 'press') return head + `## Соопштение за медиуми\n**Наслов:** WPA развива протоколарна анализа и образовни алатки за јавна употреба\n\nWorld Protocol Academy продолжува со развој на едукативни и истражувачки инструменти за протокол, дипломатија, јавна комуникација и безбедносни студии. Платформата е во развојна фаза и има информативна, академска и авторска цел.\n\n**Клучна порака:** сите содржини подлежат на човечка проверка, корекција и изворна верификација.`;
-    if(agent === 'sandeai') return head + `## Одговор на Санде AI\nПрашање: ${val('saiq') || topic}\n\nПротоколот мора да се разбере како дисциплина на ред, достоинство и институционална одговорност. Добриот протокол не импровизира кога е важно; тој предвидува, подготвува и го штити кредибилитетот на институцијата.\n\n${doctrine()}`;
-    if(agent === 'mentor') return head + `## Менторски вердикт\n**Материјал:** ${text || topic}\n\n### Силни страни\n${bullets(['Јасна WPA насока.','Добра поврзаност меѓу протокол и академска употреба.','Потенцијал за наставна и институционална примена.'])}\n\n### Ризици\n${bullets(['Потребна е проверка на извори.','Да се избегне тврдење за акредитација/официјален статус.','Да се оддели авторски став од институционална анализа.'])}\n\n**Финален суд:** доработи и одобри по human review.`;
-    return head + `Локален WPAWS одговор за ${topic}.`;
-  }
-
-  function buildPPP(action){
-    const title = val('pppTitle','WPA презентација');
-    const author = val('pppAuthor','World Protocol Academy');
-    const n = Math.min(Math.max(parseInt(val('pppSlides','12'),10)||12,8),40);
-    const ideas = (val('pppContent','протокол, дипломатија, јавна комуникација, безбедност') || '').split(/[\n.;]+/).map(x=>x.trim()).filter(Boolean);
-    const slides=[];
-    for(let i=1;i<=n;i++){
-      const idea = ideas[(i-1)%ideas.length] || 'WPA protocol doctrine';
-      slides.push({title:(i===1?title:i===n?'Заклучок и Q&A':`Слајд ${i}: ${idea.slice(0,48)}`), body:[idea,'Клучна порака за публиката','Пример / протоколарна импликација']});
+  /* ========================= INSTITUTE COMMAND LAYER ========================= */
+  function installInstitute(){
+    if(PAGE!=='institute'||$('wpaInstituteCommandLayer')) return;
+    const style=document.createElement('style');
+    style.id='wpa-institute-command-style';
+    style.textContent=`
+      #wpaInstituteCommandLayer{background:#081328;color:#fbf8ee;padding:44px 20px;border-top:2px solid #c9a84c;border-bottom:2px solid #c9a84c}
+      #wpaInstituteCommandLayer .wic-wrap{max-width:1180px;margin:0 auto}
+      #wpaInstituteCommandLayer .wic-eyebrow{font:700 11px/1.2 Inter,system-ui,sans-serif;letter-spacing:.22em;text-transform:uppercase;color:#e3c878;margin-bottom:12px}
+      #wpaInstituteCommandLayer h2{font-family:'Cormorant Garamond',Georgia,serif;color:#fbf8ee;font-size:clamp(30px,4vw,46px);font-weight:500;margin:0 0 12px}
+      #wpaInstituteCommandLayer p{color:rgba(251,248,238,.78);line-height:1.65}
+      .wic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:24px 0}
+      .wic-card{background:rgba(255,255,255,.045);border:1px solid rgba(201,168,76,.28);border-radius:14px;padding:16px}
+      .wic-card b{display:block;color:#e3c878;font:800 12px/1.3 Inter,system-ui,sans-serif;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+      .wic-card span{display:block;color:rgba(251,248,238,.78);font-size:14px;line-height:1.5}
+      .wic-card a{color:#e3c878;font-weight:800;text-decoration:none}
+      .wic-tool{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.32);border-radius:18px;padding:18px;margin-top:20px}
+      .wic-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+      .wic-field label{display:block;color:#e3c878;font:800 12px/1.2 Inter,system-ui,sans-serif;margin-bottom:5px}
+      .wic-field select,.wic-field textarea,.wic-field input{width:100%;border:1px solid rgba(201,168,76,.35);background:#0d1f3c;color:#fbf8ee;border-radius:12px;padding:10px;font:14px/1.4 Inter,system-ui,sans-serif}
+      .wic-field textarea{min-height:92px;resize:vertical}.wic-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+      .wic-btn{border:1px solid rgba(201,168,76,.45);background:transparent;color:#e3c878;border-radius:999px;padding:10px 14px;font:800 13px/1 Inter,system-ui,sans-serif;cursor:pointer;text-decoration:none}.wic-btn.primary{background:#c9a84c;color:#081328;border-color:#c9a84c}
+      .wic-out{white-space:pre-wrap;background:#050b17;border:1px solid rgba(201,168,76,.24);border-radius:12px;padding:13px;margin-top:12px;color:#e9eef6;font:12.5px/1.55 ui-monospace,Consolas,monospace}
+      .wic-notice{border-left:4px solid #c9a84c;background:rgba(255,255,255,.04);padding:12px 14px;border-radius:12px;color:rgba(251,248,238,.78);font-size:13px}
+    `;
+    document.head.appendChild(style);
+    const sec=document.createElement('section');
+    sec.id='wpaInstituteCommandLayer';
+    sec.innerHTML=`<div class="wic-wrap">
+      <div class="wic-eyebrow">WPA Institute Command Layer · v2.1</div>
+      <h2>Институтска контролна палуба · Institute control deck</h2>
+      <p>Брз оперативен слој за главната WPA Institute страница: идентитет, инструменти, trust layer, services, briefings, journal, student desk и AI roadmap. Овој панел е локален, не собира податоци и не менува институционален статус.</p>
+      <div class="wic-grid">
+        <div class="wic-card"><b>Identity</b><span>Развојна, тест и пробна фаза — независна дигитална образовна, истражувачка и авторска платформа.</span></div>
+        <div class="wic-card"><b>Protocolometry</b><span>Работен поим во настанување, не универзално воспоставена дисциплина.</span></div>
+        <div class="wic-card"><b>Instruments</b><span>PSPI/ИПММ за настани + WPA Institute Index за институции, со право на исправка.</span></div>
+        <div class="wic-card"><b>REV2 Dataset</b><span>Master List REV2: 160 records · 159 external · 155 distinct · groups A-D, G-I, R.</span></div>
+        <div class="wic-card"><b>Services</b><span><a href="wpa-services.html">Institutional Services</a> · <a href="wpa-briefings.html">Premium Briefings</a></span></div>
+        <div class="wic-card"><b>Trust</b><span><a href="public-disclaimer.html">Public Disclaimer</a> · <a href="correction-request.html">Correction</a> · <a href="rights-takedown.html">Rights & Takedown</a></span></div>
+      </div>
+      <div class="wic-notice"><strong>Boundary:</strong> WPA Institute is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services and briefings are separate from Journal decisions, certificates and index outcomes.</div>
+      <div class="wic-tool" id="wicTool"><h3 style="margin:0;color:#e3c878">Institute brief builder</h3><p>Подготви краток текст за контакт, институционална соработка, correction request, OPC 2026 интерес или services/briefings inquiry.</p>
+        <div class="wic-form"><div class="wic-field"><label>Purpose</label><select id="wicPurpose"><option>Institutional inquiry</option><option>Services / training inquiry</option><option>Premium briefing inquiry</option><option>Correction / trust request</option><option>OPC 2026 expression of interest</option><option>Practitioner lecture proposal</option><option>Journal / publication inquiry</option></select></div><div class="wic-field"><label>Domain</label><select id="wicDomain"><option>Protocol</option><option>Diplomacy</option><option>Public communication / PR</option><option>Security studies</option><option>Research / index methodology</option><option>Student Desk / education</option></select></div><div class="wic-field"><label>Language</label><select id="wicLang"><option>Macedonian</option><option>English</option><option>Both MK/EN</option></select></div></div>
+        <div class="wic-field"><label>Context</label><textarea id="wicContext" placeholder="Institution / person, purpose, topic, public-source context, desired next step..."></textarea></div>
+        <div class="wic-actions"><button class="wic-btn primary" id="wicBuild">Build brief</button><button class="wic-btn" id="wicCopy">Copy brief</button><a class="wic-btn" id="wicMail" href="mailto:worldprotocolacademy@gmail.com">Open email</a></div><div class="wic-out" id="wicOut"></div>
+      </div>
+    </div>`;
+    const anchor=q('#identity')||q('.wpa-identity')||q('#wpa-public-tools-hub')||document.body.firstElementChild;
+    if(anchor&&anchor.parentNode) anchor.parentNode.insertBefore(sec,anchor); else document.body.appendChild(sec);
+    function build(){
+      const text=`WPA Institute Brief\n\nPurpose: ${val('wicPurpose')}\nDomain: ${val('wicDomain')}\nLanguage: ${val('wicLang')}\n\nContext:\n${val('wicContext','—')}\n\nRequested next step:\nPlease confirm the appropriate WPA route, scope, public-source boundaries and follow-up procedure.\n\nBoundary:\nWPA is an independent digital educational, research and authorial platform in development/testing/pilot phase. It is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services, briefings, journal decisions, index outcomes and certificates remain separate.`;
+      $('wicOut').textContent=text;
+      $('wicMail').href='mailto:worldprotocolacademy@gmail.com?subject='+encodeURIComponent('WPA Institute — '+val('wicPurpose'))+'&body='+encodeURIComponent(text);
+      return text;
     }
-    window.pppSlides = slides; window.pppIdx = 0; renderPPPPreview();
-    if(action==='speaker_notes' || action==='qa_prep' || action==='elevator'){
-      const out = `# PPP Notes · ${title}\n\n**Автор:** ${author}\n\n## Говорни белешки\n${slides.slice(0,6).map((s,i)=>`- Slide ${i+1}: ${s.title} — нагласи ${s.body[0]}.`).join('\n')}\n\n## Q&A\n- Зошто оваа тема е важна?\n- Кои се ризиците ако протоколот се занемари?\n- Како WPA пристапот може да се примени практично?`;
-      const notes = $('r-ppp-notes'); if(notes) notes.innerHTML = md(out); return out;
+    ['wicPurpose','wicDomain','wicLang','wicContext'].forEach(id=>$(id).addEventListener('input',build));
+    $('wicBuild').onclick=build;$('wicCopy').onclick=()=>copy($('wicOut').textContent);build();
+  }
+
+  /* ========================= WPAWS LOCAL HEART ENGINE ========================= */
+  function installWPAWS(){
+    if(PAGE!=='wpaws') return;
+    const agents={architect:['🏛️ Архитект','концепт, теза, методологија'],structure:['📐 Структура','структура и поглавја'],book:['📚 Книга','монографија и поглавје'],analyze:['🔬 Анализа','синтеза и извештај'],semantic:['🧠 Семантика','логичка кохерентност'],ppp:['📊 PPP','слајдови и говорни белешки'],protocol:['🎩 Протокол','пресеанс и церемонијал'],diplomacy:['🌍 Дипломатија','дипломатска анализа'],security:['🛡️ Безбедност','ризик и заштита'],stylist:['✨ Стилист','јазик и стил'],citations:['📖 Цитати','APA/Chicago'],editor:['✍️ Уредник','полирање'],reviewer:['🧐 Рецензент','академска рецензија'],plagiat:['🔍 Плагијат','интегритет'],press:['📰 WPA Press','соопштение'],sandeai:['👑 Санде AI','протоколарен одговор'],mentor:['🧠🏛️ Ментор-Архитект','финален суд']};
+    function outbox(a){return $(a==='ppp'?'r-ppp-create':'r-'+a)}
+    function text(){return val('topic')||val('stopic')||val('bkTitle')||val('pppTitle')||val('protDet')||val('dipDet')||val('secDet')||val('saiq')||val('edText')||'WPA тема'}
+    function renderMarkdown(t){return esc(t).replace(/^# (.*)$/gm,'<h2>$1</h2>').replace(/^## (.*)$/gm,'<h3>$1</h3>').replace(/\n/g,'<br>')}
+    function response(a,action){const topic=text(),meta=agents[a]||[a,'WPA'];let h=`# ${meta[0]}\n*${meta[1]} · WPAWS Local Heart Engine · Human review required*\n\n`;
+      const common=`**Тема:** ${topic}\n\n- Јасна теза и проверливи јавни извори.\n- Академска дисциплина, човечка ревизија и правна/етичка претпазливост.\n- Без измислени цитати, статуси, акредитации или институционални врски.\n\n„Преговарањето е опционално. Протоколот е апсолутен.“`;
+      if(a==='structure')return h+`## Структура\n1. Вовед\n2. Теоретска рамка\n3. Јавни извори и метод\n4. Анализа\n5. Македонска и компаративна перспектива\n6. Ризици и ограничувања\n7. Заклучок\n8. Единствена библиографија`;
+      if(a==='ppp')return buildPPP();
+      if(a==='protocol')return h+`## Протоколарна матрица\n- Домаќин, гостин, ранг, формат, место.\n- Пресеанс, седење, знамиња, химни, говори.\n- Plan B и тивка транзиција.\n- Финална проверка пред јавна изведба.`;
+      if(a==='security')return h+`## Безбедносно-протоколарна рамка\n- Public-source контекст.\n- Event risk, reputational risk, protocol breach.\n- VIP movement, contingency, communication line.\n- Нема класифицирани или приватни податоци.`;
+      if(a==='citations')return h+`## Citation readiness\n- Провери секој директен цитат.\n- Не измислувај DOI/ISBN.\n- Оддели библиографија на крај.\n- Обележи AI assistance ако постои.`;
+      if(a==='plagiat')return h+`## Integrity check\nОва е локална листа за самопроверка, не вистинска интернет/база проверка. Провери атрибуција, парафрази, само-плагијат и согласност.`;
+      return h+common;
     }
-    return `# PPP Local Engine · ${title}\n\n**Автор:** ${author}\n**Слајдови:** ${n}\n\n` + slides.map((s,i)=>`[СЛАЈД ${i+1}: ${s.title}]\n${s.body.map(b=>'• '+b).join('\n')}`).join('\n\n');
+    function buildPPP(){const title=val('pppTitle','WPA presentation');const n=Math.min(Math.max(parseInt(val('pppSlides','12'),10)||12,8),40);window.pppSlides=[];for(let i=1;i<=n;i++)window.pppSlides.push({title:i===1?title:(i===n?'Заклучок и Q&A':'Слајд '+i),body:['Клучна порака','Пример / case','Протоколарна импликација']});window.pppIdx=0;if(typeof window.renderSlide==='function')try{window.renderSlide()}catch(e){}return `# PPP Local Engine · ${title}\n\nСлајдови: ${n}\n\n`+window.pppSlides.map((s,i)=>`[${i+1}] ${s.title}\n• ${s.body.join('\n• ')}`).join('\n\n')}
+    window.swA=function(agent,btn){window.curAgent=agent;qa('.sp').forEach(p=>p.classList.remove('active'));const p=$('sp-'+agent);if(p)p.classList.add('active');qa('.abt').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');const sb=$('sb-agent');if(sb)sb.textContent=(agents[agent]||[agent])[0]};
+    window.cc=function(agent,action){agent=agent||window.curAgent||'architect';const box=outbox(agent);if(box){box.innerHTML='<div class="thinking">⚜️ WPAWS Local Heart Engine...</div>';setTimeout(()=>{box.innerHTML=renderMarkdown(response(agent,action));},100)}};
+    window.callClaude=async()=>response(window.curAgent||'architect');window.callGPT=async()=>response(window.curAgent||'architect');
+    window.runAnalyze=()=>window.cc('analyze','full');window.runSemantic=()=>window.cc('semantic','full');
+    window.startChain=function(kind){[['architect','full'],['structure','full'],['editor','full'],['reviewer','full'],['mentor','full']].forEach((x,i)=>setTimeout(()=>window.cc(x[0],x[1]),i*450))};window.chainRun=()=>window.startChain('new_paper');
+    window.saveToMemory=function(){const a=window.curAgent||'architect',box=outbox(a),content=box?box.innerText.trim():'';if(!content)return alert('Нема содржина за зачувување.');let m=[];try{m=JSON.parse(localStorage.getItem('wpaws_memory_v9')||'[]')}catch(e){}m.unshift({id:Date.now(),agent:a,content,date:new Date().toLocaleString()});localStorage.setItem('wpaws_memory_v9',JSON.stringify(m.slice(0,50)));alert('Зачувано локално.')};
+    window.exportAs=function(format){const a=window.curAgent||'architect',box=outbox(a),content=box?box.innerText.trim():'';if(!content)return alert('Нема содржина за export.');const blob=new Blob([content],{type:'text/plain'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download='wpaws_'+a+'_'+Date.now()+'.txt';link.click();URL.revokeObjectURL(link.href)};
+    document.addEventListener('DOMContentLoaded',()=>{const v=$('sb-ver');if(v)v.textContent='WPAWS 11.1.7 Heart Patch';});
   }
 
-  function renderPPPPreview(){
-    const slides = window.pppSlides || [];
-    const disp = $('slideDisplay'), ctr = $('slideCtr'), list = $('slideList');
-    if(!slides.length){ if(ctr) ctr.textContent='0/0'; return; }
-    const idx = Math.max(0, Math.min(window.pppIdx||0, slides.length-1)); window.pppIdx=idx;
-    if(disp) disp.innerHTML = `<h2>${esc(slides[idx].title)}</h2><ul>${slides[idx].body.map(b=>'<li>'+esc(b)+'</li>').join('')}</ul>`;
-    if(ctr) ctr.textContent = (idx+1)+'/'+slides.length;
-    if(list) list.innerHTML = slides.map((s,i)=>`<button class="btn bgh bsm" onclick="goSlide(${i})">${i+1}. ${esc(s.title.slice(0,34))}</button>`).join(' ');
-  }
-  window.navSlide = function(dir){ const slides=window.pppSlides||[]; if(!slides.length) return; window.pppIdx=(window.pppIdx||0)+dir; if(window.pppIdx<0) window.pppIdx=slides.length-1; if(window.pppIdx>=slides.length) window.pppIdx=0; renderPPPPreview(); };
-  window.goSlide = function(i){ window.pppIdx=i; renderPPPPreview(); };
-  window.renderSlide = renderPPPPreview;
-  window.buildPPPList = renderPPPPreview;
-
-  const oldSwA = window.swA;
-  window.swA = function(agent, btn){
-    try{ if(typeof oldSwA === 'function') oldSwA(agent,btn); }catch(e){}
-    window.curAgent = agent;
-    document.querySelectorAll('.sp').forEach(p=>p.classList.remove('active'));
-    const panel = $('sp-'+agent); if(panel) panel.classList.add('active');
-    document.querySelectorAll('.abt').forEach(b=>b.classList.remove('active'));
-    const ab = btn || $('abt-'+agent); if(ab) ab.classList.add('active');
-    const sb = $('sb-agent'); if(sb) sb.textContent = (AGENTS[agent]||[agent])[0];
-  };
-
-  window.callClaude = async function(sys,prompt,tokens){ return localEngine(window.curAgent || 'architect', 'local'); };
-  window.callGPT = async function(sys,prompt,tokens){ return localEngine(window.curAgent || 'architect', 'local'); };
-
-  window.cc = async function(agent, action){
-    agent = agent || window.curAgent || 'architect';
-    window.curAgent = agent;
-    const r = boxFor(agent); if(r) r.innerHTML = '<div class="thinking">⚜️ <strong>WPAWS Local Heart Engine...</strong></div>';
-    setTimeout(()=>{ show(agent, localEngine(agent, action)); toast('✅','WPAWS агентот заврши локален излез.'); }, 120);
-  };
-
-  window.runAnalyze = async function(mode){ window.cc('analyze', mode || 'general'); };
-  window.runSemantic = async function(mode){ window.cc('semantic', mode || 'full'); };
-
-  window.chainRun = function(){ window.startChain('new_paper'); };
-  window.startChain = function(chainId){
-    const chains = {
-      new_paper:[['architect','full'],['structure','generate'],['editor','full'],['reviewer','full'],['plagiat','full']],
-      monograph:[['architect','full'],['book','write'],['stylist','sande_voice'],['citations','smiljanov'],['mentor','full']],
-      protocol_doc:[['protocol','analyze'],['editor','academic_polish'],['press','write'],['mentor','verdict']],
-      review_paper:[['plagiat','full'],['reviewer','full'],['editor','track_changes'],['mentor','verdict']],
-      press_release:[['sandeai','ask'],['press','write'],['stylist','elevate'],['mentor','full']]
-    };
-    const steps = chains[chainId] || chains.new_paper; let i=0;
-    function next(){ if(i>=steps.length){ toast('✅','Автоматскиот синџир е завршен.'); return; } const [a,act]=steps[i++]; window.swA(a,null); window.cc(a,act); setTimeout(next, 550); }
-    toast('🔗','WPAWS синџир стартува локално.'); next();
-  };
-
-  function saveLast(agent,text){
-    try{ window._wpaws_last = {agent, text, at:new Date().toISOString()}; }catch(e){}
-  }
-
-  window.saveToMemory = function(){
-    const agent = window.curAgent || 'architect'; const r = boxFor(agent); const content = r ? r.innerText.trim() : '';
-    if(!content || content.length < 10){ toast('⚠️','Нема содржина за зачувување.'); return; }
-    const key='wpaws_memory_v9'; let mem=[]; try{mem=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
-    mem.unshift({id:Date.now(),agent,agentName:(AGENTS[agent]||[agent])[0],content,date:new Date().toLocaleString()}); mem=mem.slice(0,50); localStorage.setItem(key,JSON.stringify(mem));
-    if(typeof window.renderMemory==='function') try{window.renderMemory()}catch(e){}
-    document.querySelectorAll('.mem-count-badge').forEach(el=>el.textContent=mem.length);
-    toast('💾','Документот е зачуван локално.');
-  };
-
-  window.exportAs = function(format){
-    const agent = window.curAgent || 'architect'; const r = boxFor(agent); const content = r ? r.innerText.trim() : '';
-    if(!content){ toast('⚠️','Нема содржина за export.'); return; }
-    const ext = format==='txt'?'txt':format==='json'?'json':'md';
-    const data = ext==='json' ? JSON.stringify({agent,content,exportedAt:new Date().toISOString()},null,2) : content;
-    const blob = new Blob([data], {type: ext==='json'?'application/json':'text/plain'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`wpaws_${agent}_${Date.now()}.${ext}`; a.click(); URL.revokeObjectURL(a.href); toast('📤','Export готов.');
-  };
-
-  document.addEventListener('DOMContentLoaded', function(){
-    const pill = $('aiPillTxt'); if(pill) pill.textContent = 'WPAWS Local Heart';
-    const sbv = $('sb-ver'); if(sbv) sbv.textContent = 'WPAWS 11.1.7 Heart Patch';
-    try{ document.querySelectorAll('.aibtn').forEach(b=>{ if((b.textContent||'').includes('Локален')) b.classList.add('active'); }); }catch(e){}
-    toast('⚜️','WPAWS Heart Patch активен: 17 агенти работат локално.');
-  });
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{installInstitute();installWPAWS();}); else {installInstitute();installWPAWS();}
 })();
