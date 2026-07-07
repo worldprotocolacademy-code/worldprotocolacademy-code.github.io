@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="mk">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>WPA Protocolometry Center · World Protocol Academy</title>
-<meta name="description" content="WPA Protocolometry Center — Methodological Center for Measurement, Analysis and Comparative Research in Protocol, Diplomacy, Communicology and Security Studies.">
+<meta name="description" content="WPA Protocolometry Center — methodological center for measurement, analysis and comparative research in protocol, diplomacy, communicology and security studies. Public-source only, human review required." />
+<link rel="canonical" href="https://worldprotocolacademy-code.github.io/protocolometry-center.html" />
 <style>
 :root{
   --navy:#081423;
@@ -18,6 +19,7 @@
   --soft:#aebed1;
   --ok:#9fe6b8;
   --warn:#f5d78a;
+  --danger:#ffb8b8;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -62,14 +64,14 @@ h1{
   font-size:18px;
   line-height:1.68;
 }
-nav{
+nav,.footer-links,.actions{
   display:flex;
   justify-content:center;
   gap:10px;
   flex-wrap:wrap;
   margin-top:26px;
 }
-.btn{
+.btn,button.btn{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -82,8 +84,11 @@ nav{
   text-decoration:none;
   border:1px solid var(--gold);
   min-height:44px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:15px;
 }
-.btn.secondary{
+.btn.secondary,button.btn.secondary{
   background:transparent;
   color:var(--gold2);
   border-color:rgba(212,175,55,.55);
@@ -153,12 +158,7 @@ section{margin-top:44px}
   width:5px;
   background:var(--gold);
 }
-.sublist{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:12px;
-}
+.sublist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .tag{
   display:inline-flex;
   border:1px solid rgba(212,175,55,.45);
@@ -169,12 +169,7 @@ section{margin-top:44px}
   font-weight:700;
   font-size:14px;
 }
-.flow{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-top:16px;
-}
+.flow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .step{
   background:#0d2238;
   border:1px solid var(--line);
@@ -183,17 +178,9 @@ section{margin-top:44px}
   color:#fff;
   font-weight:800;
 }
-.note{
-  border-left:5px solid var(--gold);
-  background:rgba(212,175,55,.10);
-}
+.note{border-left:5px solid var(--gold);background:rgba(212,175,55,.10)}
 .note strong{color:var(--gold2)}
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:12px;
-  margin-top:18px;
-}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:18px}
 .metric{
   background:#0b1f35;
   border:1px solid var(--line);
@@ -203,28 +190,40 @@ section{margin-top:44px}
 }
 .metric .num{font-size:32px;color:var(--gold2);font-weight:900}
 .metric .label{color:var(--soft);margin-top:4px}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:12px;
-  overflow:hidden;
-  border-radius:12px;
-}
-th,td{
+.status-panel{
+  background:#0b1f35;
   border:1px solid var(--line);
-  padding:12px;
-  text-align:left;
-  vertical-align:top;
+  border-radius:16px;
+  padding:16px;
+  margin-top:16px;
 }
+.status-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.status-chip{
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:7px 10px;
+  color:var(--soft);
+  font-weight:750;
+  font-size:13px;
+}
+.status-chip.ok{color:var(--ok);border-color:rgba(159,230,184,.45)}
+.status-chip.warn{color:var(--warn);border-color:rgba(245,215,138,.45)}
+.status-chip.danger{color:var(--danger);border-color:rgba(255,184,184,.45)}
+table{width:100%;border-collapse:collapse;margin-top:12px;overflow:hidden;border-radius:12px}
+th,td{border:1px solid var(--line);padding:12px;text-align:left;vertical-align:top}
 th{background:#0d2238;color:var(--gold2)}
 td{color:#dce4ee;background:rgba(9,21,34,.38)}
 .small{font-size:14px;color:var(--soft)}
-.footer-links{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:10px;
-  margin-top:16px;
+pre{
+  white-space:pre-wrap;
+  word-break:break-word;
+  background:#071326;
+  color:#dce4ee;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  max-height:280px;
+  overflow:auto;
 }
 footer{
   text-align:center;
@@ -235,10 +234,8 @@ footer{
 }
 .status-ok{color:var(--ok);font-weight:850}
 .status-warn{color:var(--warn);font-weight:850}
-@media (max-width:640px){
-  nav{justify-content:flex-start}
-  .btn{width:100%}
-}
+.status-danger{color:var(--danger);font-weight:850}
+@media (max-width:640px){nav,.actions,.footer-links{justify-content:flex-start}.btn,button.btn{width:100%}}
 </style>
 </head>
 
@@ -297,30 +294,16 @@ footer{
     <div class="kicker">Academic ecosystem</div>
     <h2 class="section-title">Четири главни столба</h2>
     <div class="grid">
-      <div class="card">
-        <h3>🏛 Протокол · Protocol</h3>
-        <p>Државен, дипломатски, институционален, церемонијален и меѓународен протокол; пресеанс, симболи, протоколарна изведба и официјален ред.</p>
-      </div>
-      <div class="card">
-        <h3>🤝 Дипломатија · Diplomacy</h3>
-        <p>Меѓународни односи, дипломатска практика, јавна дипломатија, одбранбена дипломатија, билатерални и мултилатерални формати.</p>
-      </div>
+      <div class="card"><h3>🏛 Протокол · Protocol</h3><p>Државен, дипломатски, институционален, церемонијален и меѓународен протокол; пресеанс, симболи, протоколарна изведба и официјален ред.</p></div>
+      <div class="card"><h3>🤝 Дипломатија · Diplomacy</h3><p>Меѓународни односи, дипломатска практика, јавна дипломатија, одбранбена дипломатија, билатерални и мултилатерални формати.</p></div>
       <div class="card">
         <h3>💬 Комуникологија · Communicology</h3>
         <p>Комуникологијата е главниот научен покрив за јавната комуникација, односите со јавност и институционалната репутација.</p>
         <div class="sublist">
-          <span class="tag">Односи со јавност</span>
-          <span class="tag">Јавна комуникација</span>
-          <span class="tag">Кризна комуникација</span>
-          <span class="tag">Институционална комуникација</span>
-          <span class="tag">Стратегиска комуникација</span>
-          <span class="tag">Медиумска комуникација</span>
+          <span class="tag">Односи со јавност</span><span class="tag">Јавна комуникација</span><span class="tag">Кризна комуникација</span><span class="tag">Институционална комуникација</span><span class="tag">Стратегиска комуникација</span><span class="tag">Медиумска комуникација</span>
         </div>
       </div>
-      <div class="card">
-        <h3>🛡 Безбедносни студии · Security Studies</h3>
-        <p>Безбедносна култура, јавни настани, кризни процедури, институционален ризик, event security и заштита на достоинството на официјалниот настан.</p>
-      </div>
+      <div class="card"><h3>🛡 Безбедносни студии · Security Studies</h3><p>Безбедносна култура, јавни настани, кризни процедури, институционален ризик, event security и заштита на достоинството на официјалниот настан.</p></div>
     </div>
   </section>
 
@@ -328,41 +311,19 @@ footer{
     <div class="kicker">The WPA Instruments</div>
     <h2 class="section-title">Инструменти на Протоколометријата</h2>
     <div class="grid">
-      <div class="card">
-        <h3>Инструмент I · PSPI / ИПММ</h3>
-        <p><strong>Protocol State Performance Index</strong> мери протоколарна изведба на конкретни настани: државни посети, церемонии, пречек, визуелна дипломатска режија, пресеанс и протоколарна коректност.</p>
-      </div>
-      <div class="card">
-        <h3>Инструмент II · WPA Institute Index</h3>
-        <p>Мери институции преку четири димензии: истражување и публикации, програми и сертификација, професионална практика, транспарентност и соработка.</p>
-      </div>
-      <div class="card">
-        <h3>Инструмент III · Protocolometry Watch</h3>
-        <p>Јавен monitoring на RSS/Atom сигнали преку WPA Watch, без scraping, без paywall bypass и без тајни извори. Сите записи се candidates за проверка.</p>
-      </div>
-      <div class="card">
-        <h3>Инструмент IV · Journal Pipeline</h3>
-        <p>Journal Watch ги претвора јавните сигнали во topic candidates, research angles и editorial queue. Ниту еден кандидат не е автоматска научна публикација.</p>
-      </div>
+      <div class="card"><h3>Инструмент I · PSPI / ИПММ</h3><p><strong>Protocol State Performance Index</strong> мери протоколарна изведба на конкретни настани: државни посети, церемонии, пречек, визуелна дипломатска режија, пресеанс и протоколарна коректност.</p></div>
+      <div class="card"><h3>Инструмент II · WPA Institute Index</h3><p>Мери институции преку четири димензии: истражување и публикации, програми и сертификација, професионална практика, транспарентност и соработка.</p></div>
+      <div class="card"><h3>Инструмент III · Protocolometry Watch</h3><p>Јавен monitoring на RSS/Atom сигнали преку WPA Watch, без scraping, без paywall bypass и без тајни извори. Сите записи се candidates за проверка.</p></div>
+      <div class="card"><h3>Инструмент IV · Journal Pipeline</h3><p>Journal Watch ги претвора јавните сигнали во topic candidates, research angles и editorial queue. Ниту еден кандидат не е автоматска научна публикација.</p></div>
     </div>
   </section>
 
   <section id="pipeline">
     <div class="kicker">Connected ecosystem</div>
     <h2 class="section-title">Систем на врзани садови</h2>
-    <p class="lead">
-      Protocolometry Center е методолошкиот центар што ги поврзува јавните извори,
-      академското пребарување, уредничката подготовка и Virtual Sande.
-    </p>
+    <p class="lead">Protocolometry Center е методолошкиот центар што ги поврзува јавните извори, академското пребарување, уредничката подготовка и Virtual Sande.</p>
     <div class="flow">
-      <span class="step">Public Sources</span>
-      <span class="step">→ WPA Watch</span>
-      <span class="step">→ Protocolometry Center</span>
-      <span class="step">→ Academic Search Hub</span>
-      <span class="step">→ Traceability</span>
-      <span class="step">→ Journal Watch</span>
-      <span class="step">→ WPA Journal</span>
-      <span class="step">→ Virtual Sande</span>
+      <span class="step">Public Sources</span><span class="step">→ WPA Watch</span><span class="step">→ Protocolometry Center</span><span class="step">→ Academic Search Hub</span><span class="step">→ Traceability</span><span class="step">→ Journal Watch</span><span class="step">→ WPA Journal</span><span class="step">→ Virtual Sande</span>
     </div>
   </section>
 
@@ -372,8 +333,8 @@ footer{
     <div class="livebox">
       <h3>🤖 Virtual Sande v35 Protocolometry Connector</h3>
       <p>
-        Овој дел чита јавен live digest од Cloudflare Worker endpoint-от на Virtual Sande.
-        Ако бројките не се појават веднаш, системот сепак може да се отвори преку копчињата подолу.
+        Овој дел чита јавен live digest од Cloudflare Worker endpoint-от на Virtual Sande. Ако endpoint-от не е достапен,
+        страницата автоматски покажува <strong>safe fallback preview</strong> и не тврди дека бројките се live.
       </p>
 
       <div class="metrics">
@@ -383,11 +344,29 @@ footer{
         <div class="metric"><div class="num" id="sourceCount">—</div><div class="label">Live sources</div></div>
       </div>
 
-      <p id="liveStatus" class="small">Loading live digest…</p>
+      <div class="status-panel">
+        <p id="liveStatus" class="small">Preparing connector check…</p>
+        <div class="status-row" id="endpointStatus">
+          <span class="status-chip warn">Waiting for check</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="button" id="refreshDigestBtn">Refresh live digest</button>
+        <button class="btn secondary" type="button" id="fallbackDigestBtn">Use safe fallback</button>
+        <button class="btn secondary" type="button" id="copyDigestBtn">Copy digest summary</button>
+        <button class="btn secondary" type="button" id="downloadDigestBtn">Download digest JSON</button>
+      </div>
+
+      <details>
+        <summary class="btn secondary" style="width:max-content;cursor:pointer;">Show diagnostic JSON</summary>
+        <pre id="digestPreview">No digest loaded yet.</pre>
+      </details>
 
       <div class="footer-links">
-        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry">Open /protocolometry</a>
-        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry/live">Open /protocolometry/live</a>
+        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry" target="_blank" rel="noopener noreferrer">Open /protocolometry</a>
+        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry/live" target="_blank" rel="noopener noreferrer">Open /protocolometry/live</a>
+        <a class="btn secondary" href="https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/health" target="_blank" rel="noopener noreferrer">Open /health</a>
         <a class="btn secondary" href="/tools/virtual-sande/bot-connector-manifest.json">Open Bot Manifest</a>
       </div>
     </div>
@@ -400,70 +379,30 @@ footer{
       <div class="card">
         <h3>✅ Што прави центарот</h3>
         <ul>
-          <li>користи јавни и проверливи извори;</li>
-          <li>создава структуриран аналитички процес;</li>
-          <li>овозможува академска проверка и право на исправка;</li>
-          <li>поврзува WPA Watch, Academic Search Hub, Journal Watch и Virtual Sande;</li>
-          <li>ја задржува човечката ревизија како финална одговорност.</li>
+          <li>користи јавни и проверливи извори;</li><li>создава структуриран аналитички процес;</li><li>овозможува академска проверка и право на исправка;</li><li>поврзува WPA Watch, Academic Search Hub, Journal Watch и Virtual Sande;</li><li>ја задржува човечката ревизија како финална одговорност.</li>
         </ul>
       </div>
       <div class="card">
         <h3>⛔ Што не прави центарот</h3>
         <ul>
-          <li>не е државна разузнавачка служба;</li>
-          <li>не врши надзор врз приватни лица;</li>
-          <li>не користи тајни извори, cyber intrusion или приватни бази;</li>
-          <li>не создава автоматски journal статии;</li>
-          <li>не измислува DOI, ISSN, ISBN, рангови, партнерства или акредитации.</li>
+          <li>не е државна разузнавачка служба;</li><li>не врши надзор врз приватни лица;</li><li>не користи тајни извори, cyber intrusion или приватни бази;</li><li>не создава автоматски journal статии;</li><li>не измислува DOI, ISSN, ISBN, рангови, партнерства или акредитации.</li>
         </ul>
       </div>
     </div>
-
-    <div class="note">
-      <strong>Protocolometry public-brand rule:</strong> Поранешни формулации како
-      “Intelligence Center” се третираат како legacy wording. Јавниот, долгорочен и
-      академски прецизен термин е <strong>Protocolometry Center</strong>.
-    </div>
+    <div class="note"><strong>Protocolometry public-brand rule:</strong> Поранешни формулации како “Intelligence Center” се третираат како legacy wording. Јавниот, долгорочен и академски прецизен термин е <strong>Protocolometry Center</strong>.</div>
   </section>
 
   <section id="taxonomy">
     <div class="kicker">Academic taxonomy</div>
     <h2 class="section-title">Односи со јавност во рамки на комуникологијата</h2>
-    <p class="lead">
-      Во WPA академската архитектура, <strong>Комуникологијата</strong> е главниот научен
-      столб. <strong>Односите со јавност</strong>, јавната комуникација, кризното комуницирање,
-      институционалната комуникација, стратегиската комуникација и медиумската комуникација
-      се третираат како специјализирани полиња во рамки на тој столб.
-    </p>
+    <p class="lead">Во WPA академската архитектура, <strong>Комуникологијата</strong> е главниот научен столб. <strong>Односите со јавност</strong>, јавната комуникација, кризното комуницирање, институционалната комуникација, стратегиската комуникација и медиумската комуникација се третираат како специјализирани полиња во рамки на тој столб.</p>
     <table>
-      <thead>
-        <tr>
-          <th>Главен столб</th>
-          <th>Подполиња</th>
-          <th>Protocolometry application</th>
-        </tr>
-      </thead>
+      <thead><tr><th>Главен столб</th><th>Подполиња</th><th>Protocolometry application</th></tr></thead>
       <tbody>
-        <tr>
-          <td>Комуникологија</td>
-          <td>Односи со јавност, јавна комуникација, кризна комуникација, институционална комуникација, стратегиска комуникација, медиумска комуникација</td>
-          <td>Мерење на јасност, репутациски ризици, јавна видливост, институционална нарација и комуникациски пропусти.</td>
-        </tr>
-        <tr>
-          <td>Протокол</td>
-          <td>Пресеанс, церемонијал, државни посети, симболи, официјален ред</td>
-          <td>Мерење на протоколарна изведба спрема јасен стандард и проверлив доказ.</td>
-        </tr>
-        <tr>
-          <td>Дипломатија</td>
-          <td>Јавна дипломатија, билатерални односи, мултилатерални формати, одбранбена дипломатија</td>
-          <td>Анализа на институционални сигнали, дипломатски формати и јавна дипломатска комуникација.</td>
-        </tr>
-        <tr>
-          <td>Безбедносни студии</td>
-          <td>Event security, кризни процедури, јавни настани, безбедносна култура</td>
-          <td>Мерење на јавни индикатори за ризик, организациска подготвеност и кризна комуникација.</td>
-        </tr>
+        <tr><td>Комуникологија</td><td>Односи со јавност, јавна комуникација, кризна комуникација, институционална комуникација, стратегиска комуникација, медиумска комуникација</td><td>Мерење на јасност, репутациски ризици, јавна видливост, институционална нарација и комуникациски пропусти.</td></tr>
+        <tr><td>Протокол</td><td>Пресеанс, церемонијал, државни посети, симболи, официјален ред</td><td>Мерење на протоколарна изведба спрема јасен стандард и проверлив доказ.</td></tr>
+        <tr><td>Дипломатија</td><td>Јавна дипломатија, билатерални односи, мултилатерални формати, одбранбена дипломатија</td><td>Анализа на институционални сигнали, дипломатски формати и јавна дипломатска комуникација.</td></tr>
+        <tr><td>Безбедносни студии</td><td>Event security, кризни процедури, јавни настани, безбедносна култура</td><td>Мерење на јавни индикатори за ризик, организациска подготвеност и кризна комуникација.</td></tr>
       </tbody>
     </table>
   </section>
@@ -484,41 +423,211 @@ footer{
 
 <footer>
   <strong>World Protocol Academy</strong><br>
-  Institute for Protocol, Diplomacy, Public Communication & Security Studies<br>
+  Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies<br>
   <span class="small">Development, testing and pilot phase — 2026 · Public-source only · Human review required</span>
   <div class="footer-links">
     <a class="btn dark" href="/public-disclaimer.html">Public Disclaimer</a>
     <a class="btn dark" href="/correction-request.html">Correction Request</a>
-    <a class="btn dark" href="/rights-takedown.html">Rights & Takedown</a>
+    <a class="btn dark" href="/rights-takedown.html">Rights &amp; Takedown</a>
+    <a class="btn dark" href="/privacy.html">Privacy Policy</a>
   </div>
   <p class="small">„Преговарањето е опционално. Протоколот е апсолутен.“ · “Negotiation is optional. Protocol is absolute.”</p>
 </footer>
 
 <script>
 (function(){
-  const endpoint = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/protocolometry/live";
-  const setText = (id, value) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = value;
-  };
-  fetch(endpoint, {headers: {"Accept":"application/json"}})
-    .then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
-    .then(data => {
-      const live = data && data.live ? data.live : {};
-      const status = live.wpa_watch_status || {};
-      setText("watchCount", live.wpa_watch_count ?? "—");
-      setText("topicCount", live.journal_topic_count ?? "—");
-      setText("queueCount", live.editorial_queue_count ?? "—");
-      setText("sourceCount", status.sources_live ?? "—");
-      const st = document.getElementById("liveStatus");
-      if (st) {
-        st.innerHTML = '<span class="status-ok">Live connector active.</span> Generated: ' + (data.generated_at || "unknown") + '. Sources live: ' + (status.sources_live ?? "—") + ' / ' + (status.sources_total ?? "—") + '.';
+  const WORKER_BASE = "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev";
+  const LIVE_ENDPOINT = WORKER_BASE + "/protocolometry/live";
+  const HEALTH_ENDPOINT = WORKER_BASE + "/health";
+  const TIMEOUT_MS = 7000;
+
+  let lastDigest = null;
+  let lastDigestMode = "none";
+
+  const fallbackDigest = {
+    mode: "safe-fallback-preview",
+    generated_at: "static fallback — not live",
+    live: {
+      wpa_watch_count: 32,
+      journal_topic_count: 40,
+      editorial_queue_count: 40,
+      wpa_watch_status: {
+        sources_live: 4,
+        sources_total: 9
       }
-    })
-    .catch(err => {
-      const st = document.getElementById("liveStatus");
-      if (st) st.innerHTML = '<span class="status-warn">Live preview unavailable.</span> Open the Worker endpoint directly if needed.';
+    },
+    governance: {
+      public_source_only: true,
+      human_review_required: true,
+      note: "Fallback numbers are a safe preview when the live Worker endpoint is unavailable. They must not be cited as live data."
+    }
+  };
+
+  const qs = (id) => document.getElementById(id);
+  const setText = (id, value) => { const el = qs(id); if (el) el.textContent = value; };
+
+  function timeoutSignal(ms){
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return { signal: controller.signal, cancel: () => clearTimeout(timer) };
+  }
+
+  function normalizeDigest(data){
+    const live = data && data.live ? data.live : data || {};
+    const status = live.wpa_watch_status || live.status || {};
+    return {
+      generated_at: data.generated_at || data.generatedAt || live.generated_at || "unknown",
+      live: {
+        wpa_watch_count: live.wpa_watch_count ?? live.watch_count ?? live.watchItems ?? "—",
+        journal_topic_count: live.journal_topic_count ?? live.topic_count ?? live.journalTopics ?? "—",
+        editorial_queue_count: live.editorial_queue_count ?? live.queue_count ?? live.editorialQueue ?? "—",
+        wpa_watch_status: {
+          sources_live: status.sources_live ?? status.live_sources ?? live.sources_live ?? "—",
+          sources_total: status.sources_total ?? status.total_sources ?? live.sources_total ?? "—"
+        }
+      }
+    };
+  }
+
+  function renderDigest(digest, mode){
+    const normalized = normalizeDigest(digest);
+    const live = normalized.live;
+    const status = live.wpa_watch_status || {};
+
+    lastDigest = normalized;
+    lastDigestMode = mode;
+
+    setText("watchCount", live.wpa_watch_count ?? "—");
+    setText("topicCount", live.journal_topic_count ?? "—");
+    setText("queueCount", live.editorial_queue_count ?? "—");
+    setText("sourceCount", status.sources_live ?? "—");
+
+    const st = qs("liveStatus");
+    if (st) {
+      if (mode === "live") {
+        st.innerHTML = '<span class="status-ok">Live connector active.</span> Generated: ' + normalized.generated_at + '. Sources live: ' + (status.sources_live ?? "—") + ' / ' + (status.sources_total ?? "—") + '.';
+      } else {
+        st.innerHTML = '<span class="status-warn">Safe fallback preview active.</span> Live endpoint is not being treated as current data. Manual verification required.';
+      }
+    }
+
+    const preview = qs("digestPreview");
+    if (preview) preview.textContent = JSON.stringify({ mode, digest: normalized }, null, 2);
+  }
+
+  function renderEndpointStatus(items){
+    const holder = qs("endpointStatus");
+    if (!holder) return;
+    holder.innerHTML = items.map((item) => '<span class="status-chip ' + item.kind + '">' + item.label + '</span>').join("");
+  }
+
+  async function fetchJson(url){
+    const t = timeoutSignal(TIMEOUT_MS);
+    try {
+      const response = await fetch(url, { headers: { "Accept": "application/json" }, signal: t.signal });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return await response.json();
+    } finally {
+      t.cancel();
+    }
+  }
+
+  async function refreshDigest(){
+    renderEndpointStatus([{ kind:"warn", label:"Checking live endpoint…" }]);
+    const st = qs("liveStatus");
+    if (st) st.innerHTML = '<span class="status-warn">Checking live digest…</span>';
+
+    try {
+      const data = await fetchJson(LIVE_ENDPOINT);
+      renderDigest(data, "live");
+      renderEndpointStatus([
+        { kind:"ok", label:"/protocolometry/live OK" },
+        { kind:"ok", label:"JSON parsed" },
+        { kind:"warn", label:"Human review still required" }
+      ]);
+    } catch (error) {
+      renderDigest(fallbackDigest, "safe-fallback");
+      renderEndpointStatus([
+        { kind:"danger", label:"Live fetch unavailable" },
+        { kind:"warn", label:String(error.message || error) },
+        { kind:"ok", label:"Safe fallback loaded" }
+      ]);
+    }
+  }
+
+  async function checkHealth(){
+    try {
+      await fetchJson(HEALTH_ENDPOINT);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function copyDigest(){
+    const live = lastDigest && lastDigest.live ? lastDigest.live : normalizeDigest(fallbackDigest).live;
+    const status = live.wpa_watch_status || {};
+    const text = [
+      "WPA Protocolometry Digest",
+      "Mode: " + lastDigestMode,
+      "WPA Watch items: " + (live.wpa_watch_count ?? "—"),
+      "Journal topics: " + (live.journal_topic_count ?? "—"),
+      "Editorial queue: " + (live.editorial_queue_count ?? "—"),
+      "Sources live: " + (status.sources_live ?? "—") + " / " + (status.sources_total ?? "—"),
+      "Public-source only. Human review required."
+    ].join("\n");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => alert("Digest summary copied."));
+    } else {
+      prompt("Copy digest summary:", text);
+    }
+  }
+
+  function downloadDigest(){
+    const payload = {
+      exported_at: new Date().toISOString(),
+      mode: lastDigestMode,
+      digest: lastDigest || normalizeDigest(fallbackDigest),
+      governance: {
+        public_source_only: true,
+        human_review_required: true,
+        not_intelligence_service: true,
+        not_automatic_publication: true
+      }
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "wpa-protocolometry-digest.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    const refreshBtn = qs("refreshDigestBtn");
+    const fallbackBtn = qs("fallbackDigestBtn");
+    const copyBtn = qs("copyDigestBtn");
+    const downloadBtn = qs("downloadDigestBtn");
+
+    if (refreshBtn) refreshBtn.addEventListener("click", refreshDigest);
+    if (fallbackBtn) fallbackBtn.addEventListener("click", () => {
+      renderDigest(fallbackDigest, "safe-fallback");
+      renderEndpointStatus([{ kind:"ok", label:"Safe fallback loaded" }, { kind:"warn", label:"Not live data" }]);
     });
+    if (copyBtn) copyBtn.addEventListener("click", copyDigest);
+    if (downloadBtn) downloadBtn.addEventListener("click", downloadDigest);
+
+    renderDigest(fallbackDigest, "safe-fallback");
+    const healthy = await checkHealth();
+    if (healthy) {
+      renderEndpointStatus([{ kind:"ok", label:"Worker health OK" }, { kind:"warn", label:"Loading live digest…" }]);
+    }
+    refreshDigest();
+  });
 })();
 </script>
 </body>
