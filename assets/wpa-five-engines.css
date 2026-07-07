@@ -1,0 +1,223 @@
+/* WPA Five Engines — Final UI Patch
+   World Protocol Academy
+   Safe standalone CSS. It does not override global WPA design aggressively. */
+
+:root {
+  --wpa-fe-bg: #07111f;
+  --wpa-fe-card: rgba(255, 255, 255, 0.06);
+  --wpa-fe-card-strong: rgba(255, 255, 255, 0.1);
+  --wpa-fe-border: rgba(255, 255, 255, 0.16);
+  --wpa-fe-text: #f7fafc;
+  --wpa-fe-muted: #c9d4e5;
+  --wpa-fe-accent: #d6b25e;
+  --wpa-fe-accent-2: #67e8f9;
+  --wpa-fe-danger: #f97373;
+  --wpa-fe-ok: #7ddc9b;
+  --wpa-fe-radius: 18px;
+  --wpa-fe-shadow: 0 18px 50px rgba(0, 0, 0, 0.25);
+}
+
+.wpa-five-engines,
+#wpa-five-engines {
+  background: radial-gradient(circle at top left, rgba(214, 178, 94, 0.16), transparent 32%),
+    linear-gradient(135deg, #07111f 0%, #0d1b2f 55%, #111827 100%);
+  color: var(--wpa-fe-text);
+  padding: 48px 18px;
+}
+
+.wpa-fe-container {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+
+.wpa-fe-hero {
+  border: 1px solid var(--wpa-fe-border);
+  border-radius: 28px;
+  padding: clamp(28px, 5vw, 54px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04));
+  box-shadow: var(--wpa-fe-shadow);
+}
+
+.wpa-fe-kicker {
+  color: var(--wpa-fe-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.wpa-fe-title {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+
+.wpa-fe-lead {
+  color: var(--wpa-fe-muted);
+  font-size: clamp(1.02rem, 2vw, 1.25rem);
+  max-width: 860px;
+  margin: 0 0 24px;
+}
+
+.wpa-fe-nav,
+.wpa-five-engines-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.wpa-fe-nav a,
+.wpa-five-engines-nav a,
+.wpa-fe-btn,
+.wpa-fe-button,
+.wpa-fe-tool button,
+.wpa-fe-download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--wpa-fe-border);
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.08);
+  color: var(--wpa-fe-text);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.wpa-fe-nav a:hover,
+.wpa-five-engines-nav a:hover,
+.wpa-fe-btn:hover,
+.wpa-fe-button:hover,
+.wpa-fe-tool button:hover,
+.wpa-fe-download:hover {
+  transform: translateY(-1px);
+  background: rgba(214,178,94,0.17);
+  border-color: rgba(214,178,94,0.55);
+}
+
+.wpa-fe-grid,
+.wpa-fe-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.wpa-fe-tool,
+.wpa-fe-card {
+  grid-column: span 6;
+  border: 1px solid var(--wpa-fe-border);
+  border-radius: var(--wpa-fe-radius);
+  padding: 22px;
+  background: var(--wpa-fe-card);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.16);
+}
+
+.wpa-fe-tool h2,
+.wpa-fe-card h2,
+.wpa-fe-tool h3,
+.wpa-fe-card h3 {
+  margin-top: 0;
+  color: #fff;
+}
+
+.wpa-fe-tool p,
+.wpa-fe-card p,
+.wpa-fe-note,
+.wpa-fe-disclaimer {
+  color: var(--wpa-fe-muted);
+}
+
+.wpa-fe-disclaimer,
+.wpa-fe-note {
+  border-left: 3px solid var(--wpa-fe-accent);
+  padding: 10px 12px;
+  background: rgba(214,178,94,0.08);
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+.wpa-fe-field,
+.wpa-fe-tool input,
+.wpa-fe-tool select,
+.wpa-fe-tool textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--wpa-fe-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.22);
+  color: var(--wpa-fe-text);
+  margin: 8px 0 12px;
+}
+
+.wpa-fe-result,
+#wpaScoreResult,
+#wpaRiskResult,
+#wpaScenarioResult,
+#wpaInsightsOutput {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--wpa-fe-card-strong);
+  border: 1px solid var(--wpa-fe-border);
+  color: var(--wpa-fe-text);
+  white-space: pre-wrap;
+}
+
+.wpa-fe-status-ok { color: var(--wpa-fe-ok); font-weight: 800; }
+.wpa-fe-status-risk { color: var(--wpa-fe-danger); font-weight: 800; }
+.wpa-fe-accent { color: var(--wpa-fe-accent); }
+
+.wpa-footer,
+.wpa-fe-footer {
+  text-align: center;
+  padding: 28px 16px;
+  color: var(--wpa-fe-muted);
+  background: #07111f;
+}
+
+.wpa-footer a,
+.wpa-fe-footer a {
+  color: var(--wpa-fe-accent);
+  text-decoration: none;
+}
+
+.wpa-footer a:hover,
+.wpa-fe-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 820px) {
+  .wpa-fe-tool,
+  .wpa-fe-card {
+    grid-column: 1 / -1;
+  }
+
+  .wpa-fe-nav,
+  .wpa-five-engines-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .wpa-fe-nav a,
+  .wpa-five-engines-nav a {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .wpa-fe-nav,
+  .wpa-five-engines-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .wpa-fe-hero {
+    padding: 24px 16px;
+  }
+}
