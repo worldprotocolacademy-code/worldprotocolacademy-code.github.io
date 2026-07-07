@@ -16,7 +16,7 @@
      Keys mirror the data-i18n attributes used in wpa-five-engines.html. */
   const I18N = {
     "hero.title": { mk: "WPA Five Engines", en: "WPA Five Engines" },
-    "brand.tagline": { mk: "Академија во развој", en: "Academy in development" },
+    "brand.tagline": { mk: "Независна образовна платформа во развој", en: "Independent educational platform in development" },
     "nav.home": { mk: "Почетна", en: "Home" },
     "nav.institute": { mk: "Институт", en: "Institute" },
     "hero.kicker": { mk: "Протокол · Дипломатија · Безбедност · Комуникација", en: "Protocol · Diplomacy · Security · Communication" },
@@ -48,7 +48,7 @@
     "scenario.desc": { mk: "Вежбај реални протоколарни ситуации преку избори, последици и кратки објаснувања.", en: "Practice real protocol situations through choices, consequences, and short explanations." },
     "risk.kicker": { mk: "Engine 2 · Readiness", en: "Engine 2 · Readiness" },
     "risk.title": { mk: "Protocol Risk Meter", en: "Protocol Risk Meter" },
-    "risk.desc": { mk: "Провери дали настанот има низок, среден или висок протоколарен ризик.", en: "Check whether an event carries low, medium, or high protocol risk." },
+    "risk.desc": { mk: "Едукативна проценка на протоколарна подготвеност за формален настан.", en: "Educational assessment of protocol readiness for a formal event." },
     "map.kicker": { mk: "Engine 3 · Reference Atlas", en: "Engine 3 · Reference Atlas" },
     "map.title": { mk: "Global Protocol Reference Map", en: "Global Protocol Reference Map" },
     "map.desc": { mk: "Едукативен атлас на 160 записи од WPA Master List REV2 — академии, think tank-ови, УН тела, судови и финансиски институции, групирани по континент и категорија.", en: "An educational atlas of 160 records from the WPA Master List REV2 — academies, think tanks, UN bodies, courts, and financial institutions, grouped by continent and category." },
@@ -754,19 +754,20 @@
 
       let band, label, advice;
       if (total <= 6) {
-        band = "low"; label = t("НИЗОК РИЗИК", "LOW RISK");
-        advice = t("Стандардна подготовка е доволна. Проверете ги основните протоколарни чекори.", "Standard preparation is sufficient. Verify the basic protocol steps.");
+        band = "low"; label = t("ЕДУКАТИВЕН СТАТУС: СТАНДАРДНА ПОДГОТВЕНОСТ", "EDUCATIONAL STATUS: STANDARD READINESS");
+        advice = t("Основната подготовка може да биде доволна, но задолжително проверете ги клучните протоколарни чекори според конкретниот контекст.", "Basic preparation may be sufficient, but always verify the key protocol steps according to the specific context.");
       } else if (total <= 9) {
-        band = "medium"; label = t("СРЕДЕН РИЗИК", "MEDIUM RISK");
+        band = "medium"; label = t("ЕДУКАТИВЕН СТАТУС: ЗАСИЛЕНА ПОДГОТВЕНОСТ", "EDUCATIONAL STATUS: ENHANCED READINESS");
         advice = t("Препорачлива е дополнителна протоколарна проверка и репетиција на клучните моменти.", "An additional protocol review and rehearsal of key moments is advisable.");
       } else {
-        band = "high"; label = t("ВИСОК РИЗИК", "HIGH RISK");
+        band = "high"; label = t("ЕДУКАТИВЕН СТАТУС: КОМПЛЕКСНА ПОДГОТВЕНОСТ", "EDUCATIONAL STATUS: COMPLEX READINESS");
         advice = t("Потребна е целосна протоколарна репетиција, резервен план и назначено лице за координација во реално време.", "A full protocol rehearsal, a contingency plan, and a designated real-time coordination point are needed.");
       }
 
       readout.innerHTML = `
         <div class="risk-readout ${band}">${label}</div>
         <p style="margin-top:0.8rem;font-size:0.88rem;">${advice}</p>
+        <p class="not-this-note" style="margin-top:0.8rem;">${t("Ова е едукативна проценка, не официјален протоколарен или безбедносен сертификат.", "This is an educational assessment, not an official protocol or security certificate.")}</p>
         <button type="button" class="secondary" id="riskExport" style="margin-top:0.8rem;">${t("Преземи резултат (TXT)", "Download result (TXT)")}</button>
       `;
 
@@ -780,7 +781,9 @@
           t("Времето за подготовка", "Preparation time") + ": " + prepEl.selectedOptions[0].textContent,
           "",
           label,
-          advice
+          advice,
+          "",
+          t("Ова е едукативна проценка, не официјален протоколарен или безбедносен сертификат.", "This is an educational assessment, not an official protocol or security certificate.")
         ];
         downloadTextFile("wpa-risk-meter-result.txt", lines.join("\n"));
       });
