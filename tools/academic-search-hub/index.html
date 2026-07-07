@@ -1,409 +1,304 @@
 <!doctype html>
 <html lang="mk">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   <title>WPA Academic Search Hub v3.1 | World Protocol Academy</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="WPA Academic Search Hub v3.1 — staging-ready research infrastructure for bibliographic discovery, source traceability, authority auditing and future RAG support.">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="WPA Academic Search Hub v3.1 — legal-safe academic discovery hub for bibliographic search, source traceability, authority audit and future RAG support." />
+  <link rel="canonical" href="https://worldprotocolacademy-code.github.io/tools/academic-search-hub/" />
   <style>
+    :root {
+      --navy: #07111f;
+      --navy2: #10233d;
+      --gold: #c9a24a;
+      --gold2: #f5d37a;
+      --cream: #f7f1df;
+      --muted: #efe2bd;
+      --line: rgba(201, 162, 74, .35);
+      --card: rgba(255, 255, 255, .045);
+      --safe: #b7f7c7;
+      --warn: #ffe4a3;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: Georgia, 'Times New Roman', serif;
-      background: #07111f;
-      color: #f7f1df;
+      font-family: Georgia, "Times New Roman", serif;
+      background: var(--navy);
+      color: var(--cream);
       line-height: 1.65;
     }
+
+    .topnav {
+      background: #050b15;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 18px;
+    }
+
+    .topnav-inner {
+      max-width: 1150px;
+      margin: 0 auto;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: 14px;
+    }
+
     header {
       padding: 56px 22px;
       text-align: center;
-      background: linear-gradient(135deg, #07111f, #10233d);
-      border-bottom: 4px solid #c9a24a;
+      background: linear-gradient(135deg, var(--navy), var(--navy2));
+      border-bottom: 4px solid var(--gold);
     }
+
     main {
-      max-width: 1050px;
+      max-width: 1120px;
       margin: 0 auto;
       padding: 34px 20px 60px;
     }
-    h1, h2 {
-      color: #f5d37a;
+
+    h1, h2, h3 {
+      color: var(--gold2);
       line-height: 1.2;
     }
+
     h1 {
       font-size: clamp(2rem, 5vw, 3.4rem);
       margin: 0 0 14px;
     }
+
     .subtitle {
-      max-width: 850px;
+      max-width: 900px;
       margin: 0 auto;
       font-size: 1.15rem;
-      color: #efe2bd;
+      color: var(--muted);
     }
-    .badge {
+
+    .badge, .status-pill {
       display: inline-block;
       margin: 18px 0 0;
       padding: 8px 14px;
-      border: 1px solid #c9a24a;
+      border: 1px solid var(--gold);
       border-radius: 999px;
-      color: #f5d37a;
+      color: var(--gold2);
       font-weight: bold;
-      background: rgba(201,162,74,.08);
+      background: rgba(201, 162, 74, .08);
     }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
       gap: 18px;
       margin: 28px 0;
     }
+
     .card {
-      border: 1px solid rgba(201,162,74,.35);
-      background: rgba(255,255,255,.045);
+      border: 1px solid var(--line);
+      background: var(--card);
       border-radius: 18px;
       padding: 22px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
     }
-    .card h3 {
-      color: #f5d37a;
-      margin-top: 0;
-    }
+
+    .card h3 { margin-top: 0; }
+
     a {
-      color: #f5d37a;
+      color: var(--gold2);
       text-decoration: none;
       font-weight: bold;
     }
-    a:hover {
-      text-decoration: underline;
-    }
-    .actions {
+
+    a:hover { text-decoration: underline; }
+
+    .actions, .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin: 28px 0;
+      margin: 22px 0;
     }
-    .btn {
-      display: inline-block;
+
+    .btn, button.btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       padding: 12px 17px;
       border-radius: 12px;
-      border: 1px solid #c9a24a;
-      background: #c9a24a;
-      color: #07111f;
+      border: 1px solid var(--gold);
+      background: var(--gold);
+      color: var(--navy);
       font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 15px;
+      text-decoration: none;
     }
+
     .btn.secondary {
       background: transparent;
-      color: #f5d37a;
+      color: var(--gold2);
     }
+
+    .btn.active {
+      box-shadow: 0 0 0 3px rgba(245, 211, 122, .22);
+      background: var(--gold2);
+      color: var(--navy);
+    }
+
     .note {
-      border-left: 4px solid #c9a24a;
+      border-left: 4px solid var(--gold);
       padding: 16px 18px;
-      background: rgba(201,162,74,.09);
+      background: rgba(201, 162, 74, .09);
       border-radius: 10px;
       margin: 28px 0;
     }
+
+    .safe-note {
+      border-left: 4px solid var(--safe);
+      padding: 16px 18px;
+      background: rgba(183, 247, 199, .08);
+      border-radius: 10px;
+      margin: 28px 0;
+    }
+
     code {
-      background: rgba(255,255,255,.08);
+      background: rgba(255, 255, 255, .08);
       padding: 2px 5px;
       border-radius: 6px;
       color: #fff0bd;
     }
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .search-row input {
+      flex: 1;
+      min-width: 260px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--gold);
+      background: #fff;
+      color: var(--navy);
+      font-size: 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .source-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+
+    .source-meta span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      color: var(--muted);
+    }
+
+    .source-meta span.open { color: var(--safe); }
+    .source-meta span.restricted { color: var(--warn); }
+
     footer {
-      border-top: 1px solid rgba(201,162,74,.35);
+      border-top: 1px solid var(--line);
       text-align: center;
       padding: 26px 18px;
       color: #d8c58d;
     }
+
+    @media (max-width: 640px) {
+      .btn, button.btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
+  <nav class="topnav" aria-label="WPA navigation">
+    <div class="topnav-inner">
+      <a href="../../index.html">WPA Home</a>
+      <a href="../../institute.html">Institute</a>
+      <a href="../../journal/">Journal</a>
+      <a href="../../wpa-research-framework.html">Research Framework</a>
+      <a href="../../wpa-scholar-records-2026.json">Scholar Records JSON</a>
+    </div>
+  </nav>
+
   <header>
     <h1>WPA Academic Search Hub v3.1</h1>
     <p class="subtitle">
       Истражувачка инфраструктура на World Protocol Academy за библиографско пребарување,
       проверливост на извори, authority audit и идна RAG поддршка за Virtual Sande.
     </p>
-    <div class="badge">STAGING READY — Production after QA</div>
+    <div class="badge">STAGING READY — Legal-safe external discovery</div>
   </header>
 
   <main>
     <section>
-  <h2>Live Academic Search</h2>
-  <p>
-    Внеси термин и WPA Academic Search Hub ќе отвори безбедни external-search линкови
-    кон академски и регионални бази. Restricted/paywalled извори не се scrape-уваат.
-  </p>
+      <h2>Live Academic Search</h2>
+      <p>
+        Внеси термин и WPA Academic Search Hub ќе генерира безбедни external-search линкови кон
+        академски и регионални бази. Restricted/paywalled извори не се scrape-уваат и не се заобиколуваат.
+      </p>
 
-  <div class="grid" style="margin-top:18px;">
-    <div class="card">
-      <h3>32+</h3>
-      <p>Connected global, regional and supplementary sources.</p>
-    </div>
-    <div class="card">
-      <h3>6</h3>
-      <p>Core open discovery sources: OpenAlex, Crossref, Zenodo, DOAJ, OpenAIRE, CORE.</p>
-    </div>
-    <div class="card">
-      <h3>Legal-Safe</h3>
-      <p>No scraping of paywalled or login-restricted sources.</p>
-    </div>
-    <div class="card">
-      <h3>STAGING</h3>
-      <p>Ready for academic QA before production deployment.</p>
-    </div>
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0;">
-    <input id="wpaSearchQuery" type="text" placeholder="protocol diplomacy, state protocol, ceremonial diplomacy..."
-      style="flex:1;min-width:260px;padding:14px 16px;border-radius:10px;border:1px solid #c9a24a;background:#fff;color:#07111f;font-size:16px;">
-    <button onclick="wpaRunSearch()"
-      style="padding:14px 20px;border-radius:10px;border:1px solid #c9a24a;background:#c9a24a;color:#07111f;font-weight:bold;cursor:pointer;">
-      Search Sources
-    </button>
-    <button onclick="wpaOpenAllCoreSources()"
-      style="padding:14px 20px;border-radius:10px;border:1px solid #c9a24a;background:transparent;color:#f5d37a;font-weight:bold;cursor:pointer;">
-      Open All Core Sources
-    </button>
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 14px;">
-    <button onclick="wpaFounderSearch()" class="btn" type="button">👤 Founder Quick Search</button>
-    <button onclick="wpaDoctrineSearch()" class="btn secondary" type="button">🏛️ WPA Doctrine Search</button>
-    <button onclick="wpaClearFavorites()" class="btn secondary" type="button">Reset Favorites</button>
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 14px;">
-    <button onclick="wpaSetFilter('all')" class="btn secondary" type="button">All</button>
-    <button onclick="wpaSetFilter('open')" class="btn secondary" type="button">Open Sources</button>
-    <button onclick="wpaSetFilter('restricted')" class="btn secondary" type="button">Restricted</button>
-    <button onclick="wpaSetFilter('regional')" class="btn secondary" type="button">Regional</button>
-    <button onclick="wpaSetFilter('supplementary')" class="btn secondary" type="button">Supplementary</button>
-  </div>
-
-  <div style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 28px;">
-    <button onclick="wpaSetRegion('all')" class="btn secondary" type="button">🌐 Global</button>
-    <button onclick="wpaSetRegion('europe')" class="btn secondary" type="button">🇪🇺 Europe</button>
-    <button onclick="wpaSetRegion('china')" class="btn secondary" type="button">🇨🇳 China</button>
-    <button onclick="wpaSetRegion('russia')" class="btn secondary" type="button">🇷🇺 Russia</button>
-    <button onclick="wpaSetRegion('india')" class="btn secondary" type="button">🇮🇳 India</button>
-    <button onclick="wpaSetRegion('africa')" class="btn secondary" type="button">🌍 Africa</button>
-    <button onclick="wpaSetRegion('arab')" class="btn secondary" type="button">🕌 Arab World</button>
-    <button onclick="wpaSetRegion('latam')" class="btn secondary" type="button">🌎 Latin America</button>
-    <button onclick="wpaSetRegion('australia')" class="btn secondary" type="button">🇦🇺 Australia</button>
-  </div>
-
-  <div id="wpaSearchStatus" class="note" style="display:none;"></div>
-  <div id="wpaSearchResults" class="grid"></div>
-</section>
-
-<script>
-let wpaCurrentFilter = "all";
-let wpaCurrentRegion = "all";
-
-const wpaSources = [
-  ["OpenAlex", "https://openalex.org/works?search=", "open", "global", "Open metadata / academic index"],
-  ["Crossref", "https://search.crossref.org/?q=", "open", "global", "DOI and publication metadata"],
-  ["Zenodo", "https://zenodo.org/search?q=", "open", "global", "Open science repository"],
-  ["DOAJ", "https://doaj.org/search/articles?q=", "open", "global", "Open access journals"],
-  ["OpenAIRE", "https://explore.openaire.eu/search/find?keyword=", "open", "europe", "European open science discovery"],
-  ["CORE", "https://core.ac.uk/search?q=", "open", "global", "Open access research aggregator"],
-
-  ["Google Scholar", "https://scholar.google.com/scholar?q=", "restricted", "global", "External search only"],
-  ["COBISS", "https://plus.cobiss.net/cobiss/si/en/bib/search?q=", "restricted", "europe", "Catalogue search only"],
-  ["CEEOL", "https://www.ceeol.com/search?q=", "restricted", "europe", "Restricted/paywalled source"],
-  ["JSTOR", "https://www.jstor.org/action/doBasicSearch?Query=", "restricted", "global", "Restricted/paywalled source"],
-  ["Project MUSE", "https://muse.jhu.edu/search?q=", "restricted", "global", "Restricted/paywalled source"],
-  ["CNKI", "https://kns.cnki.net/kns8s/defaultResult/index?sw=", "restricted", "china", "Restricted China academic database"],
-  ["eLIBRARY.RU", "https://elibrary.ru/search_results.asp?searchword=", "restricted", "russia", "Restricted Russian academic database"],
-
-  ["PhilPapers", "https://philpapers.org/s/", "regional", "global", "Philosophy and theory"],
-  ["Baidu Scholar", "https://xueshu.baidu.com/s?wd=", "regional", "china", "China regional academic search"],
-  ["CyberLeninka", "https://cyberleninka.org/search?q=", "regional", "russia", "Russian open-access discovery"],
-  ["Shodhganga", "https://shodhganga.inflibnet.ac.in/simple-search?query=", "regional", "india", "India theses repository"],
-  ["AJOL", "https://www.ajol.info/index.php/ajol/search?query=", "regional", "africa", "African Journals Online"],
-  ["Shamaa", "https://www.shamaa.org/en/search?query=", "regional", "arab", "Arabic educational research"],
-  ["SciELO", "https://search.scielo.org/?q=", "regional", "latam", "Latin America open science"],
-  ["Redalyc", "https://www.redalyc.org/buscarArticuloFiltros.do?q=", "regional", "latam", "Latin America academic network"],
-  ["Trove", "https://trove.nla.gov.au/search/advanced/category/journals?keyword=", "regional", "australia", "Australian library discovery"],
-
-  ["Scribd Supplementary", "https://www.scribd.com/search?query=", "supplementary", "global", "Supplementary non-authority source"],
-  ["ResearchGate", "https://www.researchgate.net/search?q=", "supplementary", "global", "External profile/document discovery"],
-  ["Academia.edu", "https://www.academia.edu/search?q=", "supplementary", "global", "External profile/document discovery"]
-];
-
-function wpaGetQuery() {
-  return document.getElementById("wpaSearchQuery").value.trim();
-}
-
-function wpaSetFilter(filter) {
-  wpaCurrentFilter = filter;
-  wpaRunSearch();
-}
-
-function wpaSetRegion(region) {
-  wpaCurrentRegion = region;
-  wpaRunSearch();
-}
-
-function wpaCategoryLabel(category) {
-  if (category === "open") return "Open Sources";
-  if (category === "restricted") return "Restricted / External Only";
-  if (category === "regional") return "Regional";
-  if (category === "supplementary") return "Supplementary";
-  return "All";
-}
-
-function wpaRegionLabel(region) {
-  const labels = {
-    all: "Global / All Regions",
-    global: "Global",
-    europe: "Europe",
-    china: "China",
-    russia: "Russia",
-    india: "India",
-    africa: "Africa",
-    arab: "Arab World",
-    latam: "Latin America",
-    australia: "Australia"
-  };
-  return labels[region] || region;
-}
-
-function wpaGetFavorites() {
-  try {
-    return JSON.parse(localStorage.getItem("wpaSearchHubFavorites") || "[]");
-  } catch (e) {
-    return [];
-  }
-}
-
-function wpaSaveFavorites(favorites) {
-  localStorage.setItem("wpaSearchHubFavorites", JSON.stringify(favorites));
-}
-
-function wpaToggleFavorite(name) {
-  let favorites = wpaGetFavorites();
-  if (favorites.includes(name)) {
-    favorites = favorites.filter(item => item !== name);
-  } else {
-    favorites.push(name);
-  }
-  wpaSaveFavorites(favorites);
-  wpaRunSearch();
-}
-
-function wpaClearFavorites() {
-  localStorage.removeItem("wpaSearchHubFavorites");
-  wpaRunSearch();
-}
-
-function wpaFounderSearch() {
-  document.getElementById("wpaSearchQuery").value = "Sande Smiljanov ORCID 0009-0008-3219-394X";
-  wpaCurrentFilter = "all";
-  wpaCurrentRegion = "all";
-  wpaRunSearch();
-}
-
-function wpaDoctrineSearch() {
-  document.getElementById("wpaSearchQuery").value = "protocol diplomacy public communication security studies state protocol diplomatic protocol protocolometry";
-  wpaCurrentFilter = "all";
-  wpaCurrentRegion = "all";
-  wpaRunSearch();
-}
-
-function wpaFilteredSources() {
-  const favorites = wpaGetFavorites();
-
-  return wpaSources
-    .filter(source => {
-      const categoryMatches = wpaCurrentFilter === "all" || source[2] === wpaCurrentFilter;
-      const regionMatches = wpaCurrentRegion === "all" || source[3] === wpaCurrentRegion || source[3] === "global";
-      return categoryMatches && regionMatches;
-    })
-    .sort((a, b) => {
-      const af = favorites.includes(a[0]) ? 0 : 1;
-      const bf = favorites.includes(b[0]) ? 0 : 1;
-      return af - bf || a[0].localeCompare(b[0]);
-    });
-}
-
-function wpaRunSearch() {
-  const q = wpaGetQuery();
-  const box = document.getElementById("wpaSearchResults");
-  const status = document.getElementById("wpaSearchStatus");
-
-  if (!q) {
-    status.style.display = "block";
-    status.innerHTML = "Please enter a search term first.";
-    box.innerHTML = "";
-    return;
-  }
-
-  const encoded = encodeURIComponent(q);
-  const filteredSources = wpaFilteredSources();
-  const favorites = wpaGetFavorites();
-
-  status.style.display = "block";
-  status.innerHTML =
-    "<strong>Active filter:</strong> " + wpaCategoryLabel(wpaCurrentFilter) +
-    " · <strong>Region:</strong> " + wpaRegionLabel(wpaCurrentRegion) +
-    " · <strong>Search term:</strong> " + q +
-    " · <strong>Sources shown:</strong> " + filteredSources.length +
-    " · Manual academic verification required.";
-
-  if (!filteredSources.length) {
-    box.innerHTML = "<p>No sources match the selected filter and region.</p>";
-    return;
-  }
-
-  box.innerHTML = filteredSources.map(([name, url, category, region, note]) => {
-    const isFavorite = favorites.includes(name);
-    return `
-      <div class="card">
-        <h3>${isFavorite ? "⭐ " : ""}${name}</h3>
-        <p><strong>Category:</strong> ${wpaCategoryLabel(category)}</p>
-        <p><strong>Region:</strong> ${wpaRegionLabel(region)}</p>
-        <p>${note}. Legal-safe external search link. Manual academic verification required.</p>
-        <div class="actions" style="margin:16px 0 0;">
-          <a class="btn secondary" href="${url}${encoded}" target="_blank" rel="noopener noreferrer">
-            Search ${name}
-          </a>
-          <button class="btn secondary" type="button" onclick="wpaToggleFavorite('${name.replace(/'/g, "\'")}')">
-            ${isFavorite ? "Remove Favorite" : "⭐ Favorite"}
-          </button>
-        </div>
+      <div class="grid" style="margin-top:18px;">
+        <div class="card"><h3 id="sourceCount">34</h3><p>Connected global, regional and supplementary sources.</p></div>
+        <div class="card"><h3>10</h3><p>Core open discovery sources: OpenAlex, Crossref, Semantic Scholar, Zenodo, DOAJ, OpenAIRE, CORE, PubMed, BASE, ERIC.</p></div>
+        <div class="card"><h3>Legal-Safe</h3><p>No scraping of paywalled or login-restricted sources.</p></div>
+        <div class="card"><h3>STAGING</h3><p>Ready for academic QA before production deployment.</p></div>
       </div>
-    `;
-  }).join("");
-}
 
-function wpaOpenAllCoreSources() {
-  const q = wpaGetQuery();
+      <div class="search-row">
+        <input id="wpaSearchQuery" type="text" value="protocol diplomacy state protocol ceremonial diplomacy" aria-label="Academic search query" />
+        <button id="searchBtn" class="btn" type="button">Search Sources</button>
+        <button id="coreBtn" class="btn secondary" type="button">Show Core Source Links</button>
+      </div>
 
-  if (!q) {
-    alert("Please enter a search term first.");
-    return;
-  }
+      <div class="actions">
+        <button id="founderBtn" class="btn" type="button">👤 Founder Quick Search</button>
+        <button id="doctrineBtn" class="btn secondary" type="button">🏛️ WPA Doctrine Search</button>
+        <button id="clearFavBtn" class="btn secondary" type="button">Reset Favorites</button>
+      </div>
 
-  const encoded = encodeURIComponent(q);
-  const coreSources = wpaSources.filter(source => source[2] === "open").slice(0, 6);
+      <div class="filters" aria-label="Category filters">
+        <button data-filter="all" class="btn secondary filter-btn active" type="button">All</button>
+        <button data-filter="open" class="btn secondary filter-btn" type="button">Open Sources</button>
+        <button data-filter="restricted" class="btn secondary filter-btn" type="button">Restricted</button>
+        <button data-filter="regional" class="btn secondary filter-btn" type="button">Regional</button>
+        <button data-filter="supplementary" class="btn secondary filter-btn" type="button">Supplementary</button>
+      </div>
 
-  coreSources.forEach(([name, url], index) => {
-    setTimeout(() => {
-      window.open(url + encoded, "_blank", "noopener,noreferrer");
-    }, index * 450);
-  });
-}
+      <div class="filters" aria-label="Region filters">
+        <button data-region="all" class="btn secondary region-btn active" type="button">🌐 Global</button>
+        <button data-region="europe" class="btn secondary region-btn" type="button">🇪🇺 Europe</button>
+        <button data-region="china" class="btn secondary region-btn" type="button">🇨🇳 China</button>
+        <button data-region="russia" class="btn secondary region-btn" type="button">🇷🇺 Russia</button>
+        <button data-region="india" class="btn secondary region-btn" type="button">🇮🇳 India</button>
+        <button data-region="africa" class="btn secondary region-btn" type="button">🌍 Africa</button>
+        <button data-region="arab" class="btn secondary region-btn" type="button">🕌 Arab World</button>
+        <button data-region="latam" class="btn secondary region-btn" type="button">🌎 Latin America</button>
+        <button data-region="australia" class="btn secondary region-btn" type="button">🇦🇺 Australia</button>
+      </div>
 
-document.addEventListener("DOMContentLoaded", function () {
-  const input = document.getElementById("wpaSearchQuery");
-  if (input) {
-    input.addEventListener("keydown", function (event) {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        wpaRunSearch();
-      }
-    });
-  }
-});
-</script>
+      <div id="wpaSearchStatus" class="note"></div>
+      <div id="wpaSearchResults" class="grid"></div>
+    </section>
+
+    <section class="safe-note">
+      <strong>Legal-safe rule:</strong> this hub opens external search pages only. It does not scrape,
+      bypass login systems, harvest paywalled content, or replace human academic verification.
+    </section>
+
     <section>
       <h2>Official Research Infrastructure</h2>
       <p>
@@ -418,63 +313,25 @@ document.addEventListener("DOMContentLoaded", function () {
     </section>
 
     <section class="grid">
-      <div class="card">
-        <h3>Legal-Safe Mode</h3>
-        <p>
-          Restricted, paywalled и login-based извори не се scrape-уваат.
-          За нив се користи само external search-link режим.
-        </p>
-      </div>
-      <div class="card">
-        <h3>Traceability Score</h3>
-        <p>
-          Секој запис добива traceability score според DOI, URL, изворна база,
-          автори, година, апстракт и open-access статус.
-        </p>
-      </div>
-      <div class="card">
-        <h3>Authority &amp; RAG Gate</h3>
-        <p>
-          Само проверени, доволно трасирачки и authority-safe записи може да
-          бидат кандидати за идно RAG вклучување.
-        </p>
-      </div>
-      <div class="card">
-        <h3>Regional Coverage</h3>
-        <p>
-          OpenAlex, Crossref, Zenodo, OpenAIRE, DOAJ, COBISS, CEEOL, CNKI,
-          CyberLeninka, SciELO, Redalyc, AJOL, Shamaa, Trove и други.
-        </p>
-      </div>
+      <div class="card"><h3>Legal-Safe Mode</h3><p>Restricted, paywalled и login-based извори не се scrape-уваат. За нив се користи само external search-link режим.</p></div>
+      <div class="card"><h3>Traceability Score</h3><p>Секој запис добива traceability score според DOI, URL, изворна база, автори, година, апстракт и open-access статус.</p></div>
+      <div class="card"><h3>Authority &amp; RAG Gate</h3><p>Само проверени, доволно трасирачки и authority-safe записи може да бидат кандидати за идно RAG вклучување.</p></div>
+      <div class="card"><h3>Regional Coverage</h3><p>OpenAlex, Crossref, Zenodo, OpenAIRE, DOAJ, COBISS, CEEOL, CNKI, CyberLeninka, SciELO, Redalyc, AJOL, Shamaa, Trove и други.</p></div>
     </section>
 
     <section>
       <h2>Included Modules</h2>
       <div class="grid">
-        <div class="card">
-          <h3>Academic Search Hub</h3>
-          <p>Unified source discovery and external-link generation.</p>
-        </div>
-        <div class="card">
-          <h3>SQLite State Manager</h3>
-          <p>Crash-safe state, DOI deduplication and title-year fallback.</p>
-        </div>
-        <div class="card">
-          <h3>Precedence Matrix Engine</h3>
-          <p>Prototype for seating and diplomatic precedence mapping.</p>
-        </div>
-        <div class="card">
-          <h3>Protocol Breach Observatory</h3>
-          <p>RSS-based candidate detection with mandatory human verification.</p>
-        </div>
+        <div class="card"><h3>Academic Search Hub</h3><p>Unified source discovery and external-link generation.</p></div>
+        <div class="card"><h3>SQLite State Manager</h3><p>Crash-safe state, DOI deduplication and title-year fallback.</p></div>
+        <div class="card"><h3>Precedence Matrix Engine</h3><p>Prototype for seating and diplomatic precedence mapping.</p></div>
+        <div class="card"><h3>Protocol Breach Observatory</h3><p>RSS-based candidate detection with mandatory human verification.</p></div>
       </div>
     </section>
 
     <section class="note">
-      <strong>Important:</strong>
-      This system is not a scraping tool, not a paywall bypass tool and not a substitute
-      for human academic verification. It is currently marked as
-      <strong>STAGING READY</strong>, not Production Ready.
+      <strong>Important:</strong> This system is not a scraping tool, not a paywall bypass tool and not a substitute
+      for human academic verification. It is currently marked as <strong>STAGING READY</strong>, not Production Ready.
     </section>
 
     <section>
@@ -504,7 +361,234 @@ document.addEventListener("DOMContentLoaded", function () {
   </main>
 
   <footer>
-    © 2026 World Protocol Academy · Skopje · Academic Search Hub v3.1
+    © 2026 World Protocol Academy · Skopje · Academic Search Hub v3.1<br />
+    <a href="../../privacy.html">Privacy Policy</a> · <a href="../../public-disclaimer.html">Public Disclaimer</a> · <a href="../../rights-takedown.html">Rights &amp; Takedown</a>
   </footer>
+
+  <script>
+    let wpaCurrentFilter = "all";
+    let wpaCurrentRegion = "all";
+
+    const wpaSources = [
+      ["OpenAlex", "https://openalex.org/works?search=", "open", "global", "Open metadata / academic index"],
+      ["Crossref", "https://search.crossref.org/?q=", "open", "global", "DOI and publication metadata"],
+      ["Semantic Scholar", "https://www.semanticscholar.org/search?q=", "open", "global", "Scholarly search and citation graph"],
+      ["Zenodo", "https://zenodo.org/search?q=", "open", "global", "Open science repository"],
+      ["DOAJ", "https://doaj.org/search/articles?q=", "open", "global", "Open access journals"],
+      ["OpenAIRE", "https://explore.openaire.eu/search/find?keyword=", "open", "europe", "European open science discovery"],
+      ["CORE", "https://core.ac.uk/search?q=", "open", "global", "Open access research aggregator"],
+      ["PubMed", "https://pubmed.ncbi.nlm.nih.gov/?term=", "open", "global", "Biomedical and health-related discovery"],
+      ["BASE", "https://www.base-search.net/Search/Results?lookfor=", "open", "europe", "Bielefeld Academic Search Engine"],
+      ["ERIC", "https://eric.ed.gov/?q=", "open", "global", "Education research database"],
+      ["Europe PMC", "https://europepmc.org/search?query=", "open", "europe", "European biomedical and life-science discovery"],
+      ["arXiv", "https://arxiv.org/search/?searchtype=all&query=", "open", "global", "Preprints and open scientific papers"],
+
+      ["Google Scholar", "https://scholar.google.com/scholar?q=", "restricted", "global", "External search only; no scraping"],
+      ["COBISS", "https://plus.cobiss.net/cobiss/si/en/bib/search?q=", "restricted", "europe", "Catalogue search only"],
+      ["CEEOL", "https://www.ceeol.com/search?q=", "restricted", "europe", "Restricted/paywalled source"],
+      ["JSTOR", "https://www.jstor.org/action/doBasicSearch?Query=", "restricted", "global", "Restricted/paywalled source"],
+      ["Project MUSE", "https://muse.jhu.edu/search?q=", "restricted", "global", "Restricted/paywalled source"],
+      ["CNKI", "https://kns.cnki.net/kns8s/defaultResult/index?sw=", "restricted", "china", "Restricted China academic database"],
+      ["eLIBRARY.RU", "https://elibrary.ru/search_results.asp?searchword=", "restricted", "russia", "Restricted Russian academic database"],
+      ["WorldCat", "https://search.worldcat.org/search?q=", "restricted", "global", "Library catalogue discovery"],
+      ["Dimensions", "https://app.dimensions.ai/discover/publication?search_text=", "restricted", "global", "External discovery; terms apply"],
+
+      ["PhilPapers", "https://philpapers.org/s/", "regional", "global", "Philosophy and theory"],
+      ["Baidu Scholar", "https://xueshu.baidu.com/s?wd=", "regional", "china", "China regional academic search"],
+      ["CyberLeninka", "https://cyberleninka.org/search?q=", "regional", "russia", "Russian open-access discovery"],
+      ["Shodhganga", "https://shodhganga.inflibnet.ac.in/simple-search?query=", "regional", "india", "India theses repository"],
+      ["AJOL", "https://www.ajol.info/index.php/ajol/search?query=", "regional", "africa", "African Journals Online"],
+      ["Shamaa", "https://www.shamaa.org/en/search?query=", "regional", "arab", "Arabic educational research"],
+      ["SciELO", "https://search.scielo.org/?q=", "regional", "latam", "Latin America open science"],
+      ["Redalyc", "https://www.redalyc.org/buscarArticuloFiltros.do?q=", "regional", "latam", "Latin America academic network"],
+      ["Trove", "https://trove.nla.gov.au/search/advanced/category/journals?keyword=", "regional", "australia", "Australian library discovery"],
+      ["HAL", "https://hal.science/search/index/q/", "regional", "europe", "French and European open archive"],
+      ["HRČAK", "https://hrcak.srce.hr/pretraga?q=", "regional", "europe", "Croatian open-access journals"],
+
+      ["ResearchGate", "https://www.researchgate.net/search?q=", "supplementary", "global", "External profile/document discovery"],
+      ["Academia.edu", "https://www.academia.edu/search?q=", "supplementary", "global", "External profile/document discovery"],
+      ["SSRN", "https://papers.ssrn.com/sol3/results.cfm?txtKey_Words=", "supplementary", "global", "Working papers and preprints"],
+      ["Internet Archive", "https://archive.org/search?query=", "supplementary", "global", "Supplementary archival discovery"],
+      ["Scribd Supplementary", "https://www.scribd.com/search?query=", "supplementary", "global", "Supplementary non-authority source"]
+    ];
+
+    function wpaGetQuery() {
+      const input = document.getElementById("wpaSearchQuery");
+      return input ? input.value.trim() : "";
+    }
+
+    function wpaSetQuery(value) {
+      const input = document.getElementById("wpaSearchQuery");
+      if (input) input.value = value;
+    }
+
+    function wpaGetFavorites() {
+      try { return JSON.parse(localStorage.getItem("wpaSearchHubFavorites") || "[]"); }
+      catch (e) { return []; }
+    }
+
+    function wpaSaveFavorites(favorites) {
+      localStorage.setItem("wpaSearchHubFavorites", JSON.stringify(favorites));
+    }
+
+    function wpaToggleFavorite(name) {
+      let favorites = wpaGetFavorites();
+      favorites = favorites.includes(name) ? favorites.filter((item) => item !== name) : [...favorites, name];
+      wpaSaveFavorites(favorites);
+      wpaRunSearch();
+    }
+
+    function wpaCategoryLabel(category) {
+      if (category === "open") return "Open Sources";
+      if (category === "restricted") return "Restricted / External Only";
+      if (category === "regional") return "Regional";
+      if (category === "supplementary") return "Supplementary";
+      return "All";
+    }
+
+    function wpaRegionLabel(region) {
+      const labels = {
+        all: "Global / All Regions",
+        global: "Global",
+        europe: "Europe",
+        china: "China",
+        russia: "Russia",
+        india: "India",
+        africa: "Africa",
+        arab: "Arab World",
+        latam: "Latin America",
+        australia: "Australia"
+      };
+      return labels[region] || region;
+    }
+
+    function wpaFilteredSources() {
+      const favorites = wpaGetFavorites();
+      return wpaSources
+        .filter((source) => {
+          const categoryMatches = wpaCurrentFilter === "all" || source[2] === wpaCurrentFilter;
+          const regionMatches = wpaCurrentRegion === "all" || source[3] === wpaCurrentRegion || source[3] === "global";
+          return categoryMatches && regionMatches;
+        })
+        .sort((a, b) => {
+          const af = favorites.includes(a[0]) ? 0 : 1;
+          const bf = favorites.includes(b[0]) ? 0 : 1;
+          return af - bf || a[0].localeCompare(b[0]);
+        });
+    }
+
+    function wpaRenderActiveButtons() {
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.filter === wpaCurrentFilter);
+      });
+      document.querySelectorAll(".region-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.region === wpaCurrentRegion);
+      });
+    }
+
+    function wpaRunSearch() {
+      let q = wpaGetQuery();
+      if (!q) {
+        q = "protocol diplomacy state protocol ceremonial diplomacy";
+        wpaSetQuery(q);
+      }
+
+      const encoded = encodeURIComponent(q);
+      const box = document.getElementById("wpaSearchResults");
+      const status = document.getElementById("wpaSearchStatus");
+      const filteredSources = wpaFilteredSources();
+      const favorites = wpaGetFavorites();
+
+      wpaRenderActiveButtons();
+
+      status.innerHTML =
+        "<strong>Active filter:</strong> " + wpaCategoryLabel(wpaCurrentFilter) +
+        " · <strong>Region:</strong> " + wpaRegionLabel(wpaCurrentRegion) +
+        " · <strong>Search term:</strong> " + q +
+        " · <strong>Sources shown:</strong> " + filteredSources.length +
+        " · Manual academic verification required.";
+
+      if (!filteredSources.length) {
+        box.innerHTML = "<p>No sources match the selected filter and region.</p>";
+        return;
+      }
+
+      box.innerHTML = filteredSources.map(([name, url, category, region, note]) => {
+        const isFavorite = favorites.includes(name);
+        const categoryClass = category === "open" ? "open" : (category === "restricted" ? "restricted" : "");
+        return `
+          <div class="card">
+            <h3>${isFavorite ? "⭐ " : ""}${name}</h3>
+            <div class="source-meta">
+              <span class="${categoryClass}">${wpaCategoryLabel(category)}</span>
+              <span>${wpaRegionLabel(region)}</span>
+            </div>
+            <p>${note}. Legal-safe external search link. Manual academic verification required.</p>
+            <div class="actions" style="margin:16px 0 0;">
+              <a class="btn secondary" href="${url}${encoded}" target="_blank" rel="noopener noreferrer">Search ${name}</a>
+              <button class="btn secondary favorite-btn" type="button" data-source-name="${name}">${isFavorite ? "Remove Favorite" : "⭐ Favorite"}</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function wpaShowCoreSources() {
+      wpaCurrentFilter = "open";
+      wpaCurrentRegion = "all";
+      wpaRunSearch();
+      document.getElementById("wpaSearchStatus").insertAdjacentHTML(
+        "beforeend",
+        "<br><span class='small'>Browser pop-up blockers often block mass opening. Core source links are shown below for manual one-by-one opening.</span>"
+      );
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("sourceCount").textContent = String(wpaSources.length);
+      document.getElementById("searchBtn").addEventListener("click", wpaRunSearch);
+      document.getElementById("coreBtn").addEventListener("click", wpaShowCoreSources);
+      document.getElementById("founderBtn").addEventListener("click", () => {
+        wpaSetQuery("Sande Smiljanov ORCID 0009-0008-3219-394X World Protocol Academy");
+        wpaCurrentFilter = "all";
+        wpaCurrentRegion = "all";
+        wpaRunSearch();
+      });
+      document.getElementById("doctrineBtn").addEventListener("click", () => {
+        wpaSetQuery("protocol diplomacy public communication security studies state protocol diplomatic protocol protocolometry");
+        wpaCurrentFilter = "all";
+        wpaCurrentRegion = "all";
+        wpaRunSearch();
+      });
+      document.getElementById("clearFavBtn").addEventListener("click", () => {
+        localStorage.removeItem("wpaSearchHubFavorites");
+        wpaRunSearch();
+      });
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          wpaCurrentFilter = btn.dataset.filter || "all";
+          wpaRunSearch();
+        });
+      });
+      document.querySelectorAll(".region-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          wpaCurrentRegion = btn.dataset.region || "all";
+          wpaRunSearch();
+        });
+      });
+      document.getElementById("wpaSearchQuery").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          wpaRunSearch();
+        }
+      });
+      document.getElementById("wpaSearchResults").addEventListener("click", (event) => {
+        const button = event.target.closest(".favorite-btn");
+        if (!button) return;
+        wpaToggleFavorite(button.dataset.sourceName);
+      });
+
+      wpaRunSearch();
+    });
+  </script>
 </body>
 </html>
