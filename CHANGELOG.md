@@ -29,6 +29,23 @@
 - Version DOI: `10.5281/zenodo.20528224`
 
 ---
+---
+
+## Global Institutions Master List Patch · 7 July 2026
+
+### Patch 4F-REV3-PATCH-D001-A010 — D001 / A010 entity-resolution
+
+- D001 — Protocol Academy of Macedonia was upgraded from `Verification pending` to `VERIFIED — primary source`.
+- A010 — Protocol Academy of Kosovo was upgraded from `Verification pending` to `VERIFIED — primary source, branch/de facto presence of D001`.
+- D001 is retained as the canonical institutional entity.
+- A010 shall not be counted as a separate independent institution after the next full entity-resolution pass. It shall be retained as an audit-visible child / branch / brand-presence record under D001.
+- The relationship with The Protocol School of Washington is recorded as a curriculum-license / certification-based training relationship, not ownership or franchise unless separately evidenced.
+- Field separation was corrected: `relevance`, `verification_status`, `entity_resolution_status` and `branch_or_alias_relationship` must remain separate dataset fields.
+- No public headline count is changed by this patch alone. The current public formula remains: `115 records across registers; approximately 110 distinct institutional entities, pending final entity-resolution pass.`
+- Files added:
+  - `data/global-institutions/patches/4f-rev3/WPA_MasterList_PATCH_D001_A010.json`
+  - `data/global-institutions/patches/4f-rev3/WPA_MasterList_PATCH_D001_A010.csv`
+  - `data/global-institutions/patches/4f-rev3/CHANGELOG_ENTRY_D001_A010.md`
 
 ## Academic 10+++ Final Repository Integration Package · 10 June 2026
 
