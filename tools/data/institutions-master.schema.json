@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WPA Institutions Master List Dataset Schema — REV2",
+  "description": "Schema for the full data/institutions-master-rev2.json dataset used by the WPA Reference Map engine.",
+  "type": "object",
+  "required": [
+    "dataset_status",
+    "version",
+    "total_records",
+    "external_records",
+    "unique_external_institutions",
+    "group_counts",
+    "disclaimers",
+    "note",
+    "institutions"
+  ],
+  "properties": {
+    "dataset_status": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "total_records": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "external_records": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unique_external_institutions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "group_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "disclaimers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "note": {
+      "type": "string"
+    },
+    "institutions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "country",
+          "continent",
+          "group",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z]{1,2}[0-9]{3}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "continent": {
+            "type": "string",
+            "enum": [
+              "Africa",
+              "Asia",
+              "Europe",
+              "North America",
+              "South America",
+              "Oceania"
+            ]
+          },
+          "group": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "G",
+              "H",
+              "I",
+              "R"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "relevance": {
+            "type": "string",
+            "enum": [
+              "A",
+              "B",
+              "C",
+              ""
+            ]
+          },
+          "established": {
+            "type": "string"
+          },
+          "verification": {
+            "type": "string"
+          },
+          "has_website": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
