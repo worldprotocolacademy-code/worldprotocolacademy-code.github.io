@@ -4,15 +4,15 @@
 
 ### WPA-WP-005 — Metadata harmonised on Zenodo
 
-* The Zenodo record for WPA Working Paper No. 005 was harmonised with the WPA Working Paper Series naming convention.
-* The title was updated to explicitly include: `WPA Working Paper No. 005`.
-* The description was updated to clarify that the record contains WPA Working Paper No. 005, published by the World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies.
-* Keywords were cleaned and expanded.
-* The license text was aligned with the Zenodo metadata license: Creative Commons Attribution–NonCommercial–NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
-* No substantive analytical claims, conclusions, source base or files were changed.
-* Current version: `v1.1`
-* Concept DOI: `10.5281/zenodo.20434476`
-* Version DOI: `10.5281/zenodo.20434477`
+- The Zenodo record for WPA Working Paper No. 005 was harmonised with the WPA Working Paper Series naming convention.
+- The title was updated to explicitly include: `WPA Working Paper No. 005`.
+- The description was updated to clarify that the record contains WPA Working Paper No. 005, published by the World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies.
+- Keywords were cleaned and expanded.
+- The license text was aligned with the Zenodo metadata license: Creative Commons Attribution–NonCommercial–NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
+- No substantive analytical claims, conclusions, source base or files were changed.
+- Current version: `v1.1`
+- Concept DOI: `10.5281/zenodo.20434476`
+- Version DOI: `10.5281/zenodo.20434477`
 
 ### WPA-WP-006 — Metadata harmonised on Zenodo
 
@@ -28,7 +28,6 @@
 - Concept DOI: `10.5281/zenodo.20528223`
 - Version DOI: `10.5281/zenodo.20528224`
 
----
 ---
 
 ## Global Institutions Master List Patch · 7 July 2026
@@ -46,6 +45,8 @@
   - `data/global-institutions/patches/4f-rev3/WPA_MasterList_PATCH_D001_A010.json`
   - `data/global-institutions/patches/4f-rev3/WPA_MasterList_PATCH_D001_A010.csv`
   - `data/global-institutions/patches/4f-rev3/CHANGELOG_ENTRY_D001_A010.md`
+
+---
 
 ## Academic 10+++ Final Repository Integration Package · 10 June 2026
 
@@ -75,14 +76,17 @@
 ## institute.html — 6 targeted edits (2199 → 2246 lines)
 
 ### Edit 1: Master List public CTA link
+
 - `href="wpa_institutions_master_list_v1.0.html"` → `href="wpa-global-institutions-master-list.html"`
 - Scope: public CTA button only; data file links (`/data/` CSV/JSON/Markdown) unchanged
 
 ### Edit 2: DOI card text — canonical 001–008 wording
+
 - Tools Hub Zenodo DOI card body: updated from hybrid "всите осум" phrasing to canonical:
   `WPA работните трудови 001–008 се објавени kako јавни Zenodo DOI записи: WP-001, WP-002, WP-003, WP-004, WP-005, WP-006, WP-007 и WP-008.`
 
 ### Edit 3: Intelligence Center card in Public Tools Hub
+
 - New card added as final card in Tools Hub domains-grid:
   - Tag: `Intelligence`
   - Title: `WPA Intelligence Center`
@@ -90,10 +94,12 @@
   - CTA: `Open Intelligence Center →` → `intelligence-center.html`
 
 ### Edit 4: Intelligence Center footer link
+
 - Added after existing OPC 2026 footer link:
   `<a href="intelligence-center.html">WPA Intelligence Center</a>`
 
 ### Edit 5: Institutional Measurability section inserted
+
 - New section `id="institutional-measurability"` inserted between `#analytics-centre` and `#trust-corrections`
 - Contains: doctrine text (MK+EN), 4 dimension cards (Research, Programmes, Practice, Transparency),
   5-step measurement pipeline (Public source collection → Source verification → Category assignment →
@@ -101,9 +107,11 @@
 - Zero JavaScript, self-contained HTML+inline CSS using existing CSS vars
 
 ### Edit 6: Last-updated date
+
 - Updated to: `Последно ажурирање: 10 јуни 2026 · Last updated: 10 June 2026`
 
-### Preserved (confirmed unchanged)
+### Preserved — confirmed unchanged
+
 - All existing 20+ Institute sections intact
 - `Не рангираме. Мериме.` present
 - `protocolometry` present
@@ -115,24 +123,25 @@
 
 ## mk.json — safe merge (627 → 649 keys)
 
-- **Added: 22 keys** (all Institute/IC/WP/OPC/Master List related)
+- **Added: 22 keys** — all Institute/IC/WP/OPC/Master List related
 - **Changed: 0 keys**
-- **Removed: 0 keys** (all 627 original keys preserved)
+- **Removed: 0 keys** — all 627 original keys preserved
 
 Added key groups:
-- `institute.tools_hub.dois.*` (5 keys) — Working Papers 001–008 DOI card
-- `institute.publications.working_papers.*` (5 keys) — Publications section WP card
-- `institute.opc.meta.*` (2 keys) — December 2026 date + status
-- `institute.tools_hub.master_list.cta` (1 key)
-- `institute.tools_hub.intel.*` + `institute.tools_hub.tag.intel` (4 keys) — IC Tools Hub card
-- `institute.footer.link_intel` + `institute.nav.intel` (2 keys) — IC navigation/footer
-- `ic.subtitle.mk` + `ic.subtitle.en` + `ic.tools.text.mk` (3 keys) — IC page labels
+
+- `institute.tools_hub.dois.*` — 5 keys — Working Papers 001–008 DOI card
+- `institute.publications.working_papers.*` — 5 keys — Publications section WP card
+- `institute.opc.meta.*` — 2 keys — December 2026 date + status
+- `institute.tools_hub.master_list.cta` — 1 key
+- `institute.tools_hub.intel.*` + `institute.tools_hub.tag.intel` — 4 keys — IC Tools Hub card
+- `institute.footer.link_intel` + `institute.nav.intel` — 2 keys — IC navigation/footer
+- `ic.subtitle.mk` + `ic.subtitle.en` + `ic.tools.text.mk` — 3 keys — IC page labels
 
 ## en.json — safe merge (627 → 649 keys)
 
-- **Added: 22 keys** (same set, English translations)
+- **Added: 22 keys** — same set, English translations
 - **Changed: 0 keys**
-- **Removed: 0 keys** (all 627 original keys preserved)
+- **Removed: 0 keys** — all 627 original keys preserved
 
 ---
 
