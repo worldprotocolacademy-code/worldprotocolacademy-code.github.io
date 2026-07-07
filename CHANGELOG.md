@@ -30,6 +30,7 @@
 
 ---
 
+## Academic 10+++ Final Repository Integration Package · 10 June 2026
 
 ---
 
