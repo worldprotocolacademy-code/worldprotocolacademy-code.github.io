@@ -9,6 +9,15 @@
   window.WPA_PRICING = window.WPA_PRICING || null;
   window.WPA_PRICING_READY = window.WPA_PRICING_READY || null;
 
+  function loadPerformanceLayer() {
+    if (window.WPA_PERFORMANCE_LOADED || document.querySelector('script[data-wpa-performance],script[src*="wpa-performance.js"]')) return;
+    var script = document.createElement('script');
+    script.src = '/scripts/wpa-performance.js?v=20260712';
+    script.defer = true;
+    script.setAttribute('data-wpa-performance', 'true');
+    document.head.appendChild(script);
+  }
+
   function normalizeLevelKey(input) {
     if (!input) return null;
     const value = String(input).toLowerCase().trim();
@@ -56,5 +65,6 @@
     }
   }
 
+  loadPerformanceLayer();
   window.WPA_PRICING_READY = loadPricing();
 })();
