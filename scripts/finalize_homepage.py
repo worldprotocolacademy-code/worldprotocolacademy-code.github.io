@@ -1,21 +1,64 @@
 #!/usr/bin/env python3
 """Conservative, idempotent finalizer for the WPA homepage."""
-from __future__ import annotations
-
-import re
 from pathlib import Path
+import re
 
-ROOT = Path(__file__).resolve().parents[1]
-INDEX = ROOT / "index.html"
+INDEX = Path(__file__).resolve().parents[1] / "index.html"
 
 
-def replace_once(text: str, pattern: str, replacement: str, label: str) -> str:
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+def sub_once(text, pattern, replacement, label):
+    out, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
     if count != 1:
-        raise SystemExit(f"Homepage finalizer could not safely apply: {label} (matches={count})")
-    return updated
+        raise SystemExit(f"Unsafe homepage finalization: {label} matches={count}")
+    return out
 
 
-def main() -> int:
-    text = INDEX.read_text(encoding="utf-8", errors="strict")
-    original
+def main():
+    text = INDEX.read_text(encoding="utf-8")
+    original = text
+
+    # Repair the logo markup damaged by attribute parsing while preserving WebP fallback.
+    logo = ('<picture class="wpa-picture"><source srcset="https://worldprotocolacademy-code.github.io/logo.webp" '
+            'type="image/webp"><img src="https://worldprotocolacademy-code.github.io/logo.png" alt="WPA" '
+            'onerror="this.style.display=\'none\';this.parentElement.textContent=\'WPA\'" decoding="async" '
+            'loading="eager" fetchpriority="high" width="512" height="512"></picture>')
+    if "this.parentElement.innerHTML='<spa" in text:
+        text = sub_once(text, r'<picture class="wpa-picture"><source srcset="https://worldprotocolacademy-code\.github\.io/logo\.webp".*?</picture>WPA</span>\'">', logo, "damaged logo")
+
+    # Phase 1 language policy: only Macedonian and English are active.
+    select = '''<select id="pageLang" aria-label="Select WPA language" title="WPA Languages" onchange="if(this.value){ window.location.href=this.value; }">
+          <option value="">Languages</option>
+          <option value="https://worldprotocolacademy-code.github.io/">🇲🇰 Македонски</option>
+          <option value="https://worldprotocolacademy-code.github.io/en/">🇬🇧 English</option>
+        </select>'''
+    text = sub_once(text, r'<select id="pageLang".*?</select>', select, "MK/EN selector")
+    text = text.replace('>All languages</a>', '>Languages hub</a>', 1)
+
+    # Virtual Sande: fail safely if optional bot markup is unavailable.
+    marker = "const status = document.getElementById('botStatus');\n  let busy = false, conv = [];"
+    guarded = "const status = document.getElementById('botStatus');\n  if(!panel || !toggle || !closeBtn || !clearBtn || !msgs || !inp || !send || !langSel || !note || !status) return;\n  let busy = false, conv = [];"
+    if marker in text:
+        text = text.replace(marker, guarded, 1)
+
+    # Enter sends; Shift+Enter remains available for a new line.
+    text = text.replace("inp.addEventListener('keydown', function(e){ if(e.key==='Enter') ask(); });",
+                        "inp.addEventListener('keydown', function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); ask(); } });", 1)
+
+    # Validate restored session history before using it.
+    old_hist = "try{ var h = sessionStorage.getItem('wpa-bot-hist'); if(h) conv = JSON.parse(h)||[]; }catch(e){}"
+    new_hist = "try{ var h = sessionStorage.getItem('wpa-bot-hist'); if(h){ var parsed=JSON.parse(h); conv=Array.isArray(parsed)?parsed.slice(-MAX_H):[]; } }catch(e){ conv=[]; }"
+    text = text.replace(old_hist, new_hist, 1)
+
+    # Align the direct homepage performance include with the current cache version.
+    text = text.replace('/scripts/wpa-performance.js?v=1.0', '/scripts/wpa-performance.js?v=20260712', 1)
+
+    if text != original:
+        INDEX.write_text(text, encoding="utf-8", newline="\n")
+        print("Homepage finalization applied.")
+    else:
+        print("Homepage already finalized.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
