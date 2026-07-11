@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Run the WPA media optimizer and always include the homepage."""
+"""Finalize the WPA homepage, then optimize canonical public media."""
 from __future__ import annotations
 
 import json
+import finalize_homepage
 import optimize_site_media as optimizer
 
 
 def main() -> int:
+    finalize_homepage.main()
     stats = {key: 0 for key in (
         "pages_changed",
         "images_optimized",
