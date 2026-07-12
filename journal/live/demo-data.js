@@ -23,7 +23,8 @@ window.WPA_LIVE_DEMO_DATA = {
 
 /* Core enhancement layers remain active. X11.8.1 Signal Architecture stays isolated during recovery. */
 document.write('<script src="noise-hardening.js?v=20260712-r2"><\/script>');
-document.write('<script src="fusion-lenses.js?v=20260712-r2"><\/script>');
-document.write('<script src="analyst-workflow.js?v=20260712-r2"><\/script>');
-document.write('<script src="analyst-core.js?v=20260712-r2"><\/script>');
-document.write('<script src="analyst-export.js?v=20260712-r2"><\/script>');
+document.write('<script src="fusion-lenses.js?v=20260713-x119"><\/script>');
+document.write('<script src="analyst-workflow.js?v=20260713-x119"><\/script>');
+document.write('<script src="x119-editorial-intelligence.js?v=20260713-x119"><\/script>');
+document.write('<script src="analyst-core.js?v=20260713-x119"><\/script>');
+document.write('<script src="analyst-export.js?v=20260713-x119"><\/script>');
