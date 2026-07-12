@@ -1,4 +1,4 @@
-/* WPA emergency interaction recovery — 2026-07-12 */
+/* WPA emergency interaction recovery + safe Journal Live entry points — 2026-07-12 */
 (function () {
   'use strict';
 
@@ -119,19 +119,162 @@
     });
   }
 
+  function ensureJournalStyles() {
+    if (document.getElementById('wpa-journal-live-entry-style')) return;
+    var style = document.createElement('style');
+    style.id = 'wpa-journal-live-entry-style';
+    style.textContent = [
+      '.wpa-journal-live-entry{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;text-decoration:none!important;white-space:nowrap!important;font-weight:900!important;pointer-events:auto!important;}',
+      '.site-nav a.wpa-journal-live-entry{color:#9b7623!important;border:1px solid rgba(201,168,76,.48)!important;background:rgba(201,168,76,.10)!important;padding:5px 9px!important;border-radius:5px!important;}',
+      '.site-nav a.wpa-journal-live-entry:hover{color:#071326!important;background:#e8d49a!important;border-color:#c9a84c!important;}',
+      '.topbar-icon-btn.wpa-journal-live-entry{background:rgba(201,168,76,.14)!important;border-color:rgba(201,168,76,.72)!important;}',
+      '.nav-links a.wpa-journal-live-entry{color:#f4e8c1!important;border-color:rgba(201,168,76,.62)!important;background:rgba(201,168,76,.10)!important;}',
+      '.nav-links a.wpa-journal-live-entry:hover{color:#071326!important;background:#e8d49a!important;}',
+      '.wpa-journal-live-pill{display:inline-flex!important;align-items:center!important;gap:6px!important;padding:8px 12px!important;border:1px solid rgba(212,166,74,.72)!important;border-radius:999px!important;background:rgba(212,166,74,.13)!important;color:#f0ca64!important;font:800 12px/1.2 Inter,Segoe UI,Arial,sans-serif!important;text-decoration:none!important;}',
+      '.wpa-journal-live-pill:hover{background:#d4a64a!important;color:#111!important;}',
+      '@media(max-width:860px){.wpa-journal-live-entry,.wpa-journal-live-pill{white-space:normal!important;text-align:center!important;}}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function makeJournalLink(id, className, label) {
+    var link = document.createElement('a');
+    link.id = id;
+    link.href = '/journal/live/';
+    link.className = className;
+    link.title = 'WPA Journal Live';
+    link.setAttribute('aria-label', 'WPA Journal Live');
+    link.textContent = label || '🛰️ WPA Journal Live';
+    return link;
+  }
+
+  function isJournalLiveLink(anchor) {
+    if (!anchor) return false;
+    var href = String(anchor.getAttribute('href') || '');
+    return /\/journal\/live\/?(?:$|[?#])/i.test(href);
+  }
+
+  function installHomeJournalEntry() {
+    var navList = document.querySelector('.site-nav ul');
+    if (!navList) return;
+
+    var anchors = qsa('a[href]', navList);
+    var cardLink = null;
+    var journalLink = null;
+
+    anchors.forEach(function (anchor) {
+      var href = String(anchor.getAttribute('href') || '').toLowerCase();
+      var label = String(anchor.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (!cardLink && (href.indexOf('wpa-card.html') !== -1 || label === 'wpa card')) cardLink = anchor;
+      if (!journalLink && isJournalLiveLink(anchor)) journalLink = anchor;
+    });
+
+    if (!cardLink) return;
+    if (!journalLink) journalLink = makeJournalLink('wpaLiveHomeNavLink', 'wpa-journal-live-entry', '🛰️ WPA Journal Live');
+    else {
+      journalLink.id = 'wpaLiveHomeNavLink';
+      journalLink.classList.add('wpa-journal-live-entry');
+      journalLink.textContent = '🛰️ WPA Journal Live';
+    }
+
+    var journalItem = journalLink.closest ? journalLink.closest('li') : null;
+    if (!journalItem) {
+      journalItem = document.createElement('li');
+      journalItem.id = 'wpaLiveHomeNavItem';
+      journalItem.appendChild(journalLink);
+    } else {
+      journalItem.id = 'wpaLiveHomeNavItem';
+    }
+
+    var cardItem = cardLink.closest ? cardLink.closest('li') : cardLink;
+    if (cardItem && cardItem.nextElementSibling !== journalItem) cardItem.insertAdjacentElement('afterend', journalItem);
+
+    var oldAnnounce = document.getElementById('wpaJournalLiveAnnounce');
+    if (oldAnnounce) oldAnnounce.remove();
+  }
+
+  function installInstituteJournalEntries() {
+    var topbar = document.querySelector('.topbar-quicklinks');
+    if (topbar && !document.getElementById('wpaLiveInstituteTopLink')) {
+      topbar.appendChild(makeJournalLink('wpaLiveInstituteTopLink', 'topbar-icon-btn wpa-journal-live-entry', '🛰️ Journal Live'));
+    }
+
+    var nav = document.querySelector('.nav-links');
+    if (nav && !document.getElementById('wpaLiveInstituteNavLink')) {
+      var navLink = makeJournalLink('wpaLiveInstituteNavLink', 'wpa-journal-live-entry', '🛰️ WPA Journal Live');
+      var journalAnchor = null;
+      qsa('a[href]', nav).some(function (anchor) {
+        var href = String(anchor.getAttribute('href') || '').toLowerCase();
+        var label = String(anchor.textContent || '').toLowerCase();
+        if (href.indexOf('journal/index.html') !== -1 || label.indexOf('wpa journal') !== -1) {
+          journalAnchor = anchor;
+          return true;
+        }
+        return false;
+      });
+      if (journalAnchor) journalAnchor.insertAdjacentElement('beforebegin', navLink);
+      else nav.appendChild(navLink);
+    }
+
+    var hero = document.querySelector('.hero-cta');
+    if (hero && !document.getElementById('wpaLiveInstituteHeroLink')) {
+      hero.appendChild(makeJournalLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', '🛰️ Отвори WPA Journal Live'));
+    }
+  }
+
+  function installJournalPageEntries() {
+    var topin = document.querySelector('.top .topin');
+    if (topin && !document.getElementById('wpaLiveJournalHeaderLink')) {
+      var headerLink = makeJournalLink('wpaLiveJournalHeaderLink', 'wpa-journal-live-pill', '🛰️ Journal Live');
+      var phase = topin.querySelector('.phase');
+      if (phase) phase.insertAdjacentElement('beforebegin', headerLink);
+      else topin.appendChild(headerLink);
+    }
+
+    var nav = document.querySelector('nav.nav');
+    if (nav && !document.getElementById('wpaLiveJournalNavLink')) {
+      nav.insertBefore(makeJournalLink('wpaLiveJournalNavLink', 'wpa-journal-live-pill', '🛰️ WPA Journal Live'), nav.firstChild);
+    }
+
+    var actions = document.querySelector('.hero .actions');
+    if (actions && !document.getElementById('wpaLiveJournalHeroLink')) {
+      actions.insertBefore(makeJournalLink('wpaLiveJournalHeroLink', 'btn primary wpa-journal-live-entry', '🛰️ Open WPA Journal Live'), actions.firstChild);
+    }
+  }
+
+  function installJournalLiveEntries() {
+    ensureJournalStyles();
+    var path = String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
+    var page = String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
+    var isHome = page === 'index' || path === '/' || path === '/index.html';
+    var isInstitute = page === 'institute' || path === '/institute.html';
+    var isJournal = path === '/journal' || path === '/journal/index.html';
+
+    if (isHome) installHomeJournalEntry();
+    if (isInstitute) installInstituteJournalEntries();
+    if (isJournal) installJournalPageEntries();
+  }
+
   function boot() {
     closeBlockingLayers();
     restoreControls();
     installLanguageSelect();
     installAnchorFallback();
     installMobileMenu();
+    installJournalLiveEntries();
 
     window.setTimeout(function () {
       closeBlockingLayers();
       restoreControls();
       installLanguageSelect();
       installMobileMenu();
+      installJournalLiveEntries();
     }, 500);
+
+    window.setTimeout(function () {
+      restoreControls();
+      installJournalLiveEntries();
+    }, 1500);
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
