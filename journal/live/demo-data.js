@@ -1,3 +1,4 @@
+window.WPA_LIVE_DEMO_ENABLED = true;
 window.WPA_LIVE_DEMO_DATA = {
   "mode": "demo",
   "synthetic": true,
@@ -20,9 +21,8 @@ window.WPA_LIVE_DEMO_DATA = {
   ]
 };
 
-/* Parser-ordered loaders: integrity/fusion/data/signal layers must wrap fetch before deferred live-app.js executes. */
-document.write('<script src="fusion-lenses.js"><\/script>');
-document.write('<script src="analyst-workflow.js"><\/script>');
-document.write('<script src="analyst-core.js"><\/script>');
-document.write('<script src="analyst-export.js"><\/script>');
-document.write('<script src="signal-architecture.js"><\/script>');
+/* Core enhancement layers remain active. X11.8.1 Signal Architecture is temporarily isolated during recovery. */
+document.write('<script src="fusion-lenses.js?v=20260712-recovery"><\/script>');
+document.write('<script src="analyst-workflow.js?v=20260712-recovery"><\/script>');
+document.write('<script src="analyst-core.js?v=20260712-recovery"><\/script>');
+document.write('<script src="analyst-export.js?v=20260712-recovery"><\/script>');
