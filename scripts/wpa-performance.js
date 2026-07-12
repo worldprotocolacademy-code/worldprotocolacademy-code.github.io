@@ -134,7 +134,7 @@
       analytics_storage: 'granted',
       ad_storage: 'denied',
       ad_user_data: 'denied',
-      ad_personalization_storage: 'denied',
+      ad_personalization: 'denied',
       functionality_storage: 'granted',
       security_storage: 'granted'
     });
