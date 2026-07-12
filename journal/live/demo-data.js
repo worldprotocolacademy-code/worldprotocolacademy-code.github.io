@@ -20,5 +20,8 @@ window.WPA_LIVE_DEMO_DATA = {
   ]
 };
 
-/* Parser-ordered loader: X11.7 must wrap fetch before deferred live-app.js executes. */
+/* Parser-ordered loaders: integrity/fusion/data layers must wrap fetch before deferred live-app.js executes. */
 document.write('<script src="fusion-lenses.js"><\/script>');
+document.write('<script src="analyst-workflow.js"><\/script>');
+document.write('<script src="analyst-core.js"><\/script>');
+document.write('<script src="analyst-export.js"><\/script>');
