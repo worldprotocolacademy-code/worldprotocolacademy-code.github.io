@@ -1,11 +1,33 @@
-/* WPA homepage runtime loader: interaction recovery + proportional five-row navigation */
+/* WPA runtime loader: interaction recovery + page-scoped layout refinements */
 (function () {
   'use strict';
 
+  function pageName() {
+    return String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
+  }
+
+  function normalizedPath() {
+    return String(window.location.pathname || '').replace(/\/+$/, '') || '/';
+  }
+
   function isHome() {
-    var path = String(window.location.pathname || '').replace(/\/+$/, '') || '/';
-    var page = String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
+    var path = normalizedPath();
+    var page = pageName();
     return page === 'index' || path === '/' || path === '/index.html';
+  }
+
+  function isInstitute() {
+    var path = normalizedPath().toLowerCase();
+    return pageName() === 'institute' || path === '/institute.html';
+  }
+
+  function addStylesheet(id, href) {
+    if (document.getElementById(id)) return;
+    var css = document.createElement('link');
+    css.id = id;
+    css.rel = 'stylesheet';
+    css.href = href;
+    document.head.appendChild(css);
   }
 
   function applyFiveRowLayout() {
@@ -15,12 +37,12 @@
     if (list) list.classList.add('wpa-five-row-nav-grid');
   }
 
-  if (isHome() && !document.getElementById('wpa-home-five-row-css')) {
-    var css = document.createElement('link');
-    css.id = 'wpa-home-five-row-css';
-    css.rel = 'stylesheet';
-    css.href = '/styles/wpa-home-nav-five-rows.css?v=20260713';
-    document.head.appendChild(css);
+  if (isHome()) {
+    addStylesheet('wpa-home-five-row-css', '/styles/wpa-home-nav-five-rows.css?v=20260713');
+  }
+
+  if (isInstitute()) {
+    addStylesheet('wpa-institute-compact-brand-css', '/styles/wpa-institute-compact-brand.css?v=20260713-compact1');
   }
 
   applyFiveRowLayout();
