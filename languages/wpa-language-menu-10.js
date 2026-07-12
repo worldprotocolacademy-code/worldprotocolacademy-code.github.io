@@ -1,5 +1,6 @@
-/* WPA Language Menu 10 Patch v1.0
-   Safe add-on: does not rewrite page content. It augments existing language select / All languages area.
+/* WPA Language Menu 10 Patch v1.1
+   Safe add-on: augments the language selector and applies a page-scoped,
+   responsive institute brand header without rewriting institutional content.
 */
 (function(){
   "use strict";
@@ -20,8 +21,9 @@
   ];
 
   function isInstitutePage(){
+    const page = String(document.documentElement.getAttribute("data-wpa-page") || "").toLowerCase();
     const path = String(location.pathname || "").toLowerCase();
-    return path.includes("institute");
+    return page === "institute" || path.includes("institute");
   }
 
   function targetUrl(lang){
@@ -119,6 +121,114 @@
         line-height:1.45;
         padding:8px 9px 3px;
       }
+
+      /* Institute identity header: official seal on the left; full MK then EN name. */
+      html[data-wpa-page="institute"] .nav-wrap nav{
+        max-width:1440px;
+        padding:14px 28px 12px;
+        display:grid;
+        grid-template-columns:minmax(0,1fr);
+        align-items:center;
+        gap:12px;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-brand{
+        width:100%;
+        min-width:0;
+        display:grid;
+        grid-template-columns:78px minmax(0,1fr);
+        align-items:center;
+        gap:18px;
+        padding:2px 0 4px;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
+        width:76px;
+        height:76px;
+        min-width:76px;
+        border:0;
+        border-radius:50%;
+        overflow:hidden;
+        background:transparent;
+        box-shadow:0 0 0 2px rgba(201,168,76,.85),0 8px 24px rgba(0,0,0,.28);
+      }
+      html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{
+        display:block;
+        width:100%;
+        height:100%;
+        object-fit:cover;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{
+        min-width:0;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        line-height:1.13;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-name-mk{
+        display:block;
+        color:var(--cream,#fbf8ee);
+        font-family:'Cormorant Garamond','Times New Roman',serif;
+        font-size:clamp(21px,2.15vw,31px);
+        font-weight:600;
+        letter-spacing:-.01em;
+        white-space:nowrap;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-name-en{
+        display:block;
+        margin-top:4px;
+        color:var(--gold-soft,#e3c878);
+        font-family:'Cormorant Garamond','Times New Roman',serif;
+        font-size:clamp(16px,1.55vw,22px);
+        font-weight:500;
+        letter-spacing:.005em;
+        white-space:nowrap;
+      }
+      html[data-wpa-page="institute"] .wpa-institute-parent{
+        display:block;
+        margin-top:7px;
+        color:rgba(251,248,238,.72);
+        font-family:'Inter',system-ui,sans-serif;
+        font-size:10.5px;
+        font-weight:600;
+        letter-spacing:.12em;
+        text-transform:uppercase;
+      }
+      html[data-wpa-page="institute"] .nav-wrap .nav-links{
+        width:100%;
+        justify-content:center;
+        gap:4px;
+        padding-top:10px;
+        border-top:1px solid rgba(201,168,76,.24);
+      }
+
+      @media(max-width:1100px){
+        html[data-wpa-page="institute"] .wpa-institute-name-mk{
+          font-size:clamp(18px,2.25vw,24px);
+          white-space:normal;
+          text-wrap:balance;
+        }
+        html[data-wpa-page="institute"] .wpa-institute-name-en{
+          font-size:clamp(14px,1.8vw,18px);
+          white-space:normal;
+          text-wrap:balance;
+        }
+      }
+      @media(max-width:760px){
+        html[data-wpa-page="institute"] .nav-wrap nav{padding:12px 16px 10px;gap:10px}
+        html[data-wpa-page="institute"] .wpa-institute-brand{
+          grid-template-columns:60px minmax(0,1fr);
+          gap:12px;
+          align-items:start;
+        }
+        html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
+          width:58px;
+          height:58px;
+          min-width:58px;
+        }
+        html[data-wpa-page="institute"] .wpa-institute-name-mk{font-size:17px;line-height:1.15}
+        html[data-wpa-page="institute"] .wpa-institute-name-en{font-size:13.5px;line-height:1.18;margin-top:5px}
+        html[data-wpa-page="institute"] .wpa-institute-parent{font-size:8.5px;letter-spacing:.08em;line-height:1.35;margin-top:6px}
+        html[data-wpa-page="institute"] .nav-wrap .nav-links{justify-content:flex-start}
+      }
       @media(max-width:640px){
         .wpa-language-menu-10{
           display:block;
@@ -132,8 +242,57 @@
           min-width:min(92vw,340px);
         }
       }
+      @media(max-width:430px){
+        html[data-wpa-page="institute"] .wpa-institute-brand{
+          grid-template-columns:52px minmax(0,1fr);
+          gap:10px;
+        }
+        html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
+          width:50px;
+          height:50px;
+          min-width:50px;
+        }
+        html[data-wpa-page="institute"] .wpa-institute-name-mk{font-size:15px}
+        html[data-wpa-page="institute"] .wpa-institute-name-en{font-size:12px}
+        html[data-wpa-page="institute"] .wpa-institute-parent{font-size:7.7px}
+      }
     `;
     document.head.appendChild(style);
+  }
+
+  function enhanceInstituteBrand(){
+    if (!isInstitutePage()) return;
+
+    const brand = document.querySelector(".nav-wrap nav .brand");
+    if (!brand || brand.classList.contains("wpa-institute-brand")) return;
+
+    brand.classList.add("wpa-institute-brand");
+    brand.setAttribute(
+      "aria-label",
+      "Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies"
+    );
+
+    const mark = brand.querySelector(".brand-mark");
+    if (mark) {
+      mark.textContent = "";
+      const logo = document.createElement("img");
+      logo.src = "/logo.png";
+      logo.alt = "World Protocol Academy logo";
+      logo.width = 76;
+      logo.height = 76;
+      logo.loading = "eager";
+      logo.decoding = "async";
+      mark.appendChild(logo);
+    }
+
+    const brandText = brand.querySelector(".brand-text");
+    if (brandText) {
+      brandText.innerHTML = `
+        <span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>
+        <span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>
+        <span class="wpa-institute-parent">Светска академија за протокол · World Protocol Academy</span>
+      `;
+    }
   }
 
   function buildMenu(){
@@ -214,6 +373,7 @@
 
   function init(){
     addStyles();
+    enhanceInstituteBrand();
     augmentSelects();
     placeMenu();
   }
