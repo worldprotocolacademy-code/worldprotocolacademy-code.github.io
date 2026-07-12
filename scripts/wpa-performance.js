@@ -239,7 +239,7 @@
     if (!document.getElementById('wpa-live-entry-styles')) {
       var style = document.createElement('style');
       style.id = 'wpa-live-entry-styles';
-      style.textContent = '.wpa-live-header-links{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}.wpa-live-header-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:7px 12px;border:1px solid rgba(212,166,74,.58);border-radius:999px;background:rgba(212,166,74,.11);color:#f0ca64!important;text-decoration:none!important;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif;letter-spacing:.035em;white-space:nowrap;transition:transform .18s,background .18s,border-color .18s}.wpa-live-header-link:hover{transform:translateY(-1px);background:rgba(212,166,74,.23);border-color:#d4a64a;color:#fff!important}.wpa-live-header-link--primary{background:linear-gradient(135deg,#d4a64a,#f0ca64);color:#111!important;border-color:#d4a64a}.wpa-live-header-link--primary:hover{color:#111!important}.wpa-live-dot{width:7px;height:7px;border-radius:50%;background:#38c172;box-shadow:0 0 0 3px rgba(56,193,114,.16)}.wpa-live-preview-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.wpa-live-preview-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid rgba(212,166,74,.45);border-radius:999px;color:#d4a64a;text-decoration:none;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif}.wpa-live-announce-slot{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:6px!important;flex-wrap:wrap!important;text-align:right!important}.wpa-live-announce-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;padding:3px 10px!important;border:1px solid rgba(232,212,154,.68)!important;border-radius:999px!important;background:linear-gradient(135deg,#d4a64a,#f0ca64)!important;color:#071326!important;text-decoration:none!important;font:900 11.5px/1.25 Inter,Segoe UI,Arial,sans-serif!important;white-space:nowrap!important;box-shadow:0 4px 14px rgba(0,0,0,.18)!important}.wpa-live-announce-link:hover{transform:translateY(-1px);filter:brightness(1.04)}@media(min-width:861px){body[data-page="index"] header>.nav{display:grid!important;grid-template-columns:minmax(300px,auto) minmax(0,1fr) auto!important;grid-template-areas:"brand controls controls" "nav nav nav"!important;align-items:center!important;gap:10px 18px!important;padding-top:12px!important;padding-bottom:12px!important}body[data-page="index"] header>.nav>.brand{grid-area:brand!important}body[data-page="index"] header>.nav>.nav-right{grid-area:controls!important;justify-self:end!important;display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:wrap!important}body[data-page="index"] header>.nav>.nav-center{grid-area:nav!important;width:100%!important;justify-content:center!important}body[data-page="index"] header .site-nav{width:100%!important}body[data-page="index"] header .site-nav ul{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:6px 8px!important;width:100%!important}body[data-page="index"] header .site-nav li{display:block!important;flex:0 0 auto!important;width:auto!important}body[data-page="index"] header .site-nav a{display:inline-flex!important;align-items:center!important;white-space:nowrap!important}body[data-page="index"] header .wpa-live-header-links{width:auto!important;flex-wrap:nowrap!important}}@media(max-width:860px){.wpa-live-header-links{width:100%;justify-content:center}.wpa-live-header-link{flex:1;min-width:128px}.nav-right .wpa-live-header-links{order:-1}.wpa-live-announce-slot{justify-content:center!important;text-align:center!important}}';
+      style.textContent = '.wpa-live-header-links{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}.wpa-live-header-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:7px 12px;border:1px solid rgba(212,166,74,.58);border-radius:999px;background:rgba(212,166,74,.11);color:#f0ca64!important;text-decoration:none!important;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif;letter-spacing:.035em;white-space:nowrap;transition:transform .18s,background .18s,border-color .18s}.wpa-live-header-link:hover{transform:translateY(-1px);background:rgba(212,166,74,.23);border-color:#d4a64a;color:#fff!important}.wpa-live-header-link--primary{background:linear-gradient(135deg,#d4a64a,#f0ca64);color:#111!important;border-color:#d4a64a}.wpa-live-header-link--primary:hover{color:#111!important}.wpa-live-dot{width:7px;height:7px;border-radius:50%;background:#38c172;box-shadow:0 0 0 3px rgba(56,193,114,.16)}.wpa-live-preview-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.wpa-live-preview-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid rgba(212,166,74,.45);border-radius:999px;color:#d4a64a;text-decoration:none;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif}.site-nav a.wpa-live-nav-link{color:#9b7623!important;font-weight:900!important;border:1px solid rgba(201,168,76,.42)!important;background:rgba(201,168,76,.08)!important;padding:5px 9px!important}.site-nav a.wpa-live-nav-link:hover{color:#0d1f3c!important;background:#e8d49a!important;border-color:#c9a84c!important}@media(min-width:861px){body[data-page="index"] header>.nav{display:grid!important;grid-template-columns:minmax(300px,auto) minmax(0,1fr) auto!important;grid-template-areas:"brand controls controls" "nav nav nav"!important;align-items:center!important;gap:10px 18px!important;padding-top:12px!important;padding-bottom:12px!important}body[data-page="index"] header>.nav>.brand{grid-area:brand!important}body[data-page="index"] header>.nav>.nav-right{grid-area:controls!important;justify-self:end!important;display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:wrap!important}body[data-page="index"] header>.nav>.nav-center{grid-area:nav!important;width:100%!important;justify-content:center!important}body[data-page="index"] header .site-nav{width:100%!important}body[data-page="index"] header .site-nav ul{display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;justify-content:center!important;align-items:center!important;gap:6px 8px!important;width:100%!important}body[data-page="index"] header .site-nav li{display:block!important;flex:0 0 auto!important;width:auto!important}body[data-page="index"] header .site-nav a{display:inline-flex!important;align-items:center!important;white-space:nowrap!important}body[data-page="index"] header .wpa-live-header-links{width:auto!important;flex-wrap:nowrap!important}}@media(max-width:860px){.wpa-live-header-links{width:100%;justify-content:center}.wpa-live-header-link{flex:1;min-width:128px}.nav-right .wpa-live-header-links{order:-1}}';
       document.head.appendChild(style);
     }
 
@@ -272,28 +272,93 @@
       target.appendChild(link);
     }
 
-    function removeHomeHeaderDuplicates() {
-      ['wpaLiveHomeHeaderLinks', 'wpaLiveHomeNavLink'].forEach(function (id) {
-        var node = document.getElementById(id);
-        if (!node) return;
-        if (node.parentNode && node.parentNode.tagName === 'LI') node.parentNode.remove();
-        else node.remove();
-      });
+    var homeSyncBusy = false;
+
+    function normalizeHomeTopBar() {
+      var liveAnnounce = document.getElementById('wpaJournalLiveAnnounce');
+      if (liveAnnounce) liveAnnounce.remove();
+
+      var announceTargets = document.querySelectorAll('.announce .announce-inner > div');
+      var announceTarget = announceTargets.length ? announceTargets[announceTargets.length - 1] : null;
+      if (!announceTarget) return;
+
+      announceTarget.classList.remove('wpa-live-announce-slot');
+      var expected = 'Авторски креирана платформа · Поткрепена со публикации · AI-поддржана · WPAWS · WPA Card · Партнерства и членски придобивки';
+      if (/WPA Journal Live/i.test(announceTarget.textContent || '') || announceTarget.querySelector('a[href*="/journal/live/"]')) {
+        announceTarget.textContent = expected;
+      }
     }
 
-    function placeHomeLiveTopRow() {
-      removeHomeHeaderDuplicates();
-      var targets = document.querySelectorAll('.announce .announce-inner > div');
-      var target = targets.length ? targets[targets.length - 1] : null;
-      if (!target) return;
-      target.classList.add('wpa-live-announce-slot');
-      target.innerHTML = '<span>Авторски креирана платформа · Поткрепена со публикации · AI-поддржана · Партнерства и членски придобивки · WPAWS · WPA Card ·</span><a id="wpaJournalLiveAnnounce" class="wpa-live-announce-link" href="/journal/live/" title="WPA Journal Live">🛰️ WPA Journal Live</a>';
+    function ensureHomeJournalAfterCard() {
+      var navList = document.querySelector('.site-nav ul');
+      if (!navList) return;
+
+      var anchors = Array.prototype.slice.call(navList.querySelectorAll('a'));
+      var cardLink = anchors.find(function (anchor) {
+        var href = String(anchor.getAttribute('href') || '').toLowerCase();
+        var label = String(anchor.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+        return href.indexOf('wpa-card.html') !== -1 || label === 'wpa card';
+      });
+      if (!cardLink) return;
+
+      var cardItem = cardLink.closest('li') || cardLink;
+      var journalLinks = anchors.filter(function (anchor) {
+        var href = String(anchor.getAttribute('href') || '');
+        return /\/journal\/live\/?(?:$|[?#])/i.test(href) || /wpa journal live/i.test(String(anchor.textContent || ''));
+      });
+
+      var journalLink = journalLinks.shift() || document.createElement('a');
+      journalLinks.forEach(function (duplicate) {
+        var duplicateItem = duplicate.closest('li');
+        if (duplicateItem) duplicateItem.remove();
+        else duplicate.remove();
+      });
+
+      journalLink.id = 'wpaLiveHomeNavLink';
+      journalLink.href = '/journal/live/';
+      journalLink.className = 'wpa-live-nav-link';
+      journalLink.title = 'WPA Journal Live';
+      journalLink.textContent = '🛰️ WPA Journal Live';
+
+      var journalItem = journalLink.closest('li');
+      if (!journalItem) {
+        journalItem = document.createElement('li');
+        journalItem.id = 'wpaLiveHomeNavItem';
+        journalItem.appendChild(journalLink);
+      } else {
+        journalItem.id = 'wpaLiveHomeNavItem';
+      }
+
+      if (cardItem.nextElementSibling !== journalItem) cardItem.insertAdjacentElement('afterend', journalItem);
+
+      var headerGroup = document.getElementById('wpaLiveHomeHeaderLinks');
+      if (headerGroup) headerGroup.remove();
+    }
+
+    function syncHomeJournalPlacement() {
+      if (!isHome || homeSyncBusy) return;
+      homeSyncBusy = true;
+      try {
+        normalizeHomeTopBar();
+        ensureHomeJournalAfterCard();
+      } finally {
+        homeSyncBusy = false;
+      }
     }
 
     if (isHome) {
-      placeHomeLiveTopRow();
-      window.setTimeout(placeHomeLiveTopRow, 250);
-      window.setTimeout(placeHomeLiveTopRow, 1000);
+      syncHomeJournalPlacement();
+      window.setTimeout(syncHomeJournalPlacement, 250);
+      window.setTimeout(syncHomeJournalPlacement, 1000);
+      window.setTimeout(syncHomeJournalPlacement, 2500);
+      document.addEventListener('wpa:lang-changed', syncHomeJournalPlacement);
+
+      var homeObserverRoot = document.querySelector('header')?.parentNode || document.body;
+      if (homeObserverRoot && 'MutationObserver' in window) {
+        var homeObserver = new MutationObserver(function () { syncHomeJournalPlacement(); });
+        homeObserver.observe(homeObserverRoot, { childList: true, subtree: true });
+      }
+
       appendLink('.hero-actions', 'wpaLiveHomeHeroLink', '/journal/live/', 'btn btn-gold', '🛰️ Отвори WPA Journal Live', 'Open WPA Journal Live');
       appendLink('.hero-actions', 'wpaLiveHomeSourcesLink', '/journal/sources/', 'btn btn-ghost', '🗂️ Source Directory', 'Open WPA Source Directory');
     }
