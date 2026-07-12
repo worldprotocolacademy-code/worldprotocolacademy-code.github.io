@@ -229,13 +229,94 @@
       .catch(function () { configureAnalytics({}); });
   }
 
+  function injectLiveEntryPoints() {
+    var path = String(window.location.pathname || '').replace(/\/+$/, '') || '/';
+    var isHome = path === '/' || path === '/index.html';
+    var isJournal = path === '/journal' || path === '/journal/index.html';
+    var isInstitute = path === '/institute.html';
+    if (!isHome && !isJournal && !isInstitute) return;
+
+    if (!document.getElementById('wpa-live-entry-styles')) {
+      var style = document.createElement('style');
+      style.id = 'wpa-live-entry-styles';
+      style.textContent = '.wpa-live-header-links{display:inline-flex;align-items:center;gap:7px;flex-wrap:wrap}.wpa-live-header-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:7px 12px;border:1px solid rgba(212,166,74,.58);border-radius:999px;background:rgba(212,166,74,.11);color:#f0ca64!important;text-decoration:none!important;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif;letter-spacing:.035em;white-space:nowrap;transition:transform .18s,background .18s,border-color .18s}.wpa-live-header-link:hover{transform:translateY(-1px);background:rgba(212,166,74,.23);border-color:#d4a64a;color:#fff!important}.wpa-live-header-link--primary{background:linear-gradient(135deg,#d4a64a,#f0ca64);color:#111!important;border-color:#d4a64a}.wpa-live-header-link--primary:hover{color:#111!important}.wpa-live-dot{width:7px;height:7px;border-radius:50%;background:#38c172;box-shadow:0 0 0 3px rgba(56,193,114,.16)}.wpa-live-preview-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.wpa-live-preview-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid rgba(212,166,74,.45);border-radius:999px;color:#d4a64a;text-decoration:none;font:800 11px/1.2 Inter,Segoe UI,Arial,sans-serif}@media(max-width:760px){.wpa-live-header-links{width:100%;justify-content:center}.wpa-live-header-link{flex:1;min-width:128px}.nav-right .wpa-live-header-links{order:-1}}';
+      document.head.appendChild(style);
+    }
+
+    function createGroup(id) {
+      if (document.getElementById(id)) return null;
+      var group = document.createElement('span');
+      group.id = id;
+      group.className = 'wpa-live-header-links';
+      group.setAttribute('aria-label', 'WPA Journal Live links');
+      group.innerHTML = '<a class="wpa-live-header-link wpa-live-header-link--primary" href="/journal/live/" title="WPA Journal Live"><span class="wpa-live-dot" aria-hidden="true"></span><span>Journal Live</span></a><a class="wpa-live-header-link" href="/journal/sources/" title="WPA Source Directory"><span aria-hidden="true">🗂️</span><span>Sources</span></a>';
+      return group;
+    }
+
+    function appendGroup(selector, id) {
+      var target = document.querySelector(selector);
+      var group = createGroup(id);
+      if (target && group) target.appendChild(group);
+    }
+
+    function appendLink(selector, id, href, className, label, title) {
+      if (document.getElementById(id)) return;
+      var target = document.querySelector(selector);
+      if (!target) return;
+      var link = document.createElement('a');
+      link.id = id;
+      link.href = href;
+      link.className = className || '';
+      link.title = title || label;
+      link.innerHTML = label;
+      target.appendChild(link);
+    }
+
+    if (isHome) {
+      appendGroup('.nav-right', 'wpaLiveHomeHeaderLinks');
+      appendLink('.site-nav ul', 'wpaLiveHomeNavLink', '/journal/live/', '', '🛰️ WPA Journal Live', 'WPA Journal Live');
+      var homeNavLink = document.getElementById('wpaLiveHomeNavLink');
+      if (homeNavLink && homeNavLink.parentNode && homeNavLink.parentNode.tagName !== 'LI') {
+        var li = document.createElement('li');
+        homeNavLink.parentNode.insertBefore(li, homeNavLink);
+        li.appendChild(homeNavLink);
+      }
+      appendLink('.hero-actions', 'wpaLiveHomeHeroLink', '/journal/live/', 'btn btn-gold', '🛰️ Отвори WPA Journal Live', 'Open WPA Journal Live');
+      appendLink('.hero-actions', 'wpaLiveHomeSourcesLink', '/journal/sources/', 'btn btn-ghost', '🗂️ Source Directory', 'Open WPA Source Directory');
+    }
+
+    if (isInstitute) {
+      appendGroup('.topbar-quicklinks', 'wpaLiveInstituteHeaderLinks');
+      appendLink('.nav-links', 'wpaLiveInstituteNavLink', '/journal/live/', '', '🛰️ Journal Live', 'WPA Journal Live');
+      appendLink('.hero-cta', 'wpaLiveInstituteHeroLink', '/journal/live/', 'btn btn-primary', '🛰️ WPA Journal Live', 'Open WPA Journal Live');
+      appendLink('.hero-cta', 'wpaLiveInstituteSourcesLink', '/journal/sources/', 'btn btn-ghost', '🗂️ Source Directory', 'Open WPA Source Directory');
+    }
+
+    if (isJournal) {
+      appendGroup('.top .topin', 'wpaLiveJournalHeaderLinks');
+      appendLink('.nav', 'wpaLiveJournalNavLink', '/journal/live/', '', '🛰️ Journal Live', 'WPA Journal Live');
+      appendLink('.nav', 'wpaLiveJournalSourcesNavLink', '/journal/sources/', '', '🗂️ Sources', 'WPA Source Directory');
+      appendLink('.hero .actions', 'wpaLiveJournalHeroLink', '/journal/live/', 'btn primary', '🛰️ Open Journal Live', 'Open WPA Journal Live');
+      appendLink('.hero .actions', 'wpaLiveJournalHeroSourcesLink', '/journal/sources/', 'btn', '🗂️ Source Directory', 'Open WPA Source Directory');
+      var previewText = document.querySelector('.preview > div:nth-child(2)');
+      if (previewText && !document.getElementById('wpaLiveJournalPreviewLinks')) {
+        var previewLinks = document.createElement('div');
+        previewLinks.id = 'wpaLiveJournalPreviewLinks';
+        previewLinks.className = 'wpa-live-preview-links';
+        previewLinks.innerHTML = '<a href="/journal/live/">🛰️ Live diplomatic monitor</a><a href="/journal/sources/">🗂️ 1,892-source directory</a>';
+        previewText.appendChild(previewLinks);
+      }
+    }
+  }
+
   injectStabilityStyles();
   observeWebVitals();
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { hardenImages(); loadAnalyticsConfig(); });
+    document.addEventListener('DOMContentLoaded', function () { hardenImages(); loadAnalyticsConfig(); injectLiveEntryPoints(); });
   } else {
     hardenImages();
     loadAnalyticsConfig();
+    injectLiveEntryPoints();
   }
   window.addEventListener('load', hardenImages, { once: true });
   window.addEventListener('pagehide', reportCLS, { capture: true });
