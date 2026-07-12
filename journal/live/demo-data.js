@@ -19,3 +19,6 @@ window.WPA_LIVE_DEMO_DATA = {
     {"id":"demo-thinktank-001","title":"DEMO: Think-tank brief assesses narrative risk around a regional summit","source":"WPA Demo Think Tank","source_type":"think_tank","source_category":"communication","original_url":"https://example.invalid/wpa-demo/thinktank-001","published_at":"2026-07-12T07:20:00Z","fetched_at":"2026-07-12T07:21:00Z","country":"United Kingdom","region":"Europe","language":"en","primary_category":"communication","signals":["pr","security"],"summary":"Synthetic analysis item demonstrating the distinction between primary official sources and secondary commentary.","relevance_score":79,"source_confidence":75,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"}
   ]
 };
+
+/* Parser-ordered loader: X11.7 must wrap fetch before deferred live-app.js executes. */
+document.write('<script src="fusion-lenses.js"><\/script>');
