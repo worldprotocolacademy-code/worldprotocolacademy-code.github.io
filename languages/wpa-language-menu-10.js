@@ -276,7 +276,7 @@
     if (mark) {
       mark.textContent = "";
       const logo = document.createElement("img");
-      logo.src = "/logo.png";
+      logo.src = "/logo.webp";
       logo.alt = "World Protocol Academy logo";
       logo.width = 76;
       logo.height = 76;
