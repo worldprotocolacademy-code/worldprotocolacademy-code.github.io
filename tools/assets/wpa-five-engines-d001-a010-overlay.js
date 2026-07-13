@@ -26,7 +26,6 @@
     if (!data || !Array.isArray(data.institutions)) return data;
 
     data.note = "Records A005 and B008 remain reported cooperation-model observations. D001 — Protocol Academy of Macedonia is verified by primary source and retained as the canonical institutional entity. A010 — Protocol Academy of Kosovo is retained as an audit-visible child / branch / brand-presence record under D001 and is not counted as a separate independent institution pending the next full entity-resolution pass. C022/H027 (ICC) and G002/G022 (IAEA) each appear in two dataset contexts by design.";
-
     data.institutions = data.institutions.map((record) => {
       if (!record || !record.id) return record;
 
@@ -77,4 +76,12 @@
       }).catch(() => response);
     });
   };
+
+  if (!document.getElementById('wpa-social-bridge-runtime')) {
+    const social = document.createElement('script');
+    social.id = 'wpa-social-bridge-runtime';
+    social.src = '/scripts/wpa-social-bridge.js?v=20260713-1';
+    social.defer = true;
+    document.head.appendChild(social);
+  }
 })();
