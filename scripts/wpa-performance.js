@@ -21,6 +21,17 @@
     return pageName() === 'institute' || path === '/institute.html';
   }
 
+  function isSocialBridgeSystem() {
+    var path = normalizedPath().toLowerCase();
+    return path === '/virtual-sande-ai.html' ||
+      path.indexOf('/viral-sande-ai/') === 0 ||
+      path.indexOf('/journal/live') === 0 ||
+      path === '/tools/wpa-five-engines.html' ||
+      path.indexOf('/tools/wpa-digital-pavilion') === 0 ||
+      path === '/protocolometry-center.html' ||
+      path === '/wpa-briefings.html';
+  }
+
   function addStylesheet(id, href) {
     if (document.getElementById(id)) return;
     var css = document.createElement('link');
@@ -28,6 +39,15 @@
     css.rel = 'stylesheet';
     css.href = href;
     document.head.appendChild(css);
+  }
+
+  function addScript(id, src) {
+    if (document.getElementById(id)) return;
+    var script = document.createElement('script');
+    script.id = id;
+    script.src = src;
+    script.defer = true;
+    document.head.appendChild(script);
   }
 
   function applyFiveRowLayout() {
@@ -55,6 +75,10 @@
 
   if (isInstitute()) {
     addStylesheet('wpa-institute-compact-brand-css', '/styles/wpa-institute-compact-brand.css?v=20260713-compact1');
+  }
+
+  if (isSocialBridgeSystem()) {
+    addScript('wpa-social-bridge-runtime', '/scripts/wpa-social-bridge.js?v=20260713-1');
   }
 
   applyFiveRowLayout();

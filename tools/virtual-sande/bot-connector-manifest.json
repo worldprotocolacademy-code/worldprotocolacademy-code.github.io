@@ -1,6 +1,6 @@
 {
   "name": "Virtual Sande Bot Connector Manifest",
-  "version": "1.0",
+  "version": "1.1",
   "status": "STAGING READY",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "public_brand": "WPA Protocolometry Ecosystem",
@@ -61,6 +61,13 @@
     "wpa_journal": {
       "url": "/journal/",
       "purpose": "Journal publication process and policies"
+    },
+    "social_bridge": {
+      "url": "/data/wpa-social-network.json",
+      "runtime": "/scripts/wpa-social-bridge.js",
+      "purpose": "Official WPA public-channel registry, contextual manual sharing and privacy-safe local interaction events",
+      "automatic_posting": false,
+      "human_review_required": true
     }
   },
   "bot_rules": [
@@ -71,7 +78,9 @@
     "Do not create automatic journal articles.",
     "Do not invent citations, DOI, ISSN, ISBN, rankings, partnerships or credentials.",
     "For sensitive claims, label output as observation, interpretation, limitation or open question.",
-    "Always recommend human review for protocol, security, legal, institutional and academic conclusions."
+    "Always recommend human review for protocol, security, legal, institutional and academic conclusions.",
+    "Use only the official social-channel URLs from the WPA Social Bridge registry.",
+    "Do not claim that content was posted, scheduled or monitored through a platform API unless valid platform authorization and a verified delivery result exist."
   ],
   "allowed_outputs": [
     "briefing",
@@ -80,7 +89,9 @@
     "academic verification prompt",
     "journal research angle",
     "risk note",
-    "correction note draft"
+    "correction note draft",
+    "social distribution draft",
+    "channel-specific caption draft"
   ],
   "forbidden_outputs": [
     "final legal judgment",
@@ -88,6 +99,7 @@
     "unverified ranking",
     "automatic peer-reviewed article",
     "fabricated citation",
-    "private-person surveillance profile"
+    "private-person surveillance profile",
+    "unconfirmed automatic social-media publication"
   ]
 }
