@@ -6,15 +6,20 @@ html[data-wpa-page="institute"] .nav-wrap nav{
   gap:8px !important;
 }
 
+/* Raise the complete Institute identity block another half centimetre. */
+html[data-wpa-page="institute"] .nav-wrap nav > .brand,
 html[data-wpa-page="institute"] .wpa-institute-brand{
+  width:100% !important;
+  min-width:0 !important;
   grid-template-columns:58px minmax(0,1fr) !important;
   gap:13px !important;
   padding:0 0 12px !important;
-  transform:translateY(-10px) !important;
+  transform:translateY(-29px) !important;
   position:relative !important;
   z-index:3 !important;
 }
 
+html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark,
 html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
   width:56px !important;
   height:56px !important;
@@ -22,15 +27,51 @@ html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
   box-shadow:0 0 0 1px rgba(201,168,76,.82),0 5px 16px rgba(0,0,0,.24) !important;
 }
 
+html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark img,
 html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{
   width:56px !important;
   height:56px !important;
 }
 
+html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-text,
 html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{
   max-width:100% !important;
+  min-width:0 !important;
   line-height:1.04 !important;
   overflow:visible !important;
+}
+
+/* Canonical horizontal bilingual title: Macedonian first, English immediately after it. */
+html[data-wpa-page="institute"] .nav-wrap .brand-name{
+  display:flex !important;
+  align-items:baseline !important;
+  flex-wrap:wrap !important;
+  column-gap:0 !important;
+  row-gap:2px !important;
+  width:100% !important;
+  max-width:100% !important;
+  white-space:normal !important;
+  font-size:clamp(15px,1.28vw,20px) !important;
+  font-weight:620 !important;
+  letter-spacing:-.025em !important;
+  line-height:1.08 !important;
+}
+
+html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
+  display:inline !important;
+  margin:0 !important;
+  color:var(--gold-soft) !important;
+  font-size:.84em !important;
+  font-weight:520 !important;
+  letter-spacing:-.012em !important;
+  line-height:inherit !important;
+  white-space:nowrap !important;
+}
+
+html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en::before{
+  content:" · " !important;
+  color:var(--gold-soft) !important;
+  margin:0 .3em !important;
 }
 
 html[data-wpa-page="institute"] .wpa-institute-title-row{
@@ -72,9 +113,9 @@ html[data-wpa-page="institute"] .nav-wrap .nav-links{
   padding-top:0 !important;
 }
 
-/* Final desktop separation: both navigation rows begin about 2 cm below the raised identity block. */
+/* First and second navigation rows begin another centimetre lower. */
 html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-  margin-top:76px !important;
+  margin-top:114px !important;
   padding-top:0 !important;
   clear:both !important;
   position:relative !important;
@@ -102,7 +143,7 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
     flex:1 1 100% !important;
   }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:58px !important;
+    margin-top:96px !important;
   }
 }
 
@@ -110,17 +151,28 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
   html[data-wpa-page="institute"] .nav-wrap nav{
     padding:10px 14px 8px !important;
   }
+  html[data-wpa-page="institute"] .nav-wrap nav > .brand,
   html[data-wpa-page="institute"] .wpa-institute-brand{
     grid-template-columns:50px minmax(0,1fr) !important;
     gap:10px !important;
     padding-bottom:8px !important;
-    transform:translateY(-4px) !important;
+    transform:translateY(-8px) !important;
   }
+  html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark,
+  html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark img,
   html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark,
   html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{
     width:48px !important;
     height:48px !important;
     min-width:48px !important;
+  }
+  html[data-wpa-page="institute"] .nav-wrap .brand-name{
+    font-size:15px !important;
+    line-height:1.12 !important;
+  }
+  html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
+    font-size:.8em !important;
+    white-space:normal !important;
   }
   html[data-wpa-page="institute"] .wpa-institute-name-mk{
     font-size:15px !important;
@@ -136,7 +188,7 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
     margin-top:4px !important;
   }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:18px !important;
+    margin-top:24px !important;
   }
   html[data-wpa-page="institute"] body .hero .hero-cta a.wpa-sublimate-hero-button,
   html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
