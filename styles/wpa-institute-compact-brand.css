@@ -6,7 +6,21 @@ html[data-wpa-page="institute"] .nav-wrap nav{
   gap:8px !important;
 }
 
-/* Raise the complete Institute identity block another half centimetre. */
+/* First identity row: Institute bilingual title, lowered about half a centimetre. */
+html[data-wpa-page="institute"] .topbar{
+  padding-top:19px !important;
+}
+
+html[data-wpa-page="institute"] .topbar > span[data-i18n="institute.topbar.text"]{
+  display:block !important;
+  width:100% !important;
+  margin:0 auto 8px !important;
+  text-align:center !important;
+  white-space:nowrap !important;
+  line-height:1.35 !important;
+}
+
+/* Second identity row: WPA name, fully horizontal beneath the Institute title. */
 html[data-wpa-page="institute"] .nav-wrap nav > .brand,
 html[data-wpa-page="institute"] .wpa-institute-brand{
   width:100% !important;
@@ -14,7 +28,7 @@ html[data-wpa-page="institute"] .wpa-institute-brand{
   grid-template-columns:58px minmax(0,1fr) !important;
   gap:13px !important;
   padding:0 0 12px !important;
-  transform:translateY(-29px) !important;
+  transform:none !important;
   position:relative !important;
   z-index:3 !important;
 }
@@ -41,16 +55,14 @@ html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{
   overflow:visible !important;
 }
 
-/* Canonical horizontal bilingual title: Macedonian first, English immediately after it. */
 html[data-wpa-page="institute"] .nav-wrap .brand-name{
   display:flex !important;
   align-items:baseline !important;
-  flex-wrap:wrap !important;
+  flex-wrap:nowrap !important;
   column-gap:0 !important;
-  row-gap:2px !important;
   width:100% !important;
   max-width:100% !important;
-  white-space:normal !important;
+  white-space:nowrap !important;
   font-size:clamp(15px,1.28vw,20px) !important;
   font-weight:620 !important;
   letter-spacing:-.025em !important;
@@ -72,6 +84,11 @@ html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en::before{
   content:" · " !important;
   color:var(--gold-soft) !important;
   margin:0 .3em !important;
+}
+
+/* The Institute wording is already the first row; avoid a duplicated third line. */
+html[data-wpa-page="institute"] .nav-wrap .brand-sub{
+  display:none !important;
 }
 
 html[data-wpa-page="institute"] .wpa-institute-title-row{
@@ -113,16 +130,14 @@ html[data-wpa-page="institute"] .nav-wrap .nav-links{
   padding-top:0 !important;
 }
 
-/* First and second navigation rows begin another centimetre lower. */
 html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-  margin-top:114px !important;
+  margin-top:38px !important;
   padding-top:0 !important;
   clear:both !important;
   position:relative !important;
   z-index:2 !important;
 }
 
-/* Keep the two final hero tools together after Premium Briefings; no artificial empty gap. */
 html[data-wpa-page="institute"] body .hero .hero-cta a.wpa-sublimate-hero-button{
   order:90 !important;
   margin-left:0 !important;
@@ -134,6 +149,13 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
 }
 
 @media (max-width:1220px){
+  html[data-wpa-page="institute"] .topbar > span[data-i18n="institute.topbar.text"]{
+    white-space:normal !important;
+  }
+  html[data-wpa-page="institute"] .nav-wrap .brand-name{
+    flex-wrap:wrap !important;
+    white-space:normal !important;
+  }
   html[data-wpa-page="institute"] .wpa-institute-title-row{
     white-space:normal !important;
     row-gap:2px !important;
@@ -143,11 +165,14 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
     flex:1 1 100% !important;
   }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:96px !important;
+    margin-top:30px !important;
   }
 }
 
 @media (max-width:760px){
+  html[data-wpa-page="institute"] .topbar{
+    padding-top:12px !important;
+  }
   html[data-wpa-page="institute"] .nav-wrap nav{
     padding:10px 14px 8px !important;
   }
@@ -156,7 +181,7 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
     grid-template-columns:50px minmax(0,1fr) !important;
     gap:10px !important;
     padding-bottom:8px !important;
-    transform:translateY(-8px) !important;
+    transform:none !important;
   }
   html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark,
   html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark img,
@@ -169,6 +194,8 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
   html[data-wpa-page="institute"] .nav-wrap .brand-name{
     font-size:15px !important;
     line-height:1.12 !important;
+    flex-wrap:wrap !important;
+    white-space:normal !important;
   }
   html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
     font-size:.8em !important;
@@ -188,7 +215,7 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
     margin-top:4px !important;
   }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:24px !important;
+    margin-top:18px !important;
   }
   html[data-wpa-page="institute"] body .hero .hero-cta a.wpa-sublimate-hero-button,
   html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
