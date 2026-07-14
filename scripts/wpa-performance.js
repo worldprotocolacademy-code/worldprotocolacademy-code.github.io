@@ -165,5 +165,4 @@
   window.addEventListener('resize', boot);
 
   addScript('wpa-performance-core-runtime', '/scripts/wpa-performance-core.js?v=20260714-3');
-  addScript('wpa-phase1-integrity-runtime', '/scripts/wpa-phase1-integrity.js?v=20260714-1');
 })();
