@@ -144,7 +144,7 @@
     var card = document.createElement('article');
     card.className = 'card';
     card.id = 'wpaWp012RuntimeCard';
-    card.innerHTML = '<span class="small-kicker">WP-012 · Summit Protocol Case Study</span><h4 class="paper-title">Ankara 2026 — The Sealed Stage: Protocol, Documentary Sovereignty and Visibility Gatekeeping at the 36th NATO Summit</h4><p class="paper-summary">Protocolometric and diplomatic-communication analysis of the Ankara summit, with Evidence Ladder+, PSPI+, Protocol Impact Assessment and source-control safeguards. Publicly deposited on Zenodo on 10 July 2026.</p><div class="paper-tags"><span class="tag">Ankara 2026</span><span class="tag">Documentary Sovereignty</span><span class="tag">Protocolometry</span></div><div class="paper-actions"><span class="wpa-phase1-pending">Zenodo DOI link: metadata sync pending on WPA index</span></div>';
+    card.innerHTML = '<span class="small-kicker">WP-012 · Summit Protocol Case Study</span><h4 class="paper-title">Ankara 2026 — The Sealed Stage: Protocol, Documentary Sovereignty and Visibility Gatekeeping at the 36th NATO Summit</h4><p class="paper-summary">Protocolometric and diplomatic-communication analysis of the Ankara summit, with Evidence Ladder+, PSPI+, Protocol Impact Assessment and source-control safeguards. Published on Zenodo on 10 July 2026 as v2.5 Final Deposit Lock / QA-Audited Edition.</p><div class="paper-tags"><span class="tag">Ankara 2026</span><span class="tag">Documentary Sovereignty</span><span class="tag">Protocolometry</span></div><div class="paper-actions"><a class="btn btn-secondary" href="https://doi.org/10.5281/zenodo.21299485" target="_blank" rel="noopener">→ Zenodo DOI 10.5281/zenodo.21299485</a></div>';
     grid.appendChild(card);
   }
 
