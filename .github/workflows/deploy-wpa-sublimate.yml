@@ -1,0 +1,47 @@
+name: Deploy WPA Sublimate Worker
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Extract and verify Worker package
+        run: node workers/wpa-sublimate-engine-v0.3.0/extract-bundle.mjs
+
+      - name: Prepare Wrangler configuration
+        working-directory: workers/wpa-sublimate-engine-v0.3.0/extracted/wpa-sublimate-engine
+        run: cp wrangler.toml.example wrangler.toml
+
+      - name: Install and verify
+        working-directory: workers/wpa-sublimate-engine-v0.3.0/extracted/wpa-sublimate-engine
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run check
+
+      - name: Deploy isolated Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: workers/wpa-sublimate-engine-v0.3.0/extracted/wpa-sublimate-engine
+          command: deploy
+          secrets: |
+            SUBLIMATE_API_TOKEN
+        env:
+          SUBLIMATE_API_TOKEN: ${{ secrets.SUBLIMATE_API_TOKEN }}
