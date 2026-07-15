@@ -21,8 +21,27 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply fail-closed static patch
-        run: python scripts/apply_publication_integrity_static.py
+        id: apply
+        shell: bash
+        run: |
+          set +e
+          python scripts/apply_publication_integrity_static.py > publication-integrity-run.log 2>&1
+          status=$?
+          cat publication-integrity-run.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Commit diagnostic only on assertion failure
+        if: steps.apply.outputs.status != '0'
+        run: |
+          git restore institute.html papers.html locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json 2>/dev/null || true
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add publication-integrity-run.log
+          git commit -m "Record publication integrity assertion failure"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          exit 1
       - name: Verify allowed file scope
+        if: steps.apply.outputs.status == '0'
         run: |
           git diff --name-only > /tmp/changed.txt
           cat /tmp/changed.txt
@@ -47,6 +66,7 @@ jobs:
               raise SystemExit('Digital Pavilion guard failed')
           PY
       - name: Commit verified static changes
+        if: steps.apply.outputs.status == '0'
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
