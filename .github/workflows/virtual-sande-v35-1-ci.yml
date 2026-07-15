@@ -1,0 +1,54 @@
+name: Virtual Sande v35.1 CI
+
+on:
+  pull_request:
+    paths:
+      - 'tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs'
+      - '.github/workflows/virtual-sande-v35-1-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify source files exist
+        run: |
+          test -f tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Syntax checks
+        run: |
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+
+      - name: Run routing and safety tests
+        run: |
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Verify delegation chain
+        run: |
+          grep -F "import baseWorker from './wpa-protocol-bot-v35-protocolometry-connector.mjs';" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          grep -F "return baseWorker.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          grep -F "import orchestrator from './wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs';" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          grep -F "return orchestrator.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
