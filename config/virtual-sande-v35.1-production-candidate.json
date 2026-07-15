@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande",
+  "version": "v35.1",
+  "production_authorized": false,
+  "candidate_status": "BLOCKED_PENDING_EXPLICIT_APPROVAL_AND_TARGETS",
+  "source_branch": "main",
+  "worker_source": "workers/virtual-sande-v35.1-staging/src/index.mjs",
+  "staging_config": "workers/virtual-sande-v35.1-staging/wrangler.toml",
+  "production_worker_name": "UNSET",
+  "production_route_or_custom_domain": "UNSET",
+  "production_cloudflare_account": "UNSET",
+  "production_environment": "UNSET",
+  "production_cors_origins": "UNSET",
+  "required_secret_names": [],
+  "required_bindings": {
+    "AI": "REQUIRED",
+    "AI_SEARCH_NAME": "protocol-ai"
+  },
+  "rollback": {
+    "known_good_commit_sha": "UNSET",
+    "known_good_worker_deployment_id": "UNSET",
+    "command_or_workflow_input": "UNSET",
+    "approver": "UNSET"
+  },
+  "approval_requirements": [
+    "All UNSET production target fields must be resolved.",
+    "The exact production-candidate commit must pass CI, staging deployment, and staging acceptance.",
+    "A protected GitHub production environment with required reviewer approval must exist.",
+    "The repository owner must give explicit written production deployment approval."
+  ],
+  "safety_boundary": "This manifest cannot deploy and does not authorize production."
+}
