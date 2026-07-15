@@ -75,11 +75,26 @@ jobs:
           echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
           printf '%s\n' "$PRODUCTION_URL" > /tmp/production-url.txt
 
-      - name: Run production acceptance before public cutover
+      - name: Wait for production propagation
         run: |
           set -euo pipefail
           mkdir -p /tmp/production-evidence
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$PRODUCTION_URL/orchestrator/health" | tee /tmp/production-evidence/health.json
+          for attempt in $(seq 1 24); do
+            status=$(curl --silent --show-error --output /tmp/production-evidence/health.json --write-out '%{http_code}' "$PRODUCTION_URL/orchestrator/health" || true)
+            if [ "$status" = '200' ] && grep -Fq '"ok": true' /tmp/production-evidence/health.json && grep -Fq 'v35.1' /tmp/production-evidence/health.json; then
+              echo "Production health propagated on attempt $attempt."
+              exit 0
+            fi
+            echo "Production health not ready yet (attempt $attempt, HTTP $status)."
+            sleep 5
+          done
+          echo 'Production endpoint did not propagate a valid v35.1 health response within 120 seconds.' >&2
+          cat /tmp/production-evidence/health.json >&2 || true
+          exit 1
+
+      - name: Run production acceptance before public cutover
+        run: |
+          set -euo pipefail
           grep -F '"ok": true' /tmp/production-evidence/health.json
           grep -F 'v35.1' /tmp/production-evidence/health.json
 
