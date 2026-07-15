@@ -5,8 +5,42 @@ on:
     paths:
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs'
       - '.github/workflows/virtual-sande-v35-1-ci.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verify source files exist
+        run: |
+          test -f tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+
+      - name: Syntax check base Worker
+        run: node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+
+      - name: Syntax check orchestrator
+        run: node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+
+      - name: Run orchestrator routing tests
+        run: node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+
+      - name: Verify orchestrator delegates to unchanged base Worker
+        run: |
+          grep -F "import baseWorker from './wpa-protocol-bot-v35-protocolometry-connector.mjs';" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          grep -F "return baseWorker.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
