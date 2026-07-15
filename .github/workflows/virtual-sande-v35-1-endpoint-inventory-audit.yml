@@ -28,17 +28,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Verify endpoint inventory and public consumers
+      - name: Validate blocked endpoint inventory
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          inventory_path = Path('config/virtual-sande-v35.1-endpoint-inventory.json')
-          data = json.loads(inventory_path.read_text())
-
-          legacy = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          data = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
           expected_consumers = [
               'index.html',
               'papers.html',
@@ -53,25 +50,33 @@ jobs:
           assert data['version'] == 'v35.1'
           assert data['production_authorized'] is False
           assert data['inventory_status'] == 'DISCOVERED_NOT_MIGRATED'
-          assert data['legacy_public_endpoint'] == legacy
+          assert data['legacy_public_endpoint'] == 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
           assert data['public_consumers'] == expected_consumers
           assert data['canonical_production_endpoint'] == 'UNSET'
           assert data['cutover_strategy'] == 'UNSET'
           assert data['rollback_strategy'] == 'UNSET'
           assert data['journal_live_upstream_is_virtual_sande_endpoint'] is False
-
-          discovered = sorted(
-              str(path).replace('\\', '/')
-              for path in Path('.').rglob('*.html')
-              if legacy in path.read_text(errors='ignore')
-          )
-          assert discovered == sorted(expected_consumers), (
-              f'Legacy endpoint consumer drift. Expected {sorted(expected_consumers)}, found {discovered}'
-          )
-
-          for path_text in expected_consumers:
-              assert Path(path_text).read_text().count(legacy) >= 1
           PY
+
+      - name: Verify exact legacy public consumer set
+        run: |
+          set -euo pipefail
+          LEGACY_ENDPOINT='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          cat > /tmp/expected-consumers.txt <<'EOF'
+          index.html
+          papers.html
+          protocolometry-center.html
+          wpaws/analysis/index.html
+          wpaws/book/index.html
+          wpaws/index.html
+          wpaws/paper/index.html
+          EOF
+          grep -RIlF --include='*.html' --exclude-dir='.git' "$LEGACY_ENDPOINT" . \
+            | sed 's#^./##' \
+            | sort > /tmp/discovered-consumers.txt
+          echo 'Discovered legacy consumers:'
+          cat /tmp/discovered-consumers.txt
+          diff -u /tmp/expected-consumers.txt /tmp/discovered-consumers.txt
 
       - name: Verify migration remains blocked
         run: |
