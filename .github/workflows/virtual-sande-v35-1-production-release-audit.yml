@@ -80,6 +80,9 @@ jobs:
               'persist-credentials: false',
               'CERTIFIED_SHA: 6a1822ba8e524a454dcf4a038f3d6bc38c3d500d',
               '--config workers/virtual-sande-v35.1-production/wrangler.toml',
+              'Wait for production propagation',
+              'for attempt in $(seq 1 24)',
+              'Production endpoint did not propagate a valid v35.1 health response within 120 seconds.',
               'Run production acceptance before public cutover',
               'Run legacy compatibility before public cutover',
               'public_cutover_performed',
@@ -124,6 +127,7 @@ jobs:
             echo '- Owner production approval recorded: **Yes**'
             echo '- Dedicated production Worker package: **Valid**'
             echo '- Protected production environment required: **Yes**'
+            echo '- Production propagation gate: **Required**'
             echo '- Production acceptance before cutover: **Required**'
             echo '- Public consumers changed in this PR: **No**'
             echo '- Legacy rollback endpoint preserved: **Yes**'
