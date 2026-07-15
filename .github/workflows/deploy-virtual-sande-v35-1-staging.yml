@@ -1,0 +1,79 @@
+name: Virtual Sande v35.1 Staging
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Choose validate first. Deploy only after validate succeeds.'
+        required: true
+        default: validate
+        type: choice
+        options:
+          - validate
+          - deploy
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-sande-v35-1-staging
+  cancel-in-progress: false
+
+jobs:
+  staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: staging
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify staging package
+        run: |
+          set -euo pipefail
+          test -f workers/virtual-sande-v35.1-staging/wrangler.toml
+          test -f workers/virtual-sande-v35.1-staging/src/index.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+
+      - name: Validate Worker bundle only
+        if: ${{ inputs.mode == 'validate' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --dry-run --config workers/virtual-sande-v35.1-staging/wrangler.toml
+
+      - name: Deploy isolated staging Worker
+        if: ${{ inputs.mode == 'deploy' }}
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config workers/virtual-sande-v35.1-staging/wrangler.toml
+
+      - name: Staging smoke test
+        if: ${{ inputs.mode == 'deploy' }}
+        env:
+          STAGING_URL: https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$STAGING_URL/orchestrator/health" | tee /tmp/health.json
+          grep -F 'v35.1' /tmp/health.json
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
+            --get "$STAGING_URL/ask" \
+            --data-urlencode 'message=Што е агреман?' \
+            --data-urlencode 'lang=mk' | tee /tmp/ask.json
+          grep -F 'answer' /tmp/ask.json
+
+      - name: Deployment boundary
+        if: ${{ inputs.mode == 'deploy' }}
+        run: |
+          echo 'Staging Worker deployed under a separate workers.dev name.'
+          echo 'No production Worker, custom domain, route, secret, KV namespace, or D1 database was modified.'
