@@ -13,10 +13,12 @@ kept = []
 removed = []
 for line in lines:
     matched = [label for label in labels if label in line]
-    if matched:
-        removed.extend(matched)
-    else:
+    if not matched:
         kept.append(line)
+        continue
+    removed.extend(matched)
+    if 'Institute EN summary' in matched:
+        kept.append(' ]\n')
 if set(removed) != labels or len(removed) != 4:
     raise SystemExit(f'Wrapper label assertion failed: {removed}')
 source = ''.join(kept)
