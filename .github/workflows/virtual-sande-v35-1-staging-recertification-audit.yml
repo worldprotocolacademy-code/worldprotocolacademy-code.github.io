@@ -52,6 +52,7 @@ jobs:
               "test \"$GITHUB_REF\" = 'refs/heads/main'",
               'persist-credentials: false',
               'workers/virtual-sande-v35.1-staging/wrangler.toml',
+              'test ! -e workers/virtual-sande-v35.1-production/wrangler.toml',
               'virtual-sande-v35-1-exact-candidate-recertification',
               'Production deployment performed: **No**',
               'Production authorized: **No**',
@@ -66,7 +67,8 @@ jobs:
               'schedule:',
               'environment: production',
               'contents: write',
-              'workers/virtual-sande-v35.1-production/wrangler.toml',
+              '--config workers/virtual-sande-v35.1-production/',
+              'wrangler deploy --env production',
               'routes =',
               'custom_domain',
           ]
