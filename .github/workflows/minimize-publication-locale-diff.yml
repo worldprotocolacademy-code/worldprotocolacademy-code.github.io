@@ -1,0 +1,65 @@
+name: Minimize Publication Locale Diff
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/minimize-publication-locale-diff.yml
+permissions:
+  contents: write
+jobs:
+  minimize:
+    if: github.event.pull_request.number == 37 && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - name: Restore canonical formatting and apply exact text-only replacements
+        shell: bash
+        run: |
+          git checkout origin/main -- locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json
+          python - <<'PY'
+          from pathlib import Path
+          jobs = {
+            'locales/institute/mk.json': [
+              ('WPA работни трудови 001–004', 'WPA работни трудови 001–012'),
+              ('Првите четири WPA работни трудови се објавени како јавни Zenodo DOI записи: WP-001, WP-002, WP-003 и WP-004.', 'Дванаесет WPA работни трудови се објавени како јавни Zenodo DOI записи: WP-001–WP-012.'),
+            ],
+            'locales/institute/en.json': [
+              ('WPA Working Papers 001–004', 'WPA Working Papers 001–012'),
+              ('The first four WPA Working Papers are published as public Zenodo DOI records: WP-001, WP-002, WP-003 and WP-004.', 'Twelve WPA Working Papers are published as public Zenodo DOI records: WP-001–WP-012.'),
+            ],
+            'locales/institute/locales/institute/mk.json': [
+              ('WPA работни трудови 001–004', 'WPA работни трудови 001–012'),
+              ('Првите четири WPA работни трудови се објавени како јавни Zenodo DOI записи: WP-001, WP-002, WP-003 и WP-004.', 'Дванаесет WPA работни трудови се објавени како јавни Zenodo DOI записи: WP-001–WP-012.'),
+            ],
+            'locales/institute/locales/institute/en.json': [
+              ('WPA Working Papers 001–004', 'WPA Working Papers 001–012'),
+              ('The first four WPA Working Papers are published as public Zenodo DOI records: WP-001, WP-002, WP-003 and WP-004.', 'Twelve WPA Working Papers are published as public Zenodo DOI records: WP-001–WP-012.'),
+            ],
+          }
+          for name, pairs in jobs.items():
+              path = Path(name)
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  count = text.count(old)
+                  if count < 1:
+                      raise SystemExit(f'{name}: missing expected canonical value: {old}')
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+      - name: Verify narrow locale-only scope
+        run: |
+          changed=$(git diff --name-only)
+          printf '%s\n' "$changed"
+          test "$(printf '%s\n' "$changed" | grep -c '^locales/institute/')" -eq 4
+          test "$(printf '%s\n' "$changed" | wc -l)" -eq 4
+      - name: Commit minimized locale changes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json
+          git commit -m "Minimize canonical locale publication updates"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
