@@ -14,7 +14,6 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: staging
 
     steps:
       - name: Checkout repository
@@ -33,14 +32,14 @@ jobs:
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
 
-      - name: Validate Worker bundle only
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --dry-run --config workers/virtual-sande-v35.1-staging/wrangler.toml
+      - name: Validate Worker bundle without Cloudflare credentials
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy \
+            --dry-run \
+            --config workers/virtual-sande-v35.1-staging/wrangler.toml
 
       - name: Validation boundary
         run: |
-          echo 'Validation completed with Wrangler dry-run only.'
-          echo 'No Worker deployment, route, custom domain, secret, KV namespace, D1 database, or production endpoint was modified.'
+          echo 'Validation completed locally with Wrangler dry-run only.'
+          echo 'No Cloudflare credential, Worker deployment, route, custom domain, secret, KV namespace, D1 database, or production endpoint was accessed or modified.'
