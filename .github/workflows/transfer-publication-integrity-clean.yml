@@ -1,0 +1,45 @@
+name: Transfer Publication Integrity Clean Files
+on:
+  push:
+    branches:
+      - fix/phase-1-publication-integrity-clean-main-2026-07-15
+    paths:
+      - .github/workflows/transfer-publication-integrity-clean.yml
+permissions:
+  contents: write
+jobs:
+  transfer:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/phase-1-publication-integrity-clean-main-2026-07-15
+          fetch-depth: 0
+      - name: Transfer only verified publication files
+        run: |
+          set -euo pipefail
+          git fetch origin audit/phase-1-publication-integrity-clean-2026-07-15
+          git checkout origin/audit/phase-1-publication-integrity-clean-2026-07-15 -- \
+            institute.html \
+            papers.html \
+            locales/institute/mk.json \
+            locales/institute/en.json \
+            locales/institute/locales/institute/mk.json \
+            locales/institute/locales/institute/en.json
+          changed="$(git diff --name-only)"
+          printf '%s\n' "$changed"
+          test "$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l)" -eq 6
+          ! printf '%s\n' "$changed" | grep -q 'tools/wpa-digital-pavilion'
+          test "$(grep -o '10.5281/zenodo.21299485' papers.html | wc -l)" -eq 1
+          test "$(grep -o 'WP-012 · NATO Summit / Protocolometric Case Study' papers.html | wc -l)" -eq 1
+          grep -q 'WPA-PN-003 remains a working draft in authorial review' papers.html
+          grep -q 'WPA Working Papers 001–012' institute.html
+          ! grep -q 'Important implementation note' papers.html
+      - name: Commit clean six-file transfer
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add institute.html papers.html locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json
+          git commit -m "Align Institute and Papers publication integrity"
+          git push origin HEAD:fix/phase-1-publication-integrity-clean-main-2026-07-15
