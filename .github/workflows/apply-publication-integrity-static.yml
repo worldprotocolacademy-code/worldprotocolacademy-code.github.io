@@ -1,8 +1,8 @@
 name: Apply Publication Integrity Static Patch
 on:
-  push:
-    branches:
-      - audit/phase-1-publication-integrity-clean-2026-07-15
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
     paths:
       - scripts/apply_publication_integrity_static.py
       - .github/workflows/apply-publication-integrity-static.yml
@@ -10,12 +10,12 @@ permissions:
   contents: write
 jobs:
   apply:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.number == 37 && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: audit/phase-1-publication-integrity-clean-2026-07-15
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -53,4 +53,4 @@ jobs:
           git add institute.html papers.html locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json
           git diff --cached --quiet && { echo 'No verified changes to commit'; exit 1; }
           git commit -m "Align Institute and Papers publication integrity statically"
-          git push origin HEAD:audit/phase-1-publication-integrity-clean-2026-07-15
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
