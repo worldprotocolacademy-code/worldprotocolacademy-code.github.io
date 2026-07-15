@@ -1,10 +1,19 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "component": "Virtual Sande",
   "version": "v35.1",
   "production_authorized": false,
-  "candidate_status": "BLOCKED_PENDING_EXPLICIT_APPROVAL_AND_TARGETS",
+  "candidate_status": "STAGING_CERTIFIED_BLOCKED_PENDING_PRODUCTION_TARGETS_AND_EXPLICIT_APPROVAL",
   "source_branch": "main",
+  "certified_candidate_sha": "6a1822ba8e524a454dcf4a038f3d6bc38c3d500d",
+  "certified_staging_url": "https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev",
+  "certification_evidence": {
+    "workflow": "Virtual Sande v35.1 Staging Recertification",
+    "run_number": 1,
+    "isolated_staging_deploy": "PASSED",
+    "acceptance_suite": "PASSED",
+    "legacy_compatibility": "PASSED"
+  },
   "worker_source": "workers/virtual-sande-v35.1-staging/src/index.mjs",
   "staging_config": "workers/virtual-sande-v35.1-staging/wrangler.toml",
   "production_worker_name": "UNSET",
@@ -24,10 +33,10 @@
     "approver": "UNSET"
   },
   "approval_requirements": [
-    "All UNSET production target fields must be resolved.",
-    "The exact production-candidate commit must pass CI, staging deployment, and staging acceptance.",
+    "All UNSET production target and rollback fields must be resolved.",
+    "The certified candidate SHA must remain unchanged or staging recertification must be repeated.",
     "A protected GitHub production environment with required reviewer approval must exist.",
     "The repository owner must give explicit written production deployment approval."
   ],
-  "safety_boundary": "This manifest cannot deploy and does not authorize production."
+  "safety_boundary": "This manifest records a staging-certified candidate but cannot deploy and does not authorize production."
 }
