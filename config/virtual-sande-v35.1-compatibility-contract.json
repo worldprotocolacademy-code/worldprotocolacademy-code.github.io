@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande",
+  "candidate_version": "v35.1",
+  "production_authorized": false,
+  "comparison_mode": "READ_ONLY_MANUAL",
+  "request_contract": {
+    "method": "POST",
+    "path": "/ask",
+    "content_type": "application/json",
+    "required_request_fields": ["message", "lang"],
+    "optional_request_fields": ["history"]
+  },
+  "success_contract": {
+    "http_status": 200,
+    "required_response_fields": ["ok", "answer"],
+    "ok_value": true,
+    "answer_must_be_non_empty_string": true,
+    "optional_response_fields": ["mode", "servedBy", "sources", "human_review_required", "results"]
+  },
+  "compatibility_cases": [
+    {
+      "id": "mk_agrement",
+      "message": "Што е агреман?",
+      "lang": "mk"
+    },
+    {
+      "id": "en_protocol",
+      "message": "What is diplomatic protocol?",
+      "lang": "en"
+    },
+    {
+      "id": "mk_history",
+      "message": "Што е протокол?",
+      "lang": "mk",
+      "history": [
+        {"role": "user", "content": "Зборуваме за дипломатски протокол."}
+      ]
+    }
+  ],
+  "comparison_rules": [
+    "Do not require identical answer text.",
+    "Both endpoints must satisfy the public success contract for every case.",
+    "The candidate must preserve POST JSON compatibility with the current public front end.",
+    "Any endpoint mutation, deployment, route change, or front-end migration is outside this contract."
+  ],
+  "safety_boundary": "This contract performs no deployment and grants no production authorization."
+}
