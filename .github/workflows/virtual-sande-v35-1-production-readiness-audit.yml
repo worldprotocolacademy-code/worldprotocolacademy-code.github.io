@@ -1,0 +1,100 @@
+name: Virtual Sande v35.1 Production Readiness Audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/virtual-sande-v35.1-production-candidate.json'
+      - 'docs/virtual-sande-v35.1-production-readiness.md'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs'
+      - 'workers/virtual-sande-v35.1-staging/**'
+      - '.github/workflows/virtual-sande-v35-1-production-readiness-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-sande-v35-1-production-readiness-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout exact candidate commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate blocked candidate manifest
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('config/virtual-sande-v35.1-production-candidate.json')
+          data = json.loads(path.read_text())
+
+          assert data['component'] == 'Virtual Sande'
+          assert data['version'] == 'v35.1'
+          assert data['production_authorized'] is False
+          assert data['candidate_status'] == 'BLOCKED_PENDING_EXPLICIT_APPROVAL_AND_TARGETS'
+          assert data['source_branch'] == 'main'
+          assert data['required_bindings']['AI'] == 'REQUIRED'
+          assert data['required_bindings']['AI_SEARCH_NAME'] == 'protocol-ai'
+
+          required_unset = [
+              data['production_worker_name'],
+              data['production_route_or_custom_domain'],
+              data['production_cloudflare_account'],
+              data['production_environment'],
+              data['production_cors_origins'],
+              data['rollback']['known_good_commit_sha'],
+              data['rollback']['known_good_worker_deployment_id'],
+              data['rollback']['command_or_workflow_input'],
+              data['rollback']['approver'],
+          ]
+          assert all(value == 'UNSET' for value in required_unset)
+          assert data['required_secret_names'] == []
+          PY
+
+      - name: Verify source, syntax, routing, and safety
+        run: |
+          set -euo pipefail
+          test -f docs/virtual-sande-v35.1-production-readiness.md
+          test -f workers/virtual-sande-v35.1-staging/wrangler.toml
+          test -f workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Verify no production deployment surface exists
+        run: |
+          set -euo pipefail
+          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-staging/wrangler.toml
+          ! grep -Eq 'CLOUDFLARE_API_TOKEN|CLOUDFLARE_ACCOUNT_ID|wrangler deploy' .github/workflows/virtual-sande-v35-1-production-readiness-audit.yml
+
+      - name: Record exact audited candidate
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Production Readiness Audit'
+            echo
+            echo "- Candidate commit: \`${GITHUB_SHA}\`"
+            echo '- Status: **BLOCKED — production not authorized**'
+            echo '- Cloudflare credentials accessed: **No**'
+            echo '- Deployment performed: **No**'
+            echo '- Production target fields resolved: **No**'
+            echo '- Next gate: explicit target resolution and repository-owner approval'
+          } >> "$GITHUB_STEP_SUMMARY"
