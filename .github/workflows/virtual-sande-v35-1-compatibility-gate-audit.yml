@@ -1,0 +1,95 @@
+name: Virtual Sande v35.1 Compatibility Gate Audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/virtual-sande-v35.1-compatibility-contract.json'
+      - '.github/workflows/virtual-sande-v35-1-compatibility-gate.yml'
+      - '.github/workflows/virtual-sande-v35-1-compatibility-gate-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout exact audited commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate compatibility contract
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path('config/virtual-sande-v35.1-compatibility-contract.json').read_text())
+          assert data['component'] == 'Virtual Sande'
+          assert data['candidate_version'] == 'v35.1'
+          assert data['production_authorized'] is False
+          assert data['comparison_mode'] == 'READ_ONLY_MANUAL'
+          assert data['request_contract']['method'] == 'POST'
+          assert data['request_contract']['path'] == '/ask'
+          assert data['request_contract']['content_type'] == 'application/json'
+          assert data['success_contract']['http_status'] == 200
+          assert data['success_contract']['ok_value'] is True
+          assert data['success_contract']['answer_must_be_non_empty_string'] is True
+          assert len(data['compatibility_cases']) >= 3
+          assert any(case.get('history') for case in data['compatibility_cases'])
+          PY
+
+      - name: Verify manual read-only safety boundary
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/virtual-sande-v35-1-compatibility-gate.yml')
+          text = path.read_text()
+          required = [
+              'workflow_dispatch:',
+              'permissions:\n  contents: read',
+              'persist-credentials: false',
+              'https://*.workers.dev',
+              "method: 'POST'",
+              "`${base}/ask`",
+              'actions/upload-artifact@v7',
+              'Production authorized: **No**',
+          ]
+          missing = [value for value in required if value not in text]
+          if missing:
+              raise SystemExit(f'Missing compatibility safety controls: {missing}')
+
+          forbidden = [
+              'pull_request_target:',
+              'push:',
+              'schedule:',
+              'CLOUDFLARE_' + 'API_TOKEN',
+              'CLOUDFLARE_' + 'ACCOUNT_ID',
+              'wrangler ' + 'deploy',
+              'environment:' + ' production',
+              'cloudflare/' + 'wrangler-action',
+              'contents: write',
+          ]
+          found = [value for value in forbidden if value in text]
+          if found:
+              raise SystemExit(f'Forbidden compatibility surface found: {found}')
+          PY
+
+      - name: Verify production remains blocked
+        run: |
+          set -euo pipefail
+          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
+          assert candidate['production_authorized'] is False
+          assert candidate['candidate_status'] == 'BLOCKED_PENDING_EXPLICIT_APPROVAL_AND_TARGETS'
+          PY
