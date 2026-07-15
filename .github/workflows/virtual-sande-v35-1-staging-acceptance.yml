@@ -2,6 +2,11 @@ name: Virtual Sande v35.1 Staging Acceptance
 
 on:
   workflow_dispatch:
+    inputs:
+      staging_url:
+        description: 'Exact workers.dev URL printed by the successful staging deploy run.'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -11,9 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      STAGING_URL: https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev
+      STAGING_URL: ${{ inputs.staging_url }}
 
     steps:
+      - name: Validate staging URL boundary
+        run: |
+          set -euo pipefail
+          test -n "$STAGING_URL"
+          STAGING_URL="${STAGING_URL%/}"
+          case "$STAGING_URL" in
+            https://*.workers.dev) ;;
+            *) echo 'Only an exact HTTPS workers.dev staging URL is allowed.' >&2; exit 1 ;;
+          esac
+          echo "STAGING_URL=$STAGING_URL" >> "$GITHUB_ENV"
+
       - name: Health and version
         run: |
           set -euo pipefail
@@ -103,5 +119,5 @@ jobs:
 
       - name: Acceptance boundary
         run: |
-          echo 'Acceptance tests read only from the isolated staging Worker.'
+          echo 'Acceptance tests read only from the exact isolated staging URL supplied by the deploy run.'
           echo 'No Worker deployment, route, custom domain, secret, KV namespace, D1 database, or production endpoint was modified.'
