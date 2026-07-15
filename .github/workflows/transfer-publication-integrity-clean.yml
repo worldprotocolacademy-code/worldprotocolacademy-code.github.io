@@ -1,20 +1,18 @@
 name: Transfer Publication Integrity Clean Files
 on:
-  push:
-    branches:
-      - fix/phase-1-publication-integrity-clean-main-2026-07-15
-    paths:
-      - .github/workflows/transfer-publication-integrity-clean.yml
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 permissions:
   contents: write
 jobs:
   transfer:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.head.ref == 'fix/phase-1-publication-integrity-clean-main-2026-07-15' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: fix/phase-1-publication-integrity-clean-main-2026-07-15
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - name: Transfer only verified publication files
         run: |
@@ -42,4 +40,4 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add institute.html papers.html locales/institute/mk.json locales/institute/en.json locales/institute/locales/institute/mk.json locales/institute/locales/institute/en.json
           git commit -m "Align Institute and Papers publication integrity"
-          git push origin HEAD:fix/phase-1-publication-integrity-clean-main-2026-07-15
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
