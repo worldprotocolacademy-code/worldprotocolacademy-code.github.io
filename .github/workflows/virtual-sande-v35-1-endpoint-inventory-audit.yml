@@ -58,10 +58,25 @@ jobs:
           assert data['journal_live_upstream_is_virtual_sande_endpoint'] is False
           PY
 
-      - name: Verify exact legacy public consumer set
+      - name: Generate actual legacy public consumer set
         run: |
           set -euo pipefail
           LEGACY_ENDPOINT='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          grep -RIlF --include='*.html' --exclude-dir='.git' "$LEGACY_ENDPOINT" . \
+            | sed 's#^./##' \
+            | sort > /tmp/discovered-consumers.txt
+          cat /tmp/discovered-consumers.txt
+
+      - name: Upload discovered consumer evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-legacy-consumers
+          path: /tmp/discovered-consumers.txt
+          retention-days: 30
+
+      - name: Verify exact legacy public consumer set
+        run: |
+          set -euo pipefail
           cat > /tmp/expected-consumers.txt <<'EOF'
           index.html
           papers.html
@@ -71,11 +86,6 @@ jobs:
           wpaws/index.html
           wpaws/paper/index.html
           EOF
-          grep -RIlF --include='*.html' --exclude-dir='.git' "$LEGACY_ENDPOINT" . \
-            | sed 's#^./##' \
-            | sort > /tmp/discovered-consumers.txt
-          echo 'Discovered legacy consumers:'
-          cat /tmp/discovered-consumers.txt
           diff -u /tmp/expected-consumers.txt /tmp/discovered-consumers.txt
 
       - name: Verify migration remains blocked
