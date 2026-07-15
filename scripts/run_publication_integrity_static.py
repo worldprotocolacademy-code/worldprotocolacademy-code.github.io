@@ -27,4 +27,9 @@ new_guard = " if any(v<1 for v in hit.values()):raise SystemExit(f'{rel}: locale
 if source.count(old_guard) != 1:
     raise SystemExit('Locale guard assertion failed')
 source = source.replace(old_guard, new_guard, 1)
+old_verify = " if 'WPA-PN-003 remains a working draft in authorial review' not in p or '14 published WPA Zenodo DOI records' not in i:raise SystemExit('Status verification failed')"
+new_verify = " if 'WPA-PN-003 remains a working draft in authorial review' not in p or 'WPA Working Papers 001–012' not in i or '14 total WPA Zenodo DOI records' not in p:raise SystemExit('Status verification failed')"
+if source.count(old_verify) != 1:
+    raise SystemExit('Final verification assertion failed')
+source = source.replace(old_verify, new_verify, 1)
 exec(compile(source, str(source_path), 'exec'), {'__name__': '__main__', '__file__': str(source_path)})
