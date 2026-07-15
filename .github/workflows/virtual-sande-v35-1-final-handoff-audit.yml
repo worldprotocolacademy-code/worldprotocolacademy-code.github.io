@@ -1,0 +1,108 @@
+name: Virtual Sande v35.1 Final Handoff Audit
+
+on:
+  pull_request:
+    paths:
+      - 'docs/virtual-sande-v35.1-final-handoff.md'
+      - 'config/virtual-sande-v35.1-production-decision.json'
+      - 'config/virtual-sande-v35.1-production-candidate.json'
+      - 'config/virtual-sande-v35.1-certification-ledger.json'
+      - '.github/workflows/virtual-sande-v35-1-final-handoff-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout exact audited commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate final handoff decision
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          decision = json.loads(Path('config/virtual-sande-v35.1-production-decision.json').read_text())
+          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
+          ledger = json.loads(Path('config/virtual-sande-v35.1-certification-ledger.json').read_text())
+          handoff = Path('docs/virtual-sande-v35.1-final-handoff.md').read_text()
+
+          certified_sha = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
+          assert decision['component'] == 'Virtual Sande'
+          assert decision['version'] == 'v35.1'
+          assert decision['decision'] == 'NO_GO'
+          assert decision['production_authorized'] is False
+          assert decision['engineering_phase'] == 'COMPLETE'
+          assert decision['staging_certification']['status'] == 'PASSED'
+          assert decision['staging_certification']['candidate_sha'] == certified_sha
+          assert decision['staging_certification']['acceptance_suite'] == 'PASSED'
+          assert decision['staging_certification']['legacy_compatibility'] == 'PASSED'
+          assert decision['recommended_architecture']['proposal_approved'] is False
+          assert decision['recommended_architecture']['legacy_worker_overwrite_allowed'] is False
+          assert decision['public_cutover']['authorized'] is False
+          assert len(decision['public_cutover']['direct_consumers']) == 5
+          assert len(decision['public_cutover']['constructed_consumers']) == 1
+          assert all(value == 'UNSET' for value in decision['unresolved_blockers'].values())
+
+          assert candidate['production_authorized'] is False
+          assert candidate['certified_candidate_sha'] == certified_sha
+          assert ledger['production_authorized'] is False
+          assert ledger['certification_status'] == 'STAGING_CERTIFIED_EXACT_CANDIDATE'
+
+          required_handoff = [
+              'STAGING CERTIFIED / PRODUCTION NO-GO',
+              certified_sha,
+              'Current decision: **NO-GO FOR PRODUCTION**',
+              'wpa-virtual-sande-v35-1-production',
+              'protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask',
+          ]
+          missing = [value for value in required_handoff if value not in handoff]
+          if missing:
+              raise SystemExit(f'Missing final handoff evidence: {missing}')
+          PY
+
+      - name: Verify no production execution surface exists
+        run: |
+          set -euo pipefail
+          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          test ! -e .github/workflows/deploy-virtual-sande-v35-1-production.yml
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/virtual-sande-v35-1-final-handoff-audit.yml').read_text()
+          forbidden_workflow = [
+              'workflow_' + 'dispatch:',
+              'pu' + 'sh:',
+              'sche' + 'dule:',
+              'environment:' + ' production',
+              'contents:' + ' write',
+              'CLOUDFLARE_' + 'API_TOKEN',
+              'CLOUDFLARE_' + 'ACCOUNT_ID',
+              'wrangler ' + 'deploy',
+              'cloudflare/' + 'wrangler-action',
+          ]
+          found = [value for value in forbidden_workflow if value in workflow]
+          if found:
+              raise SystemExit(f'Forbidden final handoff execution surface: {found}')
+          PY
+
+      - name: Record final boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Final Handoff'
+            echo
+            echo '- Engineering phase: **Complete**'
+            echo '- Exact-candidate staging certification: **Passed**'
+            echo '- Production decision: **NO-GO**'
+            echo '- Production deployment performed: **No**'
+            echo '- Public cutover performed: **No**'
+            echo '- Remaining blockers: **Operational targets, rollback identifiers, protected environment, and explicit approvals**'
+          } >> "$GITHUB_STEP_SUMMARY"
