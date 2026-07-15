@@ -1,0 +1,192 @@
+name: DEPLOY Virtual Sande v35.1 PRODUCTION
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-sande-v35-1-production-deploy
+  cancel-in-progress: false
+
+env:
+  CERTIFIED_SHA: 6a1822ba8e524a454dcf4a038f3d6bc38c3d500d
+  EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
+  EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+
+    steps:
+      - name: Checkout production release from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require main and certified runtime identity
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          git cat-file -e "$CERTIFIED_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-staging/wrangler.toml
+          echo "RELEASE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Verify dedicated production package
+        run: |
+          set -euo pipefail
+          test -f workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'workers_dev = true' workers/virtual-sande-v35.1-production/wrangler.toml
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Deploy dedicated production Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy \
+            --config workers/virtual-sande-v35.1-production/wrangler.toml \
+            2>&1 | tee /tmp/production-deploy.log
+
+      - name: Resolve and verify production URL
+        run: |
+          set -euo pipefail
+          PRODUCTION_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/production-deploy.log | tail -n 1 | sed 's:/$::')"
+          test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
+          echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
+          printf '%s\n' "$PRODUCTION_URL" > /tmp/production-url.txt
+
+      - name: Run production acceptance before public cutover
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/production-evidence
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$PRODUCTION_URL/orchestrator/health" | tee /tmp/production-evidence/health.json
+          grep -F '"ok": true' /tmp/production-evidence/health.json
+          grep -F 'v35.1' /tmp/production-evidence/health.json
+
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
+            --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Што е агреман?' \
+            --data-urlencode 'lang=mk' | tee /tmp/production-evidence/agrement.json
+          grep -F '"ok": true' /tmp/production-evidence/agrement.json
+          grep -F '"answer"' /tmp/production-evidence/agrement.json
+
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
+            --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Покажи ми D001' \
+            --data-urlencode 'lang=mk' | tee /tmp/production-evidence/d001.json
+          grep -F 'D001' /tmp/production-evidence/d001.json
+
+          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
+            --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Кои се најновите дипломатски вести?' \
+            --data-urlencode 'lang=mk' | tee /tmp/production-evidence/live.json
+          grep -E 'journal_live_strict_search|journal_live_unavailable' /tmp/production-evidence/live.json
+          grep -F '"human_review_required": true' /tmp/production-evidence/live.json
+
+          status=$(curl --silent --output /tmp/production-evidence/method.json --write-out '%{http_code}' -X PUT "$PRODUCTION_URL/ask")
+          test "$status" = '405'
+          status=$(curl --silent --output /tmp/production-evidence/origin.json --write-out '%{http_code}' -H 'Origin: https://example.invalid' --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Што е протокол?' --data-urlencode 'lang=mk')
+          test "$status" = '403'
+          message=$(python3 -c "print('а' * 701)")
+          status=$(curl --silent --output /tmp/production-evidence/long.json --write-out '%{http_code}' --get "$PRODUCTION_URL/ask" --data-urlencode "message=$message" --data-urlencode 'lang=mk')
+          test "$status" = '400'
+          status=$(curl --silent --output /tmp/production-evidence/urls.json --write-out '%{http_code}' --get "$PRODUCTION_URL/ask" --data-urlencode 'message=https://a.example https://b.example https://c.example https://d.example' --data-urlencode 'lang=mk')
+          test "$status" = '400'
+
+      - name: Run legacy compatibility before public cutover
+        env:
+          LEGACY_URL: https://protocol-bot-workerjs.worldprotocolacademy.workers.dev
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs/promises';
+          const contract = JSON.parse(await fs.readFile('config/virtual-sande-v35.1-compatibility-contract.json', 'utf8'));
+          const endpoints = { legacy: process.env.LEGACY_URL, production: process.env.PRODUCTION_URL };
+          const report = { candidate_sha: process.env.CERTIFIED_SHA, release_sha: process.env.RELEASE_SHA, endpoints, cases: [] };
+          async function call(base, testCase) {
+            const response = await fetch(`${base}/ask`, {
+              method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' },
+              body: JSON.stringify({ message: testCase.message, lang: testCase.lang, history: testCase.history || [] }),
+            });
+            const data = await response.json();
+            return { status: response.status, valid: response.status === 200 && data?.ok === true && typeof data?.answer === 'string' && data.answer.trim().length > 0 };
+          }
+          let failed = false;
+          for (const testCase of contract.compatibility_cases) {
+            const legacy = await call(endpoints.legacy, testCase);
+            const production = await call(endpoints.production, testCase);
+            const compatible = legacy.valid && production.valid;
+            if (!compatible) failed = true;
+            report.cases.push({ id: testCase.id, legacy, production, compatible });
+          }
+          report.compatible = !failed;
+          await fs.writeFile('/tmp/production-evidence/compatibility-report.json', JSON.stringify(report, null, 2) + '\n');
+          if (failed) process.exitCode = 1;
+          NODE
+
+      - name: Build deployment evidence
+        run: |
+          set -euo pipefail
+          cp /tmp/production-url.txt /tmp/production-evidence/production-url.txt
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          compatibility = json.loads(Path('/tmp/production-evidence/compatibility-report.json').read_text())
+          evidence = {
+              'schema_version': '1.0',
+              'component': 'Virtual Sande',
+              'version': 'v35.1',
+              'certified_candidate_sha': os.environ['CERTIFIED_SHA'],
+              'release_sha': os.environ['RELEASE_SHA'],
+              'production_url': os.environ['PRODUCTION_URL'],
+              'dedicated_production_deploy': 'PASSED',
+              'production_acceptance': 'PASSED',
+              'legacy_compatibility': 'PASSED' if compatibility['compatible'] else 'FAILED',
+              'public_cutover_performed': False,
+              'rollback_public_endpoint': 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask',
+          }
+          Path('/tmp/production-evidence/deployment-evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+
+      - name: Upload production deployment evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-v35-1-production-deployment-evidence
+          path: /tmp/production-evidence
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Production deployment boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Production Deployment'
+            echo
+            echo "- Certified candidate SHA: \`$CERTIFIED_SHA\`"
+            echo "- Release SHA: \`$RELEASE_SHA\`"
+            echo "- Production URL: \`$PRODUCTION_URL\`"
+            echo '- Dedicated production deploy: **Passed**'
+            echo '- Production acceptance: **Passed**'
+            echo '- Legacy compatibility: **Passed**'
+            echo '- Public cutover performed: **No**'
+            echo '- Next gate: reviewed six-consumer frontend cutover PR'
+          } >> "$GITHUB_STEP_SUMMARY"

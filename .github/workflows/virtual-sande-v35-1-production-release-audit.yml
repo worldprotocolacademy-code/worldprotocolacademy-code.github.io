@@ -1,0 +1,130 @@
+name: Virtual Sande v35.1 Production Release Audit
+
+on:
+  pull_request:
+    paths:
+      - 'workers/virtual-sande-v35.1-production/**'
+      - '.github/workflows/deploy-virtual-sande-v35-1-production.yml'
+      - '.github/workflows/virtual-sande-v35-1-production-release-audit.yml'
+      - 'config/virtual-sande-v35.1-production-decision.json'
+      - 'config/virtual-sande-v35.1-production-candidate.json'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout exact release commit
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate approved dedicated production package
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          decision = json.loads(Path('config/virtual-sande-v35.1-production-decision.json').read_text())
+          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
+          certified = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
+
+          assert decision['decision'] == 'GO_APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
+          assert decision['production_authorized'] is True
+          assert decision['public_cutover']['authorized'] is True
+          assert decision['staging_certification']['candidate_sha'] == certified
+          assert decision['recommended_architecture']['proposal_approved'] is True
+          assert decision['recommended_architecture']['legacy_worker_overwrite_allowed'] is False
+          assert candidate['production_authorized'] is True
+          assert candidate['certified_candidate_sha'] == certified
+          assert candidate['production_worker_name'] == 'wpa-virtual-sande-v35-1-production'
+          assert candidate['production_environment'] == 'production'
+          assert candidate['production_route_or_custom_domain'] == 'workers.dev only'
+          PY
+
+      - name: Verify production config and runtime identity
+        run: |
+          set -euo pipefail
+          test -f workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'workers_dev = true' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'preview_urls = false' workers/virtual-sande-v35.1-production/wrangler.toml
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Verify protected deployment workflow
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/deploy-virtual-sande-v35-1-production.yml').read_text()
+          required = [
+              'workflow_dispatch:',
+              'permissions:\n  contents: read',
+              'environment: production',
+              "test \"$GITHUB_REF\" = 'refs/heads/main'",
+              'persist-credentials: false',
+              'CERTIFIED_SHA: 6a1822ba8e524a454dcf4a038f3d6bc38c3d500d',
+              '--config workers/virtual-sande-v35.1-production/wrangler.toml',
+              'Run production acceptance before public cutover',
+              'Run legacy compatibility before public cutover',
+              'public_cutover_performed',
+              'Public cutover performed: **No**',
+          ]
+          missing = [value for value in required if value not in text]
+          if missing:
+              raise SystemExit(f'Missing protected production controls: {missing}')
+
+          forbidden = [
+              'push:',
+              'schedule:',
+              'pull_request_target:',
+              'contents: write',
+          ]
+          found = [value for value in forbidden if value in text]
+          if found:
+              raise SystemExit(f'Forbidden production release surface: {found}')
+          PY
+
+      - name: Confirm public consumers remain on legacy during deploy phase
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          legacy = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+          direct = ['index.html', 'papers.html', 'wpaws/book/index.html', 'wpaws/paper/index.html', 'wpaws/analysis/index.html']
+          for path in direct:
+              text = Path(path).read_text()
+              if f'{legacy}/ask' not in text:
+                  raise SystemExit(f'Legacy endpoint missing before deploy phase: {path}')
+          constructed = Path('wpaws/index.html').read_text()
+          if legacy not in constructed or '/ask' not in constructed:
+              raise SystemExit('Constructed legacy consumer changed before deploy phase.')
+          PY
+
+      - name: Production release boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Production Release Audit'
+            echo
+            echo '- Owner production approval recorded: **Yes**'
+            echo '- Dedicated production Worker package: **Valid**'
+            echo '- Protected production environment required: **Yes**'
+            echo '- Production acceptance before cutover: **Required**'
+            echo '- Public consumers changed in this PR: **No**'
+            echo '- Legacy rollback endpoint preserved: **Yes**'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,10 +1,16 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "component": "Virtual Sande",
   "version": "v35.1",
-  "decision": "NO_GO",
-  "production_authorized": false,
+  "decision": "GO_APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY",
+  "production_authorized": true,
   "engineering_phase": "COMPLETE",
+  "owner_approval": {
+    "production_deploy": true,
+    "public_cutover": true,
+    "approval_text": "Изречно одобрувам production deploy на Virtual Sande v35.1 и јавен cutover.",
+    "approval_date": "2026-07-15"
+  },
   "staging_certification": {
     "status": "PASSED",
     "candidate_sha": "6a1822ba8e524a454dcf4a038f3d6bc38c3d500d",
@@ -18,7 +24,7 @@
     "strategy": "DEDICATED_PRODUCTION_WORKER_THEN_SEPARATE_FRONTEND_CUTOVER",
     "proposed_worker_name": "wpa-virtual-sande-v35-1-production",
     "proposed_workers_dev_url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
-    "proposal_approved": false,
+    "proposal_approved": true,
     "legacy_worker_overwrite_allowed": false
   },
   "known_runtime_configuration": {
@@ -34,8 +40,16 @@
     "default_user_plan": "free",
     "debug_mode": false
   },
+  "production_release": {
+    "phase": "PACKAGE_READY_PENDING_PROTECTED_ENVIRONMENT_AND_MANUAL_DISPATCH",
+    "workflow": "DEPLOY Virtual Sande v35.1 PRODUCTION",
+    "environment": "production",
+    "production_acceptance_required_before_cutover": true,
+    "deployment_evidence_artifact": "virtual-sande-v35-1-production-deployment-evidence"
+  },
   "public_cutover": {
-    "authorized": false,
+    "authorized": true,
+    "execution_status": "BLOCKED_UNTIL_PRODUCTION_DEPLOYMENT_AND_ACCEPTANCE_PASS",
     "direct_consumers": [
       "index.html",
       "papers.html",
@@ -48,18 +62,17 @@
     ],
     "excluded_non_ask_consumer": "protocolometry-center.html",
     "legacy_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
+    "production_endpoint": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask",
     "rollback_strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT"
   },
-  "unresolved_blockers": {
-    "cloudflare_account_id": "UNSET",
-    "protected_production_environment": "UNSET",
-    "required_production_reviewer": "UNSET",
-    "production_worker_name_approval": "UNSET",
-    "known_good_production_deployment_id": "UNSET",
-    "rollback_command_or_workflow_input": "UNSET",
-    "explicit_production_deployment_approval": "UNSET",
-    "explicit_public_cutover_approval": "UNSET"
+  "remaining_operational_requirements": {
+    "cloudflare_account_id_secret": "REQUIRED_IN_PRODUCTION_ENVIRONMENT",
+    "cloudflare_api_token_secret": "REQUIRED_IN_PRODUCTION_ENVIRONMENT",
+    "protected_production_environment": "REQUIRED",
+    "required_production_reviewer": "REQUIRED",
+    "known_good_production_deployment_id": "CAPTURE_AFTER_FIRST_SUCCESSFUL_DEPLOY",
+    "rollback_command_or_workflow_input": "RESTORE_SIX_FRONTEND_CONSUMERS_TO_LEGACY_ENDPOINT"
   },
   "invalidation_rule": "Any later change to the Virtual Sande Worker source, orchestrator, safe entrypoint, staging configuration, request/response contract, or required bindings requires a new same-commit staging recertification.",
-  "safety_boundary": "This decision manifest creates no production configuration, workflow, deployment, route, domain, secret, KV, D1, binding, or frontend change."
+  "safety_boundary": "Approval is recorded, but public cutover remains technically blocked until the dedicated production deployment and full production acceptance suite pass."
 }

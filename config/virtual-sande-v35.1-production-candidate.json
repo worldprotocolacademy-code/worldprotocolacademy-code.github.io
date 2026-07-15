@@ -1,9 +1,9 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "component": "Virtual Sande",
   "version": "v35.1",
-  "production_authorized": false,
-  "candidate_status": "STAGING_CERTIFIED_BLOCKED_PENDING_PRODUCTION_TARGETS_AND_EXPLICIT_APPROVAL",
+  "production_authorized": true,
+  "candidate_status": "APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY_AND_ACCEPTANCE",
   "source_branch": "main",
   "certified_candidate_sha": "6a1822ba8e524a454dcf4a038f3d6bc38c3d500d",
   "certified_staging_url": "https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev",
@@ -14,29 +14,42 @@
     "acceptance_suite": "PASSED",
     "legacy_compatibility": "PASSED"
   },
-  "worker_source": "workers/virtual-sande-v35.1-staging/src/index.mjs",
-  "staging_config": "workers/virtual-sande-v35.1-staging/wrangler.toml",
-  "production_worker_name": "UNSET",
-  "production_route_or_custom_domain": "UNSET",
-  "production_cloudflare_account": "UNSET",
-  "production_environment": "UNSET",
-  "production_cors_origins": "UNSET",
-  "required_secret_names": [],
+  "worker_source": "workers/virtual-sande-v35.1-production/src/index.mjs",
+  "production_config": "workers/virtual-sande-v35.1-production/wrangler.toml",
+  "production_worker_name": "wpa-virtual-sande-v35-1-production",
+  "production_route_or_custom_domain": "workers.dev only",
+  "production_cloudflare_account": "FROM_PRODUCTION_ENVIRONMENT_SECRET",
+  "production_environment": "production",
+  "production_cors_origins": [
+    "https://worldprotocolacademy-code.github.io",
+    "https://worldprotocolacademy.com",
+    "https://www.worldprotocolacademy.com"
+  ],
+  "required_secret_names": [
+    "CLOUDFLARE_API_TOKEN",
+    "CLOUDFLARE_ACCOUNT_ID"
+  ],
   "required_bindings": {
     "AI": "REQUIRED",
     "AI_SEARCH_NAME": "protocol-ai"
   },
-  "rollback": {
-    "known_good_commit_sha": "UNSET",
-    "known_good_worker_deployment_id": "UNSET",
-    "command_or_workflow_input": "UNSET",
-    "approver": "UNSET"
+  "deployment": {
+    "workflow": "DEPLOY Virtual Sande v35.1 PRODUCTION",
+    "expected_url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
+    "manual_dispatch_from_main_only": true,
+    "production_acceptance_before_cutover": true,
+    "status": "PENDING_PROTECTED_ENVIRONMENT_AND_MANUAL_DISPATCH"
   },
-  "approval_requirements": [
-    "All UNSET production target and rollback fields must be resolved.",
-    "The certified candidate SHA must remain unchanged or staging recertification must be repeated.",
-    "A protected GitHub production environment with required reviewer approval must exist.",
-    "The repository owner must give explicit written production deployment approval."
-  ],
-  "safety_boundary": "This manifest records a staging-certified candidate but cannot deploy and does not authorize production."
+  "rollback": {
+    "legacy_public_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
+    "public_cutover_rollback": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT",
+    "known_good_production_deployment_id": "CAPTURE_AFTER_FIRST_SUCCESSFUL_DEPLOY",
+    "approver": "repository owner"
+  },
+  "approval": {
+    "production_deploy": true,
+    "public_cutover": true,
+    "approval_date": "2026-07-15"
+  },
+  "safety_boundary": "The dedicated production Worker may deploy only through the protected production environment. Public cutover remains blocked until production acceptance and legacy compatibility pass."
 }

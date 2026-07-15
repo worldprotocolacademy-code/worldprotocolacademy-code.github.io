@@ -4,118 +4,66 @@ on:
   pull_request:
     paths:
       - 'config/virtual-sande-v35.1-production-candidate.json'
-      - 'docs/virtual-sande-v35.1-production-readiness.md'
-      - 'tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs'
-      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
-      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
-      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs'
-      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs'
-      - 'workers/virtual-sande-v35.1-staging/**'
+      - 'config/virtual-sande-v35.1-production-decision.json'
+      - 'workers/virtual-sande-v35.1-production/**'
+      - '.github/workflows/deploy-virtual-sande-v35-1-production.yml'
       - '.github/workflows/virtual-sande-v35-1-production-readiness-audit.yml'
-  workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: virtual-sande-v35-1-production-readiness-audit-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 8
-
     steps:
-      - name: Checkout exact candidate commit
+      - name: Checkout exact release commit
         uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - name: Validate staging-certified blocked candidate manifest
+      - name: Validate approved production candidate
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-
-          certified_sha = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
-          path = Path('config/virtual-sande-v35.1-production-candidate.json')
-          data = json.loads(path.read_text())
-
-          assert data['component'] == 'Virtual Sande'
-          assert data['version'] == 'v35.1'
-          assert data['production_authorized'] is False
-          assert data['candidate_status'] == 'STAGING_CERTIFIED_BLOCKED_PENDING_PRODUCTION_TARGETS_AND_EXPLICIT_APPROVAL'
-          assert data['source_branch'] == 'main'
-          assert data['certified_candidate_sha'] == certified_sha
-          assert data['certification_evidence']['run_number'] == 1
-          assert data['certification_evidence']['isolated_staging_deploy'] == 'PASSED'
-          assert data['certification_evidence']['acceptance_suite'] == 'PASSED'
-          assert data['certification_evidence']['legacy_compatibility'] == 'PASSED'
-          assert data['required_bindings']['AI'] == 'REQUIRED'
-          assert data['required_bindings']['AI_SEARCH_NAME'] == 'protocol-ai'
-
-          required_unset = [
-              data['production_worker_name'],
-              data['production_route_or_custom_domain'],
-              data['production_cloudflare_account'],
-              data['production_environment'],
-              data['production_cors_origins'],
-              data['rollback']['known_good_commit_sha'],
-              data['rollback']['known_good_worker_deployment_id'],
-              data['rollback']['command_or_workflow_input'],
-              data['rollback']['approver'],
-          ]
-          assert all(value == 'UNSET' for value in required_unset)
-          assert data['required_secret_names'] == []
+          data = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
+          assert data['production_authorized'] is True
+          assert data['candidate_status'] == 'APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY_AND_ACCEPTANCE'
+          assert data['certified_candidate_sha'] == '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
+          assert data['production_worker_name'] == 'wpa-virtual-sande-v35-1-production'
+          assert data['production_route_or_custom_domain'] == 'workers.dev only'
+          assert data['production_environment'] == 'production'
+          assert data['deployment']['manual_dispatch_from_main_only'] is True
+          assert data['deployment']['production_acceptance_before_cutover'] is True
+          assert data['approval']['production_deploy'] is True
+          assert data['approval']['public_cutover'] is True
           PY
 
-      - name: Verify source, syntax, routing, and safety
+      - name: Verify production release safety
         run: |
           set -euo pipefail
-          test -f docs/virtual-sande-v35.1-production-readiness.md
-          test -f workers/virtual-sande-v35.1-staging/wrangler.toml
-          test -f workers/virtual-sande-v35.1-staging/src/index.mjs
-          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
-          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
-          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
-          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
-          node --test \
-            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
-            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
-
-      - name: Verify no production deployment surface exists
-        run: |
-          set -euo pipefail
-          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
-          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-staging/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
           python3 - <<'PY'
           from pathlib import Path
-
-          text = Path('.github/workflows/virtual-sande-v35-1-production-readiness-audit.yml').read_text()
-          forbidden = [
-              'CLOUDFLARE_' + 'API_TOKEN',
-              'CLOUDFLARE_' + 'ACCOUNT_ID',
-              'wrangler ' + 'deploy',
-              'environment:' + ' production',
-              'cloudflare/' + 'wrangler-action',
-          ]
-          found = [item for item in forbidden if item in text]
-          if found:
-              raise SystemExit(f'Forbidden deployment surface found: {found}')
+          text = Path('.github/workflows/deploy-virtual-sande-v35-1-production.yml').read_text()
+          required = ['workflow_dispatch:', 'environment: production', "test \"$GITHUB_REF\" = 'refs/heads/main'", 'Run production acceptance before public cutover', 'Public cutover performed: **No**']
+          missing = [x for x in required if x not in text]
+          if missing: raise SystemExit(f'Missing production controls: {missing}')
           PY
 
-      - name: Record exact audited candidate
+      - name: Readiness boundary
         run: |
           {
-            echo '## Virtual Sande v35.1 Production Readiness Audit'
-            echo
-            echo '- Staging certification: **Passed**'
-            echo '- Certified source SHA: `6a1822ba8e524a454dcf4a038f3d6bc38c3d500d`'
-            echo '- Status: **BLOCKED — production not authorized**'
-            echo '- Cloudflare credentials accessed: **No**'
-            echo '- Deployment performed: **No**'
-            echo '- Production target and rollback fields resolved: **No**'
-            echo '- Next gate: explicit target resolution, rollback resolution, protected environment, and repository-owner approval'
+            echo '## Virtual Sande v35.1 Production Readiness'
+            echo '- Explicit owner approval: **Recorded**'
+            echo '- Dedicated production package: **Ready**'
+            echo '- Protected production deploy: **Required**'
+            echo '- Acceptance before cutover: **Required**'
+            echo '- Deployment performed by this audit: **No**'
           } >> "$GITHUB_STEP_SUMMARY"

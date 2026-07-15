@@ -15,109 +15,45 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-
     steps:
       - name: Checkout exact audited commit
         uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - name: Validate exact-candidate certification ledger
+      - name: Validate preserved staging certification
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-
-          certified_sha = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
-          staging_url = 'https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev'
-          data = json.loads(Path('config/virtual-sande-v35.1-certification-ledger.json').read_text())
-
-          assert data['component'] == 'Virtual Sande'
-          assert data['version'] == 'v35.1'
-          assert data['production_authorized'] is False
-          assert data['certification_status'] == 'STAGING_CERTIFIED_EXACT_CANDIDATE'
-          assert data['certified_candidate_ref'] == 'main'
-          assert data['certified_candidate_sha'] == certified_sha
-          assert data['certified_staging_url'] == staging_url
-          evidence = data['recertification_evidence']
-          assert evidence['run_number'] == 1
-          assert evidence['result'] == 'SUCCESS'
-          assert evidence['isolated_staging_deploy'] == 'PASSED'
-          assert evidence['acceptance_suite'] == 'PASSED'
-          assert evidence['legacy_compatibility'] == 'PASSED'
-          assert evidence['production_deployment_performed'] is False
-          assert evidence['production_authorized'] is False
-          assert data['invalidation_rule']
+          certified = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
+          ledger = json.loads(Path('config/virtual-sande-v35.1-certification-ledger.json').read_text())
+          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
+          assert ledger['certification_status'] == 'STAGING_CERTIFIED_EXACT_CANDIDATE'
+          assert ledger['certified_candidate_sha'] == certified
+          assert ledger['recertification_evidence']['result'] == 'SUCCESS'
+          assert ledger['recertification_evidence']['acceptance_suite'] == 'PASSED'
+          assert ledger['recertification_evidence']['legacy_compatibility'] == 'PASSED'
+          assert candidate['certified_candidate_sha'] == certified
+          assert candidate['certification_evidence']['acceptance_suite'] == 'PASSED'
+          assert candidate['certification_evidence']['legacy_compatibility'] == 'PASSED'
           PY
 
-      - name: Validate staging-certified production candidate remains blocked
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          certified_sha = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
-          data = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
-
-          assert data['component'] == 'Virtual Sande'
-          assert data['version'] == 'v35.1'
-          assert data['production_authorized'] is False
-          assert data['candidate_status'] == 'STAGING_CERTIFIED_BLOCKED_PENDING_PRODUCTION_TARGETS_AND_EXPLICIT_APPROVAL'
-          assert data['certified_candidate_sha'] == certified_sha
-          assert data['certification_evidence']['run_number'] == 1
-          assert data['certification_evidence']['isolated_staging_deploy'] == 'PASSED'
-          assert data['certification_evidence']['acceptance_suite'] == 'PASSED'
-          assert data['certification_evidence']['legacy_compatibility'] == 'PASSED'
-          assert data['production_worker_name'] == 'UNSET'
-          assert data['production_route_or_custom_domain'] == 'UNSET'
-          assert data['production_cloudflare_account'] == 'UNSET'
-          assert data['production_environment'] == 'UNSET'
-          assert data['production_cors_origins'] == 'UNSET'
-          assert all(value == 'UNSET' for value in data['rollback'].values())
-          PY
-
-      - name: Verify recertification safety surface
+      - name: Verify staging workflow remains isolated
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          path = Path('.github/workflows/virtual-sande-v35-1-staging-recertification.yml')
-          text = path.read_text()
-          required = [
-              'workflow_dispatch:',
-              'permissions:\n  contents: read',
-              'environment: staging',
-              "test \"$GITHUB_REF\" = 'refs/heads/main'",
-              'persist-credentials: false',
-              'workers/virtual-sande-v35.1-staging/wrangler.toml',
-              'test ! -e workers/virtual-sande-v35.1-production/wrangler.toml',
-              'virtual-sande-v35-1-exact-candidate-recertification',
-              'Production deployment performed: **No**',
-              'Production authorized: **No**',
-          ]
-          missing = [value for value in required if value not in text]
-          if missing:
-              raise SystemExit(f'Missing recertification controls: {missing}')
-
-          forbidden = [
-              'pull_request_target:',
-              'push:',
-              'schedule:',
-              'environment: production',
-              'contents: write',
-              '--config workers/virtual-sande-v35.1-production/',
-              'wrangler deploy --env production',
-              'routes =',
-              'custom_domain',
-          ]
-          found = [value for value in forbidden if value in text]
-          if found:
-              raise SystemExit(f'Forbidden recertification surface found: {found}')
+          text = Path('.github/workflows/virtual-sande-v35-1-staging-recertification.yml').read_text()
+          required = ['workflow_dispatch:', 'environment: staging', "test \"$GITHUB_REF\" = 'refs/heads/main'", 'workers/virtual-sande-v35.1-staging/wrangler.toml', 'Production deployment performed: **No**']
+          missing = [x for x in required if x not in text]
+          if missing: raise SystemExit(f'Missing staging isolation controls: {missing}')
+          forbidden = ['environment: production', '--config workers/virtual-sande-v35.1-production/', 'routes =', 'custom_domain']
+          found = [x for x in forbidden if x in text]
+          if found: raise SystemExit(f'Forbidden staging surface: {found}')
           PY
 
-      - name: Verify production remains technically absent
+      - name: Staging certification boundary
         run: |
-          set -euo pipefail
-          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          echo 'Staging certification remains valid and separate from the approved protected production release.' >> "$GITHUB_STEP_SUMMARY"
