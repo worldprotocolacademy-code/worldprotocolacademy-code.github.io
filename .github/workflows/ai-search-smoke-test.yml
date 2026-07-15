@@ -55,14 +55,16 @@ jobs:
           fi
 
           jq -e '.success == true' "$response_file" >/dev/null
-          result_count=$(jq '[.result.data[]?] | length' "$response_file")
+          result_count=$(jq '[.result.chunks[]?] | length' "$response_file")
 
           echo "AI Search authentication and request succeeded."
-          echo "Retrieved result count: $result_count"
+          echo "Retrieved chunk count: $result_count"
 
           if [[ "$result_count" -eq 0 ]]; then
             echo "Request succeeded, but protocol-ai returned no chunks for this query."
+            echo "Response shape summary:"
+            jq '{success, result_keys: (.result | keys)}' "$response_file"
             exit 1
           fi
 
-          jq '{success, result_count: ([.result.data[]?] | length)}' "$response_file"
+          jq '{success, chunk_count: ([.result.chunks[]?] | length)}' "$response_file"
