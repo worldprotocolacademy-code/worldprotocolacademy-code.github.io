@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "component": "Virtual Sande",
+  "version": "v35.1",
+  "inventory_status": "DISCOVERED_NOT_MIGRATED",
+  "production_authorized": false,
+  "legacy_public_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
+  "legacy_public_base": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev",
+  "legacy_worker_source_in_repository": false,
+  "legacy_worker_config_in_repository": false,
+  "direct_public_consumers": [
+    "index.html",
+    "papers.html",
+    "wpaws/book/index.html",
+    "wpaws/paper/index.html",
+    "wpaws/analysis/index.html"
+  ],
+  "constructed_public_consumers": [
+    "wpaws/index.html"
+  ],
+  "public_consumers": [
+    "index.html",
+    "papers.html",
+    "wpaws/index.html",
+    "wpaws/book/index.html",
+    "wpaws/paper/index.html",
+    "wpaws/analysis/index.html"
+  ],
+  "non_virtual_sande_legacy_base_consumers": [
+    "protocolometry-center.html"
+  ],
+  "v35_1_staging_worker": "wpa-virtual-sande-v35-1-staging",
+  "v35_1_staging_config": "workers/virtual-sande-v35.1-staging/wrangler.toml",
+  "journal_live_upstream": "https://wpa-live-production-bridge.worldprotocolacademy.workers.dev",
+  "journal_live_upstream_is_virtual_sande_endpoint": false,
+  "cutover_strategy": "UNSET",
+  "rollback_strategy": "UNSET",
+  "canonical_production_endpoint": "UNSET",
+  "required_before_cutover": [
+    "Confirm ownership and current deployment state of the legacy Worker.",
+    "Record a known-good legacy deployment identifier or rollback target.",
+    "Choose an explicit canonical Virtual Sande production Worker name and URL.",
+    "Run v35.1 staging deployment and acceptance on the exact production-candidate commit.",
+    "Approve a separate reviewed frontend migration PR covering all direct and constructed consumers.",
+    "Obtain explicit repository-owner production deployment approval."
+  ],
+  "safety_boundary": "This inventory changes no endpoint and authorizes no deployment or frontend migration."
+}
