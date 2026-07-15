@@ -41,6 +41,9 @@ jobs:
           git commit -m "Record publication integrity assertion failure"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
           exit 1
+      - name: Restore diagnostic log after successful application
+        if: steps.apply.outputs.status == '0'
+        run: git restore publication-integrity-run.log
       - name: Verify allowed file scope
         if: steps.apply.outputs.status == '0'
         run: |
