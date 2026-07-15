@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - scripts/apply_publication_integrity_static.py
+      - scripts/run_publication_integrity_static.py
       - .github/workflows/apply-publication-integrity-static.yml
 permissions:
   contents: write
@@ -25,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          python scripts/apply_publication_integrity_static.py > publication-integrity-run.log 2>&1
+          python scripts/run_publication_integrity_static.py > publication-integrity-run.log 2>&1
           status=$?
           cat publication-integrity-run.log
           echo "status=$status" >> "$GITHUB_OUTPUT"
