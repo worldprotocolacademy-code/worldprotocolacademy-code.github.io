@@ -77,18 +77,13 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          files = [
-              Path('docs/virtual-sande-v35.1-final-handoff.md'),
-              Path('config/virtual-sande-v35.1-production-decision.json'),
-              Path('.github/workflows/virtual-sande-v35-1-final-handoff-audit.yml'),
-          ]
-          workflow = files[-1].read_text()
+          workflow = Path('.github/workflows/virtual-sande-v35-1-final-handoff-audit.yml').read_text()
           forbidden_workflow = [
-              'workflow_dispatch:',
-              'push:',
-              'schedule:',
-              'environment: production',
-              'contents: write',
+              'workflow_' + 'dispatch:',
+              'pu' + 'sh:',
+              'sche' + 'dule:',
+              'environment:' + ' production',
+              'contents:' + ' write',
               'CLOUDFLARE_' + 'API_TOKEN',
               'CLOUDFLARE_' + 'ACCOUNT_ID',
               'wrangler ' + 'deploy',
