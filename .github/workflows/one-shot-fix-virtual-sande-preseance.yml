@@ -40,10 +40,18 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
-          node --test \
-            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
-            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
-          test "$(grep -o '"'"'"preseance"'"'": "'"'"пресеанс"'"'"' tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs | wc -l)" -eq 1
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs').read_text()
+          canonical = '"preseance": "пресеанс"'
+          duplicate_tail = '"preseance": "пресеанс", "presance": "пресеанс"'
+          if text.count(canonical) != 1:
+              raise SystemExit(f'Expected one canonical preseance key, found {text.count(canonical)}.')
+          if duplicate_tail in text:
+              raise SystemExit('Duplicate preseance tail entry still present.')
+          PY
 
       - name: Remove one-shot helper and commit only final code change
         run: |
