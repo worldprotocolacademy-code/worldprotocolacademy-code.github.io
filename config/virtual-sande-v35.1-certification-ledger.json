@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande",
+  "version": "v35.1",
+  "production_authorized": false,
+  "certification_status": "RECERTIFICATION_REQUIRED_AFTER_SOURCE_CHANGE",
+  "current_candidate_ref": "main",
+  "candidate_sha_resolution": "The recertification workflow checks out and records the exact github.sha selected for a manual workflow_dispatch from main.",
+  "previous_evidence": {
+    "staging_deploy_run_number": 14,
+    "staging_acceptance_run_number": 5,
+    "compatibility_evidence_pr": 54,
+    "status": "VALID_HISTORICAL_EVIDENCE_NOT_EXACT_CURRENT_CANDIDATE"
+  },
+  "source_change_after_previous_staging_evidence": {
+    "pull_request": 50,
+    "merge_commit": "e4a20faaa452cbd16853a12cb62a1297f6957038",
+    "scope": "Remove one duplicate preseance normalization key from the Virtual Sande Worker source."
+  },
+  "required_recertification": {
+    "same_commit_deploy_acceptance_compatibility": true,
+    "workflow": "Virtual Sande v35.1 Staging Recertification",
+    "dispatch_ref": "main",
+    "isolated_staging_only": true,
+    "retained_evidence_artifact": "virtual-sande-v35-1-exact-candidate-recertification"
+  },
+  "required_evidence": [
+    "Exact candidate commit SHA",
+    "Isolated staging workers.dev URL",
+    "Successful staging deployment",
+    "Successful health and v35.1 checks",
+    "Successful academic, D001, Journal Live, method, CORS, length, and URL-count checks",
+    "Successful legacy POST JSON compatibility for Macedonian, English, and history payload cases"
+  ],
+  "next_gate_after_success": "Record the exact recertified commit and evidence artifact in the production decision package. Production remains blocked until target, rollback, protected environment, and explicit owner approval are resolved.",
+  "safety_boundary": "This ledger and recertification process authorize no production deployment, route, domain, secret, KV, D1, binding, or frontend change."
+}
