@@ -6,8 +6,6 @@ on:
       - 'config/virtual-sande-v35.1-endpoint-inventory.json'
       - 'index.html'
       - 'papers.html'
-      - 'protocolometry-center.html'
-      - 'wpaws/index.html'
       - 'wpaws/book/index.html'
       - 'wpaws/paper/index.html'
       - 'wpaws/analysis/index.html'
@@ -39,8 +37,6 @@ jobs:
           expected_consumers = [
               'index.html',
               'papers.html',
-              'protocolometry-center.html',
-              'wpaws/index.html',
               'wpaws/book/index.html',
               'wpaws/paper/index.html',
               'wpaws/analysis/index.html',
@@ -80,10 +76,8 @@ jobs:
           cat > /tmp/expected-consumers.txt <<'EOF'
           index.html
           papers.html
-          protocolometry-center.html
           wpaws/analysis/index.html
           wpaws/book/index.html
-          wpaws/index.html
           wpaws/paper/index.html
           EOF
           diff -u /tmp/expected-consumers.txt /tmp/discovered-consumers.txt
@@ -114,7 +108,7 @@ jobs:
             echo '## Virtual Sande v35.1 Endpoint Inventory'
             echo
             echo '- Legacy public endpoint discovered: **Yes**'
-            echo '- Exact public consumer set recorded: **7 files**'
+            echo '- Exact public consumer set recorded: **5 files**'
             echo '- Canonical v35.1 production endpoint selected: **No**'
             echo '- Frontend migration performed: **No**'
             echo '- Deployment performed: **No**'
