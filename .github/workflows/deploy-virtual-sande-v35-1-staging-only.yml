@@ -39,6 +39,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4"
           command: deploy --config workers/virtual-sande-v35.1-staging/wrangler.toml
 
       - name: Verify exact deployment URL
