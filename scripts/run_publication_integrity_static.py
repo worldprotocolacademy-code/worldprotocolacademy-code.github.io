@@ -22,4 +22,9 @@ for line in lines:
 if set(removed) != labels or len(removed) != 4:
     raise SystemExit(f'Wrapper label assertion failed: {removed}')
 source = ''.join(kept)
+old_guard = " if any(v!=1 for v in hit.values()):raise SystemExit(f'{rel}: locale assertion {hit}')"
+new_guard = " if any(v<1 for v in hit.values()):raise SystemExit(f'{rel}: locale assertion {hit}')"
+if source.count(old_guard) != 1:
+    raise SystemExit('Locale guard assertion failed')
+source = source.replace(old_guard, new_guard, 1)
 exec(compile(source, str(source_path), 'exec'), {'__name__': '__main__', '__file__': str(source_path)})
