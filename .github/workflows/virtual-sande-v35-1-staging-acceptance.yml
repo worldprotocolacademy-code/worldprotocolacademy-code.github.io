@@ -83,10 +83,7 @@ jobs:
       - name: Reject oversized message
         run: |
           set -euo pipefail
-          message=$(python3 - <<'PY'
-print('а' * 701)
-PY
-          )
+          message=$(python3 -c "print('а' * 701)")
           status=$(curl --silent --output /tmp/long.json --write-out '%{http_code}' \
             --get "$STAGING_URL/ask" \
             --data-urlencode "message=$message" \
