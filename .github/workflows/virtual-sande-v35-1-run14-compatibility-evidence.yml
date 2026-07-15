@@ -1,0 +1,187 @@
+name: Virtual Sande v35.1 Run 14 Compatibility Evidence
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/virtual-sande-v35-1-run14-compatibility-evidence.yml'
+      - '.github/workflows/virtual-sande-v35-1-compatibility-gate.yml'
+      - 'config/virtual-sande-v35.1-compatibility-contract.json'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  compare-run-14:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      LEGACY_URL: https://protocol-bot-workerjs.worldprotocolacademy.workers.dev
+      DEPLOY_WORKFLOW_FILE: deploy-virtual-sande-v35-1-staging-only.yml
+      DEPLOY_RUN_NUMBER: '14'
+      ARTIFACT_NAME: virtual-sande-v35-1-staging-url
+
+    steps:
+      - name: Checkout exact evidence commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Resolve successful deploy run 14 and download URL artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/run14-artifact
+
+          runs_api="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${DEPLOY_WORKFLOW_FILE}/runs?event=workflow_dispatch&per_page=100"
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "$runs_api" > /tmp/runs.json
+
+          run_id=$(jq -r --argjson number "$DEPLOY_RUN_NUMBER" '
+            [.workflow_runs[] | select(.run_number == $number and .status == "completed" and .conclusion == "success")] |
+            sort_by(.created_at) | last | .id // empty
+          ' /tmp/runs.json)
+          test -n "$run_id"
+
+          artifacts_api="https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts"
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "$artifacts_api" > /tmp/artifacts.json
+
+          artifact_url=$(jq -r --arg name "$ARTIFACT_NAME" '
+            [.artifacts[] | select(.name == $name and .expired == false)] |
+            sort_by(.created_at) | last | .archive_download_url // empty
+          ' /tmp/artifacts.json)
+          test -n "$artifact_url"
+
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "$artifact_url" -o /tmp/run14-artifact.zip
+          unzip -q /tmp/run14-artifact.zip -d /tmp/run14-artifact
+
+          candidate_url=$(grep -RhoE 'https://[A-Za-z0-9.-]+\.workers\.dev/?' /tmp/run14-artifact | head -n 1 | sed 's#/$##')
+          case "$candidate_url" in
+            https://*.workers.dev) ;;
+            *) echo 'Run 14 artifact did not contain an exact HTTPS workers.dev URL.' >&2; exit 1 ;;
+          esac
+          test "$candidate_url" != "$LEGACY_URL"
+
+          echo "DEPLOY_RUN_ID=$run_id" >> "$GITHUB_ENV"
+          echo "CANDIDATE_URL=$candidate_url" >> "$GITHUB_ENV"
+          printf '%s\n' "$candidate_url" > /tmp/run14-artifact/resolved-candidate-url.txt
+
+      - name: Compare legacy and run 14 candidate POST JSON contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/virtual-sande-compatibility
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs/promises';
+          import path from 'node:path';
+
+          const contract = JSON.parse(await fs.readFile('config/virtual-sande-v35.1-compatibility-contract.json', 'utf8'));
+          if (contract.production_authorized !== false) throw new Error('Compatibility contract must remain production-blocked.');
+
+          const endpoints = {
+            legacy: process.env.LEGACY_URL,
+            candidate: process.env.CANDIDATE_URL,
+          };
+          const report = {
+            component: contract.component,
+            candidate_version: contract.candidate_version,
+            deploy_run_number: Number(process.env.DEPLOY_RUN_NUMBER),
+            deploy_run_id: Number(process.env.DEPLOY_RUN_ID),
+            production_authorized: false,
+            comparison_mode: 'READ_ONLY_RUN_ARTIFACT',
+            endpoints,
+            cases: [],
+          };
+
+          async function callEndpoint(base, testCase) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 30000);
+            try {
+              const response = await fetch(`${base}/ask`, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json', accept: 'application/json' },
+                body: JSON.stringify({
+                  message: testCase.message,
+                  lang: testCase.lang,
+                  history: testCase.history || [],
+                }),
+                signal: controller.signal,
+              });
+              const text = await response.text();
+              let data = null;
+              try { data = JSON.parse(text); } catch {}
+              return {
+                status: response.status,
+                valid: response.status === 200 && data?.ok === true && typeof data?.answer === 'string' && data.answer.trim().length > 0,
+                response_fields: data && typeof data === 'object' ? Object.keys(data).sort() : [],
+                answer_length: typeof data?.answer === 'string' ? data.answer.trim().length : 0,
+                mode: data?.mode ?? null,
+                servedBy: data?.servedBy ?? null,
+                error: data?.error ?? null,
+              };
+            } finally {
+              clearTimeout(timeout);
+            }
+          }
+
+          let failed = false;
+          for (const testCase of contract.compatibility_cases) {
+            const legacy = await callEndpoint(endpoints.legacy, testCase);
+            const candidate = await callEndpoint(endpoints.candidate, testCase);
+            const compatible = legacy.valid && candidate.valid;
+            if (!compatible) failed = true;
+            report.cases.push({
+              id: testCase.id,
+              lang: testCase.lang,
+              history_items: Array.isArray(testCase.history) ? testCase.history.length : 0,
+              legacy,
+              candidate,
+              compatible,
+            });
+          }
+
+          report.compatible = !failed;
+          report.note = 'Read-only comparison using the exact candidate URL stored by successful staging deploy run 14. Answer text is not compared for equality.';
+          const output = path.join('/tmp/virtual-sande-compatibility', 'run14-compatibility-report.json');
+          await fs.writeFile(output, JSON.stringify(report, null, 2) + '\n');
+          console.log(JSON.stringify(report, null, 2));
+          if (failed) process.exitCode = 1;
+          NODE
+
+      - name: Upload run 14 compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-v35-1-run14-compatibility-evidence
+          path: |
+            /tmp/virtual-sande-compatibility/run14-compatibility-report.json
+            /tmp/run14-artifact/resolved-candidate-url.txt
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Evidence boundary
+        if: always()
+        run: |
+          {
+            echo '## Virtual Sande v35.1 — Run 14 Compatibility Evidence'
+            echo
+            echo "- Staging deploy run number: **${DEPLOY_RUN_NUMBER}**"
+            echo "- Staging deploy run ID: **${DEPLOY_RUN_ID:-unresolved}**"
+            echo '- Candidate URL source: **successful deploy artifact**'
+            echo '- Comparison: **read-only POST JSON**'
+            echo '- Cloudflare credentials accessed: **No**'
+            echo '- Deployment performed: **No**'
+            echo '- Frontend changed: **No**'
+            echo '- Production authorized: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"
