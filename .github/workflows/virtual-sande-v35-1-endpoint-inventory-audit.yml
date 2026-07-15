@@ -1,0 +1,101 @@
+name: Virtual Sande v35.1 Endpoint Inventory Audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/virtual-sande-v35.1-endpoint-inventory.json'
+      - 'index.html'
+      - 'papers.html'
+      - 'protocolometry-center.html'
+      - 'wpaws/index.html'
+      - 'wpaws/book/index.html'
+      - 'wpaws/paper/index.html'
+      - 'wpaws/analysis/index.html'
+      - '.github/workflows/virtual-sande-v35-1-endpoint-inventory-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout exact audited commit
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Verify endpoint inventory and public consumers
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          inventory_path = Path('config/virtual-sande-v35.1-endpoint-inventory.json')
+          data = json.loads(inventory_path.read_text())
+
+          legacy = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          expected_consumers = [
+              'index.html',
+              'papers.html',
+              'protocolometry-center.html',
+              'wpaws/index.html',
+              'wpaws/book/index.html',
+              'wpaws/paper/index.html',
+              'wpaws/analysis/index.html',
+          ]
+
+          assert data['component'] == 'Virtual Sande'
+          assert data['version'] == 'v35.1'
+          assert data['production_authorized'] is False
+          assert data['inventory_status'] == 'DISCOVERED_NOT_MIGRATED'
+          assert data['legacy_public_endpoint'] == legacy
+          assert data['public_consumers'] == expected_consumers
+          assert data['canonical_production_endpoint'] == 'UNSET'
+          assert data['cutover_strategy'] == 'UNSET'
+          assert data['rollback_strategy'] == 'UNSET'
+          assert data['journal_live_upstream_is_virtual_sande_endpoint'] is False
+
+          for path_text in expected_consumers:
+              path = Path(path_text)
+              assert path.is_file(), f'Missing public consumer: {path_text}'
+              count = path.read_text().count(legacy)
+              assert count == 1, f'Expected one legacy endpoint reference in {path_text}, found {count}'
+          PY
+
+      - name: Verify migration remains blocked
+        run: |
+          set -euo pipefail
+          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          python3 - <<'PY'
+          from pathlib import Path
+
+          workflow = Path('.github/workflows/virtual-sande-v35-1-endpoint-inventory-audit.yml').read_text()
+          forbidden = [
+              'CLOUDFLARE_' + 'API_TOKEN',
+              'CLOUDFLARE_' + 'ACCOUNT_ID',
+              'wrangler ' + 'deploy',
+              'environment:' + ' production',
+              'cloudflare/' + 'wrangler-action',
+          ]
+          found = [value for value in forbidden if value in workflow]
+          if found:
+              raise SystemExit(f'Forbidden deployment surface found: {found}')
+          PY
+
+      - name: Record discovery boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Endpoint Inventory'
+            echo
+            echo '- Legacy public endpoint discovered: **Yes**'
+            echo '- Public consumers recorded: **7**'
+            echo '- Canonical v35.1 production endpoint selected: **No**'
+            echo '- Frontend migration performed: **No**'
+            echo '- Deployment performed: **No**'
+            echo '- Status: **BLOCKED pending target, cutover, rollback, and explicit approval**'
+          } >> "$GITHUB_STEP_SUMMARY"
