@@ -51,6 +51,7 @@ jobs:
           command: deploy --dry-run --config workers/virtual-sande-v35.1-staging/wrangler.toml
 
       - name: Deploy isolated staging Worker
+        id: deploy
         if: ${{ inputs.mode == 'deploy' }}
         uses: cloudflare/wrangler-action@v3
         with:
@@ -58,10 +59,24 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --config workers/virtual-sande-v35.1-staging/wrangler.toml
 
+      - name: Verify deployment URL
+        if: ${{ inputs.mode == 'deploy' }}
+        env:
+          STAGING_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          set -euo pipefail
+          test -n "$STAGING_URL"
+          case "$STAGING_URL" in
+            https://*.workers.dev|https://*.workers.dev/) ;;
+            *) echo "Unexpected staging deployment URL: $STAGING_URL" >&2; exit 1 ;;
+          esac
+          echo "STAGING_DEPLOYMENT_URL=$STAGING_URL"
+          printf '%s\n' "$STAGING_URL" > /tmp/virtual-sande-staging-url.txt
+
       - name: Staging smoke test
         if: ${{ inputs.mode == 'deploy' }}
         env:
-          STAGING_URL: https://wpa-virtual-sande-v35-1-staging.worldprotocolacademy.workers.dev
+          STAGING_URL: ${{ steps.deploy.outputs.deployment-url }}
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --retry 5 --retry-delay 3 "$STAGING_URL/orchestrator/health" | tee /tmp/health.json
@@ -72,8 +87,16 @@ jobs:
             --data-urlencode 'lang=mk' | tee /tmp/ask.json
           grep -F 'answer' /tmp/ask.json
 
+      - name: Upload exact staging URL
+        if: ${{ inputs.mode == 'deploy' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: virtual-sande-v35-1-staging-url
+          path: /tmp/virtual-sande-staging-url.txt
+          retention-days: 30
+
       - name: Deployment boundary
         if: ${{ inputs.mode == 'deploy' }}
         run: |
-          echo 'Staging Worker deployed under a separate workers.dev name.'
+          echo 'Staging Worker deployed under the exact workers.dev URL returned by Wrangler.'
           echo 'No production Worker, custom domain, route, secret, KV namespace, or D1 database was modified.'
