@@ -804,7 +804,7 @@ const TERM_NORMALIZATION_MAP = {
   "предимство": "пресеанс", "прединство": "пресеанс",
   "редослед на предимство": "ред на првенство", "ред на предимство": "ред на првенство",
   "редот на предимство": "редот на првенство", "first among equals": "пресеанс",
-  "preseance": "пресеанс", "presance": "пресеанс",
+  "presance": "пресеанс",
   // PATCH v33.1: Guard against presence/presentation confusion
   // These are NOT normalized to пресеанс — they are different concepts
   // "presence" and "presentation" are intentionally excluded from normalization
