@@ -32,21 +32,27 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate blocked candidate manifest
+      - name: Validate staging-certified blocked candidate manifest
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
 
+          certified_sha = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
           path = Path('config/virtual-sande-v35.1-production-candidate.json')
           data = json.loads(path.read_text())
 
           assert data['component'] == 'Virtual Sande'
           assert data['version'] == 'v35.1'
           assert data['production_authorized'] is False
-          assert data['candidate_status'] == 'BLOCKED_PENDING_EXPLICIT_APPROVAL_AND_TARGETS'
+          assert data['candidate_status'] == 'STAGING_CERTIFIED_BLOCKED_PENDING_PRODUCTION_TARGETS_AND_EXPLICIT_APPROVAL'
           assert data['source_branch'] == 'main'
+          assert data['certified_candidate_sha'] == certified_sha
+          assert data['certification_evidence']['run_number'] == 1
+          assert data['certification_evidence']['isolated_staging_deploy'] == 'PASSED'
+          assert data['certification_evidence']['acceptance_suite'] == 'PASSED'
+          assert data['certification_evidence']['legacy_compatibility'] == 'PASSED'
           assert data['required_bindings']['AI'] == 'REQUIRED'
           assert data['required_bindings']['AI_SEARCH_NAME'] == 'protocol-ai'
 
@@ -105,10 +111,11 @@ jobs:
           {
             echo '## Virtual Sande v35.1 Production Readiness Audit'
             echo
-            echo "- Candidate commit: \`${GITHUB_SHA}\`"
+            echo '- Staging certification: **Passed**'
+            echo '- Certified source SHA: `6a1822ba8e524a454dcf4a038f3d6bc38c3d500d`'
             echo '- Status: **BLOCKED — production not authorized**'
             echo '- Cloudflare credentials accessed: **No**'
             echo '- Deployment performed: **No**'
-            echo '- Production target fields resolved: **No**'
-            echo '- Next gate: explicit target resolution and repository-owner approval'
+            echo '- Production target and rollback fields resolved: **No**'
+            echo '- Next gate: explicit target resolution, rollback resolution, protected environment, and repository-owner approval'
           } >> "$GITHUB_STEP_SUMMARY"
