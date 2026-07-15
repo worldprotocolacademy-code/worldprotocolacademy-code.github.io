@@ -1,0 +1,58 @@
+name: ONE SHOT — Fix Virtual Sande preseance duplicate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/one-shot-fix-virtual-sande-preseance.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-clean:
+    if: github.event.pull_request.head.ref == 'fix/virtual-sande-preseance-duplicate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/virtual-sande-preseance-duplicate
+          fetch-depth: 0
+
+      - name: Apply exactly one normalization fix
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs')
+          text = path.read_text()
+          old = '  "preseance": "пресеанс", "presance": "пресеанс",\n'
+          new = '  "presance": "пресеанс",\n'
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one duplicate tail entry, found {count}.')
+          path.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Verify syntax and routing safety
+        run: |
+          set -euo pipefail
+          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+          test "$(grep -o '"'"'"preseance"'"'": "'"'"пресеанс"'"'"' tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs | wc -l)" -eq 1
+
+      - name: Remove one-shot helper and commit only final code change
+        run: |
+          set -euo pipefail
+          rm .github/workflows/one-shot-fix-virtual-sande-preseance.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
+          git add -u .github/workflows/one-shot-fix-virtual-sande-preseance.yml
+          git diff --cached --check
+          git commit -m 'fix(virtual-sande): remove duplicate preseance normalization key'
+          git push origin HEAD:fix/virtual-sande-preseance-duplicate
