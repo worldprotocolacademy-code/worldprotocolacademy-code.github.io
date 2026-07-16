@@ -1,0 +1,111 @@
+name: Virtual Sande v35.1 Public Cutover Audit
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'papers.html'
+      - 'wpaws/index.html'
+      - 'wpaws/book/index.html'
+      - 'wpaws/paper/index.html'
+      - 'wpaws/analysis/index.html'
+      - 'protocolometry-center.html'
+      - 'config/virtual-sande-v35.1-endpoint-inventory.json'
+      - 'config/virtual-sande-v35.1-production-deployment-evidence.json'
+      - '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact cutover commit
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify production evidence and exact six-consumer migration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          legacy_base = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+          legacy_ask = legacy_base + '/ask'
+          production_base = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
+          production_ask = production_base + '/ask'
+
+          direct = [
+              'index.html',
+              'papers.html',
+              'wpaws/book/index.html',
+              'wpaws/paper/index.html',
+              'wpaws/analysis/index.html',
+          ]
+          constructed = 'wpaws/index.html'
+
+          evidence = json.loads(Path('config/virtual-sande-v35.1-production-deployment-evidence.json').read_text())
+          assert evidence['status'] == 'PRODUCTION_DEPLOYED_AND_ACCEPTED_PENDING_PUBLIC_CUTOVER'
+          assert evidence['workflow_run_id'] == 29457124570
+          assert evidence['production_url'] == production_base
+          assert evidence['dedicated_production_deploy'] == 'PASSED'
+          assert evidence['production_acceptance'] == 'PASSED'
+          assert evidence['legacy_compatibility'] == 'PASSED'
+          assert evidence['public_cutover_performed'] is False
+
+          for path in direct:
+              text = Path(path).read_text()
+              if text.count(production_ask) != 1:
+                  raise SystemExit(f'Expected exactly one production /ask endpoint in {path}.')
+              if legacy_ask in text:
+                  raise SystemExit(f'Legacy /ask endpoint remains in {path}.')
+
+          text = Path(constructed).read_text()
+          if text.count(production_base) != 1:
+              raise SystemExit('Expected exactly one production base in wpaws/index.html.')
+          if legacy_base in text:
+              raise SystemExit('Legacy base remains in wpaws/index.html.')
+
+          protocolometry = Path('protocolometry-center.html').read_text()
+          if legacy_base not in protocolometry:
+              raise SystemExit('protocolometry-center.html legacy non-/ask base was changed.')
+          if production_base in protocolometry:
+              raise SystemExit('protocolometry-center.html must not use the Virtual Sande production base.')
+
+          inventory = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
+          assert inventory['inventory_status'] == 'MIGRATION_PR_READY'
+          assert inventory['production_authorized'] is True
+          assert inventory['canonical_production_endpoint'] == production_ask
+          assert inventory['cutover_strategy'] == 'MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
+          assert inventory['rollback_strategy'] == 'RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
+          assert inventory['non_virtual_sande_legacy_base_consumers'] == ['protocolometry-center.html']
+          PY
+
+      - name: Verify changed-file boundary
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          allowed='^(index.html|papers.html|wpaws/index.html|wpaws/book/index.html|wpaws/paper/index.html|wpaws/analysis/index.html|config/virtual-sande-v35.1-endpoint-inventory.json|\.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml)$'
+          git diff --name-only "$base" "$head" | tee /tmp/changed.txt
+          if grep -Ev "$allowed" /tmp/changed.txt; then
+            echo 'Unexpected file in public cutover PR.' >&2
+            exit 1
+          fi
+          test "$(wc -l < /tmp/changed.txt)" -eq 8
+
+      - name: Cutover boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1 Public Cutover Audit'
+            echo '- Verified production evidence: **Passed**'
+            echo '- Exact six-consumer migration: **Passed**'
+            echo '- protocolometry-center.html excluded: **Passed**'
+            echo '- Legacy rollback endpoint retained in inventory: **Yes**'
+            echo '- Worker runtime/config changed: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"
