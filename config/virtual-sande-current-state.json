@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "component": "Virtual Sande",
   "canonical_state_record": true,
   "recorded_at": "2026-07-16",
@@ -18,13 +18,16 @@
   },
   "consistency_patch": {
     "version": "v35.1.1",
-    "merge_commit": "0142bb33c4b5362f178712f377ed2bdb222a4779",
     "response_contract": "wpa-virtual-sande-response-v1.1",
-    "code_status": "MERGED_PENDING_SAME_COMMIT_STAGING_RECERTIFICATION",
+    "code_merge_commit": "0142bb33c4b5362f178712f377ed2bdb222a4779",
+    "certified_candidate_sha": "1576d7a2ccc3b674e84c6cb13537558dcaa4668c",
+    "code_status": "MERGED_AND_STAGING_RECERTIFIED",
     "staging_recertification_workflow": "Virtual Sande v35.1.1 Staging Recertification",
-    "staging_recertification_status": "PENDING_MANUAL_DISPATCH_FROM_MAIN",
-    "production_patch_status": "BLOCKED",
-    "production_patch_gate": "RECORD_GREEN_SAME_COMMIT_STAGING_RECERTIFICATION_THEN_USE_PROTECTED_PRODUCTION_ENVIRONMENT"
+    "staging_recertification_run_number": 2,
+    "staging_recertification_status": "SUCCESS",
+    "staging_evidence_artifact": "virtual-sande-v35-1-1-same-commit-recertification",
+    "production_patch_status": "AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY",
+    "production_patch_gate": "PRODUCTION_ENVIRONMENT_REVIEW_AND_EXACT_CERTIFIED_SHA_GUARD"
   },
   "consumer_state": {
     "canonical_production_consumers": [
@@ -35,7 +38,8 @@
       "wpaws/paper/index.html",
       "wpaws/analysis/index.html"
     ],
-    "excluded_non_ask_consumer": "protocolometry-center.html"
+    "excluded_non_ask_consumer": "protocolometry-center.html",
+    "consumer_changes_required_for_patch": false
   },
   "rollback": {
     "legacy_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
@@ -49,5 +53,5 @@
     "final_handoff": "docs/virtual-sande-v35.1-final-handoff.md",
     "interpretation": "Historical phase evidence only. This current-state record is authoritative for operational status."
   },
-  "safety_boundary": "No v35.1.1 production patch has been deployed. The existing v35.1 public service and completed six-consumer cutover remain unchanged until recertification and protected deployment succeed."
+  "safety_boundary": "The v35.1.1 production patch may be deployed only by manual dispatch from main through the protected production environment, against the exact certified candidate SHA. No frontend cutover, route, domain, KV, D1, secret, or legacy Worker change is part of this patch."
 }

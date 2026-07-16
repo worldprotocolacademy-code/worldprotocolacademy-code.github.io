@@ -1,0 +1,118 @@
+name: Virtual Sande v35.1.1 Production Patch Audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/virtual-sande-v35.1.1-staging-certification.json'
+      - 'config/virtual-sande-current-state.json'
+      - '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml'
+      - '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml'
+      - '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml'
+      - '.github/workflows/virtual-sande-current-state-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate certification and canonical patch state
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          cert = json.loads(Path('config/virtual-sande-v35.1.1-staging-certification.json').read_text())
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          assert cert['version'] == 'v35.1.1'
+          assert cert['certification_status'] == 'STAGING_RECERTIFIED_SAME_COMMIT'
+          assert cert['candidate_sha'] == '1576d7a2ccc3b674e84c6cb13537558dcaa4668c'
+          assert cert['run_number'] == 2
+          assert cert['run_status'] == 'SUCCESS'
+          assert cert['production_patch_deployment_performed'] is False
+          assert cert['gates']['isolated_staging_deploy'] == 'PASSED'
+          assert cert['gates']['response_consistency'] == 'PASSED'
+          assert cert['gates']['acceptance_suite'] == 'PASSED'
+          assert cert['gates']['legacy_compatibility'] == 'PASSED'
+          patch = state['consistency_patch']
+          assert patch['certified_candidate_sha'] == cert['candidate_sha']
+          assert patch['code_status'] == 'MERGED_AND_STAGING_RECERTIFIED'
+          assert patch['production_patch_status'] == 'AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY'
+          assert state['public_production']['version'] == 'v35.1'
+          assert state['public_production']['public_cutover_status'] == 'COMPLETED'
+          assert state['consumer_state']['consumer_changes_required_for_patch'] is False
+          assert state['rollback']['legacy_worker_retained'] is True
+          PY
+
+      - name: Verify protected manual workflow controls
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml').read_text()
+          required = [
+            'workflow_dispatch:',
+            'permissions:\n  contents: read',
+            'environment: production',
+            "test \"$GITHUB_REF\" = 'refs/heads/main'",
+            'CERTIFIED_SHA: 1576d7a2ccc3b674e84c6cb13537558dcaa4668c',
+            'git diff --quiet "$CERTIFIED_SHA" "$GITHUB_SHA"',
+            '--config workers/virtual-sande-v35.1-production/wrangler.toml',
+            'Wait for v35.1.1 propagation',
+            'Run v35.1.1 production acceptance',
+            'message=Здраво',
+            '"hasContext": false',
+            'virtual-sande-v35-1-1-production-patch-evidence',
+            'Public consumer changes: **No**',
+            'Legacy rollback Worker retained: **Yes**',
+          ]
+          missing = [x for x in required if x not in text]
+          if missing:
+            raise SystemExit(f'Missing protected patch controls: {missing}')
+          forbidden = ['\npush:', '\nschedule:', 'pull_request_target:', 'contents: write', 'routes =', 'custom_domain =']
+          found = [x for x in forbidden if x in text]
+          if found:
+            raise SystemExit(f'Forbidden production patch surface: {found}')
+          PY
+
+      - name: Verify exact PR boundary
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          merge_base="$(git merge-base "$base" "$head")"
+          git diff --name-only "$merge_base" "$head" | sort > /tmp/changed.txt
+          cat /tmp/changed.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed = {
+            'config/virtual-sande-v35.1.1-staging-certification.json',
+            'config/virtual-sande-current-state.json',
+            '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml',
+            '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml',
+            '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml',
+            '.github/workflows/virtual-sande-current-state-audit.yml',
+          }
+          actual = {x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
+          if actual != allowed:
+            raise SystemExit(f'Unexpected production patch gate boundary: actual={sorted(actual)}')
+          PY
+
+      - name: Patch gate boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1.1 Production Patch Gate'
+            echo '- Same-commit staging certification: **Passed**'
+            echo '- Exact certified SHA guard: **Passed**'
+            echo '- Protected production environment: **Required**'
+            echo '- Manual dispatch only: **Yes**'
+            echo '- Frontend consumer changes: **No**'
+            echo '- Production deployment performed by this PR: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"
