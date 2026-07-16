@@ -67,8 +67,8 @@ export function normalizePayload(input = {}) {
   return {
     ...data,
     version: API_VERSION,
-    runtime: ORCHESTRATOR_VERSION,
-    base: BASE_VERSION,
+    runtime: String(data.runtime || ORCHESTRATOR_VERSION),
+    base: String(data.base || BASE_VERSION),
     contract: RESPONSE_CONTRACT,
     hasContext,
     sources,
@@ -91,7 +91,7 @@ export async function normalizeResponse(response, requestHeaders = undefined) {
   const normalized = normalizePayload(payload);
   const headers = new Headers(response.headers);
   headers.set('content-type', 'application/json; charset=utf-8');
-  headers.set('x-wpa-runtime', ORCHESTRATOR_VERSION);
+  headers.set('x-wpa-runtime', normalized.runtime || ORCHESTRATOR_VERSION);
   headers.set('x-wpa-response-contract', RESPONSE_CONTRACT);
   if (requestHeaders?.get?.('Origin')) headers.set('vary', 'Origin');
 
