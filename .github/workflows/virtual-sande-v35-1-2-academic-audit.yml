@@ -7,7 +7,6 @@ on:
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs'
-      - 'workers/virtual-sande-v35.1-staging/src/index.mjs'
       - 'config/virtual-sande-v35.1.2-academic-candidate.json'
       - '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml'
 
@@ -30,7 +29,6 @@ jobs:
           set -euo pipefail
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs
-          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
           node --test \
             tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs \
             tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs
@@ -55,12 +53,12 @@ jobs:
           assert data['safety']['requires_staging_certification'] is True
           PY
 
-      - name: Verify staging-only wiring and production isolation
+      - name: Verify runtime isolation before staging certification
         run: |
           set -euo pipefail
-          grep -F "wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs" workers/virtual-sande-v35.1-staging/src/index.mjs
+          grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-staging/src/index.mjs
           grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-production/src/index.mjs
-          ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^(index.html|papers.html|wpaws/|workers/virtual-sande-v35.1-production/)'
+          ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^(index.html|papers.html|wpaws/|workers/virtual-sande-v35.1-staging/|workers/virtual-sande-v35.1-production/)'
 
       - name: Verify exact academic candidate boundary
         run: |
@@ -79,7 +77,6 @@ jobs:
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs',
-            'workers/virtual-sande-v35.1-staging/src/index.mjs',
           }
           actual={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           if actual!=allowed:
@@ -95,7 +92,8 @@ jobs:
             echo '- Macedonian and English gold set: **Passed**'
             echo '- Primary legal anchors: **Passed**'
             echo '- Complex-question delegation: **Preserved**'
+            echo '- Staging runtime changed: **No**'
             echo '- Production runtime changed: **No**'
             echo '- Public consumers changed: **No**'
-            echo '- Next gate: isolated staging certification'
+            echo '- Next gate: isolated staging certification workflow'
           } >> "$GITHUB_STEP_SUMMARY"
