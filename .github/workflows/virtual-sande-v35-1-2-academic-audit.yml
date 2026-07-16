@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-router.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs'
@@ -28,6 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-router.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs
 
       - name: Run definition gold set
@@ -53,7 +55,7 @@ jobs:
       - name: Compare official visit types
         run: |
           set -euo pipefail
-          node --test --test-name-pattern='visit types comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+          node --test --test-name-pattern='visit types comparison|English shared-noun visit comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
 
       - name: Run academic safety guards
         run: |
@@ -92,7 +94,7 @@ jobs:
           grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-production/src/index.mjs
           ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^(index.html|papers.html|wpaws/|workers/virtual-sande-v35.1-staging/|workers/virtual-sande-v35.1-production/)'
 
-      - name: Verify exact academic candidate boundary
+      - name: Verify bounded academic candidate boundary
         run: |
           set -euo pipefail
           base="${{ github.event.pull_request.base.sha }}"
@@ -106,13 +108,24 @@ jobs:
             '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml',
             'config/virtual-sande-v35.1.2-academic-candidate.json',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-router.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs',
           }
           actual={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
-          if actual!=allowed:
-              raise SystemExit(f'Unexpected academic candidate boundary: actual={sorted(actual)}')
+          extra=actual-allowed
+          if extra:
+              raise SystemExit(f'Unexpected academic candidate files: {sorted(extra)}')
+          required={
+            'config/virtual-sande-v35.1.2-academic-candidate.json',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-router.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs',
+          }
+          missing=required-actual
+          if missing:
+              raise SystemExit(f'Missing required academic candidate files: {sorted(missing)}')
           PY
 
       - name: Academic candidate summary
@@ -121,6 +134,7 @@ jobs:
             echo '## Virtual Sande v35.1.2 Academic Excellence Candidate'
             echo '- Controlled definitions: **20**'
             echo '- Controlled comparisons: **9**'
+            echo '- Shared-noun visit comparison: **Passed**'
             echo '- Macedonian and English gold set: **Passed**'
             echo '- Primary legal anchors: **Passed**'
             echo '- Complex-question delegation: **Preserved**'
