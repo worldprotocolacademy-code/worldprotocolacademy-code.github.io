@@ -8,6 +8,7 @@ on:
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs'
       - 'config/virtual-sande-v35.1-consistency-contract.json'
+      - '.github/workflows/virtual-sande-v35-1-ci.yml'
       - '.github/workflows/virtual-sande-v35-1-1-consistency-audit.yml'
 
 permissions:
@@ -50,8 +51,8 @@ jobs:
           assert data['safe_entrypoint'] == 'v35.1.1-safe-entrypoint'
           assert data['base'] == 'v35.0-protocolometry-connector'
           assert data['response_contract'] == 'wpa-virtual-sande-response-v1.1'
-          assert data['greeting_requires_retrieval'] is False
-          assert data['no_context_has_context'] is False
+          assert data['corrections']['greeting_requires_retrieval'] is False
+          assert data['corrections']['no_context_has_context'] is False
           assert data['production_deploy_performed'] is False
           assert data['requires_same_commit_staging_recertification'] is True
           PY
@@ -68,6 +69,7 @@ jobs:
           from pathlib import Path
           allowed = {
               '.github/workflows/virtual-sande-v35-1-1-consistency-audit.yml',
+              '.github/workflows/virtual-sande-v35-1-ci.yml',
               'config/virtual-sande-v35.1-consistency-contract.json',
               'tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs',
               'tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs',
