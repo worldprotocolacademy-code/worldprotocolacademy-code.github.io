@@ -24,14 +24,21 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Validate syntax and academic gold set
+      - name: Validate academic syntax
         run: |
           set -euo pipefail
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs
-          node --test \
-            tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs \
-            tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs
+
+      - name: Run Academic Core gold set
+        run: |
+          set -euo pipefail
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Run academic entrypoint tests
+        run: |
+          set -euo pipefail
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs
 
       - name: Validate academic candidate manifest
         run: |
