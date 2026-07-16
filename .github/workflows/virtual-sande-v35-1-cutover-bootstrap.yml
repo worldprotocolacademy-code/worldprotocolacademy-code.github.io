@@ -1,9 +1,10 @@
 name: Bootstrap Virtual Sande v35.1 Six-Consumer Cutover
 
 on:
-  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
     branches:
-      - release/virtual-sande-v35-1-public-cutover
+      - main
     paths:
       - '.github/virtual-sande-v35-1-cutover.marker'
 
@@ -16,14 +17,14 @@ concurrency:
 
 jobs:
   apply:
-    if: github.actor == 'worldprotocolacademy-code'
+    if: github.actor == 'worldprotocolacademy-code' && github.event.pull_request.head.ref == 'release/virtual-sande-v35-1-public-cutover'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
       - name: Checkout exact cutover branch
         uses: actions/checkout@v7
         with:
-          ref: release/virtual-sande-v35-1-public-cutover
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Require exact marker and production evidence
@@ -133,4 +134,4 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html papers.html wpaws/index.html wpaws/book/index.html wpaws/paper/index.html wpaws/analysis/index.html config/virtual-sande-v35.1-endpoint-inventory.json .github/virtual-sande-v35-1-cutover.marker
           git commit -m 'Cut over six Virtual Sande consumers to v35.1 production'
-          git push origin HEAD:release/virtual-sande-v35-1-public-cutover
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
