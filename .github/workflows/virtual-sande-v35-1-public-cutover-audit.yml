@@ -91,13 +91,25 @@ jobs:
           set -euo pipefail
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
-          allowed='^(index.html|papers.html|wpaws/index.html|wpaws/book/index.html|wpaws/paper/index.html|wpaws/analysis/index.html|config/virtual-sande-v35.1-endpoint-inventory.json|\.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml)$'
-          git diff --name-only "$base" "$head" | tee /tmp/changed.txt
-          if grep -Ev "$allowed" /tmp/changed.txt; then
-            echo 'Unexpected file in public cutover PR.' >&2
-            exit 1
-          fi
-          test "$(wc -l < /tmp/changed.txt)" -eq 8
+          merge_base="$(git merge-base "$base" "$head")"
+          git diff --name-only "$merge_base" "$head" | sort > /tmp/changed.txt
+          cat /tmp/changed.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          expected = {
+              '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml',
+              'config/virtual-sande-v35.1-endpoint-inventory.json',
+              'index.html',
+              'papers.html',
+              'wpaws/analysis/index.html',
+              'wpaws/book/index.html',
+              'wpaws/index.html',
+              'wpaws/paper/index.html',
+          }
+          actual = {line for line in Path('/tmp/changed.txt').read_text().splitlines() if line}
+          if actual != expected:
+              raise SystemExit(f'Unexpected cutover file set. Missing={sorted(expected-actual)} Extra={sorted(actual-expected)}')
+          PY
 
       - name: Cutover boundary
         run: |
