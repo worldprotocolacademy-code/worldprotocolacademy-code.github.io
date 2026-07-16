@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande",
+  "release": "v35.1.1",
+  "public_version": "v35.1.1",
+  "runtime": "v35.1.1-multisystem-orchestrator",
+  "safe_entrypoint": "v35.1.1-safe-entrypoint",
+  "base": "v35.0-protocolometry-connector",
+  "response_contract": "wpa-virtual-sande-response-v1.1",
+  "corrections": {
+    "greeting_fast_path": true,
+    "greeting_requires_retrieval": false,
+    "delegated_json_normalization": true,
+    "no_context_has_context": false,
+    "health_version_is_unambiguous": true,
+    "base_version_is_explicit": true,
+    "contract_headers_enabled": true,
+    "macedonian_live_wording_normalized": true
+  },
+  "required_public_fields": [
+    "ok",
+    "version",
+    "runtime",
+    "base",
+    "contract",
+    "hasContext",
+    "mode",
+    "servedBy"
+  ],
+  "context_rule": "hasContext may be true only when the selected response path has real evidence, a protected knowledge block, or non-empty governed results. Any no-context servedBy value forces hasContext=false.",
+  "version_rule": "The public version is v35.1.1. The v35.0 protocolometry connector is an explicit internal base and must never be presented as the public release version.",
+  "greeting_rule": "Bounded Macedonian and English greetings return a direct institutional greeting without AI Search, Workers AI, Anthropic, or knowledge retrieval.",
+  "public_consumers_changed": false,
+  "production_worker_configuration_changed": false,
+  "production_deploy_performed": false,
+  "requires_same_commit_staging_recertification": true,
+  "production_patch_gate": "BLOCKED_UNTIL_V35_1_1_SAME_COMMIT_STAGING_RECERTIFICATION_AND_ACCEPTANCE_PASS",
+  "rollback_target": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
+  "safety_boundary": "This consistency package changes the response contract and safe entrypoint only. It performs no deployment, route change, custom-domain change, binding change, secret change, or frontend migration."
+}
