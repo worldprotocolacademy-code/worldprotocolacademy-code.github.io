@@ -3,12 +3,11 @@ name: Virtual Sande v35.1.1 Production Patch Audit
 on:
   pull_request:
     paths:
-      - 'config/virtual-sande-v35.1.1-staging-certification.json'
+      - 'config/virtual-sande-v35.1.1-production-patch-evidence.json'
       - 'config/virtual-sande-current-state.json'
-      - '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml'
+      - '.github/workflows/virtual-sande-current-state-audit.yml'
       - '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml'
       - '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml'
-      - '.github/workflows/virtual-sande-current-state-audit.yml'
 
 permissions:
   contents: read
@@ -23,73 +22,37 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Validate certification and canonical patch state
+      - name: Validate production evidence
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-          cert = json.loads(Path('config/virtual-sande-v35.1.1-staging-certification.json').read_text())
+          evidence = json.loads(Path('config/virtual-sande-v35.1.1-production-patch-evidence.json').read_text())
           state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
-          assert cert['version'] == 'v35.1.1'
-          assert cert['certification_status'] == 'STAGING_RECERTIFIED_SAME_COMMIT'
-          assert cert['candidate_sha'] == '1576d7a2ccc3b674e84c6cb13537558dcaa4668c'
-          assert cert['run_number'] == 2
-          assert cert['run_status'] == 'SUCCESS'
-          assert cert['production_patch_deployment_performed'] is False
-          assert cert['gates']['isolated_staging_deploy'] == 'PASSED'
-          assert cert['gates']['response_consistency'] == 'PASSED'
-          assert cert['gates']['acceptance_suite'] == 'PASSED'
-          assert cert['gates']['legacy_compatibility'] == 'PASSED'
-          patch = state['consistency_patch']
-          assert patch['certified_candidate_sha'] == cert['candidate_sha']
-          assert patch['code_status'] == 'MERGED_AND_STAGING_RECERTIFIED'
-          assert patch['production_patch_status'] == 'AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY'
-          assert state['public_production']['version'] == 'v35.1'
-          assert state['public_production']['public_cutover_status'] == 'COMPLETED'
-          assert state['consumer_state']['consumer_changes_required_for_patch'] is False
-          assert state['rollback']['legacy_worker_retained'] is True
+          assert evidence['version'] == 'v35.1.1'
+          assert evidence['status'] == 'PRODUCTION_PATCH_DEPLOYED_AND_ACCEPTED'
+          assert evidence['workflow_run_number'] == 3
+          assert evidence['workflow_run_id'] == 29485825251
+          assert evidence['job_id'] == 87579958160
+          assert evidence['certified_candidate_sha'] == '1576d7a2ccc3b674e84c6cb13537558dcaa4668c'
+          assert evidence['release_sha'] == 'b43a4133c106317db0548e9bdd5831eb9c7fa87f'
+          assert evidence['response_contract'] == 'wpa-virtual-sande-response-v1.1'
+          assert evidence['gates']['protected_environment_approval'] == 'PASSED'
+          assert evidence['gates']['exact_certified_runtime_guard'] == 'PASSED'
+          assert evidence['gates']['production_deploy'] == 'PASSED'
+          assert evidence['gates']['stable_health_and_greeting_propagation'] == 'PASSED'
+          assert evidence['gates']['production_acceptance'] == 'PASSED'
+          assert evidence['gates']['security_guards'] == 'PASSED'
+          assert evidence['gates']['public_consumer_changes'] is False
+          assert evidence['gates']['legacy_rollback_worker_retained'] is True
+          assert evidence['artifact']['id'] == 8370399164
+          assert evidence['artifact']['digest'] == 'sha256:4d521447841a48c560fa4e9a61c8dcfa999cde0560e9f29d58451b95ec7b2f48'
+          assert state['public_production']['version'] == 'v35.1.1'
+          assert state['consistency_patch']['production_patch_status'] == 'DEPLOYED_AND_ACCEPTED'
           PY
 
-      - name: Verify protected manual workflow and stable propagation controls
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          text = Path('.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml').read_text()
-          required = [
-            'workflow_dispatch:',
-            'permissions:\n  contents: read',
-            'environment: production',
-            "test \"$GITHUB_REF\" = 'refs/heads/main'",
-            'CERTIFIED_SHA: 1576d7a2ccc3b674e84c6cb13537558dcaa4668c',
-            'git diff --quiet "$CERTIFIED_SHA" "$GITHUB_SHA"',
-            '--config workers/virtual-sande-v35.1-production/wrangler.toml',
-            'Wait for stable v35.1.1 health and greeting propagation',
-            'for attempt in $(seq 1 36)',
-            'consecutive=$((consecutive + 1))',
-            'if [ "$consecutive" -ge 2 ]',
-            'deploy_check=$nonce',
-            'message=Здраво',
-            '"mode": "greeting"',
-            '"hasContext": false',
-            '"sources": []',
-            "! grep -Fq 'не видам'",
-            'stable_health_and_greeting_propagation',
-            'virtual-sande-v35-1-1-production-patch-evidence',
-            'Public consumer changes: **No**',
-            'Legacy rollback Worker retained: **Yes**',
-          ]
-          missing = [x for x in required if x not in text]
-          if missing:
-            raise SystemExit(f'Missing protected patch controls: {missing}')
-          forbidden = ['\npush:', '\nschedule:', 'pull_request_target:', 'contents: write', 'routes =', 'custom_domain =']
-          found = [x for x in forbidden if x in text]
-          if found:
-            raise SystemExit(f'Forbidden production patch surface: {found}')
-          PY
-
-      - name: Verify exact PR boundary
+      - name: Verify exact finalization boundary
         run: |
           set -euo pipefail
           base="${{ github.event.pull_request.base.sha }}"
@@ -100,25 +63,27 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           allowed = {
-            '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml',
+            'config/virtual-sande-v35.1.1-production-patch-evidence.json',
+            'config/virtual-sande-current-state.json',
+            '.github/workflows/virtual-sande-current-state-audit.yml',
             '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml',
+            '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml',
           }
           actual = {x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           if actual != allowed:
-            raise SystemExit(f'Unexpected propagation hotfix boundary: actual={sorted(actual)}')
+              raise SystemExit(f'Unexpected production finalization boundary: actual={sorted(actual)}')
           PY
 
-      - name: Patch gate boundary
+      - name: Production finalization boundary
         run: |
           {
-            echo '## Virtual Sande v35.1.1 Production Patch Gate'
-            echo '- Same-commit staging certification: **Passed**'
-            echo '- Exact certified SHA guard: **Passed**'
-            echo '- Stable health plus greeting propagation gate: **Required**'
-            echo '- Two consecutive valid observations: **Required**'
-            echo '- Protected production environment: **Required**'
-            echo '- Manual dispatch only: **Yes**'
+            echo '## Virtual Sande v35.1.1 Production Finalization'
+            echo '- Protected production patch: **Passed**'
+            echo '- Stable health and greeting propagation: **Passed**'
+            echo '- Production acceptance: **Passed**'
+            echo '- Evidence artifact: **Recorded**'
+            echo '- Staging certification history preserved: **Yes**'
             echo '- Frontend consumer changes: **No**'
-            echo '- Runtime source changes: **No**'
-            echo '- Production deployment performed by this PR: **No**'
+            echo '- Runtime changes in finalization PR: **No**'
+            echo '- Legacy rollback Worker retained: **Yes**'
           } >> "$GITHUB_STEP_SUMMARY"

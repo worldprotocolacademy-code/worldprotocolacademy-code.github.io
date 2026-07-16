@@ -22,7 +22,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate successful same-commit recertification
+      - name: Validate historical same-commit recertification
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -31,13 +31,13 @@ jobs:
           state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
           cert = json.loads(Path('config/virtual-sande-v35.1.1-staging-certification.json').read_text())
           contract = json.loads(Path('config/virtual-sande-v35.1-consistency-contract.json').read_text())
-          assert state['public_production']['version'] == 'v35.1'
+          assert state['public_production']['version'] == 'v35.1.1'
           assert state['public_production']['public_cutover_status'] == 'COMPLETED'
           patch = state['consistency_patch']
           assert patch['version'] == 'v35.1.1'
           assert patch['certified_candidate_sha'] == '1576d7a2ccc3b674e84c6cb13537558dcaa4668c'
           assert patch['staging_recertification_status'] == 'SUCCESS'
-          assert patch['production_patch_status'] == 'AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY'
+          assert patch['production_patch_status'] == 'DEPLOYED_AND_ACCEPTED'
           assert cert['candidate_sha'] == patch['certified_candidate_sha']
           assert cert['certification_status'] == 'STAGING_RECERTIFIED_SAME_COMMIT'
           assert cert['run_number'] == 2
@@ -78,14 +78,13 @@ jobs:
           if found: raise SystemExit(f'Forbidden staging surface: {found}')
           PY
 
-      - name: Staging patch boundary
+      - name: Staging certification boundary
         run: |
           {
-            echo '## Virtual Sande v35.1.1 Staging Recertification Gate'
-            echo '- Current public v35.1 preserved: **Yes**'
-            echo '- Completed public cutover preserved: **Yes**'
-            echo '- Same-commit v35.1.1 recertification: **Passed**'
-            echo '- Exact candidate SHA recorded: **Yes**'
-            echo '- Staging environment isolated: **Yes**'
+            echo '## Virtual Sande v35.1.1 Staging Certification History'
+            echo '- Same-commit recertification: **Passed**'
+            echo '- Exact candidate SHA preserved: **Yes**'
+            echo '- Staging environment remained isolated: **Yes**'
             echo '- Production patch performed by staging workflow: **No**'
+            echo '- Candidate subsequently deployed to production: **Yes**'
           } >> "$GITHUB_STEP_SUMMARY"
