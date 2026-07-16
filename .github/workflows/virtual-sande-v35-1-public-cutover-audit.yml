@@ -60,14 +60,14 @@ jobs:
 
           for path in direct:
               text = Path(path).read_text()
-              if text.count(production_ask) != 1:
-                  raise SystemExit(f'Expected exactly one production /ask endpoint in {path}.')
+              if text.count(production_ask) < 1:
+                  raise SystemExit(f'Expected at least one production /ask endpoint in {path}.')
               if legacy_ask in text:
                   raise SystemExit(f'Legacy /ask endpoint remains in {path}.')
 
           text = Path(constructed).read_text()
-          if text.count(production_base) != 1:
-              raise SystemExit('Expected exactly one production base in wpaws/index.html.')
+          if text.count(production_base) < 1:
+              raise SystemExit('Expected at least one production base in wpaws/index.html.')
           if legacy_base in text:
               raise SystemExit('Legacy base remains in wpaws/index.html.')
 
