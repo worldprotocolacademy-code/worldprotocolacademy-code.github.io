@@ -7,6 +7,8 @@ on:
       - 'config/virtual-sande-current-state.json'
       - '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml'
       - '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml'
+      - '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml'
+      - '.github/workflows/virtual-sande-current-state-audit.yml'
 
 permissions:
   contents: read
@@ -74,14 +76,7 @@ jobs:
           missing = [x for x in required if x not in text]
           if missing:
             raise SystemExit(f'Missing protected patch controls: {missing}')
-          forbidden = [
-            '\npush:',
-            '\nschedule:',
-            'pull_request_target:',
-            'contents: write',
-            'routes =',
-            'custom_domain =',
-          ]
+          forbidden = ['\npush:', '\nschedule:', 'pull_request_target:', 'contents: write', 'routes =', 'custom_domain =']
           found = [x for x in forbidden if x in text]
           if found:
             raise SystemExit(f'Forbidden production patch surface: {found}')
@@ -102,6 +97,8 @@ jobs:
             'config/virtual-sande-current-state.json',
             '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml',
             '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml',
+            '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml',
+            '.github/workflows/virtual-sande-current-state-audit.yml',
           }
           actual = {x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           if actual != allowed:
