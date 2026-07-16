@@ -144,6 +144,65 @@
     list.appendChild(item);
   }
 
+  function ensureVirtualSandeBrandingStyles() {
+    if (document.getElementById('wpa-virtual-sande-branding-style')) return;
+    var style = document.createElement('style');
+    style.id = 'wpa-virtual-sande-branding-style';
+    style.textContent = [
+      '.wpa-virtual-sande-brand{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important;}',
+      '.wpa-virtual-sande-mark{width:36px!important;height:36px!important;flex:0 0 36px!important;border-radius:50%!important;overflow:hidden!important;display:grid!important;place-items:center!important;background:#0d1f3c!important;border:1px solid rgba(201,168,76,.72)!important;box-shadow:0 4px 14px rgba(0,0,0,.22)!important;color:#e8d49a!important;font:800 9px/1 system-ui,sans-serif!important;letter-spacing:.04em!important;}',
+      '.wpa-virtual-sande-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;}',
+      '.wpa-virtual-sande-copy{min-width:0!important;}',
+      '@media(max-width:520px){.wpa-virtual-sande-mark{width:32px!important;height:32px!important;flex-basis:32px!important;}}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
+  function brandVirtualSandeHeader(header, titleSelector) {
+    if (!header || header.querySelector('.wpa-virtual-sande-mark')) return;
+    var title = header.querySelector(titleSelector);
+    if (!title) return;
+    var copy = title.parentElement;
+    if (!copy || !copy.parentNode) return;
+
+    ensureVirtualSandeBrandingStyles();
+    copy.classList.add('wpa-virtual-sande-copy');
+
+    var brand = document.createElement('div');
+    brand.className = 'wpa-virtual-sande-brand';
+    brand.setAttribute('translate', 'no');
+    brand.setAttribute('data-no-i18n', 'true');
+
+    var mark = document.createElement('span');
+    mark.className = 'wpa-virtual-sande-mark';
+    mark.setAttribute('aria-label', 'World Protocol Academy');
+    mark.textContent = 'WPA';
+
+    var image = document.createElement('img');
+    image.src = '/logo.webp';
+    image.alt = 'World Protocol Academy logo';
+    image.width = 36;
+    image.height = 36;
+    image.loading = 'eager';
+    image.decoding = 'async';
+    image.addEventListener('load', function () {
+      mark.textContent = '';
+      mark.appendChild(image);
+    }, { once: true });
+    image.addEventListener('error', function () {
+      mark.textContent = 'WPA';
+    }, { once: true });
+
+    copy.parentNode.insertBefore(brand, copy);
+    brand.appendChild(mark);
+    brand.appendChild(copy);
+  }
+
+  function placeVirtualSandeBranding() {
+    brandVirtualSandeHeader(document.querySelector('.bot-hd'), '.bot-title');
+    brandVirtualSandeHeader(document.querySelector('.wpa2-bot-header'), '.wpa2-bot-title');
+  }
+
   function boot() {
     if (isInstitute()) {
       ensureInstituteStyles();
@@ -151,6 +210,7 @@
       placeInstituteTools();
     }
     if (isHome()) placeHomePilot();
+    placeVirtualSandeBranding();
   }
 
   if (isInstitute()) {
