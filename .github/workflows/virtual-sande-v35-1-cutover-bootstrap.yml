@@ -70,21 +70,21 @@ jobs:
               p = Path(path)
               text = p.read_text()
               count = text.count(legacy_ask)
-              if count != 1:
-                  raise SystemExit(f'{path}: expected exactly one legacy /ask endpoint, found {count}.')
-              updated = text.replace(legacy_ask, production_ask, 1)
-              if updated.count(production_ask) != 1 or legacy_ask in updated:
-                  raise SystemExit(f'{path}: exact endpoint replacement verification failed.')
+              if count < 1:
+                  raise SystemExit(f'{path}: expected at least one legacy /ask endpoint, found {count}.')
+              updated = text.replace(legacy_ask, production_ask)
+              if updated.count(production_ask) != count or legacy_ask in updated:
+                  raise SystemExit(f'{path}: complete endpoint replacement verification failed.')
               p.write_text(updated)
 
           constructed = Path('wpaws/index.html')
           text = constructed.read_text()
           count = text.count(legacy_base)
-          if count != 1:
-              raise SystemExit(f'wpaws/index.html: expected exactly one legacy base, found {count}.')
-          updated = text.replace(legacy_base, production_base, 1)
-          if updated.count(production_base) != 1 or legacy_base in updated:
-              raise SystemExit('wpaws/index.html: exact base replacement verification failed.')
+          if count < 1:
+              raise SystemExit(f'wpaws/index.html: expected at least one legacy base, found {count}.')
+          updated = text.replace(legacy_base, production_base)
+          if updated.count(production_base) != count or legacy_base in updated:
+              raise SystemExit('wpaws/index.html: complete base replacement verification failed.')
           constructed.write_text(updated)
 
           protocolometry = Path('protocolometry-center.html').read_text()
