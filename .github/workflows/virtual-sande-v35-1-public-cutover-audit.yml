@@ -12,6 +12,7 @@ on:
       - 'protocolometry-center.html'
       - 'config/virtual-sande-v35.1-endpoint-inventory.json'
       - 'config/virtual-sande-v35.1-production-deployment-evidence.json'
+      - '.github/workflows/virtual-sande-v35-1-cutover-bootstrap.yml'
       - '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml'
 
 permissions:
@@ -50,13 +51,30 @@ jobs:
           constructed = 'wpaws/index.html'
 
           evidence = json.loads(Path('config/virtual-sande-v35.1-production-deployment-evidence.json').read_text())
-          assert evidence['status'] == 'PRODUCTION_DEPLOYED_AND_ACCEPTED_PENDING_PUBLIC_CUTOVER'
           assert evidence['workflow_run_id'] == 29457124570
           assert evidence['production_url'] == production_base
           assert evidence['dedicated_production_deploy'] == 'PASSED'
           assert evidence['production_acceptance'] == 'PASSED'
           assert evidence['legacy_compatibility'] == 'PASSED'
-          assert evidence['public_cutover_performed'] is False
+
+          inventory = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
+          assert inventory['production_authorized'] is True
+          assert inventory['canonical_production_endpoint'] == production_ask
+          assert inventory['cutover_strategy'] == 'MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
+          assert inventory['rollback_strategy'] == 'RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
+          assert inventory['non_virtual_sande_legacy_base_consumers'] == ['protocolometry-center.html']
+
+          if inventory['inventory_status'] == 'MIGRATION_PR_READY':
+              assert evidence['status'] == 'PRODUCTION_DEPLOYED_AND_ACCEPTED_PENDING_PUBLIC_CUTOVER'
+              assert evidence['public_cutover_performed'] is False
+          elif inventory['inventory_status'] == 'MIGRATED_TO_V35_1_PRODUCTION':
+              assert evidence['status'] == 'PRODUCTION_DEPLOYED_ACCEPTED_AND_PUBLIC_CUTOVER_COMPLETED'
+              assert evidence['public_cutover_performed'] is True
+              assert evidence['public_cutover']['pull_request'] == 63
+              assert evidence['public_cutover']['merge_commit'] == 'dbd97e76163a72d2205d2985506a25d7c620b268'
+              assert inventory['public_cutover_evidence']['pull_request'] == 63
+          else:
+              raise SystemExit(f"Unsupported cutover inventory status: {inventory['inventory_status']}")
 
           for path in direct:
               text = Path(path).read_text()
@@ -76,14 +94,6 @@ jobs:
               raise SystemExit('protocolometry-center.html legacy non-/ask base was changed.')
           if production_base in protocolometry:
               raise SystemExit('protocolometry-center.html must not use the Virtual Sande production base.')
-
-          inventory = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
-          assert inventory['inventory_status'] == 'MIGRATION_PR_READY'
-          assert inventory['production_authorized'] is True
-          assert inventory['canonical_production_endpoint'] == production_ask
-          assert inventory['cutover_strategy'] == 'MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
-          assert inventory['rollback_strategy'] == 'RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
-          assert inventory['non_virtual_sande_legacy_base_consumers'] == ['protocolometry-center.html']
           PY
 
       - name: Verify changed-file boundary
@@ -96,7 +106,7 @@ jobs:
           cat /tmp/changed.txt
           python3 - <<'PY'
           from pathlib import Path
-          expected = {
+          cutover = {
               '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml',
               'config/virtual-sande-v35.1-endpoint-inventory.json',
               'index.html',
@@ -106,18 +116,26 @@ jobs:
               'wpaws/index.html',
               'wpaws/paper/index.html',
           }
+          finalization = {
+              '.github/workflows/virtual-sande-v35-1-cutover-bootstrap.yml',
+              '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml',
+              'config/virtual-sande-v35.1-endpoint-inventory.json',
+              'config/virtual-sande-v35.1-production-deployment-evidence.json',
+          }
           actual = {line for line in Path('/tmp/changed.txt').read_text().splitlines() if line}
-          if actual != expected:
-              raise SystemExit(f'Unexpected cutover file set. Missing={sorted(expected-actual)} Extra={sorted(actual-expected)}')
+          if actual not in (cutover, finalization):
+              raise SystemExit(f'Unexpected cutover lifecycle file set: {sorted(actual)}')
           PY
 
       - name: Cutover boundary
         run: |
+          status=$(python3 -c "import json; print(json.load(open('config/virtual-sande-v35.1-endpoint-inventory.json'))['inventory_status'])")
           {
             echo '## Virtual Sande v35.1 Public Cutover Audit'
             echo '- Verified production evidence: **Passed**'
-            echo '- Exact six-consumer migration: **Passed**'
+            echo '- Exact six-consumer production routing: **Passed**'
             echo '- protocolometry-center.html excluded: **Passed**'
-            echo '- Legacy rollback endpoint retained in inventory: **Yes**'
+            echo '- Legacy rollback endpoint retained: **Yes**'
+            echo "- Cutover lifecycle status: **$status**"
             echo '- Worker runtime/config changed: **No**'
           } >> "$GITHUB_STEP_SUMMARY"

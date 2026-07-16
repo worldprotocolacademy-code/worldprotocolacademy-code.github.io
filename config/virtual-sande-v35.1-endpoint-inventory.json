@@ -2,7 +2,7 @@
   "schema_version": "1.1",
   "component": "Virtual Sande",
   "version": "v35.1",
-  "inventory_status": "MIGRATION_PR_READY",
+  "inventory_status": "MIGRATED_TO_V35_1_PRODUCTION",
   "production_authorized": true,
   "legacy_public_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
   "legacy_public_base": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev",
@@ -37,7 +37,7 @@
   "rollback_strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT",
   "canonical_production_endpoint": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask",
   "required_before_cutover": [],
-  "safety_boundary": "This reviewed migration PR changes exactly six Virtual Sande /ask consumers. protocolometry-center.html remains on the legacy base for its non-/ask endpoints. Rollback restores all six consumers to the recorded legacy endpoint.",
+  "safety_boundary": "Public cutover is complete for exactly six Virtual Sande /ask consumers. protocolometry-center.html remains on the legacy base for its non-/ask endpoints. The unchanged legacy Worker remains the rollback target.",
   "production_worker": "wpa-virtual-sande-v35-1-production",
   "production_deployment_evidence": {
     "workflow_run_number": 3,
@@ -47,5 +47,12 @@
     "artifact_digest": "sha256:50e5d6b26080a50f4eeda45a61eca4ca629fe65ed8e3a2a67bc5a24249bda19b",
     "production_acceptance": "PASSED",
     "legacy_compatibility": "PASSED"
+  },
+  "public_cutover_evidence": {
+    "pull_request": 63,
+    "merge_commit": "dbd97e76163a72d2205d2985506a25d7c620b268",
+    "cutover_audit": "PASSED",
+    "endpoint_inventory_audit": "PASSED",
+    "completed_at": "2026-07-16"
   }
 }

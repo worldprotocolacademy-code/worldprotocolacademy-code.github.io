@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "component": "Virtual Sande",
   "version": "v35.1",
-  "status": "PRODUCTION_DEPLOYED_AND_ACCEPTED_PENDING_PUBLIC_CUTOVER",
+  "status": "PRODUCTION_DEPLOYED_ACCEPTED_AND_PUBLIC_CUTOVER_COMPLETED",
   "certified_candidate_sha": "6a1822ba8e524a454dcf4a038f3d6bc38c3d500d",
   "workflow": "DEPLOY Virtual Sande v35.1 PRODUCTION",
   "workflow_run_number": 3,
@@ -22,9 +22,17 @@
     "digest": "sha256:50e5d6b26080a50f4eeda45a61eca4ca629fe65ed8e3a2a67bc5a24249bda19b",
     "expires_at": "2026-10-13T22:58:32Z"
   },
-  "public_cutover_performed": false,
+  "public_cutover_performed": true,
   "public_cutover_authorized": true,
-  "next_gate": "SEPARATE_REVIEWED_SIX_CONSUMER_FRONTEND_CUTOVER_PR",
+  "public_cutover": {
+    "pull_request": 63,
+    "merge_commit": "dbd97e76163a72d2205d2985506a25d7c620b268",
+    "completed_at": "2026-07-16",
+    "cutover_audit": "PASSED",
+    "endpoint_inventory_audit": "PASSED",
+    "consumer_count": 6
+  },
+  "next_gate": "POST_CUTOVER_MONITORING_AND_ROLLBACK_RETENTION",
   "direct_consumers": [
     "index.html",
     "papers.html",
