@@ -62,11 +62,11 @@ jobs:
           missing = [x for x in required if x not in text]
           if missing: raise SystemExit(f'Missing staging recertification controls: {missing}')
           forbidden = [
-              'environment: production',
-              '--config workers/virtual-sande-v35.1-production/wrangler.toml',
-              'test ! -e workers/virtual-sande-v35.1-production/wrangler.toml',
-              'routes =',
-              'custom_domain',
+              'environment:' + ' production',
+              '--config workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
+              'test ! -e workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
+              'routes ' + '=',
+              'custom_' + 'domain',
           ]
           found = [x for x in forbidden if x in text]
           if found: raise SystemExit(f'Forbidden staging surface: {found}')
