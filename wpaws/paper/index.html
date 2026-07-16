@@ -411,7 +411,7 @@ async function runGenerate(sec){
   if(statusEl) statusEl.textContent = 'Generating...';
   if(resultEl) { resultEl.className = 'gen-result'; }
   try {
-    const res = await fetch('https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask', {
+    const res = await fetch('https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ message: 'PAPER STUDIO · PRODUCTION MODE. Write the ' + sec + ' section for an academic paper.\nPaper: ' + PAPER_STATE.title + '\nStyle: ' + PAPER_STATE.citeStyle.toUpperCase() + '\nInstruction: ' + prompt, lang:'mk', history:[] })
     });

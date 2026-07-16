@@ -2,8 +2,8 @@
   "schema_version": "1.1",
   "component": "Virtual Sande",
   "version": "v35.1",
-  "inventory_status": "DISCOVERED_NOT_MIGRATED",
-  "production_authorized": false,
+  "inventory_status": "MIGRATION_PR_READY",
+  "production_authorized": true,
   "legacy_public_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
   "legacy_public_base": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev",
   "legacy_worker_source_in_repository": false,
@@ -33,16 +33,19 @@
   "v35_1_staging_config": "workers/virtual-sande-v35.1-staging/wrangler.toml",
   "journal_live_upstream": "https://wpa-live-production-bridge.worldprotocolacademy.workers.dev",
   "journal_live_upstream_is_virtual_sande_endpoint": false,
-  "cutover_strategy": "UNSET",
-  "rollback_strategy": "UNSET",
-  "canonical_production_endpoint": "UNSET",
-  "required_before_cutover": [
-    "Confirm ownership and current deployment state of the legacy Worker.",
-    "Record a known-good legacy deployment identifier or rollback target.",
-    "Choose an explicit canonical Virtual Sande production Worker name and URL.",
-    "Run v35.1 staging deployment and acceptance on the exact production-candidate commit.",
-    "Approve a separate reviewed frontend migration PR covering all direct and constructed consumers.",
-    "Obtain explicit repository-owner production deployment approval."
-  ],
-  "safety_boundary": "This inventory changes no endpoint and authorizes no deployment or frontend migration."
+  "cutover_strategy": "MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS",
+  "rollback_strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT",
+  "canonical_production_endpoint": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask",
+  "required_before_cutover": [],
+  "safety_boundary": "This reviewed migration PR changes exactly six Virtual Sande /ask consumers. protocolometry-center.html remains on the legacy base for its non-/ask endpoints. Rollback restores all six consumers to the recorded legacy endpoint.",
+  "production_worker": "wpa-virtual-sande-v35-1-production",
+  "production_deployment_evidence": {
+    "workflow_run_number": 3,
+    "workflow_run_id": 29457124570,
+    "release_sha": "8ab76fe682badfcbedaba9deac75782bcd0d505e",
+    "artifact_id": 8366172298,
+    "artifact_digest": "sha256:50e5d6b26080a50f4eeda45a61eca4ca629fe65ed8e3a2a67bc5a24249bda19b",
+    "production_acceptance": "PASSED",
+    "legacy_compatibility": "PASSED"
+  }
 }
