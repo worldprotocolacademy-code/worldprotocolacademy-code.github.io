@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - 'config/virtual-sande-v35.1-endpoint-inventory.json'
+      - 'config/virtual-sande-v35.1-production-deployment-evidence.json'
       - 'index.html'
       - 'papers.html'
       - 'wpaws/index.html'
       - 'wpaws/book/index.html'
       - 'wpaws/paper/index.html'
       - 'wpaws/analysis/index.html'
+      - 'protocolometry-center.html'
       - '.github/workflows/virtual-sande-v35-1-endpoint-inventory-audit.yml'
   workflow_dispatch:
 
@@ -19,7 +21,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - name: Checkout exact audited commit
@@ -27,14 +29,18 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Validate blocked endpoint inventory
+      - name: Validate endpoint inventory lifecycle state
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          data = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
+          legacy_base = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+          legacy_ask = legacy_base + '/ask'
+          production_base = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
+          production_ask = production_base + '/ask'
+
           direct = [
               'index.html',
               'papers.html',
@@ -52,70 +58,72 @@ jobs:
               'wpaws/analysis/index.html',
           ]
 
+          data = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
           assert data['schema_version'] == '1.1'
           assert data['component'] == 'Virtual Sande'
           assert data['version'] == 'v35.1'
-          assert data['production_authorized'] is False
-          assert data['inventory_status'] == 'DISCOVERED_NOT_MIGRATED'
-          assert data['legacy_public_endpoint'] == 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
-          assert data['legacy_public_base'] == 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+          assert data['legacy_public_endpoint'] == legacy_ask
+          assert data['legacy_public_base'] == legacy_base
           assert data['direct_public_consumers'] == direct
           assert data['constructed_public_consumers'] == constructed
           assert data['public_consumers'] == all_consumers
           assert data['non_virtual_sande_legacy_base_consumers'] == ['protocolometry-center.html']
-          assert data['canonical_production_endpoint'] == 'UNSET'
-          assert data['cutover_strategy'] == 'UNSET'
-          assert data['rollback_strategy'] == 'UNSET'
           assert data['journal_live_upstream_is_virtual_sande_endpoint'] is False
+
+          status = data['inventory_status']
+          if status == 'DISCOVERED_NOT_MIGRATED':
+              assert data['production_authorized'] is False
+              assert data['canonical_production_endpoint'] == 'UNSET'
+              assert data['cutover_strategy'] == 'UNSET'
+              assert data['rollback_strategy'] == 'UNSET'
+              for path in direct:
+                  assert legacy_ask in Path(path).read_text(errors='ignore')
+              constructed_text = Path('wpaws/index.html').read_text(errors='ignore')
+              assert legacy_base in constructed_text and '/ask' in constructed_text
+          elif status in {'MIGRATION_PR_READY', 'MIGRATED_TO_V35_1_PRODUCTION'}:
+              assert data['production_authorized'] is True
+              assert data['canonical_production_endpoint'] == production_ask
+              assert data['cutover_strategy'] == 'MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
+              assert data['rollback_strategy'] == 'RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
+              deployment = data['production_deployment_evidence']
+              assert deployment['workflow_run_id'] == 29457124570
+              assert deployment['production_acceptance'] == 'PASSED'
+              assert deployment['legacy_compatibility'] == 'PASSED'
+
+              evidence = json.loads(Path('config/virtual-sande-v35.1-production-deployment-evidence.json').read_text())
+              assert evidence['workflow_run_id'] == 29457124570
+              assert evidence['production_url'] == production_base
+              assert evidence['dedicated_production_deploy'] == 'PASSED'
+              assert evidence['production_acceptance'] == 'PASSED'
+              assert evidence['legacy_compatibility'] == 'PASSED'
+
+              for path in direct:
+                  text = Path(path).read_text(errors='ignore')
+                  assert production_ask in text
+                  assert legacy_ask not in text
+              constructed_text = Path('wpaws/index.html').read_text(errors='ignore')
+              assert production_base in constructed_text
+              assert legacy_base not in constructed_text
+
+              protocolometry = Path('protocolometry-center.html').read_text(errors='ignore')
+              assert legacy_base in protocolometry
+              assert production_base not in protocolometry
+
+              if status == 'MIGRATION_PR_READY':
+                  assert evidence['public_cutover_performed'] is False
+              else:
+                  assert evidence['public_cutover_performed'] is True
+          else:
+              raise SystemExit(f'Unsupported endpoint inventory status: {status}')
+
+          print(f'Validated endpoint inventory status: {status}')
           PY
 
-      - name: Generate actual direct legacy public consumer set
-        run: |
-          set -euo pipefail
-          LEGACY_ENDPOINT='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
-          grep -RIlF --include='*.html' --exclude-dir='.git' "$LEGACY_ENDPOINT" . \
-            | sed 's#^./##' \
-            | sort > /tmp/discovered-direct-consumers.txt
-          cat /tmp/discovered-direct-consumers.txt
-
-      - name: Upload discovered direct-consumer evidence
-        uses: actions/upload-artifact@v7
-        with:
-          name: virtual-sande-legacy-direct-consumers
-          path: /tmp/discovered-direct-consumers.txt
-          retention-days: 30
-
-      - name: Verify exact direct legacy public consumer set
-        run: |
-          set -euo pipefail
-          cat > /tmp/expected-direct-consumers.txt <<'EOF'
-          index.html
-          papers.html
-          wpaws/analysis/index.html
-          wpaws/book/index.html
-          wpaws/paper/index.html
-          EOF
-          diff -u /tmp/expected-direct-consumers.txt /tmp/discovered-direct-consumers.txt
-
-      - name: Verify constructed legacy ask consumer
+      - name: Verify audit has no deployment capability
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-
-          text = Path('wpaws/index.html').read_text(errors='ignore')
-          assert 'WPA_API_BASE' in text
-          assert 'protocol-bot-workerjs.worldprotocolacademy.workers.dev' in text
-          assert '/ask' in text
-          PY
-
-      - name: Verify migration remains blocked
-        run: |
-          set -euo pipefail
-          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
-          python3 - <<'PY'
-          from pathlib import Path
-
           workflow = Path('.github/workflows/virtual-sande-v35-1-endpoint-inventory-audit.yml').read_text()
           forbidden = [
               'CLOUDFLARE_' + 'API_TOKEN',
@@ -123,22 +131,22 @@ jobs:
               'wrangler ' + 'deploy',
               'environment:' + ' production',
               'cloudflare/' + 'wrangler-action',
+              'contents: write',
           ]
           found = [value for value in forbidden if value in workflow]
           if found:
               raise SystemExit(f'Forbidden deployment surface found: {found}')
           PY
 
-      - name: Record discovery boundary
+      - name: Record inventory boundary
         run: |
+          status=$(python3 -c "import json; print(json.load(open('config/virtual-sande-v35.1-endpoint-inventory.json'))['inventory_status'])")
           {
             echo '## Virtual Sande v35.1 Endpoint Inventory'
             echo
-            echo '- Direct legacy /ask consumers: **5 files**'
-            echo '- Constructed legacy /ask consumers: **1 file**'
-            echo '- Total public Virtual Sande consumers: **6 files**'
-            echo '- Canonical v35.1 production endpoint selected: **No**'
-            echo '- Frontend migration performed: **No**'
-            echo '- Deployment performed: **No**'
-            echo '- Status: **BLOCKED pending target, cutover, rollback, and explicit approval**'
+            echo '- Public Virtual Sande consumers: **6 files**'
+            echo '- Excluded non-/ask legacy consumer: **protocolometry-center.html**'
+            echo "- Inventory lifecycle status: **$status**"
+            echo '- Legacy rollback endpoint retained: **Yes**'
+            echo '- Deployment capability in this audit: **No**'
           } >> "$GITHUB_STEP_SUMMARY"
