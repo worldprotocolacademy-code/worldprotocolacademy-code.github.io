@@ -7,6 +7,7 @@ on:
       - 'config/virtual-sande-current-state.json'
       - '.github/workflows/virtual-sande-current-state-audit.yml'
       - '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml'
+      - '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml'
 
 permissions:
   contents: read
@@ -66,6 +67,7 @@ jobs:
             'config/virtual-sande-current-state.json',
             '.github/workflows/virtual-sande-current-state-audit.yml',
             '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml',
+            '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml',
           }
           actual = {x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           if actual != allowed:
@@ -80,6 +82,7 @@ jobs:
             echo '- Stable health and greeting propagation: **Passed**'
             echo '- Production acceptance: **Passed**'
             echo '- Evidence artifact: **Recorded**'
+            echo '- Staging certification history preserved: **Yes**'
             echo '- Frontend consumer changes: **No**'
             echo '- Runtime changes in finalization PR: **No**'
             echo '- Legacy rollback Worker retained: **Yes**'
