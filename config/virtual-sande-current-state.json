@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande",
+  "canonical_state_record": true,
+  "recorded_at": "2026-07-16",
+  "public_production": {
+    "version": "v35.1",
+    "runtime": "v35.1-multisystem-orchestrator",
+    "base": "v35.0-protocolometry-connector",
+    "worker": "wpa-virtual-sande-v35-1-production",
+    "url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
+    "endpoint": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask",
+    "deployment_status": "DEPLOYED_AND_ACCEPTED",
+    "public_cutover_status": "COMPLETED",
+    "production_deployment_run_id": 29457124570,
+    "cutover_pull_request": 63,
+    "cutover_merge_commit": "dbd97e76163a72d2205d2985506a25d7c620b268"
+  },
+  "consistency_patch": {
+    "version": "v35.1.1",
+    "merge_commit": "0142bb33c4b5362f178712f377ed2bdb222a4779",
+    "response_contract": "wpa-virtual-sande-response-v1.1",
+    "code_status": "MERGED_PENDING_SAME_COMMIT_STAGING_RECERTIFICATION",
+    "staging_recertification_workflow": "Virtual Sande v35.1.1 Staging Recertification",
+    "staging_recertification_status": "PENDING_MANUAL_DISPATCH_FROM_MAIN",
+    "production_patch_status": "BLOCKED",
+    "production_patch_gate": "RECORD_GREEN_SAME_COMMIT_STAGING_RECERTIFICATION_THEN_USE_PROTECTED_PRODUCTION_ENVIRONMENT"
+  },
+  "consumer_state": {
+    "canonical_production_consumers": [
+      "index.html",
+      "papers.html",
+      "wpaws/index.html",
+      "wpaws/book/index.html",
+      "wpaws/paper/index.html",
+      "wpaws/analysis/index.html"
+    ],
+    "excluded_non_ask_consumer": "protocolometry-center.html"
+  },
+  "rollback": {
+    "legacy_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
+    "legacy_worker_retained": true,
+    "strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT"
+  },
+  "historical_records": {
+    "certification_ledger": "config/virtual-sande-v35.1-certification-ledger.json",
+    "production_decision": "config/virtual-sande-v35.1-production-decision.json",
+    "production_candidate": "config/virtual-sande-v35.1-production-candidate.json",
+    "final_handoff": "docs/virtual-sande-v35.1-final-handoff.md",
+    "interpretation": "Historical phase evidence only. This current-state record is authoritative for operational status."
+  },
+  "safety_boundary": "No v35.1.1 production patch has been deployed. The existing v35.1 public service and completed six-consumer cutover remain unchanged until recertification and protected deployment succeed."
+}
