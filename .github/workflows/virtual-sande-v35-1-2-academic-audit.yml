@@ -1,0 +1,101 @@
+name: Virtual Sande v35.1.2 Academic Excellence Audit
+
+on:
+  pull_request:
+    paths:
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs'
+      - 'workers/virtual-sande-v35.1-staging/src/index.mjs'
+      - 'config/virtual-sande-v35.1.2-academic-candidate.json'
+      - '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact academic candidate
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate syntax and academic gold set
+        run: |
+          set -euo pipefail
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs
+          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs
+
+      - name: Validate academic candidate manifest
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('config/virtual-sande-v35.1.2-academic-candidate.json').read_text())
+          assert data['candidate_version']=='v35.1.2'
+          assert data['runtime']=='v35.1.2-academic-entrypoint'
+          assert data['upstream_runtime']=='v35.1.1-safe-entrypoint'
+          assert data['response_contract']=='wpa-virtual-sande-response-v1.2'
+          assert data['academic_core']=='wpa-academic-core-v1.0'
+          assert data['scope']['controlled_definitions']==20
+          assert data['scope']['controlled_comparisons']==9
+          assert data['safety']['production_changed'] is False
+          assert data['safety']['public_consumers_changed'] is False
+          assert data['safety']['complex_questions_delegate_to_upstream'] is True
+          assert data['safety']['requires_staging_certification'] is True
+          PY
+
+      - name: Verify staging-only wiring and production isolation
+        run: |
+          set -euo pipefail
+          grep -F "wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs" workers/virtual-sande-v35.1-staging/src/index.mjs
+          grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-production/src/index.mjs
+          ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^(index.html|papers.html|wpaws/|workers/virtual-sande-v35.1-production/)'
+
+      - name: Verify exact academic candidate boundary
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          merge_base="$(git merge-base "$base" "$head")"
+          git diff --name-only "$merge_base" "$head" | sort > /tmp/changed.txt
+          cat /tmp/changed.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed={
+            '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml',
+            'config/virtual-sande-v35.1.2-academic-candidate.json',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs',
+            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs',
+            'workers/virtual-sande-v35.1-staging/src/index.mjs',
+          }
+          actual={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
+          if actual!=allowed:
+              raise SystemExit(f'Unexpected academic candidate boundary: actual={sorted(actual)}')
+          PY
+
+      - name: Academic candidate summary
+        run: |
+          {
+            echo '## Virtual Sande v35.1.2 Academic Excellence Candidate'
+            echo '- Controlled definitions: **20**'
+            echo '- Controlled comparisons: **9**'
+            echo '- Macedonian and English gold set: **Passed**'
+            echo '- Primary legal anchors: **Passed**'
+            echo '- Complex-question delegation: **Preserved**'
+            echo '- Production runtime changed: **No**'
+            echo '- Public consumers changed: **No**'
+            echo '- Next gate: isolated staging certification'
+          } >> "$GITHUB_STEP_SUMMARY"
