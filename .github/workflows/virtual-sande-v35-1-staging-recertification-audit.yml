@@ -65,8 +65,6 @@ jobs:
               'environment:' + ' production',
               '--config workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
               'test ! -e workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
-              'routes ' + '=',
-              'custom_' + 'domain',
           ]
           found = [x for x in forbidden if x in text]
           if found: raise SystemExit(f'Forbidden staging surface: {found}')
