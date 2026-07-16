@@ -1,6 +1,17 @@
 import orchestrator from './wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs';
+import {
+  API_VERSION,
+  ORCHESTRATOR_VERSION,
+  SAFE_ENTRYPOINT_VERSION,
+  BASE_VERSION,
+  RESPONSE_CONTRACT,
+  greetingIntent,
+  greetingPayload,
+  normalizePayload,
+  normalizeResponse,
+} from './wpa-protocol-bot-v35.1-response-contract.mjs';
 
-const VERSION = 'v35.1-safe-entrypoint';
+const VERSION = SAFE_ENTRYPOINT_VERSION;
 const LIVE_ROOT = 'https://wpa-live-production-bridge.worldprotocolacademy.workers.dev';
 const MAX_MESSAGE_LENGTH = 700;
 const MAX_URLS_IN_MESSAGE = 3;
@@ -36,12 +47,18 @@ function headers(request, env) {
     'access-control-allow-origin': allowed.includes(origin) ? origin : allowed[0],
     'access-control-allow-methods': 'GET,POST,OPTIONS',
     'access-control-allow-headers': 'content-type,authorization',
+    'x-wpa-runtime': ORCHESTRATOR_VERSION,
+    'x-wpa-response-contract': RESPONSE_CONTRACT,
     vary: 'Origin'
   };
 }
 
 function json(data, request, env, status = 200) {
   return new Response(JSON.stringify(data, null, 2), { status, headers: headers(request, env) });
+}
+
+function contractJson(data, request, env, status = 200) {
+  return json(normalizePayload(data), request, env, status);
 }
 
 async function payload(request, url) {
@@ -128,54 +145,107 @@ function liveAnswer(search, query, english) {
   if (!search.results.length) {
     return english
       ? `WPA Journal Live found no query-matching public-source candidates for “${query}”. Unrelated feed items were not shown.`
-      : `WPA Journal Live не најде public-source candidates што одговараат на „${query}“. Нерелевантни feed записи не се прикажани.`;
+      : `WPA Journal Live не најде јавно достапни изворни кандидати што одговараат на „${query}“. Нерелевантни записи не се прикажани.`;
   }
-  const rows = search.results.map(({ record }) => `• ${record.title || 'Без наслов'} — ${record.source || 'Unknown source'} · R ${record.relevance_score ?? '—'} / C ${record.source_confidence ?? '—'}${record.original_url ? ` · ${record.original_url}` : ''}`);
+  const rows = search.results.map(({ record }) => `• ${record.title || 'Без наслов'} — ${record.source || 'Непознат извор'} · R ${record.relevance_score ?? '—'} / C ${record.source_confidence ?? '—'}${record.original_url ? ` · ${record.original_url}` : ''}`);
   const boundary = english
     ? 'These are not independently verified WPA findings. Check the original source and apply human review.'
-    : 'Ова не се независно верификувани WPA наоди. Провери го оригиналниот извор и примени човечка проверка.';
-  return `${english ? 'Public-source candidates' : 'Public-source candidates'} за „${query}“:\n${rows.join('\n')}\n\n${boundary}`;
+    : 'Ова не се независно верификувани WPA наоди. Проверете го оригиналниот извор и применете човечка проверка.';
+  return `${english ? 'Public-source candidates' : 'Јавно достапни изворни кандидати'} за „${query}“:\n${rows.join('\n')}\n\n${boundary}`;
 }
 
-export const __test = { validateAsk, isLiveIntent, queryTerms, rank };
+export const __test = {
+  validateAsk,
+  isLiveIntent,
+  queryTerms,
+  rank,
+  greetingIntent,
+  greetingPayload,
+  normalizePayload,
+};
 
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: headers(request, env) });
-    if (request.method !== 'GET' && request.method !== 'POST') return json({ ok: false, error: 'Method not allowed.' }, request, env, 405);
+    if (request.method !== 'GET' && request.method !== 'POST') {
+      return contractJson({ ok: false, error: 'Method not allowed.', hasContext: false, mode: 'request_error', servedBy: VERSION }, request, env, 405);
+    }
 
     const url = new URL(request.url);
     if (url.pathname === '/safe-entrypoint/health') {
-      return json({ ok: true, version: VERSION, orchestrator: 'v35.1-multisystem-orchestrator' }, request, env);
+      return contractJson({
+        ok: true,
+        version: API_VERSION,
+        runtime: SAFE_ENTRYPOINT_VERSION,
+        orchestrator: ORCHESTRATOR_VERSION,
+        base: BASE_VERSION,
+        contract: RESPONSE_CONTRACT,
+        hasContext: false,
+        mode: 'health',
+        servedBy: SAFE_ENTRYPOINT_VERSION,
+      }, request, env);
     }
-    if (url.pathname !== '/ask') return orchestrator.fetch(request, env);
+    if (url.pathname === '/orchestrator/health') {
+      return contractJson({
+        ok: true,
+        version: API_VERSION,
+        runtime: ORCHESTRATOR_VERSION,
+        base: BASE_VERSION,
+        contract: RESPONSE_CONTRACT,
+        hasContext: false,
+        mode: 'health',
+        servedBy: ORCHESTRATOR_VERSION,
+      }, request, env);
+    }
+    if (url.pathname !== '/ask') {
+      return normalizeResponse(await orchestrator.fetch(request, env), request.headers);
+    }
 
     const delegated = request.clone();
     const p = await payload(request, url);
     const invalid = validateAsk(request, env, p.message);
-    if (invalid) return json({ ok: false, error: invalid.error }, request, env, invalid.status);
+    if (invalid) {
+      return contractJson({ ok: false, error: invalid.error, hasContext: false, mode: 'request_error', servedBy: VERSION }, request, env, invalid.status);
+    }
 
-    if (!isLiveIntent(p.message)) return orchestrator.fetch(delegated, env);
+    const greetingLang = greetingIntent(p.message);
+    if (greetingLang) return contractJson(greetingPayload(greetingLang), request, env);
+
+    if (!isLiveIntent(p.message)) {
+      return normalizeResponse(await orchestrator.fetch(delegated, env), request.headers);
+    }
 
     try {
       const search = await fetchLive(p.message, env);
-      return json({
+      return contractJson({
         ok: true,
-        version: VERSION,
+        version: API_VERSION,
+        runtime: SAFE_ENTRYPOINT_VERSION,
+        base: BASE_VERSION,
+        contract: RESPONSE_CONTRACT,
         mode: 'journal_live_strict_search',
-        servedBy: VERSION,
+        servedBy: SAFE_ENTRYPOINT_VERSION,
+        hasContext: search.results.length > 0,
         human_review_required: true,
         source: `${search.root}/api/v1/live`,
+        sources: search.results.length ? [`${search.root}/api/v1/live`] : [],
+        sourceDetails: [],
         results: search.results.map(({ record }) => record),
         answer: liveAnswer(search, p.message, isEnglish(p.lang, p.message))
       }, request, env);
     } catch {
-      return json({
+      return contractJson({
         ok: true,
-        version: VERSION,
+        version: API_VERSION,
+        runtime: SAFE_ENTRYPOINT_VERSION,
+        base: BASE_VERSION,
+        contract: RESPONSE_CONTRACT,
         mode: 'journal_live_unavailable',
-        servedBy: VERSION,
+        servedBy: SAFE_ENTRYPOINT_VERSION,
+        hasContext: false,
         human_review_required: true,
+        sources: [],
+        sourceDetails: [],
         results: [],
         answer: isEnglish(p.lang, p.message)
           ? 'WPA Journal Live is temporarily unavailable. No substitute or unrelated items were shown.'
