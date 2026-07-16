@@ -1,5 +1,5 @@
 import upstreamWorker from './wpa-protocol-bot-v35.1-safe-entrypoint.mjs';
-import { ACADEMIC_CORE_VERSION, academicIntent, academicPayload } from './wpa-protocol-bot-v35.1.2-academic-core.mjs';
+import { ACADEMIC_CORE_VERSION, academicIntent, academicPayload } from './wpa-protocol-bot-v35.1.2-academic-router.mjs';
 
 export const API_VERSION = 'v35.1.2';
 export const RUNTIME_VERSION = 'v35.1.2-academic-entrypoint';
