@@ -1,10 +1,10 @@
-name: Virtual Sande v35.1 Staging Recertification Audit
+name: Virtual Sande v35.1.1 Staging Recertification Audit
 
 on:
   pull_request:
     paths:
-      - 'config/virtual-sande-v35.1-certification-ledger.json'
-      - 'config/virtual-sande-v35.1-production-candidate.json'
+      - 'config/virtual-sande-current-state.json'
+      - 'config/virtual-sande-v35.1-consistency-contract.json'
       - '.github/workflows/virtual-sande-v35-1-staging-recertification.yml'
       - '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml'
 
@@ -14,46 +14,69 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - name: Checkout exact audited commit
         uses: actions/checkout@v7
         with:
           persist-credentials: false
 
-      - name: Validate preserved staging certification
+      - name: Validate current patch gate
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-          certified = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
-          ledger = json.loads(Path('config/virtual-sande-v35.1-certification-ledger.json').read_text())
-          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
-          assert ledger['certification_status'] == 'STAGING_CERTIFIED_EXACT_CANDIDATE'
-          assert ledger['certified_candidate_sha'] == certified
-          assert ledger['recertification_evidence']['result'] == 'SUCCESS'
-          assert ledger['recertification_evidence']['acceptance_suite'] == 'PASSED'
-          assert ledger['recertification_evidence']['legacy_compatibility'] == 'PASSED'
-          assert candidate['certified_candidate_sha'] == certified
-          assert candidate['certification_evidence']['acceptance_suite'] == 'PASSED'
-          assert candidate['certification_evidence']['legacy_compatibility'] == 'PASSED'
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          contract = json.loads(Path('config/virtual-sande-v35.1-consistency-contract.json').read_text())
+          assert state['public_production']['version'] == 'v35.1'
+          assert state['public_production']['public_cutover_status'] == 'COMPLETED'
+          assert state['consistency_patch']['version'] == 'v35.1.1'
+          assert state['consistency_patch']['merge_commit'] == '0142bb33c4b5362f178712f377ed2bdb222a4779'
+          assert state['consistency_patch']['staging_recertification_status'] == 'PENDING_MANUAL_DISPATCH_FROM_MAIN'
+          assert state['consistency_patch']['production_patch_status'] == 'BLOCKED'
+          assert contract['requires_same_commit_staging_recertification'] is True
+          assert contract['production_deploy_performed'] is False
           PY
 
-      - name: Verify staging workflow remains isolated
+      - name: Verify staging workflow remains isolated and complete
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           text = Path('.github/workflows/virtual-sande-v35-1-staging-recertification.yml').read_text()
-          required = ['workflow_dispatch:', 'environment: staging', "test \"$GITHUB_REF\" = 'refs/heads/main'", 'workers/virtual-sande-v35.1-staging/wrangler.toml', 'Production deployment performed: **No**']
+          required = [
+              'name: Virtual Sande v35.1.1 Staging Recertification',
+              'workflow_dispatch:',
+              'environment: staging',
+              "test \"$GITHUB_REF\" = 'refs/heads/main'",
+              'workers/virtual-sande-v35.1-staging/wrangler.toml',
+              'wpa-protocol-bot-v35.1-response-contract.test.mjs',
+              'wpa-protocol-bot-v35.1-consistency-integration.test.mjs',
+              '\"version\": \"v35.1.1\"',
+              'message=Здраво',
+              'production_patch_deployment_performed',
+              'Current public production remains v35.1: **Yes**',
+              'Production patch deployment performed: **No**',
+          ]
           missing = [x for x in required if x not in text]
-          if missing: raise SystemExit(f'Missing staging isolation controls: {missing}')
-          forbidden = ['environment: production', '--config workers/virtual-sande-v35.1-production/', 'routes =', 'custom_domain']
+          if missing: raise SystemExit(f'Missing staging recertification controls: {missing}')
+          forbidden = [
+              'environment:' + ' production',
+              '--config workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
+              'test ! -e workers/virtual-sande-v35.1-production/' + 'wrangler.toml',
+          ]
           found = [x for x in forbidden if x in text]
           if found: raise SystemExit(f'Forbidden staging surface: {found}')
           PY
 
-      - name: Staging certification boundary
+      - name: Staging patch boundary
         run: |
-          echo 'Staging certification remains valid and separate from the approved protected production release.' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo '## Virtual Sande v35.1.1 Staging Recertification Gate'
+            echo '- Current public v35.1 preserved: **Yes**'
+            echo '- Completed public cutover preserved: **Yes**'
+            echo '- Same-commit v35.1.1 recertification required: **Yes**'
+            echo '- Staging environment isolated: **Yes**'
+            echo '- Production patch performed by workflow: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,4 +1,4 @@
-name: Virtual Sande v35.1 Staging Recertification
+name: Virtual Sande v35.1.1 Staging Recertification
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: virtual-sande-v35-1-staging-recertification
+  group: virtual-sande-v35-1-1-staging-recertification
   cancel-in-progress: false
 
 jobs:
@@ -20,6 +20,7 @@ jobs:
       - name: Checkout exact candidate commit
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Require main branch dispatch
@@ -28,20 +29,24 @@ jobs:
           test "$GITHUB_REF" = 'refs/heads/main'
           echo "CANDIDATE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
 
-      - name: Verify source and blocked production boundary
+      - name: Verify source and staging isolation boundary
         run: |
           set -euo pipefail
           test -f workers/virtual-sande-v35.1-staging/wrangler.toml
           test -f workers/virtual-sande-v35.1-staging/src/index.mjs
-          test -f config/virtual-sande-v35.1-certification-ledger.json
-          test ! -e workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f config/virtual-sande-v35.1-consistency-contract.json
           node --check workers/virtual-sande-v35.1-staging/src/index.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
           node --test \
             tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
             tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-staging/wrangler.toml
 
       - name: Deploy isolated staging Worker
         env:
@@ -65,54 +70,64 @@ jobs:
           echo "STAGING_URL=$STAGING_URL" >> "$GITHUB_ENV"
           printf '%s\n' "$STAGING_URL" > /tmp/staging-url.txt
 
-      - name: Run staging acceptance suite
+      - name: Wait for staging propagation
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 "$STAGING_URL/orchestrator/health" | tee /tmp/health.json
-          grep -F '"ok": true' /tmp/health.json
-          grep -F 'v35.1' /tmp/health.json
+          mkdir -p /tmp/recertification
+          for attempt in $(seq 1 24); do
+            status=$(curl --silent --show-error --output /tmp/recertification/health.json --write-out '%{http_code}' "$STAGING_URL/orchestrator/health" || true)
+            if [ "$status" = '200' ] && grep -Fq '"ok": true' /tmp/recertification/health.json && grep -Fq '"version": "v35.1.1"' /tmp/recertification/health.json; then
+              echo "Staging health propagated on attempt $attempt."
+              exit 0
+            fi
+            echo "Staging health not ready yet (attempt $attempt, HTTP $status)."
+            sleep 5
+          done
+          echo 'Staging endpoint did not propagate the v35.1.1 response contract within 120 seconds.' >&2
+          cat /tmp/recertification/health.json >&2 || true
+          exit 1
 
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
-            --get "$STAGING_URL/ask" \
+      - name: Run v35.1.1 staging acceptance suite
+        run: |
+          set -euo pipefail
+          grep -F '"version": "v35.1.1"' /tmp/recertification/health.json
+          grep -F '"runtime": "v35.1.1-multisystem-orchestrator"' /tmp/recertification/health.json
+          grep -F '"base": "v35.0-protocolometry-connector"' /tmp/recertification/health.json
+          grep -F '"contract": "wpa-virtual-sande-response-v1.1"' /tmp/recertification/health.json
+
+          curl --fail --silent --show-error --get "$STAGING_URL/ask" \
+            --data-urlencode 'message=Здраво' \
+            --data-urlencode 'lang=mk' | tee /tmp/recertification/greeting.json
+          grep -F '"mode": "greeting"' /tmp/recertification/greeting.json
+          grep -F '"hasContext": false' /tmp/recertification/greeting.json
+          grep -F '"servedBy": "v35.1.1-greeting"' /tmp/recertification/greeting.json
+
+          curl --fail --silent --show-error --get "$STAGING_URL/ask" \
             --data-urlencode 'message=Што е агреман?' \
-            --data-urlencode 'lang=mk' | tee /tmp/agrement.json
-          grep -F '"ok": true' /tmp/agrement.json
-          grep -F '"answer"' /tmp/agrement.json
+            --data-urlencode 'lang=mk' | tee /tmp/recertification/agrement.json
+          grep -F '"ok": true' /tmp/recertification/agrement.json
+          grep -F '"version": "v35.1.1"' /tmp/recertification/agrement.json
+          grep -F '"answer"' /tmp/recertification/agrement.json
 
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
-            --get "$STAGING_URL/ask" \
+          curl --fail --silent --show-error --get "$STAGING_URL/ask" \
             --data-urlencode 'message=Покажи ми D001' \
-            --data-urlencode 'lang=mk' | tee /tmp/d001.json
-          grep -F 'D001' /tmp/d001.json
+            --data-urlencode 'lang=mk' | tee /tmp/recertification/d001.json
+          grep -F 'D001' /tmp/recertification/d001.json
 
-          curl --fail --silent --show-error --retry 5 --retry-delay 3 \
-            --get "$STAGING_URL/ask" \
+          curl --fail --silent --show-error --get "$STAGING_URL/ask" \
             --data-urlencode 'message=Кои се најновите дипломатски вести?' \
-            --data-urlencode 'lang=mk' | tee /tmp/live.json
-          grep -E 'journal_live_strict_search|journal_live_unavailable' /tmp/live.json
-          grep -F '"human_review_required": true' /tmp/live.json
+            --data-urlencode 'lang=mk' | tee /tmp/recertification/live.json
+          grep -E 'journal_live_strict_search|journal_live_unavailable' /tmp/recertification/live.json
+          grep -F '"human_review_required": true' /tmp/recertification/live.json
 
-          status=$(curl --silent --output /tmp/method.json --write-out '%{http_code}' -X PUT "$STAGING_URL/ask")
+          status=$(curl --silent --output /tmp/recertification/method.json --write-out '%{http_code}' -X PUT "$STAGING_URL/ask")
           test "$status" = '405'
-
-          status=$(curl --silent --output /tmp/origin.json --write-out '%{http_code}' \
-            -H 'Origin: https://example.invalid' \
-            --get "$STAGING_URL/ask" \
-            --data-urlencode 'message=Што е протокол?' \
-            --data-urlencode 'lang=mk')
+          status=$(curl --silent --output /tmp/recertification/origin.json --write-out '%{http_code}' -H 'Origin: https://example.invalid' --get "$STAGING_URL/ask" --data-urlencode 'message=Што е протокол?' --data-urlencode 'lang=mk')
           test "$status" = '403'
-
           message=$(python3 -c "print('а' * 701)")
-          status=$(curl --silent --output /tmp/long.json --write-out '%{http_code}' \
-            --get "$STAGING_URL/ask" \
-            --data-urlencode "message=$message" \
-            --data-urlencode 'lang=mk')
+          status=$(curl --silent --output /tmp/recertification/long.json --write-out '%{http_code}' --get "$STAGING_URL/ask" --data-urlencode "message=$message" --data-urlencode 'lang=mk')
           test "$status" = '400'
-
-          status=$(curl --silent --output /tmp/urls.json --write-out '%{http_code}' \
-            --get "$STAGING_URL/ask" \
-            --data-urlencode 'message=https://a.example https://b.example https://c.example https://d.example' \
-            --data-urlencode 'lang=mk')
+          status=$(curl --silent --output /tmp/recertification/urls.json --write-out '%{http_code}' --get "$STAGING_URL/ask" --data-urlencode 'message=https://a.example https://b.example https://c.example https://d.example' --data-urlencode 'lang=mk')
           test "$status" = '400'
 
       - name: Run legacy compatibility contract
@@ -120,38 +135,30 @@ jobs:
           LEGACY_URL: https://protocol-bot-workerjs.worldprotocolacademy.workers.dev
         run: |
           set -euo pipefail
-          mkdir -p /tmp/recertification
           node --input-type=module <<'NODE'
           import fs from 'node:fs/promises';
           const contract = JSON.parse(await fs.readFile('config/virtual-sande-v35.1-compatibility-contract.json', 'utf8'));
           const endpoints = { legacy: process.env.LEGACY_URL, candidate: process.env.STAGING_URL };
-          const report = {
-            component: contract.component,
-            version: contract.candidate_version,
-            candidate_sha: process.env.CANDIDATE_SHA,
-            production_authorized: false,
-            endpoints,
-            cases: [],
-          };
+          const report = { component: contract.component, version: 'v35.1.1', candidate_sha: process.env.CANDIDATE_SHA, endpoints, cases: [] };
           async function call(base, testCase) {
             const response = await fetch(`${base}/ask`, {
               method: 'POST',
-              headers: { 'content-type': 'application/json', 'accept': 'application/json' },
+              headers: { 'content-type': 'application/json', accept: 'application/json' },
               body: JSON.stringify({ message: testCase.message, lang: testCase.lang, history: testCase.history || [] }),
             });
             const data = await response.json();
             return {
               status: response.status,
               valid: response.status === 200 && data?.ok === true && typeof data?.answer === 'string' && data.answer.trim().length > 0,
+              version: data?.version || null,
               response_fields: Object.keys(data || {}).sort(),
-              answer_length: typeof data?.answer === 'string' ? data.answer.trim().length : 0,
             };
           }
           let failed = false;
           for (const testCase of contract.compatibility_cases) {
             const legacy = await call(endpoints.legacy, testCase);
             const candidate = await call(endpoints.candidate, testCase);
-            const compatible = legacy.valid && candidate.valid;
+            const compatible = legacy.valid && candidate.valid && candidate.version === 'v35.1.1';
             if (!compatible) failed = true;
             report.cases.push({ id: testCase.id, legacy, candidate, compatible });
           }
@@ -160,26 +167,27 @@ jobs:
           if (failed) process.exitCode = 1;
           NODE
 
-      - name: Build exact-candidate certification evidence
+      - name: Build same-commit recertification evidence
         run: |
           set -euo pipefail
           cp /tmp/staging-url.txt /tmp/recertification/staging-url.txt
-          cp /tmp/health.json /tmp/recertification/health.json
           python3 - <<'PY'
           import json, os
           from pathlib import Path
           report = json.loads(Path('/tmp/recertification/compatibility-report.json').read_text())
           evidence = {
-              'schema_version': '1.0',
+              'schema_version': '1.1',
               'component': 'Virtual Sande',
-              'version': 'v35.1',
+              'version': 'v35.1.1',
               'candidate_sha': os.environ['CANDIDATE_SHA'],
               'staging_url': os.environ['STAGING_URL'],
               'staging_deploy': 'PASSED',
               'staging_acceptance': 'PASSED',
+              'response_consistency': 'PASSED',
               'legacy_compatibility': 'PASSED' if report['compatible'] else 'FAILED',
-              'production_authorized': False,
-              'production_deployment_performed': False,
+              'current_public_production_version': 'v35.1',
+              'production_patch_deployment_performed': False,
+              'public_cutover_already_completed': True,
           }
           Path('/tmp/recertification/certification-evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')
           PY
@@ -187,21 +195,22 @@ jobs:
       - name: Upload recertification evidence
         uses: actions/upload-artifact@v7
         with:
-          name: virtual-sande-v35-1-exact-candidate-recertification
+          name: virtual-sande-v35-1-1-same-commit-recertification
           path: /tmp/recertification
-          retention-days: 30
+          retention-days: 90
           if-no-files-found: error
 
       - name: Recertification boundary
         run: |
           {
-            echo '## Virtual Sande v35.1 Exact-Candidate Staging Recertification'
-            echo
+            echo '## Virtual Sande v35.1.1 Same-Commit Staging Recertification'
             echo "- Candidate SHA: \`$CANDIDATE_SHA\`"
             echo "- Staging URL: \`$STAGING_URL\`"
             echo '- Isolated staging deploy: **Passed**'
+            echo '- v35.1.1 response consistency: **Passed**'
             echo '- Acceptance suite: **Passed**'
             echo '- Legacy compatibility: **Passed**'
-            echo '- Production deployment performed: **No**'
-            echo '- Production authorized: **No**'
+            echo '- Current public production remains v35.1: **Yes**'
+            echo '- Production patch deployment performed: **No**'
+            echo '- Next gate: record this run and authorize protected v35.1.1 production patch deploy'
           } >> "$GITHUB_STEP_SUMMARY"
