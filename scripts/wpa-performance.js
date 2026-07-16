@@ -5,6 +5,7 @@
   var PILOT_URL = '/data/global-institutions/pilot-20/v1.3.1/';
   var SUBLIMATE_URL = '/wpa-sublimate-engine.html';
   var JOURNAL_LIVE_URL = '/journal/live/';
+  var PN003_DOI_URL = 'https://doi.org/10.5281/zenodo.21390763';
 
   function path() {
     return String(window.location.pathname || '').replace(/\/+$/, '') || '/';
@@ -20,6 +21,10 @@
 
   function isHome() {
     return page() === 'index' || path() === '/' || path() === '/index.html';
+  }
+
+  function isPapers() {
+    return path().toLowerCase() === '/papers.html';
   }
 
   function addStylesheet(id, href) {
@@ -144,6 +149,60 @@
     list.appendChild(item);
   }
 
+  function updateTextOnce(selector, before, after) {
+    var nodes = document.querySelectorAll(selector);
+    for (var i = 0; i < nodes.length; i += 1) {
+      if (String(nodes[i].textContent || '').trim() === before) {
+        nodes[i].textContent = after;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function placePn003OnPapers() {
+    var section = document.getElementById('wpa-protocol-notes');
+    if (!section) return;
+
+    updateTextOnce('#wpa-protocol-notes h3', 'Two applied protocolometry records — open access via Zenodo.', 'Three applied protocolometry records — open access via Zenodo.');
+
+    var paragraphs = section.querySelectorAll('.section-header p');
+    for (var i = 0; i < paragraphs.length; i += 1) {
+      if (paragraphs[i].textContent.indexOf('PN-001 and PN-002 are published Zenodo DOI records') !== -1) {
+        paragraphs[i].innerHTML = '<strong>Publication status:</strong> PN-001, PN-002 and PN-003 are published Zenodo DOI records. WPA-PN-003 was published on 16 July 2026 and is counted among the 15 published WPA Zenodo records.';
+      }
+    }
+
+    updateTextOnce('.hero-list li', '2 WPA Protocol Notes with Zenodo DOI records', '3 WPA Protocol Notes with Zenodo DOI records');
+    updateTextOnce('.hero-list li', '14 total WPA Zenodo DOI records across the two WPA series, separate from the 25-publication academic corpus', '15 total WPA Zenodo DOI records across the two WPA series, separate from the 25-publication academic corpus');
+
+    var statSpans = document.querySelectorAll('.stat-card span');
+    for (var s = 0; s < statSpans.length; s += 1) {
+      if (String(statSpans[s].textContent || '').trim() === 'WPA Protocol Notes · Zenodo DOI') {
+        var strong = statSpans[s].parentElement && statSpans[s].parentElement.querySelector('strong');
+        if (strong) strong.textContent = '3';
+      }
+    }
+
+    var grid = section.querySelector('.grid-3');
+    if (grid && !document.getElementById('wpaPn003PapersCard')) {
+      var card = document.createElement('article');
+      card.className = 'card';
+      card.id = 'wpaPn003PapersCard';
+      card.innerHTML = '<span class="small-kicker">WPA-PN-003 · Applied Protocolometry Record</span><h4 class="paper-title">Les Invalides 2026 — The Coalition of the Willing Summit and Bastille Day, Paris, 13–14 July 2026</h4><p class="paper-summary">A bilingual protocol note analysing the integrated two-day ceremonial architecture of the Coalition of the Willing summit and the French state ceremonies through chrono-binding, ceremonial condensation, Evidence Ladder+, visual statecraft and applied protocolometry.</p><div class="paper-tags"><span class="tag">Protocol Note</span><span class="tag">Les Invalides</span><span class="tag">Evidence Ladder+</span></div><div class="paper-actions"><a class="btn btn-secondary" href="' + PN003_DOI_URL + '" target="_blank" rel="noopener">→ Zenodo DOI</a></div>';
+      grid.appendChild(card);
+    }
+
+    var actions = section.querySelector('div[style*="margin-top:22px"]');
+    if (actions && !document.getElementById('wpaPn003DoiButton')) {
+      var bibliography = actions.querySelector('a[href*="/bibliography/"]');
+      var doi = makeLink('wpaPn003DoiButton', 'btn btn-secondary', PN003_DOI_URL, 'PN-003 DOI →', 'WPA-PN-003 Zenodo DOI');
+      doi.target = '_blank';
+      doi.rel = 'noopener';
+      if (bibliography) actions.insertBefore(doi, bibliography); else actions.appendChild(doi);
+    }
+  }
+
   function ensureVirtualSandeBrandingStyles() {
     if (document.getElementById('wpa-virtual-sande-branding-style')) return;
     var style = document.createElement('style');
@@ -210,6 +269,7 @@
       placeInstituteTools();
     }
     if (isHome()) placeHomePilot();
+    if (isPapers()) placePn003OnPapers();
     placeVirtualSandeBranding();
   }
 
