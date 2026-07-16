@@ -12,4 +12,202 @@ concurrency:
 
 env:
   CERTIFIED_SHA: 1576d7a2ccc3b674e84c6cb13537558dcaa4668c
-  EXPECTED
+  EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
+  EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+
+    steps:
+      - name: Checkout protected patch release from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require main and exact certified runtime
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          git cat-file -e "$CERTIFIED_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-production/src/index.mjs \
+            workers/virtual-sande-v35.1-production/wrangler.toml
+          echo "RELEASE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Verify certification and production boundary
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          cert = json.loads(Path('config/virtual-sande-v35.1.1-staging-certification.json').read_text())
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          assert cert['certification_status'] == 'STAGING_RECERTIFIED_SAME_COMMIT'
+          assert cert['candidate_sha'] == '1576d7a2ccc3b674e84c6cb13537558dcaa4668c'
+          assert cert['run_status'] == 'SUCCESS'
+          assert cert['production_patch_deployment_performed'] is False
+          assert all(value == 'PASSED' for key, value in cert['gates'].items() if key != 'current_public_production_preserved')
+          assert cert['gates']['current_public_production_preserved'] is True
+          patch = state['consistency_patch']
+          assert patch['certified_candidate_sha'] == cert['candidate_sha']
+          assert patch['production_patch_status'] == 'AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY'
+          assert state['consumer_state']['consumer_changes_required_for_patch'] is False
+          PY
+          test -f workers/virtual-sande-v35.1-production/wrangler.toml
+          test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'workers_dev = true' workers/virtual-sande-v35.1-production/wrangler.toml
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Deploy certified patch to existing production Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy \
+            --config workers/virtual-sande-v35.1-production/wrangler.toml \
+            2>&1 | tee /tmp/production-patch-deploy.log
+
+      - name: Resolve production URL
+        run: |
+          set -euo pipefail
+          PRODUCTION_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/production-patch-deploy.log | tail -n 1 | sed 's:/$::')"
+          test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
+          echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
+
+      - name: Wait for stable v35.1.1 health and greeting propagation
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v35-1-1-production-evidence
+          consecutive=0
+          for attempt in $(seq 1 36); do
+            nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            health_status=$(curl --silent --show-error --output /tmp/v35-1-1-production-evidence/health.json --write-out '%{http_code}' "$PRODUCTION_URL/orchestrator/health?deploy_check=$nonce" || true)
+            greeting_status=$(curl --silent --show-error --get --output /tmp/v35-1-1-production-evidence/greeting.json --write-out '%{http_code}' "$PRODUCTION_URL/ask" \
+              --data-urlencode 'message=Здраво' \
+              --data-urlencode 'lang=mk' \
+              --data-urlencode "deploy_check=$nonce" || true)
+
+            health_ok=false
+            greeting_ok=false
+            if [ "$health_status" = '200' ] \
+              && grep -Fq '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/health.json \
+              && grep -Fq '"base": "v35.0-protocolometry-connector"' /tmp/v35-1-1-production-evidence/health.json; then
+              health_ok=true
+            fi
+            if [ "$greeting_status" = '200' ] \
+              && grep -Fq '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"mode": "greeting"' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"hasContext": false' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"sources": []' /tmp/v35-1-1-production-evidence/greeting.json; then
+              greeting_ok=true
+            fi
+
+            if [ "$health_ok" = true ] && [ "$greeting_ok" = true ]; then
+              consecutive=$((consecutive + 1))
+              echo "Stable v35.1.1 health and greeting observed ($consecutive/2) on attempt $attempt."
+              if [ "$consecutive" -ge 2 ]; then
+                exit 0
+              fi
+            else
+              consecutive=0
+              echo "Propagation not stable yet (attempt $attempt, health HTTP $health_status, greeting HTTP $greeting_status)."
+            fi
+            sleep 5
+          done
+          echo 'Production endpoint did not produce two consecutive valid v35.1.1 health and greeting responses within 180 seconds.' >&2
+          cat /tmp/v35-1-1-production-evidence/health.json >&2 || true
+          cat /tmp/v35-1-1-production-evidence/greeting.json >&2 || true
+          exit 1
+
+      - name: Run v35.1.1 production acceptance
+        run: |
+          set -euo pipefail
+          grep -F '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/greeting.json
+          grep -F '"mode": "greeting"' /tmp/v35-1-1-production-evidence/greeting.json
+          grep -F '"hasContext": false' /tmp/v35-1-1-production-evidence/greeting.json
+          grep -F '"sources": []' /tmp/v35-1-1-production-evidence/greeting.json
+          ! grep -Fq 'не видам' /tmp/v35-1-1-production-evidence/greeting.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Што е агреман?' --data-urlencode 'lang=mk' | tee /tmp/v35-1-1-production-evidence/agrement.json
+          grep -F '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/agrement.json
+          grep -F '"answer"' /tmp/v35-1-1-production-evidence/agrement.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Покажи ми D001' --data-urlencode 'lang=mk' | tee /tmp/v35-1-1-production-evidence/d001.json
+          grep -F 'D001' /tmp/v35-1-1-production-evidence/d001.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Кои се најновите дипломатски вести?' --data-urlencode 'lang=mk' | tee /tmp/v35-1-1-production-evidence/live.json
+          grep -E 'journal_live_strict_search|journal_live_unavailable' /tmp/v35-1-1-production-evidence/live.json
+          grep -F '"human_review_required": true' /tmp/v35-1-1-production-evidence/live.json
+
+          status=$(curl --silent --output /tmp/v35-1-1-production-evidence/method.json --write-out '%{http_code}' -X PUT "$PRODUCTION_URL/ask")
+          test "$status" = '405'
+          status=$(curl --silent --output /tmp/v35-1-1-production-evidence/origin.json --write-out '%{http_code}' -H 'Origin: https://example.invalid' --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Што е протокол?' --data-urlencode 'lang=mk')
+          test "$status" = '403'
+          message=$(python3 -c "print('а' * 701)")
+          status=$(curl --silent --output /tmp/v35-1-1-production-evidence/long.json --write-out '%{http_code}' --get "$PRODUCTION_URL/ask" --data-urlencode "message=$message" --data-urlencode 'lang=mk')
+          test "$status" = '400'
+          status=$(curl --silent --output /tmp/v35-1-1-production-evidence/urls.json --write-out '%{http_code}' --get "$PRODUCTION_URL/ask" --data-urlencode 'message=https://a.example https://b.example https://c.example https://d.example' --data-urlencode 'lang=mk')
+          test "$status" = '400'
+
+      - name: Build and upload patch evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            'schema_version': '1.1',
+            'component': 'Virtual Sande',
+            'version': 'v35.1.1',
+            'certified_candidate_sha': os.environ['CERTIFIED_SHA'],
+            'release_sha': os.environ['RELEASE_SHA'],
+            'production_url': os.environ['PRODUCTION_URL'],
+            'response_contract': 'wpa-virtual-sande-response-v1.1',
+            'protected_patch_deploy': 'PASSED',
+            'stable_health_and_greeting_propagation': 'PASSED',
+            'production_acceptance': 'PASSED',
+            'public_consumer_change': False,
+            'legacy_rollback_worker_retained': True,
+          }
+          Path('/tmp/v35-1-1-production-evidence/patch-evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-v35-1-1-production-patch-evidence
+          path: /tmp/v35-1-1-production-evidence
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Production patch boundary
+        run: |
+          {
+            echo '## Virtual Sande v35.1.1 Protected Production Patch'
+            echo "- Certified candidate SHA: \`$CERTIFIED_SHA\`"
+            echo "- Release SHA: \`$RELEASE_SHA\`"
+            echo "- Production URL: \`$PRODUCTION_URL\`"
+            echo '- Protected production patch: **Passed**'
+            echo '- Stable health and greeting propagation: **Passed**'
+            echo '- v35.1.1 response contract: **Passed**'
+            echo '- Production acceptance: **Passed**'
+            echo '- Public consumer changes: **No**'
+            echo '- Legacy rollback Worker retained: **Yes**'
+          } >> "$GITHUB_STEP_SUMMARY"
