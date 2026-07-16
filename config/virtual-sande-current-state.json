@@ -1,33 +1,42 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "component": "Virtual Sande",
   "canonical_state_record": true,
   "recorded_at": "2026-07-16",
   "public_production": {
-    "version": "v35.1",
-    "runtime": "v35.1-multisystem-orchestrator",
+    "version": "v35.1.1",
+    "runtime": "v35.1.1-multisystem-orchestrator",
     "base": "v35.0-protocolometry-connector",
+    "response_contract": "wpa-virtual-sande-response-v1.1",
     "worker": "wpa-virtual-sande-v35-1-production",
     "url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
     "endpoint": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask",
     "deployment_status": "DEPLOYED_AND_ACCEPTED",
     "public_cutover_status": "COMPLETED",
-    "production_deployment_run_id": 29457124570,
-    "cutover_pull_request": 63,
-    "cutover_merge_commit": "dbd97e76163a72d2205d2985506a25d7c620b268"
+    "production_patch_workflow": "DEPLOY Virtual Sande v35.1.1 PRODUCTION PATCH",
+    "production_patch_run_number": 3,
+    "production_patch_run_id": 29485825251,
+    "production_patch_job_id": 87579958160,
+    "release_sha": "b43a4133c106317db0548e9bdd5831eb9c7fa87f",
+    "certified_candidate_sha": "1576d7a2ccc3b674e84c6cb13537558dcaa4668c",
+    "production_evidence_artifact_id": 8370399164,
+    "production_evidence_artifact": "virtual-sande-v35-1-1-production-patch-evidence",
+    "production_evidence_digest": "sha256:4d521447841a48c560fa4e9a61c8dcfa999cde0560e9f29d58451b95ec7b2f48",
+    "original_cutover_pull_request": 63,
+    "original_cutover_merge_commit": "dbd97e76163a72d2205d2985506a25d7c620b268"
   },
   "consistency_patch": {
     "version": "v35.1.1",
     "response_contract": "wpa-virtual-sande-response-v1.1",
     "code_merge_commit": "0142bb33c4b5362f178712f377ed2bdb222a4779",
     "certified_candidate_sha": "1576d7a2ccc3b674e84c6cb13537558dcaa4668c",
-    "code_status": "MERGED_AND_STAGING_RECERTIFIED",
+    "code_status": "MERGED_STAGING_RECERTIFIED_AND_PRODUCTION_DEPLOYED",
     "staging_recertification_workflow": "Virtual Sande v35.1.1 Staging Recertification",
     "staging_recertification_run_number": 2,
     "staging_recertification_status": "SUCCESS",
-    "staging_evidence_artifact": "virtual-sande-v35-1-1-same-commit-recertification",
-    "production_patch_status": "AUTHORIZED_FOR_PROTECTED_MANUAL_DEPLOY_ONLY",
-    "production_patch_gate": "PRODUCTION_ENVIRONMENT_REVIEW_AND_EXACT_CERTIFIED_SHA_GUARD"
+    "production_patch_status": "DEPLOYED_AND_ACCEPTED",
+    "stable_health_and_greeting_propagation": "PASSED",
+    "language_guard_nonstandard_ne_vidam": "PASSED"
   },
   "consumer_state": {
     "canonical_production_consumers": [
@@ -39,12 +48,18 @@
       "wpaws/analysis/index.html"
     ],
     "excluded_non_ask_consumer": "protocolometry-center.html",
-    "consumer_changes_required_for_patch": false
+    "consumer_changes_required_for_patch": false,
+    "consumer_endpoints_unchanged_during_patch": true
   },
   "rollback": {
     "legacy_endpoint": "https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask",
     "legacy_worker_retained": true,
-    "strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT"
+    "strategy": "RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT",
+    "status": "READY"
+  },
+  "evidence": {
+    "production_patch_manifest": "config/virtual-sande-v35.1.1-production-patch-evidence.json",
+    "staging_certification": "config/virtual-sande-v35.1.1-staging-certification.json"
   },
   "historical_records": {
     "certification_ledger": "config/virtual-sande-v35.1-certification-ledger.json",
@@ -53,5 +68,5 @@
     "final_handoff": "docs/virtual-sande-v35.1-final-handoff.md",
     "interpretation": "Historical phase evidence only. This current-state record is authoritative for operational status."
   },
-  "safety_boundary": "The v35.1.1 production patch may be deployed only by manual dispatch from main through the protected production environment, against the exact certified candidate SHA. No frontend cutover, route, domain, KV, D1, secret, or legacy Worker change is part of this patch."
+  "safety_boundary": "Virtual Sande v35.1.1 is deployed and accepted on the existing dedicated production Worker. The completed six-consumer cutover, Worker URL, bindings, routes, domains, secrets, and legacy rollback Worker remain unchanged."
 }
