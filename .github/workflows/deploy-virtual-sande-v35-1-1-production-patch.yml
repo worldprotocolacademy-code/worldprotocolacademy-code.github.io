@@ -93,28 +93,59 @@ jobs:
           test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
           echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
 
-      - name: Wait for v35.1.1 propagation
+      - name: Wait for stable v35.1.1 health and greeting propagation
         run: |
           set -euo pipefail
           mkdir -p /tmp/v35-1-1-production-evidence
-          for attempt in $(seq 1 24); do
-            status=$(curl --silent --show-error --output /tmp/v35-1-1-production-evidence/health.json --write-out '%{http_code}' "$PRODUCTION_URL/orchestrator/health" || true)
-            if [ "$status" = '200' ] && grep -Fq '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/health.json && grep -Fq '"base": "v35.0-protocolometry-connector"' /tmp/v35-1-1-production-evidence/health.json; then
-              exit 0
+          consecutive=0
+          for attempt in $(seq 1 36); do
+            nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            health_status=$(curl --silent --show-error --output /tmp/v35-1-1-production-evidence/health.json --write-out '%{http_code}' "$PRODUCTION_URL/orchestrator/health?deploy_check=$nonce" || true)
+            greeting_status=$(curl --silent --show-error --get --output /tmp/v35-1-1-production-evidence/greeting.json --write-out '%{http_code}' "$PRODUCTION_URL/ask" \
+              --data-urlencode 'message=Здраво' \
+              --data-urlencode 'lang=mk' \
+              --data-urlencode "deploy_check=$nonce" || true)
+
+            health_ok=false
+            greeting_ok=false
+            if [ "$health_status" = '200' ] \
+              && grep -Fq '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/health.json \
+              && grep -Fq '"base": "v35.0-protocolometry-connector"' /tmp/v35-1-1-production-evidence/health.json; then
+              health_ok=true
+            fi
+            if [ "$greeting_status" = '200' ] \
+              && grep -Fq '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"mode": "greeting"' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"hasContext": false' /tmp/v35-1-1-production-evidence/greeting.json \
+              && grep -Fq '"sources": []' /tmp/v35-1-1-production-evidence/greeting.json; then
+              greeting_ok=true
+            fi
+
+            if [ "$health_ok" = true ] && [ "$greeting_ok" = true ]; then
+              consecutive=$((consecutive + 1))
+              echo "Stable v35.1.1 health and greeting observed ($consecutive/2) on attempt $attempt."
+              if [ "$consecutive" -ge 2 ]; then
+                exit 0
+              fi
+            else
+              consecutive=0
+              echo "Propagation not stable yet (attempt $attempt, health HTTP $health_status, greeting HTTP $greeting_status)."
             fi
             sleep 5
           done
+          echo 'Production endpoint did not produce two consecutive valid v35.1.1 health and greeting responses within 180 seconds.' >&2
           cat /tmp/v35-1-1-production-evidence/health.json >&2 || true
+          cat /tmp/v35-1-1-production-evidence/greeting.json >&2 || true
           exit 1
 
       - name: Run v35.1.1 production acceptance
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Здраво' --data-urlencode 'lang=mk' | tee /tmp/v35-1-1-production-evidence/greeting.json
           grep -F '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/greeting.json
           grep -F '"mode": "greeting"' /tmp/v35-1-1-production-evidence/greeting.json
           grep -F '"hasContext": false' /tmp/v35-1-1-production-evidence/greeting.json
           grep -F '"sources": []' /tmp/v35-1-1-production-evidence/greeting.json
+          ! grep -Fq 'не видам' /tmp/v35-1-1-production-evidence/greeting.json
 
           curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" --data-urlencode 'message=Што е агреман?' --data-urlencode 'lang=mk' | tee /tmp/v35-1-1-production-evidence/agrement.json
           grep -F '"version": "v35.1.1"' /tmp/v35-1-1-production-evidence/agrement.json
@@ -144,7 +175,7 @@ jobs:
           import json, os
           from pathlib import Path
           evidence = {
-            'schema_version': '1.0',
+            'schema_version': '1.1',
             'component': 'Virtual Sande',
             'version': 'v35.1.1',
             'certified_candidate_sha': os.environ['CERTIFIED_SHA'],
@@ -152,6 +183,7 @@ jobs:
             'production_url': os.environ['PRODUCTION_URL'],
             'response_contract': 'wpa-virtual-sande-response-v1.1',
             'protected_patch_deploy': 'PASSED',
+            'stable_health_and_greeting_propagation': 'PASSED',
             'production_acceptance': 'PASSED',
             'public_consumer_change': False,
             'legacy_rollback_worker_retained': True,
@@ -173,6 +205,7 @@ jobs:
             echo "- Release SHA: \`$RELEASE_SHA\`"
             echo "- Production URL: \`$PRODUCTION_URL\`"
             echo '- Protected production patch: **Passed**'
+            echo '- Stable health and greeting propagation: **Passed**'
             echo '- v35.1.1 response contract: **Passed**'
             echo '- Production acceptance: **Passed**'
             echo '- Public consumer changes: **No**'

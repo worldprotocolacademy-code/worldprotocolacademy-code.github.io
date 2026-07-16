@@ -51,7 +51,7 @@ jobs:
           assert state['rollback']['legacy_worker_retained'] is True
           PY
 
-      - name: Verify protected manual workflow controls
+      - name: Verify protected manual workflow and stable propagation controls
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -65,10 +65,17 @@ jobs:
             'CERTIFIED_SHA: 1576d7a2ccc3b674e84c6cb13537558dcaa4668c',
             'git diff --quiet "$CERTIFIED_SHA" "$GITHUB_SHA"',
             '--config workers/virtual-sande-v35.1-production/wrangler.toml',
-            'Wait for v35.1.1 propagation',
-            'Run v35.1.1 production acceptance',
+            'Wait for stable v35.1.1 health and greeting propagation',
+            'for attempt in $(seq 1 36)',
+            'consecutive=$((consecutive + 1))',
+            'if [ "$consecutive" -ge 2 ]',
+            'deploy_check=$nonce',
             'message=Здраво',
+            '"mode": "greeting"',
             '"hasContext": false',
+            '"sources": []',
+            "! grep -Fq 'не видам'",
+            'stable_health_and_greeting_propagation',
             'virtual-sande-v35-1-1-production-patch-evidence',
             'Public consumer changes: **No**',
             'Legacy rollback Worker retained: **Yes**',
@@ -93,16 +100,12 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           allowed = {
-            'config/virtual-sande-v35.1.1-staging-certification.json',
-            'config/virtual-sande-current-state.json',
             '.github/workflows/deploy-virtual-sande-v35-1-1-production-patch.yml',
             '.github/workflows/virtual-sande-v35-1-1-production-patch-audit.yml',
-            '.github/workflows/virtual-sande-v35-1-staging-recertification-audit.yml',
-            '.github/workflows/virtual-sande-current-state-audit.yml',
           }
           actual = {x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           if actual != allowed:
-            raise SystemExit(f'Unexpected production patch gate boundary: actual={sorted(actual)}')
+            raise SystemExit(f'Unexpected propagation hotfix boundary: actual={sorted(actual)}')
           PY
 
       - name: Patch gate boundary
@@ -111,8 +114,11 @@ jobs:
             echo '## Virtual Sande v35.1.1 Production Patch Gate'
             echo '- Same-commit staging certification: **Passed**'
             echo '- Exact certified SHA guard: **Passed**'
+            echo '- Stable health plus greeting propagation gate: **Required**'
+            echo '- Two consecutive valid observations: **Required**'
             echo '- Protected production environment: **Required**'
             echo '- Manual dispatch only: **Yes**'
             echo '- Frontend consumer changes: **No**'
+            echo '- Runtime source changes: **No**'
             echo '- Production deployment performed by this PR: **No**'
           } >> "$GITHUB_STEP_SUMMARY"
