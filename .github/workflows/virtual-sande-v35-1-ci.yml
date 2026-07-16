@@ -6,6 +6,9 @@ on:
       - 'tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs'
       - 'workers/virtual-sande-v35.1-staging/**'
@@ -22,7 +25,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,6 +39,9 @@ jobs:
           test -f tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
           test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
           test -f tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs
           test -f tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
           test -f tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
           test -f workers/virtual-sande-v35.1-staging/wrangler.toml
@@ -44,20 +52,24 @@ jobs:
         run: |
           node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
           node --check workers/virtual-sande-v35.1-staging/src/index.mjs
 
-      - name: Run routing and safety tests
+      - name: Run routing, response-contract, and safety tests
         run: |
-          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
-          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
 
-      - name: Verify delegation chain
+      - name: Verify delegation and normalization chain
         run: |
           grep -F "import baseWorker from './wpa-protocol-bot-v35-protocolometry-connector.mjs';" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
           grep -F "return baseWorker.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
           grep -F "import orchestrator from './wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs';" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
-          grep -F "return orchestrator.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          grep -F "normalizeResponse(await orchestrator.fetch" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
           grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-staging/src/index.mjs
 
       - name: Verify staging boundaries
