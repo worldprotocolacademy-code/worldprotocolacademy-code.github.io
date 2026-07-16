@@ -74,7 +74,6 @@
   function normalizeInstituteBrand() {
     var brand = document.querySelector('.nav-wrap nav .brand');
     if (!brand) return;
-
     brand.removeAttribute('href');
     brand.removeAttribute('target');
     brand.classList.add('wpa-institute-brand');
@@ -124,7 +123,6 @@
       var briefings = hero.querySelector('a[href="wpa-briefings.html"]');
       var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, '◆ Отвори WPA Sublimate', 'WPA Sublimate Engine Preview');
       var journalHero = makeLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', JOURNAL_LIVE_URL, '🛰️ Отвори WPA Journal Live', 'WPA Journal Live');
-
       if (briefings) {
         briefings.insertAdjacentElement('afterend', subHero);
         subHero.insertAdjacentElement('afterend', journalHero);
@@ -167,7 +165,6 @@
 
     ensureVirtualSandeBrandingStyles();
     copy.classList.add('wpa-virtual-sande-copy');
-
     var brand = document.createElement('div');
     brand.className = 'wpa-virtual-sande-brand';
     brand.setAttribute('translate', 'no');
@@ -215,6 +212,7 @@
 
   if (isInstitute()) {
     addStylesheet('wpa-institute-compact-brand-css', '/styles/wpa-institute-compact-brand.css?v=20260714-identity2');
+    addScript('wpa-institute-virtual-sande-widget', '/scripts/virtual-sande-institute-widget.js?v=20260716-1');
   }
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
 
@@ -223,6 +221,5 @@
   window.setTimeout(boot, 250);
   window.setTimeout(boot, 1000);
   window.addEventListener('resize', boot);
-
   addScript('wpa-performance-core-runtime', '/scripts/wpa-performance-core.js?v=20260714-3');
 })();
