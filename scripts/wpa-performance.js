@@ -215,6 +215,7 @@
 
   if (isInstitute()) {
     addStylesheet('wpa-institute-compact-brand-css', '/styles/wpa-institute-compact-brand.css?v=20260714-identity2');
+    addScript('wpa-institute-virtual-sande-widget', '/scripts/virtual-sande-institute-widget.js?v=20260716-1');
   }
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
 
