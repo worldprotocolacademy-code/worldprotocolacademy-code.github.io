@@ -40,10 +40,20 @@ jobs:
           set -euo pipefail
           node --test --test-name-pattern='Article' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
 
-      - name: Run comparison gold set
+      - name: Compare protocol and diplomacy
         run: |
           set -euo pipefail
-          node --test --test-name-pattern='comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+          node --test --test-name-pattern='protocol and diplomacy comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Compare defence and military diplomacy
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='defence and military diplomacy comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Compare official visit types
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='visit types comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
 
       - name: Run academic safety guards
         run: |
