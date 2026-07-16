@@ -1,0 +1,56 @@
+name: Virtual Sande Current State Audit
+
+on:
+  pull_request:
+    paths:
+      - 'config/virtual-sande-current-state.json'
+      - '.github/workflows/virtual-sande-v35-1-staging-recertification.yml'
+      - '.github/workflows/virtual-sande-current-state-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Validate canonical state and recertification gate
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          assert state['canonical_state_record'] is True
+          public = state['public_production']
+          assert public['version'] == 'v35.1'
+          assert public['deployment_status'] == 'DEPLOYED_AND_ACCEPTED'
+          assert public['public_cutover_status'] == 'COMPLETED'
+          patch = state['consistency_patch']
+          assert patch['version'] == 'v35.1.1'
+          assert patch['merge_commit'] == '0142bb33c4b5362f178712f377ed2bdb222a4779'
+          assert patch['code_status'] == 'MERGED_PENDING_SAME_COMMIT_STAGING_RECERTIFICATION'
+          assert patch['production_patch_status'] == 'BLOCKED'
+          assert state['rollback']['legacy_worker_retained'] is True
+          PY
+          workflow=.github/workflows/virtual-sande-v35-1-staging-recertification.yml
+          grep -F 'Virtual Sande v35.1.1 Staging Recertification' "$workflow"
+          grep -F '"version": "v35.1.1"' "$workflow"
+          grep -F 'message=Здраво' "$workflow"
+          grep -F 'production_patch_deployment_performed' "$workflow"
+          ! grep -F 'test ! -e workers/virtual-sande-v35.1-production/wrangler.toml' "$workflow"
+          ! grep -F -- '--config workers/virtual-sande-v35.1-production/wrangler.toml' "$workflow"
+      - name: State boundary
+        run: |
+          {
+            echo '## Virtual Sande Current State'
+            echo '- Public v35.1: **Deployed and cut over**'
+            echo '- v35.1.1 code: **Merged**'
+            echo '- v35.1.1 staging recertification: **Pending manual dispatch**'
+            echo '- v35.1.1 production patch: **Blocked**'
+            echo '- Legacy rollback Worker retained: **Yes**'
+          } >> "$GITHUB_STEP_SUMMARY"
