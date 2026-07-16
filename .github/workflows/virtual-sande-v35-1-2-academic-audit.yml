@@ -30,10 +30,25 @@ jobs:
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs
 
-      - name: Run Academic Core gold set
+      - name: Run definition gold set
         run: |
           set -euo pipefail
-          node --test tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+          node --test --test-name-pattern='definition|English academic definition' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Run primary-law gold set
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='Article' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Run comparison gold set
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='comparison' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
+
+      - name: Run academic safety guards
+        run: |
+          set -euo pipefail
+          node --test --test-name-pattern='delegates|structure|nonstandard|authorship' tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs
 
       - name: Run academic entrypoint tests
         run: |
