@@ -14,7 +14,13 @@ test('routes combined ecosystem requests to multiple systems',()=>{
   assert.ok(ids.includes('sublimate'));
 });
 
-test('includes services and intelligence center',()=>{
-  assert.equal(__test.EXTRA_SYSTEMS.services.status,'live_request_builder');
-  assert.equal(__test.EXTRA_SYSTEMS.intelligence_center.status,'public_source_analysis');
+test('routes all phase 2 systems',()=>{
+  const ids=__test.routeMessage('Поврзи Audio Media Engine, WPAWS, Academic Search Hub, Protocol Symbols Lab, Multi-AI Command Center, Volume I Issue I и Diplomatic Analysis Lab').map(x=>x.id);
+  for (const id of ['audio_media','wpaws','academic_search','protocol_symbols','multi_ai','journal_issue_1','diplomatic_analysis']) assert.ok(ids.includes(id),id);
+});
+
+test('preserves phase 2 status boundaries',()=>{
+  assert.equal(__test.EXTRA_SYSTEMS.multi_ai.status,'simulation_prototype');
+  assert.equal(__test.EXTRA_SYSTEMS.protocol_symbols.status,'verified_dataset_ui');
+  assert.equal(__test.EXTRA_SYSTEMS.journal_issue_1.status,'public_flipbook_forthcoming_identifiers');
 });
