@@ -1,4 +1,4 @@
-/* Virtual Sande Connected Vessels client v1.0 */
+/* Virtual Sande Connected Vessels client v2.0 */
 (function(){
   'use strict';
   if(window.WPA_CONNECTED_VESSELS_LOADED)return;
@@ -17,7 +17,13 @@
     '/journal/live/':'journal_live',
     '/wpa-live-intelligence-feed.html':'live_feed',
     '/wpa-sublimate-engine.html':'sublimate',
-    '/wpaws/':'wpaws'
+    '/audio-media-engine.html':'audio_media',
+    '/wpaws/':'wpaws',
+    '/tools/academic-search-hub/':'academic_search',
+    '/wpaws/protocol-symbols-verified/':'protocol_symbols',
+    '/multi-ai-command-center.html':'multi_ai',
+    '/journal/vol-1-issue-1-2026.html':'journal_issue_1',
+    '/wpaws/diplomatic-analysis-lab/':'diplomatic_analysis'
   };
   function pageId(){var p=location.pathname.replace(/\/+$/,'/')||'/';return PAGE_MAP[p]||document.documentElement.getAttribute('data-wpa-page')||'wpa_public';}
   function collectContext(){
@@ -35,7 +41,7 @@
     sessionStorage.setItem('wpaVirtualSandeHandoff',JSON.stringify({message:message,context:Object.assign(collectContext(),extra||{}),createdAt:Date.now()}));
     location.href='/virtual-sande-ai.html';
   }
-  window.WPAVirtualSande={ask:ask,collectContext:collectContext,openWithPrompt:openWithPrompt,version:'connected-vessels-client-v1'};
+  window.WPAVirtualSande={ask:ask,collectContext:collectContext,openWithPrompt:openWithPrompt,version:'connected-vessels-client-v2'};
 
   document.addEventListener('click',function(event){
     var el=event.target.closest('[data-virtual-sande-prompt]');
