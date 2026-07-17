@@ -5,10 +5,15 @@ on:
     paths:
       - 'data/wpa-module-registry.json'
       - 'data/wpa-ai-council-80.json'
+      - 'data/wpaws-proactive-research-mandate.json'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs'
+      - 'tools/virtual-sande/wpa-central-orchestrator.mjs'
+      - 'tools/virtual-sande/wpa-central-orchestrator.test.mjs'
       - 'tools/virtual-sande/wpa-ai-council-phase3.mjs'
       - 'tools/virtual-sande/wpa-ai-council-phase3.test.mjs'
+      - 'tools/virtual-sande/wpa-ai-council-prompt-compiler.mjs'
+      - 'tools/virtual-sande/wpa-ai-council-prompt-compiler.test.mjs'
       - 'scripts/virtual-sande-connected-vessels.js'
       - '.github/workflows/virtual-sande-v35-2-connected-vessels-ci.yml'
   workflow_dispatch: {}
@@ -27,13 +32,18 @@ jobs:
       - name: Syntax checks
         run: |
           node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
+          node --check tools/virtual-sande/wpa-central-orchestrator.mjs
           node --check tools/virtual-sande/wpa-ai-council-phase3.mjs
+          node --check tools/virtual-sande/wpa-ai-council-prompt-compiler.mjs
           node --check scripts/virtual-sande-connected-vessels.js
       - name: JSON validation
         run: |
-          node -e "const fs=require('fs'); const registry=JSON.parse(fs.readFileSync('data/wpa-module-registry.json','utf8')); if(!Array.isArray(registry.modules)) process.exit(1);"
+          node -e "const fs=require('fs'); const registry=JSON.parse(fs.readFileSync('data/wpa-module-registry.json','utf8')); if(!Array.isArray(registry.modules)) process.exit(1); if(!registry.central_orchestration) process.exit(1);"
           node -e "const fs=require('fs'); const council=JSON.parse(fs.readFileSync('data/wpa-ai-council-80.json','utf8')); const total=council.pillars.reduce((n,p)=>n+p.seats,0); if(council.pillars.length!==10 || total!==80) process.exit(1);"
-      - name: Routing and governance tests
+          node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('data/wpaws-proactive-research-mandate.json','utf8')); if(m.domains.length!==10 || m.agent_mandates.length!==17) process.exit(1); if(m.source_policy.paywall_bypass!==false || m.publication_policy.automatic_publication!==false) process.exit(1);"
+      - name: Routing, orchestration and governance tests
         run: |
           node --test tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+          node --test tools/virtual-sande/wpa-central-orchestrator.test.mjs
           node --test tools/virtual-sande/wpa-ai-council-phase3.test.mjs
+          node --test tools/virtual-sande/wpa-ai-council-prompt-compiler.test.mjs
