@@ -1,0 +1,201 @@
+name: AI Search Corpus Doctor — AUDIT ONLY
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-corpus-doctor-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Validate read-only credentials
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+
+      - name: Collect AI Search inventory, stats, jobs and logs
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/corpus-doctor/raw/items /tmp/corpus-doctor/raw/jobs
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          auth="Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"
+
+          curl --fail --silent --show-error "$api" -H "$auth" > /tmp/corpus-doctor/raw/instance.json
+          curl --fail --silent --show-error "$api/stats" -H "$auth" > /tmp/corpus-doctor/raw/stats.json
+          curl --fail --silent --show-error "$api/jobs?page=1&per_page=50" -H "$auth" > /tmp/corpus-doctor/raw/jobs/jobs.json
+
+          page=1
+          while :; do
+            file="/tmp/corpus-doctor/raw/items/page-${page}.json"
+            curl --fail --silent --show-error "$api/items?page=${page}&per_page=50" -H "$auth" > "$file"
+            jq -e '.success == true' "$file" >/dev/null
+            count="$(jq '.result | length' "$file")"
+            test "$count" -ge 0
+            if [ "$count" -lt 50 ]; then break; fi
+            page=$((page + 1))
+            if [ "$page" -gt 100 ]; then echo 'Pagination safety limit reached' >&2; exit 1; fi
+          done
+
+          jq -s '[.[].result[]?]' /tmp/corpus-doctor/raw/items/page-*.json > /tmp/corpus-doctor/items.json
+
+          latest_job="$(jq -r '.result | sort_by(.started_at // "") | last | .id // empty' /tmp/corpus-doctor/raw/jobs/jobs.json)"
+          if [ -n "$latest_job" ]; then
+            curl --fail --silent --show-error "$api/jobs/${latest_job}" -H "$auth" > /tmp/corpus-doctor/raw/jobs/latest-job.json
+            curl --fail --silent --show-error "$api/jobs/${latest_job}/logs?page=1&per_page=1000" -H "$auth" > /tmp/corpus-doctor/raw/jobs/latest-job-logs.json
+          else
+            printf '{"success":true,"result":[]}' > /tmp/corpus-doctor/raw/jobs/latest-job-logs.json
+          fi
+
+      - name: Classify skipped and errored items
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv, json, re
+          from collections import Counter, defaultdict
+          from pathlib import Path
+
+          root = Path('/tmp/corpus-doctor')
+          items = json.loads((root / 'items.json').read_text())
+
+          def first(obj, *keys, default=''):
+              for key in keys:
+                  value = obj.get(key)
+                  if value not in (None, '', []):
+                      return value
+              return default
+
+          def status_of(item):
+              return str(first(item, 'status', 'indexing_status', 'state', default='unknown')).strip().lower()
+
+          def reason_of(item):
+              value = first(item, 'error', 'error_message', 'message', 'reason', 'status_message', 'last_error', default='')
+              if isinstance(value, dict):
+                  value = value.get('message') or json.dumps(value, ensure_ascii=False)
+              return str(value).strip()
+
+          def category(status, reason, key):
+              text = f'{status} {reason} {key}'.lower()
+              if 'file content empty' in text or 'empty' in text and key.lower().endswith(('.csv','.txt','.md','.json')):
+                  return 'EMPTY_CONTENT'
+              if 'over size' in text or 'oversize' in text or 'too large' in text or 'file size' in text:
+                  return 'OVER_SIZE'
+              if 'unsupported' in text or 'not supported' in text or 'file type' in text:
+                  return 'UNSUPPORTED_TYPE'
+              if 'duplicate' in text or 'checksum' in text:
+                  return 'DUPLICATE_OR_UNCHANGED'
+              if 'permission' in text or 'forbidden' in text or 'access' in text:
+                  return 'SOURCE_ACCESS'
+              if status in {'skipped','skip'}:
+                  return 'SKIPPED_OTHER'
+              if status in {'error','errored','failed','failure'}:
+                  return 'ERROR_OTHER'
+              return 'OTHER'
+
+          rows=[]
+          counts=Counter()
+          ext_counts=Counter()
+          status_counts=Counter()
+          for item in items:
+              key=str(first(item,'key','name','filename','path','source_key','id'))
+              status=status_of(item)
+              reason=reason_of(item)
+              cat=category(status,reason,key)
+              ext=Path(key).suffix.lower() or '[none]'
+              row={
+                  'id':str(item.get('id','')),
+                  'status':status,
+                  'category':cat,
+                  'key':key,
+                  'extension':ext,
+                  'reason':reason,
+                  'source':str(first(item,'source','source_name','data_source',default='')),
+                  'size':str(first(item,'size','file_size','bytes',default='')),
+                  'chunks_count':str(first(item,'chunks_count','chunk_count',default='')),
+              }
+              rows.append(row)
+              counts[cat]+=1
+              ext_counts[(status,ext)]+=1
+              status_counts[status]+=1
+
+          with (root/'corpus-items.csv').open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(rows[0].keys()) if rows else ['id','status','category','key','extension','reason','source','size','chunks_count'])
+              w.writeheader(); w.writerows(rows)
+
+          problem=[r for r in rows if r['status'] in {'skipped','skip','error','errored','failed','failure'} or r['category'] not in {'OTHER'}]
+          with (root/'problem-items.csv').open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=list(rows[0].keys()) if rows else ['id','status','category','key','extension','reason','source','size','chunks_count'])
+              w.writeheader(); w.writerows(problem)
+
+          summary={
+              'schema_version':'1.0',
+              'mode':'AUDIT_ONLY',
+              'instance':'protocol-ai',
+              'total_items':len(items),
+              'status_counts':dict(status_counts),
+              'category_counts':dict(counts),
+              'problem_items':len(problem),
+              'recommended_actions':{
+                  'EMPTY_CONTENT':'Remove empty R2 source objects only after confirming canonical replacements exist.',
+                  'OVER_SIZE':'Preserve originals outside the indexed prefix and create AI-ready split derivatives below the platform file-size limit.',
+                  'UNSUPPORTED_TYPE':'Convert to supported text/PDF/HTML derivative or exclude intentionally.',
+                  'DUPLICATE_OR_UNCHANGED':'Usually safe to retain; confirm this is an intentional skip.',
+                  'SOURCE_ACCESS':'Repair R2/source permissions before re-sync.',
+                  'SKIPPED_OTHER':'Inspect item and latest job logs before any mutation.',
+                  'ERROR_OTHER':'Inspect item and latest job logs before any mutation.',
+              },
+          }
+          (root/'summary.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2))
+
+          lines=['# AI Search Corpus Doctor — Audit Only','',f'- Instance: `protocol-ai`',f'- Total items returned by API: **{len(items)}**',f'- Problem items classified: **{len(problem)}**','','## Status counts']
+          for key,value in sorted(status_counts.items()): lines.append(f'- `{key}`: **{value}**')
+          lines += ['','## Reason categories']
+          for key,value in sorted(counts.items()): lines.append(f'- `{key}`: **{value}**')
+          lines += ['','## Safety boundary','- No R2 object was deleted, moved, overwritten or uploaded.','- No AI Search item was deleted or synchronized.','- No indexing job was created.','- Apply/remediation requires a separate protected workflow and explicit approval.']
+          (root/'REPORT.md').write_text('\n'.join(lines)+'\n')
+          PY
+
+      - name: Verify audit-only boundary
+        run: |
+          set -euo pipefail
+          test -s /tmp/corpus-doctor/items.json
+          test -s /tmp/corpus-doctor/summary.json
+          test -s /tmp/corpus-doctor/problem-items.csv
+          test -s /tmp/corpus-doctor/REPORT.md
+          jq -e '.mode == "AUDIT_ONLY"' /tmp/corpus-doctor/summary.json >/dev/null
+          cat /tmp/corpus-doctor/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload corpus audit evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-search-corpus-doctor-audit
+          path: /tmp/corpus-doctor
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Explicit non-mutation statement
+        run: |
+          echo 'Audit complete. No Cloudflare or R2 mutation was performed.'
