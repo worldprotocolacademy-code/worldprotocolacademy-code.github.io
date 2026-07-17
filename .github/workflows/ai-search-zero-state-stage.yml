@@ -1,0 +1,123 @@
+name: AI Search Zero State - PLAN AND STAGE
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Generate a fresh plan or stage an approved plan'
+        required: true
+        default: PLAN_ONLY
+        type: choice
+        options:
+          - PLAN_ONLY
+          - STAGE_ONLY
+      approval_phrase:
+        description: 'For STAGE_ONLY type exactly: STAGE PROTOCOL-AI ZERO STATE'
+        required: false
+        default: ''
+        type: string
+      approved_plan_sha256:
+        description: 'For STAGE_ONLY paste the SHA-256 printed by PLAN_ONLY'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-zero-state-stage
+  cancel-in-progress: false
+
+jobs:
+  plan_or_stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    environment:
+      name: ${{ inputs.mode == 'STAGE_ONLY' && 'production' || 'staging' }}
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+      WRANGLER_BIN: /tmp/node_modules/.bin/wrangler
+      OUT: /tmp/ai-search-zero-state-stage
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Enforce mode gates and credentials
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval_phrase }}
+          PLAN_SHA: ${{ inputs.approved_plan_sha256 }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          if [ "$MODE" = STAGE_ONLY ]; then
+            test "$APPROVAL" = 'STAGE PROTOCOL-AI ZERO STATE'
+            printf '%s' "$PLAN_SHA" | grep -Eq '^[0-9a-f]{64}$'
+            test -n "$CLOUDFLARE_API_TOKEN"
+          fi
+
+      - name: Install deterministic tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qpdf libreoffice jq
+          cd /tmp
+          npm install --silent --no-audit --no-fund wrangler@4
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          test -x "$WRANGLER_BIN"
+          python3 -m py_compile scripts/ai_search_zero_state_stage.py 2>/dev/null || python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_stage.py"
+
+      - name: Generate current migration plan
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          python3 scripts/ai_search_zero_state_stage.py --mode PLAN --out "$OUT"
+          cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Stage verified AI-ready corpus
+        if: ${{ inputs.mode == 'STAGE_ONLY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          APPROVED_PLAN_SHA256: ${{ inputs.approved_plan_sha256 }}
+        run: |
+          set -euo pipefail
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
+          python3 scripts/ai_search_zero_state_stage.py \
+            --mode STAGE \
+            --approved-sha "$APPROVED_PLAN_SHA256" \
+            --out "$OUT"
+          cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Assert non-destructive boundary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo '### Safety boundary' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Original R2 objects are never deleted, moved, or overwritten.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- PLAN_ONLY performs no R2 writes.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- STAGE_ONLY writes only below a versioned `__ai_search_ready_v1__/` prefix.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- AI Search source parameters and sync jobs are not changed by this workflow.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload staging evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-zero-state-stage-${{ github.run_number }}
+          path: /tmp/ai-search-zero-state-stage
+          retention-days: 90
+          if-no-files-found: warn
