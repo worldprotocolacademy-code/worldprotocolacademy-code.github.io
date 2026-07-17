@@ -1,0 +1,28 @@
+name: Virtual Sande v35.2 Connected Vessels CI
+
+on:
+  pull_request:
+    paths:
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs'
+      - 'scripts/virtual-sande-connected-vessels.js'
+      - '.github/workflows/virtual-sande-v35-2-connected-vessels-ci.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax checks
+        run: |
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
+          node --check scripts/virtual-sande-connected-vessels.js
+      - name: Routing tests
+        run: node --test tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
