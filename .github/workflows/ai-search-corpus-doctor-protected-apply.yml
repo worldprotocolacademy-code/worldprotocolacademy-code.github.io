@@ -1,0 +1,228 @@
+name: AI Search Corpus Doctor - PROTECTED APPLY
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'PLAN_ONLY or APPLY'
+        required: true
+        default: PLAN_ONLY
+        type: choice
+        options: [PLAN_ONLY, APPLY]
+      approval_phrase:
+        description: 'For APPLY type exactly: APPLY PROTOCOL-AI CORPUS REMEDIATION'
+        required: false
+        default: ''
+        type: string
+      delete_empty_objects:
+        description: 'Delete confirmed empty R2 source objects'
+        required: true
+        default: false
+        type: boolean
+      split_oversize_pdfs:
+        description: 'Create page-level AI-ready PDF derivatives and remove original only after verification'
+        required: true
+        default: true
+        type: boolean
+      trigger_resync:
+        description: 'Trigger an AI Search sync job after successful changes'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+environment: production
+concurrency:
+  group: ai-search-corpus-doctor-apply
+  cancel-in-progress: false
+
+jobs:
+  remediate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+      MAX_BYTES: '3900000'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Enforce protected APPLY gate
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval_phrase }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          if [ "$MODE" = APPLY ]; then
+            test "$APPROVAL" = 'APPLY PROTOCOL-AI CORPUS REMEDIATION'
+          fi
+
+      - name: Install PDF tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qpdf ghostscript jq
+
+      - name: Collect and classify current AI Search items
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          root=/tmp/corpus-remediation
+          mkdir -p "$root/raw/items" "$root/work" "$root/report"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          auth="Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"
+          page=1
+          while :; do
+            out="$root/raw/items/page-${page}.json"
+            code="$(curl -sS -o "$out" -w '%{http_code}' "$api/items?page=${page}&per_page=50" -H "$auth")"
+            test "$code" -ge 200 -a "$code" -lt 300
+            jq -e '.success == true' "$out" >/dev/null
+            count="$(jq '.result|length' "$out")"
+            [ "$count" -lt 50 ] && break
+            page=$((page+1)); [ "$page" -le 100 ]
+          done
+          jq -s '[.[].result[]?]' "$root"/raw/items/page-*.json > "$root/items.json"
+          python3 - <<'PY'
+          import csv,json
+          from pathlib import Path
+          root=Path('/tmp/corpus-remediation')
+          items=json.loads((root/'items.json').read_text())
+          def val(o,*ks):
+            for k in ks:
+              v=o.get(k)
+              if v not in (None,'',[]): return v
+            return ''
+          rows=[]
+          for x in items:
+            key=str(val(x,'key','name','filename','path','source_key','id'))
+            status=str(val(x,'status','indexing_status','state')).lower()
+            reason=str(val(x,'error','error_message','message','reason','status_message','last_error'))
+            t=f'{status} {reason} {key}'.lower()
+            cat='OTHER'
+            if 'file content empty' in t or ('empty' in t and key.lower().endswith(('.csv','.txt','.md','.json'))): cat='EMPTY_CONTENT'
+            elif 'over size' in t or 'oversize' in t or 'too large' in t or 'file size' in t: cat='OVER_SIZE'
+            elif 'unsupported' in t or 'not supported' in t or 'file type' in t: cat='UNSUPPORTED_TYPE'
+            elif status in ('skipped','skip'): cat='SKIPPED_OTHER'
+            elif status in ('error','errored','failed','failure'): cat='ERROR_OTHER'
+            rows.append({'id':str(x.get('id','')),'status':status,'category':cat,'key':key,'reason':reason})
+          with (root/'report/problem-items.csv').open('w',newline='',encoding='utf-8') as f:
+            w=csv.DictWriter(f,fieldnames=['id','status','category','key','reason']); w.writeheader();
+            w.writerows(r for r in rows if r['category']!='OTHER')
+          (root/'report/plan.json').write_text(json.dumps({
+            'mode':'${{ inputs.mode }}',
+            'empty':[r for r in rows if r['category']=='EMPTY_CONTENT'],
+            'oversize':[r for r in rows if r['category']=='OVER_SIZE'],
+            'blocked':[r for r in rows if r['category'] in ('UNSUPPORTED_TYPE','SKIPPED_OTHER','ERROR_OTHER')]
+          },ensure_ascii=False,indent=2))
+          PY
+          jq '{empty:(.empty|length),oversize:(.oversize|length),blocked:(.blocked|length)}' "$root/report/plan.json" | tee "$root/report/counts.json"
+
+      - name: Stop PLAN_ONLY after producing evidence
+        if: ${{ inputs.mode == 'PLAN_ONLY' }}
+        run: |
+          echo '### Corpus Doctor plan generated' >> "$GITHUB_STEP_SUMMARY"
+          cat /tmp/corpus-remediation/report/counts.json >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply confirmed empty-object removals
+        if: ${{ inputs.mode == 'APPLY' && inputs.delete_empty_objects }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          jq -r '.empty[].key' /tmp/corpus-remediation/report/plan.json | while IFS= read -r key; do
+            [ -n "$key" ] || continue
+            echo "Deleting confirmed empty object: $key"
+            npx --yes wrangler@4 r2 object delete "${R2_BUCKET}/${key}" --remote
+          done
+
+      - name: Split and replace oversize PDFs transactionally
+        if: ${{ inputs.mode == 'APPLY' && inputs.split_oversize_pdfs }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          root=/tmp/corpus-remediation
+          jq -r '.oversize[].key' "$root/report/plan.json" | while IFS= read -r key; do
+            [ -n "$key" ] || continue
+            case "${key,,}" in *.pdf) ;; *) echo "BLOCK non-PDF oversize: $key"; exit 1;; esac
+            safe="$(printf '%s' "$key" | sha256sum | cut -c1-20)"
+            work="$root/work/$safe"; mkdir -p "$work/pages"
+            src="$work/source.pdf"
+            npx --yes wrangler@4 r2 object get "${R2_BUCKET}/${key}" --remote --file "$src"
+            qpdf --check "$src"
+            qpdf --split-pages "$src" "$work/pages/page-%04d.pdf"
+            test "$(find "$work/pages" -name '*.pdf' | wc -l)" -gt 0
+            prefix="${key%.*}.__ai_search_parts__"
+            uploaded=0
+            for page in "$work"/pages/*.pdf; do
+              base="$(basename "$page")"
+              out="$work/ready-$base"
+              cp "$page" "$out"
+              bytes="$(stat -c %s "$out")"
+              if [ "$bytes" -gt "$MAX_BYTES" ]; then
+                gs -q -dNOPAUSE -dBATCH -dSAFER -sDEVICE=pdfwrite -dCompatibilityLevel=1.5 -dPDFSETTINGS=/ebook -dDetectDuplicateImages=true -dCompressFonts=true -sOutputFile="$work/compressed-$base" "$out"
+                mv "$work/compressed-$base" "$out"
+                bytes="$(stat -c %s "$out")"
+              fi
+              if [ "$bytes" -gt "$MAX_BYTES" ]; then
+                echo "Page remains over limit; original retained: $key / $base ($bytes bytes)" >&2
+                exit 1
+              fi
+              qpdf --check "$out"
+              target="${prefix}/${base}"
+              npx --yes wrangler@4 r2 object put "${R2_BUCKET}/${target}" --remote --file "$out" --content-type application/pdf
+              uploaded=$((uploaded+1))
+            done
+            test "$uploaded" -gt 0
+            npx --yes wrangler@4 r2 object delete "${R2_BUCKET}/${key}" --remote
+            printf '%s,%s,%s\n' "$key" "$prefix" "$uploaded" >> "$root/report/replaced-oversize.csv"
+          done
+
+      - name: Trigger AI Search resync
+        if: ${{ inputs.mode == 'APPLY' && inputs.trigger_resync }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}/jobs"
+          curl -sS -X POST "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' -d '{"description":"Corpus Doctor protected remediation resync"}' | tee /tmp/corpus-remediation/report/resync-job.json
+          jq -e '.success == true' /tmp/corpus-remediation/report/resync-job.json >/dev/null
+
+      - name: Final safety report
+        if: always()
+        run: |
+          set -euo pipefail
+          echo '### AI Search Corpus Doctor - Protected remediation' >> "$GITHUB_STEP_SUMMARY"
+          echo "- Mode: ${{ inputs.mode }}" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/corpus-remediation/report/counts.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/corpus-remediation/report/counts.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '- Unknown/unsupported problems are never auto-deleted.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Oversize originals are removed only after all derivatives pass local PDF and size checks and upload succeeds.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload remediation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-search-corpus-doctor-remediation
+          path: /tmp/corpus-remediation/report
+          retention-days: 90
+          if-no-files-found: warn
