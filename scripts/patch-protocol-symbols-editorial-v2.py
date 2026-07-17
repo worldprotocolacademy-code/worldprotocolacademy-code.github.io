@@ -60,3 +60,5 @@ for marker, pair in resource_replacements.items():
 
 path.write_text(text, encoding="utf-8")
 print("Protocol symbols editorial corrections applied.")
+
+# Workflow trigger marker: 2026-07-17
