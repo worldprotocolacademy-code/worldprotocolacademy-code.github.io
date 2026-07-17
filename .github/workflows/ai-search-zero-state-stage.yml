@@ -68,12 +68,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update -qq
-          sudo apt-get install -y -qq qpdf libreoffice jq
+          sudo apt-get install -y -qq qpdf ghostscript libreoffice jq
           cd /tmp
           npm install --silent --no-audit --no-fund wrangler@4
           python3 -m pip install --disable-pip-version-check --quiet requests
           test -x "$WRANGLER_BIN"
-          python3 -m py_compile scripts/ai_search_zero_state_stage.py 2>/dev/null || python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_stage.py"
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_stage.py"
 
       - name: Generate current migration plan
         env:
