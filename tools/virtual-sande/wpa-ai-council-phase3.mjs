@@ -1,4 +1,12 @@
-const VERSION = 'phase3-ai-council-1.0';
+const VERSION = 'phase3-ai-council-1.1';
+
+export const DIPLOMATIC_PROTOCOL_CORE = {
+  id:'diplomatic_protocol_core',
+  name:'Дипломатски протокол',
+  role:'governing_foundation',
+  mandatory:true,
+  checks:['precedence','accreditation_status','forms_of_address','diplomatic_visits','flags_symbols','seating_placement','ceremonial_sequence','host_state_practice','vienna_convention_context','institutional_dignity']
+};
 
 export const PILLARS = [
   {id:'protocol',name:'Протокол',terms:['протокол','protocol','precedence','претходство','state visit','државна посета']},
@@ -34,23 +42,26 @@ export function buildCouncilPlan(message, options={}) {
   return {
     version:VERSION,
     message:String(message || ''),
+    foundation_review:{...DIPLOMATIC_PROTOCOL_CORE,status:'required'},
     selected_pillars:pillars.map(({id,name})=>({id,name})),
     advisory_seats:seats,
-    gates:{evidence:'required',safety:'required',human_approval:'required'},
+    gates:{diplomatic_protocol_core:'required',evidence:'required',safety:'required',human_approval:'required'},
     publication_allowed:false
   };
 }
 
 export function evaluateRelease(state={}) {
+  const diplomatic = state.diplomatic_protocol_core === 'passed';
   const evidence = state.evidence_gate === 'passed';
   const safety = state.safety_gate === 'passed';
   const human = state.sande_human_approval === 'approved';
   return {
+    diplomatic_protocol_core:diplomatic,
     evidence_gate:evidence,
     safety_gate:safety,
     sande_human_approval:human,
-    wpa_output_allowed:evidence && safety && human,
-    reason:evidence && safety && human ? 'All mandatory gates passed.' : 'WPA Output remains blocked until every mandatory gate passes.'
+    wpa_output_allowed:diplomatic && evidence && safety && human,
+    reason:diplomatic && evidence && safety && human ? 'All mandatory gates passed.' : 'WPA Output remains blocked until Diplomatic Protocol Core and every mandatory gate pass.'
   };
 }
 
