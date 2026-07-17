@@ -1,0 +1,169 @@
+name: AI Search R2 Validation — READ ONLY
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-r2-readonly-validation
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: staging
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate read-only credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+
+      - name: Collect current AI Search inventory
+        env:
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r2-validation/raw /tmp/r2-validation/files /tmp/r2-validation/report
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          page=1
+          while :; do
+            out="/tmp/r2-validation/raw/page-${page}.json"
+            curl --fail --silent --show-error "$api/items?page=${page}&per_page=50" \
+              -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$out"
+            jq -e '.success == true' "$out" >/dev/null
+            count="$(jq '.result | length' "$out")"
+            [ "$count" -lt 50 ] && break
+            page=$((page + 1))
+          done
+          jq -s '[.[].result[]?]' /tmp/r2-validation/raw/page-*.json > /tmp/r2-validation/raw/items.json
+          jq -r '.[] | select(
+            (.status == "error" and ((.error != "over_size") or (.key | contains("/01_smiljanov_books/")))) or
+            (.status == "skipped" and .error == "Skipped by Include Rules" and
+              ((.key | startswith("books_output/01_kniga1_")) or
+               (.key | startswith("books_output/03_kniga3_")) or
+               (.key | startswith("UN_Protocol/")) or
+               (.key | startswith("sandesmiljanov2021_doctoral/"))))
+          ) | .key' /tmp/r2-validation/raw/items.json > /tmp/r2-validation/selected-keys.txt
+
+      - name: Download selected objects with GET only
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          : > /tmp/r2-validation/report/downloads.jsonl
+          while IFS= read -r key; do
+            [ -n "$key" ] || continue
+            id="$(printf '%s' "$key" | sha256sum | cut -d' ' -f1)"
+            ext="${key##*.}"; [ "$ext" != "$key" ] || ext=bin
+            target="/tmp/r2-validation/files/${id}.${ext}"
+            if npx --yes wrangler@4 r2 object get "${R2_BUCKET}/${key}" --file "$target" --remote >/tmp/r2-get.log 2>&1; then
+              bytes="$(wc -c < "$target" | tr -d ' ')"
+              sha="$(sha256sum "$target" | cut -d' ' -f1)"
+              mime="$(file --brief --mime-type "$target")"
+              jq -n --arg key "$key" --arg file "$target" --arg sha "$sha" --arg mime "$mime" --argjson bytes "$bytes" \
+                '{key:$key,file:$file,downloaded:true,bytes:$bytes,sha256:$sha,mime:$mime}' >> /tmp/r2-validation/report/downloads.jsonl
+            else
+              msg="$(tail -n 20 /tmp/r2-get.log | tr '\n' ' ' | cut -c1-1000)"
+              jq -n --arg key "$key" --arg msg "$msg" '{key:$key,downloaded:false,error:$msg}' >> /tmp/r2-validation/report/downloads.jsonl
+            fi
+          done < /tmp/r2-validation/selected-keys.txt
+          jq -s '.' /tmp/r2-validation/report/downloads.jsonl > /tmp/r2-validation/report/downloads.json
+
+      - name: Analyze files and build validation decision
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet pypdf
+          python3 - <<'PY'
+          import csv, json, re
+          from collections import defaultdict
+          from pathlib import Path
+          from pypdf import PdfReader
+
+          root=Path('/tmp/r2-validation')
+          rows=json.loads((root/'report/downloads.json').read_text())
+          analyses=[]
+          for row in rows:
+              out={k:v for k,v in row.items() if k!='file'}
+              if not row.get('downloaded'):
+                  analyses.append(out); continue
+              p=Path(row['file'])
+              try:
+                  if p.suffix.lower()=='.pdf':
+                      reader=PdfReader(str(p)); out['page_count']=len(reader.pages)
+                  elif p.suffix.lower()=='.csv':
+                      raw=p.read_bytes(); out['null_bytes']=raw.count(b'\x00')
+                      for enc in ('utf-8-sig','utf-16','cp1252','latin-1'):
+                          try: text=raw.decode(enc); out['encoding']=enc; break
+                          except UnicodeDecodeError: pass
+                      sample=text[:10000]
+                      dialect=csv.Sniffer().sniff(sample,delimiters=',;\t|')
+                      parsed=list(csv.reader(text.splitlines(),dialect))
+                      out['rows']=len(parsed); out['max_columns']=max((len(r) for r in parsed),default=0)
+              except Exception as e:
+                  out['analysis_error']=f'{type(e).__name__}: {e}'
+              analyses.append(out)
+
+          folders=defaultdict(list); hashes=defaultdict(list)
+          for row in analyses:
+              key=row.get('key','')
+              if key.startswith('books_output/') and row.get('downloaded'):
+                  hashes[row['sha256']].append(key)
+                  m=re.search(r'_pp(\d+)-(\d+)\.pdf$',key)
+                  if m: folders[str(Path(key).parent)].append((int(m.group(1)),int(m.group(2)),row.get('page_count'),key))
+          folder_checks=[]
+          for folder,parts in sorted(folders.items()):
+              parts.sort(); expected=1; issues=[]
+              for start,end,pages,key in parts:
+                  if start!=expected: issues.append(f'gap before {key}: expected {expected}, got {start}')
+                  if pages!=(end-start+1): issues.append(f'page mismatch {key}: {pages} vs {end-start+1}')
+                  expected=end+1
+              folder_checks.append({'folder':folder,'parts':len(parts),'range_end':expected-1,'issues':issues,'valid':not issues})
+          failures=[r for r in analyses if not r.get('downloaded') or r.get('analysis_error')]
+          duplicate_groups=[v for v in hashes.values() if len(v)>1]
+          decision='APPROVE_DRY_RUN_MANIFEST' if not failures and all(x['valid'] for x in folder_checks) else 'HOLD_FOR_REVIEW'
+          report={'schema_version':'1.0','mode':'READ_ONLY_VALIDATION','decision':decision,'selected':len(rows),
+                  'downloaded':sum(r.get('downloaded',False) for r in rows),'failures':failures,
+                  'folder_checks':folder_checks,'duplicate_groups':duplicate_groups,'items':analyses}
+          (root/'report/validation-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          lines=['# WPA R2 Read-only Validation','',f'- Selected: **{report["selected"]}**',f'- Downloaded: **{report["downloaded"]}**',f'- Decision: **{decision}**','','## Split folders']
+          for x in folder_checks: lines.append(f'- `{x["folder"]}`: parts={x["parts"]}, pages=1-{x["range_end"]}, valid={x["valid"]}')
+          lines += ['','## Duplicate byte groups',f'- Groups: **{len(duplicate_groups)}**','','## Safety boundary','- GET-only R2 access.','- No upload, overwrite, move, delete, AI Search setting change, sync, or deployment.','- Source files are not uploaded as artifacts.']
+          (root/'report/REPORT.md').write_text('\n'.join(lines)+'\n')
+          PY
+          cat /tmp/r2-validation/report/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove temporary source files
+        if: always()
+        run: rm -rf /tmp/r2-validation/files
+
+      - name: Upload validation report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-search-r2-readonly-validation
+          path: /tmp/r2-validation/report
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Explicit non-mutation statement
+        run: echo 'Read-only validation complete. No R2 or AI Search mutation was performed.'
