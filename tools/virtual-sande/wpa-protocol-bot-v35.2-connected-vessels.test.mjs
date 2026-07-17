@@ -7,20 +7,29 @@ test('routes protocolometry requests',()=>{
   assert.ok(ids.includes('protocolometry'));
 });
 
-test('routes combined ecosystem requests to multiple systems',()=>{
-  const ids=__test.routeMessage('Поврзи Student Desk со Journal Watch и Sublimate').map(x=>x.id);
-  assert.ok(ids.includes('student_desk'));
-  assert.ok(ids.includes('journal_watch'));
-  assert.ok(ids.includes('sublimate'));
+test('routes connected WPA output surfaces',()=>{
+  const ids=__test.routeMessage('Поврзи Premium Briefings, Services, Institutional Profile и Digital Pavilion').map(x=>x.id);
+  for(const id of ['premium_briefings','services','institutional_profile','digital_pavilion'])assert.ok(ids.includes(id),id);
 });
 
-test('routes all phase 2 systems',()=>{
-  const ids=__test.routeMessage('Поврзи Audio Media Engine, WPAWS, Academic Search Hub, Protocol Symbols Lab, Multi-AI Command Center, Volume I Issue I и Diplomatic Analysis Lab').map(x=>x.id);
-  for (const id of ['audio_media','wpaws','academic_search','protocol_symbols','multi_ai','journal_issue_1','diplomatic_analysis']) assert.ok(ids.includes(id),id);
+test('routes research through Academic Search Hub and WPAWS',()=>{
+  const ids=__test.routeMessage('Пронајди ги сите книги преку Academic Search Hub и 17 агенти').map(x=>x.id);
+  assert.ok(ids.includes('academic_search'));
+  assert.ok(ids.includes('wpaws'));
 });
 
-test('preserves phase 2 status boundaries',()=>{
+test('builds comprehensive central orchestration plan',()=>{
+  const plan=__test.buildOrchestrationPlan('Сеопфатно истражување на сите книги за десет области');
+  assert.equal(plan.mode,'comprehensive');
+  assert.equal(plan.wpaws_agents.length,17);
+  assert.equal(plan.council.advisory_seats.length,80);
+  assert.equal(plan.diplomatic_protocol_core,'mandatory');
+});
+
+test('preserves safety and public-brand boundaries',()=>{
+  assert.equal(__test.EXTRA_SYSTEMS.intelligence_center.status,'protocolometry_legacy_alias');
   assert.equal(__test.EXTRA_SYSTEMS.multi_ai.status,'simulation_prototype');
-  assert.equal(__test.EXTRA_SYSTEMS.protocol_symbols.status,'verified_dataset_ui');
-  assert.equal(__test.EXTRA_SYSTEMS.journal_issue_1.status,'public_flipbook_forthcoming_identifiers');
+  const plan=__test.buildOrchestrationPlan('Објави автоматски');
+  assert.equal(plan.governance.no_automatic_publication,true);
+  assert.equal(plan.release_status,'blocked_pending_mandatory_gates');
 });
