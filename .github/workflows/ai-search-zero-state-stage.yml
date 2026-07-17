@@ -125,13 +125,36 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           APPROVED_PLAN_SHA256: ${{ inputs.approved_plan_sha256 }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           rm -rf "$OUT"
           mkdir -p "$OUT"
+          set +e
           python3 scripts/ai_search_zero_state_stage.py \
             --mode STAGE \
             --approved-sha "$APPROVED_PLAN_SHA256" \
-            --out "$OUT"
+            --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ]; then
+            last_item="$(grep -E '^\[[0-9]+/[0-9]+\] ' "$OUT/stage.log" | tail -n 1 || true)"
+            python3 - "$OUT/failure.json" "$code" "$last_item" <<'PY'
+          import json,sys
+          from pathlib import Path
+          path=Path(sys.argv[1])
+          code=int(sys.argv[2])
+          last=sys.argv[3]
+          log=path.with_name('stage.log')
+          tail=log.read_text(errors='replace').splitlines()[-120:] if log.exists() else []
+          path.write_text(json.dumps({'exit_code':code,'last_item':last,'log_tail':tail},ensure_ascii=False,indent=2)+'\n')
+          PY
+            echo '### STAGE_ONLY failure evidence' >> "$GITHUB_STEP_SUMMARY"
+            echo "- Exit code: $code" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Last item: ${last_item:-unknown}" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 40 "$OUT/stage.log" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            exit "$code"
+          fi
           cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Assert non-destructive boundary
