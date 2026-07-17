@@ -1,0 +1,115 @@
+name: AI Search Zero State - APPROVED STAGE
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-zero-state-stage
+  cancel-in-progress: false
+
+jobs:
+  approved_stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    environment: production
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+      WRANGLER_BIN: /tmp/node_modules/.bin/wrangler
+      OUT: /tmp/ai-search-zero-state-stage
+      APPROVED_PLAN_SHA256: 7d31262832e95eb4185458f46dc6046dcc062af6d788dac23760b9290a26338e
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Validate protected credentials
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          fail=0
+          for name in CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_AI_SEARCH_TOKEN CLOUDFLARE_API_TOKEN; do
+            eval "value=\${$name:-}"
+            if [ -z "$value" ]; then
+              echo "::error title=Missing production secret::$name is unavailable in production."
+              fail=1
+            fi
+          done
+          [ "$fail" -eq 0 ]
+          printf '%s' "$APPROVED_PLAN_SHA256" | grep -Eq '^[0-9a-f]{64}$'
+          echo 'Protected credentials and locked plan SHA are valid.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Install deterministic tooling
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qpdf ghostscript libreoffice jq
+          cd /tmp
+          npm install --silent --no-audit --no-fund wrangler@4
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          test -x "$WRANGLER_BIN"
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_stage.py"
+
+      - name: Run locked approved staging
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -uo pipefail
+          rm -rf "$OUT"
+          mkdir -p "$OUT"
+          set +e
+          python3 scripts/ai_search_zero_state_stage.py \
+            --mode STAGE \
+            --approved-sha "$APPROVED_PLAN_SHA256" \
+            --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ]; then
+            last_item="$(grep -E '^\[[0-9]+/[0-9]+\] ' "$OUT/stage.log" | tail -n 1 || true)"
+            python3 - "$OUT/failure.json" "$code" "$last_item" <<'PY'
+          import json,sys
+          from pathlib import Path
+          path=Path(sys.argv[1])
+          code=int(sys.argv[2])
+          last=sys.argv[3]
+          log=path.with_name('stage.log')
+          tail=log.read_text(errors='replace').splitlines()[-120:] if log.exists() else []
+          path.write_text(json.dumps({'exit_code':code,'last_item':last,'log_tail':tail},ensure_ascii=False,indent=2)+'\n')
+          PY
+            echo '### APPROVED STAGE failure evidence' >> "$GITHUB_STEP_SUMMARY"
+            echo "- Exit code: $code" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Last item: ${last_item:-unknown}" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 40 "$OUT/stage.log" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            exit "$code"
+          fi
+          cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Assert non-destructive boundary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo '### Safety boundary' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Original R2 objects are never deleted, moved, or overwritten.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Writes are restricted to the versioned AI-ready prefix.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Active AI Search configuration and sync jobs remain unchanged.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload staging evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-zero-state-approved-stage-${{ github.run_number }}
+          path: /tmp/ai-search-zero-state-stage
+          retention-days: 90
+          if-no-files-found: warn
