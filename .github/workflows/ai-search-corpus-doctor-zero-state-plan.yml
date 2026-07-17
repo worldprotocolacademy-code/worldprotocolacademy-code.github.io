@@ -1,0 +1,205 @@
+name: AI Search Corpus Doctor - ZERO STATE PLAN
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-corpus-doctor-zero-state-plan
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      ROOT: /tmp/zero-state-plan
+    steps:
+      - name: Validate read-only credentials
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+
+      - name: Collect instance configuration, stats and items
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$ROOT/raw/items" "$ROOT/report"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          auth="Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"
+          cf_get() {
+            local url="$1" out="$2"
+            local code
+            code="$(curl -sS -o "$out" -w '%{http_code}' "$url" -H "$auth")"
+            test "$code" -ge 200 -a "$code" -lt 300
+            jq -e '.success == true' "$out" >/dev/null
+          }
+          cf_get "$api" "$ROOT/raw/instance.json"
+          cf_get "$api/stats" "$ROOT/raw/stats.json"
+          page=1
+          while :; do
+            out="$ROOT/raw/items/page-${page}.json"
+            cf_get "$api/items?page=${page}&per_page=50" "$out"
+            count="$(jq '.result | length' "$out")"
+            [ "$count" -lt 50 ] && break
+            page=$((page + 1))
+            [ "$page" -le 100 ]
+          done
+          jq -s '[.[].result[]?]' "$ROOT"/raw/items/page-*.json > "$ROOT/raw/items.json"
+
+      - name: Build zero-state remediation manifest
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import csv, hashlib, json
+          from collections import Counter
+          from pathlib import Path
+
+          root = Path('/tmp/zero-state-plan')
+          items = json.loads((root/'raw/items.json').read_text())
+          instance = json.loads((root/'raw/instance.json').read_text()).get('result', {})
+          stats = json.loads((root/'raw/stats.json').read_text()).get('result', {})
+
+          def first(obj, *keys, default=''):
+              for key in keys:
+                  value = obj.get(key)
+                  if value not in (None, '', []):
+                      return value
+              return default
+
+          def reason_of(item):
+              value = first(item, 'error', 'error_message', 'message', 'reason',
+                            'status_message', 'last_error', default='')
+              if isinstance(value, dict):
+                  value = value.get('message') or json.dumps(value, ensure_ascii=False)
+              return str(value).strip()
+
+          def category(status, reason, key):
+              key_l = key.lower()
+              text = f'{status} {reason} {key}'.lower().replace('_', ' ')
+              if 'file content empty' in text or ('empty' in text and key_l.endswith(('.csv','.txt','.md','.json'))):
+                  return 'EMPTY_CONTENT'
+              if any(marker in text for marker in ('over size','oversize','too large','file size')):
+                  return 'OVER_SIZE'
+              if ('unsupported' in text or 'not supported' in text or 'file type' in text) and key_l.endswith('.ppt'):
+                  return 'UNSUPPORTED_PPT'
+              if 'permission' in text or 'forbidden' in text or 'source access' in text:
+                  return 'SOURCE_ACCESS'
+              if status in {'skipped','skip'}:
+                  if key.endswith('/'):
+                      return 'FOLDER_MARKER'
+                  if key_l.endswith('.jsonl'):
+                      return 'FILTERED_JSONL'
+                  if key_l.endswith('.mp3'):
+                      return 'FILTERED_MP3'
+                  if key_l.endswith('.pdf'):
+                      return 'FILTERED_PDF'
+                  return 'FILTERED_OTHER'
+              if status in {'error','errored','failed','failure'}:
+                  return 'ERROR_OTHER'
+              if status == 'outdated':
+                  return 'OUTDATED'
+              return 'OTHER'
+
+          actions = {
+              'EMPTY_CONTENT': 'VERIFY_EMPTY_THEN_DELETE',
+              'OVER_SIZE': 'SPLIT_PDF_TRANSACTIONALLY',
+              'FOLDER_MARKER': 'VERIFY_ZERO_BYTE_THEN_DELETE',
+              'FILTERED_JSONL': 'CONVERT_TO_JSON_PARTS_AND_ARCHIVE_ORIGINAL',
+              'FILTERED_MP3': 'ARCHIVE_ORIGINAL_PENDING_TRANSCRIPT',
+              'FILTERED_PDF': 'CLEAR_PATH_FILTERS_AFTER_NONINDEXABLE_CLEANUP',
+              'UNSUPPORTED_PPT': 'CONVERT_TO_PDF_AND_ARCHIVE_ORIGINAL',
+              'SOURCE_ACCESS': 'REPAIR_SOURCE_ACCESS',
+              'FILTERED_OTHER': 'MANUAL_REVIEW',
+              'ERROR_OTHER': 'MANUAL_REVIEW',
+              'OUTDATED': 'RESYNC',
+          }
+          implemented = {
+              'EMPTY_CONTENT','OVER_SIZE','FOLDER_MARKER','FILTERED_JSONL',
+              'FILTERED_MP3','FILTERED_PDF','UNSUPPORTED_PPT','OUTDATED'
+          }
+          problem_status = {'skipped','skip','error','errored','failed','failure','outdated'}
+          rows=[]; status_counts=Counter(); category_counts=Counter()
+          for item in items:
+              key=str(first(item,'key','name','filename','path','source_key','id'))
+              status=str(first(item,'status','indexing_status','state',default='unknown')).strip().lower()
+              reason=reason_of(item)
+              cat=category(status,reason,key)
+              status_counts[status]+=1
+              if status in problem_status:
+                  row={'id':str(item.get('id','')),'status':status,'category':cat,
+                       'action':actions.get(cat,'MANUAL_REVIEW'),'key':key,'reason':reason}
+                  rows.append(row); category_counts[cat]+=1
+          rows.sort(key=lambda r:(r['category'],r['key'],r['id']))
+          blocked=[r for r in rows if r['category'] not in implemented]
+          source_params=instance.get('source_params') or {}
+          path_filters={
+              'include_items': source_params.get('include_items') or [],
+              'exclude_items': source_params.get('exclude_items') or [],
+              'prefix': source_params.get('prefix'),
+              'r2_jurisdiction': source_params.get('r2_jurisdiction'),
+          }
+          manifest={
+              'schema_version':'3.0',
+              'mode':'ZERO_STATE_PLAN_READ_ONLY',
+              'instance':instance.get('id','protocol-ai'),
+              'instance_modified_at':instance.get('modified_at'),
+              'source':instance.get('source'),
+              'type':instance.get('type'),
+              'path_filters':path_filters,
+              'stats':stats,
+              'items':rows,
+              'blocked':blocked,
+          }
+          raw=(json.dumps(manifest,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
+          (root/'report/zero-state-plan.json').write_bytes(raw)
+          plan_sha=hashlib.sha256(raw).hexdigest()
+          (root/'report/zero-state-plan.sha256').write_text(plan_sha+'\n')
+          fields=['id','status','category','action','key','reason']
+          with (root/'report/problem-items.csv').open('w',newline='',encoding='utf-8') as f:
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
+          (root/'report/path-filters.json').write_text(json.dumps(path_filters,ensure_ascii=False,indent=2)+'\n')
+          summary={
+              'total_items':len(items),
+              'problem_items':len(rows),
+              'status_counts':dict(status_counts),
+              'category_counts':dict(category_counts),
+              'blocked':len(blocked),
+              'remediation_ready':not blocked,
+              'zero_state_plan_sha256':plan_sha,
+          }
+          (root/'report/counts.json').write_text(json.dumps(summary,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(summary,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Publish summary
+        run: |
+          set -euo pipefail
+          echo '### AI Search Corpus Doctor - ZERO STATE PLAN' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$ROOT/report/counts.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo '#### Current path filters' >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$ROOT/report/path-filters.json" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Read-only: no R2 object, AI Search setting, or index was changed.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload zero-state plan evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ai-search-zero-state-plan
+          path: /tmp/zero-state-plan/report
+          retention-days: 90
+          if-no-files-found: error
