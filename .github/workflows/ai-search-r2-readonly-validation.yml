@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
 
@@ -64,6 +64,24 @@ jobs:
                (.key | startswith("sandesmiljanov2021_doctoral/"))))
           ) | .key' /tmp/r2-validation/raw/items.json > /tmp/r2-validation/selected-keys.txt
 
+      - name: R2 read-access preflight
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          npx --yes wrangler@4 r2 bucket list > /tmp/r2-validation/report/r2-preflight.log 2>&1
+          code=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$code" > /tmp/r2-validation/report/r2-preflight.json
+          if [ "$code" -ne 0 ]; then
+            echo '### R2 preflight failed' >> "$GITHUB_STEP_SUMMARY"
+            echo 'The current CLOUDFLARE_API_TOKEN cannot list/read R2 with Wrangler.' >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 20 /tmp/r2-validation/report/r2-preflight.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Download selected objects with GET only
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -83,8 +101,11 @@ jobs:
               jq -n --arg key "$key" --arg file "$target" --arg sha "$sha" --arg mime "$mime" --argjson bytes "$bytes" \
                 '{key:$key,file:$file,downloaded:true,bytes:$bytes,sha256:$sha,mime:$mime}' >> /tmp/r2-validation/report/downloads.jsonl
             else
-              msg="$(tail -n 20 /tmp/r2-get.log | tr '\n' ' ' | cut -c1-1000)"
-              jq -n --arg key "$key" --arg msg "$msg" '{key:$key,downloaded:false,error:$msg}' >> /tmp/r2-validation/report/downloads.jsonl
+              msg="$(tail -n 30 /tmp/r2-get.log | tr '\n' ' ' | cut -c1-2000)"
+              category="OTHER"
+              printf '%s' "$msg" | grep -Eqi 'permission|forbidden|unauthorized|authentication|code: 10000|code: 10001' && category="TOKEN_SCOPE"
+              printf '%s' "$msg" | grep -Eqi 'not found|does not exist|NoSuchKey|404' && category="OBJECT_NOT_FOUND"
+              jq -n --arg key "$key" --arg msg "$msg" --arg category "$category" '{key:$key,downloaded:false,error_category:$category,error:$msg}' >> /tmp/r2-validation/report/downloads.jsonl
             fi
           done < /tmp/r2-validation/selected-keys.txt
           jq -s '.' /tmp/r2-validation/report/downloads.jsonl > /tmp/r2-validation/report/downloads.json
@@ -95,7 +116,7 @@ jobs:
           python3 -m pip install --disable-pip-version-check --quiet pypdf
           python3 - <<'PY'
           import csv, json, re
-          from collections import defaultdict
+          from collections import Counter, defaultdict
           from pathlib import Path
           from pypdf import PdfReader
 
@@ -112,6 +133,7 @@ jobs:
                       reader=PdfReader(str(p)); out['page_count']=len(reader.pages)
                   elif p.suffix.lower()=='.csv':
                       raw=p.read_bytes(); out['null_bytes']=raw.count(b'\x00')
+                      text=''
                       for enc in ('utf-8-sig','utf-16','cp1252','latin-1'):
                           try: text=raw.decode(enc); out['encoding']=enc; break
                           except UnicodeDecodeError: pass
@@ -140,12 +162,24 @@ jobs:
               folder_checks.append({'folder':folder,'parts':len(parts),'range_end':expected-1,'issues':issues,'valid':not issues})
           failures=[r for r in analyses if not r.get('downloaded') or r.get('analysis_error')]
           duplicate_groups=[v for v in hashes.values() if len(v)>1]
+          categories=Counter(r.get('error_category','NONE') for r in failures)
           decision='APPROVE_DRY_RUN_MANIFEST' if not failures and all(x['valid'] for x in folder_checks) else 'HOLD_FOR_REVIEW'
-          report={'schema_version':'1.0','mode':'READ_ONLY_VALIDATION','decision':decision,'selected':len(rows),
-                  'downloaded':sum(r.get('downloaded',False) for r in rows),'failures':failures,
-                  'folder_checks':folder_checks,'duplicate_groups':duplicate_groups,'items':analyses}
+          report={'schema_version':'1.1','mode':'READ_ONLY_VALIDATION','decision':decision,'selected':len(rows),
+                  'downloaded':sum(r.get('downloaded',False) for r in rows),'failure_categories':dict(categories),
+                  'failures':failures,'folder_checks':folder_checks,'duplicate_groups':duplicate_groups,'items':analyses}
           (root/'report/validation-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
-          lines=['# WPA R2 Read-only Validation','',f'- Selected: **{report["selected"]}**',f'- Downloaded: **{report["downloaded"]}**',f'- Decision: **{decision}**','','## Split folders']
+          lines=['# WPA R2 Read-only Validation','',f'- Selected: **{report["selected"]}**',f'- Downloaded: **{report["downloaded"]}**',f'- Decision: **{decision}**','','## Failure categories']
+          for k,v in sorted(categories.items()): lines.append(f'- `{k}`: **{v}**')
+          lines += ['','## First distinct failures']
+          seen=set()
+          for x in failures:
+              sig=(x.get('error_category'),x.get('error'))
+              if sig in seen: continue
+              seen.add(sig)
+              lines.append(f'- `{x.get("error_category","OTHER")}` — `{x.get("key","")}`')
+              lines.append(f'  - {x.get("error","")[:600]}')
+              if len(seen)>=10: break
+          lines += ['','## Split folders']
           for x in folder_checks: lines.append(f'- `{x["folder"]}`: parts={x["parts"]}, pages=1-{x["range_end"]}, valid={x["valid"]}')
           lines += ['','## Duplicate byte groups',f'- Groups: **{len(duplicate_groups)}**','','## Safety boundary','- GET-only R2 access.','- No upload, overwrite, move, delete, AI Search setting change, sync, or deployment.','- Source files are not uploaded as artifacts.']
           (root/'report/REPORT.md').write_text('\n'.join(lines)+'\n')
@@ -158,7 +192,7 @@ jobs:
 
       - name: Upload validation report only
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ai-search-r2-readonly-validation
           path: /tmp/r2-validation/report
