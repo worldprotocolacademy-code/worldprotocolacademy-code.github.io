@@ -53,7 +53,6 @@ jobs:
     timeout-minutes: 150
     environment:
       name: ${{ inputs.mode == 'APPLY' && 'production' || 'staging' }}
-      deployment: false
     env:
       AI_SEARCH_INSTANCE: protocol-ai
       R2_BUCKET: protocol-kb
@@ -257,14 +256,14 @@ jobs:
           auth="Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"
           curl -sS -X POST "$api/jobs" -H "$auth" -H 'Content-Type: application/json' -d '{"description":"Corpus Doctor protected remediation resync"}' > "$ROOT/report/resync-create.json"
           jq -e '.success==true' "$ROOT/report/resync-create.json" >/dev/null; job="$(jq -r '.result.id' "$ROOT/report/resync-create.json")"; test -n "$job"
-          done=false
+          finished=false
           for attempt in $(seq 1 240); do
             curl -sS "$api/jobs/$job" -H "$auth" > "$ROOT/report/resync-job.json"
             jq -e '.success==true' "$ROOT/report/resync-job.json" >/dev/null
-            [ -n "$(jq -r '.result.ended_at//empty' "$ROOT/report/resync-job.json")" ] && { done=true; break; }
+            [ -n "$(jq -r '.result.ended_at//empty' "$ROOT/report/resync-job.json")" ] && { finished=true; break; }
             sleep 15
           done
-          [ "$done" = true ]
+          [ "$finished" = true ]
 
       - name: Verify zero state
         if: ${{ inputs.mode == 'APPLY' && inputs.trigger_resync && inputs.require_zero_after_sync }}
