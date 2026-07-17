@@ -40,19 +40,32 @@ jobs:
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
           set -euo pipefail
-          mkdir -p /tmp/corpus-doctor/raw/items /tmp/corpus-doctor/raw/jobs
+          mkdir -p /tmp/corpus-doctor/raw/items /tmp/corpus-doctor/raw/jobs /tmp/corpus-doctor/raw/errors
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
           auth="Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"
 
-          curl --fail --silent --show-error "$api" -H "$auth" > /tmp/corpus-doctor/raw/instance.json
-          curl --fail --silent --show-error "$api/stats" -H "$auth" > /tmp/corpus-doctor/raw/stats.json
-          curl --fail --silent --show-error "$api/jobs?page=1&per_page=50" -H "$auth" > /tmp/corpus-doctor/raw/jobs/jobs.json
+          cf_get() {
+            label="$1"
+            url="$2"
+            output="$3"
+            http_code="$(curl --silent --show-error --output "$output" --write-out '%{http_code}' "$url" -H "$auth")"
+            if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+              cp "$output" "/tmp/corpus-doctor/raw/errors/${label}.json"
+              echo "Cloudflare API request failed: ${label} (HTTP ${http_code})" >&2
+              jq '{success, errors, messages, result_info}' "$output" 2>/dev/null || cat "$output" >&2
+              exit 1
+            fi
+            jq -e '.success == true' "$output" >/dev/null
+          }
+
+          cf_get instance "$api" /tmp/corpus-doctor/raw/instance.json
+          cf_get stats "$api/stats" /tmp/corpus-doctor/raw/stats.json
+          cf_get jobs "$api/jobs?page=1&per_page=50" /tmp/corpus-doctor/raw/jobs/jobs.json
 
           page=1
           while :; do
             file="/tmp/corpus-doctor/raw/items/page-${page}.json"
-            curl --fail --silent --show-error "$api/items?page=${page}&per_page=50" -H "$auth" > "$file"
-            jq -e '.success == true' "$file" >/dev/null
+            cf_get "items-page-${page}" "$api/items?page=${page}&per_page=50" "$file"
             count="$(jq '.result | length' "$file")"
             test "$count" -ge 0
             if [ "$count" -lt 50 ]; then break; fi
@@ -64,8 +77,8 @@ jobs:
 
           latest_job="$(jq -r '.result | sort_by(.started_at // "") | last | .id // empty' /tmp/corpus-doctor/raw/jobs/jobs.json)"
           if [ -n "$latest_job" ]; then
-            curl --fail --silent --show-error "$api/jobs/${latest_job}" -H "$auth" > /tmp/corpus-doctor/raw/jobs/latest-job.json
-            curl --fail --silent --show-error "$api/jobs/${latest_job}/logs?page=1&per_page=1000" -H "$auth" > /tmp/corpus-doctor/raw/jobs/latest-job-logs.json
+            cf_get latest-job "$api/jobs/${latest_job}" /tmp/corpus-doctor/raw/jobs/latest-job.json
+            cf_get latest-job-logs "$api/jobs/${latest_job}/logs?page=1&per_page=500" /tmp/corpus-doctor/raw/jobs/latest-job-logs.json
           else
             printf '{"success":true,"result":[]}' > /tmp/corpus-doctor/raw/jobs/latest-job-logs.json
           fi
@@ -74,8 +87,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import csv, json, re
-          from collections import Counter, defaultdict
+          import csv, json
+          from collections import Counter
           from pathlib import Path
 
           root = Path('/tmp/corpus-doctor')
@@ -99,7 +112,7 @@ jobs:
 
           def category(status, reason, key):
               text = f'{status} {reason} {key}'.lower()
-              if 'file content empty' in text or 'empty' in text and key.lower().endswith(('.csv','.txt','.md','.json')):
+              if 'file content empty' in text or ('empty' in text and key.lower().endswith(('.csv','.txt','.md','.json'))):
                   return 'EMPTY_CONTENT'
               if 'over size' in text or 'oversize' in text or 'too large' in text or 'file size' in text:
                   return 'OVER_SIZE'
@@ -117,7 +130,6 @@ jobs:
 
           rows=[]
           counts=Counter()
-          ext_counts=Counter()
           status_counts=Counter()
           for item in items:
               key=str(first(item,'key','name','filename','path','source_key','id'))
@@ -138,20 +150,18 @@ jobs:
               }
               rows.append(row)
               counts[cat]+=1
-              ext_counts[(status,ext)]+=1
               status_counts[status]+=1
 
+          fields=list(rows[0].keys()) if rows else ['id','status','category','key','extension','reason','source','size','chunks_count']
           with (root/'corpus-items.csv').open('w',newline='',encoding='utf-8') as f:
-              w=csv.DictWriter(f,fieldnames=list(rows[0].keys()) if rows else ['id','status','category','key','extension','reason','source','size','chunks_count'])
-              w.writeheader(); w.writerows(rows)
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(rows)
 
-          problem=[r for r in rows if r['status'] in {'skipped','skip','error','errored','failed','failure'} or r['category'] not in {'OTHER'}]
+          problem=[r for r in rows if r['status'] in {'skipped','skip','error','errored','failed','failure'} or r['category'] != 'OTHER']
           with (root/'problem-items.csv').open('w',newline='',encoding='utf-8') as f:
-              w=csv.DictWriter(f,fieldnames=list(rows[0].keys()) if rows else ['id','status','category','key','extension','reason','source','size','chunks_count'])
-              w.writeheader(); w.writerows(problem)
+              w=csv.DictWriter(f,fieldnames=fields); w.writeheader(); w.writerows(problem)
 
           summary={
-              'schema_version':'1.0',
+              'schema_version':'1.1',
               'mode':'AUDIT_ONLY',
               'instance':'protocol-ai',
               'total_items':len(items),
@@ -189,13 +199,15 @@ jobs:
           cat /tmp/corpus-doctor/REPORT.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload corpus audit evidence
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ai-search-corpus-doctor-audit
           path: /tmp/corpus-doctor
           retention-days: 90
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Explicit non-mutation statement
+        if: always()
         run: |
-          echo 'Audit complete. No Cloudflare or R2 mutation was performed.'
+          echo 'Audit complete or diagnostically stopped. No Cloudflare or R2 mutation was performed.'
