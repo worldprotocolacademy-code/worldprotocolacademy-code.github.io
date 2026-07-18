@@ -56,9 +56,9 @@ jobs:
           grep -q 'data-panel="testing"' student-desk/index.html
           grep -q 'data-panel="sop"' student-desk/index.html
           grep -q 'data-panel="dashboard"' student-desk/index.html
-          grep -q 'certificate issuance requires an authorised WPA backend record' student-desk/index.html
-          grep -q "var codes=\['EN','MK','FR','DE','ES','IT','AR','ZH','RU','TR','PT','JA','SQ','SR','BS'\]" student-desk/js/virtual-sande-desk.js
-          grep -q "certificate_issue" student-desk/js/virtual-sande-desk.js
+          grep -qi 'certificate issuance requires an authorised WPA backend record' student-desk/index.html
+          grep -Fq "var codes=['EN','MK','FR','DE','ES','IT','AR','ZH','RU','TR','PT','JA','SQ','SR','BS']" student-desk/js/virtual-sande-desk.js
+          grep -q 'certificate_issue' student-desk/js/virtual-sande-desk.js
           grep -q 'window.WPAVirtualSande.ask' student-desk/js/virtual-sande-desk.js
       - name: JSON validation
         run: |
