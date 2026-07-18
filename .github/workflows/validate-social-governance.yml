@@ -1,0 +1,31 @@
+name: Validate WPA Social Governance
+
+on:
+  pull_request:
+    paths:
+      - 'data/social/**'
+      - 'social-studio/**'
+      - 'scripts/validate-social-governance.mjs'
+      - 'scripts/wpa-public-safety-layer.js'
+      - 'scripts/pricing-loader.js'
+      - 'docs/WPA_ANALYTICAL_TERMINOLOGY_POLICY.md'
+      - 'docs/WPA_JOURNAL_WRITING_MANDATE.md'
+      - '.github/workflows/validate-social-governance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate governed registries and safety boundaries
+        run: node scripts/validate-social-governance.mjs
