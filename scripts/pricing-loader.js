@@ -1,5 +1,5 @@
 /*
-  WPA Access & Future Pricing Guard v2.0
+  WPA Access & Future Pricing Guard v2.1
   Commercial activation is disabled during the development, testing and pilot phase.
   No prices, checkout links, payment actions, contracts or delivery commitments are loaded.
 */
@@ -43,6 +43,7 @@
 
   loadScript('/scripts/wpa-performance.js?v=20260712', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260718-1', 'data-wpa-public-safety');
+  if (/\/programmes\.html$/i.test(location.pathname)) loadScript('/scripts/wpa-training-formats-interactive.js?v=20260719-1', 'data-wpa-training-formats');
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', announceBoundary);
