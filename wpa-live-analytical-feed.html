@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>WPA Live Analytical Feed</title>
+<meta name="description" content="WPA Live Analytical Feed — јавни RSS/Atom институционални сигнали со претпазлива синтеза. Без надзор и без разузнавачка функција.">
+<style>
+:root{--navy:#0d1f3c;--deep:#071326;--gold:#c9a84c;--cream:#fbf8ee;--ink:#1a1a1a;--line:#d8d2bc}*{box-sizing:border-box}body{margin:0;font:15px/1.6 Inter,system-ui,sans-serif;background:var(--cream);color:var(--ink)}header{background:linear-gradient(135deg,var(--deep),var(--navy));color:#fff;padding:46px 20px;border-bottom:3px solid var(--gold)}header>div,main{max-width:1100px;margin:auto}h1,h2{font-family:Georgia,serif}h1{font-size:clamp(34px,5vw,54px);margin:8px 0}.badge{display:inline-block;border:1px solid var(--gold);padding:5px 10px;border-radius:99px;color:#f1dda0;font-weight:800}.notice{margin-top:20px;padding:15px;border-left:4px solid var(--gold);background:#ffffff10}main{padding:28px 20px 60px}.status{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.stat{background:#fff;border:1px solid var(--line);padding:16px}.stat strong{display:block;font-size:24px;color:var(--navy)}.controls{background:#fff;border:1px solid var(--line);padding:16px;margin-bottom:18px}input{width:100%;padding:11px;border:1px solid #aaa;font:inherit}.item{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);padding:20px;margin:14px 0}.meta{font-size:12px;color:#666}.analysis{margin-top:12px;padding:14px;background:#f4efdf}.empty{padding:28px;text-align:center;background:#fff;border:1px solid var(--line)}footer{background:var(--deep);color:#ddd;padding:25px 20px;text-align:center}@media(max-width:720px){.status{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header><div><span class="badge">PUBLIC SOURCES ONLY · ANALYTICAL MODE</span><h1>WPA Live Analytical Feed</h1><p>Жив агрегат на јавно објавени RSS/Atom институционални сигнали со изворно дисциплинирана синтеза и анализа.</p><div class="notice"><strong>Нема надзор, профилирање или разузнавачка функција.</strong> Страницата чита само претходно создаден локален JSON, не пристапува до приватни платформи и не обработува лични, службени, доверливи или класифицирани податоци.</div></div></header>
+<main>
+<div class="status"><div class="stat"><strong id="items">—</strong>Items</div><div class="stat"><strong id="sources">—</strong>Sources</div><div class="stat"><strong id="mode">—</strong>Mode</div><div class="stat"><strong id="updated">—</strong>Updated</div></div>
+<div class="controls"><label for="search"><strong>Пребарај јавен институционален сигнал</strong></label><input id="search" placeholder="Наслов, институција, земја или тема"></div>
+<div id="list"><div class="empty">Фидот сè уште нема јавно прикажани записи.</div></div>
+</main>
+<footer>© 2026 World Protocol Academy · Analytical Center · Public sources only · Не следиме луѓе. Следиме јавно објавени институционални сигнали.</footer>
+<script>
+(function(){
+let all=[];
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmt=s=>{if(!s)return '—';const d=new Date(s);return isNaN(d)?s:d.toISOString().slice(0,10)};
+function card(i){const a=i.analysis||{};return `<article class="item"><div class="meta">${esc(i.source_name)} · ${esc(i.source_country)} · ${fmt(i.published)} · ${esc(i.source_feed_status)}</div><h2>${i.link?`<a href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>`:esc(i.title)}</h2>${i.summary_raw?`<p>${esc(i.summary_raw.slice(0,300))}${i.summary_raw.length>300?'…':''}</p>`:''}<div class="analysis"><strong>WPA Analytical Note</strong><p>${esc(a.synthesis||'No analytical note available.')}</p>${a.caution?`<small>${esc(a.caution)}</small>`:''}</div></article>`}
+function render(){const q=document.getElementById('search').value.toLowerCase().trim();const rows=all.filter(i=>!q||JSON.stringify(i).toLowerCase().includes(q));document.getElementById('list').innerHTML=rows.length?rows.map(card).join(''):'<div class="empty">Нема записи што одговараат на пребарувањето.</div>'}
+fetch('data/wpa-live-feed.json').then(r=>r.json()).then(d=>{const m=d.meta||{};document.getElementById('items').textContent=m.total_items??0;document.getElementById('sources').textContent=m.sources_succeeded??0;document.getElementById('mode').textContent=(d.synthesis&&d.synthesis.analysis_mode)==='ai_assisted'?'AI-assisted':'Rule-based';document.getElementById('updated').textContent=fmt(m.generated_at);all=d.items||[];render()}).catch(()=>{document.getElementById('list').innerHTML='<div class="empty">Локалниот аналитички фид не е достапен.</div>'});
+document.getElementById('search').addEventListener('input',render);
+})();
+</script>
+</body>
+</html>
