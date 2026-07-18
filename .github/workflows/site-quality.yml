@@ -19,11 +19,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Run WPA site quality checks
+      - name: Run canonical site quality checks
         run: python scripts/site_quality_check.py
+
+      - name: Run general audit regression guard
+        run: python scripts/general_audit_guard.py
