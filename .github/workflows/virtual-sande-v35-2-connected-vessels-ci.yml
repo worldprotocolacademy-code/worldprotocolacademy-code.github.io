@@ -8,10 +8,13 @@ on:
       - 'data/wpaws-proactive-research-mandate.json'
       - 'data/wpa-strategic-speed-directive.json'
       - 'data/wpa-preventive-source-compliance-gate.json'
+      - 'data/wpa-doctrine-kernel.json'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs'
       - 'tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs'
       - 'tools/virtual-sande/wpa-central-orchestrator.mjs'
       - 'tools/virtual-sande/wpa-central-orchestrator.test.mjs'
+      - 'tools/virtual-sande/wpa-doctrine-kernel.mjs'
+      - 'tools/virtual-sande/wpa-doctrine-kernel.test.mjs'
       - 'tools/virtual-sande/wpa-ai-council-phase3.mjs'
       - 'tools/virtual-sande/wpa-ai-council-phase3.test.mjs'
       - 'tools/virtual-sande/wpa-ai-council-prompt-compiler.mjs'
@@ -30,24 +33,27 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Syntax checks
         run: |
           node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
           node --check tools/virtual-sande/wpa-central-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-doctrine-kernel.mjs
           node --check tools/virtual-sande/wpa-ai-council-phase3.mjs
           node --check tools/virtual-sande/wpa-ai-council-prompt-compiler.mjs
           node --check scripts/virtual-sande-connected-vessels.js
       - name: JSON validation
         run: |
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('data/wpa-module-registry.json','utf8')); if(!Array.isArray(r.modules)||!r.central_orchestration||!r.strategic_speed_directive||!r.source_compliance_gate) process.exit(1); if(r.strategic_speed_directive.fast_mission_target_seconds!==60||r.strategic_speed_directive.advanced_mission_target_seconds!==300||r.strategic_speed_directive.full_council_mission_target_seconds!==900||r.strategic_speed_directive.accuracy_over_deadline!==true) process.exit(1); if(r.source_compliance_gate.mode!=='fail_closed'||r.source_compliance_gate.content_reading_allowed_before_pass!==false||r.source_compliance_gate.paywall_bypass!==false||r.source_compliance_gate.unverified_rag_ingestion!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('data/wpa-ai-council-80.json','utf8')); const total=c.pillars.reduce((n,p)=>n+p.seats,0); if(c.pillars.length!==10||total!==80) process.exit(1);"
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('data/wpa-module-registry.json','utf8')); if(!Array.isArray(r.modules)||r.architecture!=='WPA six-level governed constitutional command architecture'||!r.doctrine_kernel||!r.source_compliance_gate||!r.strategic_speed_directive) process.exit(1); if(r.source_compliance_gate.mode!=='fail_closed'||r.source_compliance_gate.content_reading_allowed_before_pass!==false||r.source_compliance_gate.paywall_or_authentication_bypass!==false||r.source_compliance_gate.unverified_rag_ingestion!==false) process.exit(1);"
+          node -e "const fs=require('fs'); const c=JSON.parse(fs.readFileSync('data/wpa-ai-council-80.json','utf8')); const total=c.pillars.reduce((n,p)=>n+p.seats,0); if(c.pillars.length!==10||total!==80||c.governance.doctrine_kernel_required!==true||c.seat_policy.authority!=='bounded_task_execution') process.exit(1);"
           node -e "const fs=require('fs'); const m=JSON.parse(fs.readFileSync('data/wpaws-proactive-research-mandate.json','utf8')); if(m.domains.length!==10||m.agent_mandates.length!==17) process.exit(1); if(m.source_policy.paywall_bypass!==false||m.publication_policy.automatic_publication!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('data/wpa-strategic-speed-directive.json','utf8')); const x=Object.fromEntries(d.mission_classes.map(m=>[m.id,m])); if(x.fast_mission.target_seconds!==60||x.advanced_mission.target_seconds!==300||x.full_council_mission.target_seconds!==900||x.extended_verification.target_seconds!==null) process.exit(1); if(d.execution_policy.accuracy_must_not_be_sacrificed_for_speed!==true||d.execution_policy.deadline_is_target_not_guarantee!==true||d.execution_policy.automatic_publication!==false) process.exit(1);"
-          node -e "const fs=require('fs'); const g=JSON.parse(fs.readFileSync('data/wpa-preventive-source-compliance-gate.json','utf8')); if(g.mode!=='fail_closed'||g.trigger_position!=='before_any_content_access'||g.default_decision!=='deny_until_verified') process.exit(1); if(g.prohibited_actions.paywall_bypass!==true||g.prohibited_actions.credential_bypass!==true||g.prohibited_actions.silent_download!==true||g.prohibited_actions.unverified_rag_ingestion!==true) process.exit(1); if(g.incident_response.delete_if_unauthorised_after_preserving_required_audit_record!==true) process.exit(1);"
+          node -e "const fs=require('fs'); const d=JSON.parse(fs.readFileSync('data/wpa-strategic-speed-directive.json','utf8')); const x=Object.fromEntries(d.mission_classes.map(m=>[m.id,m])); if(x.fast_mission.target_seconds!==60||x.advanced_mission.target_seconds!==300||x.full_council_mission.target_seconds!==900||x.extended_verification.target_seconds!==null) process.exit(1); if(d.execution_policy.accuracy_must_not_be_sacrificed_for_speed!==true||d.execution_policy.automatic_publication!==false) process.exit(1);"
+          node -e "const fs=require('fs'); const g=JSON.parse(fs.readFileSync('data/wpa-preventive-source-compliance-gate.json','utf8')); if(g.mode!=='fail_closed'||g.trigger_position!=='before_any_content_access'||g.default_decision!=='deny_until_verified') process.exit(1); if(g.prohibited_actions.paywall_or_drm_bypass!==true||g.prohibited_actions.credential_or_authentication_bypass!==true||g.prohibited_actions.silent_download!==true||g.prohibited_actions.unverified_rag_ingestion!==true) process.exit(1); if(g.incident_response.delete_if_unauthorised_after_preserving_required_audit_record!==true) process.exit(1);"
+          node -e "const fs=require('fs'); const k=JSON.parse(fs.readFileSync('data/wpa-doctrine-kernel.json','utf8')); if(k.canonical_chain.length!==6||k.canonical_chain[0]!=='sande_smiljanov'||k.canonical_chain[1]!=='wpa_doctrine_kernel') process.exit(1); if(k.drift_alarm.enabled!==true||k.drift_alarm.sande_approval_required_for_doctrine_change!==true||k.release_gates.length!==6) process.exit(1);"
       - name: Routing, orchestration and governance tests
         run: |
           node --test tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+          node --test tools/virtual-sande/wpa-doctrine-kernel.test.mjs
           node --test tools/virtual-sande/wpa-central-orchestrator.test.mjs
           node --test tools/virtual-sande/wpa-ai-council-phase3.test.mjs
           node --test tools/virtual-sande/wpa-ai-council-prompt-compiler.test.mjs
