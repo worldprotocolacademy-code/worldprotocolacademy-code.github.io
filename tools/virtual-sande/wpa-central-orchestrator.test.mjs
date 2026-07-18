@@ -7,10 +7,11 @@ test('keeps Sande as supreme human authority',()=>{
   assert.equal(COMMAND_HIERARCHY.supreme_human_authority.can_authorise_official_wpa_action,true);
 });
 
-test('defines Virtual Sande and Claude as dual proactive strategic core',()=>{
+test('defines GPT and Claude before Virtual Sande orchestrator',()=>{
   assert.equal(COMMAND_HIERARCHY.strategic_core.length,2);
-  assert.equal(COMMAND_HIERARCHY.strategic_core[0].id,'virtual_sande');
+  assert.equal(COMMAND_HIERARCHY.strategic_core[0].id,'gpt');
   assert.equal(COMMAND_HIERARCHY.strategic_core[1].id,'claude');
+  assert.equal(COMMAND_HIERARCHY.orchestrator.id,'virtual_sande');
   assert.equal(COMMAND_HIERARCHY.strategic_core[1].connection_mode,'adapter_unconfigured');
 });
 
@@ -30,8 +31,20 @@ test('activates all 17 executive agents and all 80 tactical agents for comprehen
   assert.equal(plan.wpaws_agents.length,17);
   assert.equal(WPAWS_AGENTS.length,17);
   assert.equal(plan.council.advisory_seats.length,80);
-  assert.equal(plan.council.activation_policy,'only_after_human_or_strategic_core_directive');
+  assert.equal(plan.council.activation_policy,'only_after_human_or_approved_strategic_directive');
   assert.ok(plan.connected_outputs.some(x=>x.id==='academic_search'));
+});
+
+test('preserves exact canonical command order',()=>{
+  const plan=buildOrchestrationPlan('Подготви WPA анализа');
+  assert.deepEqual(plan.command_chain.slice(0,5),[
+    'sande_smiljanov',
+    'gpt_and_claude_strategic_core',
+    'virtual_sande_orchestrator',
+    'wpaws_17_executive_agents',
+    'council_80_tactical_operational_agents'
+  ]);
+  assert.match(plan.canonical_chain,/Sande Smiljanov -> GPT \+ Claude -> Virtual Sande orchestrator -> 17 executive agents -> 80 tactical-operational agents/);
 });
 
 test('blocks output until mandatory gates and human approval',()=>{
