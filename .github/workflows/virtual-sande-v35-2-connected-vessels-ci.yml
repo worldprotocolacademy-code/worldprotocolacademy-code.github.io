@@ -1,0 +1,62 @@
+name: Virtual Sande Connected Vessels and AI Council CI
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
+          node --check tools/virtual-sande/wpa-central-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-doctrine-kernel.mjs
+          node --check tools/virtual-sande/wpa-ai-council-phase3.mjs
+          node --check tools/virtual-sande/wpa-ai-council-prompt-compiler.mjs
+          node --check scripts/virtual-sande-connected-vessels.js
+          node --check student-desk/js/virtual-sande-desk.js
+      - name: Student Desk boundary
+        run: |
+          grep -q 'Virtual Sande — WPA Student Desk' student-desk/index.html
+          grep -q '/logo.png' student-desk/index.html
+          grep -q 'data-panel="admission"' student-desk/index.html
+          grep -q 'data-panel="pathway"' student-desk/index.html
+          grep -q 'data-panel="testing"' student-desk/index.html
+          grep -q 'data-panel="sop"' student-desk/index.html
+          grep -q 'data-panel="dashboard"' student-desk/index.html
+          grep -qi 'certificate issuance requires an authorised WPA backend record' student-desk/index.html
+          grep -q 'certificate_issue' student-desk/js/virtual-sande-desk.js
+          grep -q 'window.WPAVirtualSande.ask' student-desk/js/virtual-sande-desk.js
+          test ! -e student-desk/student-desk/index.html
+          grep -q "url:'/student-desk/'" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          ! grep -q '/student-desk/student-desk/' tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+      - name: JSON governance
+        run: |
+          node -e "const fs=require('fs');for(const f of ['data/wpa-module-registry.json','data/wpa-ai-council-80.json','data/wpa-preventive-source-compliance-gate.json','data/wpa-doctrine-kernel.json','data/wpa-student-lifecycle.json','data/wpa-student-question-bank-r2-manifest.json','student-desk/data/wpa-student-curriculum.json','data/wpa-student-operations-backend-schema.json'])JSON.parse(fs.readFileSync(f,'utf8'));"
+          node -e "const q=require('./data/wpa-student-question-bank-r2-manifest.json');if(q.storage.bucket!=='protocol-kb'||q.storage.public_access!==false||q.classification.tier!=='S'||q.classification.certification_pool!==false||q.access.answer_release!=='after_candidate_response'||q.access.direct_r2_urls_allowed!==false)process.exit(1)"
+          node -e "const s=require('./data/wpa-student-lifecycle.json');if(s.orchestrator!=='virtual_sande'||s.stages.length!==10||s.boundaries.certificate_is_not_issued_without_authorised_backend_record!==true)process.exit(1)"
+      - name: Route protocolometry
+        run: node --test --test-name-pattern='routes protocolometry requests' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+      - name: Route output surfaces
+        run: node --test --test-name-pattern='routes connected WPA output surfaces' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+      - name: Route research
+        run: node --test --test-name-pattern='routes research through Academic Search Hub and WPAWS' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+      - name: Comprehensive orchestration
+        run: node --test --test-name-pattern='builds comprehensive central orchestration plan' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+      - name: Safety boundaries
+        run: node --test --test-name-pattern='preserves safety and public-brand boundaries' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
+      - name: Doctrine tests
+        run: node --test tools/virtual-sande/wpa-doctrine-kernel.test.mjs
+      - name: Orchestrator tests
+        run: node --test tools/virtual-sande/wpa-central-orchestrator.test.mjs
+      - name: Council tests
+        run: node --test tools/virtual-sande/wpa-ai-council-phase3.test.mjs
+      - name: Prompt compiler tests
+        run: node --test tools/virtual-sande/wpa-ai-council-prompt-compiler.test.mjs

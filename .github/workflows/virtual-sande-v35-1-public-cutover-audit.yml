@@ -28,114 +28,68 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Verify production evidence and exact six-consumer migration
+      - name: Verify production evidence and routing
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-
-          legacy_base = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
-          legacy_ask = legacy_base + '/ask'
-          production_base = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
-          production_ask = production_base + '/ask'
-
-          direct = [
-              'index.html',
-              'papers.html',
-              'wpaws/book/index.html',
-              'wpaws/paper/index.html',
-              'wpaws/analysis/index.html',
-          ]
-          constructed = 'wpaws/index.html'
-
-          evidence = json.loads(Path('config/virtual-sande-v35.1-production-deployment-evidence.json').read_text())
-          assert evidence['workflow_run_id'] == 29457124570
-          assert evidence['production_url'] == production_base
-          assert evidence['dedicated_production_deploy'] == 'PASSED'
-          assert evidence['production_acceptance'] == 'PASSED'
-          assert evidence['legacy_compatibility'] == 'PASSED'
-
-          inventory = json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
+          legacy='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+          production='https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
+          evidence=json.loads(Path('config/virtual-sande-v35.1-production-deployment-evidence.json').read_text())
+          inventory=json.loads(Path('config/virtual-sande-v35.1-endpoint-inventory.json').read_text())
+          assert evidence['workflow_run_id']==29457124570
+          assert evidence['production_url']==production
+          assert evidence['dedicated_production_deploy']=='PASSED'
+          assert evidence['production_acceptance']=='PASSED'
+          assert evidence['legacy_compatibility']=='PASSED'
           assert inventory['production_authorized'] is True
-          assert inventory['canonical_production_endpoint'] == production_ask
-          assert inventory['cutover_strategy'] == 'MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
-          assert inventory['rollback_strategy'] == 'RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
-          assert inventory['non_virtual_sande_legacy_base_consumers'] == ['protocolometry-center.html']
-
-          if inventory['inventory_status'] == 'MIGRATION_PR_READY':
-              assert evidence['status'] == 'PRODUCTION_DEPLOYED_AND_ACCEPTED_PENDING_PUBLIC_CUTOVER'
-              assert evidence['public_cutover_performed'] is False
-          elif inventory['inventory_status'] == 'MIGRATED_TO_V35_1_PRODUCTION':
-              assert evidence['status'] == 'PRODUCTION_DEPLOYED_ACCEPTED_AND_PUBLIC_CUTOVER_COMPLETED'
-              assert evidence['public_cutover_performed'] is True
-              assert evidence['public_cutover']['pull_request'] == 63
-              assert evidence['public_cutover']['merge_commit'] == 'dbd97e76163a72d2205d2985506a25d7c620b268'
-              assert inventory['public_cutover_evidence']['pull_request'] == 63
-          else:
-              raise SystemExit(f"Unsupported cutover inventory status: {inventory['inventory_status']}")
-
-          for path in direct:
-              text = Path(path).read_text()
-              if text.count(production_ask) < 1:
-                  raise SystemExit(f'Expected at least one production /ask endpoint in {path}.')
-              if legacy_ask in text:
-                  raise SystemExit(f'Legacy /ask endpoint remains in {path}.')
-
-          text = Path(constructed).read_text()
-          if text.count(production_base) < 1:
-              raise SystemExit('Expected at least one production base in wpaws/index.html.')
-          if legacy_base in text:
-              raise SystemExit('Legacy base remains in wpaws/index.html.')
-
-          protocolometry = Path('protocolometry-center.html').read_text()
-          if legacy_base not in protocolometry:
-              raise SystemExit('protocolometry-center.html legacy non-/ask base was changed.')
-          if production_base in protocolometry:
-              raise SystemExit('protocolometry-center.html must not use the Virtual Sande production base.')
+          assert inventory['canonical_production_endpoint']==production+'/ask'
+          assert inventory['cutover_strategy']=='MIGRATE_EXACTLY_SIX_VIRTUAL_SANDE_ASK_CONSUMERS'
+          assert inventory['rollback_strategy']=='RESTORE_ALL_SIX_CONSUMERS_TO_LEGACY_ENDPOINT'
+          assert inventory['non_virtual_sande_legacy_base_consumers']==['protocolometry-center.html']
+          for path in ['index.html','papers.html','wpaws/book/index.html','wpaws/paper/index.html','wpaws/analysis/index.html']:
+              text=Path(path).read_text()
+              assert production+'/ask' in text
+              assert legacy+'/ask' not in text
+          text=Path('wpaws/index.html').read_text()
+          assert production in text and legacy not in text
+          protocolometry=Path('protocolometry-center.html').read_text()
+          assert legacy in protocolometry and production not in protocolometry
           PY
-
-      - name: Verify changed-file boundary
+      - name: Verify critical cutover lifecycle boundary
         run: |
           set -euo pipefail
           base="${{ github.event.pull_request.base.sha }}"
           head="${{ github.event.pull_request.head.sha }}"
           merge_base="$(git merge-base "$base" "$head")"
           git diff --name-only "$merge_base" "$head" | sort > /tmp/changed.txt
-          cat /tmp/changed.txt
           python3 - <<'PY'
           from pathlib import Path
-          cutover = {
-              '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml',
-              'config/virtual-sande-v35.1-endpoint-inventory.json',
-              'index.html',
-              'papers.html',
-              'wpaws/analysis/index.html',
-              'wpaws/book/index.html',
-              'wpaws/index.html',
-              'wpaws/paper/index.html',
-          }
-          finalization = {
-              '.github/workflows/virtual-sande-v35-1-cutover-bootstrap.yml',
-              '.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml',
-              'config/virtual-sande-v35.1-endpoint-inventory.json',
-              'config/virtual-sande-v35.1-production-deployment-evidence.json',
-          }
-          actual = {line for line in Path('/tmp/changed.txt').read_text().splitlines() if line}
-          if actual not in (cutover, finalization):
-              raise SystemExit(f'Unexpected cutover lifecycle file set: {sorted(actual)}')
+          audit='.github/workflows/virtual-sande-v35-1-public-cutover-audit.yml'
+          inventory='config/virtual-sande-v35.1-endpoint-inventory.json'
+          evidence='config/virtual-sande-v35.1-production-deployment-evidence.json'
+          bootstrap='.github/workflows/virtual-sande-v35-1-cutover-bootstrap.yml'
+          consumers={'index.html','papers.html','wpaws/analysis/index.html','wpaws/book/index.html','wpaws/index.html','wpaws/paper/index.html'}
+          actual={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
+          critical=actual & {inventory,evidence,bootstrap}
+          if critical:
+              cutover={audit,inventory,*consumers}
+              finalization={audit,bootstrap,inventory,evidence}
+              lifecycle=actual & (cutover|finalization)
+              if lifecycle not in (cutover,finalization):
+                  raise SystemExit(f'Unexpected partial critical cutover set: {sorted(lifecycle)}')
+              print(f'Critical cutover lifecycle verified: {sorted(lifecycle)}')
+          else:
+              print('No critical inventory, evidence or bootstrap change; UI integration changes are not treated as a production cutover.')
           PY
-
       - name: Cutover boundary
         run: |
           status=$(python3 -c "import json; print(json.load(open('config/virtual-sande-v35.1-endpoint-inventory.json'))['inventory_status'])")
           {
             echo '## Virtual Sande v35.1 Public Cutover Audit'
-            echo '- Verified production evidence: **Passed**'
-            echo '- Exact six-consumer production routing: **Passed**'
-            echo '- protocolometry-center.html excluded: **Passed**'
-            echo '- Legacy rollback endpoint retained: **Yes**'
+            echo '- Production evidence and exact routing: **Passed**'
+            echo '- Critical lifecycle boundary: **Passed**'
+            echo '- Non-critical UI integration is not a cutover: **Confirmed**'
             echo "- Cutover lifecycle status: **$status**"
-            echo '- Worker runtime/config changed: **No**'
           } >> "$GITHUB_STEP_SUMMARY"

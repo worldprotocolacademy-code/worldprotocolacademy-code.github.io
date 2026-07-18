@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { DIPLOMATIC_PROTOCOL_CORE, PILLARS, selectPillars, buildCouncilPlan, evaluateRelease } from './wpa-ai-council-phase3.mjs';
+
+test('defines ten doctrine pillars and eighty seats',()=>{assert.equal(PILLARS.length,10);assert.equal(PILLARS.length*8,80);});
+test('defines diplomatic protocol as mandatory governing foundation',()=>{assert.equal(DIPLOMATIC_PROTOCOL_CORE.id,'diplomatic_protocol_core');assert.equal(DIPLOMATIC_PROTOCOL_CORE.mandatory,true);});
+test('routes a combined defence diplomatic and PR request',()=>{const ids=selectPillars('Подготви одбранбена дипломатија, воен протокол и PR план').map(x=>x.id);assert.ok(ids.includes('defence_diplomacy'));assert.ok(ids.includes('military_protocol'));assert.ok(ids.includes('public_relations'));});
+test('creates bounded tactical-operational seats only after approved directive',()=>{const plan=buildCouncilPlan('Анализа на церемонијал и безбедност',{seatsPerPillar:3});assert.equal(plan.foundation_review.status,'required');assert.equal(plan.publication_allowed,false);assert.equal(plan.activation_policy,'only_after_sande_or_approved_strategic_directive');assert.ok(plan.advisory_seats.every(x=>x.role==='tactical_operational_agent'&&x.authority==='bounded_task_execution'&&x.output_status==='blocked_until_mandatory_gates'));});
+test('blocks WPA output until every constitutional and release gate passes',()=>{assert.equal(evaluateRelease({diplomatic_protocol_core:'passed',evidence_gate:'passed',safety_gate:'passed',sande_human_approval:'approved'}).wpa_output_allowed,false);assert.equal(evaluateRelease({doctrine_kernel:'passed',source_compliance_gate:'passed',diplomatic_protocol_core:'passed',evidence_gate:'passed',safety_gate:'passed',sande_human_approval:'approved'}).wpa_output_allowed,true);});
