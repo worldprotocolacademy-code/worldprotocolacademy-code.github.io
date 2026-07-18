@@ -31,4 +31,24 @@ jobs:
         run: python scripts/site_quality_check.py
 
       - name: Run general audit regression guard
-        run: python scripts/general_audit_guard.py
+        id: general_audit
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/general_audit_guard.py 2>&1 | tee general-audit-report.txt
+
+      - name: Upload general audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-general-audit-report
+          path: general-audit-report.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce general audit result
+        if: steps.general_audit.outcome != 'success'
+        run: |
+          echo "General audit guard reported defects. See wpa-general-audit-report artifact."
+          exit 1
