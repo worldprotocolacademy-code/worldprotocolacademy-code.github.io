@@ -28,7 +28,7 @@ test('builds comprehensive central orchestration plan',()=>{
 
 test('preserves safety and public-brand boundaries',()=>{
   assert.equal(__test.EXTRA_SYSTEMS.intelligence_center.status,'protocolometry_legacy_alias');
-  assert.equal(__test.EXTRA_SYSTEMS.multi_ai.status,'simulation_prototype');
+  assert.equal(__test.EXTRA_SYSTEMS.multi_ai.status,'controlled_tactical_operational_layer');
   const plan=__test.buildOrchestrationPlan('Објави автоматски');
   assert.equal(plan.governance.no_automatic_publication,true);
   assert.equal(plan.release_status,'blocked_pending_mandatory_gates');
