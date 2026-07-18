@@ -1,5 +1,5 @@
 {
-  "version": "2.6.0",
+  "version": "2.7.0",
   "updated": "2026-07-18",
   "architecture": "WPA five-level governed command architecture",
   "public_brand": "WPA Protocolometry Ecosystem",
@@ -12,7 +12,19 @@
     "level_5": {"name":"WPA AI Council Tactical-Operational Layer","agents":80,"role":"tactical_operational_agents","activation":"human_or_approved_strategic_directive_required"}
   },
   "central_orchestration": {
-    "id":"virtual_sande","name":"Virtual Sande","role":"WPA central nervous system and final synthesis orchestrator","metaphor":["heart","eyes","brain"],"strategic_inputs":["gpt","claude"],"selective_mode":true,"comprehensive_mode":true,"wpaws_agents":17,"council_seats":80,"diplomatic_protocol_core_required":true,"evidence_gate_required":true,"safety_gate_required":true,"sande_human_approval_required":true
+    "id":"virtual_sande","name":"Virtual Sande","role":"WPA central nervous system and final synthesis orchestrator","metaphor":["heart","eyes","brain"],"strategic_inputs":["gpt","claude"],"selective_mode":true,"comprehensive_mode":true,"wpaws_agents":17,"council_seats":80,"diplomatic_protocol_core_required":true,"source_compliance_gate_required":true,"evidence_gate_required":true,"safety_gate_required":true,"sande_human_approval_required":true
+  },
+  "source_compliance_gate": {
+    "document":"/data/wpa-preventive-source-compliance-gate.json",
+    "position":"before_content_access_download_indexing_citation_or_rag",
+    "mode":"fail_closed",
+    "unknown_rights_action":"block_quarantine_record_notify_sande",
+    "content_reading_allowed_before_pass":false,
+    "paywall_bypass":false,
+    "credential_bypass":false,
+    "restricted_scraping":false,
+    "silent_download":false,
+    "unverified_rag_ingestion":false
   },
   "strategic_speed_directive": {
     "document":"/data/wpa-strategic-speed-directive.json",
@@ -26,9 +38,9 @@
     "provisional_label_required_when_incomplete":true
   },
   "governance": {
-    "public_source_only":true,"human_review_required":true,"automatic_publication":false,"silent_browser_operation":false,"private_or_classified_data":false,"claude_live_adapter_configured":false,"legacy_intelligence_wording_publicly_deprecated":true,"accuracy_must_not_be_sacrificed_for_speed":true
+    "public_source_only":true,"licensed_source_only":true,"human_review_required":true,"automatic_publication":false,"silent_browser_operation":false,"private_or_classified_data":false,"claude_live_adapter_configured":false,"legacy_intelligence_wording_publicly_deprecated":true,"accuracy_must_not_be_sacrificed_for_speed":true
   },
-  "pipeline": ["sande_smiljanov","gpt_and_claude_strategic_core","virtual_sande_orchestrator","wpaws_17_executive_agents","council_80_tactical_operational_agents","virtual_sande_synthesis","evidence_and_safety_gates","sande_human_approval","wpa_output"],
+  "pipeline": ["sande_smiljanov","gpt_and_claude_strategic_core","virtual_sande_orchestrator","source_compliance_gate","public_or_licensed_sources_only","wpaws_17_executive_agents","council_80_tactical_operational_agents","virtual_sande_synthesis","evidence_and_safety_gates","sande_human_approval","wpa_output"],
   "modules": [
     {"id":"protocolometry","name":"WPA Protocolometry Center","path":"/protocolometry-center.html","status":"operational_methodological_center"},
     {"id":"protocolometry_legacy_alias","name":"WPA Intelligence Center — legacy alias","path":"/intelligence-center.html","status":"legacy_public_wording","canonical_id":"protocolometry"},
@@ -38,6 +50,7 @@
     {"id":"journal_live","name":"WPA Journal Live","path":"/journal/live/","status":"live_public_source_monitoring"},
     {"id":"live_feed","name":"WPA Live Feed","path":"/wpa-live-intelligence-feed.html","status":"live_public_source_legacy_path"},
     {"id":"academic_search","name":"WPA Academic Search Hub v3.1","path":"/tools/academic-search-hub/","status":"staging_external_discovery"},
+    {"id":"source_compliance_gate","name":"WPA Preventive Source Compliance Gate","path":"/data/wpa-preventive-source-compliance-gate.json","status":"mandatory_pre_access_fail_closed_gate"},
     {"id":"wpaws","name":"WPAWS 17 Executive Agents","path":"/wpaws/","status":"orchestrated_executive_agent_layer"},
     {"id":"ai_council","name":"WPA AI Council 80 Tactical-Operational Agents","path":"/multi-ai-command-center.html","status":"controlled_tactical_operational_layer"},
     {"id":"strategic_speed_directive","name":"WPA Strategic Speed and Accuracy Directive","path":"/data/wpa-strategic-speed-directive.json","status":"canonical_machine_readable_strategy"},
