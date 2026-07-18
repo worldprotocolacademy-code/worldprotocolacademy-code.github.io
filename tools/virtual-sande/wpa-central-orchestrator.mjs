@@ -1,6 +1,6 @@
 import { buildCouncilPlan } from './wpa-ai-council-phase3.mjs';
 
-export const VERSION = 'wpa-central-orchestrator-1.3.0';
+export const VERSION = 'wpa-central-orchestrator-1.4.0';
 
 export const COMMAND_HIERARCHY = {
   canonical_chain: 'Sande Smiljanov -> GPT + Claude -> Virtual Sande orchestrator -> 17 executive agents -> 80 tactical-operational agents',
@@ -34,6 +34,17 @@ export const PERFORMANCE_DIRECTIVE = {
   accuracy_over_deadline: true,
   provisional_label_required_when_verification_incomplete: true,
   parallel_by_default: true
+};
+
+export const SOURCE_COMPLIANCE_GATE = {
+  id: 'wpa_preventive_source_compliance_gate',
+  document: '/data/wpa-preventive-source-compliance-gate.json',
+  position: 'before_content_access',
+  mode: 'fail_closed',
+  required_checks: ['source_identity','access_method','licence_or_permission','intended_use','retention_and_rag_rights'],
+  prohibited_actions: ['credential_bypass','paywall_bypass','restricted_scraping','silent_download','unverified_rag_ingestion','log_deletion'],
+  unknown_rights_action: 'block_quarantine_record_notify_sande',
+  content_reading_allowed_before_pass: false
 };
 
 export const WPAWS_AGENTS = [
@@ -101,6 +112,7 @@ function buildCommandChain() {
     'sande_smiljanov',
     'gpt_and_claude_strategic_core',
     'virtual_sande_orchestrator',
+    'source_compliance_gate',
     'wpaws_17_executive_agents',
     'council_80_tactical_operational_agents',
     'virtual_sande_synthesis',
@@ -125,13 +137,14 @@ export function buildOrchestrationPlan(message='', options={}) {
     mode:comprehensive?'comprehensive':'selective',
     mission_class:missionClass,
     performance:{...performance,target_is_guarantee:false,parallel_execution:true,accuracy_over_deadline:true,provisional_if_incomplete:true},
+    source_compliance_gate:{...SOURCE_COMPLIANCE_GATE,status:'required_before_any_content_access'},
     diplomatic_protocol_core:'mandatory',
     wpaws_agents:selectAgents(message,comprehensive),
     council:{...council,command_level:'tactical_operational',activation_policy:'only_after_human_or_approved_strategic_directive'},
     connected_outputs:selectOutputs(message),
     command_chain:buildCommandChain(),
-    pipeline:['sande_smiljanov','gpt_and_claude_strategic_core','virtual_sande_orchestrator','wpaws_executive_agents','council_tactical_operational_agents','virtual_sande_synthesis','evidence_gate','safety_gate','sande_human_approval','wpa_output'],
-    governance:{public_source_only:true,no_paywall_bypass:true,no_secret_sources:true,no_automatic_publication:true,human_review_required:true,claude_live_connection:false,accuracy_must_not_be_sacrificed_for_speed:true},
+    pipeline:['sande_smiljanov','gpt_and_claude_strategic_core','virtual_sande_orchestrator','source_compliance_gate','public_and_licensed_sources_only','wpaws_executive_agents','council_tactical_operational_agents','virtual_sande_synthesis','evidence_gate','safety_gate','sande_human_approval','wpa_output'],
+    governance:{public_source_only:true,licensed_source_only:true,no_paywall_bypass:true,no_secret_sources:true,no_silent_download:true,no_unverified_rag_ingestion:true,no_automatic_publication:true,human_review_required:true,claude_live_connection:false,accuracy_must_not_be_sacrificed_for_speed:true},
     release_status:'blocked_pending_mandatory_gates'
   };
 }
