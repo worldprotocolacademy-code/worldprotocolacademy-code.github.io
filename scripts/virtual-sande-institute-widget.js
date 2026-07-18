@@ -66,6 +66,11 @@
     document.head.appendChild(s);
   }
 
+  function removePn003TopbarPromo() {
+    var links = document.querySelectorAll('.topbar-quicklinks a[href="https://doi.org/10.5281/zenodo.21390763"]');
+    Array.prototype.forEach.call(links, function (link) { link.remove(); });
+  }
+
   function addMessage(text, who) {
     var msgs = document.getElementById('wpaInstVsMsgs');
     if (!msgs) return;
@@ -117,6 +122,7 @@
   }
 
   function mount() {
+    removePn003TopbarPromo();
     if (document.getElementById('wpaInstVsFab')) return;
     style();
     var t = copy();
