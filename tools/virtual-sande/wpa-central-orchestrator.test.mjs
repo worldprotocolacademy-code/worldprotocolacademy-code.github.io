@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE } from './wpa-central-orchestrator.mjs';
+import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE, SOURCE_COMPLIANCE_GATE } from './wpa-central-orchestrator.mjs';
 
 test('keeps Sande as supreme human authority',()=>{
   assert.equal(COMMAND_HIERARCHY.supreme_human_authority.id,'sande_smiljanov');
@@ -13,6 +13,17 @@ test('defines GPT and Claude before Virtual Sande orchestrator',()=>{
   assert.equal(COMMAND_HIERARCHY.strategic_core[1].id,'claude');
   assert.equal(COMMAND_HIERARCHY.orchestrator.id,'virtual_sande');
   assert.equal(COMMAND_HIERARCHY.strategic_core[1].connection_mode,'adapter_unconfigured');
+});
+
+test('enforces source compliance before any content access',()=>{
+  const plan=buildOrchestrationPlan('Пронајди книга за дипломатски протокол');
+  assert.equal(SOURCE_COMPLIANCE_GATE.mode,'fail_closed');
+  assert.equal(SOURCE_COMPLIANCE_GATE.content_reading_allowed_before_pass,false);
+  assert.equal(plan.source_compliance_gate.status,'required_before_any_content_access');
+  assert.equal(plan.command_chain.indexOf('source_compliance_gate') < plan.command_chain.indexOf('wpaws_17_executive_agents'),true);
+  assert.equal(plan.governance.no_paywall_bypass,true);
+  assert.equal(plan.governance.no_silent_download,true);
+  assert.equal(plan.governance.no_unverified_rag_ingestion,true);
 });
 
 test('uses selective routing and fast mission target for ordinary work',()=>{
@@ -53,12 +64,10 @@ test('moves very large verification work beyond artificial deadline',()=>{
 
 test('preserves exact canonical command order',()=>{
   const plan=buildOrchestrationPlan('Подготви WPA анализа');
-  assert.deepEqual(plan.command_chain.slice(0,5),[
+  assert.deepEqual(plan.command_chain.slice(0,3),[
     'sande_smiljanov',
     'gpt_and_claude_strategic_core',
-    'virtual_sande_orchestrator',
-    'wpaws_17_executive_agents',
-    'council_80_tactical_operational_agents'
+    'virtual_sande_orchestrator'
   ]);
   assert.match(plan.canonical_chain,/Sande Smiljanov -> GPT \+ Claude -> Virtual Sande orchestrator -> 17 executive agents -> 80 tactical-operational agents/);
 });
