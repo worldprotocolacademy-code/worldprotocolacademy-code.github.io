@@ -1,4 +1,4 @@
-/* WPA Public Safety Layer v1.3
+/* WPA Public Safety Layer v1.4
  * Civil, analytical, development-phase terminology and public-boundary enforcement.
  * No publishing, payment, credential or backend actions are performed here.
  * Analytical modules use public sources only and have no intelligence, surveillance, investigative or operational function.
@@ -86,11 +86,22 @@
     });
   }
 
+  function loadAboutEnhancer(){
+    var isHome=path==='/'||path==='/index.html';
+    if(!isHome||document.getElementById('wpa-about-interactive-loader'))return;
+    var script=document.createElement('script');
+    script.id='wpa-about-interactive-loader';
+    script.src='/scripts/wpa-about-interactive.js?v=20260718-1';
+    script.defer=true;
+    document.head.appendChild(script);
+  }
+
   function boot(){
     safeTextNodes(document.body);
     updateLinks();
     addBoundary();
     guardCommercialActions();
+    loadAboutEnhancer();
   }
 
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
