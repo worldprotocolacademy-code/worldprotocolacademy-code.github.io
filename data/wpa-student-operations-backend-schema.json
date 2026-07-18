@@ -1,0 +1,89 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-07-18",
+  "title": "WPA Student Operations Backend Schema",
+  "status": "privacy_safe_backend_blueprint",
+  "source_model": "WPA Master Workbook v1.4 structure only; no workbook records copied",
+  "purpose": "Translate the private operational workbook into a governed backend and administrator-console data model for Virtual Sande Student Desk.",
+  "privacy": {
+    "public_repository_may_store_personal_records": false,
+    "public_repository_may_store_payment_records": false,
+    "public_repository_may_store_assessment_records": false,
+    "browser_local_storage_for_sensitive_student_state": false,
+    "encrypted_private_backend_required": true,
+    "role_based_access_required": true,
+    "audit_log_required": true,
+    "data_retention_policy_required": true
+  },
+  "entities": [
+    {"id":"students","source_sheet":"РЕГИСТАР","primary_key":"student_id","classification":"restricted_personal_data","purpose":"master student identity and programme status","public_fields":["student_id_hash","programme_id","status_code","created_month"],"restricted_fields":["full_name","email","phone","country","city","organisation","notes"]},
+    {"id":"applications","source_sheet":"ПРИЈАВИ","primary_key":"application_id","foreign_keys":["student_id"],"classification":"restricted_admissions_data","purpose":"application, consent and human admission review"},
+    {"id":"assessments","source_sheet":"ТЕСТИРАЊЕ","primary_key":"assessment_id","foreign_keys":["student_id","application_id"],"classification":"restricted_academic_record","purpose":"attempts, component scores, integrity review and human-confirmed result"},
+    {"id":"certificates","source_sheet":"СЕРТИФИКАТИ","primary_key":"certificate_id","foreign_keys":["student_id","assessment_id"],"classification":"restricted_credential_record","purpose":"eligibility, authorisation, serial, verification and revocation","issuance_policy":"human_authorisation_and_registry_record_required"},
+    {"id":"support_cases","source_sheet":"ПОДДРШКА","primary_key":"case_id","foreign_keys":["student_id"],"classification":"restricted_support_data","purpose":"case management and escalation"},
+    {"id":"agent_events","source_sheet":"АГЕНТ ЛОГОВИ","primary_key":"event_id","foreign_keys":["student_id"],"classification":"confidential_operational_log","purpose":"minimal Virtual Sande activity audit without storing unnecessary conversation content"},
+    {"id":"payments","source_sheet":"ФИНАНСИИ","primary_key":"payment_id","foreign_keys":["student_id"],"classification":"restricted_financial_data","purpose":"payment status and reconciliation","card_data_storage":false},
+    {"id":"disputes","source_sheet":"ДИСПУТИ","primary_key":"dispute_id","foreign_keys":["student_id"],"classification":"restricted_case_data","purpose":"certificate, assessment, access or payment dispute handling"},
+    {"id":"proactive_tasks","source_sheet":"ПРОАКТИВНО","primary_key":"task_id","foreign_keys":["student_id"],"classification":"internal_operational_data","purpose":"inactivity, completion and unresolved-case reminders"},
+    {"id":"audit_events","source_sheet":"CHANGELOG","primary_key":"audit_id","classification":"immutable_confidential_audit","purpose":"append-only material changes, approvals and overrides"}
+  ],
+  "student_lifecycle_mapping": [
+    {"stage":"application","entities":["students","applications"],"human_gate":true},
+    {"stage":"identity_and_consent","entities":["students","applications","audit_events"],"human_gate":true},
+    {"stage":"admission","entities":["applications","audit_events"],"human_gate":true},
+    {"stage":"enrolment","entities":["students","payments","audit_events"],"human_gate":true},
+    {"stage":"learning_plan","entities":["students","agent_events"],"human_gate":false},
+    {"stage":"module_progress","entities":["students","agent_events","proactive_tasks"],"human_gate":false},
+    {"stage":"assessment","entities":["assessments","audit_events"],"human_gate":true},
+    {"stage":"completion_review","entities":["assessments","support_cases","audit_events"],"human_gate":true},
+    {"stage":"certificate_authorisation","entities":["certificates","audit_events"],"human_gate":true},
+    {"stage":"certificate_issue","entities":["certificates","audit_events"],"human_gate":true}
+  ],
+  "derived_views": [
+    {"id":"student_360","source_sheet":"360 ДОСИЕ","policy":"restricted_role_based_view"},
+    {"id":"executive_dashboard","source_sheet":"DASHBOARD","policy":"aggregate_only_no_personal_data"},
+    {"id":"integrity_checks","source_sheet":"ВАЛИДАЦИЈА","policy":"blocking_pre_release_checks"}
+  ],
+  "integrity_rules": [
+    "Every application student_id must reference an existing student.",
+    "Every assessment application_id must reference an authorised application.",
+    "Assessment result must be calculated from versioned programme rules and then human-confirmed.",
+    "Certificate eligibility is not certificate authorisation.",
+    "A certificate requires completion review, assessment pass, human authorisation and registry record.",
+    "Certificate serials are generated by the backend and must be unique and immutable.",
+    "Revocation changes status but does not delete the credential audit trail.",
+    "Financial disputes and academic disputes are separate case types.",
+    "Dashboard values are aggregate outputs and never a source of truth.",
+    "All privileged overrides require actor, reason, timestamp and previous/new values."
+  ],
+  "workbook_findings_to_correct_before_migration": [
+    "Replace public package labels Free, Pro and Academic Pro with approved WPA programme and commercial terminology.",
+    "Do not use programme Level 1/2/3 labels in public student-facing copy; use official certificate programme names.",
+    "Do not calculate certificate issuance automatically from quiz counts or spreadsheet flags.",
+    "Repair and independently verify the four detected Dashboard formula error cells before using workbook KPI output.",
+    "Treat workbook dates, thresholds and pricing as draft configuration until Sande approves the current values.",
+    "Remove sample personal, institutional and financial records before any workbook sharing or migration."
+  ],
+  "backend_requirements": [
+    "authenticated_student_accounts",
+    "administrator_and_reviewer_roles",
+    "encrypted_database_at_rest_and_in_transit",
+    "consent_and_privacy_log",
+    "versioned_programme_and_assessment_rules",
+    "human_admission_review",
+    "assessment_integrity_review",
+    "certificate_authorisation_queue",
+    "certificate_registry_and_revocation_status",
+    "payment_provider_tokenisation",
+    "immutable_audit_log",
+    "backup_restore_and_retention_controls"
+  ],
+  "deployment_boundary": {
+    "current_student_desk_status":"governed_public_preview",
+    "real_enrolment_enabled":false,
+    "real_payment_enabled":false,
+    "official_assessment_record_enabled":false,
+    "official_certificate_issue_enabled":false,
+    "activation_requires":"approved_private_backend, security review, privacy review, tests and Sande human authorisation"
+  }
+}
