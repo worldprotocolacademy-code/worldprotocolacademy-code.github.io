@@ -1,4 +1,4 @@
-/* WPA Public Safety Layer v1.4
+/* WPA Public Safety Layer v1.5
  * Civil, analytical, development-phase terminology and public-boundary enforcement.
  * No publishing, payment, credential or backend actions are performed here.
  * Analytical modules use public sources only and have no intelligence, surveillance, investigative or operational function.
@@ -33,12 +33,7 @@
     ['уредничката интелигенција','уредничката анализа']
   ];
 
-  function replaceText(text){
-    var out=text;
-    replacements.forEach(function(pair){out=out.split(pair[0]).join(pair[1]);});
-    return out;
-  }
-
+  function replaceText(text){var out=text;replacements.forEach(function(pair){out=out.split(pair[0]).join(pair[1]);});return out;}
   function safeTextNodes(root){
     var walker=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(node){
       var p=node.parentElement;
@@ -46,65 +41,21 @@
       if(p.closest('[data-wpa-preserve-name="true"]'))return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }});
-    var nodes=[];
-    while(walker.nextNode())nodes.push(walker.currentNode);
-    nodes.forEach(function(node){
-      var next=replaceText(node.nodeValue);
-      if(next!==node.nodeValue)node.nodeValue=next;
-    });
+    var nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+    nodes.forEach(function(node){var next=replaceText(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next;});
   }
-
-  function updateLinks(){
-    document.querySelectorAll('a[href]').forEach(function(a){
-      var href=a.getAttribute('href')||'';
-      if(/(^|\/)intelligence-center\.html([?#].*)?$/i.test(href))a.setAttribute('href','analytical-center.html');
-      if(/(^|\/)wpa-live-intelligence-feed\.html([?#].*)?$/i.test(href))a.setAttribute('href','wpa-live-analytical-feed.html');
-    });
-  }
-
+  function updateLinks(){document.querySelectorAll('a[href]').forEach(function(a){var href=a.getAttribute('href')||'';if(/(^|\/)intelligence-center\.html([?#].*)?$/i.test(href))a.setAttribute('href','analytical-center.html');if(/(^|\/)wpa-live-intelligence-feed\.html([?#].*)?$/i.test(href))a.setAttribute('href','wpa-live-analytical-feed.html');});}
   function addBoundary(){
     if(document.getElementById('wpaPublicSafetyBoundary'))return;
-    var box=document.createElement('aside');
-    box.id='wpaPublicSafetyBoundary';
-    box.setAttribute('role','note');
+    var box=document.createElement('aside');box.id='wpaPublicSafetyBoundary';box.setAttribute('role','note');
     box.style.cssText='max-width:1180px;margin:18px auto;padding:14px 18px;border:1px solid rgba(201,168,76,.42);border-left:4px solid #c9a84c;background:#fffaf0;color:#1a1a2e;font:13px/1.6 system-ui,sans-serif;box-sizing:border-box';
     box.innerHTML='<strong>WPA јавна граница · Public boundary:</strong> WPA е независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза. Аналитичките модули користат јавни извори и немаат разузнавачка, надзорна, истражна или оперативна функција. <span lang="en">Analytical modules use public sources only and have no intelligence, surveillance, investigative or operational function.</span> Услуги, членства, сертификати, плаќања и комерцијални понуди не се активирани додека не се воспостави соодветна правна, етичка, даночна и платежна рамка. <span lang="en">Services, memberships, certificates, payments and commercial offers remain in development and are not activated.</span>';
-    var main=document.querySelector('main');
-    if(main&&main.parentNode)main.parentNode.insertBefore(box,main);
-    else document.body.insertBefore(box,document.body.firstChild);
+    var main=document.querySelector('main');if(main&&main.parentNode)main.parentNode.insertBefore(box,main);else document.body.insertBefore(box,document.body.firstChild);
   }
-
-  function guardCommercialActions(){
-    document.querySelectorAll('a,button').forEach(function(el){
-      var text=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-      var href=(el.getAttribute&&el.getAttribute('href'))||'';
-      var risky=/checkout|pay now|payment|плати|купи|buy now|побарај понуда|request quote|estimated fee/.test(text+' '+href);
-      if(!risky)return;
-      if(el.tagName==='A')el.setAttribute('href','mailto:worldprotocolacademy@gmail.com?subject='+encodeURIComponent('WPA expression of interest'));
-      el.setAttribute('data-wpa-development-only','true');
-      el.setAttribute('title','Development preview — no payment, contract or commercial commitment is created.');
-    });
-  }
-
-  function loadAboutEnhancer(){
-    var isHome=path==='/'||path==='/index.html';
-    if(!isHome||document.getElementById('wpa-about-interactive-loader'))return;
-    var script=document.createElement('script');
-    script.id='wpa-about-interactive-loader';
-    script.src='/scripts/wpa-about-interactive.js?v=20260718-1';
-    script.defer=true;
-    document.head.appendChild(script);
-  }
-
-  function boot(){
-    safeTextNodes(document.body);
-    updateLinks();
-    addBoundary();
-    guardCommercialActions();
-    loadAboutEnhancer();
-  }
-
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
-  else boot();
+  function guardCommercialActions(){document.querySelectorAll('a,button').forEach(function(el){var text=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();var href=(el.getAttribute&&el.getAttribute('href'))||'';var risky=/checkout|pay now|payment|плати|купи|buy now|побарај понуда|request quote|estimated fee/.test(text+' '+href);if(!risky)return;if(el.tagName==='A')el.setAttribute('href','mailto:worldprotocolacademy@gmail.com?subject='+encodeURIComponent('WPA expression of interest'));el.setAttribute('data-wpa-development-only','true');el.setAttribute('title','Development preview — no payment, contract or commercial commitment is created.');});}
+  function loadScriptOnce(id,src){if(document.getElementById(id))return;var script=document.createElement('script');script.id=id;script.src=src;script.defer=true;document.head.appendChild(script);}
+  function loadHomepageEnhancers(){var isHome=path==='/'||path==='/index.html';if(!isHome)return;loadScriptOnce('wpa-about-interactive-loader','/scripts/wpa-about-interactive.js?v=20260718-1');loadScriptOnce('wpa-programme-families-loader','/scripts/wpa-programme-families-interactive.js?v=20260718-1');}
+  function boot(){safeTextNodes(document.body);updateLinks();addBoundary();guardCommercialActions();loadHomepageEnhancers();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   document.addEventListener('wpa:lang-changed',function(){setTimeout(boot,60);});
 })();
