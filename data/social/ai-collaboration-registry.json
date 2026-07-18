@@ -1,26 +1,31 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-07-18",
-  "principle": "AI systems assist; humans remain responsible. Every contribution records provenance, role, review and approval.",
-  "slots": [
-    {"slot":1,"name":"unconfirmed","role":"research-assistant","status":"awaiting-director-confirmation"},
-    {"slot":2,"name":"unconfirmed","role":"source-mapper","status":"awaiting-director-confirmation"},
-    {"slot":3,"name":"unconfirmed","role":"fact-check-support","status":"awaiting-director-confirmation"},
-    {"slot":4,"name":"unconfirmed","role":"long-form-drafting","status":"awaiting-director-confirmation"},
-    {"slot":5,"name":"unconfirmed","role":"language-localisation","status":"awaiting-director-confirmation"},
-    {"slot":6,"name":"unconfirmed","role":"regional-cultural-review-support","status":"awaiting-director-confirmation"},
-    {"slot":7,"name":"unconfirmed","role":"social-format-adaptation","status":"awaiting-director-confirmation"},
-    {"slot":8,"name":"unconfirmed","role":"visual-brief-generation","status":"awaiting-director-confirmation"},
-    {"slot":9,"name":"unconfirmed","role":"audio-video-script-support","status":"awaiting-director-confirmation"},
-    {"slot":10,"name":"unconfirmed","role":"risk-and-governance-check","status":"awaiting-director-confirmation"},
-    {"slot":11,"name":"unconfirmed","role":"quality-comparison-and-red-team","status":"awaiting-director-confirmation"}
+  "council_name": "WPA AI Editorial Council",
+  "director_confirmed_count": 12,
+  "principle": "AI systems assist; humans remain responsible. Every contribution records provenance, role, model or version, review and approval.",
+  "systems": [
+    {"slot":1,"id":"openai-gpt","display_name":"GPT","provider":"OpenAI","type":"model-and-assistant-ecosystem","preferred_role":["editorial-architecture","structured-drafting","cross-platform-adaptation"],"status":"director-confirmed"},
+    {"slot":2,"id":"anthropic-claude","display_name":"Claude","provider":"Anthropic","type":"model-and-assistant-ecosystem","preferred_role":["long-form-review","argument-audit","red-team-reading"],"status":"director-confirmed"},
+    {"slot":3,"id":"google-gemini","display_name":"Gemini","provider":"Google","type":"multimodal-model-and-assistant-ecosystem","preferred_role":["multimodal-analysis","document-review","language-localisation-support"],"status":"director-confirmed"},
+    {"slot":4,"id":"microsoft-copilot","display_name":"Copilot","provider":"Microsoft","type":"productivity-and-coding-assistant-ecosystem","preferred_role":["code-assistance","workflow-support","productivity-drafting"],"status":"director-confirmed"},
+    {"slot":5,"id":"google-ai-ecosystem","display_name":"Google","provider":"Google","type":"search-research-and-ai-ecosystem","preferred_role":["source-discovery","trend-mapping","search-validation-support"],"status":"director-confirmed","note":"Registered separately from Gemini because the Director listed Google as an independent research and discovery ecosystem."},
+    {"slot":6,"id":"deepseek","display_name":"DeepSeek","provider":"DeepSeek","type":"model-and-assistant-ecosystem","preferred_role":["technical-reasoning","comparative-analysis","structured-review"],"status":"director-confirmed"},
+    {"slot":7,"id":"moonshot-kimi","display_name":"Kimi","provider":"Moonshot AI","type":"model-and-assistant-ecosystem","preferred_role":["long-context-review","Chinese-language-support","source-synthesis"],"status":"director-confirmed"},
+    {"slot":8,"id":"alibaba-qwen","display_name":"Qwen","provider":"Alibaba Cloud","type":"multilingual-model-ecosystem","preferred_role":["multilingual-analysis","Chinese-regional-localisation","technical-comparison"],"status":"director-confirmed"},
+    {"slot":9,"id":"minimax-mavis","display_name":"MiniMax–Mavis","provider":"MiniMax","type":"agent-and-model-ecosystem","preferred_role":["agentic-workflow-support","multimodal-content-support","creative-variation"],"status":"director-confirmed","aliases":["Mini Max-Mavis","MiniMax Mavis"]},
+    {"slot":10,"id":"z-ai","display_name":"Z.ai","provider":"Z.ai","type":"model-and-agent-ecosystem","preferred_role":["reasoning-comparison","Chinese-language-support","research-drafting"],"status":"director-confirmed"},
+    {"slot":11,"id":"xai-grok","display_name":"Grok","provider":"xAI","type":"model-and-assistant-ecosystem","preferred_role":["current-discourse-mapping","counterargument-generation","social-context-review"],"status":"director-confirmed"},
+    {"slot":12,"id":"perplexity","display_name":"Perplexity","provider":"Perplexity AI","type":"answer-and-research-engine","preferred_role":["source-discovery","citation-mapping","research-briefing"],"status":"director-confirmed","aliases":["Perpleksity"]}
   ],
   "required_log_fields": ["system","model_or_version","task","input_provenance","output_summary","human_reviewer","decision","timestamp"],
   "rules": [
     "No AI system may publish directly.",
     "No confidential, classified, personal or official-service data may be entered.",
     "AI text is a draft until source, rights, language and governance review pass.",
+    "Search and answer engines do not count as primary evidence; original sources must be opened and checked.",
     "Conflicting AI outputs must be resolved by source evidence and human judgment.",
+    "No AI provider is described as an official WPA partner without a separate written agreement.",
     "Sande Gate is mandatory for public release."
   ]
 }
