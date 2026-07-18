@@ -1,5 +1,5 @@
 /*
-  WPA Access & Future Pricing Guard v2.1
+  WPA Access & Future Pricing Guard v2.2
   Commercial activation is disabled during the development, testing and pilot phase.
   No prices, checkout links, payment actions, contracts or delivery commitments are loaded.
 */
@@ -48,7 +48,10 @@
 
   loadScript('/scripts/wpa-performance.js?v=20260712', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260718-1', 'data-wpa-public-safety');
-  if (isHome()) loadScript('/scripts/wpa-ai-hub-clarity.js?v=20260719-1', 'data-wpa-ai-hub-clarity');
+  if (isHome()) {
+    loadScript('/scripts/wpa-ai-hub-clarity.js?v=20260719-1', 'data-wpa-ai-hub-clarity');
+    loadScript('/scripts/wpa-home-promo-cleanup.js?v=20260719-1', 'data-wpa-home-promo-cleanup');
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', announceBoundary);
