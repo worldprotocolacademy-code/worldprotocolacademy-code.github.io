@@ -1,0 +1,46 @@
+name: WPA Comprehensive Site Audit
+
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run comprehensive integrity audit
+        run: node scripts/wpa-comprehensive-site-audit.mjs
+
+      - name: Publish audit summary
+        if: always()
+        run: |
+          echo '## WPA Comprehensive Site Audit' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .audit-output/comprehensive-site-audit.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat .audit-output/comprehensive-site-audit.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-comprehensive-site-audit-${{ github.run_number }}
+          path: .audit-output/
+          retention-days: 90
+          if-no-files-found: warn
