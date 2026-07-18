@@ -1,55 +1,20 @@
-/* Virtual Sande Connected Vessels client v2.1 */
+/* Virtual Sande Connected Vessels client v2.2 */
 (function(){
   'use strict';
   if(window.WPA_CONNECTED_VESSELS_LOADED)return;
   window.WPA_CONNECTED_VESSELS_LOADED=true;
-
   var ENDPOINT=window.WPA_VIRTUAL_SANDE_ENDPOINT||'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask';
-  var PAGE_MAP={
-    '/protocolometry-center.html':'protocolometry',
-    '/intelligence-center.html':'protocolometry_legacy_alias',
-    '/tools/wpa-five-engines.html':'five_engines',
-    '/tools/wpa-watch/':'wpa_watch',
-    '/journal/watch/':'journal_watch',
-    '/journal/live/':'journal_live',
-    '/wpa-live-intelligence-feed.html':'live_feed',
-    '/tools/academic-search-hub/':'academic_search',
-    '/wpaws/':'wpaws',
-    '/wpa-briefings.html':'premium_briefings',
-    '/wpa-services.html':'services',
-    '/wpa-one-page-service-profile.html':'institutional_profile',
-    '/tools/wpa-digital-pavilion/':'digital_pavilion',
-    '/student-desk/':'student_desk',
-    '/student-desk/index.html':'student_desk',
-    '/wpa-sublimate-engine.html':'sublimate',
-    '/audio-media-engine.html':'audio_media',
-    '/wpaws/protocol-symbols-verified/':'protocol_symbols',
-    '/multi-ai-command-center.html':'multi_ai',
-    '/journal/vol-1-issue-1-2026.html':'journal_issue_1',
-    '/wpaws/diplomatic-analysis-lab/':'diplomatic_analysis'
-  };
+  var PAGE_MAP={'/protocolometry-center.html':'protocolometry','/intelligence-center.html':'protocolometry_legacy_alias','/tools/wpa-five-engines.html':'five_engines','/tools/wpa-watch/':'wpa_watch','/journal/watch/':'journal_watch','/journal/live/':'journal_live','/wpa-live-intelligence-feed.html':'live_feed','/tools/academic-search-hub/':'academic_search','/wpaws/':'wpaws','/wpa-briefings.html':'premium_briefings','/wpa-services.html':'services','/wpa-one-page-service-profile.html':'institutional_profile','/tools/wpa-digital-pavilion/':'digital_pavilion','/student-desk/':'student_desk','/student-desk/index.html':'student_desk','/wpa-sublimate-engine.html':'sublimate','/audio-media-engine.html':'audio_media','/wpaws/protocol-symbols-verified/':'protocol_symbols','/multi-ai-command-center.html':'multi_ai','/journal/vol-1-issue-1-2026.html':'journal_issue_1','/wpaws/diplomatic-analysis-lab/':'diplomatic_analysis'};
+  var STUDENT_STAGES=[['application','Пријава'],['identity_and_consent','Идентитет и согласности'],['admission','Одлука за прием'],['enrolment','Запишување'],['learning_plan','План за учење'],['module_progress','Модули и напредок'],['assessment','Проверка на знаење'],['completion_review','Завршна проверка'],['certificate_authorisation','Овластување за сертификат'],['certificate_issue','Издавање и проверлив запис']];
   function pageId(){var p=location.pathname.replace(/\/+$/,'/')||'/';return PAGE_MAP[p]||document.documentElement.getAttribute('data-wpa-page')||'wpa_public';}
-  function collectContext(){
-    var selected=window.getSelection?String(window.getSelection()).trim().slice(0,1200):'';
-    var heading=document.querySelector('main h1,main h2,h1');
-    return {page:pageId(),path:location.pathname,title:document.title,heading:heading?heading.textContent.trim():'',selection:selected,language:document.documentElement.lang||'mk',publicBrand:'WPA Protocolometry Ecosystem',timestamp:new Date().toISOString()};
+  function collectContext(){var selected=window.getSelection?String(window.getSelection()).trim().slice(0,1200):'';var heading=document.querySelector('main h1,main h2,h1');return {page:pageId(),path:location.pathname,title:document.title,heading:heading?heading.textContent.trim():'',selection:selected,language:document.documentElement.lang||'mk',publicBrand:'WPA Protocolometry Ecosystem',timestamp:new Date().toISOString()};}
+  async function ask(message,extra){var context=Object.assign(collectContext(),extra||{});var response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify({message:message,lang:context.language,context:context})});if(!response.ok)throw new Error('Virtual Sande HTTP '+response.status);return response.json();}
+  function openWithPrompt(message,extra){sessionStorage.setItem('wpaVirtualSandeHandoff',JSON.stringify({message:message,context:Object.assign(collectContext(),extra||{}),createdAt:Date.now()}));location.href='/virtual-sande-ai.html';}
+  function injectWpaLogo(){var host=document.querySelector('.brand .logo');if(!host)return;host.textContent='';host.style.background='transparent';host.style.overflow='hidden';var img=document.createElement('img');img.src='/logo.png';img.alt='World Protocol Academy';img.width=42;img.height=42;img.style.cssText='width:42px;height:42px;object-fit:contain;border-radius:10px;display:block';host.appendChild(img);}
+  function injectStudentLifecycle(){if(pageId()!=='student_desk'||document.getElementById('wpa-student-lifecycle'))return;var containers=document.querySelectorAll('main .wpa-container');var container=containers.length?containers[containers.length-1]:document.querySelector('main');if(!container)return;var section=document.createElement('section');section.id='wpa-student-lifecycle';section.className='wpa-section';section.innerHTML='<h2 class="wpa-section-title">Целосна студентска патека преку Virtual Sande</h2><p>Virtual Sande е единствената водечка точка од првата пријава до завршната проверка и овластеното издавање сертификат. Чувствителните и правно значајните чекори остануваат под човечка и институционална контрола.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:20px 0">'+STUDENT_STAGES.map(function(x,i){return '<button type="button" class="wpa-card" data-wpa-student-stage="'+x[0]+'" style="text-align:left;cursor:pointer"><strong>'+(i+1)+'. '+x[1]+'</strong><br><span style="font-size:.82rem;opacity:.75">Продолжи со Virtual Sande</span></button>';}).join('')+'</div><div class="wpa-callout wpa-callout-info"><div class="wpa-callout-title">Контролирана имплементација</div><p style="margin:0">Овој интерфејс го оркестрира процесот. Вистинска регистрација, проверка на идентитет, плаќање, трајно чување резултати и издавање проверлив сертификат се активираат само преку одобрен безбеден backend, база и овластен WPA запис.</p></div>';
+    container.insertBefore(section,container.firstChild);
   }
-  async function ask(message,extra){
-    var context=Object.assign(collectContext(),extra||{});
-    var response=await fetch(ENDPOINT,{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify({message:message,lang:context.language,context:context})});
-    if(!response.ok)throw new Error('Virtual Sande HTTP '+response.status);
-    return response.json();
-  }
-  function openWithPrompt(message,extra){
-    sessionStorage.setItem('wpaVirtualSandeHandoff',JSON.stringify({message:message,context:Object.assign(collectContext(),extra||{}),createdAt:Date.now()}));
-    location.href='/virtual-sande-ai.html';
-  }
-  window.WPAVirtualSande={ask:ask,collectContext:collectContext,openWithPrompt:openWithPrompt,version:'connected-vessels-client-v2.1'};
-
-  document.addEventListener('click',function(event){
-    var el=event.target.closest('[data-virtual-sande-prompt]');
-    if(!el)return;
-    event.preventDefault();
-    openWithPrompt(el.getAttribute('data-virtual-sande-prompt')||'Објасни ја оваа WPA функција.',{action:el.getAttribute('data-virtual-sande-action')||'explain'});
-  });
+  window.WPAVirtualSande={ask:ask,collectContext:collectContext,openWithPrompt:openWithPrompt,studentStages:STUDENT_STAGES,version:'connected-vessels-client-v2.2'};
+  document.addEventListener('click',function(event){var stage=event.target.closest('[data-wpa-student-stage]');if(stage){event.preventDefault();var id=stage.getAttribute('data-wpa-student-stage');var item=STUDENT_STAGES.find(function(x){return x[0]===id;})||STUDENT_STAGES[0];openWithPrompt('Води ме низ WPA студентската фаза: '+item[1]+'. Објасни ги условите, потребните податоци, човечките одобрувања и следниот чекор.',{action:'student_lifecycle',studentStage:id});return;}var el=event.target.closest('[data-virtual-sande-prompt]');if(!el)return;event.preventDefault();openWithPrompt(el.getAttribute('data-virtual-sande-prompt')||'Објасни ја оваа WPA функција.',{action:el.getAttribute('data-virtual-sande-action')||'explain'});});
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){injectWpaLogo();injectStudentLifecycle();});else{injectWpaLogo();injectStudentLifecycle();}
 })();
