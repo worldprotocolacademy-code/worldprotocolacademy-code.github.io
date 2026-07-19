@@ -1,11 +1,329 @@
 /* ============================================================
-   WPA HOME TYPOGRAPHY & CONTRAST FOUNDATION v2.0
+   WPA HOME TYPOGRAPHY & CONTRAST FOUNDATION v2.1
    Scope: homepage only.
    Goal: dependable Macedonian Cyrillic, calm hierarchy and
    readable text on every light and dark surface.
    ============================================================ */
 
-html[data-wpa-page="index"]{
-  color-scheme:light;
+html[data-wpa-page="index"] {
+  color-scheme: light;
+  --wpa-font-display: Georgia, "Times New Roman", Times, serif;
+  --wpa-font-body: "Segoe UI", Inter, Roboto, "Noto Sans", Arial, sans-serif;
+  --wpa-font-ui: "Segoe UI", Inter, Roboto, "Noto Sans", Arial, sans-serif;
 
-  /* Reliable system fonts
+  --wpa-ink: #122033;
+  --wpa-ink-soft: #34445a;
+  --wpa-ink-muted: #526176;
+  --wpa-navy: #081a33;
+  --wpa-navy-2: #102a4d;
+  --wpa-ivory: #fffaf0;
+  --wpa-cream: #f6f1e8;
+  --wpa-white: #ffffff;
+  --wpa-gold: #a8791f;
+  --wpa-gold-light: #e7cf8a;
+  --wpa-line: #d7cdbd;
+  --wpa-focus: #cf2748;
+
+  --wpa-body-size: 17px;
+  --wpa-body-leading: 1.72;
+  --wpa-reading-width: 72ch;
+}
+
+html[data-wpa-page="index"] body {
+  font-family: var(--wpa-font-body) !important;
+  font-size: var(--wpa-body-size);
+  line-height: var(--wpa-body-leading);
+  font-weight: 400;
+  color: var(--wpa-ink) !important;
+  background: var(--wpa-cream);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html[data-wpa-page="index"] h1,
+html[data-wpa-page="index"] h2,
+html[data-wpa-page="index"] h3,
+html[data-wpa-page="index"] h4,
+html[data-wpa-page="index"] h5,
+html[data-wpa-page="index"] h6 {
+  font-family: var(--wpa-font-display) !important;
+  color: var(--wpa-navy) !important;
+  font-weight: 700 !important;
+  line-height: 1.16 !important;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+html[data-wpa-page="index"] h1 { font-size: clamp(2.35rem, 5vw, 4.75rem); }
+html[data-wpa-page="index"] h2 { font-size: clamp(2rem, 3.7vw, 3.4rem); }
+html[data-wpa-page="index"] h3 { font-size: clamp(1.42rem, 2.3vw, 2.15rem); }
+html[data-wpa-page="index"] h4 { font-size: clamp(1.15rem, 1.7vw, 1.48rem); }
+
+html[data-wpa-page="index"] p,
+html[data-wpa-page="index"] li,
+html[data-wpa-page="index"] dd,
+html[data-wpa-page="index"] blockquote {
+  font-family: var(--wpa-font-body) !important;
+  color: var(--wpa-ink-soft) !important;
+  line-height: var(--wpa-body-leading) !important;
+}
+
+html[data-wpa-page="index"] p,
+html[data-wpa-page="index"] .section-lead,
+html[data-wpa-page="index"] .reading-copy {
+  max-width: var(--wpa-reading-width);
+}
+
+html[data-wpa-page="index"] small,
+html[data-wpa-page="index"] .meta,
+html[data-wpa-page="index"] .eyebrow,
+html[data-wpa-page="index"] .section-label,
+html[data-wpa-page="index"] .card-kicker {
+  font-family: var(--wpa-font-ui) !important;
+  color: var(--wpa-ink-muted) !important;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+}
+
+html[data-wpa-page="index"] strong,
+html[data-wpa-page="index"] b {
+  color: var(--wpa-ink) !important;
+  font-weight: 750;
+}
+
+html[data-wpa-page="index"] a {
+  color: #70510f;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
+}
+
+html[data-wpa-page="index"] a:hover {
+  color: #4d3708;
+}
+
+/* Light surfaces: dark ink, never washed-out grey or gold body copy. */
+html[data-wpa-page="index"] section:not(.dark-section),
+html[data-wpa-page="index"] .card,
+html[data-wpa-page="index"] .platform-card,
+html[data-wpa-page="index"] .price-card,
+html[data-wpa-page="index"] .hub,
+html[data-wpa-page="index"] .wpa-about-card,
+html[data-wpa-page="index"] .wpa-pf-panel,
+html[data-wpa-page="index"] .wpa-pf-module {
+  color: var(--wpa-ink) !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) .card,
+html[data-wpa-page="index"] section:not(.dark-section) .platform-card,
+html[data-wpa-page="index"] section:not(.dark-section) .price-card,
+html[data-wpa-page="index"] section:not(.dark-section) .hub,
+html[data-wpa-page="index"] section:not(.dark-section) .wpa-about-card,
+html[data-wpa-page="index"] section:not(.dark-section) .wpa-pf-panel,
+html[data-wpa-page="index"] section:not(.dark-section) .wpa-pf-module {
+  background: var(--wpa-white) !important;
+  border-color: var(--wpa-line) !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) p,
+html[data-wpa-page="index"] section:not(.dark-section) li,
+html[data-wpa-page="index"] section:not(.dark-section) span,
+html[data-wpa-page="index"] section:not(.dark-section) small,
+html[data-wpa-page="index"] section:not(.dark-section) .section-lead,
+html[data-wpa-page="index"] section:not(.dark-section) .card p,
+html[data-wpa-page="index"] section:not(.dark-section) .platform-card p,
+html[data-wpa-page="index"] section:not(.dark-section) .card-list li {
+  color: var(--wpa-ink-soft) !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) h1,
+html[data-wpa-page="index"] section:not(.dark-section) h2,
+html[data-wpa-page="index"] section:not(.dark-section) h3,
+html[data-wpa-page="index"] section:not(.dark-section) h4,
+html[data-wpa-page="index"] section:not(.dark-section) h5,
+html[data-wpa-page="index"] section:not(.dark-section) h6 {
+  color: var(--wpa-navy) !important;
+  text-shadow: none !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) strong,
+html[data-wpa-page="index"] section:not(.dark-section) b {
+  color: var(--wpa-ink) !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) .section-label,
+html[data-wpa-page="index"] section:not(.dark-section) .card-kicker,
+html[data-wpa-page="index"] section:not(.dark-section) .card-link {
+  color: #70510f !important;
+}
+
+html[data-wpa-page="index"] section:not(.dark-section) .card-list li {
+  background: var(--wpa-cream) !important;
+}
+
+/* Dark surfaces: ivory/white text only. Gold is an accent, not body copy. */
+html[data-wpa-page="index"] .dark-section,
+html[data-wpa-page="index"] .hero,
+html[data-wpa-page="index"] footer,
+html[data-wpa-page="index"] .wpa-audio-engine-card,
+html[data-wpa-page="index"] [class*="dark-card"] {
+  color: var(--wpa-ivory) !important;
+}
+
+html[data-wpa-page="index"] .dark-section h1,
+html[data-wpa-page="index"] .dark-section h2,
+html[data-wpa-page="index"] .dark-section h3,
+html[data-wpa-page="index"] .dark-section h4,
+html[data-wpa-page="index"] .hero h1,
+html[data-wpa-page="index"] .hero h2,
+html[data-wpa-page="index"] .hero h3,
+html[data-wpa-page="index"] footer h1,
+html[data-wpa-page="index"] footer h2,
+html[data-wpa-page="index"] footer h3,
+html[data-wpa-page="index"] .wpa-audio-engine-card h1,
+html[data-wpa-page="index"] .wpa-audio-engine-card h2,
+html[data-wpa-page="index"] .wpa-audio-engine-card h3 {
+  color: var(--wpa-white) !important;
+  text-shadow: none !important;
+}
+
+html[data-wpa-page="index"] .dark-section p,
+html[data-wpa-page="index"] .dark-section li,
+html[data-wpa-page="index"] .dark-section span,
+html[data-wpa-page="index"] .dark-section small,
+html[data-wpa-page="index"] .hero p,
+html[data-wpa-page="index"] .hero li,
+html[data-wpa-page="index"] .hero span,
+html[data-wpa-page="index"] footer p,
+html[data-wpa-page="index"] footer li,
+html[data-wpa-page="index"] footer span,
+html[data-wpa-page="index"] footer small,
+html[data-wpa-page="index"] .wpa-audio-engine-card p,
+html[data-wpa-page="index"] .wpa-audio-engine-card li,
+html[data-wpa-page="index"] .wpa-audio-engine-card span {
+  color: #e8eef7 !important;
+}
+
+html[data-wpa-page="index"] .dark-section strong,
+html[data-wpa-page="index"] .hero strong,
+html[data-wpa-page="index"] footer strong,
+html[data-wpa-page="index"] .wpa-audio-engine-card strong {
+  color: var(--wpa-white) !important;
+}
+
+html[data-wpa-page="index"] .dark-section a,
+html[data-wpa-page="index"] .hero a,
+html[data-wpa-page="index"] footer a,
+html[data-wpa-page="index"] .wpa-audio-engine-card a {
+  color: #f2d98e;
+}
+
+/* Explicit protection for the reported programme and platform areas. */
+html[data-wpa-page="index"] #families .card,
+html[data-wpa-page="index"] #platform .platform-card,
+html[data-wpa-page="index"] #symbols-lab .platform-card {
+  background: var(--wpa-white) !important;
+  color: var(--wpa-ink) !important;
+}
+
+html[data-wpa-page="index"] #families .card h1,
+html[data-wpa-page="index"] #families .card h2,
+html[data-wpa-page="index"] #families .card h3,
+html[data-wpa-page="index"] #families .card h4,
+html[data-wpa-page="index"] #platform .platform-card h1,
+html[data-wpa-page="index"] #platform .platform-card h2,
+html[data-wpa-page="index"] #platform .platform-card h3,
+html[data-wpa-page="index"] #platform .platform-card h4,
+html[data-wpa-page="index"] #symbols-lab .platform-card h1,
+html[data-wpa-page="index"] #symbols-lab .platform-card h2,
+html[data-wpa-page="index"] #symbols-lab .platform-card h3,
+html[data-wpa-page="index"] #symbols-lab .platform-card h4 {
+  color: var(--wpa-navy) !important;
+}
+
+html[data-wpa-page="index"] #families .card p,
+html[data-wpa-page="index"] #families .card li,
+html[data-wpa-page="index"] #families .card span,
+html[data-wpa-page="index"] #platform .platform-card p,
+html[data-wpa-page="index"] #platform .platform-card li,
+html[data-wpa-page="index"] #platform .platform-card span,
+html[data-wpa-page="index"] #symbols-lab .platform-card p,
+html[data-wpa-page="index"] #symbols-lab .platform-card li,
+html[data-wpa-page="index"] #symbols-lab .platform-card span {
+  color: var(--wpa-ink-soft) !important;
+}
+
+/* Interface lettering remains sans-serif and highly legible. */
+html[data-wpa-page="index"] button,
+html[data-wpa-page="index"] input,
+html[data-wpa-page="index"] select,
+html[data-wpa-page="index"] textarea,
+html[data-wpa-page="index"] .btn,
+html[data-wpa-page="index"] nav,
+html[data-wpa-page="index"] .site-nav,
+html[data-wpa-page="index"] .announce {
+  font-family: var(--wpa-font-ui) !important;
+}
+
+html[data-wpa-page="index"] .btn,
+html[data-wpa-page="index"] button {
+  font-weight: 750 !important;
+  letter-spacing: 0.025em;
+}
+
+html[data-wpa-page="index"] .btn-gold {
+  background: var(--wpa-gold-light) !important;
+  color: var(--wpa-navy) !important;
+  border-color: #b68b2f !important;
+}
+
+html[data-wpa-page="index"] .btn-navy,
+html[data-wpa-page="index"] section:not(.dark-section) .btn-navy {
+  background: var(--wpa-navy) !important;
+  color: var(--wpa-white) !important;
+  border-color: var(--wpa-navy) !important;
+}
+
+html[data-wpa-page="index"] input,
+html[data-wpa-page="index"] select,
+html[data-wpa-page="index"] textarea {
+  background: var(--wpa-white) !important;
+  color: var(--wpa-ink) !important;
+  border: 2px solid #aeb9c8 !important;
+}
+
+html[data-wpa-page="index"] input::placeholder,
+html[data-wpa-page="index"] textarea::placeholder {
+  color: #58677a !important;
+  opacity: 1;
+}
+
+html[data-wpa-page="index"] :focus-visible {
+  outline: 3px solid var(--wpa-focus) !important;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  html[data-wpa-page="index"] {
+    --wpa-body-size: 16px;
+    --wpa-body-leading: 1.68;
+  }
+
+  html[data-wpa-page="index"] h1,
+  html[data-wpa-page="index"] h2,
+  html[data-wpa-page="index"] h3,
+  html[data-wpa-page="index"] h4 {
+    letter-spacing: -0.012em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-wpa-page="index"] *,
+  html[data-wpa-page="index"] *::before,
+  html[data-wpa-page="index"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
