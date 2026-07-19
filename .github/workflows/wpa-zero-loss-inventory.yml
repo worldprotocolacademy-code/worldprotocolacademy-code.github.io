@@ -1,0 +1,53 @@
+name: WPA and Institute Zero-Loss Inventory
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'scripts/wpa-zero-loss-inventory.mjs'
+      - 'styles/wpa-unified-zero-loss-v1.css'
+      - 'docs/wpa-institute-zero-loss-charter.md'
+      - '.github/workflows/wpa-zero-loss-inventory.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Generate zero-loss inventory
+        run: node scripts/wpa-zero-loss-inventory.mjs
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          echo '## WPA + Institute Zero-Loss Inventory' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .audit-output/wpa-zero-loss-inventory.md ]; then
+            cat .audit-output/wpa-zero-loss-inventory.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Inventory output was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload inventory evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-institute-zero-loss-inventory-${{ github.run_number }}
+          path: .audit-output/
+          retention-days: 90
+          if-no-files-found: error
