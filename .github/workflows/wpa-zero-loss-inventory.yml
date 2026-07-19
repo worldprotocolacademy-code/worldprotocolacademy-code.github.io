@@ -6,6 +6,8 @@ on:
       - 'index.html'
       - 'institute.html'
       - 'scripts/wpa-zero-loss-inventory.mjs'
+      - 'scripts/wpa-zero-loss-css-safety.mjs'
+      - 'styles/wpa-pilot20-badge.css'
       - 'styles/wpa-unified-zero-loss-v1.css'
       - 'docs/wpa-institute-zero-loss-charter.md'
       - '.github/workflows/wpa-zero-loss-inventory.yml'
@@ -28,6 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Enforce zero-loss CSS safety
+        run: node scripts/wpa-zero-loss-css-safety.mjs
 
       - name: Generate zero-loss inventory
         run: node scripts/wpa-zero-loss-inventory.mjs
