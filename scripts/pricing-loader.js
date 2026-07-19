@@ -1,5 +1,5 @@
 /*
-  WPA Access & Future Pricing Guard v2.0
+  WPA Access & Future Pricing Guard v2.2
   Commercial activation is disabled during the development, testing and pilot phase.
   No prices, checkout links, payment actions, contracts or delivery commitments are loaded.
 */
@@ -42,7 +42,27 @@
   window.WPA_PRICING_READY = Promise.resolve(window.WPA_PRICING);
 
   loadScript('/scripts/wpa-performance.js?v=20260712', 'data-wpa-performance');
-  loadScript('/scripts/wpa-public-safety-layer.js?v=20260718-1', 'data-wpa-public-safety');
+  loadScript('/scripts/wpa-public-safety-layer.js?v=20260719-2', 'data-wpa-public-safety');
+
+  var path = String(window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+  var isHome = path === '/' || path === '/index.html';
+
+  if (isHome) {
+    loadScript('/scripts/wpa-ai-hub-clarity.js?v=20260719-2', 'data-wpa-ai-hub-clarity');
+    loadScript('/scripts/wpa-home-promo-cleanup.js?v=20260719-2', 'data-wpa-home-promo-cleanup');
+  }
+
+  if (/\/professional-english\.html$/.test(path)) {
+    loadScript('/scripts/professional-english-protocol-toolkit.js?v=20260719-2', 'data-wpa-professional-english-toolkit');
+  }
+
+  if (/\/(certification|programmes|wpa-card|institute|virtual-sande-ai)\.html$/.test(path)) {
+    loadScript('/scripts/wpa-credential-journey.js?v=20260719-2', 'data-wpa-credential-journey');
+  }
+
+  if (/\/programmes\.html$/.test(path)) {
+    loadScript('/scripts/wpa-training-formats-interactive.js?v=20260719-2', 'data-wpa-training-formats');
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', announceBoundary);
