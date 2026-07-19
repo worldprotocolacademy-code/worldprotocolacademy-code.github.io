@@ -69,7 +69,7 @@
       'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{overflow:hidden!important;border-radius:50%!important;}',
       'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;}',
       'html[data-wpa-page="institute"] .wpa-institute-parent{display:block!important;white-space:nowrap!important;}',
-      'html[data-wpa-page="institute"] .wpa-pilot20-institute-nav-link,html[data-wpa-page="institute"] .wpa-journal-live-entry,html[data-wpa-page="institute"] .wpa-sublimate-institute-nav-link{font-weight:900!important;border-color:rgba(201,168,76,.65)!important;background:rgba(201,168,76,.11)!important;}',
+      'html[data-wpa-page="institute"] .wpa-pilot20-institute-nav-link,html[data-wpa-page="institute"] .wpa-journal-live-entry,html[data-wpa-page="institute"] .wpa-sublimate-institute-nav-link{font-weight:600!important;border-color:transparent!important;background:transparent!important;}',
       'html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{margin-left:0!important;}',
       '@media(max-width:760px){html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{width:100%!important;}}'
     ].join('');
@@ -108,27 +108,27 @@
     var nav = document.querySelector('.nav-wrap nav .nav-links');
     if (nav) {
       var tools = nav.querySelector('a[href="#wpa-public-tools-hub"]');
-      var pilot = makeLink('wpaPilot20InstituteNav', 'wpa-pilot20-inline-link wpa-pilot20-institute-nav-link', PILOT_URL, 'P20✓ Pilot 20', 'WPA Pilot 20');
+      var pilot = makeLink('wpaPilot20InstituteNav', 'wpa-pilot20-inline-link wpa-pilot20-institute-nav-link', PILOT_URL, 'Pilot 20', 'WPA Pilot 20');
       if (tools) tools.insertAdjacentElement('afterend', pilot); else nav.appendChild(pilot);
 
       var journalAnchor = nav.querySelector('a[href="journal/index.html"]');
-      var journal = makeLink('wpaLiveInstituteNavLink', 'wpa-journal-live-entry', JOURNAL_LIVE_URL, '🛰️ WPA Journal Live', 'WPA Journal Live');
+      var journal = makeLink('wpaLiveInstituteNavLink', 'wpa-journal-live-entry', JOURNAL_LIVE_URL, 'Journal Live', 'WPA Journal Live');
       if (journalAnchor) nav.insertBefore(journal, journalAnchor); else nav.appendChild(journal);
 
       var opc = nav.querySelector('a[href="#opc-banner"]');
-      var sublimate = makeLink('wpaSublimateInstituteNav', 'wpa-sublimate-institute-nav-link', SUBLIMATE_URL, '◆ WPA Sublimate', 'WPA Sublimate Engine Preview');
+      var sublimate = makeLink('wpaSublimateInstituteNav', 'wpa-sublimate-institute-nav-link', SUBLIMATE_URL, 'WPA Sublimate', 'WPA Sublimate Engine Preview');
       if (opc) opc.insertAdjacentElement('afterend', sublimate); else nav.appendChild(sublimate);
     }
 
     var hero = document.querySelector('.hero .hero-cta');
     if (hero) {
       var protocolometry = hero.querySelector('a[href="/protocolometry-center.html"]');
-      var pilotHero = makeLink('wpaPilot20InstituteHero', 'btn btn-primary wpa-pilot20-hero-button', PILOT_URL, 'P20✓ Pilot 20', 'WPA Pilot 20');
+      var pilotHero = makeLink('wpaPilot20InstituteHero', 'btn btn-primary wpa-pilot20-hero-button', PILOT_URL, 'Pilot 20', 'WPA Pilot 20');
       if (protocolometry) protocolometry.insertAdjacentElement('afterend', pilotHero); else hero.appendChild(pilotHero);
 
       var briefings = hero.querySelector('a[href="wpa-briefings.html"]');
-      var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, '◆ Отвори WPA Sublimate', 'WPA Sublimate Engine Preview');
-      var journalHero = makeLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', JOURNAL_LIVE_URL, '🛰️ Отвори WPA Journal Live', 'WPA Journal Live');
+      var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, 'Отвори WPA Sublimate', 'WPA Sublimate Engine Preview');
+      var journalHero = makeLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', JOURNAL_LIVE_URL, 'Отвори WPA Journal Live', 'WPA Journal Live');
 
       if (briefings) {
         briefings.insertAdjacentElement('afterend', subHero);
@@ -145,7 +145,7 @@
     if (!list || document.getElementById('wpaPilot20HomeNav')) return;
     var item = document.createElement('li');
     item.id = 'wpaPilot20HomeNav';
-    item.appendChild(makeLink('wpaPilot20HomeLink', 'wpa-pilot20-nav-link', PILOT_URL, 'P20✓ Pilot 20', 'WPA Pilot 20'));
+    item.appendChild(makeLink('wpaPilot20HomeLink', 'wpa-pilot20-nav-link', PILOT_URL, 'Pilot 20', 'WPA Pilot 20'));
     list.appendChild(item);
   }
 
