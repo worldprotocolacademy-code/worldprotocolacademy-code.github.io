@@ -1,8 +1,8 @@
 /* WPA HOME UNIFIED VISUAL SYSTEM v4 — 2026-07-20
-   Homepage only. One institutional palette, one component geometry and one spacing rhythm.
-   Content, routes, modules and functionality are not changed. */
+   Homepage only. One institutional palette, component geometry and spacing rhythm.
+   Content, routes, modules and functionality are unchanged. */
 
-html[data-wpa-page="index"] {
+html[data-wpa-page="index"]{
   --wpa-vs-navy:#0d1f3c;
   --wpa-vs-navy-deep:#071326;
   --wpa-vs-navy-soft:#162947;
@@ -10,4 +10,259 @@ html[data-wpa-page="index"] {
   --wpa-vs-gold-light:#e8d49a;
   --wpa-vs-cream:#f8f4ee;
   --wpa-vs-cream-alt:#f0ead8;
- 
+  --wpa-vs-white:#ffffff;
+  --wpa-vs-ink:#172235;
+  --wpa-vs-muted:#46566c;
+  --wpa-vs-line:#d8cdb8;
+  --wpa-vs-dark-text:#e6edf7;
+  --wpa-vs-radius:8px;
+  --wpa-vs-card-radius:6px;
+  --wpa-vs-shadow:0 8px 26px rgba(13,31,60,.10);
+}
+
+html[data-wpa-page="index"] body{
+  background:var(--wpa-vs-cream);
+  color:var(--wpa-vs-ink);
+  font-size:17px;
+  line-height:1.7;
+}
+
+/* One section rhythm and two allowed section surfaces. */
+html[data-wpa-page="index"] main > section{padding:76px 0;}
+html[data-wpa-page="index"] main > section:not(.hero):not(.dark-section):not(.wpa-audio-engine-section):not(.wpa-cultural-diplomacy-module):not(.wpa-scenario-film-lab):not(.wpa-humanism-partner-module){
+  background:var(--wpa-vs-cream);
+  border-top:1px solid rgba(216,205,184,.72);
+}
+html[data-wpa-page="index"] main > section.accent{
+  background:var(--wpa-vs-cream-alt);
+}
+
+/* Unified headings and body copy. */
+html[data-wpa-page="index"] .section-title,
+html[data-wpa-page="index"] .card h4,
+html[data-wpa-page="index"] .platform-card h4,
+html[data-wpa-page="index"] .hub h4,
+html[data-wpa-page="index"] .price-card h4,
+html[data-wpa-page="index"] .pub-body h4,
+html[data-wpa-page="index"] .faq-q,
+html[data-wpa-page="index"] .bib-title,
+html[data-wpa-page="index"] .wpa-core-doc-card strong{
+  color:var(--wpa-vs-navy)!important;
+  font-weight:700!important;
+  text-shadow:none!important;
+}
+html[data-wpa-page="index"] .section-lead,
+html[data-wpa-page="index"] .card p,
+html[data-wpa-page="index"] .platform-card p,
+html[data-wpa-page="index"] .hub p,
+html[data-wpa-page="index"] .price-text,
+html[data-wpa-page="index"] .pub-body p,
+html[data-wpa-page="index"] .faq-a,
+html[data-wpa-page="index"] .bib-meta,
+html[data-wpa-page="index"] .platform-creator-content p,
+html[data-wpa-page="index"] .wpa-core-doc-card span{
+  color:var(--wpa-vs-muted)!important;
+  opacity:1!important;
+}
+html[data-wpa-page="index"] .section-label,
+html[data-wpa-page="index"] .card-kicker,
+html[data-wpa-page="index"] .wpa-core-docs-kicker{
+  color:#6f4c0d!important;
+  font-weight:800!important;
+}
+
+/* One light-card system. */
+html[data-wpa-page="index"] .card,
+html[data-wpa-page="index"] .platform-card,
+html[data-wpa-page="index"] .hub,
+html[data-wpa-page="index"] .price-card,
+html[data-wpa-page="index"] .pub-card,
+html[data-wpa-page="index"] .faq-item,
+html[data-wpa-page="index"] .bib-entry,
+html[data-wpa-page="index"] .plink,
+html[data-wpa-page="index"] .wpa-core-doc-card{
+  background:var(--wpa-vs-white)!important;
+  border:1px solid var(--wpa-vs-line)!important;
+  border-radius:var(--wpa-vs-card-radius)!important;
+  box-shadow:var(--wpa-vs-shadow)!important;
+  color:var(--wpa-vs-ink)!important;
+}
+html[data-wpa-page="index"] .card:hover,
+html[data-wpa-page="index"] .platform-card:hover,
+html[data-wpa-page="index"] .hub:hover,
+html[data-wpa-page="index"] .price-card:hover,
+html[data-wpa-page="index"] .pub-card:hover,
+html[data-wpa-page="index"] .plink:hover,
+html[data-wpa-page="index"] .wpa-core-doc-card:hover{
+  transform:translateY(-2px)!important;
+  border-color:var(--wpa-vs-gold)!important;
+  box-shadow:0 12px 32px rgba(13,31,60,.14)!important;
+}
+html[data-wpa-page="index"] .card-list li,
+html[data-wpa-page="index"] .price-list li{
+  background:var(--wpa-vs-cream)!important;
+  color:var(--wpa-vs-ink)!important;
+  border-radius:4px!important;
+}
+html[data-wpa-page="index"] .card-link,
+html[data-wpa-page="index"] .hub-link,
+html[data-wpa-page="index"] .pub-body a,
+html[data-wpa-page="index"] .plink span:last-child,
+html[data-wpa-page="index"] .wpa-core-doc-card em{
+  color:#6f4c0d!important;
+  font-weight:700!important;
+}
+
+/* One dark-panel system. */
+html[data-wpa-page="index"] .hero,
+html[data-wpa-page="index"] .dark-section,
+html[data-wpa-page="index"] .wpa-latest-pn,
+html[data-wpa-page="index"] .wpa-core-docs-hub,
+html[data-wpa-page="index"] .matrix-band,
+html[data-wpa-page="index"] .cta-band,
+html[data-wpa-page="index"] .policy-box,
+html[data-wpa-page="index"] .wpa-audio-engine-card,
+html[data-wpa-page="index"] .wpa-cultural-diplomacy-wrap,
+html[data-wpa-page="index"] .wpa-scenario-film-wrap,
+html[data-wpa-page="index"] .wpa-humanism-wrap{
+  background:var(--wpa-vs-navy)!important;
+  background-image:none!important;
+  border:1px solid rgba(201,168,76,.42)!important;
+  border-radius:var(--wpa-vs-radius)!important;
+  box-shadow:0 14px 38px rgba(7,19,38,.18)!important;
+  color:var(--wpa-vs-white)!important;
+}
+html[data-wpa-page="index"] .hero{border-radius:0!important;border-left:0!important;border-right:0!important;}
+html[data-wpa-page="index"] .hero::before,
+html[data-wpa-page="index"] .hero::after,
+html[data-wpa-page="index"] .wpa-latest-pn::before,
+html[data-wpa-page="index"] .wpa-core-docs-hub::before,
+html[data-wpa-page="index"] .matrix-band::before,
+html[data-wpa-page="index"] .cta-band::before,
+html[data-wpa-page="index"] .wpa-cultural-diplomacy-wrap::before{
+  opacity:.28!important;
+}
+html[data-wpa-page="index"] .hero h2,
+html[data-wpa-page="index"] .dark-section .section-title,
+html[data-wpa-page="index"] .wpa-latest-pn h4,
+html[data-wpa-page="index"] .wpa-core-docs-hub h3,
+html[data-wpa-page="index"] .cta-band h3,
+html[data-wpa-page="index"] .wpa-audio-engine-card h2,
+html[data-wpa-page="index"] .wpa-cultural-diplomacy-module h2,
+html[data-wpa-page="index"] .wpa-scenario-film-lab h2,
+html[data-wpa-page="index"] .wpa-humanism-partner-module h2{
+  color:var(--wpa-vs-white)!important;
+}
+html[data-wpa-page="index"] .hero-sub,
+html[data-wpa-page="index"] .dark-section .section-lead,
+html[data-wpa-page="index"] .wpa-latest-pn p,
+html[data-wpa-page="index"] .wpa-core-docs-hub>p,
+html[data-wpa-page="index"] .cta-band p,
+html[data-wpa-page="index"] .wpa-audio-engine-card p,
+html[data-wpa-page="index"] .wpa-cultural-lead,
+html[data-wpa-page="index"] .wpa-scenario-lead,
+html[data-wpa-page="index"] .wpa-humanism-lead{
+  color:var(--wpa-vs-dark-text)!important;
+}
+
+/* Custom module cards now share one visual grammar. */
+html[data-wpa-page="index"] .wpa-cultural-card,
+html[data-wpa-page="index"] .wpa-scenario-card,
+html[data-wpa-page="index"] .wpa-scenario-flow,
+html[data-wpa-page="index"] .wpa-humanism-card{
+  background:rgba(255,255,255,.045)!important;
+  background-image:none!important;
+  border:1px solid rgba(232,212,154,.24)!important;
+  border-radius:var(--wpa-vs-card-radius)!important;
+  box-shadow:none!important;
+}
+html[data-wpa-page="index"] .wpa-cultural-card h3,
+html[data-wpa-page="index"] .wpa-scenario-card h3,
+html[data-wpa-page="index"] .wpa-scenario-flow h3,
+html[data-wpa-page="index"] .wpa-humanism-card h3{
+  color:var(--wpa-vs-white)!important;
+}
+html[data-wpa-page="index"] .wpa-cultural-card p,
+html[data-wpa-page="index"] .wpa-scenario-card p,
+html[data-wpa-page="index"] .wpa-scenario-step,
+html[data-wpa-page="index"] .wpa-humanism-card p,
+html[data-wpa-page="index"] .wpa-cultural-tagline,
+html[data-wpa-page="index"] .wpa-scenario-tagline,
+html[data-wpa-page="index"] .wpa-humanism-tagline{
+  color:var(--wpa-vs-dark-text)!important;
+}
+html[data-wpa-page="index"] .wpa-cultural-icon,
+html[data-wpa-page="index"] .wpa-scenario-card-icon,
+html[data-wpa-page="index"] .wpa-humanism-icon{
+  background:var(--wpa-vs-gold)!important;
+  background-image:none!important;
+  border-radius:var(--wpa-vs-card-radius)!important;
+  box-shadow:none!important;
+}
+html[data-wpa-page="index"] .wpa-cultural-pill,
+html[data-wpa-page="index"] .wpa-scenario-pill,
+html[data-wpa-page="index"] .wpa-humanism-pill{
+  background:transparent!important;
+  color:var(--wpa-vs-gold-light)!important;
+  border:1px solid rgba(232,212,154,.35)!important;
+  border-radius:4px!important;
+}
+html[data-wpa-page="index"] .wpa-cultural-disclaimer,
+html[data-wpa-page="index"] .wpa-scenario-disclaimer,
+html[data-wpa-page="index"] .wpa-humanism-disclaimer{
+  color:#cbd6e6!important;
+  opacity:1!important;
+}
+
+/* One button geometry. */
+html[data-wpa-page="index"] .btn,
+html[data-wpa-page="index"] .wpa-audio-engine-btn,
+html[data-wpa-page="index"] .wpa-humanism-button,
+html[data-wpa-page="index"] button{
+  border-radius:4px!important;
+  box-shadow:none!important;
+  text-shadow:none!important;
+}
+html[data-wpa-page="index"] .btn-gold,
+html[data-wpa-page="index"] .btn-primary,
+html[data-wpa-page="index"] .wpa-audio-engine-btn.primary,
+html[data-wpa-page="index"] .wpa-humanism-button:not(.secondary){
+  background:var(--wpa-vs-gold)!important;
+  background-image:none!important;
+  border-color:var(--wpa-vs-gold)!important;
+  color:var(--wpa-vs-navy-deep)!important;
+}
+html[data-wpa-page="index"] .btn-ghost,
+html[data-wpa-page="index"] .btn-outline,
+html[data-wpa-page="index"] .wpa-audio-engine-btn.secondary,
+html[data-wpa-page="index"] .wpa-humanism-button.secondary{
+  background:transparent!important;
+  border-color:rgba(232,212,154,.52)!important;
+  color:var(--wpa-vs-gold-light)!important;
+}
+
+/* Publication covers use the same navy surface. */
+html[data-wpa-page="index"] .pub-cover{
+  background:var(--wpa-vs-navy-soft)!important;
+  background-image:none!important;
+}
+
+/* Legal and footer alignment. */
+html[data-wpa-page="index"] .wpa-legal-disclaimer{
+  background:var(--wpa-vs-cream-alt)!important;
+  border:1px solid var(--wpa-vs-line)!important;
+  border-left:4px solid var(--wpa-vs-gold)!important;
+  border-radius:var(--wpa-vs-card-radius)!important;
+  color:var(--wpa-vs-ink)!important;
+}
+html[data-wpa-page="index"] .footer{
+  background:var(--wpa-vs-navy-deep)!important;
+  border-top:2px solid var(--wpa-vs-gold)!important;
+}
+
+@media(max-width:860px){
+  html[data-wpa-page="index"] main>section{padding:58px 0;}
+  html[data-wpa-page="index"] .wpa-cultural-diplomacy-wrap,
+  html[data-wpa-page="index"] .wpa-scenario-film-wrap,
+  html[data-wpa-page="index"] .wpa-humanism-wrap{padding:28px 22px!important;}
+}
