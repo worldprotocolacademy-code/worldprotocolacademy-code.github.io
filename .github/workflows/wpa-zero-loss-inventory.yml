@@ -1,0 +1,72 @@
+name: WPA and Institute Zero-Loss Inventory
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'scripts/wpa-zero-loss-inventory.mjs'
+      - 'scripts/wpa-zero-loss-css-safety.mjs'
+      - 'scripts/wpa-legibility-audit.mjs'
+      - 'styles/wpa-pilot20-badge.css'
+      - 'styles/wpa-unified-zero-loss-v1.css'
+      - 'styles/wpa-legibility-calibration-v1.css'
+      - 'docs/wpa-institute-zero-loss-charter.md'
+      - '.github/workflows/wpa-zero-loss-inventory.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Enforce zero-loss CSS safety
+        run: node scripts/wpa-zero-loss-css-safety.mjs
+
+      - name: Enforce legibility thresholds
+        run: node scripts/wpa-legibility-audit.mjs
+
+      - name: Generate zero-loss inventory
+        run: node scripts/wpa-zero-loss-inventory.mjs
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          echo '## WPA + Institute Zero-Loss Inventory' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .audit-output/wpa-zero-loss-inventory.md ]; then
+            cat .audit-output/wpa-zero-loss-inventory.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Inventory output was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '---' >> "$GITHUB_STEP_SUMMARY"
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f .audit-output/wpa-legibility-audit.md ]; then
+            cat .audit-output/wpa-legibility-audit.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'Legibility audit output was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload inventory and legibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-institute-zero-loss-inventory-${{ github.run_number }}
+          path: .audit-output/
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: error
