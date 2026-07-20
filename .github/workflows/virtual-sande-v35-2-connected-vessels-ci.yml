@@ -24,24 +24,28 @@ jobs:
           node --check student-desk/js/virtual-sande-desk.js
       - name: Student Desk boundary
         run: |
-          grep -q 'Virtual Sande — WPA Student Desk' student-desk/index.html
+          grep -q 'Виртуелен Санде — Студентски центар на WPA' student-desk/index.html
           grep -q '/logo.png' student-desk/index.html
           grep -q 'data-panel="admission"' student-desk/index.html
           grep -q 'data-panel="pathway"' student-desk/index.html
           grep -q 'data-panel="testing"' student-desk/index.html
           grep -q 'data-panel="sop"' student-desk/index.html
           grep -q 'data-panel="dashboard"' student-desk/index.html
-          grep -qi 'certificate issuance requires an authorised WPA backend record' student-desk/index.html
+          grep -q 'не прима уплати' student-desk/index.html
+          grep -q 'не чува лични документи' student-desk/index.html
           grep -q 'certificate_issue' student-desk/js/virtual-sande-desk.js
           grep -q 'window.WPAVirtualSande.ask' student-desk/js/virtual-sande-desk.js
+          grep -q "privacy:'no_form_fields'" student-desk/js/virtual-sande-desk.js
+          grep -q "language:'mk'" student-desk/js/virtual-sande-desk.js
           test ! -e student-desk/student-desk/index.html
           grep -q "url:'/student-desk/'" tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
           ! grep -q '/student-desk/student-desk/' tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
       - name: JSON governance
         run: |
-          node -e "const fs=require('fs');for(const f of ['data/wpa-module-registry.json','data/wpa-ai-council-80.json','data/wpa-preventive-source-compliance-gate.json','data/wpa-doctrine-kernel.json','data/wpa-student-lifecycle.json','data/wpa-student-question-bank-r2-manifest.json','student-desk/data/wpa-student-curriculum.json','data/wpa-student-operations-backend-schema.json'])JSON.parse(fs.readFileSync(f,'utf8'));"
+          node -e "const fs=require('fs');for(const f of ['data/wpa-module-registry.json','data/wpa-ai-council-80.json','data/wpa-preventive-source-compliance-gate.json','data/wpa-doctrine-kernel.json','data/wpa-student-lifecycle.json','data/wpa-student-question-bank-r2-manifest.json','student-desk/data/wpa-student-curriculum.json','data/wpa-student-operations-backend-schema.json','data/wpa-ai-search-corpus-policy.json'])JSON.parse(fs.readFileSync(f,'utf8'));"
           node -e "const q=require('./data/wpa-student-question-bank-r2-manifest.json');if(q.storage.bucket!=='protocol-kb'||q.storage.public_access!==false||q.classification.tier!=='S'||q.classification.certification_pool!==false||q.access.answer_release!=='after_candidate_response'||q.access.direct_r2_urls_allowed!==false)process.exit(1)"
           node -e "const s=require('./data/wpa-student-lifecycle.json');if(s.orchestrator!=='virtual_sande'||s.stages.length!==10||s.boundaries.certificate_is_not_issued_without_authorised_backend_record!==true)process.exit(1)"
+          node -e "const p=require('./data/wpa-ai-search-corpus-policy.json');if(p.mode!=='fail_closed_allowlist_required'||p.automatic_cutover!==false||p.automatic_deletion!==false||!p.mandatory_exclusions.includes('**/student_records/**')||!p.mandatory_exclusions.includes('**/*answer_key*'))process.exit(1)"
       - name: Route protocolometry
         run: node --test --test-name-pattern='routes protocolometry requests' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
       - name: Route output surfaces
