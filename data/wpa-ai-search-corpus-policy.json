@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0.0",
+  "updated": "2026-07-18",
+  "instance": "protocol-ai",
+  "source_bucket": "protocol-kb",
+  "mode": "fail_closed_allowlist_required",
+  "purpose": "Public and student-safe academic retrieval for World Protocol Academy",
+  "mandatory_exclusions": [
+    "**/09_smiljanov_answer_keys/**",
+    "**/*answer-key*",
+    "**/*answer_key*",
+    "**/certification_pool/**",
+    "**/live_exam/**",
+    "**/student_records/**",
+    "**/applications/**",
+    "**/identity_documents/**",
+    "**/payments/**",
+    "**/private/**",
+    "**/classified/**",
+    "**/secrets/**",
+    "**/.env*"
+  ],
+  "required_metadata": [
+    "source_identity",
+    "provenance",
+    "rights_status",
+    "rag_permission",
+    "retention_permission",
+    "public_or_licensed_status",
+    "reviewed_by",
+    "reviewed_at"
+  ],
+  "allowed_rights_status": [
+    "wpa_owned",
+    "public_domain_verified",
+    "open_licence_verified",
+    "licensed_for_rag",
+    "explicit_permission_verified"
+  ],
+  "unknown_rights_action": "exclude_and_quarantine_metadata_only",
+  "empty_object_action": "exclude_without_deleting_original",
+  "oversize_pdf_action": "create_verified_derivatives_below_platform_limit_without_overwriting_original",
+  "answer_key_policy": {
+    "index_in_public_ai_search": false,
+    "index_in_student_practice_search": false,
+    "storage": "private_authorised_backend_only",
+    "release": "only_after_candidate_response_and_only_for_approved_practice_items"
+  },
+  "cutover_gates": [
+    "staging_manifest_verified",
+    "derivative_hashes_verified",
+    "mandatory_exclusions_verified",
+    "rights_allowlist_verified",
+    "no_sensitive_paths_verified",
+    "rollback_configuration_recorded",
+    "sande_authorisation_recorded",
+    "resync_completed",
+    "errors_equal_zero",
+    "skips_equal_zero_or_explicitly_approved"
+  ],
+  "automatic_cutover": false,
+  "automatic_deletion": false
+}
