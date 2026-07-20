@@ -1,26 +1,28 @@
-/* WPA HOME BALANCED READABILITY SYSTEM — 2026-07-20
-   Scope: homepage only. Presentation only; no content is hidden or removed.
-   Light surfaces use dark text. Dark components retain dark surfaces and light text. */
+/* WPA HOME COMPLETE LEGIBILITY LAYER v3 — 2026-07-20
+   Homepage only. Text contrast and typography only.
+   This file does not recolour section, card or module backgrounds. */
 
 html[data-wpa-page="index"] {
-  --wpa-er-ink:#0b1525;
-  --wpa-er-body:#172235;
-  --wpa-er-muted:#334155;
-  --wpa-er-link:#4b3200;
-  --wpa-er-light:#fffdf8;
-  --wpa-er-light-muted:#eef3fb;
-  --wpa-er-gold:#ffe39a;
+  --wpa-leg-ink:#0b1525;
+  --wpa-leg-body:#26374b;
+  --wpa-leg-muted:#40516a;
+  --wpa-leg-link:#684600;
+  --wpa-leg-light:#fffdf8;
+  --wpa-leg-light-body:#e6edf7;
+  --wpa-leg-light-muted:#cbd6e6;
+  --wpa-leg-gold:#f3dc91;
 }
 
 html[data-wpa-page="index"] body {
-  color:var(--wpa-er-body) !important;
-  font-size:18px !important;
-  line-height:1.72 !important;
+  color:var(--wpa-leg-body);
+  font-size:17px;
+  line-height:1.72;
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* Standard light surfaces. Do not recolour whole sections. */
+/* Standard light-section typography. Backgrounds remain owned by index.html. */
 html[data-wpa-page="index"] .section-title,
-html[data-wpa-page="index"] .brand-text h1,
 html[data-wpa-page="index"] .card h1,
 html[data-wpa-page="index"] .card h2,
 html[data-wpa-page="index"] .card h3,
@@ -33,188 +35,180 @@ html[data-wpa-page="index"] .price-card h4,
 html[data-wpa-page="index"] .pub-body h4,
 html[data-wpa-page="index"] .faq-q,
 html[data-wpa-page="index"] .bib-title,
-html[data-wpa-page="index"] .doctrine p {
-  color:var(--wpa-er-ink) !important;
+html[data-wpa-page="index"] .hub h4,
+html[data-wpa-page="index"] .doctrine p,
+html[data-wpa-page="index"] .wpa-core-doc-card strong {
+  color:var(--wpa-leg-ink) !important;
   opacity:1 !important;
   text-shadow:none !important;
 }
 
 html[data-wpa-page="index"] .section-lead,
-html[data-wpa-page="index"] .brand-text p,
 html[data-wpa-page="index"] .card p,
 html[data-wpa-page="index"] .platform-card p,
 html[data-wpa-page="index"] .price-text,
 html[data-wpa-page="index"] .pub-body p,
 html[data-wpa-page="index"] .faq-a,
 html[data-wpa-page="index"] .bib-meta,
-html[data-wpa-page="index"] .platform-creator-content p {
-  color:var(--wpa-er-body) !important;
+html[data-wpa-page="index"] .hub p,
+html[data-wpa-page="index"] .platform-creator-content p,
+html[data-wpa-page="index"] .wpa-core-doc-card span,
+html[data-wpa-page="index"] .wpa-legal-disclaimer {
+  color:var(--wpa-leg-body) !important;
   opacity:1 !important;
   text-shadow:none !important;
 }
 
-html[data-wpa-page="index"] .card,
-html[data-wpa-page="index"] .platform-card,
-html[data-wpa-page="index"] .price-card,
-html[data-wpa-page="index"] .pub-card,
-html[data-wpa-page="index"] .faq-item,
-html[data-wpa-page="index"] .bib-entry,
-html[data-wpa-page="index"] .plink {
-  background:#ffffff !important;
-  color:var(--wpa-er-body) !important;
-  opacity:1 !important;
-}
-
 html[data-wpa-page="index"] .card-list li,
-html[data-wpa-page="index"] .price-list li {
-  color:var(--wpa-er-body) !important;
-  background:#f5f7fa !important;
+html[data-wpa-page="index"] .price-list li,
+html[data-wpa-page="index"] .matrix-item span {
+  color:var(--wpa-leg-body) !important;
   opacity:1 !important;
 }
 
 html[data-wpa-page="index"] .card-link,
 html[data-wpa-page="index"] .pub-body a,
+html[data-wpa-page="index"] .hub-link,
 html[data-wpa-page="index"] .plink span:last-child,
-html[data-wpa-page="index"] main a:not(.btn):not(.wpa-audio-engine-btn) {
-  color:var(--wpa-er-link) !important;
-  font-weight:700 !important;
-  opacity:1 !important;
-  text-decoration:underline !important;
-  text-decoration-thickness:1.5px !important;
-  text-underline-offset:.18em !important;
-}
-
-html[data-wpa-page="index"] .site-nav a {
-  color:var(--wpa-er-ink) !important;
-  font-size:13px !important;
-  font-weight:700 !important;
-  line-height:1.35 !important;
+html[data-wpa-page="index"] .wpa-core-doc-card em {
+  color:var(--wpa-leg-link) !important;
+  font-weight:750 !important;
   opacity:1 !important;
 }
 
-/* Dark section and dark component protection. */
-html[data-wpa-page="index"] .hero,
-html[data-wpa-page="index"] .dark-section,
-html[data-wpa-page="index"] .wpa-latest-pn,
-html[data-wpa-page="index"] .wpa-audio-engine-card,
-html[data-wpa-page="index"] .cta-band,
-html[data-wpa-page="index"] .policy-box,
-html[data-wpa-page="index"] .pub-cover,
-html[data-wpa-page="index"] .footer,
-html[data-wpa-page="index"] .announce {
-  color:var(--wpa-er-light) !important;
-}
-
+/* Dark architectural surfaces. Only text is strengthened. */
 html[data-wpa-page="index"] .hero h1,
 html[data-wpa-page="index"] .hero h2,
 html[data-wpa-page="index"] .hero h3,
-html[data-wpa-page="index"] .dark-section h1,
-html[data-wpa-page="index"] .dark-section h2,
-html[data-wpa-page="index"] .dark-section h3,
-html[data-wpa-page="index"] .dark-section h4,
+html[data-wpa-page="index"] .dark-section .section-title,
 html[data-wpa-page="index"] .wpa-latest-pn h4,
 html[data-wpa-page="index"] .wpa-audio-engine-card h2,
 html[data-wpa-page="index"] .cta-band h3,
 html[data-wpa-page="index"] .policy-box h1,
 html[data-wpa-page="index"] .policy-box h2,
 html[data-wpa-page="index"] .policy-box h3,
-html[data-wpa-page="index"] .footer h1,
-html[data-wpa-page="index"] .footer h2,
-html[data-wpa-page="index"] .footer h3,
+html[data-wpa-page="index"] .wpa-core-docs-hub h3,
 html[data-wpa-page="index"] .footer h4,
 html[data-wpa-page="index"] .footer h5 {
-  color:var(--wpa-er-light) !important;
+  color:var(--wpa-leg-light) !important;
   opacity:1 !important;
+  text-shadow:none !important;
 }
 
-html[data-wpa-page="index"] .hero p,
-html[data-wpa-page="index"] .hero li,
 html[data-wpa-page="index"] .hero-sub,
-html[data-wpa-page="index"] .dark-section > .container > p,
+html[data-wpa-page="index"] .hero-pillars li,
 html[data-wpa-page="index"] .dark-section .section-lead,
 html[data-wpa-page="index"] .wpa-latest-pn p,
 html[data-wpa-page="index"] .wpa-audio-engine-card p,
 html[data-wpa-page="index"] .cta-band p,
 html[data-wpa-page="index"] .policy-rule,
+html[data-wpa-page="index"] .wpa-core-docs-hub > p,
 html[data-wpa-page="index"] .footer p,
-html[data-wpa-page="index"] .footer li,
+html[data-wpa-page="index"] .footer a,
 html[data-wpa-page="index"] .announce {
-  color:var(--wpa-er-light-muted) !important;
+  color:var(--wpa-leg-light-body) !important;
   opacity:1 !important;
 }
 
-html[data-wpa-page="index"] .hero a:not(.btn),
-html[data-wpa-page="index"] .dark-section a:not(.btn),
-html[data-wpa-page="index"] .wpa-latest-pn a:not(.btn),
-html[data-wpa-page="index"] .wpa-audio-engine-card a,
-html[data-wpa-page="index"] .cta-band a:not(.btn),
-html[data-wpa-page="index"] .policy-box a,
-html[data-wpa-page="index"] .footer a,
-html[data-wpa-page="index"] .announce a,
-html[data-wpa-page="index"] .announce strong,
-html[data-wpa-page="index"] .hero em,
+html[data-wpa-page="index"] .hero-eyebrow,
 html[data-wpa-page="index"] .hero strong,
+html[data-wpa-page="index"] .hero em,
 html[data-wpa-page="index"] .stat-num,
+html[data-wpa-page="index"] .hero-pillars li strong,
+html[data-wpa-page="index"] .wpa-latest-pn-kicker,
 html[data-wpa-page="index"] .wpa-latest-pn-en,
 html[data-wpa-page="index"] .wpa-latest-pn-meta span,
-html[data-wpa-page="index"] .pub-spine {
-  color:var(--wpa-er-gold) !important;
+html[data-wpa-page="index"] .wpa-audio-engine-badge,
+html[data-wpa-page="index"] .wpa-core-docs-kicker,
+html[data-wpa-page="index"] .matrix-item strong,
+html[data-wpa-page="index"] .announce strong,
+html[data-wpa-page="index"] .announce a,
+html[data-wpa-page="index"] .footer-col h5 {
+  color:var(--wpa-leg-gold) !important;
   opacity:1 !important;
 }
 
-/* Cards inside dark sections stay light cards with dark text. */
-html[data-wpa-page="index"] .dark-section .card,
-html[data-wpa-page="index"] .dark-section .platform-card,
-html[data-wpa-page="index"] .dark-section .price-card,
-html[data-wpa-page="index"] .dark-section .pub-card {
-  background:#ffffff !important;
-  color:var(--wpa-er-body) !important;
+/* Custom dark modules below main: Cultural Diplomacy, Scenario Film Lab, Humanism. */
+html[data-wpa-page="index"] .wpa-cultural-diplomacy-module h2,
+html[data-wpa-page="index"] .wpa-cultural-card h3,
+html[data-wpa-page="index"] .wpa-scenario-film-lab h2,
+html[data-wpa-page="index"] .wpa-scenario-card h3,
+html[data-wpa-page="index"] .wpa-scenario-flow h3,
+html[data-wpa-page="index"] .wpa-humanism-partner-module h2,
+html[data-wpa-page="index"] .wpa-humanism-card h3 {
+  color:var(--wpa-leg-light) !important;
+  opacity:1 !important;
+  text-shadow:none !important;
 }
 
-html[data-wpa-page="index"] .dark-section .card h1,
-html[data-wpa-page="index"] .dark-section .card h2,
-html[data-wpa-page="index"] .dark-section .card h3,
-html[data-wpa-page="index"] .dark-section .card h4,
-html[data-wpa-page="index"] .dark-section .platform-card h1,
-html[data-wpa-page="index"] .dark-section .platform-card h2,
-html[data-wpa-page="index"] .dark-section .platform-card h3,
-html[data-wpa-page="index"] .dark-section .platform-card h4,
-html[data-wpa-page="index"] .dark-section .price-card h4,
-html[data-wpa-page="index"] .dark-section .pub-body h4 {
-  color:var(--wpa-er-ink) !important;
+html[data-wpa-page="index"] .wpa-cultural-lead,
+html[data-wpa-page="index"] .wpa-cultural-card p,
+html[data-wpa-page="index"] .wpa-cultural-tagline,
+html[data-wpa-page="index"] .wpa-scenario-lead,
+html[data-wpa-page="index"] .wpa-scenario-card p,
+html[data-wpa-page="index"] .wpa-scenario-step,
+html[data-wpa-page="index"] .wpa-scenario-tagline,
+html[data-wpa-page="index"] .wpa-humanism-lead,
+html[data-wpa-page="index"] .wpa-humanism-card p,
+html[data-wpa-page="index"] .wpa-humanism-tagline {
+  color:var(--wpa-leg-light-body) !important;
+  opacity:1 !important;
 }
 
-html[data-wpa-page="index"] .dark-section .card p,
-html[data-wpa-page="index"] .dark-section .card li,
-html[data-wpa-page="index"] .dark-section .platform-card p,
-html[data-wpa-page="index"] .dark-section .price-card p,
-html[data-wpa-page="index"] .dark-section .price-card li,
-html[data-wpa-page="index"] .dark-section .pub-body p {
-  color:var(--wpa-er-body) !important;
+html[data-wpa-page="index"] .wpa-cultural-kicker,
+html[data-wpa-page="index"] .wpa-cultural-lead strong,
+html[data-wpa-page="index"] .wpa-scenario-kicker,
+html[data-wpa-page="index"] .wpa-scenario-lead strong,
+html[data-wpa-page="index"] .wpa-humanism-kicker,
+html[data-wpa-page="index"] .wpa-humanism-lead strong,
+html[data-wpa-page="index"] .wpa-humanism-button.secondary {
+  color:var(--wpa-leg-gold) !important;
+  opacity:1 !important;
 }
 
+html[data-wpa-page="index"] .wpa-cultural-pill,
+html[data-wpa-page="index"] .wpa-scenario-pill,
+html[data-wpa-page="index"] .wpa-humanism-pill {
+  color:var(--wpa-leg-light-body) !important;
+  border-color:rgba(243,220,145,.34) !important;
+  opacity:1 !important;
+}
+
+html[data-wpa-page="index"] .wpa-cultural-disclaimer,
+html[data-wpa-page="index"] .wpa-scenario-disclaimer,
+html[data-wpa-page="index"] .wpa-humanism-disclaimer {
+  color:var(--wpa-leg-light-muted) !important;
+  font-size:13px !important;
+  line-height:1.68 !important;
+  opacity:1 !important;
+}
+
+/* Utility and interactive text; do not restyle component surfaces. */
+html[data-wpa-page="index"] .site-nav a,
 html[data-wpa-page="index"] .btn,
 html[data-wpa-page="index"] button,
 html[data-wpa-page="index"] input,
 html[data-wpa-page="index"] select,
 html[data-wpa-page="index"] textarea {
-  font-size:14px !important;
-  font-weight:700 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
 }
 
 html[data-wpa-page="index"] .muted,
 html[data-wpa-page="index"] .small,
 html[data-wpa-page="index"] .meta,
-html[data-wpa-page="index"] .note {
+html[data-wpa-page="index"] .note,
+html[data-wpa-page="index"] .stat-label,
+html[data-wpa-page="index"] .bot-sub,
+html[data-wpa-page="index"] .bot-status,
+html[data-wpa-page="index"] .bot-note,
+html[data-wpa-page="index"] .bmeta {
   opacity:1 !important;
 }
 
 @media (max-width:860px) {
-  html[data-wpa-page="index"] body {
-    font-size:17px !important;
-    line-height:1.7 !important;
-  }
-  html[data-wpa-page="index"] .site-nav a {
-    font-size:14px !important;
-  }
+  html[data-wpa-page="index"] body {font-size:16.5px;line-height:1.7;}
+  html[data-wpa-page="index"] .wpa-cultural-disclaimer,
+  html[data-wpa-page="index"] .wpa-scenario-disclaimer,
+  html[data-wpa-page="index"] .wpa-humanism-disclaimer {font-size:12.5px !important;}
 }
