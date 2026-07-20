@@ -1,24 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@500;600;700&display=swap');
 
-/* WPA + Institute unified zero-loss visual layer v1.2
-   Additive only: no content is hidden, removed or reordered. */
+/* WPA + Institute unified legibility layer v1.3
+   Typography, contrast and spacing only. Nothing is hidden, removed or reordered. */
 
 html[data-wpa-page="index"],
 html[data-wpa-page="institute"] {
-  --wpa-u-navy-950:#061326;
-  --wpa-u-navy-900:#0a1d38;
-  --wpa-u-navy-800:#123158;
-  --wpa-u-ink-900:#122033;
-  --wpa-u-ink-700:#34445a;
-  --wpa-u-ink-600:#526176;
-  --wpa-u-ivory-50:#fffdf8;
-  --wpa-u-ivory-100:#fbf7ef;
-  --wpa-u-gold-700:#8a6218;
-  --wpa-u-gold-600:#a8791f;
-  --wpa-u-gold-300:#e3c878;
-  --wpa-u-line:#d8cdbb;
+  --wpa-u-navy:#0d1f3c;
+  --wpa-u-text:#172235;
+  --wpa-u-text-soft:#46566c;
+  --wpa-u-ivory:#fffdf8;
+  --wpa-u-gold-dark:#6f4c0d;
+  --wpa-u-gold-light:#f0d989;
+  --wpa-u-dark-muted:#d7dfeb;
   --wpa-u-focus:#cf2748;
-  --wpa-u-display:'EB Garamond',Georgia,'Times New Roman',serif;
+  --wpa-u-display:'Noto Serif',Georgia,'Times New Roman',serif;
   --wpa-u-body:'Noto Sans','Segoe UI',Arial,sans-serif;
 }
 
@@ -26,9 +21,23 @@ html[data-wpa-page="index"] body,
 html[data-wpa-page="institute"] body {
   font-family:var(--wpa-u-body) !important;
   font-size:17px;
+  font-weight:400;
   line-height:1.72;
+  color:var(--wpa-u-text);
   text-rendering:optimizeLegibility;
   -webkit-font-smoothing:antialiased;
+  font-synthesis:none;
+}
+
+html[data-wpa-page="index"] button,
+html[data-wpa-page="index"] input,
+html[data-wpa-page="index"] select,
+html[data-wpa-page="index"] textarea,
+html[data-wpa-page="institute"] button,
+html[data-wpa-page="institute"] input,
+html[data-wpa-page="institute"] select,
+html[data-wpa-page="institute"] textarea {
+  font-family:var(--wpa-u-body) !important;
 }
 
 html[data-wpa-page="index"] h1,
@@ -44,14 +53,174 @@ html[data-wpa-page="institute"] h5,
 html[data-wpa-page="index"] .brand-text h1,
 html[data-wpa-page="institute"] .brand-name {
   font-family:var(--wpa-u-display) !important;
+  font-weight:650 !important;
+  line-height:1.16;
+  letter-spacing:-.018em;
   text-wrap:balance;
 }
 
-html[data-wpa-page="index"] p,
-html[data-wpa-page="index"] li,
-html[data-wpa-page="institute"] p,
-html[data-wpa-page="institute"] li {
-  overflow-wrap:break-word;
+html[data-wpa-page="index"] main p,
+html[data-wpa-page="index"] main li,
+html[data-wpa-page="index"] main td,
+html[data-wpa-page="institute"] main p,
+html[data-wpa-page="institute"] main li,
+html[data-wpa-page="institute"] main td {
+  font-family:var(--wpa-u-body) !important;
+  overflow-wrap:anywhere;
+  text-wrap:pretty;
+}
+
+html[data-wpa-page="index"] main p,
+html[data-wpa-page="institute"] main p {
+  max-width:78ch;
+}
+
+html[data-wpa-page="index"] .section-title,
+html[data-wpa-page="institute"] .section-title {
+  color:var(--wpa-u-navy) !important;
+  font-weight:650 !important;
+  line-height:1.13 !important;
+  letter-spacing:-.02em !important;
+}
+
+html[data-wpa-page="index"] .section-label,
+html[data-wpa-page="index"] .eyebrow,
+html[data-wpa-page="index"] .card-kicker,
+html[data-wpa-page="index"] .wpa-latest-pn-kicker,
+html[data-wpa-page="institute"] .section-label,
+html[data-wpa-page="institute"] .eyebrow,
+html[data-wpa-page="institute"] .domain-tag,
+html[data-wpa-page="institute"] .hero-formula-label {
+  font-family:var(--wpa-u-body) !important;
+  color:var(--wpa-u-gold-dark) !important;
+  font-size:11.5px !important;
+  font-weight:800 !important;
+  line-height:1.4 !important;
+  letter-spacing:.1em !important;
+}
+
+html[data-wpa-page="index"] .section-lead,
+html[data-wpa-page="institute"] .section-lead {
+  color:var(--wpa-u-text-soft) !important;
+  font-size:17.5px !important;
+  font-weight:500 !important;
+  line-height:1.75 !important;
+}
+
+html[data-wpa-page="index"] .card p,
+html[data-wpa-page="index"] .platform-card p,
+html[data-wpa-page="index"] .price-text,
+html[data-wpa-page="index"] .platform-creator-content p,
+html[data-wpa-page="institute"] .identity-block p,
+html[data-wpa-page="institute"] .domain-card p,
+html[data-wpa-page="institute"] .pillar p,
+html[data-wpa-page="institute"] .disclaimer-box p {
+  color:var(--wpa-u-text-soft) !important;
+  font-size:15.5px !important;
+  font-weight:450 !important;
+  line-height:1.75 !important;
+}
+
+html[data-wpa-page="index"] .card-list li,
+html[data-wpa-page="index"] .price-list li,
+html[data-wpa-page="institute"] .analytics-block li,
+html[data-wpa-page="institute"] .region li,
+html[data-wpa-page="institute"] .method-table td,
+html[data-wpa-page="institute"] .examples {
+  color:#2f4057 !important;
+  font-size:14.5px !important;
+  line-height:1.65 !important;
+}
+
+html[data-wpa-page="index"] .pub-body p {
+  color:var(--wpa-u-text-soft) !important;
+  font-size:14.5px !important;
+  line-height:1.65 !important;
+}
+
+html[data-wpa-page="index"] .card h4,
+html[data-wpa-page="index"] .platform-card h4,
+html[data-wpa-page="index"] .pub-body h4,
+html[data-wpa-page="index"] .price-card h4,
+html[data-wpa-page="institute"] .domain-card h3,
+html[data-wpa-page="institute"] .pillar h3,
+html[data-wpa-page="institute"] .region h3,
+html[data-wpa-page="institute"] .analytics-block h3 {
+  color:var(--wpa-u-navy) !important;
+  font-weight:650 !important;
+  line-height:1.28 !important;
+}
+
+html[data-wpa-page="index"] .card-link,
+html[data-wpa-page="index"] .pub-body a,
+html[data-wpa-page="index"] .plink span:last-child,
+html[data-wpa-page="institute"] main p a:not(.btn),
+html[data-wpa-page="institute"] main li a:not(.btn) {
+  color:var(--wpa-u-gold-dark) !important;
+  font-weight:750 !important;
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:.2em;
+}
+
+html[data-wpa-page="index"] .announce,
+html[data-wpa-page="institute"] .topbar {
+  color:var(--wpa-u-dark-muted) !important;
+  font-size:13px !important;
+  font-weight:500 !important;
+  line-height:1.55 !important;
+  letter-spacing:.015em !important;
+}
+
+html[data-wpa-page="index"] .announce strong,
+html[data-wpa-page="index"] .announce a,
+html[data-wpa-page="institute"] .topbar a,
+html[data-wpa-page="institute"] .topbar-icon-btn {
+  color:var(--wpa-u-gold-light) !important;
+  font-weight:750 !important;
+}
+
+html[data-wpa-page="index"] .brand-text h1 {
+  color:var(--wpa-u-navy) !important;
+  font-size:20px !important;
+}
+
+html[data-wpa-page="index"] .brand-text p {
+  color:var(--wpa-u-text-soft) !important;
+  font-size:12px !important;
+  font-weight:550 !important;
+  line-height:1.4 !important;
+}
+
+html[data-wpa-page="index"] .site-nav a,
+html[data-wpa-page="institute"] .nav-links a {
+  font-family:var(--wpa-u-body) !important;
+  font-size:12.5px !important;
+  font-weight:650 !important;
+  line-height:1.35 !important;
+  letter-spacing:.01em !important;
+}
+
+html[data-wpa-page="index"] .site-nav a {
+  color:var(--wpa-u-navy) !important;
+}
+
+html[data-wpa-page="institute"] .nav-links a,
+html[data-wpa-page="institute"] .brand-name {
+  color:var(--wpa-u-ivory) !important;
+}
+
+html[data-wpa-page="institute"] .brand-name {
+  font-size:21px !important;
+}
+
+html[data-wpa-page="institute"] .brand-sub,
+html[data-wpa-page="institute"] .wpa-institute-parent {
+  color:var(--wpa-u-gold-light) !important;
+  font-size:12px !important;
+  font-weight:650 !important;
+  line-height:1.42 !important;
+  letter-spacing:.055em !important;
 }
 
 html[data-wpa-page="index"] .hero h1,
@@ -60,48 +229,105 @@ html[data-wpa-page="index"] .hero h3,
 html[data-wpa-page="institute"] .hero h1,
 html[data-wpa-page="institute"] .hero h2,
 html[data-wpa-page="institute"] .hero h3 {
-  color:#fffdf8 !important;
-  letter-spacing:-.025em;
+  color:var(--wpa-u-ivory) !important;
+  font-weight:650 !important;
+  letter-spacing:-.025em !important;
 }
 
 html[data-wpa-page="index"] .hero h1 em,
 html[data-wpa-page="index"] .hero h2 em,
 html[data-wpa-page="institute"] .hero h1 em,
 html[data-wpa-page="institute"] .hero h2 em {
-  color:var(--wpa-u-gold-300) !important;
+  color:var(--wpa-u-gold-light) !important;
 }
 
-html[data-wpa-page="index"] .section-title,
-html[data-wpa-page="institute"] .section-title {
-  font-weight:600 !important;
-  letter-spacing:-.02em !important;
+html[data-wpa-page="index"] .hero-sub,
+html[data-wpa-page="institute"] .hero-lead {
+  color:var(--wpa-u-dark-muted) !important;
+  font-size:18px !important;
+  font-weight:500 !important;
+  line-height:1.75 !important;
 }
 
-html[data-wpa-page="index"] .section-label,
-html[data-wpa-page="index"] .eyebrow,
-html[data-wpa-page="institute"] .section-label,
-html[data-wpa-page="institute"] .eyebrow {
-  font-family:var(--wpa-u-body) !important;
+html[data-wpa-page="index"] .hero-eyebrow,
+html[data-wpa-page="institute"] .hero-tagline,
+html[data-wpa-page="institute"] .hero-formula-label {
+  color:var(--wpa-u-gold-light) !important;
+  font-size:12px !important;
   font-weight:800 !important;
-  letter-spacing:.12em !important;
+  letter-spacing:.1em !important;
 }
 
-html[data-wpa-page="index"] a:focus-visible,
-html[data-wpa-page="index"] button:focus-visible,
-html[data-wpa-page="index"] select:focus-visible,
-html[data-wpa-page="institute"] a:focus-visible,
-html[data-wpa-page="institute"] button:focus-visible,
-html[data-wpa-page="institute"] select:focus-visible {
-  outline:3px solid var(--wpa-u-focus) !important;
-  outline-offset:4px !important;
+html[data-wpa-page="index"] .stat-label,
+html[data-wpa-page="index"] .hero-pillars li {
+  color:var(--wpa-u-dark-muted) !important;
+  font-weight:550 !important;
+  line-height:1.55 !important;
+}
+
+html[data-wpa-page="index"] .stat-label {
+  font-size:12px !important;
+}
+
+html[data-wpa-page="index"] .hero-pillars li {
+  font-size:14.5px !important;
+}
+
+html[data-wpa-page="index"] .hero-pillars li strong,
+html[data-wpa-page="index"] .stat-num,
+html[data-wpa-page="institute"] .hero-formula-text {
+  color:var(--wpa-u-gold-light) !important;
+}
+
+html[data-wpa-page="index"] .dark-section .section-title,
+html[data-wpa-page="institute"] #charter .section-title,
+html[data-wpa-page="institute"] #practitioner-lectures .section-title,
+html[data-wpa-page="institute"] .index-dimensions h3,
+html[data-wpa-page="index"] .wpa-latest-pn h4 {
+  color:var(--wpa-u-ivory) !important;
+}
+
+html[data-wpa-page="index"] .dark-section .section-lead,
+html[data-wpa-page="index"] .wpa-latest-pn p,
+html[data-wpa-page="institute"] #charter .section-lead,
+html[data-wpa-page="institute"] #practitioner-lectures .section-lead,
+html[data-wpa-page="institute"] .charter-card p,
+html[data-wpa-page="institute"] .dim p,
+html[data-wpa-page="institute"] .dim-note {
+  color:var(--wpa-u-dark-muted) !important;
+  font-weight:500 !important;
+}
+
+html[data-wpa-page="institute"] .method-table th {
+  color:var(--wpa-u-gold-light) !important;
+  font-size:11.5px !important;
+  font-weight:800 !important;
+  line-height:1.45 !important;
+  letter-spacing:.08em !important;
 }
 
 html[data-wpa-page="index"] .btn,
 html[data-wpa-page="institute"] .btn {
   min-height:46px;
   font-family:var(--wpa-u-body) !important;
-  font-weight:800 !important;
-  line-height:1.25;
+  font-size:13.5px !important;
+  font-weight:750 !important;
+  line-height:1.3 !important;
+  letter-spacing:.025em !important;
+}
+
+html[data-wpa-page="index"] a:focus-visible,
+html[data-wpa-page="index"] button:focus-visible,
+html[data-wpa-page="index"] input:focus-visible,
+html[data-wpa-page="index"] select:focus-visible,
+html[data-wpa-page="index"] textarea:focus-visible,
+html[data-wpa-page="institute"] a:focus-visible,
+html[data-wpa-page="institute"] button:focus-visible,
+html[data-wpa-page="institute"] input:focus-visible,
+html[data-wpa-page="institute"] select:focus-visible,
+html[data-wpa-page="institute"] textarea:focus-visible {
+  outline:3px solid var(--wpa-u-focus) !important;
+  outline-offset:4px !important;
 }
 
 html[data-wpa-page="index"] img,
@@ -118,23 +344,23 @@ html[data-wpa-page="institute"] section {
   scroll-margin-top:110px;
 }
 
-/* Restore inherited Institute routes that were visually hidden by legacy inline CSS. */
+/* Restore inherited Institute routes hidden by legacy inline CSS. */
 html[data-wpa-page="institute"] .topbar-quicklinks a[href="intelligence-center.html"],
 html[data-wpa-page="institute"] .topbar-quicklinks a[href="wpa-live-intelligence-feed.html"] {
   display:inline-flex !important;
-  opacity:.82;
+  opacity:.88;
 }
 
 html[data-wpa-page="institute"] .nav-links a[href="intelligence-center.html"],
 html[data-wpa-page="institute"] .nav-links a[href="wpa-live-intelligence-feed.html"] {
   display:flex !important;
-  opacity:.82;
+  opacity:.88;
 }
 
 html[data-wpa-page="institute"] .hero-cta a[href="intelligence-center.html"],
 html[data-wpa-page="institute"] .hero-cta a[href="wpa-live-intelligence-feed.html"] {
   display:inline-flex !important;
-  opacity:.86;
+  opacity:.9;
 }
 
 html[data-wpa-page="institute"] .topbar-quicklinks a[href="intelligence-center.html"]:hover,
@@ -150,18 +376,29 @@ html[data-wpa-page="institute"] .hero-cta a[href="wpa-live-intelligence-feed.htm
   html[data-wpa-page="index"] body,
   html[data-wpa-page="institute"] body {
     font-size:16px;
-    line-height:1.68;
+    line-height:1.7;
   }
+
   html[data-wpa-page="index"] h1,
   html[data-wpa-page="institute"] h1 {
-    font-size:clamp(2.2rem,10vw,3.8rem) !important;
-    line-height:1.02 !important;
-  }
-  html[data-wpa-page="index"] h2,
-  html[data-wpa-page="institute"] h2 {
-    font-size:clamp(1.9rem,8vw,3rem) !important;
+    font-size:clamp(2.15rem,9vw,3.6rem) !important;
     line-height:1.08 !important;
   }
+
+  html[data-wpa-page="index"] h2,
+  html[data-wpa-page="institute"] h2 {
+    font-size:clamp(1.85rem,7.5vw,2.9rem) !important;
+    line-height:1.12 !important;
+  }
+
+  html[data-wpa-page="index"] .hero-sub,
+  html[data-wpa-page="institute"] .hero-lead,
+  html[data-wpa-page="index"] .section-lead,
+  html[data-wpa-page="institute"] .section-lead {
+    font-size:16.5px !important;
+    line-height:1.72 !important;
+  }
+
   html[data-wpa-page="index"] .btn,
   html[data-wpa-page="institute"] .btn {
     white-space:normal !important;
