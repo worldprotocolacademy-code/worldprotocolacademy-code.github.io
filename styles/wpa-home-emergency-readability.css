@@ -1,5 +1,6 @@
-/* WPA HOME EMERGENCY READABILITY HOTFIX — 2026-07-20
-   Scope: homepage only. Presentation only; no content is hidden or removed. */
+/* WPA HOME BALANCED READABILITY SYSTEM — 2026-07-20
+   Scope: homepage only. Presentation only; no content is hidden or removed.
+   Light surfaces use dark text. Dark components retain dark surfaces and light text. */
 
 html[data-wpa-page="index"] {
   --wpa-er-ink:#0b1525;
@@ -7,66 +8,58 @@ html[data-wpa-page="index"] {
   --wpa-er-muted:#334155;
   --wpa-er-link:#4b3200;
   --wpa-er-light:#fffdf8;
-  --wpa-er-light-muted:#f4f7fb;
+  --wpa-er-light-muted:#eef3fb;
   --wpa-er-gold:#ffe39a;
-  --wpa-er-surface:#fffdf8;
 }
 
 html[data-wpa-page="index"] body {
-  background:var(--wpa-er-surface) !important;
   color:var(--wpa-er-body) !important;
   font-size:18px !important;
   line-height:1.72 !important;
 }
 
-html[data-wpa-page="index"] main,
-html[data-wpa-page="index"] main section:not(.dark-section) {
-  color:var(--wpa-er-body) !important;
-}
-
-html[data-wpa-page="index"] main section:not(.dark-section) {
-  background-color:var(--wpa-er-surface) !important;
-}
-
-html[data-wpa-page="index"] main section:not(.dark-section) h1,
-html[data-wpa-page="index"] main section:not(.dark-section) h2,
-html[data-wpa-page="index"] main section:not(.dark-section) h3,
-html[data-wpa-page="index"] main section:not(.dark-section) h4,
-html[data-wpa-page="index"] main section:not(.dark-section) h5,
-html[data-wpa-page="index"] main section:not(.dark-section) h6,
+/* Standard light surfaces. Do not recolour whole sections. */
 html[data-wpa-page="index"] .section-title,
-html[data-wpa-page="index"] .brand-text h1 {
+html[data-wpa-page="index"] .brand-text h1,
+html[data-wpa-page="index"] .card h1,
+html[data-wpa-page="index"] .card h2,
+html[data-wpa-page="index"] .card h3,
+html[data-wpa-page="index"] .card h4,
+html[data-wpa-page="index"] .platform-card h1,
+html[data-wpa-page="index"] .platform-card h2,
+html[data-wpa-page="index"] .platform-card h3,
+html[data-wpa-page="index"] .platform-card h4,
+html[data-wpa-page="index"] .price-card h4,
+html[data-wpa-page="index"] .pub-body h4,
+html[data-wpa-page="index"] .faq-q,
+html[data-wpa-page="index"] .bib-title,
+html[data-wpa-page="index"] .doctrine p {
   color:var(--wpa-er-ink) !important;
   opacity:1 !important;
   text-shadow:none !important;
 }
 
-html[data-wpa-page="index"] main section:not(.dark-section) p,
-html[data-wpa-page="index"] main section:not(.dark-section) li,
-html[data-wpa-page="index"] main section:not(.dark-section) td,
-html[data-wpa-page="index"] main section:not(.dark-section) dd,
-html[data-wpa-page="index"] main section:not(.dark-section) figcaption,
 html[data-wpa-page="index"] .section-lead,
 html[data-wpa-page="index"] .brand-text p,
 html[data-wpa-page="index"] .card p,
 html[data-wpa-page="index"] .platform-card p,
+html[data-wpa-page="index"] .price-text,
 html[data-wpa-page="index"] .pub-body p,
-html[data-wpa-page="index"] .price-text {
+html[data-wpa-page="index"] .faq-a,
+html[data-wpa-page="index"] .bib-meta,
+html[data-wpa-page="index"] .platform-creator-content p {
   color:var(--wpa-er-body) !important;
   opacity:1 !important;
   text-shadow:none !important;
 }
 
-html[data-wpa-page="index"] main section:not(.dark-section) p,
-html[data-wpa-page="index"] main section:not(.dark-section) li {
-  font-size:max(1rem,16px) !important;
-  line-height:1.72 !important;
-}
-
 html[data-wpa-page="index"] .card,
 html[data-wpa-page="index"] .platform-card,
 html[data-wpa-page="index"] .price-card,
-html[data-wpa-page="index"] .pub-card {
+html[data-wpa-page="index"] .pub-card,
+html[data-wpa-page="index"] .faq-item,
+html[data-wpa-page="index"] .bib-entry,
+html[data-wpa-page="index"] .plink {
   background:#ffffff !important;
   color:var(--wpa-er-body) !important;
   opacity:1 !important;
@@ -79,10 +72,10 @@ html[data-wpa-page="index"] .price-list li {
   opacity:1 !important;
 }
 
-html[data-wpa-page="index"] main section:not(.dark-section) a:not(.btn),
 html[data-wpa-page="index"] .card-link,
 html[data-wpa-page="index"] .pub-body a,
-html[data-wpa-page="index"] .plink span:last-child {
+html[data-wpa-page="index"] .plink span:last-child,
+html[data-wpa-page="index"] main a:not(.btn):not(.wpa-audio-engine-btn) {
   color:var(--wpa-er-link) !important;
   font-weight:700 !important;
   opacity:1 !important;
@@ -99,9 +92,15 @@ html[data-wpa-page="index"] .site-nav a {
   opacity:1 !important;
 }
 
+/* Dark section and dark component protection. */
 html[data-wpa-page="index"] .hero,
 html[data-wpa-page="index"] .dark-section,
-html[data-wpa-page="index"] footer,
+html[data-wpa-page="index"] .wpa-latest-pn,
+html[data-wpa-page="index"] .wpa-audio-engine-card,
+html[data-wpa-page="index"] .cta-band,
+html[data-wpa-page="index"] .policy-box,
+html[data-wpa-page="index"] .pub-cover,
+html[data-wpa-page="index"] .footer,
 html[data-wpa-page="index"] .announce {
   color:var(--wpa-er-light) !important;
 }
@@ -113,22 +112,32 @@ html[data-wpa-page="index"] .dark-section h1,
 html[data-wpa-page="index"] .dark-section h2,
 html[data-wpa-page="index"] .dark-section h3,
 html[data-wpa-page="index"] .dark-section h4,
-html[data-wpa-page="index"] footer h1,
-html[data-wpa-page="index"] footer h2,
-html[data-wpa-page="index"] footer h3,
-html[data-wpa-page="index"] footer h4 {
+html[data-wpa-page="index"] .wpa-latest-pn h4,
+html[data-wpa-page="index"] .wpa-audio-engine-card h2,
+html[data-wpa-page="index"] .cta-band h3,
+html[data-wpa-page="index"] .policy-box h1,
+html[data-wpa-page="index"] .policy-box h2,
+html[data-wpa-page="index"] .policy-box h3,
+html[data-wpa-page="index"] .footer h1,
+html[data-wpa-page="index"] .footer h2,
+html[data-wpa-page="index"] .footer h3,
+html[data-wpa-page="index"] .footer h4,
+html[data-wpa-page="index"] .footer h5 {
   color:var(--wpa-er-light) !important;
   opacity:1 !important;
-  text-shadow:none !important;
 }
 
 html[data-wpa-page="index"] .hero p,
 html[data-wpa-page="index"] .hero li,
 html[data-wpa-page="index"] .hero-sub,
-html[data-wpa-page="index"] .dark-section p,
-html[data-wpa-page="index"] .dark-section li,
-html[data-wpa-page="index"] footer p,
-html[data-wpa-page="index"] footer li,
+html[data-wpa-page="index"] .dark-section > .container > p,
+html[data-wpa-page="index"] .dark-section .section-lead,
+html[data-wpa-page="index"] .wpa-latest-pn p,
+html[data-wpa-page="index"] .wpa-audio-engine-card p,
+html[data-wpa-page="index"] .cta-band p,
+html[data-wpa-page="index"] .policy-rule,
+html[data-wpa-page="index"] .footer p,
+html[data-wpa-page="index"] .footer li,
 html[data-wpa-page="index"] .announce {
   color:var(--wpa-er-light-muted) !important;
   opacity:1 !important;
@@ -136,14 +145,52 @@ html[data-wpa-page="index"] .announce {
 
 html[data-wpa-page="index"] .hero a:not(.btn),
 html[data-wpa-page="index"] .dark-section a:not(.btn),
-html[data-wpa-page="index"] footer a,
+html[data-wpa-page="index"] .wpa-latest-pn a:not(.btn),
+html[data-wpa-page="index"] .wpa-audio-engine-card a,
+html[data-wpa-page="index"] .cta-band a:not(.btn),
+html[data-wpa-page="index"] .policy-box a,
+html[data-wpa-page="index"] .footer a,
 html[data-wpa-page="index"] .announce a,
 html[data-wpa-page="index"] .announce strong,
 html[data-wpa-page="index"] .hero em,
 html[data-wpa-page="index"] .hero strong,
-html[data-wpa-page="index"] .stat-num {
+html[data-wpa-page="index"] .stat-num,
+html[data-wpa-page="index"] .wpa-latest-pn-en,
+html[data-wpa-page="index"] .wpa-latest-pn-meta span,
+html[data-wpa-page="index"] .pub-spine {
   color:var(--wpa-er-gold) !important;
   opacity:1 !important;
+}
+
+/* Cards inside dark sections stay light cards with dark text. */
+html[data-wpa-page="index"] .dark-section .card,
+html[data-wpa-page="index"] .dark-section .platform-card,
+html[data-wpa-page="index"] .dark-section .price-card,
+html[data-wpa-page="index"] .dark-section .pub-card {
+  background:#ffffff !important;
+  color:var(--wpa-er-body) !important;
+}
+
+html[data-wpa-page="index"] .dark-section .card h1,
+html[data-wpa-page="index"] .dark-section .card h2,
+html[data-wpa-page="index"] .dark-section .card h3,
+html[data-wpa-page="index"] .dark-section .card h4,
+html[data-wpa-page="index"] .dark-section .platform-card h1,
+html[data-wpa-page="index"] .dark-section .platform-card h2,
+html[data-wpa-page="index"] .dark-section .platform-card h3,
+html[data-wpa-page="index"] .dark-section .platform-card h4,
+html[data-wpa-page="index"] .dark-section .price-card h4,
+html[data-wpa-page="index"] .dark-section .pub-body h4 {
+  color:var(--wpa-er-ink) !important;
+}
+
+html[data-wpa-page="index"] .dark-section .card p,
+html[data-wpa-page="index"] .dark-section .card li,
+html[data-wpa-page="index"] .dark-section .platform-card p,
+html[data-wpa-page="index"] .dark-section .price-card p,
+html[data-wpa-page="index"] .dark-section .price-card li,
+html[data-wpa-page="index"] .dark-section .pub-body p {
+  color:var(--wpa-er-body) !important;
 }
 
 html[data-wpa-page="index"] .btn,
@@ -153,10 +200,8 @@ html[data-wpa-page="index"] select,
 html[data-wpa-page="index"] textarea {
   font-size:14px !important;
   font-weight:700 !important;
-  opacity:1 !important;
 }
 
-html[data-wpa-page="index"] [style*="opacity"],
 html[data-wpa-page="index"] .muted,
 html[data-wpa-page="index"] .small,
 html[data-wpa-page="index"] .meta,
@@ -171,9 +216,5 @@ html[data-wpa-page="index"] .note {
   }
   html[data-wpa-page="index"] .site-nav a {
     font-size:14px !important;
-  }
-  html[data-wpa-page="index"] main section:not(.dark-section) p,
-  html[data-wpa-page="index"] main section:not(.dark-section) li {
-    font-size:16px !important;
   }
 }
