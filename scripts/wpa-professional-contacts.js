@@ -14,6 +14,8 @@
     journal: 'journal@worldprotocolacademy.mk'
   };
 
+  var LEGACY_EMAIL_PATTERN = /worldprotocolacademy@(gmail|outlook)\.com/gi;
+
   function path() {
     return String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
   }
@@ -22,14 +24,42 @@
     return String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
   }
 
+  function replaceLegacyText(root, address) {
+    if (!root) return;
+    if (document.createTreeWalker && typeof NodeFilter !== 'undefined') {
+      var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+      var node;
+      while ((node = walker.nextNode())) {
+        var value = String(node.nodeValue || '');
+        LEGACY_EMAIL_PATTERN.lastIndex = 0;
+        if (LEGACY_EMAIL_PATTERN.test(value)) {
+          LEGACY_EMAIL_PATTERN.lastIndex = 0;
+          node.nodeValue = value.replace(LEGACY_EMAIL_PATTERN, address);
+        }
+      }
+      return;
+    }
+    var children = root.childNodes || [];
+    for (var i = 0; i < children.length; i += 1) {
+      if (children[i].nodeType === 3) {
+        var text = String(children[i].nodeValue || '');
+        LEGACY_EMAIL_PATTERN.lastIndex = 0;
+        if (LEGACY_EMAIL_PATTERN.test(text)) {
+          LEGACY_EMAIL_PATTERN.lastIndex = 0;
+          children[i].nodeValue = text.replace(LEGACY_EMAIL_PATTERN, address);
+        }
+      } else {
+        replaceLegacyText(children[i], address);
+      }
+    }
+  }
+
   function setMailLink(anchor, address) {
     if (!anchor) return;
     var href = String(anchor.getAttribute('href') || '');
     var query = href.indexOf('?') >= 0 ? href.slice(href.indexOf('?')) : '';
     anchor.setAttribute('href', 'mailto:' + address + query);
-    if (/worldprotocolacademy@(gmail|outlook)\.com/i.test(String(anchor.textContent || ''))) {
-      anchor.textContent = address;
-    }
+    replaceLegacyText(anchor, address);
   }
 
   function keepMailLink(anchor, address) {
@@ -39,7 +69,8 @@
     anchor.setAttribute('data-wpa-mail-guard', 'true');
     var observer = new MutationObserver(function () {
       var href = String(anchor.getAttribute('href') || '');
-      if (/worldprotocolacademy@(gmail|outlook)\.com/i.test(href)) setMailLink(anchor, address);
+      LEGACY_EMAIL_PATTERN.lastIndex = 0;
+      if (LEGACY_EMAIL_PATTERN.test(href)) setMailLink(anchor, address);
     });
     observer.observe(anchor, { attributes: true, attributeFilter: ['href'] });
   }
@@ -49,7 +80,8 @@
     var links = scope.querySelectorAll('a[href^="mailto:"]');
     for (var i = 0; i < links.length; i += 1) {
       var href = String(links[i].getAttribute('href') || '');
-      if (/worldprotocolacademy@(gmail|outlook)\.com/i.test(href)) setMailLink(links[i], address);
+      LEGACY_EMAIL_PATTERN.lastIndex = 0;
+      if (LEGACY_EMAIL_PATTERN.test(href)) setMailLink(links[i], address);
     }
   }
 
@@ -57,7 +89,8 @@
     var scripts = document.querySelectorAll('script[type="application/ld+json"]');
     for (var i = 0; i < scripts.length; i += 1) {
       var raw = String(scripts[i].textContent || '');
-      if (!/worldprotocolacademy@(gmail|outlook)\.com/i.test(raw)) continue;
+      LEGACY_EMAIL_PATTERN.lastIndex = 0;
+      if (!LEGACY_EMAIL_PATTERN.test(raw)) continue;
       scripts[i].textContent = raw
         .replace(/worldprotocolacademy@gmail\.com/gi, address)
         .replace(/worldprotocolacademy@outlook\.com/gi, address);
