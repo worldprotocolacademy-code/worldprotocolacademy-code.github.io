@@ -27,8 +27,6 @@ jobs:
 
           root = Path('.')
 
-          # Main WPA page: preserve a clean primary public address and expose
-          # dedicated administrative, Institute, Journal and author channels.
           index = root / 'index.html'
           text = index.read_text(encoding='utf-8')
           old_footer = '''    <li>
@@ -48,27 +46,22 @@ jobs:
           text = text.replace('worldprotocolacademy@gmail.com', 'info@worldprotocolacademy.mk')
           index.write_text(text, encoding='utf-8')
 
-          # Institute: dedicated institutional address in visible footer and JSON-LD.
           institute = root / 'institute.html'
           text = institute.read_text(encoding='utf-8')
           text = text.replace('worldprotocolacademy@gmail.com', 'institute@worldprotocolacademy.mk')
           institute.write_text(text, encoding='utf-8')
 
-          # Journal: all submission, editorial, reviewer and institutional contact
-          # actions go to the dedicated Journal address.
           journal = root / 'journal' / 'index.html'
           text = journal.read_text(encoding='utf-8')
           text = text.replace('worldprotocolacademy@gmail.com', 'journal@worldprotocolacademy.mk')
           text = text.replace('worldprotocolacademy@outlook.com', 'journal@worldprotocolacademy.mk')
           journal.write_text(text, encoding='utf-8')
 
-          # Public pricing/access expressions of interest use the main WPA address.
           pricing = root / 'scripts' / 'pricing-loader.js'
           text = pricing.read_text(encoding='utf-8')
           text = text.replace("contact: 'worldprotocolacademy@gmail.com'", "contact: 'info@worldprotocolacademy.mk'")
           pricing.write_text(text, encoding='utf-8')
 
-          # Remove this one-use automation from the final branch.
           Path('.github/workflows/update-professional-emails.yml').unlink()
 
       - name: Commit generated changes
