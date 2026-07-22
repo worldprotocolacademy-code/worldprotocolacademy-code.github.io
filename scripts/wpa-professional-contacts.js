@@ -32,6 +32,18 @@
     }
   }
 
+  function keepMailLink(anchor, address) {
+    if (!anchor) return;
+    setMailLink(anchor, address);
+    if (anchor.getAttribute('data-wpa-mail-guard') === 'true' || typeof MutationObserver === 'undefined') return;
+    anchor.setAttribute('data-wpa-mail-guard', 'true');
+    var observer = new MutationObserver(function () {
+      var href = String(anchor.getAttribute('href') || '');
+      if (/worldprotocolacademy@(gmail|outlook)\.com/i.test(href)) setMailLink(anchor, address);
+    });
+    observer.observe(anchor, { attributes: true, attributeFilter: ['href'] });
+  }
+
   function replaceLegacyMailLinks(address, root) {
     var scope = root || document;
     var links = scope.querySelectorAll('a[href^="mailto:"]');
@@ -100,7 +112,7 @@
     updateStructuredEmail(ADDRESSES.journal);
 
     var mailButton = document.getElementById('mailBtn');
-    if (mailButton) setMailLink(mailButton, ADDRESSES.journal);
+    if (mailButton) keepMailLink(mailButton, ADDRESSES.journal);
   }
 
   function boot() {
@@ -108,7 +120,14 @@
     var currentPage = page();
     if (currentPage === 'index' || currentPath === '/' || currentPath === '/index.html') updateHome();
     if (currentPage === 'institute' || currentPath === '/institute.html') updateInstitute();
-    if (currentPath === '/journal' || currentPath === '/journal/index.html' || currentPath.indexOf('/journal/') === 0) updateJournal();
+    if (
+      currentPage === 'forms' ||
+      currentPath === '/forms' ||
+      currentPath === '/forms/index.html' ||
+      currentPath === '/journal' ||
+      currentPath === '/journal/index.html' ||
+      currentPath.indexOf('/journal/') === 0
+    ) updateJournal();
   }
 
   window.WPA_PROFESSIONAL_EMAILS = Object.freeze(ADDRESSES);
