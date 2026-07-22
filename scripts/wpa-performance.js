@@ -280,6 +280,7 @@
     addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20260716-1');
   }
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
+  addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20260722');
 
   boot();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
