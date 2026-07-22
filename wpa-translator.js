@@ -11,6 +11,7 @@
   window.WPA_TRANSLATOR_LOADED=true;
   if(typeof window.setUILang!=='function') window.setUILang=function(lang){try{localStorage.setItem('wpa.language',lang||'mk')}catch(e){} document.documentElement.lang=lang||'mk'; document.dispatchEvent(new CustomEvent('wpa:lang-changed'));};
   if(typeof window.setAILang!=='function') window.setAILang=function(lang){try{localStorage.setItem('wpaws_ai_lang',lang||'mk')}catch(e){} window.curLang=lang||'mk';};
+  function loadProfessionalContacts(){if(document.querySelector('script[data-wpa-professional-contacts]'))return;const s=document.createElement('script');s.src='/scripts/wpa-professional-contacts.js?v=20260722';s.defer=true;s.setAttribute('data-wpa-professional-contacts','true');document.head.appendChild(s)}
 
   /* ========================= INSTITUTE COMMAND LAYER ========================= */
   function installInstitute(){
@@ -56,7 +57,7 @@
       <div class="wic-tool" id="wicTool"><h3 style="margin:0;color:#e3c878">Institute brief builder</h3><p>Подготви краток текст за контакт, институционална соработка, correction request, OPC 2026 интерес или services/briefings inquiry.</p>
         <div class="wic-form"><div class="wic-field"><label>Purpose</label><select id="wicPurpose"><option>Institutional inquiry</option><option>Services / training inquiry</option><option>Premium briefing inquiry</option><option>Correction / trust request</option><option>OPC 2026 expression of interest</option><option>Practitioner lecture proposal</option><option>Journal / publication inquiry</option></select></div><div class="wic-field"><label>Domain</label><select id="wicDomain"><option>Protocol</option><option>Diplomacy</option><option>Public communication / PR</option><option>Security studies</option><option>Research / index methodology</option><option>Student Desk / education</option></select></div><div class="wic-field"><label>Language</label><select id="wicLang"><option>Macedonian</option><option>English</option><option>Both MK/EN</option></select></div></div>
         <div class="wic-field"><label>Context</label><textarea id="wicContext" placeholder="Institution / person, purpose, topic, public-source context, desired next step..."></textarea></div>
-        <div class="wic-actions"><button class="wic-btn primary" id="wicBuild">Build brief</button><button class="wic-btn" id="wicCopy">Copy brief</button><a class="wic-btn" id="wicMail" href="mailto:worldprotocolacademy@gmail.com">Open email</a></div><div class="wic-out" id="wicOut"></div>
+        <div class="wic-actions"><button class="wic-btn primary" id="wicBuild">Build brief</button><button class="wic-btn" id="wicCopy">Copy brief</button><a class="wic-btn" id="wicMail" href="mailto:institute@worldprotocolacademy.mk">Open email</a></div><div class="wic-out" id="wicOut"></div>
       </div>
     </div>`;
     const anchor=q('#identity')||q('.wpa-identity')||q('#wpa-public-tools-hub')||document.body.firstElementChild;
@@ -64,7 +65,7 @@
     function build(){
       const text=`WPA Institute Brief\n\nPurpose: ${val('wicPurpose')}\nDomain: ${val('wicDomain')}\nLanguage: ${val('wicLang')}\n\nContext:\n${val('wicContext','—')}\n\nRequested next step:\nPlease confirm the appropriate WPA route, scope, public-source boundaries and follow-up procedure.\n\nBoundary:\nWPA is an independent digital educational, research and authorial platform in development/testing/pilot phase. It is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services, briefings, journal decisions, index outcomes and certificates remain separate.`;
       $('wicOut').textContent=text;
-      $('wicMail').href='mailto:worldprotocolacademy@gmail.com?subject='+encodeURIComponent('WPA Institute — '+val('wicPurpose'))+'&body='+encodeURIComponent(text);
+      $('wicMail').href='mailto:institute@worldprotocolacademy.mk?subject='+encodeURIComponent('WPA Institute — '+val('wicPurpose'))+'&body='+encodeURIComponent(text);
       return text;
     }
     ['wicPurpose','wicDomain','wicLang','wicContext'].forEach(id=>$(id).addEventListener('input',build));
@@ -99,5 +100,5 @@
     document.addEventListener('DOMContentLoaded',()=>{const v=$('sb-ver');if(v)v.textContent='WPAWS 11.1.7 Heart Patch';});
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{installInstitute();installWPAWS();}); else {installInstitute();installWPAWS();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{loadProfessionalContacts();installInstitute();installWPAWS();}); else {loadProfessionalContacts();installInstitute();installWPAWS();}
 })();
