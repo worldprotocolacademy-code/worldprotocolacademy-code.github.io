@@ -2,6 +2,9 @@
 (function () {
   'use strict';
 
+  if (window.WPA_PROFESSIONAL_CONTACTS_LOADED) return;
+  window.WPA_PROFESSIONAL_CONTACTS_LOADED = true;
+
   var ADDRESSES = {
     info: 'info@worldprotocolacademy.mk',
     contact: 'contact@worldprotocolacademy.mk',
