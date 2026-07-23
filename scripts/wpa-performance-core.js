@@ -147,7 +147,8 @@
     installAnchorFallback();
     installMobileMenu();
     installJournalLiveEntries();
-    addScript('wpa-corpus-sync-20260723', '/scripts/wpa-corpus-sync-20260723.js?v=20260723');
+    addScript('wpa-corpus-sync-20260723', '/scripts/wpa-corpus-sync-20260723.js?v=20260723-4');
+    addScript('wpa-corpus-final-audit-20260723', '/scripts/wpa-corpus-final-audit-20260723.js?v=20260723-1');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
