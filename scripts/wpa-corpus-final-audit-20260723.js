@@ -22,6 +22,71 @@
     return String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
+  function styleStrategicPublication() {
+    var section = document.getElementById('wpaStrategicPlanPapersSection');
+    var card = document.getElementById('wpaStrategicPlanPapersCard');
+    if (!section || !card) return;
+
+    section.classList.add('wpa-strategic-publication-section');
+    card.classList.add('wpa-strategic-publication-card');
+
+    var grid = section.querySelector('.grid-3');
+    if (grid) grid.classList.add('wpa-strategic-publication-grid');
+
+    var eyebrow = section.querySelector('.section-header .eyebrow');
+    if (eyebrow) eyebrow.textContent = 'WPA Strategic Publication';
+
+    var title = section.querySelector('.section-header h2');
+    if (title) title.textContent = 'Global Strategic Plan 2026';
+
+    var kicker = card.querySelector('.small-kicker');
+    if (kicker) kicker.textContent = 'WPA Global Strategic Plan 2026 · Strategic Report';
+
+    var summary = card.querySelector('.paper-summary');
+    if (summary && !card.querySelector('.wpa-strategic-doi-line')) {
+      var doiLine = document.createElement('p');
+      doiLine.className = 'wpa-strategic-doi-line';
+      doiLine.innerHTML = '<strong>Permanent DOI:</strong> <a href="' + STRATEGY_URL + '" target="_blank" rel="noopener">' + STRATEGY_DOI + '</a>';
+      summary.insertAdjacentElement('afterend', doiLine);
+    }
+
+    var doiButton = card.querySelector('.paper-actions a');
+    if (doiButton) {
+      doiButton.classList.add('wpa-strategic-doi-button');
+      doiButton.href = STRATEGY_URL;
+      doiButton.target = '_blank';
+      doiButton.rel = 'noopener';
+      doiButton.textContent = 'Open Zenodo DOI · ' + STRATEGY_DOI;
+    }
+
+    if (!document.getElementById('wpa-strategic-publication-style')) {
+      var style = document.createElement('style');
+      style.id = 'wpa-strategic-publication-style';
+      style.textContent = [
+        '#wpaStrategicPlanPapersSection{position:relative;background:linear-gradient(180deg,#fbf8f3 0%,#f6f2eb 100%);border-top:1px solid rgba(154,119,40,.18);border-bottom:1px solid rgba(154,119,40,.18);}',
+        '#wpaStrategicPlanPapersSection .section-header{max-width:none;margin-bottom:28px;padding:22px 26px;background:#fff;border:1px solid rgba(154,119,40,.22);border-left:6px solid var(--gold,#9a7728);border-radius:0 18px 18px 0;box-shadow:0 10px 30px rgba(20,31,52,.08);}',
+        '#wpaStrategicPlanPapersSection .section-header .eyebrow{margin-bottom:12px;background:rgba(154,119,40,.09);border:1px solid rgba(154,119,40,.34);color:var(--gold-dark,#7b5f1f);font-weight:900;letter-spacing:.48px;}',
+        '#wpaStrategicPlanPapersSection .section-header h2{margin:0 0 9px;color:var(--navy,#162947);font-family:Georgia,"Times New Roman",serif;font-size:clamp(30px,3vw,44px);line-height:1.08;}',
+        '#wpaStrategicPlanPapersSection .section-header p{font-size:16px;color:var(--muted,#5a6577);}',
+        '#wpaStrategicPlanPapersSection .wpa-strategic-publication-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;}',
+        '#wpaStrategicPlanPapersCard{position:relative;width:100%;max-width:none;min-height:0;padding:30px 32px 32px;background:linear-gradient(135deg,#fffdf7 0%,#fff 58%,#fbf8f3 100%)!important;border:1px solid rgba(154,119,40,.25)!important;border-left:7px solid var(--gold,#9a7728)!important;border-top:3px solid #c9a84c!important;border-radius:0 18px 18px 0!important;box-shadow:0 14px 38px rgba(20,31,52,.11)!important;overflow:hidden;}',
+        '#wpaStrategicPlanPapersCard:after{content:"";position:absolute;right:-78px;top:-78px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.15),rgba(201,168,76,0) 70%);pointer-events:none;}',
+        '#wpaStrategicPlanPapersCard .small-kicker{position:relative;z-index:1;display:inline-flex;align-self:flex-start;width:auto;margin-bottom:14px;padding:7px 11px;border:1px solid rgba(154,119,40,.35);border-radius:999px;background:rgba(154,119,40,.08);color:var(--gold-dark,#7b5f1f);font-size:11px;font-weight:900;letter-spacing:.42px;}',
+        '#wpaStrategicPlanPapersCard .paper-title{position:relative;z-index:1;margin-bottom:12px;color:var(--navy,#162947);font-family:Georgia,"Times New Roman",serif;font-size:clamp(25px,2.6vw,34px);line-height:1.16;}',
+        '#wpaStrategicPlanPapersCard .paper-summary{position:relative;z-index:1;max-width:980px;margin-bottom:14px;font-size:16px;line-height:1.72;color:var(--muted,#5a6577);}',
+        '#wpaStrategicPlanPapersCard .wpa-strategic-doi-line{position:relative;z-index:1;margin:0 0 18px;padding:11px 14px;background:rgba(154,119,40,.07);border-left:3px solid #c9a84c;border-radius:0 8px 8px 0;color:var(--navy,#162947);font-size:14px;}',
+        '#wpaStrategicPlanPapersCard .wpa-strategic-doi-line a{color:var(--gold-dark,#7b5f1f);font-weight:900;word-break:break-word;}',
+        '#wpaStrategicPlanPapersCard .paper-tags{position:relative;z-index:1;margin-bottom:20px;}',
+        '#wpaStrategicPlanPapersCard .paper-tags .tag{background:rgba(154,119,40,.08);border-color:rgba(154,119,40,.28);color:var(--navy,#162947);}',
+        '#wpaStrategicPlanPapersCard .paper-actions{position:relative;z-index:1;}',
+        '#wpaStrategicPlanPapersCard .wpa-strategic-doi-button{background:var(--gold,#9a7728)!important;border-color:var(--gold,#9a7728)!important;color:#fff!important;box-shadow:0 8px 22px rgba(154,119,40,.22);}',
+        '#wpaStrategicPlanPapersCard .wpa-strategic-doi-button:hover{background:var(--gold-dark,#7b5f1f)!important;border-color:var(--gold-dark,#7b5f1f)!important;transform:translateY(-1px);}',
+        '@media(max-width:640px){#wpaStrategicPlanPapersSection .section-header{padding:20px;border-left-width:5px}#wpaStrategicPlanPapersCard{padding:24px 21px 26px;border-left-width:5px!important}#wpaStrategicPlanPapersCard .wpa-strategic-doi-button{width:100%;text-align:center;white-space:normal}}'
+      ].join('');
+      document.head.appendChild(style);
+    }
+  }
+
   function fixStrategyLinks() {
     qsa('[data-record-link="SP-2026"],#strategic-plan-2026 a,#wpaStrategicPlanPapersCard a,#wpaBibStrategicPlan a').forEach(function (anchor) {
       anchor.href = STRATEGY_URL;
@@ -194,6 +259,7 @@
 
   function boot() {
     fixStrategyLinks();
+    styleStrategicPublication();
     fixVisualSummary();
     fixBibliographyMetrics();
     bindBibliographySearch();
