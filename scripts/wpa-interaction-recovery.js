@@ -40,6 +40,27 @@
     });
   }
 
+  function installContrastFixes() {
+    if (document.getElementById('wpa-contrast-fix-20260723')) return;
+    var style = document.createElement('style');
+    style.id = 'wpa-contrast-fix-20260723';
+    style.textContent = [
+      'html[data-wpa-page="index"] .cta-band .btn-actions .btn-ghost{color:#f8f4ee!important;border:1px solid rgba(232,212,154,.55)!important;}',
+      'html[data-wpa-page="index"] .cta-band .btn-actions .btn-ghost:hover{color:#071326!important;background:#e8d49a!important;border-color:#e8d49a!important;}',
+      'html[data-wpa-page="institute"] a.btn-ghost[href$="wpa_institutions_master_list_v1.0.csv"],',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="tools/wpa-five-engines.html"],',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/academic-search-hub/"],',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/wpa-watch/"],',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/journal/watch/"]{color:var(--navy)!important;border-color:var(--navy)!important;}',
+      'html[data-wpa-page="institute"] a.btn-ghost[href$="wpa_institutions_master_list_v1.0.csv"]:hover,',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="tools/wpa-five-engines.html"]:hover,',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/academic-search-hub/"]:hover,',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/wpa-watch/"]:hover,',
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/journal/watch/"]:hover{background:var(--navy)!important;color:var(--cream)!important;border-color:var(--navy)!important;}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
   function installLanguageSelect() {
     qsa('select').forEach(function (select) {
       if (select.dataset.wpaRecoveryBound === '1') return;
@@ -143,6 +164,7 @@
   function boot() {
     closeBlockingLayers();
     restoreControls();
+    installContrastFixes();
     installLanguageSelect();
     installAnchorFallback();
     installMobileMenu();
