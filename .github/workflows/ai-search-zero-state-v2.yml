@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 360
     environment:
-      name: ${{ inputs.mode == 'PLAN_ONLY' && 'staging' || 'production' }}
+      name: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' && 'production' || 'staging' }}
     env:
       AI_SEARCH_INSTANCE: protocol-ai
       R2_BUCKET: protocol-kb
@@ -241,7 +241,8 @@ jobs:
             echo '### AI Search Zero State v2 safety boundary'
             echo '- No original R2 object is deleted, moved, or overwritten.'
             echo '- Staging writes only below a locked versioned `__ai_search_ready_v2__/` prefix.'
-            echo '- Write modes require both production-environment approval and the APPROVE workflow choice.'
+            echo '- STAGE_ONLY uses the staging environment; only CUTOVER_AND_VERIFY uses production.'
+            echo '- Write modes require the APPROVE workflow choice; production cutover also requires production-environment approval.'
             echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
             [ -f "$OUT/gate-diagnostics.txt" ] && { echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'; }
             [ -f "$OUT/failure.json" ] && { echo '```json'; cat "$OUT/failure.json"; echo '```'; }
