@@ -60,7 +60,7 @@ jobs:
           APPROVAL: ${{ inputs.approval }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
         run: |
           set -euo pipefail
           fail=0
@@ -78,7 +78,7 @@ jobs:
           check_present CLOUDFLARE_ACCOUNT_ID "$CLOUDFLARE_ACCOUNT_ID"
           check_present CLOUDFLARE_AI_SEARCH_TOKEN "$CLOUDFLARE_AI_SEARCH_TOKEN"
           if [ "$MODE" != PLAN_ONLY ]; then
-            check_present CLOUDFLARE_API_TOKEN "$CLOUDFLARE_API_TOKEN"
+            check_present CLOUDFLARE_R2_API_TOKEN "$CLOUDFLARE_R2_API_TOKEN"
             if [ "$APPROVAL" != APPROVE ]; then
               echo 'INVALID: approval choice' | tee -a "$OUT/gate-diagnostics.txt"
               echo '::error title=Approval required::Select APPROVE for a protected write mode.'
@@ -110,7 +110,6 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
           trap 'code=$?; printf "{\"status\":\"plan_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
@@ -135,7 +134,7 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
         run: |
           set -uo pipefail
           set +e
@@ -246,6 +245,7 @@ jobs:
             echo '- No original R2 object is deleted, moved, or overwritten.'
             echo '- Staging writes only below a locked versioned `__ai_search_ready_v2__/` prefix.'
             echo '- STAGE_ONLY uses the staging environment; only CUTOVER_AND_VERIFY uses production.'
+            echo '- A dedicated `CLOUDFLARE_R2_API_TOKEN` is isolated from Workers deployment credentials.'
             echo '- Write modes require the APPROVE workflow choice; production cutover also requires production-environment approval.'
             echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
             if [ -f "$OUT/gate-diagnostics.txt" ]; then
