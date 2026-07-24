@@ -13,9 +13,9 @@ OMIT={'.mp3','.wav','.m4a','.aac','.flac','.ogg','.mp4','.mov','.avi','.mkv','.w
 
 def sh(cmd,cap=False):
  print('+',' '.join(map(str,cmd)),flush=True); return subprocess.run(list(map(str,cmd)),check=True,text=True,capture_output=cap)
-def qpdf_check(p):
- cmd=['qpdf','--check',str(p)]; print('+',' '.join(cmd),flush=True); r=subprocess.run(cmd,text=True)
- if r.returncode not in (0,3): raise subprocess.CalledProcessError(r.returncode,cmd)
+def qpdf(args,cap=False):
+ cmd=['qpdf',*map(str,args)]; print('+',' '.join(cmd),flush=True); r=subprocess.run(cmd,text=True,capture_output=cap)
+ if r.returncode not in (0,3): raise subprocess.CalledProcessError(r.returncode,cmd,output=r.stdout,stderr=r.stderr)
  return r
 def canon(v): return (json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'))+'\n').encode()
 def hbytes(v): return hashlib.sha256(v).hexdigest()
@@ -81,17 +81,17 @@ def upload(cf,src,target,verify,manifest,source,kind):
  if before!=hfile(got): raise RuntimeError(f'hash mismatch {target}')
  manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':src.stat().st_size,'sha256':before})
 def splitpdf(cf,src,source,prefix,w,verify,manifest):
- qpdf_check(src); pages=int(sh(['qpdf','--show-npages',src],True).stdout); start=1; n=1; stem=str(PurePosixPath(source).with_suffix('')); sourcehash=hfile(src)[:20]
+ qpdf(['--check',src]); pages=int(qpdf(['--show-npages',src],True).stdout); start=1; n=1; stem=str(PurePosixPath(source).with_suffix('')); sourcehash=hfile(src)[:20]
  while start<=pages:
   span=min(20,pages-start+1)
   while True:
-   end=min(start+span-1,pages); out=w/f'p{n:04d}-{start:05d}-{end:05d}.pdf'; sh(['qpdf','--empty','--pages',src,f'{start}-{end}','--',out])
+   end=min(start+span-1,pages); out=w/f'p{n:04d}-{start:05d}-{end:05d}.pdf'; qpdf(['--empty','--pages',src,f'{start}-{end}','--',out])
    if out.stat().st_size<=LIMIT: break
    if span>1: out.unlink(); span=max(1,span//2); continue
    comp=w/f'p{n:04d}-{start:05d}-{end:05d}-compressed.pdf'; sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite','-dPDFSETTINGS=/screen',f'-sOutputFile={comp}',out]); out.unlink(); out=comp
    if out.stat().st_size>LIMIT: raise RuntimeError(f'single page over limit {source}')
    break
-  qpdf_check(out); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF'); start=end+1; n+=1
+  qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF'); start=end+1; n+=1
 def jsonl_to_json(cf,src,source,prefix,w,verify,manifest):
  rows=[]
  for n,line in enumerate(src.read_text(encoding='utf-8-sig').splitlines(),1):
