@@ -238,15 +238,28 @@ jobs:
         if: always()
         run: |
           {
+            echo '### AI Search Zero State v2 run context'
+            echo '- Selected operation: `${{ inputs.mode }}`'
+            echo '- Selected approval: `${{ inputs.approval }}`'
+            echo '- Selected environment: `${{ inputs.mode == 'CUTOVER_AND_VERIFY' && 'production' || 'staging' }}`'
             echo '### AI Search Zero State v2 safety boundary'
             echo '- No original R2 object is deleted, moved, or overwritten.'
             echo '- Staging writes only below a locked versioned `__ai_search_ready_v2__/` prefix.'
             echo '- STAGE_ONLY uses the staging environment; only CUTOVER_AND_VERIFY uses production.'
             echo '- Write modes require the APPROVE workflow choice; production cutover also requires production-environment approval.'
             echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
-            [ -f "$OUT/gate-diagnostics.txt" ] && { echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'; }
-            [ -f "$OUT/failure.json" ] && { echo '```json'; cat "$OUT/failure.json"; echo '```'; }
+            if [ -f "$OUT/gate-diagnostics.txt" ]; then
+              echo '```text'
+              cat "$OUT/gate-diagnostics.txt"
+              echo '```'
+            fi
+            if [ -f "$OUT/failure.json" ]; then
+              echo '```json'
+              cat "$OUT/failure.json"
+              echo '```'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
 
       - name: Upload evidence
         if: always()
