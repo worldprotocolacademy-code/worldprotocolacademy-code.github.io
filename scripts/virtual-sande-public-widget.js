@@ -37,6 +37,7 @@
         send: 'Send',
         clear: 'Clear',
         connecting: 'Connecting...',
+        offline: 'WPA academic core',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
         label: 'Open Virtual Sande AI',
         close: 'Close'
@@ -50,10 +51,67 @@
       send: 'Испрати',
       clear: 'Исчисти',
       connecting: 'Се поврзувам...',
+      offline: 'WPA академско јадро',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
       label: 'Отвори Virtual Sande AI',
       close: 'Затвори'
     };
+  }
+
+  var LOCAL_CORE = {
+    diplomatic_protocol: {
+      mk: 'Дипломатскиот протокол е систем на правила, норми и утврдени постапки што го уредуваат официјалното однесување и церемонијалните односи меѓу државите, дипломатските мисии и нивните претставници. Тој ги опфаќа акредитацијата на амбасадорите, предавањето акредитивни писма, редот на предимство, официјалните посети, обраќањето, седењето, знамињата, пречекот и испраќањето, како и формата на дипломатската кореспонденција. Неговата суштина е да обезбеди еднаквост, достоинство, предвидливост и почитување на државниот суверенитет.\n\nВо практична смисла, дипломатијата ја носи политичката содржина и интересот, а дипломатскиот протокол ја уредува формата во која тие односи се остваруваат.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'Diplomatic protocol is the system of rules, norms and established procedures governing official conduct and ceremonial relations between states, diplomatic missions and their representatives. It covers ambassadorial accreditation, presentation of credentials, order of precedence, official visits, forms of address, seating, flags, reception and departure ceremonies, and diplomatic correspondence. Its purpose is to secure equality, dignity, predictability and respect for state sovereignty.\n\nIn practical terms, diplomacy carries the political substance and interests, while diplomatic protocol regulates the form through which those relations are conducted.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    diplomacy: {
+      mk: 'Дипломатијата е уметност, професија и институционална практика на управување со односите меѓу државите, меѓународните организации и другите меѓународни субјекти преку претставување, комуникација, преговарање и мирно усогласување на интересите. Таа е еден од главните инструменти за остварување на надворешната политика.\n\nДипломатијата ја определува содржината на односот — целите, интересите и преговорите — додека протоколот го определува редот, формата и официјалниот начин на постапување.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'Diplomacy is the art, profession and institutional practice of managing relations among states, international organisations and other international actors through representation, communication, negotiation and the peaceful adjustment of interests. It is one of the principal instruments of foreign policy.\n\nDiplomacy defines the substance of the relationship — objectives, interests and negotiations — while protocol defines the order, form and official manner of conduct.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    state_protocol: {
+      mk: 'Државниот протокол е систем на правила и институционални постапки што го уредуваат официјалното и церемонијалното дејствување на државните органи и носителите на највисоките јавни функции. Тој ги опфаќа редот на предимство, државните и официјалните посети, државните церемонии, употребата на симболите, почестите, седењето, потпишувањето и официјалното претставување на државата.\n\nНеговата цел е државниот авторитет да биде изразен точно, достоинствено и без институционална двосмисленост.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'State protocol is the system of rules and institutional procedures governing the official and ceremonial activity of state bodies and holders of the highest public offices. It covers order of precedence, state and official visits, state ceremonies, use of symbols, honours, seating, signing arrangements and the official representation of the state.\n\nIts purpose is to express state authority accurately, with dignity and without institutional ambiguity.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    protocol: {
+      mk: 'Протоколот е систем на правила, норми и стандарди што го уредуваат формалното, официјалното и церемонијалното однесување во јавниот и институционалниот живот. Тој го определува редот, формата и начинот на постапување меѓу личности, институции и држави.\n\nВо официјален контекст протоколот не е декоративен додаток, туку механизам на институционална јасност, достоинство и предвидливост.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'Protocol is the system of rules, norms and standards governing formal, official and ceremonial conduct in public and institutional life. It determines the order, form and manner of conduct among individuals, institutions and states.\n\nIn an official context, protocol is not a decorative addition but a mechanism of institutional clarity, dignity and predictability.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    etiquette: {
+      mk: 'Етикецијата, односно бон-тонот, е систем на правила за пристојно, рафинирано и општествено прифатливо однесување. Таа се однесува на личното и социјалното однесување, додека протоколот првенствено го уредува официјалното и институционалното.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'Etiquette, or bon ton, is the system of rules for courteous, refined and socially acceptable conduct. It concerns personal and social behaviour, while protocol primarily governs official and institutional conduct.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    precedence: {
+      mk: 'Редот на предимство е официјално утврдена хиерархија според која носителите на функции, дипломатските претставници и другите учесници се распоредуваат при церемонии, седење, поздравување, говори и потпишувања. Тој не претставува лична вредносна оцена, туку институционален ред што спречува конфликт, двосмисленост и протоколарна повреда.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
+      en: 'Order of precedence is the officially established hierarchy used to arrange office-holders, diplomatic representatives and other participants during ceremonies, seating, greetings, speeches and signings. It is not a personal value judgement, but an institutional order designed to prevent conflict, ambiguity and protocol breaches.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
+    },
+    agrement: {
+      mk: 'Агреман е претходна согласност што државата примач ја дава за лицето предложено за шеф на дипломатска мисија. Државата испраќач не треба официјално да го именува кандидатот пред да го добие агреманот. Одбивањето не мора да биде образложено.\n\nИзворна основа: дипломатска практика и наставни материјали на World Protocol Academy.',
+      en: 'Agrément is the prior consent granted by the receiving state to a person proposed as head of a diplomatic mission. The sending state should not formally appoint the candidate before obtaining agrément, and a refusal need not be explained.\n\nSource basis: diplomatic practice and World Protocol Academy teaching materials.'
+    }
+  };
+
+  function normalizeQuestion(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zа-шѓќѕџјљњ0-9]+/gi, ' ')
+      .trim();
+  }
+
+  function localCoreAnswer(question) {
+    var q = normalizeQuestion(question);
+    var lang = isEnglish() ? 'en' : 'mk';
+    var key = '';
+
+    if (/дипломатски протокол|diplomatic protocol/.test(q)) key = 'diplomatic_protocol';
+    else if (/државен протокол|state protocol/.test(q)) key = 'state_protocol';
+    else if (/ред на предимство|редот на предимство|order of precedence|precedence/.test(q)) key = 'precedence';
+    else if (/агреман|agrement|agrément/.test(q)) key = 'agrement';
+    else if (/етикеција|бон тон|бон-тон|etiquette|bon ton/.test(q)) key = 'etiquette';
+    else if (/дипломатија|diplomacy/.test(q)) key = 'diplomacy';
+    else if (/протокол|protocol/.test(q)) key = 'protocol';
+
+    return key && LOCAL_CORE[key] ? LOCAL_CORE[key][lang] : '';
   }
 
   function installStyles() {
@@ -137,6 +195,9 @@
   }
 
   async function requestAnswer(question) {
+    var local = localCoreAnswer(question);
+    if (local) return { answer: local, local: true };
+
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -151,7 +212,7 @@
     var lastError = null;
     for (var i = 0; i < ENDPOINTS.length; i += 1) {
       try {
-        return await callEndpoint(ENDPOINTS[i], payload);
+        return { answer: await callEndpoint(ENDPOINTS[i], payload), local: false };
       } catch (error) {
         lastError = error;
       }
@@ -176,15 +237,17 @@
     if (status) status.textContent = copy().connecting;
 
     try {
-      var answer = await requestAnswer(question);
-      addMessage(answer, 'bot');
-      history.push({ role: 'assistant', content: answer });
+      var result = await requestAnswer(question);
+      addMessage(result.answer, 'bot');
+      history.push({ role: 'assistant', content: result.answer });
+      if (status) status.textContent = result.local ? copy().offline : '';
+      if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
       addMessage(copy().error, 'bot');
+      if (status) status.textContent = '';
     } finally {
       busy = false;
       if (button) button.disabled = false;
-      if (status) status.textContent = '';
       if (input) input.focus();
     }
   }
