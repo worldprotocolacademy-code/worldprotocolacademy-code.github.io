@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Stage a clean AI Search corpus without deleting original R2 objects."""
-import argparse,csv,hashlib,json,mimetypes,os,subprocess,tempfile
+import argparse,csv,hashlib,json,mimetypes,os,shutil,subprocess,tempfile
 from collections import Counter
 from pathlib import Path,PurePosixPath
 import requests
@@ -35,6 +35,8 @@ def classify(o):
  if k.startswith(ROOT+'/'): return 'IGNORE'
  if k.endswith('/') or 'file content empty' in t or 'file_content_empty' in t: return 'OMIT_EMPTY'
  if ('over size' in t or 'over_size' in t or 'oversize' in t or 'too large' in t) and ext=='.pdf': return 'SPLIT_PDF'
+ if ext=='.jsonl': return 'JSONL_TO_JSON'
+ if ext in {'.ppt','.pptx'}: return 'PPT_TO_PDF'
  if ext in OMIT: return 'OMIT_UNSUPPORTED'
  if ext in SUPPORTED: return 'COPY'
  return 'OMIT_UNSUPPORTED'
@@ -86,6 +88,37 @@ def splitpdf(cf,src,source,prefix,w,verify,manifest):
    if out.stat().st_size>LIMIT: raise RuntimeError(f'single page over limit {source}')
    break
   sh(['qpdf','--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF'); start=end+1; n+=1
+def jsonl_to_json(cf,src,source,prefix,w,verify,manifest):
+ rows=[]
+ for n,line in enumerate(src.read_text(encoding='utf-8-sig').splitlines(),1):
+  if not line.strip(): continue
+  try: rows.append(json.loads(line))
+  except json.JSONDecodeError as exc: raise RuntimeError(f'invalid JSONL record {source}:{n}: {exc}') from exc
+ if not rows: raise RuntimeError(f'empty JSONL {source}')
+ chunks=[]; cur=[]
+ for row in rows:
+  trial=cur+[row]
+  if len(canon(trial))>LIMIT and cur: chunks.append(cur); cur=[row]
+  else: cur=trial
+  if len(canon(cur))>LIMIT: raise RuntimeError(f'JSONL record exceeds limit {source}')
+ if cur: chunks.append(cur)
+ stem=str(PurePosixPath(source).with_suffix(''))
+ for i,chunk in enumerate(chunks,1):
+  out=w/f'part-{i:04d}.json'; out.write_text(json.dumps(chunk,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+  upload(cf,out,f'{prefix}{stem}.__json_parts__/{out.name}',verify,manifest,source,'JSONL_TO_JSON')
+def ensure_libreoffice():
+ if shutil.which('libreoffice'): return
+ sh(['sudo','apt-get','update','-qq'])
+ sh(['sudo','apt-get','install','-y','-qq','libreoffice'])
+ if not shutil.which('libreoffice'): raise RuntimeError('libreoffice installation failed')
+def ppt_to_pdf(cf,src,source,prefix,w,verify,manifest):
+ ensure_libreoffice(); outdir=w/'office'; outdir.mkdir(exist_ok=True)
+ sh(['libreoffice','--headless','--convert-to','pdf','--outdir',outdir,src])
+ pdfs=list(outdir.glob('*.pdf'))
+ if len(pdfs)!=1: raise RuntimeError(f'PPT conversion failed {source}')
+ pdf=pdfs[0]; target_source=str(PurePosixPath(source).with_suffix('.pdf'))
+ if pdf.stat().st_size<=LIMIT: upload(cf,pdf,prefix+target_source,verify,manifest,source,'PPT_TO_PDF')
+ else: splitpdf(cf,pdf,target_source,prefix,w,verify,manifest)
 
 def build(cf):
  rows=[]
@@ -93,13 +126,13 @@ def build(cf):
   a=classify(o)
   if a!='IGNORE': rows.append({'status':status(o),'action':a,'key':key(o),'reason':reason(o)})
  rows.sort(key=lambda r:(r['action'],r['key']))
- approval={'schema':'2.0','instance':cf.i,'actions':[{'key':r['key'],'action':r['action']} for r in rows]}; sha=hbytes(canon(approval)); prefix=f'{ROOT}/{sha[:20]}/'
- return {'schema':'2.0','instance':cf.i,'approval_sha256':sha,'target_prefix':prefix,'items':rows},approval
+ approval={'schema':'2.1','instance':cf.i,'actions':[{'key':r['key'],'action':r['action']} for r in rows]}; sha=hbytes(canon(approval)); prefix=f'{ROOT}/{sha[:20]}/'
+ return {'schema':'2.1','instance':cf.i,'approval_sha256':sha,'target_prefix':prefix,'items':rows},approval
 
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--mode',choices=['PLAN','STAGE']); ap.add_argument('--approved-sha',default=''); ap.add_argument('--out',type=Path); ap.add_argument('--self-test',action='store_true'); x=ap.parse_args()
  if x.self_test:
-  tests=[({'status':'error','error':'file content empty','key':'a.csv'},'OMIT_EMPTY'),({'status':'errored','error':'Over size','key':'a.pdf'},'SPLIT_PDF'),({'status':'skipped','error':'Skipped by Include Rules','key':'a.pdf'},'COPY')]
+  tests=[({'status':'error','error':'file content empty','key':'a.csv'},'OMIT_EMPTY'),({'status':'errored','error':'Over size','key':'a.pdf'},'SPLIT_PDF'),({'status':'skipped','error':'Skipped by Include Rules','key':'a.pdf'},'COPY'),({'status':'skipped','key':'a.jsonl'},'JSONL_TO_JSON'),({'status':'error','key':'a.ppt','error':'unsupported_type'},'PPT_TO_PDF')]
   for item,want in tests:
    got=classify(item)
    if got!=want: raise AssertionError((item,got,want))
@@ -119,6 +152,8 @@ def main():
    w=root/hbytes(k.encode())[:20]; w.mkdir(); src=w/(PurePosixPath(k).name or 'source.bin'); cf.get(k,src); is_empty,why=empty(src,k)
    if is_empty: omitted.append({'source_key':k,'reason':why}); continue
    if a=='SPLIT_PDF' or (src.suffix.lower()=='.pdf' and src.stat().st_size>LIMIT): splitpdf(cf,src,k,plan['target_prefix'],w,verify,manifest)
+   elif a=='JSONL_TO_JSON': jsonl_to_json(cf,src,k,plan['target_prefix'],w,verify,manifest)
+   elif a=='PPT_TO_PDF': ppt_to_pdf(cf,src,k,plan['target_prefix'],w,verify,manifest)
    elif src.suffix.lower() in SUPPORTED and src.stat().st_size<=LIMIT: upload(cf,src,plan['target_prefix']+k,verify,manifest,k,'COPY')
    else: omitted.append({'source_key':k,'reason':'unsupported-or-over-limit'})
  with (x.out/'staged-manifest.csv').open('w',newline='',encoding='utf-8') as f:
