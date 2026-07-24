@@ -9,6 +9,7 @@ API='https://api.cloudflare.com/client/v4'
 ROOT='__ai_search_ready_v3__'
 STAGING_ROOTS=('__ai_search_ready_v2__/','__ai_search_ready_v3__/')
 LIMIT=3_700_000
+R2_ATTEMPTS=8
 SUPPORTED={'.txt','.rst','.log','.ini','.conf','.env','.properties','.toml','.md','.mdx','.tex','.sh','.ps1','.json','.sql','.yaml','.yml','.css','.js','.php','.py','.rb','.java','.c','.cpp','.h','.hpp','.go','.rs','.swift','.dart','.pdf','.jpeg','.jpg','.png','.webp','.svg','.gif','.bmp','.html','.htm','.xml','.xlsx','.xlsm','.xlsb','.xls','.docx','.ods','.odt','.csv','.numbers'}
 OMIT={'.mp3','.wav','.m4a','.aac','.flac','.ogg','.mp4','.mov','.avi','.mkv','.webm','.zip','.rar','.7z','.gz','.tar','.exe','.dll','.bin','.iso'}
 
@@ -66,8 +67,32 @@ class CF:
    if len(batch)<50: return out
    p+=1
    if p>200: raise RuntimeError('pagination safety limit')
- def get(self,k,p): p.parent.mkdir(parents=True,exist_ok=True); sh([self.w,'r2','object','get',f'{self.b}/{k}','--remote','--file',p])
- def put(self,k,p,ct): sh([self.w,'r2','object','put',f'{self.b}/{k}','--remote','--force','--file',p,'--content-type',ct])
+ def r2(self,args,allow_missing=False):
+  cmd=[self.w,'r2','object',*map(str,args)]
+  for attempt in range(1,R2_ATTEMPTS+1):
+   print('+',' '.join(cmd),flush=True)
+   r=subprocess.run(cmd,text=True,capture_output=True)
+   if r.returncode==0:
+    if r.stdout: print(r.stdout,end='' if r.stdout.endswith('\n') else '\n',flush=True)
+    if r.stderr: print(r.stderr,end='' if r.stderr.endswith('\n') else '\n',flush=True)
+    time.sleep(0.20)
+    return True
+   text=(r.stdout or '')+'\n'+(r.stderr or '')
+   low=text.lower()
+   if allow_missing and ('404' in low or 'not found' in low or 'does not exist' in low): return False
+   transient=('429' in low or '10058' in low or 'too many requests' in low or 'reduce your rate' in low or 'timed out' in low or 'timeout' in low or 'econnreset' in low or 'temporarily unavailable' in low)
+   if transient and attempt<R2_ATTEMPTS:
+    delay=min(60,2**attempt)
+    print(f'WARNING: transient R2 failure attempt {attempt}/{R2_ATTEMPTS}; retrying in {delay}s',flush=True)
+    time.sleep(delay)
+    continue
+   raise subprocess.CalledProcessError(r.returncode,cmd,output=r.stdout,stderr=r.stderr)
+  return False
+ def get(self,k,p,allow_missing=False):
+  p.parent.mkdir(parents=True,exist_ok=True)
+  return self.r2(['get',f'{self.b}/{k}','--remote','--file',p],allow_missing=allow_missing)
+ def put(self,k,p,ct):
+  return self.r2(['put',f'{self.b}/{k}','--remote','--force','--file',p,'--content-type',ct])
 
 def ctype(p): return {'.pdf':'application/pdf','.csv':'text/csv; charset=utf-8','.json':'application/json'}.get(p.suffix.lower()) or mimetypes.guess_type(p.name)[0] or 'application/octet-stream'
 def empty(p,k):
@@ -92,6 +117,13 @@ def stabilize_pdf(p):
 def upload(cf,src,target,verify,manifest,source,kind):
  if not 0<src.stat().st_size<=LIMIT: raise RuntimeError(f'bad derivative size {src}')
  before=hfile(src); got=verify/hbytes(target.encode()); after=''
+ got.unlink(missing_ok=True)
+ if cf.get(target,got,allow_missing=True):
+  after=hfile(got)
+  if before==after:
+   print(f'REUSE: verified existing target {target}',flush=True)
+   manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':src.stat().st_size,'sha256':before})
+   return
  for attempt in range(1,4):
   got.unlink(missing_ok=True); cf.put(target,src,ctype(src)); cf.get(target,got); after=hfile(got)
   if before==after: break
