@@ -1,4 +1,4 @@
-/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-23 */
+/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-24 */
 (function () {
   'use strict';
   if (window.WPA_INTERACTION_RECOVERY_LOADED) return;
@@ -169,6 +169,7 @@
     installAnchorFallback();
     installMobileMenu();
     installJournalLiveEntries();
+    addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-restore2');
     addScript('wpa-corpus-sync-20260723', '/scripts/wpa-corpus-sync-20260723.js?v=20260723-4');
     addScript('wpa-corpus-final-audit-20260723', '/scripts/wpa-corpus-final-audit-20260723.js?v=20260723-1');
   }
