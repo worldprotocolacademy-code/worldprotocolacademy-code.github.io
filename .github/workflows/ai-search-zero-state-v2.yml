@@ -1,0 +1,187 @@
+name: AI Search Zero State v2
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'PLAN_ONLY, STAGE_ONLY, or CUTOVER_AND_VERIFY'
+        required: true
+        default: PLAN_ONLY
+        type: choice
+        options: [PLAN_ONLY, STAGE_ONLY, CUTOVER_AND_VERIFY]
+      approval_phrase:
+        description: 'For write modes type: APPLY PROTOCOL-AI ZERO STATE V2'
+        required: false
+        default: ''
+        type: string
+      approved_plan_sha256:
+        description: 'SHA-256 printed by PLAN_ONLY'
+        required: false
+        default: ''
+        type: string
+      target_prefix:
+        description: 'Staged target prefix for CUTOVER_AND_VERIFY'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-zero-state-v2
+  cancel-in-progress: false
+
+jobs:
+  zero_state:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    environment:
+      name: ${{ inputs.mode == 'PLAN_ONLY' && 'staging' || 'production' }}
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+      WRANGLER_BIN: /tmp/node_modules/.bin/wrangler
+      OUT: /tmp/ai-search-zero-state-v2
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Enforce protected gates
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval_phrase }}
+          PLAN_SHA: ${{ inputs.approved_plan_sha256 }}
+          TARGET_PREFIX: ${{ inputs.target_prefix }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          if [ "$MODE" != PLAN_ONLY ]; then
+            test -n "$CLOUDFLARE_API_TOKEN"
+            test "$APPROVAL" = 'APPLY PROTOCOL-AI ZERO STATE V2'
+            printf '%s' "$PLAN_SHA" | grep -Eq '^[0-9a-f]{64}$'
+          fi
+          if [ "$MODE" = CUTOVER_AND_VERIFY ]; then
+            printf '%s' "$TARGET_PREFIX" | grep -Eq '^__ai_search_ready_v2__/[0-9a-f]{20}/$'
+          fi
+
+      - name: Install tools and test code
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qpdf ghostscript jq
+          cd /tmp
+          npm install --silent --no-audit --no-fund wrangler@4
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v2.py"
+          python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v2.py" --self-test
+
+      - name: Generate fresh plan
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          rm -rf "$OUT"; mkdir -p "$OUT"
+          python3 scripts/ai_search_zero_state_v2.py --mode PLAN --out "$OUT"
+          cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify approved plan
+        if: ${{ inputs.mode != 'PLAN_ONLY' }}
+        run: test "$(cat "$OUT/migration-plan.sha256")" = '${{ inputs.approved_plan_sha256 }}'
+
+      - name: Stage clean versioned corpus
+        if: ${{ inputs.mode == 'STAGE_ONLY' || inputs.mode == 'CUTOVER_AND_VERIFY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 scripts/ai_search_zero_state_v2.py --mode STAGE \
+            --approved-sha '${{ inputs.approved_plan_sha256 }}' --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+          cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save current AI Search configuration
+        if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test "$(jq -r '.target_prefix' "$OUT/stage-summary.json")" = '${{ inputs.target_prefix }}'
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          curl --fail --silent --show-error "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$OUT/original-instance.json"
+          jq -e '.success==true' "$OUT/original-instance.json" >/dev/null
+          jq '.result.source_params // {}' "$OUT/original-instance.json" > "$OUT/original-source-params.json"
+
+      - name: Cut over to clean prefix
+        if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          jq --arg prefix '${{ inputs.target_prefix }}' '. + {prefix:$prefix,include_items:[],exclude_items:[]}' "$OUT/original-source-params.json" > "$OUT/new-source-params.json"
+          jq -n --slurpfile p "$OUT/new-source-params.json" '{source_params:$p[0]}' > "$OUT/cutover-request.json"
+          curl --fail --silent --show-error -X PUT "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' --data-binary @"$OUT/cutover-request.json" > "$OUT/cutover-response.json"
+          jq -e '.success==true' "$OUT/cutover-response.json" >/dev/null
+
+      - name: Sync and verify zero state
+        if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' }}
+        id: verify
+        continue-on-error: true
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          curl --fail --silent --show-error -X POST "$api/jobs" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' -d '{"description":"WPA zero-state v2 sync"}' > "$OUT/job.json"
+          job="$(jq -r '.result.id' "$OUT/job.json")"; test -n "$job"
+          for n in $(seq 1 240); do
+            curl --fail --silent --show-error "$api/jobs/$job" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$OUT/job-state.json"
+            [ -n "$(jq -r '.result.ended_at//empty' "$OUT/job-state.json")" ] && break
+            sleep 15
+          done
+          mkdir -p "$OUT/post"; page=1
+          while :; do
+            f="$OUT/post/$page.json"; curl --fail --silent --show-error "$api/items?page=$page&per_page=50" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$f"
+            count="$(jq '.result|length' "$f")"; [ "$count" -lt 50 ] && break; page=$((page+1))
+          done
+          jq -s '[.[].result[]?]' "$OUT"/post/*.json > "$OUT/post-items.json"
+          jq '[.[]|select((.status//""|ascii_downcase)|IN("skipped","skip","error","errored","failed","failure","outdated","queued","running","processing"))]' "$OUT/post-items.json" > "$OUT/post-problems.json"
+          test "$(jq 'length' "$OUT/post-problems.json")" -eq 0
+          test "$(jq '[.[]|select((.status//""|ascii_downcase)=="indexed")]|length' "$OUT/post-items.json")" -gt 0
+
+      - name: Roll back after failed verification
+        if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' && steps.verify.outcome == 'failure' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          jq -n --slurpfile p "$OUT/original-source-params.json" '{source_params:$p[0]}' > "$OUT/rollback-request.json"
+          curl --fail --silent --show-error -X PUT "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' --data-binary @"$OUT/rollback-request.json" > "$OUT/rollback-response.json"
+          jq -e '.success==true' "$OUT/rollback-response.json" >/dev/null
+
+      - name: Enforce final result
+        if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' }}
+        run: test '${{ steps.verify.outcome }}' = success
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-zero-state-v2-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: warn
