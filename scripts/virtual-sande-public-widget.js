@@ -135,7 +135,9 @@
       '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
       '.wpa-public-vs-row.user .wpa-public-vs-bubble{background:#0d1f3c;color:#fff;border-color:#0d1f3c}',
       '.wpa-public-vs-form{display:flex;gap:8px;padding:10px;border-top:1px solid #d8d2bc;background:#f5f0e0}',
-      '.wpa-public-vs-input{flex:1;min-height:46px;max-height:110px;resize:vertical;border:1px solid #d8d2bc;border-radius:9px;padding:10px;font:13px/1.4 Inter,system-ui,sans-serif;outline:none;background:#fff;color:#1a1a1a}',
+      '.wpa-public-vs-input,#botInput.bot-inp,.bot-inp,.wpa-inst-vs-input{flex:1;min-height:46px;max-height:110px;resize:vertical;border:1px solid #d7c485!important;border-radius:9px;padding:10px;font:13px/1.4 Inter,system-ui,sans-serif;outline:none!important;background:#fff;color:#1a1a1a;box-shadow:none!important;text-decoration:none!important;text-decoration-color:transparent!important;caret-color:#7b5f1f!important}',
+      '.wpa-public-vs-input:focus,.wpa-public-vs-input:focus-visible,#botInput.bot-inp:focus,.bot-inp:focus,.wpa-inst-vs-input:focus,.wpa-inst-vs-input:focus-visible{border-color:#c9a84c!important;outline:2px solid rgba(201,168,76,.22)!important;outline-offset:1px!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important;text-decoration:none!important;text-decoration-color:transparent!important}',
+      '.wpa-public-vs-input:invalid,.wpa-public-vs-input:user-invalid,#botInput.bot-inp:invalid,.bot-inp:invalid,.wpa-inst-vs-input:invalid,.wpa-inst-vs-input:user-invalid{border-color:#d7c485!important;outline-color:rgba(201,168,76,.22)!important;box-shadow:none!important}',
       '.wpa-public-vs-send{border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
@@ -143,6 +145,36 @@
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
+  }
+
+  function forceGoldInput(input) {
+    if (!input || input.dataset.wpaGoldInputBound === '1') return;
+    input.dataset.wpaGoldInputBound = '1';
+    input.spellcheck = false;
+    input.setAttribute('spellcheck', 'false');
+    input.setAttribute('autocorrect', 'off');
+    input.setAttribute('autocomplete', 'off');
+    input.style.setProperty('border-color', '#d7c485', 'important');
+    input.style.setProperty('outline', 'none', 'important');
+    input.style.setProperty('box-shadow', 'none', 'important');
+    input.style.setProperty('text-decoration', 'none', 'important');
+    input.style.setProperty('text-decoration-color', 'transparent', 'important');
+    input.addEventListener('focus', function () {
+      input.style.setProperty('border-color', '#c9a84c', 'important');
+      input.style.setProperty('outline', '2px solid rgba(201,168,76,.22)', 'important');
+      input.style.setProperty('outline-offset', '1px', 'important');
+      input.style.setProperty('box-shadow', '0 0 0 3px rgba(201,168,76,.12)', 'important');
+    });
+    input.addEventListener('blur', function () {
+      input.style.setProperty('border-color', '#d7c485', 'important');
+      input.style.setProperty('outline', 'none', 'important');
+      input.style.setProperty('box-shadow', 'none', 'important');
+    });
+  }
+
+  function protectAllInputs() {
+    var inputs = document.querySelectorAll('#wpaPublicVsInput,#wpaInstVsInput,#botInput,.bot-inp,.wpa-public-vs-input,.wpa-inst-vs-input');
+    Array.prototype.forEach.call(inputs, forceGoldInput);
   }
 
   function hideLegacyBots() {
@@ -253,9 +285,10 @@
   }
 
   function mount() {
+    installStyles();
+    protectAllInputs();
     if (isExcluded() || document.getElementById('wpaPublicVsFab') || !document.body) return;
 
-    installStyles();
     hideLegacyBots();
     var text = copy();
     var panel = document.createElement('section');
@@ -264,7 +297,7 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
-    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm"><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
@@ -277,6 +310,7 @@
 
     document.body.appendChild(panel);
     document.body.appendChild(fab);
+    protectAllInputs();
     addMessage(text.welcome, 'bot');
 
     fab.addEventListener('click', function () {
@@ -320,4 +354,5 @@
   else mount();
   window.setTimeout(mount, 400);
   window.setTimeout(mount, 1600);
+  window.setTimeout(protectAllInputs, 2500);
 })();
