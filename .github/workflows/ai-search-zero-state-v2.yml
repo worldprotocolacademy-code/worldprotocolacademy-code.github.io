@@ -4,26 +4,22 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'PLAN_ONLY, STAGE_ONLY, or CUTOVER_AND_VERIFY'
+        description: 'Choose the protected operation'
         required: true
         default: PLAN_ONLY
         type: choice
-        options: [PLAN_ONLY, STAGE_ONLY, CUTOVER_AND_VERIFY]
-      approval_phrase:
-        description: 'For write modes type: APPLY PROTOCOL-AI ZERO STATE V2'
-        required: false
-        default: ''
-        type: string
-      approved_plan_sha256:
-        description: 'SHA-256 printed by PLAN_ONLY'
-        required: false
-        default: ''
-        type: string
-      target_prefix:
-        description: 'Staged target prefix for CUTOVER_AND_VERIFY'
-        required: false
-        default: ''
-        type: string
+        options:
+          - PLAN_ONLY
+          - STAGE_ONLY
+          - CUTOVER_AND_VERIFY
+      approval:
+        description: 'Required for STAGE_ONLY and CUTOVER_AND_VERIFY'
+        required: true
+        default: DO_NOT_APPROVE
+        type: choice
+        options:
+          - DO_NOT_APPROVE
+          - APPROVE
 
 permissions:
   contents: read
@@ -43,6 +39,9 @@ jobs:
       R2_BUCKET: protocol-kb
       WRANGLER_BIN: /tmp/node_modules/.bin/wrangler
       OUT: /tmp/ai-search-zero-state-v2
+      APPROVED_PLAN_SHA256: 80cd2f51cf9ddb42956260707d3fa064799ffe3d75c21a65bda018c0ea2caecc
+      APPROVED_TARGET_PREFIX: __ai_search_ready_v2__/80cd2f51cf9ddb429562/
+
     steps:
       - uses: actions/checkout@v5
         with:
@@ -58,9 +57,7 @@ jobs:
       - name: Enforce protected gates
         env:
           MODE: ${{ inputs.mode }}
-          APPROVAL: ${{ inputs.approval_phrase }}
-          PLAN_SHA: ${{ inputs.approved_plan_sha256 }}
-          TARGET_PREFIX: ${{ inputs.target_prefix }}
+          APPROVAL: ${{ inputs.approval }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -82,21 +79,11 @@ jobs:
           check_present CLOUDFLARE_AI_SEARCH_TOKEN "$CLOUDFLARE_AI_SEARCH_TOKEN"
           if [ "$MODE" != PLAN_ONLY ]; then
             check_present CLOUDFLARE_API_TOKEN "$CLOUDFLARE_API_TOKEN"
-            if [ "$APPROVAL" != 'APPLY PROTOCOL-AI ZERO STATE V2' ]; then
-              echo 'INVALID: approval_phrase' | tee -a "$OUT/gate-diagnostics.txt"
-              echo '::error title=Approval phrase mismatch::Use exactly APPLY PROTOCOL-AI ZERO STATE V2'
+            if [ "$APPROVAL" != APPROVE ]; then
+              echo 'INVALID: approval choice' | tee -a "$OUT/gate-diagnostics.txt"
+              echo '::error title=Approval required::Select APPROVE for a protected write mode.'
               fail=1
             fi
-            if ! printf '%s' "$PLAN_SHA" | grep -Eq '^[0-9a-f]{64}$'; then
-              echo 'INVALID: approved_plan_sha256' | tee -a "$OUT/gate-diagnostics.txt"
-              echo '::error title=Invalid plan SHA::The approved SHA must contain exactly 64 lowercase hexadecimal characters.'
-              fail=1
-            fi
-          fi
-          if [ "$MODE" = CUTOVER_AND_VERIFY ] && ! printf '%s' "$TARGET_PREFIX" | grep -Eq '^__ai_search_ready_v2__/[0-9a-f]{20}/$'; then
-            echo 'INVALID: target_prefix' | tee -a "$OUT/gate-diagnostics.txt"
-            echo '::error title=Invalid target prefix::Use the exact versioned prefix printed by STAGE_ONLY.'
-            fail=1
           fi
           if [ "$fail" -ne 0 ]; then
             printf '{"status":"gate_failed","mode":"%s"}\n' "$MODE" > "$OUT/failure.json"
@@ -131,17 +118,17 @@ jobs:
           python3 scripts/ai_search_zero_state_v2.py --mode PLAN --out "$OUT"
           cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Verify approved plan
+      - name: Verify locked approved plan
         if: ${{ inputs.mode != 'PLAN_ONLY' }}
         run: |
           set -euo pipefail
           actual="$(cat "$OUT/migration-plan.sha256")"
-          expected='${{ inputs.approved_plan_sha256 }}'
-          if [ "$actual" != "$expected" ]; then
-            printf '{"status":"plan_sha_mismatch","actual":"%s","expected":"%s"}\n' "$actual" "$expected" > "$OUT/failure.json"
-            echo '::error title=Plan SHA mismatch::The corpus changed or the wrong PLAN_ONLY SHA was supplied.'
+          if [ "$actual" != "$APPROVED_PLAN_SHA256" ]; then
+            printf '{"status":"plan_sha_mismatch","actual":"%s","expected":"%s"}\n' "$actual" "$APPROVED_PLAN_SHA256" > "$OUT/failure.json"
+            echo '::error title=Plan SHA mismatch::The corpus changed. Run PLAN_ONLY and review a new artifact before staging.'
             exit 1
           fi
+          test "$(jq -r '.target_prefix' "$OUT/counts.json")" = "$APPROVED_TARGET_PREFIX"
 
       - name: Stage clean versioned corpus
         if: ${{ inputs.mode == 'STAGE_ONLY' || inputs.mode == 'CUTOVER_AND_VERIFY' }}
@@ -153,7 +140,7 @@ jobs:
           set -uo pipefail
           set +e
           python3 scripts/ai_search_zero_state_v2.py --mode STAGE \
-            --approved-sha '${{ inputs.approved_plan_sha256 }}' --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+            --approved-sha "$APPROVED_PLAN_SHA256" --out "$OUT" 2>&1 | tee "$OUT/stage.log"
           code=${PIPESTATUS[0]}
           set -e
           if [ "$code" -ne 0 ]; then
@@ -175,7 +162,7 @@ jobs:
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
           set -euo pipefail
-          test "$(jq -r '.target_prefix' "$OUT/stage-summary.json")" = '${{ inputs.target_prefix }}'
+          test "$(jq -r '.target_prefix' "$OUT/stage-summary.json")" = "$APPROVED_TARGET_PREFIX"
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
           curl --fail --silent --show-error "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$OUT/original-instance.json"
           jq -e '.success==true' "$OUT/original-instance.json" >/dev/null
@@ -189,7 +176,7 @@ jobs:
         run: |
           set -euo pipefail
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
-          jq --arg prefix '${{ inputs.target_prefix }}' '. + {prefix:$prefix,include_items:[],exclude_items:[]}' "$OUT/original-source-params.json" > "$OUT/new-source-params.json"
+          jq --arg prefix "$APPROVED_TARGET_PREFIX" '. + {prefix:$prefix,include_items:[],exclude_items:[]}' "$OUT/original-source-params.json" > "$OUT/new-source-params.json"
           jq -n --slurpfile p "$OUT/new-source-params.json" '{source_params:$p[0]}' > "$OUT/cutover-request.json"
           curl --fail --silent --show-error -X PUT "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' --data-binary @"$OUT/cutover-request.json" > "$OUT/cutover-response.json"
           jq -e '.success==true' "$OUT/cutover-response.json" >/dev/null
@@ -217,9 +204,12 @@ jobs:
           [ "$finished" = true ]
           mkdir -p "$OUT/post"; page=1
           while :; do
-            f="$OUT/post/$page.json"; curl --fail --silent --show-error "$api/items?page=$page&per_page=50" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$f"
+            f="$OUT/post/$page.json"
+            curl --fail --silent --show-error "$api/items?page=$page&per_page=50" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$f"
             jq -e '.success==true' "$f" >/dev/null
-            count="$(jq '.result|length' "$f")"; [ "$count" -lt 50 ] && break; page=$((page+1)); [ "$page" -le 200 ]
+            count="$(jq '.result|length' "$f")"
+            [ "$count" -lt 50 ] && break
+            page=$((page+1)); [ "$page" -le 200 ]
           done
           jq -s '[.[].result[]?]' "$OUT"/post/*.json > "$OUT/post-items.json"
           jq '[.[]|select((.status//""|ascii_downcase)|IN("skipped","skip","error","errored","failed","failure","outdated","queued","running","processing"))]' "$OUT/post-items.json" > "$OUT/post-problems.json"
@@ -250,8 +240,8 @@ jobs:
           {
             echo '### AI Search Zero State v2 safety boundary'
             echo '- No original R2 object is deleted, moved, or overwritten.'
-            echo '- Staging writes only below a versioned `__ai_search_ready_v2__/` prefix.'
-            echo '- Empty, unsupported, media and archive objects remain preserved in the source bucket but are omitted from the active AI Search prefix.'
+            echo '- Staging writes only below a locked versioned `__ai_search_ready_v2__/` prefix.'
+            echo '- Write modes require both production-environment approval and the APPROVE workflow choice.'
             echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
             [ -f "$OUT/gate-diagnostics.txt" ] && { echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'; }
             [ -f "$OUT/failure.json" ] && { echo '```json'; cat "$OUT/failure.json"; echo '```'; }
