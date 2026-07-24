@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Stage a clean AI Search corpus without deleting original R2 objects."""
-import argparse,csv,hashlib,json,mimetypes,os,shutil,subprocess,tempfile
+import argparse,csv,hashlib,json,mimetypes,os,shutil,subprocess,tempfile,time
 from collections import Counter
 from pathlib import Path,PurePosixPath
 import requests
@@ -77,18 +77,25 @@ def empty(p,k):
  return False,'non-empty'
 def upload(cf,src,target,verify,manifest,source,kind):
  if not 0<src.stat().st_size<=LIMIT: raise RuntimeError(f'bad derivative size {src}')
- before=hfile(src); cf.put(target,src,ctype(src)); got=verify/hbytes(target.encode()); cf.get(target,got)
- if before!=hfile(got): raise RuntimeError(f'hash mismatch {target}')
+ before=hfile(src); got=verify/hbytes(target.encode()); after=''
+ for attempt in range(1,4):
+  got.unlink(missing_ok=True); cf.put(target,src,ctype(src)); cf.get(target,got); after=hfile(got)
+  if before==after: break
+  print(f'WARNING: hash mismatch attempt {attempt}/3 for {target}: expected={before} actual={after}',flush=True)
+  if attempt<3: time.sleep(attempt*2)
+ else:
+  raise RuntimeError(f'hash mismatch after 3 attempts {target}: expected={before} actual={after}')
  manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':src.stat().st_size,'sha256':before})
 def splitpdf(cf,src,source,prefix,w,verify,manifest):
  qpdf(['--check',src]); pages=int(qpdf(['--show-npages',src],True).stdout); start=1; n=1; stem=str(PurePosixPath(source).with_suffix('')); sourcehash=hfile(src)[:20]
  while start<=pages:
   span=min(20,pages-start+1)
   while True:
-   end=min(start+span-1,pages); out=w/f'p{n:04d}-{start:05d}-{end:05d}.pdf'; qpdf(['--empty','--pages',src,f'{start}-{end}','--',out])
+   end=min(start+span-1,pages); out=w/f'p{n:04d}-{start:05d}-{end:05d}.pdf'; qpdf(['--deterministic-id','--empty','--pages',src,f'{start}-{end}','--',out])
    if out.stat().st_size<=LIMIT: break
    if span>1: out.unlink(); span=max(1,span//2); continue
-   comp=w/f'p{n:04d}-{start:05d}-{end:05d}-compressed.pdf'; sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite','-dPDFSETTINGS=/screen',f'-sOutputFile={comp}',out]); out.unlink(); out=comp
+   comp=w/f'p{n:04d}-{start:05d}-{end:05d}-compressed.pdf'; sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite','-dPDFSETTINGS=/screen',f'-sOutputFile={comp}',out]); out.unlink()
+   det=w/f'p{n:04d}-{start:05d}-{end:05d}-deterministic.pdf'; qpdf(['--deterministic-id',comp,det]); comp.unlink(); det.replace(comp); out=comp
    if out.stat().st_size>LIMIT: raise RuntimeError(f'single page over limit {source}')
    break
   qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF'); start=end+1; n+=1
