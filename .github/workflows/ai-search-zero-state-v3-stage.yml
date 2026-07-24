@@ -1,0 +1,177 @@
+name: AI Search Zero State v3 Stage
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Choose the protected staging operation'
+        required: true
+        default: PLAN_ONLY
+        type: choice
+        options:
+          - PLAN_ONLY
+          - STAGE_ONLY
+      approval:
+        description: 'Required for STAGE_ONLY'
+        required: true
+        default: DO_NOT_APPROVE
+        type: choice
+        options:
+          - DO_NOT_APPROVE
+          - APPROVE
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-zero-state-v3-stage
+  cancel-in-progress: false
+
+jobs:
+  zero_state_v3_stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    environment: staging
+    env:
+      AI_SEARCH_INSTANCE: protocol-ai
+      R2_BUCKET: protocol-kb
+      WRANGLER_BIN: /tmp/node_modules/.bin/wrangler
+      OUT: /tmp/ai-search-zero-state-v3
+      APPROVED_PLAN_SHA256: 80cd2f51cf9ddb42956260707d3fa064799ffe3d75c21a65bda018c0ea2caecc
+      APPROVED_TARGET_PREFIX: __ai_search_ready_v3__/80cd2f51cf9ddb429562/
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize diagnostic evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"status":"started","mode":"%s","run_id":"%s","sha":"%s","generation":"v3"}\n' \
+            '${{ inputs.mode }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
+      - name: Enforce protected staging gates
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          fail=0
+          : > "$OUT/gate-diagnostics.txt"
+          check_present() {
+            name="$1"; value="$2"
+            if [ -z "$value" ]; then
+              echo "MISSING: $name" | tee -a "$OUT/gate-diagnostics.txt"
+              fail=1
+            else
+              echo "PRESENT: $name" >> "$OUT/gate-diagnostics.txt"
+            fi
+          }
+          check_present CLOUDFLARE_ACCOUNT_ID "$CLOUDFLARE_ACCOUNT_ID"
+          check_present CLOUDFLARE_AI_SEARCH_TOKEN "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          if [ "$MODE" = STAGE_ONLY ]; then
+            check_present CLOUDFLARE_R2_API_TOKEN "$CLOUDFLARE_R2_API_TOKEN"
+            if [ "$APPROVAL" != APPROVE ]; then
+              echo 'INVALID: approval choice' | tee -a "$OUT/gate-diagnostics.txt"
+              fail=1
+            fi
+          fi
+          if [ "$fail" -ne 0 ]; then
+            printf '{"status":"gate_failed","mode":"%s"}\n' "$MODE" > "$OUT/failure.json"
+            exit 1
+          fi
+          printf '{"status":"gate_passed","mode":"%s"}\n' "$MODE" > "$OUT/gate-result.json"
+
+      - name: Install tools and test v3 code
+        run: |
+          set -euo pipefail
+          trap 'code=$?; printf "{\"status\":\"tool_install_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq qpdf ghostscript jq libreoffice
+          cd /tmp
+          npm install --silent --no-audit --no-fund wrangler@4
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          test -x "$WRANGLER_BIN"
+          command -v libreoffice >/dev/null
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py"
+          python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py" --self-test
+          printf '{"status":"tools_ready","generation":"v3"}\n' > "$OUT/tool-result.json"
+
+      - name: Generate fresh v3 plan
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          trap 'code=$?; printf "{\"status\":\"plan_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
+          find "$OUT" -mindepth 1 -maxdepth 1 ! -name 'run-context.json' ! -name 'gate-diagnostics.txt' ! -name 'gate-result.json' ! -name 'tool-result.json' -exec rm -rf {} +
+          python3 scripts/ai_search_zero_state_v3.py --mode PLAN --out "$OUT"
+          cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify locked approved v3 plan
+        if: ${{ inputs.mode == 'STAGE_ONLY' }}
+        run: |
+          set -euo pipefail
+          actual="$(cat "$OUT/migration-plan.sha256")"
+          test "$actual" = "$APPROVED_PLAN_SHA256"
+          test "$(jq -r '.target_prefix' "$OUT/counts.json")" = "$APPROVED_TARGET_PREFIX"
+
+      - name: Stage clean v3 corpus
+        if: ${{ inputs.mode == 'STAGE_ONLY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/ai_search_zero_state_v3.py --mode STAGE \
+            --approved-sha "$APPROVED_PLAN_SHA256" --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ]; then
+            last_item="$(grep -E '^\[[0-9]+/[0-9]+\] ' "$OUT/stage.log" | tail -n 1 || true)"
+            python3 - "$OUT/failure.json" "$code" "$last_item" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path(sys.argv[1]); log=p.with_name('stage.log')
+          p.write_text(json.dumps({'status':'stage_failed','generation':'v3','exit_code':int(sys.argv[2]),'last_item':sys.argv[3],'log_tail':log.read_text(errors='replace').splitlines()[-140:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+            exit "$code"
+          fi
+          cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search Zero State v3 stage-only run'
+            echo '- Selected operation: `${{ inputs.mode }}`'
+            echo '- Selected environment: `staging`'
+            echo '- No cutover operation exists in this workflow.'
+            echo '- No original R2 object is deleted, moved, or overwritten.'
+            echo '- Writes are isolated below `__ai_search_ready_v3__/`.'
+            echo '- Existing v2 staging objects remain untouched.'
+            echo '- Every staged object requires an exact SHA-256 read-back match.'
+            if [ -f "$OUT/gate-diagnostics.txt" ]; then
+              echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'
+            fi
+            if [ -f "$OUT/failure.json" ]; then
+              echo '```json'; cat "$OUT/failure.json"; echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+
+      - name: Upload v3 evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-zero-state-v3-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
