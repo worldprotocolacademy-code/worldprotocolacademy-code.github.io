@@ -1,0 +1,128 @@
+name: HOTFIX Virtual Sande custom-domain CORS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - config/virtual-sande-custom-domain-cors-hotfix-trigger.json
+
+permissions:
+  contents: write
+
+concurrency:
+  group: virtual-sande-custom-domain-cors-hotfix
+  cancel-in-progress: false
+
+jobs:
+  deploy-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify custom-domain allowlist and runtime
+        run: |
+          set -euo pipefail
+          grep -F 'https://worldprotocolacademy.mk' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'https://www.worldprotocolacademy.mk' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F "'https://worldprotocolacademy.mk'" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          grep -F "'https://www.worldprotocolacademy.mk'" tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Deploy existing production Worker with custom-domain CORS
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy --config workers/virtual-sande-v35.1-production/wrangler.toml 2>&1 | tee /tmp/deploy.log
+          grep -F 'wpa-virtual-sande-v35-1-production' /tmp/deploy.log
+
+      - name: Verify health, preflight and browser-equivalent POST
+        run: |
+          set -euo pipefail
+          BASE='https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
+          mkdir -p /tmp/virtual-sande-hotfix
+          for attempt in $(seq 1 30); do
+            health=$(curl -sS -o /tmp/virtual-sande-hotfix/health.json -w '%{http_code}' "$BASE/orchestrator/health?hotfix=$GITHUB_RUN_ID-$attempt" || true)
+            if [ "$health" = '200' ] && grep -Fq '"ok": true' /tmp/virtual-sande-hotfix/health.json; then
+              break
+            fi
+            sleep 5
+          done
+          test "${health:-000}" = '200'
+
+          preflight=$(curl -sS -D /tmp/virtual-sande-hotfix/preflight.headers -o /dev/null -w '%{http_code}' -X OPTIONS \
+            -H 'Origin: https://worldprotocolacademy.mk' \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type' \
+            "$BASE/ask")
+          test "$preflight" = '204'
+          grep -iF 'access-control-allow-origin: https://worldprotocolacademy.mk' /tmp/virtual-sande-hotfix/preflight.headers
+
+          post_status=$(curl -sS -D /tmp/virtual-sande-hotfix/post.headers -o /tmp/virtual-sande-hotfix/post.json -w '%{http_code}' \
+            -X POST \
+            -H 'Origin: https://worldprotocolacademy.mk' \
+            -H 'Content-Type: application/json' \
+            --data '{"message":"Здраво","question":"Здраво","query":"Здраво","language":"mk","history":[]}' \
+            "$BASE/ask")
+          test "$post_status" = '200'
+          grep -iF 'access-control-allow-origin: https://worldprotocolacademy.mk' /tmp/virtual-sande-hotfix/post.headers
+          grep -F '"ok": true' /tmp/virtual-sande-hotfix/post.json
+          grep -F '"answer"' /tmp/virtual-sande-hotfix/post.json
+
+          www_status=$(curl -sS -D /tmp/virtual-sande-hotfix/www.headers -o /dev/null -w '%{http_code}' -X OPTIONS \
+            -H 'Origin: https://www.worldprotocolacademy.mk' \
+            -H 'Access-Control-Request-Method: POST' \
+            -H 'Access-Control-Request-Headers: content-type' \
+            "$BASE/ask")
+          test "$www_status" = '204'
+          grep -iF 'access-control-allow-origin: https://www.worldprotocolacademy.mk' /tmp/virtual-sande-hotfix/www.headers
+
+      - name: Record successful hotfix evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "schema_version": "1.0",
+            "component": "Virtual Sande",
+            "incident": "custom_domain_cors_block",
+            "status": "DEPLOYED_AND_VERIFIED",
+            "production_worker": "wpa-virtual-sande-v35-1-production",
+            "allowed_origins_added": [
+              "https://worldprotocolacademy.mk",
+              "https://www.worldprotocolacademy.mk"
+            ],
+            "health": "PASSED",
+            "preflight_from_apex_domain": "PASSED",
+            "post_from_apex_domain": "PASSED",
+            "preflight_from_www_domain": "PASSED",
+            "workflow_run_id": os.environ.get("GITHUB_RUN_ID"),
+            "release_sha": os.environ.get("GITHUB_SHA")
+          }
+          Path('config/virtual-sande-custom-domain-cors-hotfix-result.json').write_text(json.dumps(evidence, indent=2) + '\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add config/virtual-sande-custom-domain-cors-hotfix-result.json
+          git commit -m 'Record verified Virtual Sande custom-domain CORS hotfix' || exit 0
+          git push
+
+      - name: Summary
+        run: |
+          {
+            echo '## Virtual Sande custom-domain CORS hotfix'
+            echo '- Production Worker deployment: **Passed**'
+            echo '- Health check: **Passed**'
+            echo '- worldprotocolacademy.mk preflight: **Passed**'
+            echo '- worldprotocolacademy.mk POST /ask: **Passed**'
+            echo '- www.worldprotocolacademy.mk preflight: **Passed**'
+          } >> "$GITHUB_STEP_SUMMARY"
