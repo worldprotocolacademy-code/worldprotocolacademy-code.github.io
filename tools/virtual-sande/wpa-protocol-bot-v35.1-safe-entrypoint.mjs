@@ -18,7 +18,11 @@ const MAX_URLS_IN_MESSAGE = 3;
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://worldprotocolacademy-code.github.io',
   'https://worldprotocolacademy.com',
-  'https://www.worldprotocolacademy.com'
+  'https://www.worldprotocolacademy.com',
+  'https://worldprotocolacademy.mk',
+  'https://www.worldprotocolacademy.mk',
+  'https://wpa.mk',
+  'https://www.wpa.mk'
 ];
 
 const STOPWORDS = new Set([
@@ -68,7 +72,7 @@ async function payload(request, url) {
     try {
       const body = await request.clone().json();
       message = message || body.message || body.q || body.prompt || '';
-      lang = lang || body.lang || body.rawLang || body.aiLang || '';
+      lang = lang || body.lang || body.rawLang || body.aiLang || body.language || '';
     } catch {}
   }
   return { message: sanitize(message), lang: String(lang).toLowerCase().trim() };
