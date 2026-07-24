@@ -48,6 +48,13 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Initialize diagnostic evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"status":"started","mode":"%s","run_id":"%s","sha":"%s"}\n' \
+            '${{ inputs.mode }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
       - name: Enforce protected gates
         env:
           MODE: ${{ inputs.mode }}
@@ -59,27 +66,58 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
-          test -n "$CLOUDFLARE_ACCOUNT_ID"
-          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          fail=0
+          : > "$OUT/gate-diagnostics.txt"
+          check_present() {
+            name="$1"; value="$2"
+            if [ -z "$value" ]; then
+              echo "MISSING: $name" | tee -a "$OUT/gate-diagnostics.txt"
+              echo "::error title=Missing protected secret::$name is unavailable in the selected GitHub environment."
+              fail=1
+            else
+              echo "PRESENT: $name" >> "$OUT/gate-diagnostics.txt"
+            fi
+          }
+          check_present CLOUDFLARE_ACCOUNT_ID "$CLOUDFLARE_ACCOUNT_ID"
+          check_present CLOUDFLARE_AI_SEARCH_TOKEN "$CLOUDFLARE_AI_SEARCH_TOKEN"
           if [ "$MODE" != PLAN_ONLY ]; then
-            test -n "$CLOUDFLARE_API_TOKEN"
-            test "$APPROVAL" = 'APPLY PROTOCOL-AI ZERO STATE V2'
-            printf '%s' "$PLAN_SHA" | grep -Eq '^[0-9a-f]{64}$'
+            check_present CLOUDFLARE_API_TOKEN "$CLOUDFLARE_API_TOKEN"
+            if [ "$APPROVAL" != 'APPLY PROTOCOL-AI ZERO STATE V2' ]; then
+              echo 'INVALID: approval_phrase' | tee -a "$OUT/gate-diagnostics.txt"
+              echo '::error title=Approval phrase mismatch::Use exactly APPLY PROTOCOL-AI ZERO STATE V2'
+              fail=1
+            fi
+            if ! printf '%s' "$PLAN_SHA" | grep -Eq '^[0-9a-f]{64}$'; then
+              echo 'INVALID: approved_plan_sha256' | tee -a "$OUT/gate-diagnostics.txt"
+              echo '::error title=Invalid plan SHA::The approved SHA must contain exactly 64 lowercase hexadecimal characters.'
+              fail=1
+            fi
           fi
-          if [ "$MODE" = CUTOVER_AND_VERIFY ]; then
-            printf '%s' "$TARGET_PREFIX" | grep -Eq '^__ai_search_ready_v2__/[0-9a-f]{20}/$'
+          if [ "$MODE" = CUTOVER_AND_VERIFY ] && ! printf '%s' "$TARGET_PREFIX" | grep -Eq '^__ai_search_ready_v2__/[0-9a-f]{20}/$'; then
+            echo 'INVALID: target_prefix' | tee -a "$OUT/gate-diagnostics.txt"
+            echo '::error title=Invalid target prefix::Use the exact versioned prefix printed by STAGE_ONLY.'
+            fail=1
           fi
+          if [ "$fail" -ne 0 ]; then
+            printf '{"status":"gate_failed","mode":"%s"}\n' "$MODE" > "$OUT/failure.json"
+            exit 1
+          fi
+          printf '{"status":"gate_passed","mode":"%s"}\n' "$MODE" > "$OUT/gate-result.json"
 
       - name: Install tools and test code
         run: |
           set -euo pipefail
+          trap 'code=$?; printf "{\"status\":\"tool_install_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
           sudo apt-get update -qq
-          sudo apt-get install -y -qq qpdf ghostscript jq
+          sudo apt-get install -y -qq qpdf ghostscript jq libreoffice
           cd /tmp
           npm install --silent --no-audit --no-fund wrangler@4
           python3 -m pip install --disable-pip-version-check --quiet requests
+          test -x "$WRANGLER_BIN"
+          command -v libreoffice >/dev/null
           python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v2.py"
           python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v2.py" --self-test
+          printf '{"status":"tools_ready"}\n' > "$OUT/tool-result.json"
 
       - name: Generate fresh plan
         env:
@@ -88,13 +126,22 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -euo pipefail
-          rm -rf "$OUT"; mkdir -p "$OUT"
+          trap 'code=$?; printf "{\"status\":\"plan_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
+          find "$OUT" -mindepth 1 -maxdepth 1 ! -name 'run-context.json' ! -name 'gate-diagnostics.txt' ! -name 'gate-result.json' ! -name 'tool-result.json' -exec rm -rf {} +
           python3 scripts/ai_search_zero_state_v2.py --mode PLAN --out "$OUT"
           cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verify approved plan
         if: ${{ inputs.mode != 'PLAN_ONLY' }}
-        run: test "$(cat "$OUT/migration-plan.sha256")" = '${{ inputs.approved_plan_sha256 }}'
+        run: |
+          set -euo pipefail
+          actual="$(cat "$OUT/migration-plan.sha256")"
+          expected='${{ inputs.approved_plan_sha256 }}'
+          if [ "$actual" != "$expected" ]; then
+            printf '{"status":"plan_sha_mismatch","actual":"%s","expected":"%s"}\n' "$actual" "$expected" > "$OUT/failure.json"
+            echo '::error title=Plan SHA mismatch::The corpus changed or the wrong PLAN_ONLY SHA was supplied.'
+            exit 1
+          fi
 
       - name: Stage clean versioned corpus
         if: ${{ inputs.mode == 'STAGE_ONLY' || inputs.mode == 'CUTOVER_AND_VERIFY' }}
@@ -103,9 +150,22 @@ jobs:
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          set +e
           python3 scripts/ai_search_zero_state_v2.py --mode STAGE \
             --approved-sha '${{ inputs.approved_plan_sha256 }}' --out "$OUT" 2>&1 | tee "$OUT/stage.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ]; then
+            last_item="$(grep -E '^\[[0-9]+/[0-9]+\] ' "$OUT/stage.log" | tail -n 1 || true)"
+            python3 - "$OUT/failure.json" "$code" "$last_item" <<'PY'
+          import json,sys
+          from pathlib import Path
+          p=Path(sys.argv[1]); log=p.with_name('stage.log')
+          p.write_text(json.dumps({'status':'stage_failed','exit_code':int(sys.argv[2]),'last_item':sys.argv[3],'log_tail':log.read_text(errors='replace').splitlines()[-120:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+            exit "$code"
+          fi
           cat "$OUT/stage-summary.json" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save current AI Search configuration
@@ -193,6 +253,8 @@ jobs:
             echo '- Staging writes only below a versioned `__ai_search_ready_v2__/` prefix.'
             echo '- Empty, unsupported, media and archive objects remain preserved in the source bucket but are omitted from the active AI Search prefix.'
             echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
+            [ -f "$OUT/gate-diagnostics.txt" ] && { echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'; }
+            [ -f "$OUT/failure.json" ] && { echo '```json'; cat "$OUT/failure.json"; echo '```'; }
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload evidence
@@ -202,4 +264,4 @@ jobs:
           name: ai-search-zero-state-v2-${{ github.run_number }}
           path: ${{ env.OUT }}
           retention-days: 90
-          if-no-files-found: warn
+          if-no-files-found: error
