@@ -169,7 +169,7 @@
     installAnchorFallback();
     installMobileMenu();
     installJournalLiveEntries();
-    addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-restore2');
+    addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-offline3');
     addScript('wpa-corpus-sync-20260723', '/scripts/wpa-corpus-sync-20260723.js?v=20260723-4');
     addScript('wpa-corpus-final-audit-20260723', '/scripts/wpa-corpus-final-audit-20260723.js?v=20260723-1');
   }
