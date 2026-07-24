@@ -41,9 +41,9 @@
   }
 
   function installContrastFixes() {
-    if (document.getElementById('wpa-contrast-fix-20260723')) return;
+    if (document.getElementById('wpa-contrast-fix-20260724-2')) return;
     var style = document.createElement('style');
-    style.id = 'wpa-contrast-fix-20260723';
+    style.id = 'wpa-contrast-fix-20260724-2';
     style.textContent = [
       'html[data-wpa-page="index"] .cta-band .btn-actions .btn-ghost{color:#f8f4ee!important;border:1px solid rgba(232,212,154,.55)!important;}',
       'html[data-wpa-page="index"] .cta-band .btn-actions .btn-ghost:hover{color:#071326!important;background:#e8d49a!important;border-color:#e8d49a!important;}',
@@ -56,7 +56,11 @@
       'html[data-wpa-page="institute"] a.btn-ghost[href*="tools/wpa-five-engines.html"]:hover,',
       'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/academic-search-hub/"]:hover,',
       'html[data-wpa-page="institute"] a.btn-ghost[href*="/tools/wpa-watch/"]:hover,',
-      'html[data-wpa-page="institute"] a.btn-ghost[href*="/journal/watch/"]:hover{background:var(--navy)!important;color:var(--cream)!important;border-color:var(--navy)!important;}'
+      'html[data-wpa-page="institute"] a.btn-ghost[href*="/journal/watch/"]:hover{background:var(--navy)!important;color:var(--cream)!important;border-color:var(--navy)!important;}',
+      '.wpa-public-vs-input,.wpa-inst-vs-input{border:1px solid #d7c485!important;outline:none!important;box-shadow:none!important;caret-color:#7b5f1f!important;accent-color:#c9a84c!important;}',
+      '.wpa-public-vs-input:focus,.wpa-public-vs-input:focus-visible,.wpa-inst-vs-input:focus,.wpa-inst-vs-input:focus-visible{border-color:#c9a84c!important;outline:2px solid rgba(201,168,76,.24)!important;outline-offset:1px!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important;}',
+      '.wpa-public-vs-input:invalid,.wpa-public-vs-input:user-invalid,.wpa-inst-vs-input:invalid,.wpa-inst-vs-input:user-invalid{border-color:#d7c485!important;box-shadow:none!important;}',
+      '.wpa-public-vs-form:focus-within,.wpa-inst-vs-form:focus-within{border-top-color:#d7c485!important;box-shadow:none!important;}'
     ].join('');
     document.head.appendChild(style);
   }
