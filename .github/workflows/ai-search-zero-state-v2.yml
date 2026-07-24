@@ -145,16 +145,21 @@ jobs:
           set -euo pipefail
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
           curl --fail --silent --show-error -X POST "$api/jobs" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' -d '{"description":"WPA zero-state v2 sync"}' > "$OUT/job.json"
+          jq -e '.success==true' "$OUT/job.json" >/dev/null
           job="$(jq -r '.result.id' "$OUT/job.json")"; test -n "$job"
+          finished=false
           for n in $(seq 1 240); do
             curl --fail --silent --show-error "$api/jobs/$job" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$OUT/job-state.json"
-            [ -n "$(jq -r '.result.ended_at//empty' "$OUT/job-state.json")" ] && break
+            jq -e '.success==true' "$OUT/job-state.json" >/dev/null
+            if [ -n "$(jq -r '.result.ended_at//empty' "$OUT/job-state.json")" ]; then finished=true; break; fi
             sleep 15
           done
+          [ "$finished" = true ]
           mkdir -p "$OUT/post"; page=1
           while :; do
             f="$OUT/post/$page.json"; curl --fail --silent --show-error "$api/items?page=$page&per_page=50" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$f"
-            count="$(jq '.result|length' "$f")"; [ "$count" -lt 50 ] && break; page=$((page+1))
+            jq -e '.success==true' "$f" >/dev/null
+            count="$(jq '.result|length' "$f")"; [ "$count" -lt 50 ] && break; page=$((page+1)); [ "$page" -le 200 ]
           done
           jq -s '[.[].result[]?]' "$OUT"/post/*.json > "$OUT/post-items.json"
           jq '[.[]|select((.status//""|ascii_downcase)|IN("skipped","skip","error","errored","failed","failure","outdated","queued","running","processing"))]' "$OUT/post-items.json" > "$OUT/post-problems.json"
@@ -172,10 +177,23 @@ jobs:
           jq -n --slurpfile p "$OUT/original-source-params.json" '{source_params:$p[0]}' > "$OUT/rollback-request.json"
           curl --fail --silent --show-error -X PUT "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' --data-binary @"$OUT/rollback-request.json" > "$OUT/rollback-response.json"
           jq -e '.success==true' "$OUT/rollback-response.json" >/dev/null
+          curl --fail --silent --show-error -X POST "$api/jobs" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" -H 'Content-Type: application/json' -d '{"description":"Automatic rollback after zero-state v2 verification failure"}' > "$OUT/rollback-job.json"
+          jq -e '.success==true' "$OUT/rollback-job.json" >/dev/null
 
       - name: Enforce final result
         if: ${{ inputs.mode == 'CUTOVER_AND_VERIFY' }}
         run: test '${{ steps.verify.outcome }}' = success
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search Zero State v2 safety boundary'
+            echo '- No original R2 object is deleted, moved, or overwritten.'
+            echo '- Staging writes only below a versioned `__ai_search_ready_v2__/` prefix.'
+            echo '- Empty, unsupported, media and archive objects remain preserved in the source bucket but are omitted from the active AI Search prefix.'
+            echo '- Failed verification restores the previous source parameters and triggers a rollback sync.'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload evidence
         if: always()
