@@ -10,6 +10,7 @@ ROOT='__ai_search_ready_v3__'
 STAGING_ROOTS=('__ai_search_ready_v2__/','__ai_search_ready_v3__/')
 LIMIT=3_700_000
 R2_ATTEMPTS=8
+POST_PUT_SETTLE_SECONDS=int(os.getenv('R2_POST_PUT_SETTLE_SECONDS','210'))
 SUPPORTED={'.txt','.rst','.log','.ini','.conf','.env','.properties','.toml','.md','.mdx','.tex','.sh','.ps1','.json','.sql','.yaml','.yml','.css','.js','.php','.py','.rb','.java','.c','.cpp','.h','.hpp','.go','.rs','.swift','.dart','.pdf','.jpeg','.jpg','.png','.webp','.svg','.gif','.bmp','.html','.htm','.xml','.xlsx','.xlsm','.xlsb','.xls','.docx','.ods','.odt','.csv','.numbers'}
 OMIT={'.mp3','.wav','.m4a','.aac','.flac','.ogg','.mp4','.mov','.avi','.mkv','.webm','.zip','.rar','.7z','.gz','.tar','.exe','.dll','.bin','.iso'}
 
@@ -135,9 +136,15 @@ def pdf_visual_equivalent(a,b,root,target):
 def add_manifest(manifest,source,target,kind,p,digest=None):
  manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':p.stat().st_size,'sha256':digest or hfile(p)})
 
-def upload(cf,src,target,verify,manifest,source,kind,allow_pdf_equivalent=False):
+def queue_upload(cf,src,target,pending,source,kind,before):
+ if any(row['target']==target for row in pending): raise RuntimeError(f'duplicate pending target {target}')
+ cf.put(target,src,ctype(src))
+ pending.append({'src':src,'target':target,'source':source,'kind':kind,'sha256':before,'bytes':src.stat().st_size,'uploaded_at':time.monotonic()})
+ print(f'DEFER: queued SHA-256 read-back after R2 settle window for {target}',flush=True)
+
+def upload(cf,src,target,verify,manifest,pending,source,kind,allow_pdf_equivalent=False):
  if not 0<src.stat().st_size<=LIMIT: raise RuntimeError(f'bad derivative size {src}')
- before=hfile(src); got=verify/hbytes(target.encode()); after=''
+ before=hfile(src); got=verify/hbytes(target.encode())
  got.unlink(missing_ok=True)
  if cf.get(target,got,allow_missing=True):
   after=hfile(got)
@@ -151,16 +158,31 @@ def upload(cf,src,target,verify,manifest,source,kind,allow_pdf_equivalent=False)
     add_manifest(manifest,source,target,kind,got,after)
     return
    raise RuntimeError(f'existing PDF target differs visually; refusing overwrite: {target}')
- for attempt in range(1,4):
-  got.unlink(missing_ok=True); cf.put(target,src,ctype(src)); cf.get(target,got); after=hfile(got)
-  if before==after: break
-  print(f'WARNING: hash mismatch attempt {attempt}/3 for {target}: expected={before} actual={after}',flush=True)
-  if attempt<3: time.sleep(attempt*2)
- else:
-  raise RuntimeError(f'hash mismatch after 3 attempts {target}: expected={before} actual={after}')
- add_manifest(manifest,source,target,kind,got,after)
+ queue_upload(cf,src,target,pending,source,kind,before)
 
-def splitpdf(cf,src,source,prefix,w,verify,manifest):
+def verify_pending(cf,pending,verify,manifest,settle_seconds=POST_PUT_SETTLE_SECONDS):
+ total=len(pending)
+ if not total:
+  print('VERIFY PHASE: no newly uploaded objects require deferred read-back',flush=True)
+  return
+ print(f'VERIFY PHASE: exact SHA-256 read-back for {total} newly uploaded objects after a {settle_seconds}s minimum settle window',flush=True)
+ for i,row in enumerate(pending,1):
+  target=row['target']; src=row['src']; expected=row['sha256']; got=verify/hbytes(target.encode())
+  age=time.monotonic()-row['uploaded_at']; wait=max(0.0,settle_seconds-age)
+  if wait>0:
+   print(f'[{i}/{total}] WAIT {wait:.1f}s before read-back {target}',flush=True)
+   time.sleep(wait)
+  for attempt in range(1,4):
+   got.unlink(missing_ok=True); cf.get(target,got); actual=hfile(got)
+   if actual==expected:
+    add_manifest(manifest,row['source'],target,row['kind'],got,actual)
+    print(f'[{i}/{total}] VERIFIED deferred SHA-256 read-back {target}',flush=True)
+    break
+   print(f'WARNING: deferred hash mismatch attempt {attempt}/3 for {target}: expected={expected} actual={actual}',flush=True)
+   if attempt==3: raise RuntimeError(f'deferred hash mismatch after 3 attempts {target}: expected={expected} actual={actual}')
+   cf.put(target,src,ctype(src)); row['uploaded_at']=time.monotonic(); time.sleep(settle_seconds)
+
+def splitpdf(cf,src,source,prefix,w,verify,manifest,pending):
  qpdf(['--check',src]); pages=int(qpdf(['--show-npages',src],True).stdout); start=1; n=1; stem=str(PurePosixPath(source).with_suffix('')); sourcehash=hfile(src)[:20]
  while start<=pages:
   span=min(20,pages-start+1)
@@ -173,9 +195,9 @@ def splitpdf(cf,src,source,prefix,w,verify,manifest):
    sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite','-dPDFSETTINGS=/screen',f'-sOutputFile={comp}',out]); out.unlink(); stabilize_pdf(comp); out=comp
    if out.stat().st_size>LIMIT: raise RuntimeError(f'single page over limit {source}')
    break
-  qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF',allow_pdf_equivalent=True); start=end+1; n+=1
+  qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,pending,source,'SPLIT_PDF',allow_pdf_equivalent=True); start=end+1; n+=1
 
-def jsonl_to_json(cf,src,source,prefix,w,verify,manifest):
+def jsonl_to_json(cf,src,source,prefix,w,verify,manifest,pending):
  rows=[]
  for n,line in enumerate(src.read_text(encoding='utf-8-sig').splitlines(),1):
   if not line.strip(): continue
@@ -192,20 +214,20 @@ def jsonl_to_json(cf,src,source,prefix,w,verify,manifest):
  stem=str(PurePosixPath(source).with_suffix(''))
  for i,chunk in enumerate(chunks,1):
   out=w/f'part-{i:04d}.json'; out.write_text(json.dumps(chunk,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-  upload(cf,out,f'{prefix}{stem}.__json_parts__/{out.name}',verify,manifest,source,'JSONL_TO_JSON')
+  upload(cf,out,f'{prefix}{stem}.__json_parts__/{out.name}',verify,manifest,pending,source,'JSONL_TO_JSON')
 
 def ensure_libreoffice():
  if shutil.which('libreoffice'): return
  sh(['sudo','apt-get','update','-qq']); sh(['sudo','apt-get','install','-y','-qq','libreoffice'])
  if not shutil.which('libreoffice'): raise RuntimeError('libreoffice installation failed')
-def ppt_to_pdf(cf,src,source,prefix,w,verify,manifest):
+def ppt_to_pdf(cf,src,source,prefix,w,verify,manifest,pending):
  ensure_libreoffice(); outdir=w/'office'; outdir.mkdir(exist_ok=True)
  sh(['libreoffice','--headless','--convert-to','pdf','--outdir',outdir,src])
  pdfs=list(outdir.glob('*.pdf'))
  if len(pdfs)!=1: raise RuntimeError(f'PPT conversion failed {source}')
  pdf=pdfs[0]; stabilize_pdf(pdf); target_source=str(PurePosixPath(source).with_suffix('.pdf'))
- if pdf.stat().st_size<=LIMIT: upload(cf,pdf,prefix+target_source,verify,manifest,source,'PPT_TO_PDF',allow_pdf_equivalent=True)
- else: splitpdf(cf,pdf,target_source,prefix,w,verify,manifest)
+ if pdf.stat().st_size<=LIMIT: upload(cf,pdf,prefix+target_source,verify,manifest,pending,source,'PPT_TO_PDF',allow_pdf_equivalent=True)
+ else: splitpdf(cf,pdf,target_source,prefix,w,verify,manifest,pending)
 
 def build(cf):
  rows=[]
@@ -227,6 +249,23 @@ def self_test_pdf_equivalence():
   if not pdf_visual_equivalent(a,b,root/'eq','self-test-equivalent'): raise AssertionError('equivalent PDF self-test failed')
   if pdf_visual_equivalent(a,c,root/'neq','self-test-different'): raise AssertionError('different PDF self-test failed')
 
+def self_test_deferred_verification():
+ class FakeCF:
+  def __init__(self): self.remote={}; self.puts=0
+  def get(self,k,p,allow_missing=False):
+   if k not in self.remote:
+    if allow_missing: return False
+    raise RuntimeError('missing fake object')
+   p.parent.mkdir(parents=True,exist_ok=True); p.write_bytes(self.remote[k]); return True
+  def put(self,k,p,ct): self.remote[k]=p.read_bytes(); self.puts+=1; return True
+ with tempfile.TemporaryDirectory() as td:
+  root=Path(td); src=root/'source.txt'; verify=root/'verify'; verify.mkdir(); src.write_bytes(b'deferred-r2-readback-test')
+  cf=FakeCF(); manifest=[]; pending=[]
+  upload(cf,src,'target.txt',verify,manifest,pending,'source.txt','COPY')
+  if manifest or len(pending)!=1 or cf.puts!=1: raise AssertionError('deferred upload queue self-test failed')
+  verify_pending(cf,pending,verify,manifest,settle_seconds=0)
+  if len(manifest)!=1 or manifest[0]['sha256']!=hfile(src): raise AssertionError('deferred read-back self-test failed')
+
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--mode',choices=['PLAN','STAGE']); ap.add_argument('--approved-sha',default=''); ap.add_argument('--out',type=Path); ap.add_argument('--self-test',action='store_true'); x=ap.parse_args()
  if x.self_test:
@@ -234,14 +273,15 @@ def main():
   for item,want in tests:
    got=classify(item)
    if got!=want: raise AssertionError((item,got,want))
-  self_test_pdf_equivalence(); print('self-test: OK'); return
+  if POST_PUT_SETTLE_SECONDS<0: raise AssertionError('negative R2 settle window')
+  self_test_deferred_verification(); self_test_pdf_equivalence(); print('self-test: OK'); return
  if not x.mode or x.out is None: ap.error('--mode and --out required')
  x.out.mkdir(parents=True,exist_ok=True); cf=CF(); plan,approval=build(cf); sha=plan['approval_sha256']
  (x.out/'migration-plan.json').write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n'); (x.out/'approval-plan.json').write_bytes(canon(approval)); (x.out/'migration-plan.sha256').write_text(sha+'\n')
  counts={'generation':'v3','total':len(plan['items']),'target_prefix':plan['target_prefix'],'approval_sha256':sha,'actions':dict(Counter(r['action'] for r in plan['items'])),'statuses':dict(Counter(r['status'] for r in plan['items']))}; (x.out/'counts.json').write_text(json.dumps(counts,indent=2)+'\n'); print(json.dumps(counts,indent=2))
  if x.mode=='PLAN': return
  if x.approved_sha!=sha: raise RuntimeError('approved plan SHA mismatch')
- manifest=[]; omitted=[]
+ manifest=[]; omitted=[]; pending=[]
  with tempfile.TemporaryDirectory() as td:
   root=Path(td); verify=root/'verify'; verify.mkdir()
   for i,r in enumerate(plan['items'],1):
@@ -249,14 +289,15 @@ def main():
    if a.startswith('OMIT_'): omitted.append({'source_key':k,'reason':a}); continue
    w=root/hbytes(k.encode())[:20]; w.mkdir(); src=w/(PurePosixPath(k).name or 'source.bin'); cf.get(k,src); is_empty,why=empty(src,k)
    if is_empty: omitted.append({'source_key':k,'reason':why}); continue
-   if a=='SPLIT_PDF' or (src.suffix.lower()=='.pdf' and src.stat().st_size>LIMIT): splitpdf(cf,src,k,plan['target_prefix'],w,verify,manifest)
-   elif a=='JSONL_TO_JSON': jsonl_to_json(cf,src,k,plan['target_prefix'],w,verify,manifest)
-   elif a=='PPT_TO_PDF': ppt_to_pdf(cf,src,k,plan['target_prefix'],w,verify,manifest)
-   elif src.suffix.lower() in SUPPORTED and src.stat().st_size<=LIMIT: upload(cf,src,plan['target_prefix']+k,verify,manifest,k,'COPY')
+   if a=='SPLIT_PDF' or (src.suffix.lower()=='.pdf' and src.stat().st_size>LIMIT): splitpdf(cf,src,k,plan['target_prefix'],w,verify,manifest,pending)
+   elif a=='JSONL_TO_JSON': jsonl_to_json(cf,src,k,plan['target_prefix'],w,verify,manifest,pending)
+   elif a=='PPT_TO_PDF': ppt_to_pdf(cf,src,k,plan['target_prefix'],w,verify,manifest,pending)
+   elif src.suffix.lower() in SUPPORTED and src.stat().st_size<=LIMIT: upload(cf,src,plan['target_prefix']+k,verify,manifest,pending,k,'COPY')
    else: omitted.append({'source_key':k,'reason':'unsupported-or-over-limit'})
+  newly_uploaded=len(pending); verify_pending(cf,pending,verify,manifest)
  with (x.out/'staged-manifest.csv').open('w',newline='',encoding='utf-8') as f:
   q=csv.DictWriter(f,fieldnames=['source_key','target_key','kind','bytes','sha256']); q.writeheader(); q.writerows(manifest)
  with (x.out/'omitted-items.csv').open('w',newline='',encoding='utf-8') as f:
   q=csv.DictWriter(f,fieldnames=['source_key','reason']); q.writeheader(); q.writerows(omitted)
- summary={'generation':'v3','source_items':len(plan['items']),'staged_objects':len(manifest),'omitted_items':len(omitted),'target_prefix':plan['target_prefix'],'kinds':dict(Counter(r['kind'] for r in manifest))}; (x.out/'stage-summary.json').write_text(json.dumps(summary,indent=2)+'\n'); print(json.dumps(summary,indent=2))
+ summary={'generation':'v3','source_items':len(plan['items']),'staged_objects':len(manifest),'omitted_items':len(omitted),'target_prefix':plan['target_prefix'],'new_uploads_verified':newly_uploaded,'reused_objects':len(manifest)-newly_uploaded,'kinds':dict(Counter(r['kind'] for r in manifest))}; (x.out/'stage-summary.json').write_text(json.dumps(summary,indent=2)+'\n'); print(json.dumps(summary,indent=2))
 if __name__=='__main__': main()
