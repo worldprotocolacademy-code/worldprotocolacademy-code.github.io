@@ -10,6 +10,8 @@ ROOT='__ai_search_ready_v3__'
 STAGING_ROOTS=('__ai_search_ready_v2__/','__ai_search_ready_v3__/')
 LIMIT=3_700_000
 R2_ATTEMPTS=8
+R2_GET_ATTEMPTS=int(os.getenv('R2_GET_ATTEMPTS','12'))
+R2_GET_BACKOFF_CAP=int(os.getenv('R2_GET_BACKOFF_CAP','30'))
 POST_PUT_SETTLE_SECONDS=int(os.getenv('R2_POST_PUT_SETTLE_SECONDS','210'))
 SUPPORTED={'.txt','.rst','.log','.ini','.conf','.env','.properties','.toml','.md','.mdx','.tex','.sh','.ps1','.json','.sql','.yaml','.yml','.css','.js','.php','.py','.rb','.java','.c','.cpp','.h','.hpp','.go','.rs','.swift','.dart','.pdf','.jpeg','.jpg','.png','.webp','.svg','.gif','.bmp','.html','.htm','.xml','.xlsx','.xlsm','.xlsb','.xls','.docx','.ods','.odt','.csv','.numbers'}
 OMIT={'.mp3','.wav','.m4a','.aac','.flac','.ogg','.mp4','.mov','.avi','.mkv','.webm','.zip','.rar','.7z','.gz','.tar','.exe','.dll','.bin','.iso'}
@@ -54,6 +56,10 @@ def classify(o):
  if ext in SUPPORTED: return 'COPY'
  return 'OMIT_UNSUPPORTED'
 
+def compact_error(text,limit=800):
+ value=' '.join((text or '').strip().split())
+ return value[-limit:] if value else 'no stdout/stderr returned'
+
 class CF:
  def __init__(self):
   self.a=os.environ['CLOUDFLARE_ACCOUNT_ID']; self.ai=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']; self.i=os.getenv('AI_SEARCH_INSTANCE','protocol-ai'); self.b=os.getenv('R2_BUCKET','protocol-kb'); self.w=os.getenv('WRANGLER_BIN','wrangler')
@@ -68,9 +74,9 @@ class CF:
    if len(batch)<50: return out
    p+=1
    if p>200: raise RuntimeError('pagination safety limit')
- def r2(self,args,allow_missing=False):
+ def r2(self,args,allow_missing=False,retry_reads=False,attempts=R2_ATTEMPTS):
   cmd=[self.w,'r2','object',*map(str,args)]
-  for attempt in range(1,R2_ATTEMPTS+1):
+  for attempt in range(1,attempts+1):
    print('+',' '.join(cmd),flush=True)
    r=subprocess.run(cmd,text=True,capture_output=True)
    if r.returncode==0:
@@ -79,19 +85,27 @@ class CF:
     time.sleep(0.20)
     return True
    text=(r.stdout or '')+'\n'+(r.stderr or '')
-   low=text.lower()
-   if allow_missing and ('404' in low or 'not found' in low or 'does not exist' in low): return False
-   transient=('429' in low or '10058' in low or 'too many requests' in low or 'reduce your rate' in low or 'timed out' in low or 'timeout' in low or 'econnreset' in low or 'temporarily unavailable' in low)
-   if transient and attempt<R2_ATTEMPTS:
-    delay=min(60,2**attempt)
-    print(f'WARNING: transient R2 failure attempt {attempt}/{R2_ATTEMPTS}; retrying in {delay}s',flush=True)
+   low=text.lower(); detail=compact_error(text)
+   missing=('404' in low or 'not found' in low or 'does not exist' in low or 'no such key' in low)
+   if missing:
+    if allow_missing: return False
+    print(f'ERROR: permanent R2 missing-object failure: {detail}',flush=True)
+    raise subprocess.CalledProcessError(r.returncode,cmd,output=r.stdout,stderr=r.stderr)
+   permanent_auth=('401' in low or '403' in low or 'unauthorized' in low or 'forbidden' in low or 'authentication' in low or 'permission denied' in low)
+   transient=('429' in low or '10058' in low or 'too many requests' in low or 'reduce your rate' in low or 'rate limit' in low or 'timed out' in low or 'timeout' in low or 'econnreset' in low or 'temporarily unavailable' in low or 'fetch failed' in low or 'network' in low or 'connection' in low or 'internal error' in low or 'service unavailable' in low)
+   should_retry=(retry_reads and not permanent_auth) or transient
+   if should_retry and attempt<attempts:
+    delay=min(R2_GET_BACKOFF_CAP if retry_reads else 60,2**attempt)
+    kind='read' if retry_reads else 'transient'
+    print(f'WARNING: R2 {kind} failure attempt {attempt}/{attempts}; retrying in {delay}s; reason={detail}',flush=True)
     time.sleep(delay)
     continue
+   print(f'ERROR: R2 command failed after attempt {attempt}/{attempts}; reason={detail}',flush=True)
    raise subprocess.CalledProcessError(r.returncode,cmd,output=r.stdout,stderr=r.stderr)
   return False
  def get(self,k,p,allow_missing=False):
   p.parent.mkdir(parents=True,exist_ok=True)
-  return self.r2(['get',f'{self.b}/{k}','--remote','--file',p],allow_missing=allow_missing)
+  return self.r2(['get',f'{self.b}/{k}','--remote','--file',p],allow_missing=allow_missing,retry_reads=True,attempts=R2_GET_ATTEMPTS)
  def put(self,k,p,ct):
   return self.r2(['put',f'{self.b}/{k}','--remote','--force','--file',p,'--content-type',ct])
 
@@ -274,6 +288,8 @@ def main():
    got=classify(item)
    if got!=want: raise AssertionError((item,got,want))
   if POST_PUT_SETTLE_SECONDS<0: raise AssertionError('negative R2 settle window')
+  if R2_GET_ATTEMPTS<R2_ATTEMPTS or R2_GET_BACKOFF_CAP<1: raise AssertionError('invalid R2 GET retry configuration')
+  if compact_error('  one\n two  ')!='one two': raise AssertionError('R2 error compaction self-test failed')
   self_test_deferred_verification(); self_test_pdf_equivalence(); print('self-test: OK'); return
  if not x.mode or x.out is None: ap.error('--mode and --out required')
  x.out.mkdir(parents=True,exist_ok=True); cf=CF(); plan,approval=build(cf); sha=plan['approval_sha256']
