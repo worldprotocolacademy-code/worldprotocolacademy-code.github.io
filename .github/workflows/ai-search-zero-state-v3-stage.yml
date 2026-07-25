@@ -102,6 +102,7 @@ jobs:
           command -v libreoffice >/dev/null
           command -v pdftoppm >/dev/null
           python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py"
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3_runner.py"
           python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py" --self-test 2>&1 | tee "$OUT/self-test.log"
           printf '{"status":"tools_ready","generation":"v3"}\n' > "$OUT/tool-result.json"
 
@@ -162,7 +163,7 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          python3 scripts/ai_search_zero_state_v3.py --mode STAGE \
+          python3 scripts/ai_search_zero_state_v3_runner.py --mode STAGE \
             --approved-sha "$APPROVED_PLAN_SHA256" --out "$OUT" 2>&1 | tee "$OUT/stage.log"
           code=${PIPESTATUS[0]}
           set -e
