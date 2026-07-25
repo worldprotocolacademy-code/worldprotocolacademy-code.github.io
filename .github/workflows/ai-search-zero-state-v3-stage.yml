@@ -39,6 +39,8 @@ jobs:
       OUT: /tmp/ai-search-zero-state-v3
       APPROVED_PLAN_SHA256: 80cd2f51cf9ddb42956260707d3fa064799ffe3d75c21a65bda018c0ea2caecc
       APPROVED_TARGET_PREFIX: __ai_search_ready_v3__/80cd2f51cf9ddb429562/
+      STAGING_EXCLUDE_V2: '**/__ai_search_ready_v2__/**'
+      STAGING_EXCLUDE_V3: '**/__ai_search_ready_v3__/**'
 
     steps:
       - uses: actions/checkout@v5
@@ -92,14 +94,15 @@ jobs:
           set -euo pipefail
           trap 'code=$?; printf "{\"status\":\"tool_install_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
           sudo apt-get update -qq
-          sudo apt-get install -y -qq qpdf ghostscript jq libreoffice
+          sudo apt-get install -y -qq qpdf ghostscript jq libreoffice poppler-utils
           cd /tmp
           npm install --silent --no-audit --no-fund wrangler@4
           python3 -m pip install --disable-pip-version-check --quiet requests
           test -x "$WRANGLER_BIN"
           command -v libreoffice >/dev/null
+          command -v pdftoppm >/dev/null
           python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py"
-          python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py" --self-test
+          python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py" --self-test 2>&1 | tee "$OUT/self-test.log"
           printf '{"status":"tools_ready","generation":"v3"}\n' > "$OUT/tool-result.json"
 
       - name: Generate fresh v3 plan
@@ -109,7 +112,7 @@ jobs:
         run: |
           set -euo pipefail
           trap 'code=$?; printf "{\"status\":\"plan_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
-          find "$OUT" -mindepth 1 -maxdepth 1 ! -name 'run-context.json' ! -name 'gate-diagnostics.txt' ! -name 'gate-result.json' ! -name 'tool-result.json' -exec rm -rf {} +
+          find "$OUT" -mindepth 1 -maxdepth 1 ! -name 'run-context.json' ! -name 'gate-diagnostics.txt' ! -name 'gate-result.json' ! -name 'tool-result.json' ! -name 'self-test.log' -exec rm -rf {} +
           python3 scripts/ai_search_zero_state_v3.py --mode PLAN --out "$OUT"
           cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
 
@@ -120,6 +123,35 @@ jobs:
           actual="$(cat "$OUT/migration-plan.sha256")"
           test "$actual" = "$APPROVED_PLAN_SHA256"
           test "$(jq -r '.target_prefix' "$OUT/counts.json")" = "$APPROVED_TARGET_PREFIX"
+
+      - name: Require AI Search staging exclusions
+        if: ${{ inputs.mode == 'STAGE_ONLY' }}
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          curl --fail --silent --show-error "$api" \
+            -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > "$OUT/instance-preflight.json"
+          jq -e '.success == true' "$OUT/instance-preflight.json" >/dev/null
+          jq '.result.source_params // {}' "$OUT/instance-preflight.json" > "$OUT/source-params-preflight.json"
+          if ! jq -e --arg v2 "$STAGING_EXCLUDE_V2" --arg v3 "$STAGING_EXCLUDE_V3" '
+            (.result.source_params.exclude_items // []) as $e |
+            (($e | index($v2)) != null) and (($e | index($v3)) != null)
+          ' "$OUT/instance-preflight.json" >/dev/null; then
+            jq -n \
+              --arg status 'staging_exclusions_missing' \
+              --arg required_v2 "$STAGING_EXCLUDE_V2" \
+              --arg required_v3 "$STAGING_EXCLUDE_V3" \
+              --slurpfile current "$OUT/source-params-preflight.json" \
+              '{status:$status,required_exclude_items:[$required_v2,$required_v3],current_source_params:$current[0]}' \
+              > "$OUT/failure.json"
+            echo '::error title=AI Search staging paths are not excluded::Add both required exclude patterns in protocol-ai Settings > Path Filters, save, and sync before staging.'
+            exit 1
+          fi
+          printf '{"status":"staging_exclusions_verified","patterns":["%s","%s"]}\n' \
+            "$STAGING_EXCLUDE_V2" "$STAGING_EXCLUDE_V3" > "$OUT/source-filter-gate.json"
 
       - name: Stage clean v3 corpus
         if: ${{ inputs.mode == 'STAGE_ONLY' }}
@@ -157,7 +189,8 @@ jobs:
             echo '- No original R2 object is deleted, moved, or overwritten.'
             echo '- Writes are isolated below `__ai_search_ready_v3__/`.'
             echo '- Existing v2 staging objects remain untouched.'
-            echo '- Every staged object requires an exact SHA-256 read-back match.'
+            echo '- STAGE_ONLY is blocked unless AI Search excludes both v2 and v3 staging roots.'
+            echo '- Every new staged object requires an exact SHA-256 read-back match.'
             if [ -f "$OUT/gate-diagnostics.txt" ]; then
               echo '```text'; cat "$OUT/gate-diagnostics.txt"; echo '```'
             fi
