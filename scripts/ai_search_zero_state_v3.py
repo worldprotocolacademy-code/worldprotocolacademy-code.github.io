@@ -114,7 +114,28 @@ def stabilize_pdf(p):
  if hfile(a)!=hfile(b): raise RuntimeError(f'PDF did not stabilize byte-for-byte: {p}')
  p.unlink(); a.unlink(); b.replace(p)
 
-def upload(cf,src,target,verify,manifest,source,kind):
+def pdf_render_hashes(p,root,label):
+ outdir=root/(label+'-'+hbytes(str(p).encode())[:12])
+ if outdir.exists(): shutil.rmtree(outdir)
+ outdir.mkdir(parents=True)
+ prefix=outdir/'page'
+ sh(['pdftoppm','-r','72','-gray',p,prefix],cap=True)
+ files=sorted(outdir.glob('page-*.pgm'))
+ if not files: raise RuntimeError(f'PDF rendering produced no pages: {p}')
+ return [hfile(x) for x in files]
+
+def pdf_visual_equivalent(a,b,root,target):
+ qpdf(['--check',a]); qpdf(['--check',b])
+ pages_a=int(qpdf(['--show-npages',a],True).stdout)
+ pages_b=int(qpdf(['--show-npages',b],True).stdout)
+ if pages_a!=pages_b or pages_a<1: return False
+ keyhash=hbytes(target.encode())[:16]
+ return pdf_render_hashes(a,root,'local-'+keyhash)==pdf_render_hashes(b,root,'remote-'+keyhash)
+
+def add_manifest(manifest,source,target,kind,p,digest=None):
+ manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':p.stat().st_size,'sha256':digest or hfile(p)})
+
+def upload(cf,src,target,verify,manifest,source,kind,allow_pdf_equivalent=False):
  if not 0<src.stat().st_size<=LIMIT: raise RuntimeError(f'bad derivative size {src}')
  before=hfile(src); got=verify/hbytes(target.encode()); after=''
  got.unlink(missing_ok=True)
@@ -122,8 +143,14 @@ def upload(cf,src,target,verify,manifest,source,kind):
   after=hfile(got)
   if before==after:
    print(f'REUSE: verified existing target {target}',flush=True)
-   manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':src.stat().st_size,'sha256':before})
+   add_manifest(manifest,source,target,kind,got,after)
    return
+  if allow_pdf_equivalent:
+   if pdf_visual_equivalent(src,got,verify/'pdf-compare',target):
+    print(f'REUSE: visually equivalent existing PDF target {target}',flush=True)
+    add_manifest(manifest,source,target,kind,got,after)
+    return
+   raise RuntimeError(f'existing PDF target differs visually; refusing overwrite: {target}')
  for attempt in range(1,4):
   got.unlink(missing_ok=True); cf.put(target,src,ctype(src)); cf.get(target,got); after=hfile(got)
   if before==after: break
@@ -131,7 +158,7 @@ def upload(cf,src,target,verify,manifest,source,kind):
   if attempt<3: time.sleep(attempt*2)
  else:
   raise RuntimeError(f'hash mismatch after 3 attempts {target}: expected={before} actual={after}')
- manifest.append({'source_key':source,'target_key':target,'kind':kind,'bytes':src.stat().st_size,'sha256':before})
+ add_manifest(manifest,source,target,kind,got,after)
 
 def splitpdf(cf,src,source,prefix,w,verify,manifest):
  qpdf(['--check',src]); pages=int(qpdf(['--show-npages',src],True).stdout); start=1; n=1; stem=str(PurePosixPath(source).with_suffix('')); sourcehash=hfile(src)[:20]
@@ -146,7 +173,7 @@ def splitpdf(cf,src,source,prefix,w,verify,manifest):
    sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite','-dPDFSETTINGS=/screen',f'-sOutputFile={comp}',out]); out.unlink(); stabilize_pdf(comp); out=comp
    if out.stat().st_size>LIMIT: raise RuntimeError(f'single page over limit {source}')
    break
-  qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF'); start=end+1; n+=1
+  qpdf(['--check',out]); upload(cf,out,f'{prefix}{stem}.__parts__/{sourcehash}/{out.name}',verify,manifest,source,'SPLIT_PDF',allow_pdf_equivalent=True); start=end+1; n+=1
 
 def jsonl_to_json(cf,src,source,prefix,w,verify,manifest):
  rows=[]
@@ -177,7 +204,7 @@ def ppt_to_pdf(cf,src,source,prefix,w,verify,manifest):
  pdfs=list(outdir.glob('*.pdf'))
  if len(pdfs)!=1: raise RuntimeError(f'PPT conversion failed {source}')
  pdf=pdfs[0]; stabilize_pdf(pdf); target_source=str(PurePosixPath(source).with_suffix('.pdf'))
- if pdf.stat().st_size<=LIMIT: upload(cf,pdf,prefix+target_source,verify,manifest,source,'PPT_TO_PDF')
+ if pdf.stat().st_size<=LIMIT: upload(cf,pdf,prefix+target_source,verify,manifest,source,'PPT_TO_PDF',allow_pdf_equivalent=True)
  else: splitpdf(cf,pdf,target_source,prefix,w,verify,manifest)
 
 def build(cf):
@@ -189,6 +216,17 @@ def build(cf):
  approval={'schema':'2.1','instance':cf.i,'actions':[{'key':r['key'],'action':r['action']} for r in rows]}; sha=hbytes(canon(approval)); prefix=f'{ROOT}/{sha[:20]}/'
  return {'schema':'2.1','generation':'v3','instance':cf.i,'approval_sha256':sha,'target_prefix':prefix,'items':rows},approval
 
+def self_test_pdf_equivalence():
+ with tempfile.TemporaryDirectory() as td:
+  root=Path(td); ps1=root/'a.ps'; ps2=root/'b.ps'; a=root/'a.pdf'; b=root/'b.pdf'; c=root/'c.pdf'
+  ps1.write_text('%!PS\n<< /PageSize [200 200] >> setpagedevice\n/Helvetica findfont 12 scalefont setfont\n20 100 moveto (WPA PDF equivalence test) show\nshowpage\n')
+  ps2.write_text('%!PS\n<< /PageSize [200 200] >> setpagedevice\n/Helvetica findfont 12 scalefont setfont\n20 100 moveto (DIFFERENT PDF) show\nshowpage\n')
+  sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite',f'-sOutputFile={a}',ps1])
+  qpdf([a,b])
+  sh(['gs','-q','-dNOPAUSE','-dBATCH','-dSAFER','-sDEVICE=pdfwrite',f'-sOutputFile={c}',ps2])
+  if not pdf_visual_equivalent(a,b,root/'eq','self-test-equivalent'): raise AssertionError('equivalent PDF self-test failed')
+  if pdf_visual_equivalent(a,c,root/'neq','self-test-different'): raise AssertionError('different PDF self-test failed')
+
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--mode',choices=['PLAN','STAGE']); ap.add_argument('--approved-sha',default=''); ap.add_argument('--out',type=Path); ap.add_argument('--self-test',action='store_true'); x=ap.parse_args()
  if x.self_test:
@@ -196,7 +234,7 @@ def main():
   for item,want in tests:
    got=classify(item)
    if got!=want: raise AssertionError((item,got,want))
-  print('self-test: OK'); return
+  self_test_pdf_equivalence(); print('self-test: OK'); return
  if not x.mode or x.out is None: ap.error('--mode and --out required')
  x.out.mkdir(parents=True,exist_ok=True); cf=CF(); plan,approval=build(cf); sha=plan['approval_sha256']
  (x.out/'migration-plan.json').write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n'); (x.out/'approval-plan.json').write_bytes(canon(approval)); (x.out/'migration-plan.sha256').write_text(sha+'\n')
