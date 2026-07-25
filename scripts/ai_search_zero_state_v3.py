@@ -60,6 +60,27 @@ def compact_error(text,limit=800):
  value=' '.join((text or '').strip().split())
  return value[-limit:] if value else 'no stdout/stderr returned'
 
+def r2_error_flags(text):
+ low=(text or '').lower()
+ cloudflare_html=(('<html' in low or '<!doctype html' in low or 'cf-error-details' in low) and 'cloudflare' in low)
+ missing=('404' in low or 'not found' in low or 'does not exist' in low or 'no such key' in low)
+ permanent_auth=(
+  'invalid api token' in low or 'api token is invalid' in low or
+  'authentication failed' in low or 'authentication error' in low or
+  'unauthorized' in low or 'forbidden' in low or 'not authorized' in low or
+  'insufficient permissions' in low or 'permission denied' in low
+ ) and not cloudflare_html
+ transient=(
+  cloudflare_html or '429' in low or '10058' in low or 'too many requests' in low or
+  'reduce your rate' in low or 'rate limit' in low or 'timed out' in low or
+  'timeout' in low or 'econnreset' in low or 'temporarily unavailable' in low or
+  'fetch failed' in low or 'network' in low or 'connection' in low or
+  'internal error' in low or 'service unavailable' in low or 'bad gateway' in low or
+  'gateway timeout' in low or 'error code: 500' in low or 'error code: 502' in low or
+  'error code: 503' in low or 'error code: 504' in low
+ )
+ return low,missing,permanent_auth,transient,cloudflare_html
+
 class CF:
  def __init__(self):
   self.a=os.environ['CLOUDFLARE_ACCOUNT_ID']; self.ai=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']; self.i=os.getenv('AI_SEARCH_INSTANCE','protocol-ai'); self.b=os.getenv('R2_BUCKET','protocol-kb'); self.w=os.getenv('WRANGLER_BIN','wrangler')
@@ -85,18 +106,15 @@ class CF:
     time.sleep(0.20)
     return True
    text=(r.stdout or '')+'\n'+(r.stderr or '')
-   low=text.lower(); detail=compact_error(text)
-   missing=('404' in low or 'not found' in low or 'does not exist' in low or 'no such key' in low)
+   low,missing,permanent_auth,transient,cloudflare_html=r2_error_flags(text); detail=compact_error(text)
    if missing:
     if allow_missing: return False
     print(f'ERROR: permanent R2 missing-object failure: {detail}',flush=True)
     raise subprocess.CalledProcessError(r.returncode,cmd,output=r.stdout,stderr=r.stderr)
-   permanent_auth=('401' in low or '403' in low or 'unauthorized' in low or 'forbidden' in low or 'authentication' in low or 'permission denied' in low)
-   transient=('429' in low or '10058' in low or 'too many requests' in low or 'reduce your rate' in low or 'rate limit' in low or 'timed out' in low or 'timeout' in low or 'econnreset' in low or 'temporarily unavailable' in low or 'fetch failed' in low or 'network' in low or 'connection' in low or 'internal error' in low or 'service unavailable' in low)
    should_retry=(retry_reads and not permanent_auth) or transient
    if should_retry and attempt<attempts:
     delay=min(R2_GET_BACKOFF_CAP if retry_reads else 60,2**attempt)
-    kind='read' if retry_reads else 'transient'
+    kind='cloudflare-html' if cloudflare_html else ('read' if retry_reads else 'transient')
     print(f'WARNING: R2 {kind} failure attempt {attempt}/{attempts}; retrying in {delay}s; reason={detail}',flush=True)
     time.sleep(delay)
     continue
@@ -290,6 +308,10 @@ def main():
   if POST_PUT_SETTLE_SECONDS<0: raise AssertionError('negative R2 settle window')
   if R2_GET_ATTEMPTS<R2_ATTEMPTS or R2_GET_BACKOFF_CAP<1: raise AssertionError('invalid R2 GET retry configuration')
   if compact_error('  one\n two  ')!='one two': raise AssertionError('R2 error compaction self-test failed')
+  _,missing,auth,transient,html=r2_error_flags('<html><div id="cf-error-details">403 Forbidden Cloudflare</div></html>')
+  if missing or auth or not transient or not html: raise AssertionError('Cloudflare HTML retry self-test failed')
+  _,missing,auth,transient,html=r2_error_flags('Authentication error: invalid API token')
+  if missing or not auth or transient or html: raise AssertionError('R2 authentication self-test failed')
   self_test_deferred_verification(); self_test_pdf_equivalence(); print('self-test: OK'); return
  if not x.mode or x.out is None: ap.error('--mode and --out required')
  x.out.mkdir(parents=True,exist_ok=True); cf=CF(); plan,approval=build(cf); sha=plan['approval_sha256']
