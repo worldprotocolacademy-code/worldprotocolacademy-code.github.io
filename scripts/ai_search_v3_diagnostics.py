@@ -52,7 +52,7 @@ def stats(account: str, token: str, name: str) -> dict[str, Any]:
 
 
 def jobs(account: str, token: str, name: str) -> list[dict[str, Any]]:
-    return list(request("GET", url(account, name, "/jobs"), token, params={"page": 1, "per_page": 100}).get("result") or [])
+    return list(request("GET", url(account, name, "/jobs"), token, params={"page": 1, "per_page": 50}).get("result") or [])
 
 
 def all_items(account: str, token: str, name: str) -> list[dict[str, Any]]:
