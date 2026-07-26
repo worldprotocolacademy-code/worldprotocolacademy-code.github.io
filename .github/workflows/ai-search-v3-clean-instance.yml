@@ -48,12 +48,16 @@ jobs:
           printf '{"mode":"%s","approval":"%s","run_id":"%s","sha":"%s"}\n' \
             '${{ inputs.mode }}' '${{ inputs.approval }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
 
-      - name: Enforce approval gates
+      - name: Enforce approval and credential gates
         env:
           MODE: ${{ inputs.mode }}
           APPROVAL: ${{ inputs.approval }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
           set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
           case "$MODE" in
             PLAN|STATUS)
               test "$APPROVAL" = DO_NOT_APPROVE
@@ -76,7 +80,6 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
-          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
         run: |
           set -uo pipefail
           set +e
@@ -103,6 +106,7 @@ jobs:
             echo '- Locked R2 prefix: `__ai_search_ready_v3__/80cd2f51cf9ddb429562/`.'
             echo '- Expected clean state: 793 indexed, 0 skipped, 0 errors.'
             echo '- PLAN and STATUS perform no writes.'
+            echo '- APPLY reuses the already registered AI Search service token ID from `protocol-ai`; no R2 secret value is read.'
             echo '- APPLY never modifies `protocol-ai`, production Worker configuration, or any R2 object.'
             echo '- No delete operation exists in this workflow.'
             if [ -f "$OUT/failure.json" ]; then
