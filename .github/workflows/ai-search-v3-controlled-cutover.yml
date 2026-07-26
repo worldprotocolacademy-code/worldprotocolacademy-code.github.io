@@ -74,8 +74,9 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --disable-pip-version-check --quiet requests boto3
-          python3 -m py_compile scripts/ai_search_v3_cutover.py
+          python3 -m py_compile scripts/ai_search_v3_cutover.py scripts/ai_search_v3_cutover_runner.py
           python3 scripts/ai_search_v3_cutover.py --self-test | tee "$OUT/self-test.log"
+          python3 scripts/ai_search_v3_cutover_runner.py --runner-self-test | tee "$OUT/runner-self-test.log"
 
       - name: Run controlled operation
         env:
@@ -84,7 +85,7 @@ jobs:
           CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
         run: |
           set -euo pipefail
-          python3 scripts/ai_search_v3_cutover.py \
+          python3 scripts/ai_search_v3_cutover_runner.py \
             --mode '${{ inputs.mode }}' \
             --approval '${{ inputs.approval }}' \
             --out "$OUT" | tee "$OUT/operation.log"
