@@ -1,0 +1,116 @@
+name: AI Search v3 Controlled Cutover
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Choose a fail-closed v3 cutover operation'
+        required: true
+        default: PREPARE
+        type: choice
+        options:
+          - PREPARE
+          - APPLY
+          - STATUS
+          - ROLLBACK
+      approval:
+        description: 'Required only for APPLY or ROLLBACK'
+        required: true
+        default: DO_NOT_APPROVE
+        type: choice
+        options:
+          - DO_NOT_APPROVE
+          - APPROVE_V3_CUTOVER
+          - APPROVE_ROLLBACK
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-controlled-cutover
+  cancel-in-progress: false
+
+jobs:
+  controlled_cutover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment: staging
+    env:
+      OUT: /tmp/ai-search-v3-cutover
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"mode":"%s","approval":"%s","run_id":"%s","sha":"%s"}\n' \
+            '${{ inputs.mode }}' '${{ inputs.approval }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
+      - name: Enforce approval gates
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval }}
+        run: |
+          set -euo pipefail
+          case "$MODE" in
+            PREPARE|STATUS)
+              test "$APPROVAL" = DO_NOT_APPROVE
+              ;;
+            APPLY)
+              test "$APPROVAL" = APPROVE_V3_CUTOVER
+              ;;
+            ROLLBACK)
+              test "$APPROVAL" = APPROVE_ROLLBACK
+              ;;
+            *) exit 1 ;;
+          esac
+          printf '{"status":"gate_passed","mode":"%s"}\n' "$MODE" > "$OUT/gate-result.json"
+
+      - name: Install and test cutover code
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet requests boto3
+          python3 -m py_compile scripts/ai_search_v3_cutover.py
+          python3 scripts/ai_search_v3_cutover.py --self-test | tee "$OUT/self-test.log"
+
+      - name: Run controlled operation
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 scripts/ai_search_v3_cutover.py \
+            --mode '${{ inputs.mode }}' \
+            --approval '${{ inputs.approval }}' \
+            --out "$OUT" | tee "$OUT/operation.log"
+          cat "$OUT/result.json" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search v3 controlled cutover'
+            echo '- Mode: `${{ inputs.mode }}`'
+            echo '- No R2 object is deleted, moved, or overwritten.'
+            echo '- PREPARE and STATUS perform no configuration writes.'
+            echo '- APPLY verifies the exact 793-object locked inventory before changing filters.'
+            echo '- APPLY automatically restores baseline filters if sync-job creation fails.'
+            echo '- ROLLBACK restores the exact locked baseline filters and starts a new sync job.'
+            if [ -f "$OUT/failure.json" ]; then
+              echo '```json'; cat "$OUT/failure.json"; echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload cutover evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v3-cutover-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
