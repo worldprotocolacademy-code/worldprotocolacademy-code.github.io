@@ -20,6 +20,11 @@ on:
         options:
           - DO_NOT_APPROVE
           - APPROVE_CREATE_CLEAN_V3
+      approved_manifest_sha256:
+        description: 'For APPLY, paste the SHA-256 produced by the latest PLAN artifact'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -52,6 +57,7 @@ jobs:
         env:
           MODE: ${{ inputs.mode }}
           APPROVAL: ${{ inputs.approval }}
+          APPROVED_MANIFEST_SHA256: ${{ inputs.approved_manifest_sha256 }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
@@ -61,9 +67,11 @@ jobs:
           case "$MODE" in
             PLAN|STATUS)
               test "$APPROVAL" = DO_NOT_APPROVE
+              test -z "$APPROVED_MANIFEST_SHA256"
               ;;
             APPLY)
               test "$APPROVAL" = APPROVE_CREATE_CLEAN_V3
+              printf '%s' "$APPROVED_MANIFEST_SHA256" | grep -Eq '^[0-9a-f]{64}$'
               ;;
             *) exit 1 ;;
           esac
@@ -86,15 +94,14 @@ jobs:
           python3 scripts/ai_search_v3_clean_instance.py \
             --mode '${{ inputs.mode }}' \
             --approval '${{ inputs.approval }}' \
+            --approved-manifest-sha256 '${{ inputs.approved_manifest_sha256 }}' \
             --out "$OUT" 2>&1 | tee "$OUT/operation.log"
           code=${PIPESTATUS[0]}
           set -e
-          if [ "$code" -ne 0 ]; then
-            exit "$code"
-          fi
-          if [ -f "$OUT/result.json" ]; then cat "$OUT/result.json" >> "$GITHUB_STEP_SUMMARY"; fi
-          if [ -f "$OUT/status.json" ]; then cat "$OUT/status.json" >> "$GITHUB_STEP_SUMMARY"; fi
-          if [ -f "$OUT/plan.json" ]; then cat "$OUT/plan.json" >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ "$code" -ne 0 ]; then exit "$code"; fi
+          for file in result.json status.json plan.json; do
+            if [ -f "$OUT/$file" ]; then cat "$OUT/$file" >> "$GITHUB_STEP_SUMMARY"; fi
+          done
 
       - name: Safety summary
         if: always()
@@ -102,13 +109,13 @@ jobs:
           {
             echo '### AI Search v3 clean instance'
             echo '- Target instance: `protocol-ai-v3-clean`.'
-            echo '- Source bucket: `protocol-kb`.'
             echo '- Locked R2 prefix: `__ai_search_ready_v3__/80cd2f51cf9ddb429562/`.'
-            echo '- Expected clean state: 793 indexed, 0 skipped, 0 errors.'
-            echo '- PLAN and STATUS perform no writes.'
-            echo '- APPLY reuses the already registered AI Search service token ID from `protocol-ai`; no R2 secret value is read.'
-            echo '- APPLY never modifies `protocol-ai`, production Worker configuration, or any R2 object.'
-            echo '- No delete operation exists in this workflow.'
+            echo '- PLAN exports the exact sorted 793-key manifest and its SHA-256.'
+            echo '- APPLY requires that exact PLAN SHA-256 and rejects source drift.'
+            echo '- Success requires exact key-for-key identity plus 793 indexed, 0 skipped, 0 errors.'
+            echo '- The registered service token ID is reused from `protocol-ai`; no R2 secret is read.'
+            echo '- `protocol-ai`, R2 objects, and production Worker configuration are never modified.'
+            echo '- No delete operation exists.'
             if [ -f "$OUT/failure.json" ]; then
               echo '```json'; cat "$OUT/failure.json"; echo '```'
             fi
