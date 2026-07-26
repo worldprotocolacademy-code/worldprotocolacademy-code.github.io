@@ -1,0 +1,131 @@
+name: AI Search v3 Clean Instance
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Choose a protected clean-instance operation'
+        required: true
+        default: PLAN
+        type: choice
+        options:
+          - PLAN
+          - STATUS
+          - APPLY
+      approval:
+        description: 'Required only for APPLY'
+        required: true
+        default: DO_NOT_APPROVE
+        type: choice
+        options:
+          - DO_NOT_APPROVE
+          - APPROVE_CREATE_CLEAN_V3
+      approved_manifest_sha256:
+        description: 'For APPLY, paste the SHA-256 produced by the latest PLAN artifact'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-clean-instance
+  cancel-in-progress: false
+
+jobs:
+  clean_instance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    environment: staging
+    env:
+      OUT: /tmp/ai-search-v3-clean-instance
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"mode":"%s","approval":"%s","run_id":"%s","sha":"%s"}\n' \
+            '${{ inputs.mode }}' '${{ inputs.approval }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
+      - name: Enforce approval and credential gates
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval }}
+          APPROVED_MANIFEST_SHA256: ${{ inputs.approved_manifest_sha256 }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          case "$MODE" in
+            PLAN|STATUS)
+              test "$APPROVAL" = DO_NOT_APPROVE
+              test -z "$APPROVED_MANIFEST_SHA256"
+              ;;
+            APPLY)
+              test "$APPROVAL" = APPROVE_CREATE_CLEAN_V3
+              printf '%s' "$APPROVED_MANIFEST_SHA256" | grep -Eq '^[0-9a-f]{64}$'
+              ;;
+            *) exit 1 ;;
+          esac
+          printf '{"status":"gate_passed","mode":"%s"}\n' "$MODE" > "$OUT/gate-result.json"
+
+      - name: Install and test controller
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          python3 -m py_compile scripts/ai_search_v3_clean_instance.py
+          python3 scripts/ai_search_v3_clean_instance.py --self-test | tee "$OUT/self-test.log"
+
+      - name: Run protected operation
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/ai_search_v3_clean_instance.py \
+            --mode '${{ inputs.mode }}' \
+            --approval '${{ inputs.approval }}' \
+            --approved-manifest-sha256 '${{ inputs.approved_manifest_sha256 }}' \
+            --out "$OUT" 2>&1 | tee "$OUT/operation.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -ne 0 ]; then exit "$code"; fi
+          for file in result.json status.json plan.json; do
+            if [ -f "$OUT/$file" ]; then cat "$OUT/$file" >> "$GITHUB_STEP_SUMMARY"; fi
+          done
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search v3 clean instance'
+            echo '- Target instance: `protocol-ai-v3-clean`.'
+            echo '- Locked R2 prefix: `__ai_search_ready_v3__/80cd2f51cf9ddb429562/`.'
+            echo '- PLAN exports the exact sorted 793-key manifest and its SHA-256.'
+            echo '- APPLY requires that exact PLAN SHA-256 and rejects source drift.'
+            echo '- Success requires exact key-for-key identity plus 793 indexed, 0 skipped, 0 errors.'
+            echo '- The registered service token ID is reused from `protocol-ai`; no R2 secret is read.'
+            echo '- `protocol-ai`, R2 objects, and production Worker configuration are never modified.'
+            echo '- No delete operation exists.'
+            if [ -f "$OUT/failure.json" ]; then
+              echo '```json'; cat "$OUT/failure.json"; echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v3-clean-instance-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
