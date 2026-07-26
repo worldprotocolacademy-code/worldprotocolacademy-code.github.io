@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Run v3 planning/staging with stable pagination and fail-closed R2 S3 GET/PUT fallbacks."""
+"""Run v3 planning/staging with stable pagination and direct fail-closed S3 I/O for staging keys."""
+import hashlib
 import os
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
@@ -13,20 +13,49 @@ import ai_search_zero_state_v3_runner as runner
 
 S3_PUT_ATTEMPTS = int(os.getenv('R2_S3_PUT_ATTEMPTS', '4'))
 S3_PUT_BACKOFF = int(os.getenv('R2_S3_PUT_BACKOFF', '10'))
-ORIGINAL_PUT = stage.CF.put
+ORIGINAL_SOURCE_GET = stage.CF.get
+ORIGINAL_S3_CLIENT = runner.s3_client
+S3_CLIENT_CACHE = {}
+
+
+def is_staging_key(key):
+    return key.startswith(stage.ROOT + '/')
 
 
 def validate_staging_target(key):
-    required = stage.ROOT + '/'
-    if not key.startswith(required):
+    if not is_staging_key(key):
         raise RuntimeError(f'refusing S3 PUT outside isolated v3 staging prefix: {key}')
+
+
+def cached_s3_client(cf, token):
+    cache_key = (cf.a, hashlib.sha256(token.encode('utf-8')).hexdigest())
+    client = S3_CLIENT_CACHE.get(cache_key)
+    if client is None:
+        client = ORIGINAL_S3_CLIENT(cf, token)
+        S3_CLIENT_CACHE[cache_key] = client
+        print('ROUTE: initialized cached R2 S3 client for v3 staging I/O', flush=True)
+    return client
+
+
+def direct_staging_get(self, key, destination, allow_missing=False):
+    if not is_staging_key(key):
+        return ORIGINAL_SOURCE_GET(self, key, destination, allow_missing=allow_missing)
+    destination = Path(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    print(f'ROUTE: direct R2 S3 GET for isolated v3 staging key {key}', flush=True)
+    found = runner.s3_get(self, key, destination)
+    if not found and allow_missing:
+        return False
+    if not found:
+        raise RuntimeError(f'R2 staging object missing during direct S3 GET: {key}')
+    return True
 
 
 def s3_put(cf, key, source, content_type):
     validate_staging_target(key)
     token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
     if not token:
-        raise RuntimeError('CLOUDFLARE_API_TOKEN is required for R2 S3 PUT fallback')
+        raise RuntimeError('CLOUDFLARE_API_TOKEN is required for R2 S3 PUT')
     source = Path(source)
     expected = source.stat().st_size
     if expected <= 0:
@@ -68,13 +97,10 @@ def s3_put(cf, key, source, content_type):
     raise RuntimeError(f'R2 S3 PUT failed after {S3_PUT_ATTEMPTS} attempts for {key}: {last_error}')
 
 
-def resilient_put(self, key, source, content_type):
+def direct_staging_put(self, key, source, content_type):
     validate_staging_target(key)
-    try:
-        return ORIGINAL_PUT(self, key, source, content_type)
-    except subprocess.CalledProcessError:
-        print(f'WARNING: Wrangler R2 PUT exhausted; activating S3 fallback for {key}', flush=True)
-        return s3_put(self, key, source, content_type)
+    print(f'ROUTE: direct R2 S3 PUT for isolated v3 staging key {key}', flush=True)
+    return s3_put(self, key, source, content_type)
 
 
 def io_self_test():
@@ -95,7 +121,10 @@ def io_self_test():
     with tempfile.TemporaryDirectory() as td:
         source = Path(td) / 'part.pdf'
         source.write_bytes(b'%PDF-1.5\nWPA')
-        validate_staging_target(stage.ROOT + '/test/part.pdf')
+        staging_key = stage.ROOT + '/test/part.pdf'
+        if not is_staging_key(staging_key) or is_staging_key('world-protocol-academy/original.pdf'):
+            raise AssertionError('staging key routing self-test failed')
+        validate_staging_target(staging_key)
         try:
             validate_staging_target('world-protocol-academy/original.pdf')
         except RuntimeError as exc:
@@ -107,20 +136,22 @@ def io_self_test():
         client = FakeClient()
         expected = source.stat().st_size
         with source.open('rb') as body:
-            response = client.put_object(Bucket='bucket', Key=stage.ROOT + '/test/part.pdf', Body=body, ContentType='application/pdf', ContentLength=expected)
-        head = client.head_object(Bucket='bucket', Key=stage.ROOT + '/test/part.pdf')
+            response = client.put_object(Bucket='bucket', Key=staging_key, Body=body, ContentType='application/pdf', ContentLength=expected)
+        head = client.head_object(Bucket='bucket', Key=staging_key)
         if int(head['ContentLength']) != expected or not response.get('ETag'):
             raise AssertionError('S3 PUT verification self-test failed')
 
         corrupt = FakeClient(corrupt=True)
         with source.open('rb') as body:
-            corrupt.put_object(Bucket='bucket', Key=stage.ROOT + '/test/part.pdf', Body=body, ContentType='application/pdf', ContentLength=expected)
-        if int(corrupt.head_object(Bucket='bucket', Key=stage.ROOT + '/test/part.pdf')['ContentLength']) == expected:
+            corrupt.put_object(Bucket='bucket', Key=staging_key, Body=body, ContentType='application/pdf', ContentLength=expected)
+        if int(corrupt.head_object(Bucket='bucket', Key=staging_key)['ContentLength']) == expected:
             raise AssertionError('S3 PUT length mismatch self-test failed')
     print('I/O runner self-test: OK')
 
 
-stage.CF.put = resilient_put
+runner.s3_client = cached_s3_client
+stage.CF.get = direct_staging_get
+stage.CF.put = direct_staging_put
 
 if __name__ == '__main__':
     if '--io-self-test' in sys.argv:
