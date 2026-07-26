@@ -21,9 +21,9 @@ on:
           - DO_NOT_APPROVE
           - APPROVE_CREATE_CLEAN_V3
       approved_manifest_sha256:
-        description: 'For APPLY, paste the SHA-256 produced by the latest PLAN artifact'
+        description: 'For APPLY, use the SHA-256 produced by the latest PLAN artifact'
         required: false
-        default: ''
+        default: '92e6a15bd0abbcdd0124c2ff9b43332c5d5e9d2ec8e81f51dc6041e03478f546'
         type: string
 
 permissions:
@@ -57,25 +57,45 @@ jobs:
         env:
           MODE: ${{ inputs.mode }}
           APPROVAL: ${{ inputs.approval }}
-          APPROVED_MANIFEST_SHA256: ${{ inputs.approved_manifest_sha256 }}
+          RAW_APPROVED_MANIFEST_SHA256: ${{ inputs.approved_manifest_sha256 }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
-          set -euo pipefail
-          test -n "$CLOUDFLARE_ACCOUNT_ID"
-          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          set -uo pipefail
+          fail() {
+            reason="$1"
+            python3 - "$OUT/gate-failure.json" "$MODE" "$APPROVAL" "$reason" "$NORMALIZED_SHA" <<'PY'
+          import json,sys
+          from pathlib import Path
+          Path(sys.argv[1]).write_text(json.dumps({
+              "status":"gate_failed",
+              "mode":sys.argv[2],
+              "approval":sys.argv[3],
+              "reason":sys.argv[4],
+              "normalized_sha_length":len(sys.argv[5]),
+              "normalized_sha_prefix":sys.argv[5][:8],
+              "normalized_sha_suffix":sys.argv[5][-8:] if sys.argv[5] else ""
+          },indent=2)+"\n")
+          PY
+            echo "::error title=AI Search clean-instance gate failed::$reason"
+            exit 1
+          }
+          NORMALIZED_SHA="$(printf '%s' "$RAW_APPROVED_MANIFEST_SHA256" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || fail 'CLOUDFLARE_ACCOUNT_ID is missing'
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN" || fail 'CLOUDFLARE_AI_SEARCH_TOKEN is missing'
           case "$MODE" in
             PLAN|STATUS)
-              test "$APPROVAL" = DO_NOT_APPROVE
-              test -z "$APPROVED_MANIFEST_SHA256"
+              test "$APPROVAL" = DO_NOT_APPROVE || fail 'PLAN/STATUS requires DO_NOT_APPROVE'
               ;;
             APPLY)
-              test "$APPROVAL" = APPROVE_CREATE_CLEAN_V3
-              printf '%s' "$APPROVED_MANIFEST_SHA256" | grep -Eq '^[0-9a-f]{64}$'
+              test "$APPROVAL" = APPROVE_CREATE_CLEAN_V3 || fail 'APPLY requires APPROVE_CREATE_CLEAN_V3'
+              printf '%s' "$NORMALIZED_SHA" | grep -Eq '^[0-9a-f]{64}$' || fail 'approved manifest SHA-256 is missing or malformed'
               ;;
-            *) exit 1 ;;
+            *) fail 'unknown mode' ;;
           esac
-          printf '{"status":"gate_passed","mode":"%s"}\n' "$MODE" > "$OUT/gate-result.json"
+          printf '%s' "$NORMALIZED_SHA" > "$OUT/normalized-approved-manifest-sha256.txt"
+          printf '{"status":"gate_passed","mode":"%s","normalized_sha_length":%s}\n' \
+            "$MODE" "${#NORMALIZED_SHA}" > "$OUT/gate-result.json"
 
       - name: Install and test controller
         run: |
@@ -91,10 +111,11 @@ jobs:
         run: |
           set -uo pipefail
           set +e
+          approved_sha="$(cat "$OUT/normalized-approved-manifest-sha256.txt")"
           python3 scripts/ai_search_v3_clean_instance.py \
             --mode '${{ inputs.mode }}' \
             --approval '${{ inputs.approval }}' \
-            --approved-manifest-sha256 '${{ inputs.approved_manifest_sha256 }}' \
+            --approved-manifest-sha256 "$approved_sha" \
             --out "$OUT" 2>&1 | tee "$OUT/operation.log"
           code=${PIPESTATUS[0]}
           set -e
@@ -111,14 +132,14 @@ jobs:
             echo '- Target instance: `protocol-ai-v3-clean`.'
             echo '- Locked R2 prefix: `__ai_search_ready_v3__/80cd2f51cf9ddb429562/`.'
             echo '- PLAN exports the exact sorted 793-key manifest and its SHA-256.'
-            echo '- APPLY requires that exact PLAN SHA-256 and rejects source drift.'
+            echo '- APPLY normalizes whitespace/case, requires a valid SHA-256, and rejects source drift.'
             echo '- Success requires exact key-for-key identity plus 793 indexed, 0 skipped, 0 errors.'
             echo '- The registered service token ID is reused from `protocol-ai`; no R2 secret is read.'
             echo '- `protocol-ai`, R2 objects, and production Worker configuration are never modified.'
             echo '- No delete operation exists.'
-            if [ -f "$OUT/failure.json" ]; then
-              echo '```json'; cat "$OUT/failure.json"; echo '```'
-            fi
+            for file in gate-failure.json failure.json; do
+              if [ -f "$OUT/$file" ]; then echo '```json'; cat "$OUT/$file"; echo '```'; fi
+            done
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload evidence
