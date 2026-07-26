@@ -103,8 +103,10 @@ jobs:
           command -v pdftoppm >/dev/null
           python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py"
           python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3_runner.py"
+          python3 -m py_compile "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3_io_runner.py"
           python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3.py" --self-test 2>&1 | tee "$OUT/self-test.log"
           python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3_runner.py" --runner-self-test 2>&1 | tee -a "$OUT/self-test.log"
+          python3 "$GITHUB_WORKSPACE/scripts/ai_search_zero_state_v3_io_runner.py" --io-self-test 2>&1 | tee -a "$OUT/self-test.log"
           printf '{"status":"tools_ready","generation":"v3"}\n' > "$OUT/tool-result.json"
 
       - name: Generate fresh v3 plan
@@ -115,7 +117,7 @@ jobs:
           set -euo pipefail
           trap 'code=$?; printf "{\"status\":\"plan_failed\",\"exit_code\":%s}\n" "$code" > "$OUT/failure.json"; exit "$code"' ERR
           find "$OUT" -mindepth 1 -maxdepth 1 ! -name 'run-context.json' ! -name 'gate-diagnostics.txt' ! -name 'gate-result.json' ! -name 'tool-result.json' ! -name 'self-test.log' -exec rm -rf {} +
-          python3 scripts/ai_search_zero_state_v3_runner.py --mode PLAN --out "$OUT"
+          python3 scripts/ai_search_zero_state_v3_io_runner.py --mode PLAN --out "$OUT"
           cat "$OUT/counts.json" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verify locked approved v3 plan
@@ -164,7 +166,7 @@ jobs:
         run: |
           set -uo pipefail
           set +e
-          python3 scripts/ai_search_zero_state_v3_runner.py --mode STAGE \
+          python3 scripts/ai_search_zero_state_v3_io_runner.py --mode STAGE \
             --approved-sha "$APPROVED_PLAN_SHA256" --out "$OUT" 2>&1 | tee "$OUT/stage.log"
           code=${PIPESTATUS[0]}
           set -e
