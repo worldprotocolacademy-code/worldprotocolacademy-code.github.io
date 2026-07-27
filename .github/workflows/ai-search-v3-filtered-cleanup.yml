@@ -20,11 +20,6 @@ on:
         options:
           - DO_NOT_APPROVE
           - APPROVE_EXCLUDE_THREE_EMPTY_CSV_V3
-      approved_plan_sha256:
-        description: 'For APPLY, paste the exact plan_sha256 produced by the latest PLAN artifact'
-        required: false
-        default: ''
-        type: string
 
 permissions:
   contents: read
@@ -40,6 +35,7 @@ jobs:
     environment: staging
     env:
       OUT: /tmp/ai-search-v3-filtered-cleanup
+      LOCKED_PLAN_SHA256: 1fd406a4e4ea0a559f640a92728c20597479b150628c2bf9e631c5d588dccb7e
 
     steps:
       - uses: actions/checkout@v5
@@ -50,14 +46,14 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
-          printf '{"mode":"%s","approval":"%s","run_id":"%s","sha":"%s"}\n' \
-            '${{ inputs.mode }}' '${{ inputs.approval }}' '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+          printf '{"mode":"%s","approval":"%s","run_id":"%s","sha":"%s","locked_plan_sha256":"%s"}\n' \
+            '${{ inputs.mode }}' '${{ inputs.approval }}' '${{ github.run_id }}' '${{ github.sha }}' \
+            "$LOCKED_PLAN_SHA256" > "$OUT/run-context.json"
 
       - name: Enforce approval and credential gates
         env:
           MODE: ${{ inputs.mode }}
           APPROVAL: ${{ inputs.approval }}
-          RAW_APPROVED_PLAN_SHA256: ${{ inputs.approved_plan_sha256 }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
         run: |
@@ -68,21 +64,22 @@ jobs:
             echo "::error title=AI Search filtered-cleanup gate failed::$reason"
             exit 1
           }
-          NORMALIZED_SHA="$(printf '%s' "$RAW_APPROVED_PLAN_SHA256" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]')"
           test -n "$CLOUDFLARE_ACCOUNT_ID" || fail 'CLOUDFLARE_ACCOUNT_ID is missing'
           test -n "$CLOUDFLARE_AI_SEARCH_TOKEN" || fail 'CLOUDFLARE_AI_SEARCH_TOKEN is missing'
           case "$MODE" in
             PLAN|STATUS)
               test "$APPROVAL" = DO_NOT_APPROVE || fail 'PLAN/STATUS requires DO_NOT_APPROVE'
+              NORMALIZED_SHA=''
               ;;
             APPLY)
               test "$APPROVAL" = APPROVE_EXCLUDE_THREE_EMPTY_CSV_V3 || fail 'APPLY requires exact cleanup approval'
-              printf '%s' "$NORMALIZED_SHA" | grep -Eq '^[0-9a-f]{64}$' || fail 'approved PLAN SHA-256 is missing or malformed'
+              printf '%s' "$LOCKED_PLAN_SHA256" | grep -Eq '^[0-9a-f]{64}$' || fail 'repository-locked PLAN SHA-256 is malformed'
+              NORMALIZED_SHA="$LOCKED_PLAN_SHA256"
               ;;
             *) fail 'unknown mode' ;;
           esac
           printf '%s' "$NORMALIZED_SHA" > "$OUT/normalized-approved-plan-sha256.txt"
-          printf '{"status":"gate_passed","mode":"%s","normalized_sha_length":%s}\n' \
+          printf '{"status":"gate_passed","mode":"%s","plan_sha_source":"repository_locked","normalized_sha_length":%s}\n' \
             "$MODE" "${#NORMALIZED_SHA}" > "$OUT/gate-result.json"
 
       - name: Install and test controller
@@ -123,7 +120,9 @@ jobs:
             echo '### AI Search v3 filtered cleanup'
             echo '- Target: `protocol-ai-v3-filtered` only.'
             echo '- PLAN and STATUS use GET requests only.'
+            echo '- APPLY approval uses a repository-locked PLAN SHA; no manual SHA field exists.'
             echo '- APPLY may update only `source_params.exclude_items` with three exact redundant CSV keys and may trigger one sync job.'
+            echo '- The controller recomputes the full PLAN and fails unless it exactly matches the locked PLAN SHA.'
             echo '- The original 793-key source manifest must remain SHA-locked.'
             echo '- Final success requires exact 790-key identity, 790 completed, and zero skipped/errors/queued/running/outdated.'
             echo '- Non-filter target configuration must remain byte-for-byte equivalent after canonicalization.'
