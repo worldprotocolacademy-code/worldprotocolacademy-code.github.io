@@ -1,0 +1,83 @@
+name: RECOVER - Final AI Search Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: Type APPROVE_RECOVER_FINAL_V3_SYNC exactly
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-final-recover-sync
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 190
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependency
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Recovery controller self-test
+        run: python3 scripts/ai_search_v3_final_recover_sync.py --self-test
+
+      - name: Run guarded recovery sync
+        id: recovery
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -o pipefail
+          rm -rf /tmp/ai-search-v3-final-recovery
+          mkdir -p /tmp/ai-search-v3-final-recovery
+          python3 scripts/ai_search_v3_final_recover_sync.py \
+            --approval '${{ inputs.approval }}' \
+            --out /tmp/ai-search-v3-final-recovery \
+            2>&1 | tee /tmp/ai-search-v3-final-recovery/operation.log
+
+      - name: Write recovery summary
+        if: always()
+        run: |
+          echo '## Final AI Search recovery summary' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/ai-search-v3-final-recovery/result.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v3-final-recovery/result.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v3-final-recovery/failure.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v3-final-recovery/failure.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v3-final-recovery/preflight.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v3-final-recovery/preflight.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Target: protocol-ai-v3-final only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Creates at most one indexing job on the existing instance.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Does not create/delete instances or mutate R2.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Does not change Worker production or delete old instances.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Never rerun after an unknown POST outcome; use STATUS and DIAGNOSE.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: final-ai-search-recovery-evidence
+          path: /tmp/ai-search-v3-final-recovery
+          if-no-files-found: warn
+          retention-days: 30
