@@ -1,0 +1,97 @@
+name: BUILT-IN FINAL - AI Search 790
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: PLAN, STATUS, or APPLY
+        required: true
+        default: PLAN
+        type: choice
+        options:
+          - PLAN
+          - STATUS
+          - APPLY
+      approval:
+        description: Type APPROVE_CREATE_BUILTIN_FINAL_790 only for APPLY
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v4-builtin-final
+  cancel-in-progress: false
+
+jobs:
+  builtin_final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependency
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Controller self-test
+        run: python3 scripts/ai_search_v4_builtin_final.py --self-test
+
+      - name: Run guarded built-in migration controller
+        id: operation
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -o pipefail
+          rm -rf /tmp/ai-search-v4-builtin-final
+          mkdir -p /tmp/ai-search-v4-builtin-final
+          python3 scripts/ai_search_v4_builtin_final.py \
+            --mode '${{ inputs.mode }}' \
+            --approval '${{ inputs.approval }}' \
+            --out /tmp/ai-search-v4-builtin-final \
+            2>&1 | tee /tmp/ai-search-v4-builtin-final/operation.log
+
+      - name: Write operation summary
+        if: always()
+        run: |
+          echo '## Built-in final AI Search summary' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/ai-search-v4-builtin-final/result.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-final/result.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-final/plan.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-final/plan.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-final/status.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-final/status.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-final/failure.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-final/failure.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Target: protocol-ai-v4-final only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- APPLY creates only the built-in target and uploads the locked 790 items.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- No R2 object mutation, Worker cutover, instance deletion, or cleanup exists.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- POST requests are never retried automatically.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload operation evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v4-builtin-final-evidence
+          path: /tmp/ai-search-v4-builtin-final
+          if-no-files-found: warn
+          retention-days: 30
