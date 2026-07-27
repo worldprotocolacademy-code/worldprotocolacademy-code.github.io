@@ -1,0 +1,153 @@
+/* WPA Shared Design Tokens & Base Styles
+   Used by: wpa-digital-licence-terms.html, wpa-working-papers-compendium.html
+   ------------------------------------------------------------------------ */
+:root {
+  --bg-primary:#0a0a0f;
+  --bg-secondary:#0f0f14;
+  --bg-card:#14141a;
+  --bg-elevated:#1a1a22;
+  --gold-200:#f0d98a;
+  --gold-300:#e6c555;
+  --gold-400:#d4af37;
+  --gold-500:#c9a227;
+  --gold-600:#a8841f;
+  --text-primary:#f5f5f7;
+  --text-secondary:#b8b8c4;
+  --text-muted:#8a8a98;
+  --border-subtle:rgba(212,175,55,0.08);
+  --border-medium:rgba(212,175,55,0.15);
+  --border-strong:rgba(212,175,55,0.3);
+  --font-serif:'Playfair Display', Georgia, serif;
+  --font-sans:'Inter', system-ui, -apple-system, sans-serif;
+  --focus-ring: 3px solid var(--gold-300);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+/* Shared WPA header */
+header.wpa-header {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.wpa-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold-400);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.wpa-back:hover { color: var(--gold-200); }
+.wpa-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--gold-400);
+  color: var(--bg-primary);
+  padding: 12px 20px;
+  z-index: 1000;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+}
+.skip-link:focus {
+  left: 0;
+}
+
+/* Consistent visible focus state for keyboard users */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+h1, h2, h3 { font-family: var(--font-serif); font-weight: 700; color: var(--text-primary); line-height: 1.25; }
+
+.btn {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold-500), var(--gold-400));
+  color: var(--bg-primary);
+  padding: 14px 28px;
+  border-radius: 8px;
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(212,175,55,0.25);
+  border: none;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+.btn:hover { filter: brightness(1.05); }
+
+.btn.is-disabled,
+.btn[aria-disabled="true"] {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+  border: 1px dashed var(--border-medium);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--gold-300);
+  border: 1px solid var(--border-strong);
+  box-shadow: none;
+}
+
+footer.wpa-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding: 32px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin-top: 48px;
+}
+
+img { max-width: 100%; height: auto; }
+
+/* Reduced motion class toggled by wpa-accessibility.js as a fallback
+   for browsers/tests that need a JS hook rather than only the media query. */
+.wpa-reduced-motion *, .wpa-reduced-motion *::before, .wpa-reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Fallback for browsers without reliable :focus-visible support */
+.wpa-user-is-tabbing a:focus,
+.wpa-user-is-tabbing button:focus,
+.wpa-user-is-tabbing [tabindex]:focus {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
