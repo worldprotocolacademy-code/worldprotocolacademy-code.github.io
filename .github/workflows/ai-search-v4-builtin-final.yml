@@ -42,7 +42,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check requests
 
       - name: Controller self-test
-        run: python3 scripts/ai_search_v4_builtin_final.py --self-test
+        run: python3 scripts/ai_search_v4_builtin_final_r2.py --self-test
 
       - name: Run guarded built-in migration controller
         id: operation
@@ -53,7 +53,7 @@ jobs:
           set -o pipefail
           rm -rf /tmp/ai-search-v4-builtin-final
           mkdir -p /tmp/ai-search-v4-builtin-final
-          python3 scripts/ai_search_v4_builtin_final.py \
+          python3 scripts/ai_search_v4_builtin_final_r2.py \
             --mode '${{ inputs.mode }}' \
             --approval '${{ inputs.approval }}' \
             --out /tmp/ai-search-v4-builtin-final \
@@ -83,6 +83,7 @@ jobs:
           echo '' >> "$GITHUB_STEP_SUMMARY"
           echo '- Target: protocol-ai-v4-final only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Source content is read directly from protocol-kb through read-only R2 GET.' >> "$GITHUB_STEP_SUMMARY"
           echo '- APPLY creates only the built-in target and uploads the locked 790 items.' >> "$GITHUB_STEP_SUMMARY"
           echo '- No R2 object mutation, Worker cutover, instance deletion, or cleanup exists.' >> "$GITHUB_STEP_SUMMARY"
           echo '- POST requests are never retried automatically.' >> "$GITHUB_STEP_SUMMARY"
