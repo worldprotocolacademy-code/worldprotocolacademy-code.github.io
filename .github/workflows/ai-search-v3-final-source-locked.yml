@@ -69,7 +69,8 @@ jobs:
           set -euo pipefail
           python3 -m pip install --disable-pip-version-check --quiet requests
           python3 -m py_compile scripts/ai_search_v3_final_instance.py scripts/ai_search_v3_final_instance_source_locked.py
-          python3 scripts/ai_search_v3_final_instance.py --self-test | tee "$OUT/self-test.log"
+          python3 scripts/ai_search_v3_final_instance.py --self-test | tee "$OUT/controller-self-test.log"
+          python3 scripts/ai_search_v3_final_instance_source_locked.py --self-test | tee "$OUT/wrapper-self-test.log"
 
       - name: Run protected operation
         env:
