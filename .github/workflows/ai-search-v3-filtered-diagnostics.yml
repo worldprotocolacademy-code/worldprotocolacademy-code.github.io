@@ -1,0 +1,71 @@
+name: AI Search v3 Filtered Diagnostics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-filtered-diagnostics
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+    env:
+      OUT: /tmp/ai-search-v3-filtered-diagnostics
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"read_only":true,"target":"protocol-ai-v3-filtered","run_id":"%s","sha":"%s"}\n' \
+            '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
+      - name: Install and validate diagnostics
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          python3 -m py_compile scripts/ai_search_v3_filtered_diagnostics.py
+
+      - name: Collect filtered error diagnostics
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/ai_search_v3_filtered_diagnostics.py 2>&1 | tee "$OUT/diagnostics.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ -f "$OUT/diagnostic-summary.json" ]; then
+            cat "$OUT/diagnostic-summary.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$code"
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search v3 filtered diagnostics'
+            echo '- Read-only GET requests only.'
+            echo '- No retry, indexing job, instance mutation, R2 mutation, or production cutover exists.'
+            echo '- Artifact contains exact error keys, reasons, and raw item metadata.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v3-filtered-diagnostics-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
