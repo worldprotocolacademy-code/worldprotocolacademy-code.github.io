@@ -1,0 +1,76 @@
+name: AI Search v3 Filtered Active Verifier
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-filtered-active-verifier
+  cancel-in-progress: false
+
+jobs:
+  verify_active_set:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: staging
+    env:
+      OUT: /tmp/ai-search-v3-filtered-active-verifier
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          printf '{"run_id":"%s","sha":"%s","workflow":"active-verifier"}\n' \
+            '${{ github.run_id }}' '${{ github.sha }}' > "$OUT/run-context.json"
+
+      - name: Install and validate verifier
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          python3 -m py_compile scripts/ai_search_v3_filtered_active_verifier.py
+
+      - name: Verify exact active set
+        run: |
+          set -uo pipefail
+          set +e
+          python3 scripts/ai_search_v3_filtered_active_verifier.py 2>&1 | tee "$OUT/verification.log"
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ -f "$OUT/verification-result.json" ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat "$OUT/verification-result.json" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ "$code" -ne 0 ]; then exit "$code"; fi
+
+      - name: Safety summary
+        if: always()
+        run: |
+          {
+            echo '### AI Search v3 filtered active verification'
+            echo '- Configuration and item inspection use GET requests only.'
+            echo '- Three search smoke tests use the non-mutating search endpoint.'
+            echo '- No instance update, indexing-job creation, R2 mutation, delete, Worker change, or production cutover exists.'
+            echo '- Success requires the exact 790 completed-key manifest SHA, engine objectCount 790, no active jobs, and three passing smoke tests.'
+            echo '- Historical skipped/error rows are reported but cannot count as active indexed keys.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v3-filtered-active-verifier-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
