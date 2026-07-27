@@ -1,0 +1,110 @@
+name: FINAL STEP - AI Search v3 Final Clean Instance
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Choose operation
+        required: true
+        default: PLAN
+        type: choice
+        options:
+          - PLAN
+          - STATUS
+          - APPLY
+      approval:
+        description: Required only for APPLY
+        required: true
+        default: DO_NOT_APPROVE
+        type: choice
+        options:
+          - DO_NOT_APPROVE
+          - APPROVE_CREATE_FINAL_CLEAN_V3
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v3-final-source-locked
+  cancel-in-progress: false
+
+jobs:
+  final_instance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 135
+    environment: staging
+    env:
+      OUT: /tmp/ai-search-v3-final-instance
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Initialize evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          echo '{"source_locked":true}' > "$OUT/run-context.json"
+
+      - name: Enforce operation gate
+        env:
+          MODE: ${{ inputs.mode }}
+          APPROVAL: ${{ inputs.approval }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          if [ "$MODE" = PLAN ] || [ "$MODE" = STATUS ]; then
+            test "$APPROVAL" = DO_NOT_APPROVE
+          elif [ "$MODE" = APPLY ]; then
+            test "$APPROVAL" = APPROVE_CREATE_FINAL_CLEAN_V3
+          else
+            exit 1
+          fi
+
+      - name: Install and test controller
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet requests
+          python3 -m py_compile scripts/ai_search_v3_final_instance.py scripts/ai_search_v3_final_instance_source_locked.py
+          python3 scripts/ai_search_v3_final_instance.py --self-test | tee "$OUT/self-test.log"
+
+      - name: Run protected operation
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -uo pipefail
+          python3 scripts/ai_search_v3_final_instance_source_locked.py \
+            --mode '${{ inputs.mode }}' \
+            --approval '${{ inputs.approval }}' \
+            --out "$OUT" 2>&1 | tee "$OUT/operation.log"
+
+      - name: Publish summary
+        if: always()
+        run: |
+          for file in plan.json status.json result.json failure.json; do
+            if [ -f "$OUT/$file" ]; then
+              echo '```json' >> "$GITHUB_STEP_SUMMARY"
+              cat "$OUT/$file" >> "$GITHUB_STEP_SUMMARY"
+              echo '```' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          {
+            echo '### Final source-locked AI Search instance'
+            echo '- Target: protocol-ai-v3-final only.'
+            echo '- Exact source SHA 793 and allowed SHA 790 remain mandatory.'
+            echo '- Success requires exact 790 indexed and zero skipped, errors, queued, running, or outdated.'
+            echo '- No R2 mutation, Worker change, deletion, or production cutover exists.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v3-final-source-locked-${{ github.run_number }}
+          path: ${{ env.OUT }}
+          retention-days: 90
+          if-no-files-found: error
