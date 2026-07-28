@@ -4,16 +4,17 @@
 Cloudflare does not allow downloading content for AI Search items backed by an
 external source. This wrapper preserves the guarded v4 controller and replaces
 only source-content reads: protocol-ai source keys are fetched from the
-protocol-kb R2 bucket using a dedicated read-only Cloudflare API token. Built-in
-target item downloads continue to use the AI Search Items API for resume hash
-verification.
+protocol-kb R2 bucket with `wrangler r2 object get --remote`. Built-in target
+item downloads continue to use the AI Search Items API for resume hash checks.
 """
 from __future__ import annotations
 
+import hashlib
 import os
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
-from urllib.parse import quote
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 if str(REPOSITORY_ROOT) not in sys.path:
@@ -22,6 +23,8 @@ if str(REPOSITORY_ROOT) not in sys.path:
 from scripts import ai_search_v4_builtin_final as migration
 
 _original_download_item = migration.download_item
+_SOURCE_BY_ID: dict[str, str] | None = None
+_CACHE_DIR = Path("/tmp/ai-search-v4-r2-source-cache")
 
 
 def _r2_read_token() -> str:
@@ -33,25 +36,82 @@ def _r2_read_token() -> str:
     return token
 
 
-def _download_from_r2(account: str, key: str) -> bytes:
-    # Cloudflare requires slashes in object keys to remain literal. Encode spaces
-    # and other reserved characters, but never encode '/'.
-    encoded_key = quote(key, safe="/")
-    endpoint = (
-        f"{migration.controller.API}/accounts/{account}/r2/buckets/"
-        f"{migration.controller.BUCKET}/objects/{encoded_key}"
-    )
-    response = migration.resilient_get(
-        endpoint,
-        _r2_read_token(),
-        stream=True,
-    )
-    content = response.content
-    if not content:
-        raise migration.controller.GuardError(
-            f"empty R2 object download key={key}"
+def _source_map(account: str, ai_token: str) -> dict[str, str]:
+    global _SOURCE_BY_ID
+    if _SOURCE_BY_ID is None:
+        values = migration.controller.all_items(
+            account,
+            ai_token,
+            migration.controller.SOURCE,
         )
-    return content
+        mapping: dict[str, str] = {}
+        for item in values:
+            item_id = str(item.get("id") or "")
+            key = migration.controller.key(item)
+            if not item_id or item_id in mapping:
+                raise migration.controller.GuardError(
+                    "source items contain empty or duplicate ids"
+                )
+            mapping[item_id] = key
+        _SOURCE_BY_ID = mapping
+    return _SOURCE_BY_ID
+
+
+def _cache_path(key: str) -> Path:
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return _CACHE_DIR / digest
+
+
+def _download_from_r2(key: str) -> bytes:
+    _r2_read_token()
+    _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cached = _cache_path(key)
+    if cached.is_file() and cached.stat().st_size > 0:
+        return cached.read_bytes()
+
+    with tempfile.NamedTemporaryFile(
+        prefix="wpa-r2-",
+        dir=str(_CACHE_DIR),
+        delete=False,
+    ) as handle:
+        temporary = Path(handle.name)
+    temporary.unlink(missing_ok=True)
+
+    env = os.environ.copy()
+    env["CLOUDFLARE_API_TOKEN"] = _r2_read_token()
+    command = [
+        "wrangler",
+        "r2",
+        "object",
+        "get",
+        f"{migration.controller.BUCKET}/{key}",
+        "--file",
+        str(temporary),
+        "--remote",
+    ]
+    completed = subprocess.run(
+        command,
+        cwd=str(REPOSITORY_ROOT),
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        timeout=300,
+        check=False,
+    )
+    if completed.returncode != 0:
+        temporary.unlink(missing_ok=True)
+        output = completed.stdout[-3000:]
+        raise migration.controller.GuardError(
+            f"Wrangler R2 GET failed for key={key}: {output}"
+        )
+    if not temporary.is_file() or temporary.stat().st_size < 1:
+        temporary.unlink(missing_ok=True)
+        raise migration.controller.GuardError(
+            f"Wrangler returned an empty R2 object for key={key}"
+        )
+    temporary.replace(cached)
+    return cached.read_bytes()
 
 
 def _source_aware_download_item(
@@ -63,21 +123,12 @@ def _source_aware_download_item(
     if instance_id != migration.controller.SOURCE:
         return _original_download_item(account, token, instance_id, item_id)
 
-    source_items = migration.controller.all_items(
-        account,
-        token,
-        migration.controller.SOURCE,
-    )
-    matches = [
-        item
-        for item in source_items
-        if str(item.get("id") or "") == item_id
-    ]
-    if len(matches) != 1:
+    mapping = _source_map(account, token)
+    key = mapping.get(item_id, "")
+    if not key:
         raise migration.controller.GuardError(
-            f"source item id lookup expected one match, got {len(matches)}: {item_id}"
+            f"source item id was not found: {item_id}"
         )
-    key = migration.controller.key(matches[0])
     if not key.startswith(migration.controller.PREFIX):
         raise migration.controller.GuardError(
             f"refusing R2 read outside locked prefix: {key}"
@@ -86,7 +137,7 @@ def _source_aware_download_item(
         raise migration.controller.GuardError(
             f"refusing R2 read for excluded source key: {key}"
         )
-    return _download_from_r2(account, key)
+    return _download_from_r2(key)
 
 
 migration.download_item = _source_aware_download_item
@@ -96,10 +147,11 @@ def self_test() -> None:
     assert migration.controller.BUCKET == "protocol-kb"
     assert migration.controller.SOURCE == "protocol-ai"
     assert migration.controller.EXPECTED_ACTIVE == 790
-    assert quote("a/b c.txt", safe="/") == "a/b%20c.txt"
-    assert "%2F" not in quote("a/b c.txt", safe="/")
+    assert _cache_path("a/b c.txt").name == hashlib.sha256(
+        b"a/b c.txt"
+    ).hexdigest()
     migration.self_test()
-    print("read-only R2 source wrapper self-test: OK")
+    print("Wrangler read-only R2 source wrapper self-test: OK")
 
 
 if __name__ == "__main__":

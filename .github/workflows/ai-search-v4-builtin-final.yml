@@ -38,8 +38,16 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependency
-        run: python -m pip install --disable-pip-version-check requests
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --disable-pip-version-check requests
+          npm install --global wrangler@4
+          wrangler --version
 
       - name: Controller self-test
         run: python3 scripts/ai_search_v4_builtin_final_r2.py --self-test
@@ -53,6 +61,7 @@ jobs:
         run: |
           set -o pipefail
           rm -rf /tmp/ai-search-v4-builtin-final
+          rm -rf /tmp/ai-search-v4-r2-source-cache
           mkdir -p /tmp/ai-search-v4-builtin-final
           python3 scripts/ai_search_v4_builtin_final_r2.py \
             --mode '${{ inputs.mode }}' \
@@ -84,10 +93,14 @@ jobs:
           echo '' >> "$GITHUB_STEP_SUMMARY"
           echo '- Target: protocol-ai-v4-final only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Source content is read directly from protocol-kb through a dedicated read-only R2 token.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Source content is read with Wrangler remote R2 GET only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- APPLY creates only the built-in target and uploads the locked 790 items.' >> "$GITHUB_STEP_SUMMARY"
           echo '- No R2 object mutation, Worker cutover, instance deletion, or cleanup exists.' >> "$GITHUB_STEP_SUMMARY"
           echo '- POST requests are never retried automatically.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove temporary source files
+        if: always()
+        run: rm -rf /tmp/ai-search-v4-r2-source-cache
 
       - name: Upload operation evidence
         if: always()
