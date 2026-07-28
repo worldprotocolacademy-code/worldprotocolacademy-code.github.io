@@ -4,36 +4,46 @@
 Cloudflare does not allow downloading content for AI Search items backed by an
 external source. This wrapper preserves the guarded v4 controller and replaces
 only source-content reads: protocol-ai source keys are fetched from the
-protocol-kb R2 bucket with `wrangler r2 object get --remote`. Built-in target
-item downloads continue to use the AI Search Items API for resume hash checks.
+protocol-kb R2 bucket through the repository's proven S3-compatible R2 client.
+Built-in target item downloads continue to use the AI Search Items API for
+resume hash checks.
 """
 from __future__ import annotations
 
 import hashlib
 import os
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
+
+from botocore.exceptions import BotoCoreError, ClientError
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from scripts import ai_search_v4_builtin_final as migration
+from scripts.ai_search_v3_cutover import r2_client
 
 _original_download_item = migration.download_item
 _SOURCE_BY_ID: dict[str, str] | None = None
+_R2_CLIENT = None
 _CACHE_DIR = Path("/tmp/ai-search-v4-r2-source-cache")
 
 
-def _r2_read_token() -> str:
-    token = os.environ.get("CLOUDFLARE_R2_READ_TOKEN", "")
+def _r2_token() -> str:
+    token = os.environ.get("CLOUDFLARE_R2_API_TOKEN", "")
     if not token:
         raise migration.controller.GuardError(
-            "CLOUDFLARE_R2_READ_TOKEN is required for read-only R2 source access"
+            "CLOUDFLARE_R2_API_TOKEN is required for read-only R2 source access"
         )
     return token
+
+
+def _client(account: str):
+    global _R2_CLIENT
+    if _R2_CLIENT is None:
+        _R2_CLIENT = r2_client(account, _r2_token())
+    return _R2_CLIENT
 
 
 def _source_map(account: str, ai_token: str) -> dict[str, str]:
@@ -62,56 +72,29 @@ def _cache_path(key: str) -> Path:
     return _CACHE_DIR / digest
 
 
-def _download_from_r2(key: str) -> bytes:
-    _r2_read_token()
+def _download_from_r2(account: str, key: str) -> bytes:
     _CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cached = _cache_path(key)
     if cached.is_file() and cached.stat().st_size > 0:
         return cached.read_bytes()
 
-    with tempfile.NamedTemporaryFile(
-        prefix="wpa-r2-",
-        dir=str(_CACHE_DIR),
-        delete=False,
-    ) as handle:
-        temporary = Path(handle.name)
-    temporary.unlink(missing_ok=True)
+    try:
+        response = _client(account).get_object(
+            Bucket=migration.controller.BUCKET,
+            Key=key,
+        )
+        content = response["Body"].read()
+    except (BotoCoreError, ClientError, KeyError) as exc:
+        raise migration.controller.GuardError(
+            f"R2 S3 GET failed for key={key}: {exc}"
+        ) from exc
 
-    env = os.environ.copy()
-    env["CLOUDFLARE_API_TOKEN"] = _r2_read_token()
-    command = [
-        "wrangler",
-        "r2",
-        "object",
-        "get",
-        f"{migration.controller.BUCKET}/{key}",
-        "--file",
-        str(temporary),
-        "--remote",
-    ]
-    completed = subprocess.run(
-        command,
-        cwd=str(REPOSITORY_ROOT),
-        env=env,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        timeout=300,
-        check=False,
-    )
-    if completed.returncode != 0:
-        temporary.unlink(missing_ok=True)
-        output = completed.stdout[-3000:]
+    if not content:
         raise migration.controller.GuardError(
-            f"Wrangler R2 GET failed for key={key}: {output}"
+            f"R2 S3 GET returned an empty object for key={key}"
         )
-    if not temporary.is_file() or temporary.stat().st_size < 1:
-        temporary.unlink(missing_ok=True)
-        raise migration.controller.GuardError(
-            f"Wrangler returned an empty R2 object for key={key}"
-        )
-    temporary.replace(cached)
-    return cached.read_bytes()
+    cached.write_bytes(content)
+    return content
 
 
 def _source_aware_download_item(
@@ -137,7 +120,7 @@ def _source_aware_download_item(
         raise migration.controller.GuardError(
             f"refusing R2 read for excluded source key: {key}"
         )
-    return _download_from_r2(key)
+    return _download_from_r2(account, key)
 
 
 migration.download_item = _source_aware_download_item
@@ -151,7 +134,7 @@ def self_test() -> None:
         b"a/b c.txt"
     ).hexdigest()
     migration.self_test()
-    print("Wrangler read-only R2 source wrapper self-test: OK")
+    print("S3-compatible read-only R2 source wrapper self-test: OK")
 
 
 if __name__ == "__main__":
