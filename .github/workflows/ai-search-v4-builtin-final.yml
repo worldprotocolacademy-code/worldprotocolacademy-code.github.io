@@ -49,6 +49,7 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_R2_READ_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set -o pipefail
           rm -rf /tmp/ai-search-v4-builtin-final
@@ -83,7 +84,7 @@ jobs:
           echo '' >> "$GITHUB_STEP_SUMMARY"
           echo '- Target: protocol-ai-v4-final only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
-          echo '- Source content is read directly from protocol-kb through read-only R2 GET.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Source content is read directly from protocol-kb through a dedicated read-only R2 token.' >> "$GITHUB_STEP_SUMMARY"
           echo '- APPLY creates only the built-in target and uploads the locked 790 items.' >> "$GITHUB_STEP_SUMMARY"
           echo '- No R2 object mutation, Worker cutover, instance deletion, or cleanup exists.' >> "$GITHUB_STEP_SUMMARY"
           echo '- POST requests are never retried automatically.' >> "$GITHUB_STEP_SUMMARY"
