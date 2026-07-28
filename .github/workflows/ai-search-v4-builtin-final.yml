@@ -29,6 +29,7 @@ jobs:
   builtin_final:
     runs-on: ubuntu-latest
     timeout-minutes: 300
+    environment: staging
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,6 +49,17 @@ jobs:
           python -m pip install --disable-pip-version-check requests
           npm install --global wrangler@4
           wrangler --version
+
+      - name: Validate staging Cloudflare credential
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          wrangler whoami >/tmp/wrangler-whoami.log 2>&1
+          echo 'Staging Cloudflare credential accepted by Wrangler.'
 
       - name: Controller self-test
         run: python3 scripts/ai_search_v4_builtin_final_r2.py --self-test
@@ -91,6 +103,7 @@ jobs:
             echo '```' >> "$GITHUB_STEP_SUMMARY"
           fi
           echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '- GitHub environment: staging.' >> "$GITHUB_STEP_SUMMARY"
           echo '- Target: protocol-ai-v4-final only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
           echo '- Source content is read with Wrangler remote R2 GET only.' >> "$GITHUB_STEP_SUMMARY"
