@@ -1,4 +1,4 @@
-/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-24 */
+/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-29 */
 (function () {
   'use strict';
   if (window.WPA_INTERACTION_RECOVERY_LOADED) return;
@@ -175,9 +175,7 @@
     installJournalLiveEntries();
     addScript('wpa-home-typography-20260724', '/scripts/wpa-home-typography-20260724.js?v=20260724-1');
     addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-offline3');
-    addScript('wpa-corpus-sync-20260723', '/scripts/wpa-corpus-sync-20260723.js?v=20260723-4');
-    addScript('wpa-corpus-final-audit-20260723', '/scripts/wpa-corpus-final-audit-20260723.js?v=20260723-1');
-    addScript('wpa-corpus-20260729', '/scripts/wpa-corpus-20260729.js?v=20260729-1');
+    addScript('wpa-corpus-20260729-v2', '/scripts/wpa-corpus-20260729-v2.js?v=20260729-2');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
