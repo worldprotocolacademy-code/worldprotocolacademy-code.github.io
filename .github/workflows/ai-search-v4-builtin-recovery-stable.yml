@@ -1,0 +1,117 @@
+name: RECOVER BUILT-IN FINAL - AI Search 790 (stable snapshot)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: PLAN, STATUS, or APPLY
+        required: true
+        default: PLAN
+        type: choice
+        options:
+          - PLAN
+          - STATUS
+          - APPLY
+      approval:
+        description: Type APPROVE_RECOVER_BUILTIN_FINAL_790 only for APPLY
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-search-v4-builtin-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover_builtin_final:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --disable-pip-version-check requests boto3
+
+      - name: Validate required staging credentials
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          test -n "$CLOUDFLARE_R2_API_TOKEN"
+          echo 'Required staging credentials are present.'
+
+      - name: Controller self-test
+        run: python3 scripts/ai_search_v4_builtin_recover_stable.py --self-test
+
+      - name: Run guarded recovery controller
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+          CLOUDFLARE_R2_API_TOKEN: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+        run: |
+          set -o pipefail
+          rm -rf /tmp/ai-search-v4-builtin-recovery
+          rm -rf /tmp/ai-search-v4-r2-source-cache
+          mkdir -p /tmp/ai-search-v4-builtin-recovery
+          python3 scripts/ai_search_v4_builtin_recover_stable.py \
+            --mode '${{ inputs.mode }}' \
+            --approval '${{ inputs.approval }}' \
+            --out /tmp/ai-search-v4-builtin-recovery \
+            2>&1 | tee /tmp/ai-search-v4-builtin-recovery/operation.log
+
+      - name: Write operation summary
+        if: always()
+        run: |
+          echo '## Built-in final AI Search stable recovery summary' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f /tmp/ai-search-v4-builtin-recovery/result.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-recovery/result.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-recovery/plan.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-recovery/plan.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-recovery/status.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-recovery/status.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          elif [ -f /tmp/ai-search-v4-builtin-recovery/failure.json ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat /tmp/ai-search-v4-builtin-recovery/failure.json >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Target must already contain exactly the locked 790 keys.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- PLAN and STATUS are read-only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- Mutable source snapshot retries are GET-only.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- APPLY only PATCH-indexes hash-verified error or stale-running items.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- No upload, deletion, R2 mutation, Worker cutover, or old-instance cleanup exists.' >> "$GITHUB_STEP_SUMMARY"
+          echo '- PATCH requests are never retried automatically.' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove temporary source files
+        if: always()
+        run: rm -rf /tmp/ai-search-v4-r2-source-cache
+
+      - name: Upload operation evidence
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: ai-search-v4-builtin-recovery-stable-evidence
+          path: /tmp/ai-search-v4-builtin-recovery
+          if-no-files-found: warn
+          retention-days: 30
