@@ -1,4 +1,4 @@
-/* WPA canonical corpus sync — WP-013, PN-004–PN-006 and Strategic Plan v1.1 — 2026-07-29 */
+/* WPA canonical corpus sync - stable edition - 2026-07-29 */
 (function () {
   'use strict';
   if (window.WPA_CORPUS_20260729_V2_LOADED) return;
@@ -34,7 +34,7 @@
       desc: 'A bilingual Protocol Note introducing neuroprotocol, the Effective Embodied Command Index (EECI), neural privacy, human confirmation and the WPA Right to Pause.'
     },
     strategy: {
-      key: 'strategy', code: 'WPA Global Strategic Plan 2026', short: 'Strategic Plan', kind: 'report',
+      key: 'strategy', code: 'WPA Global Strategic Plan 2026', short: 'WPA Strategic Publication', kind: 'report',
       mk: 'Светска академија за протокол — Глобален стратешки план 2026',
       en: 'World Protocol Academy — Global Strategic Plan 2026',
       version: '1.1', date: '29 July 2026', pages: '1–26', doi: '10.5281/zenodo.21675100', conceptDoi: '10.5281/zenodo.21396831',
@@ -43,7 +43,6 @@
   };
 
   var applying = false;
-  var scheduled = false;
 
   function path() {
     return String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
@@ -62,6 +61,14 @@
     return 'https://doi.org/' + record.doi;
   }
 
+  function setText(node, value) {
+    if (node && txt(node) !== String(value)) node.textContent = value;
+  }
+
+  function setHTML(node, value) {
+    if (node && node.innerHTML !== value) node.innerHTML = value;
+  }
+
   function replaceTextNodes(root, replacements) {
     if (!root || !document.createTreeWalker || typeof NodeFilter === 'undefined') return;
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -71,14 +78,12 @@
         return NodeFilter.FILTER_ACCEPT;
       }
     });
-    var nodes = [];
     var node;
-    while ((node = walker.nextNode())) nodes.push(node);
-    nodes.forEach(function (item) {
-      var next = item.nodeValue;
+    while ((node = walker.nextNode())) {
+      var next = node.nodeValue;
       replacements.forEach(function (pair) { next = next.replace(pair[0], pair[1]); });
-      if (next !== item.nodeValue) item.nodeValue = next;
-    });
+      if (next !== node.nodeValue) node.nodeValue = next;
+    }
   }
 
   function updateCorpusArithmetic() {
@@ -87,7 +92,6 @@
       [/twelve WPA Working Papers/gi, 'thirteen WPA Working Papers'],
       [/12 Working Papers \+ 3 Protocol Notes/g, '13 Working Papers + 6 Protocol Notes'],
       [/13 Working Papers \+ 4 Protocol Notes/g, '13 Working Papers + 6 Protocol Notes'],
-      [/13 Working Papers \+ 6 Protocol Notes \+ 1 Strategic Plan(?: report)? = 20(?: total WPA Zenodo records| records)?/g, '13 Working Papers + 6 Protocol Notes + 1 Strategic Plan = 20 records'],
       [/17 WPA Series DOI Records/g, '19 WPA Series DOI Records'],
       [/17 WPA series DOI records/g, '19 WPA series DOI records'],
       [/18 Total WPA Zenodo Records/g, '20 Total WPA Zenodo Records'],
@@ -117,24 +121,11 @@
       var href = String(anchor.getAttribute('href') || '');
       var context = txt(anchor.closest('article,section,.card,.bib-entry,.paper-card,.pub-card,.note-card') || anchor.parentElement);
       if (href.indexOf('10.5281/zenodo.21396832') !== -1 || /Global Strategic Plan 2026|Глобален стратешки план 2026/i.test(context)) {
-        anchor.href = doiUrl(s);
-        if (/21396832|Zenodo record|Open Zenodo DOI|Permanent DOI/i.test(txt(anchor))) {
-          anchor.textContent = txt(anchor).replace(/10\.5281\/zenodo\.21396832/g, s.doi).replace(/Open Zenodo DOI(?: · .*|$)/i, 'Open Zenodo DOI · ' + s.doi);
+        if (anchor.href !== doiUrl(s)) anchor.href = doiUrl(s);
+        if (/21396832|Open Zenodo DOI|Permanent DOI/i.test(txt(anchor))) {
+          setText(anchor, txt(anchor).replace(/10\.5281\/zenodo\.21396832/g, s.doi).replace(/Open Zenodo DOI(?: · .*|$)/i, 'Open Zenodo DOI · ' + s.doi));
         }
       }
-    });
-
-    qsa('[id*="strategic" i], [class*="strategic" i]').forEach(function (node) {
-      if (!/Global Strategic Plan 2026|Глобален стратешки план 2026|Strategic Plan/i.test(txt(node))) return;
-      replaceTextNodes(node, [
-        [/10\.5281\/zenodo\.21396832/g, s.doi],
-        [/Version 1\.0/g, 'Version 1.1'],
-        [/v1\.0/g, 'v1.1'],
-        [/Published 16 July 2026/g, 'Published 29 July 2026'],
-        [/16 July 2026/g, '29 July 2026'],
-        [/First edition/g, 'Revised and expanded edition'],
-        [/1–4/g, '1–26']
-      ]);
     });
   }
 
@@ -164,7 +155,7 @@
 
   function bibCard(record, id) {
     var card = document.createElement('div');
-    card.className = 'bib-entry';
+    card.className = 'bib-entry' + (record.kind === 'report' ? ' wpa-strategic-bib-entry' : '');
     card.id = id;
     card.setAttribute('data-doi', record.doi);
     card.setAttribute('data-index', 'doi zenodo');
@@ -172,25 +163,56 @@
     card.setAttribute('data-title', record.mk);
     card.setAttribute('data-type', record.kind);
     card.setAttribute('data-year', '2026');
-    card.innerHTML = '<div class="bib-num">' + record.short + '</div><div class="bib-mk">' + record.mk + '</div><div class="bib-en">' + record.en + '</div>' +
-      '<div class="bib-meta"><strong>2026</strong> · ' + (record.kind === 'report' ? 'Strategic Report · Version 1.1 · Revised and expanded edition · 1–26 pages · Published 29 July 2026' : record.kind === 'working-paper' ? 'WPA Working Paper No. 013 · Version v14 · Bilingual MK/EN · 29 pages' : record.code + ' · Version ' + record.version + ' · Bilingual MK/EN') + '<br>' +
-      '<strong>DOI</strong> <a class="bib-link" href="' + doiUrl(record) + '" target="_blank" rel="noopener">' + record.doi + '</a></div>' +
-      '<div class="bib-tags"><span class="bib-tag blue">' + (record.kind === 'report' ? 'Strategic Report' : record.kind === 'working-paper' ? 'Working Paper' : 'Protocol Note') + '</span><span class="bib-tag green">Zenodo DOI</span></div>' +
-      '<div class="bib-links"><a class="bib-link-btn" href="' + doiUrl(record) + '" target="_blank" rel="noopener">Zenodo record →</a></div>';
+
+    if (record.kind === 'report') {
+      card.innerHTML = '<div class="bib-num">WPA Strategic Publication · Version 1.1</div>' +
+        '<div class="bib-mk">' + record.mk + '</div><div class="bib-en">' + record.en + '</div>' +
+        '<div class="bib-meta"><strong>2026</strong> · Strategic Report · Revised and expanded edition · 26 pages · Bilingual MK/EN<br>' +
+        '<strong>Version DOI:</strong> <a class="bib-link" href="' + doiUrl(record) + '" target="_blank" rel="noopener">' + record.doi + '</a><br>' +
+        '<strong>Concept DOI:</strong> <a class="bib-link" href="https://doi.org/' + record.conceptDoi + '" target="_blank" rel="noopener">' + record.conceptDoi + '</a><br>' +
+        '<strong>Citation:</strong> Smiljanov, S. (2026). <em>World Protocol Academy — Global Strategic Plan 2026</em> (Version 1.1, Revised and expanded edition, pp. 1–26). World Protocol Academy.</div>' +
+        '<div class="bib-tags"><span class="bib-tag blue">Strategic Report</span><span class="bib-tag green">Zenodo DOI</span><span class="bib-tag">Version 1.1</span></div>' +
+        '<div class="bib-links"><a class="bib-link-btn" href="' + doiUrl(record) + '" target="_blank" rel="noopener">Open Version 1.1 on Zenodo →</a></div>';
+    } else {
+      card.innerHTML = '<div class="bib-num">' + record.short + '</div><div class="bib-mk">' + record.mk + '</div><div class="bib-en">' + record.en + '</div>' +
+        '<div class="bib-meta"><strong>2026</strong> · ' + (record.kind === 'working-paper' ? 'WPA Working Paper No. 013 · Version v14 · Bilingual MK/EN · 29 pages' : record.code + ' · Version ' + record.version + ' · Bilingual MK/EN') + '<br>' +
+        '<strong>DOI</strong> <a class="bib-link" href="' + doiUrl(record) + '" target="_blank" rel="noopener">' + record.doi + '</a></div>' +
+        '<div class="bib-tags"><span class="bib-tag blue">' + (record.kind === 'working-paper' ? 'Working Paper' : 'Protocol Note') + '</span><span class="bib-tag green">Zenodo DOI</span></div>' +
+        '<div class="bib-links"><a class="bib-link-btn" href="' + doiUrl(record) + '" target="_blank" rel="noopener">Zenodo record →</a></div>';
+    }
     return card;
   }
 
   function findEntry(pattern) {
-    return qsa('.bib-entry').filter(function (entry) { return pattern.test(txt(entry) + ' ' + String(entry.getAttribute('data-doi') || '')); })[0];
+    return qsa('.bib-entry').filter(function (entry) {
+      return pattern.test(txt(entry) + ' ' + String(entry.getAttribute('data-doi') || ''));
+    })[0];
   }
 
   function insertAfter(reference, node) {
     if (reference && reference.parentNode) reference.parentNode.insertBefore(node, reference.nextSibling);
   }
 
+  function installBibliographyStyle() {
+    if (document.getElementById('wpa-strategic-bib-style')) return;
+    var style = document.createElement('style');
+    style.id = 'wpa-strategic-bib-style';
+    style.textContent = [
+      '.wpa-strategic-bib-entry{background:linear-gradient(135deg,#fffdf7 0%,#fff 68%,#f8f4ee 100%)!important;border-left:5px solid var(--gold,#c9a84c)!important;border-top:1px solid rgba(201,168,76,.55)!important;box-shadow:0 8px 28px rgba(13,31,60,.10)!important;transform:none!important;}',
+      '.wpa-strategic-bib-entry:hover{transform:none!important;box-shadow:0 10px 32px rgba(13,31,60,.13)!important;}',
+      '.wpa-strategic-bib-entry .bib-num{font-size:11px;letter-spacing:.7px;color:var(--goldd,#a8873a);}',
+      '.wpa-strategic-bib-entry .bib-mk{font-size:19px;}',
+      '.wpa-strategic-bib-entry .bib-en{font-size:16px;}',
+      '.wpa-strategic-bib-entry .bib-meta{margin-top:12px;line-height:1.8;}',
+      '.wpa-strategic-bib-entry .bib-links{margin-top:14px;}'
+    ].join('');
+    document.head.appendChild(style);
+  }
+
   function updateBibliography() {
     var p = path();
     if (!(p === '/bibliography' || p === '/bibliography/index.html')) return;
+    installBibliographyStyle();
 
     var straySection = document.getElementById('wpaStrategicPlanPapersSection');
     if (straySection) straySection.remove();
@@ -207,23 +229,32 @@
     var pn006 = findEntry(/WPA-PN-006|Neuroprotocol 2030|21669195/i);
     if (!pn006 && pn005) { pn006 = bibCard(RECORDS.pn006, 'pn-006'); insertAfter(pn005, pn006); }
 
-    var strategicCandidates = qsa('.bib-entry').filter(function (entry) {
+    var candidates = qsa('.bib-entry').filter(function (entry) {
       return /Global Strategic Plan 2026|Глобален стратешки план 2026|21396832|21675100/i.test(txt(entry) + ' ' + String(entry.getAttribute('data-doi') || ''));
     });
-    var strategy = strategicCandidates[0];
-    if (!strategy) {
-      strategy = bibCard(RECORDS.strategy, 'wpaBibStrategicPlan');
-      if (pn006) insertAfter(pn006, strategy); else if (pn004) insertAfter(pn004, strategy);
-    } else {
-      strategy.id = 'wpaBibStrategicPlan';
-      strategy.replaceWith(bibCard(RECORDS.strategy, 'wpaBibStrategicPlan'));
-      strategy = document.getElementById('wpaBibStrategicPlan');
+    var canonical = document.getElementById('wpaBibStrategicPlan');
+
+    if (!canonical) {
+      canonical = bibCard(RECORDS.strategy, 'wpaBibStrategicPlan');
+      if (candidates[0] && candidates[0].parentNode) candidates[0].replaceWith(canonical);
+      else if (pn006) insertAfter(pn006, canonical);
+      else if (pn004) insertAfter(pn004, canonical);
+    } else if (canonical.getAttribute('data-doi') !== RECORDS.strategy.doi || !canonical.classList.contains('wpa-strategic-bib-entry')) {
+      var replacement = bibCard(RECORDS.strategy, 'wpaBibStrategicPlan');
+      canonical.replaceWith(replacement);
+      canonical = replacement;
     }
-    strategicCandidates.slice(1).forEach(function (entry) { entry.remove(); });
+
+    qsa('.bib-entry').filter(function (entry) {
+      return entry !== canonical && /Global Strategic Plan 2026|Глобален стратешки план 2026|21396832|21675100/i.test(txt(entry) + ' ' + String(entry.getAttribute('data-doi') || ''));
+    }).forEach(function (entry) { entry.remove(); });
+
+    pn006 = findEntry(/WPA-PN-006|Neuroprotocol 2030|21669195/i);
+    if (pn006 && canonical && canonical.previousElementSibling !== pn006) insertAfter(pn006, canonical);
 
     qsa('.bib-note').forEach(function (note) {
       if (txt(note).indexOf('WPA Research Metrics') === -1) return;
-      note.innerHTML = '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>' +
+      setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>' +
         '• 25 Academic Publications / Академски публикации<br>' +
         '• 13 WPA Working Papers (Zenodo DOI)<br>' +
         '• 6 WPA Protocol Notes (Zenodo DOI)<br>' +
@@ -231,22 +262,20 @@
         '• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>' +
         '• 20 Total WPA Zenodo Records<br>' +
         '• 5 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>' +
-        '• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Sacred Diplomacy · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty';
+        '• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Sacred Diplomacy · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty');
     });
-    var badge = document.querySelector('.zenodo-hero-badge strong');
-    if (badge) badge.textContent = '◆ 20 WPA Zenodo Records · 13 Working Papers + 6 Protocol Notes + 1 Strategic Plan';
 
+    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 20 WPA Zenodo Records · 13 Working Papers + 6 Protocol Notes + 1 Strategic Plan');
     var stats = qsa('.zenodo-stat strong');
-    if (stats[0]) stats[0].textContent = '13';
-    if (stats[1]) stats[1].textContent = '001–013';
-    if (stats[2]) stats[2].textContent = '13/13';
-    var coverage = document.querySelector('.zenodo-doi-line strong');
-    if (coverage) coverage.textContent = 'DOI coverage: 13 Zenodo records';
+    setText(stats[0], '13');
+    setText(stats[1], '001–013');
+    setText(stats[2], '13/13');
+    setText(document.querySelector('.zenodo-doi-line strong'), 'DOI coverage: 13 Zenodo records');
 
     var resultCount = document.getElementById('bibResultCount') || document.getElementById('resultCount');
     if (resultCount) {
       var total = qsa('.bib-entry[data-search]').filter(function (entry) { return entry.id !== 'record'; }).length;
-      resultCount.textContent = 'Прикажани ' + total + ' од ' + total + ' записи · Showing ' + total + ' of ' + total + ' records';
+      setText(resultCount, 'Прикажани ' + total + ' од ' + total + ' записи · Showing ' + total + ' of ' + total + ' records');
     }
   }
 
@@ -264,15 +293,15 @@
     var existing = document.querySelector('.wpa-latest-pn, #wpa-pn-003, #wpa-pn-006');
     if (!existing) return;
     existing.id = 'wpa-pn-006';
-    existing.innerHTML = latestHomeCard(RECORDS.pn006, true);
+    setHTML(existing, latestHomeCard(RECORDS.pn006, true));
 
     var pn005 = document.getElementById('wpa-pn-005');
     if (!pn005) { pn005 = document.createElement('article'); pn005.className = 'wpa-latest-pn'; pn005.id = 'wpa-pn-005'; insertAfter(existing, pn005); }
-    pn005.innerHTML = latestHomeCard(RECORDS.pn005, false);
+    setHTML(pn005, latestHomeCard(RECORDS.pn005, false));
 
     var plan = document.getElementById('wpa-strategic-plan-2026-home');
     if (!plan) { plan = document.createElement('article'); plan.className = 'wpa-latest-pn'; plan.id = 'wpa-strategic-plan-2026-home'; insertAfter(pn005, plan); }
-    plan.innerHTML = latestHomeCard(RECORDS.strategy, false);
+    setHTML(plan, latestHomeCard(RECORDS.strategy, false));
   }
 
   function updateInstitute() {
@@ -281,20 +310,16 @@
     if (!(p === '/institute.html' || page === 'institute')) return;
     var card = document.getElementById('wpa-protocol-notes');
     if (card) {
-      var meta = card.querySelector('.pub-meta');
-      var h3 = card.querySelector('h3');
-      var paragraph = card.querySelector('p');
-      var frequency = card.querySelector('.pub-frequency');
+      setText(card.querySelector('.pub-meta'), 'СЕРИЈА · 02 · 6 ZENODO DOI RECORDS');
+      setText(card.querySelector('h3'), 'WPA Protocol Notes 001–006');
+      setHTML(card.querySelector('p'), 'Посебна серија на кратки, применети и изворно дисциплинирани анализи. Најновите записи се <strong>WPA-PN-005: Protocol of Artificial Intelligence and State Sovereignty</strong> и <strong>WPA-PN-006: Neuroprotocol 2030</strong>.');
+      setText(card.querySelector('.pub-frequency'), 'Published · PN-001–PN-006 · 2026');
       var link = card.querySelector('a[href*="doi.org"],a[href*="zenodo"]');
-      if (meta) meta.textContent = 'СЕРИЈА · 02 · 6 ZENODO DOI RECORDS';
-      if (h3) h3.textContent = 'WPA Protocol Notes 001–006';
-      if (paragraph) paragraph.innerHTML = 'Посебна серија на кратки, применети и изворно дисциплинирани анализи. Најновите записи се <strong>WPA-PN-005: Protocol of Artificial Intelligence and State Sovereignty</strong> и <strong>WPA-PN-006: Neuroprotocol 2030</strong>.';
-      if (frequency) frequency.textContent = 'Published · PN-001–PN-006 · 2026';
-      if (link) { link.href = doiUrl(RECORDS.pn006); link.textContent = 'Отвори WPA-PN-006 на Zenodo →'; }
+      if (link) { link.href = doiUrl(RECORDS.pn006); setText(link, 'Отвори WPA-PN-006 на Zenodo →'); }
     }
     qsa('.pub-card').forEach(function (node) {
       if (!/Global Strategic Plan 2026|Глобален стратешки план 2026/i.test(txt(node))) return;
-      node.innerHTML = '<div class="pub-meta">WPA STRATEGIC PUBLICATION · VERSION 1.1</div><h3>Global Strategic Plan 2026</h3><p>' + RECORDS.strategy.desc + '</p><span class="pub-frequency">Revised and expanded edition · 29 July 2026 · 26 pages</span><p style="margin-top:14px"><a href="' + doiUrl(RECORDS.strategy) + '" target="_blank" rel="noopener" style="color:var(--navy);font-weight:700">Отвори Version 1.1 на Zenodo →</a></p>';
+      setHTML(node, '<div class="pub-meta">WPA STRATEGIC PUBLICATION · VERSION 1.1</div><h3>Global Strategic Plan 2026</h3><p>' + RECORDS.strategy.desc + '</p><span class="pub-frequency">Revised and expanded edition · 29 July 2026 · 26 pages</span><p style="margin-top:14px"><a href="' + doiUrl(RECORDS.strategy) + '" target="_blank" rel="noopener" style="color:var(--navy);font-weight:700">Отвори Version 1.1 на Zenodo →</a></p>');
     });
   }
 
@@ -307,10 +332,8 @@
     }
     var notes = document.getElementById('wpa-protocol-notes');
     if (notes) {
-      var h3 = notes.querySelector('.section-header h3');
-      var p = notes.querySelector('.section-header p');
-      if (h3) h3.textContent = 'Six applied protocolometry records — open access via Zenodo.';
-      if (p) p.innerHTML = '<strong>Publication status:</strong> PN-001–PN-006 are published Zenodo DOI records. The WPA series corpus contains 19 public DOI records: 13 Working Papers and 6 Protocol Notes.';
+      setText(notes.querySelector('.section-header h3'), 'Six applied protocolometry records — open access via Zenodo.');
+      setHTML(notes.querySelector('.section-header p'), '<strong>Publication status:</strong> PN-001–PN-006 are published Zenodo DOI records. The WPA series corpus contains 19 public DOI records: 13 Working Papers and 6 Protocol Notes.');
       var grid = notes.querySelector('.grid-3,.grid');
       [['wpaPn004PapersCard', RECORDS.pn004], ['wpaPn005PapersCard', RECORDS.pn005], ['wpaPn006PapersCard', RECORDS.pn006]].forEach(function (pair) {
         if (grid && !document.getElementById(pair[0])) grid.appendChild(simpleCard(pair[1], pair[0]));
@@ -335,15 +358,11 @@
   function updateWorkingIndex() {
     var p = path();
     if (!(p === '/working-papers' || p === '/working-papers/index.html')) return;
-    var subtitle = document.querySelector('.hero .subtitle');
-    if (subtitle) subtitle.textContent = 'Working Papers 001–013 · Protocol Notes 001–006';
-    var sectionCount = document.querySelector('.section-title span');
-    if (sectionCount) sectionCount.textContent = '13 Working Papers + 6 Protocol Notes + 1 Strategic Plan = 20 records';
+    setText(document.querySelector('.hero .subtitle'), 'Working Papers 001–013 · Protocol Notes 001–006');
+    setText(document.querySelector('.section-title span'), '13 Working Papers + 6 Protocol Notes + 1 Strategic Plan = 20 records');
     var intro = document.querySelector('.intro-box');
-    if (intro) {
-      var first = intro.querySelector('p');
-      if (first) first.innerHTML = '<strong>Published Zenodo Records:</strong> The WPA corpus contains nineteen public DOI records in its two publication series — thirteen Working Papers and six Protocol Notes — plus one Global Strategic Plan report, for twenty total WPA Zenodo records. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.';
-    }
+    if (intro) setHTML(intro.querySelector('p'), '<strong>Published Zenodo Records:</strong> The WPA corpus contains nineteen public DOI records in its two publication series — thirteen Working Papers and six Protocol Notes — plus one Global Strategic Plan report, for twenty total WPA Zenodo records. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.');
+
     var grid = document.getElementById('papersGrid');
     if (grid) {
       var dividers = qsa('.series-divider', grid);
@@ -352,17 +371,14 @@
         var w = researchCard(RECORDS.wp013, 'wp013', false);
         if (pnDivider) grid.insertBefore(w, pnDivider); else grid.appendChild(w);
       }
-      if (pnDivider && pnDivider.firstChild) pnDivider.firstChild.nodeValue = 'WPA Protocol Notes 001–006';
+      if (pnDivider && pnDivider.firstChild && pnDivider.firstChild.nodeValue !== 'WPA Protocol Notes 001–006') pnDivider.firstChild.nodeValue = 'WPA Protocol Notes 001–006';
       [['pn004', RECORDS.pn004], ['pn005', RECORDS.pn005], ['pn006', RECORDS.pn006]].forEach(function (pair) {
         if (!document.getElementById(pair[0])) grid.appendChild(researchCard(pair[1], pair[0], pair[0] === 'pn006'));
       });
       ensureDivider(grid, 'strategic-records-divider', 'WPA Strategic Publications', 'Institutional research and development reports');
-      var oldStrategy = document.getElementById('strategic-plan-2026');
-      if (oldStrategy) oldStrategy.remove();
-      grid.appendChild(researchCard(RECORDS.strategy, 'strategic-plan-2026', true));
+      if (!document.getElementById('strategic-plan-2026')) grid.appendChild(researchCard(RECORDS.strategy, 'strategic-plan-2026', true));
     }
-    var responsibility = document.querySelector('.author-responsibility p');
-    if (responsibility) responsibility.textContent = 'All twenty records — thirteen Working Papers, six Protocol Notes and one Global Strategic Plan report — are issued under the authorship and final editorial responsibility of Sande Smiljanov. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.';
+    setText(document.querySelector('.author-responsibility p'), 'All twenty records — thirteen Working Papers, six Protocol Notes and one Global Strategic Plan report — are issued under the authorship and final editorial responsibility of Sande Smiljanov. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.');
   }
 
   function apply() {
@@ -382,16 +398,8 @@
     }
   }
 
-  function schedule() {
-    if (scheduled) return;
-    scheduled = true;
-    window.setTimeout(function () { scheduled = false; apply(); }, 100);
-  }
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true }); else apply();
-  [250, 700, 1500, 3000].forEach(function (delay) { window.setTimeout(apply, delay); });
-  if (window.MutationObserver) {
-    var observer = new MutationObserver(schedule);
-    window.setTimeout(function () { if (document.body) observer.observe(document.body, { childList: true, subtree: true }); }, 150);
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
+  else apply();
+  window.setTimeout(apply, 350);
+  window.setTimeout(apply, 1400);
 })();
