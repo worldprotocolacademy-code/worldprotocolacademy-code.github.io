@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande AI Search production cutover",
+  "recorded_at": "2026-07-30",
+  "status": "AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY",
+  "production_worker": "wpa-virtual-sande-v35-1-production",
+  "production_url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
+  "certified_runtime_sha": "9f4729759ef44a86b89825033d066bb49f533b61",
+  "target_instance": "protocol-ai-v4-final",
+  "rollback_instance": "protocol-ai",
+  "expected_item_count": 790,
+  "expected_stats": {
+    "completed": 790,
+    "skipped": 0,
+    "error": 0,
+    "queued": 0,
+    "running": 0,
+    "outdated": 0
+  },
+  "source_manifest_sha256": "92e6a15bd0abbcdd0124c2ff9b43332c5d5e9d2ec8e81f51dc6041e03478f546",
+  "allowed_manifest_sha256": "dc085d582d1ee1e6b53c73d5142f33364cb2c5648781f36b8bae17005fe7130b",
+  "target_key_sha256": "82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a",
+  "source_identity": {
+    "canonical_metadata_field": "metadata.source_key",
+    "adapter": "tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs",
+    "unit_test": "tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs",
+    "generated_storage_filename_is_not_public_source_name": true
+  },
+  "deployment": {
+    "workflow": "DEPLOY Virtual Sande AI Search v4 FINAL CUTOVER",
+    "manual_dispatch_from_main_only": true,
+    "production_environment_required": true,
+    "exact_approval_required": "APPROVE_AI_SEARCH_V4_FINAL_CUTOVER",
+    "target_preflight_required": true,
+    "production_acceptance_required": true,
+    "automatic_runtime_rollback_on_post_deploy_failure": true
+  },
+  "safety": {
+    "r2_mutation": false,
+    "ai_search_instance_deletion": false,
+    "old_instance_retained": true,
+    "worker_code_replacement_beyond_certified_runtime": false,
+    "public_consumer_endpoint_change": false
+  }
+}
