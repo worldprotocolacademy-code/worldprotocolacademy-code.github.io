@@ -96,6 +96,10 @@ jobs:
           required = [
               'workflow_dispatch:',
               'permissions:\n  contents: read',
+              'preflight:',
+              'environment: staging',
+              'cutover:',
+              'needs: preflight',
               'environment: production',
               "test \"$GITHUB_REF\" = 'refs/heads/main'",
               'persist-credentials: false',
@@ -105,11 +109,14 @@ jobs:
               'test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"',
               'Verify clean built-in target before deploy',
               'EXPECTED_TARGET_KEY_SHA256: 82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a',
+              'virtual-sande-ai-search-v4-final-preflight-evidence',
               '--config workers/virtual-sande-v35.1-production/wrangler.toml',
               'Verify production retrieval and original source names',
+              'wpa-[0-9a-f]{48}',
               'Generated storage filenames leaked as public sources',
               'Roll back production runtime on post-deploy failure',
               'AI_SEARCH_NAME = "protocol-ai"',
+              'virtual-sande-ai-search-v4-final-cutover-evidence',
               'old_ai_search_instance_retained',
               'r2_objects_mutated',
               'ai_search_instances_deleted',
@@ -164,8 +171,8 @@ jobs:
             echo '- Existing dedicated production Worker: **Deployed and accepted**'
             echo '- AI Search v4 final target: **790/790 authorized for protected cutover**'
             echo '- Original source metadata adapter: **Tested**'
+            echo '- Read-only staging preflight: **Required**'
             echo '- Protected production environment: **Required**'
-            echo '- Cloudflare target preflight before deploy: **Required**'
             echo '- Post-deploy source-identity acceptance: **Required**'
             echo '- Automatic runtime rollback on failure: **Required**'
             echo '- Public consumer endpoint changes in this PR: **No**'
