@@ -1,4 +1,4 @@
-/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-29 */
+/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-30 */
 (function () {
   'use strict';
   if (window.WPA_INTERACTION_RECOVERY_LOADED) return;
@@ -7,6 +7,20 @@
   function qsa(selector, root) {
     try { return Array.prototype.slice.call((root || document).querySelectorAll(selector)); }
     catch (error) { return []; }
+  }
+
+  function fixBibliographyWorkingPaperCount() {
+    var currentPath = String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
+    if (currentPath !== '/bibliography' && currentPath !== '/bibliography/index.html') return;
+    if (!document.body || !document.createTreeWalker || typeof NodeFilter === 'undefined') return;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while ((node = walker.nextNode())) {
+      var next = String(node.nodeValue || '')
+        .replace(/Следните дванаесет working papers/g, 'Следните тринаесет working papers')
+        .replace(/Дванаесетте WPA Working Papers/g, 'Тринаесетте WPA Working Papers');
+      if (next !== node.nodeValue) node.nodeValue = next;
+    }
   }
 
   function addScript(id, src) {
@@ -168,6 +182,7 @@
   function boot() {
     closeBlockingLayers();
     restoreControls();
+    fixBibliographyWorkingPaperCount();
     installContrastFixes();
     installLanguageSelect();
     installAnchorFallback();
