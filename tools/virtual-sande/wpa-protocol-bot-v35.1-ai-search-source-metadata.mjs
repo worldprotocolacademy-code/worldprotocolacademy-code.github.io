@@ -10,34 +10,121 @@ function metadataObject(value) {
   }
 }
 
-export function originalAiSearchSourceName(item = {}) {
+function metadataViews(item = {}) {
   const metadata = metadataObject(item?.metadata);
+  const attributes = metadataObject(item?.attributes);
+  const attributeFile = metadataObject(attributes.file);
+  const attributeFileMetadata = metadataObject(attributeFile.metadata);
+  const nestedItem = metadataObject(item?.item);
+  const nestedMetadata = metadataObject(nestedItem.metadata);
+  return {
+    metadata,
+    attributes,
+    attributeFile,
+    attributeFileMetadata,
+    nestedItem,
+    nestedMetadata,
+  };
+}
+
+export function originalAiSearchSourceName(item = {}) {
+  const {
+    metadata,
+    attributes,
+    attributeFile,
+    attributeFileMetadata,
+    nestedItem,
+    nestedMetadata,
+  } = metadataViews(item);
   return String(
     metadata.source_key ||
     metadata.source ||
+    attributeFile.source_key ||
+    attributeFile.source ||
+    attributeFileMetadata.source_key ||
+    attributeFileMetadata.source ||
+    nestedMetadata.source_key ||
+    nestedMetadata.source ||
+    attributes.source_key ||
+    attributes.source ||
     item?.filename ||
     item?.source ||
+    attributes.filename ||
+    nestedItem.key ||
+    ''
+  ).trim();
+}
+
+function storageAiSearchSourceName(item = {}, views = metadataViews(item)) {
+  return String(
+    item?.filename ||
+    item?.source ||
+    views.attributes.filename ||
+    views.nestedItem.key ||
+    views.metadata.storage_filename ||
+    views.attributeFile.storage_filename ||
+    views.nestedMetadata.storage_filename ||
     ''
   ).trim();
 }
 
 function normalizeItem(item) {
   if (!item || typeof item !== 'object') return item;
+  const views = metadataViews(item);
   const originalSource = originalAiSearchSourceName(item);
   if (!originalSource) return item;
 
-  const metadata = metadataObject(item.metadata);
-  const storageFilename = String(item.filename || item.source || '').trim();
-  return {
+  const storageFilename = storageAiSearchSourceName(item, views);
+  const canonicalMetadata = {
+    ...views.attributeFileMetadata,
+    ...views.attributeFile,
+    ...views.nestedMetadata,
+    ...views.metadata,
+    source_key: String(
+      views.metadata.source_key ||
+      views.attributeFile.source_key ||
+      views.attributeFileMetadata.source_key ||
+      views.nestedMetadata.source_key ||
+      originalSource
+    ),
+    storage_filename: String(
+      views.metadata.storage_filename ||
+      views.attributeFile.storage_filename ||
+      views.nestedMetadata.storage_filename ||
+      storageFilename
+    ),
+  };
+
+  const normalized = {
     ...item,
     filename: originalSource,
     source: originalSource,
-    metadata: {
-      ...metadata,
-      source_key: String(metadata.source_key || originalSource),
-      storage_filename: String(metadata.storage_filename || storageFilename),
-    },
+    metadata: canonicalMetadata,
   };
+
+  if (item.attributes && typeof item.attributes === 'object' && !Array.isArray(item.attributes)) {
+    normalized.attributes = {
+      ...views.attributes,
+      file: {
+        ...views.attributeFile,
+        source_key: canonicalMetadata.source_key,
+        storage_filename: canonicalMetadata.storage_filename,
+      },
+    };
+  }
+
+  if (item.item && typeof item.item === 'object' && !Array.isArray(item.item)) {
+    normalized.item = {
+      ...views.nestedItem,
+      metadata: {
+        ...views.nestedMetadata,
+        source_key: canonicalMetadata.source_key,
+        storage_filename: canonicalMetadata.storage_filename,
+      },
+    };
+  }
+
+  return normalized;
 }
 
 export function normalizeAiSearchResult(result) {
@@ -45,6 +132,7 @@ export function normalizeAiSearchResult(result) {
   const normalized = { ...result };
   if (Array.isArray(result.data)) normalized.data = result.data.map(normalizeItem);
   if (Array.isArray(result.results)) normalized.results = result.results.map(normalizeItem);
+  if (Array.isArray(result.chunks)) normalized.chunks = result.chunks.map(normalizeItem);
   return normalized;
 }
 
