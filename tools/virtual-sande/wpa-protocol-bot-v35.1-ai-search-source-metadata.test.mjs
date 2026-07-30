@@ -18,6 +18,25 @@ test('metadata.source_key overrides the generated storage filename', () => {
   }), sourceKey);
 });
 
+test('legacy AutoRAG attributes.file metadata overrides the generated filename', () => {
+  assert.equal(originalAiSearchSourceName({
+    filename: hashedName,
+    attributes: {
+      filename: hashedName,
+      file: { source_key: sourceKey },
+    },
+  }), sourceKey);
+});
+
+test('new AI Search chunk item.metadata overrides the generated item key', () => {
+  assert.equal(originalAiSearchSourceName({
+    item: {
+      key: hashedName,
+      metadata: { source_key: sourceKey },
+    },
+  }), sourceKey);
+});
+
 test('JSON-string metadata is supported', () => {
   assert.equal(originalAiSearchSourceName({
     filename: hashedName,
@@ -25,21 +44,35 @@ test('JSON-string metadata is supported', () => {
   }), sourceKey);
 });
 
-test('AI Search data and results arrays expose original source names', () => {
+test('data, results, and chunks expose original source names across Cloudflare shapes', () => {
   const normalized = normalizeAiSearchResult({
-    data: [{ filename: hashedName, metadata: { source_key: sourceKey } }],
-    results: [{ source: hashedName, metadata: JSON.stringify({ source_key: sourceKey }) }],
+    data: [{
+      filename: hashedName,
+      attributes: { filename: hashedName, file: { source_key: sourceKey } },
+    }],
+    results: [{
+      source: hashedName,
+      metadata: JSON.stringify({ source_key: sourceKey }),
+    }],
+    chunks: [{
+      item: { key: hashedName, metadata: { source_key: sourceKey } },
+    }],
   });
 
-  for (const item of [...normalized.data, ...normalized.results]) {
+  for (const item of [...normalized.data, ...normalized.results, ...normalized.chunks]) {
     assert.equal(item.filename, sourceKey);
     assert.equal(item.source, sourceKey);
     assert.equal(item.metadata.source_key, sourceKey);
     assert.equal(item.metadata.storage_filename, hashedName);
   }
+
+  assert.equal(normalized.data[0].attributes.file.source_key, sourceKey);
+  assert.equal(normalized.data[0].attributes.file.storage_filename, hashedName);
+  assert.equal(normalized.chunks[0].item.metadata.source_key, sourceKey);
+  assert.equal(normalized.chunks[0].item.metadata.storage_filename, hashedName);
 });
 
-test('the AI wrapper normalizes autorag search and preserves AI.run', async () => {
+test('the AI wrapper normalizes actual AutoRAG attributes.file results and preserves AI.run', async () => {
   const calls = [];
   const ai = {
     autorag(name) {
@@ -47,7 +80,12 @@ test('the AI wrapper normalizes autorag search and preserves AI.run', async () =
       return {
         async search(options) {
           calls.push(['search', options.query]);
-          return { data: [{ filename: hashedName, metadata: { source_key: sourceKey } }] };
+          return {
+            data: [{
+              filename: hashedName,
+              attributes: { filename: hashedName, file: { source_key: sourceKey } },
+            }],
+          };
         },
       };
     },
@@ -85,7 +123,12 @@ test('the Worker adapter changes only the AI binding visible to fetch', async ()
       autorag() {
         return {
           async search() {
-            return { data: [{ filename: hashedName, metadata: { source_key: sourceKey } }] };
+            return {
+              data: [{
+                filename: hashedName,
+                attributes: { filename: hashedName, file: { source_key: sourceKey } },
+              }],
+            };
           },
         };
       },

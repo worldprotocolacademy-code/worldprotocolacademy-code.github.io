@@ -1,0 +1,357 @@
+name: DEPLOY Virtual Sande AI Search v4 SOURCE METADATA FIX
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: Type APPROVE_AI_SEARCH_V4_SOURCE_METADATA_FIX
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-sande-ai-search-v4-source-metadata-fix
+  cancel-in-progress: false
+
+env:
+  CERTIFIED_RUNTIME_SHA: 4e3dc18189b749088b8071e7ddd7a8fdd9afef00
+  EXPECTED_APPROVAL: APPROVE_AI_SEARCH_V4_SOURCE_METADATA_FIX
+  EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
+  EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+  EXPECTED_TARGET: protocol-ai-v4-final
+  ROLLBACK_TARGET: protocol-ai
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    outputs:
+      verified: ${{ steps.target_preflight.outputs.verified }}
+
+    steps:
+      - name: Checkout protected source-metadata fix from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require main, exact approval, and certified runtime
+        env:
+          CUTOVER_APPROVAL: ${{ inputs.approval }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"
+          git cat-file -e "$CERTIFIED_RUNTIME_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_RUNTIME_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-production/src/index.mjs \
+            workers/virtual-sande-v35.1-production/wrangler.toml
+
+      - name: Verify fix manifest and runtime configuration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('config/virtual-sande-ai-search-v4-source-metadata-fix.json').read_text())
+          assert manifest['status'] == 'AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
+          assert manifest['certified_runtime_sha'] == '4e3dc18189b749088b8071e7ddd7a8fdd9afef00'
+          assert manifest['target_instance'] == 'protocol-ai-v4-final'
+          assert manifest['rollback_instance'] == 'protocol-ai'
+          assert manifest['expected_item_count'] == 790
+          assert manifest['source_identity']['legacy_autorag_response_field'] == 'attributes.file.source_key'
+          assert manifest['source_identity']['current_ai_search_response_field'] == 'item.metadata.source_key'
+          assert manifest['source_identity']['normalized_runtime_field'] == 'metadata.source_key'
+          assert manifest['deployment']['automatic_runtime_rollback_on_post_deploy_failure'] is True
+          assert manifest['safety']['r2_mutation'] is False
+          assert manifest['safety']['ai_search_instance_deletion'] is False
+          PY
+          grep -F 'AI_SEARCH_NAME = "protocol-ai-v4-final"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'attributes.file' tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+
+      - name: Run source-metadata regression tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/verify_ai_search_v4_final_target.py
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Verify clean built-in target before deploy
+        id: target_preflight
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          python3 scripts/verify_ai_search_v4_final_target.py \
+            --out /tmp/ai-search-v4-source-metadata-preflight/target-preflight.json
+          echo 'verified=true' >> "$GITHUB_OUTPUT"
+
+      - name: Upload source-metadata preflight evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-ai-search-v4-source-metadata-preflight-evidence
+          path: /tmp/ai-search-v4-source-metadata-preflight
+          retention-days: 90
+          if-no-files-found: warn
+
+  cutover:
+    needs: preflight
+    if: ${{ needs.preflight.outputs.verified == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    steps:
+      - name: Checkout verified source-metadata fix from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require verified preflight and unchanged certified runtime
+        env:
+          CUTOVER_APPROVAL: ${{ inputs.approval }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"
+          test "${{ needs.preflight.outputs.verified }}" = 'true'
+          git cat-file -e "$CERTIFIED_RUNTIME_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_RUNTIME_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-production/src/index.mjs \
+            workers/virtual-sande-v35.1-production/wrangler.toml
+          echo "RELEASE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Prepare source-metadata cutover evidence
+        run: mkdir -p /tmp/ai-search-v4-source-metadata-cutover
+
+      - name: Deploy corrected source-metadata runtime
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 deploy \
+            --config workers/virtual-sande-v35.1-production/wrangler.toml \
+            2>&1 | tee /tmp/ai-search-v4-source-metadata-cutover/deploy.log
+          touch /tmp/ai-search-v4-source-metadata-deployed
+
+      - name: Resolve production URL
+        run: |
+          set -euo pipefail
+          PRODUCTION_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/ai-search-v4-source-metadata-cutover/deploy.log | tail -n 1 | sed 's:/$::')"
+          test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
+          echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
+
+      - name: Wait for stable production propagation
+        run: |
+          set -euo pipefail
+          consecutive=0
+          for attempt in $(seq 1 36); do
+            nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            status=$(curl --silent --show-error \
+              --output /tmp/ai-search-v4-source-metadata-cutover/health.json \
+              --write-out '%{http_code}' \
+              "$PRODUCTION_URL/orchestrator/health?source_metadata_fix=$nonce" || true)
+            if [ "$status" = '200' ] \
+              && grep -Fq '"ok": true' /tmp/ai-search-v4-source-metadata-cutover/health.json \
+              && grep -Fq 'v35.1' /tmp/ai-search-v4-source-metadata-cutover/health.json; then
+              consecutive=$((consecutive + 1))
+              if [ "$consecutive" -ge 2 ]; then
+                exit 0
+              fi
+            else
+              consecutive=0
+            fi
+            sleep 5
+          done
+          echo 'Production endpoint did not stabilize after source-metadata deploy.' >&2
+          cat /tmp/ai-search-v4-source-metadata-cutover/health.json >&2 || true
+          exit 1
+
+      - name: Verify production retrieval and original source identity
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Explain the U-shaped conference room seating configuration from the WPA sources.' \
+            --data-urlencode 'lang=en' \
+            --data-urlencode "source_metadata_fix=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-source-metadata-cutover/u-shaped-seating.json
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Каква е врската меѓу дипломатскиот протокол и безбедноста според изворите?' \
+            --data-urlencode 'lang=mk' \
+            --data-urlencode "source_metadata_fix=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-source-metadata-cutover/protocol-safety.json
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=What do the WPA sources say about ethical teachings and professional ethics?' \
+            --data-urlencode 'lang=en' \
+            --data-urlencode "source_metadata_fix=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-source-metadata-cutover/professional-ethics.json
+
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          paths = [
+              Path('/tmp/ai-search-v4-source-metadata-cutover/u-shaped-seating.json'),
+              Path('/tmp/ai-search-v4-source-metadata-cutover/protocol-safety.json'),
+              Path('/tmp/ai-search-v4-source-metadata-cutover/professional-ethics.json'),
+          ]
+          payloads = [json.loads(path.read_text()) for path in paths]
+          for payload in payloads:
+              assert payload.get('ok') is True
+              assert isinstance(payload.get('answer'), str) and payload['answer'].strip()
+
+          contextual = [payload for payload in payloads if payload.get('hasContext') is True]
+          if not contextual:
+              raise SystemExit('No production acceptance query returned AI Search context')
+
+          values = []
+          for payload in contextual:
+              for field in ('sources', 'sourceDetails'):
+                  field_value = payload.get(field)
+                  if isinstance(field_value, list):
+                      values.extend(
+                          item if isinstance(item, str) else json.dumps(item, ensure_ascii=False)
+                          for item in field_value
+                      )
+          if not values:
+              raise SystemExit('Contextual production responses exposed no source identity')
+
+          hashed = re.compile(r'\bwpa-[0-9a-f]{48}(?:\.[a-z0-9]{1,12})?\b', re.I)
+          bad = [value for value in values if hashed.search(value)]
+          if bad:
+              raise SystemExit(f'Generated storage filenames leaked as public sources: {bad[:3]}')
+          if not any('/' in value for value in values):
+              raise SystemExit(f'Original source paths were not exposed: {values[:3]}')
+
+          report = {
+              'queries': len(payloads),
+              'contextual_responses': len(contextual),
+              'source_identity_values': values,
+              'legacy_autorag_metadata_shape_supported': 'attributes.file.source_key',
+              'current_ai_search_metadata_shape_supported': 'item.metadata.source_key',
+              'generated_hash_names_exposed': False,
+          }
+          Path('/tmp/ai-search-v4-source-metadata-cutover/source-identity-acceptance.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n'
+          )
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Build successful source-metadata cutover evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              'schema_version': '1.0',
+              'component': 'Virtual Sande AI Search v4 source metadata fix',
+              'certified_runtime_sha': os.environ['CERTIFIED_RUNTIME_SHA'],
+              'release_sha': os.environ['RELEASE_SHA'],
+              'production_url': os.environ['PRODUCTION_URL'],
+              'target_instance': os.environ['EXPECTED_TARGET'],
+              'rollback_instance': os.environ['ROLLBACK_TARGET'],
+              'staging_target_preflight': 'PASSED',
+              'production_deploy': 'PASSED',
+              'production_retrieval_acceptance': 'PASSED',
+              'original_source_identity_acceptance': 'PASSED',
+              'legacy_autorag_attributes_file_support': 'PASSED',
+              'public_consumer_change': False,
+              'old_ai_search_instance_retained': True,
+              'r2_objects_mutated': False,
+              'ai_search_instances_deleted': False,
+          }
+          Path('/tmp/ai-search-v4-source-metadata-cutover/cutover-evidence.json').write_text(
+              json.dumps(evidence, indent=2) + '\n'
+          )
+          PY
+
+      - name: Roll back production runtime on post-deploy failure
+        if: ${{ failure() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/ai-search-v4-source-metadata-deployed ]; then
+            echo 'Deploy did not complete; no runtime rollback is required.'
+            exit 0
+          fi
+          config=workers/virtual-sande-v35.1-production/wrangler.toml
+          cp "$config" /tmp/wrangler.ai-search-v4-source-metadata.toml
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('workers/virtual-sande-v35.1-production/wrangler.toml')
+          text = path.read_text()
+          old = 'AI_SEARCH_NAME = "protocol-ai-v4-final"'
+          new = 'AI_SEARCH_NAME = "protocol-ai"'
+          if text.count(old) != 1:
+              raise SystemExit('Rollback refused: expected target line is not unique')
+          path.write_text(text.replace(old, new))
+          PY
+          npx --yes wrangler@4 deploy --config "$config" \
+            2>&1 | tee /tmp/ai-search-v4-source-metadata-cutover/rollback-deploy.log
+          mv /tmp/wrangler.ai-search-v4-source-metadata.toml "$config"
+          echo '{"rollback_instance":"protocol-ai","rollback_deploy":"COMPLETED_AFTER_SOURCE_METADATA_FAILURE"}' \
+            > /tmp/ai-search-v4-source-metadata-cutover/rollback.json
+
+      - name: Upload source-metadata cutover evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-ai-search-v4-source-metadata-cutover-evidence
+          path: /tmp/ai-search-v4-source-metadata-cutover
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Source-metadata production boundary
+        if: ${{ success() }}
+        run: |
+          {
+            echo '## Virtual Sande AI Search v4 Source Metadata Fix'
+            echo "- Certified runtime SHA: \`$CERTIFIED_RUNTIME_SHA\`"
+            echo "- Release SHA: \`$RELEASE_SHA\`"
+            echo "- Production URL: \`$PRODUCTION_URL\`"
+            echo "- Active AI Search: \`$EXPECTED_TARGET\`"
+            echo "- Rollback AI Search retained: \`$ROLLBACK_TARGET\`"
+            echo '- Staging preflight 790/790: **Passed**'
+            echo '- attributes.file source metadata: **Passed**'
+            echo '- Production source-name acceptance: **Passed**'
+            echo '- R2 mutations: **No**'
+            echo '- AI Search instance deletions: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"

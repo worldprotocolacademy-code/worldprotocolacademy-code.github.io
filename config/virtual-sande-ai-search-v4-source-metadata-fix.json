@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "component": "Virtual Sande AI Search v4 source metadata fix",
+  "recorded_at": "2026-07-30",
+  "status": "AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY",
+  "failed_run": {
+    "workflow": "DEPLOY Virtual Sande AI Search v4 FINAL CUTOVER",
+    "run_number": 1,
+    "preflight_artifact_present": true,
+    "cutover_artifact_present": true,
+    "diagnosis": "The legacy AutoRAG search response exposes uploaded custom metadata under attributes.file, while the first adapter normalized only top-level metadata."
+  },
+  "production_worker": "wpa-virtual-sande-v35-1-production",
+  "production_url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
+  "certified_runtime_sha": "4e3dc18189b749088b8071e7ddd7a8fdd9afef00",
+  "target_instance": "protocol-ai-v4-final",
+  "rollback_instance": "protocol-ai",
+  "expected_item_count": 790,
+  "expected_stats": {
+    "completed": 790,
+    "skipped": 0,
+    "error": 0,
+    "queued": 0,
+    "running": 0,
+    "outdated": 0
+  },
+  "target_key_sha256": "82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a",
+  "source_identity": {
+    "uploaded_field": "source_key",
+    "legacy_autorag_response_field": "attributes.file.source_key",
+    "current_ai_search_response_field": "item.metadata.source_key",
+    "normalized_runtime_field": "metadata.source_key",
+    "adapter": "tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs",
+    "unit_test": "tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs",
+    "generated_storage_filename_is_not_public_source_name": true
+  },
+  "deployment": {
+    "workflow": "DEPLOY Virtual Sande AI Search v4 SOURCE METADATA FIX",
+    "manual_dispatch_from_main_only": true,
+    "staging_preflight_required": true,
+    "production_environment_required": true,
+    "exact_approval_required": "APPROVE_AI_SEARCH_V4_SOURCE_METADATA_FIX",
+    "production_acceptance_required": true,
+    "automatic_runtime_rollback_on_post_deploy_failure": true
+  },
+  "safety": {
+    "r2_mutation": false,
+    "ai_search_instance_deletion": false,
+    "old_instance_retained": true,
+    "public_consumer_endpoint_change": false
+  }
+}
