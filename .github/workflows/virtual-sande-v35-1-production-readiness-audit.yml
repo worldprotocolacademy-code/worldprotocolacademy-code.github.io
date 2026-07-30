@@ -3,11 +3,13 @@ name: Virtual Sande v35.1 Production Readiness Audit
 on:
   pull_request:
     paths:
-      - 'config/virtual-sande-v35.1-production-candidate.json'
-      - 'config/virtual-sande-v35.1-production-decision.json'
       - 'workers/virtual-sande-v35.1-production/**'
-      - '.github/workflows/deploy-virtual-sande-v35-1-production.yml'
+      - 'workers/virtual-sande-v35.1-staging/src/index.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs'
+      - '.github/workflows/deploy-virtual-sande-ai-search-v4-final-cutover.yml'
       - '.github/workflows/virtual-sande-v35-1-production-readiness-audit.yml'
+      - 'config/virtual-sande-ai-search-v4-cutover.json'
 
 permissions:
   contents: read
@@ -15,55 +17,83 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
+
     steps:
       - name: Checkout exact release commit
         uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Validate approved production candidate
+      - name: Validate approved AI Search v4 cutover candidate
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
-          data = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
-          assert data['production_authorized'] is True
-          assert data['candidate_status'] == 'APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY_AND_ACCEPTANCE'
-          assert data['certified_candidate_sha'] == '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
-          assert data['production_worker_name'] == 'wpa-virtual-sande-v35-1-production'
-          assert data['production_route_or_custom_domain'] == 'workers.dev only'
-          assert data['production_environment'] == 'production'
+
+          data = json.loads(Path('config/virtual-sande-ai-search-v4-cutover.json').read_text())
+          assert data['status'] == 'AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
+          assert data['certified_runtime_sha'] == '9f4729759ef44a86b89825033d066bb49f533b61'
+          assert data['production_worker'] == 'wpa-virtual-sande-v35-1-production'
+          assert data['target_instance'] == 'protocol-ai-v4-final'
+          assert data['rollback_instance'] == 'protocol-ai'
+          assert data['expected_item_count'] == 790
           assert data['deployment']['manual_dispatch_from_main_only'] is True
-          assert data['deployment']['production_acceptance_before_cutover'] is True
-          assert data['approval']['production_deploy'] is True
-          assert data['approval']['public_cutover'] is True
+          assert data['deployment']['production_environment_required'] is True
+          assert data['deployment']['target_preflight_required'] is True
+          assert data['deployment']['production_acceptance_required'] is True
+          assert data['deployment']['automatic_runtime_rollback_on_post_deploy_failure'] is True
+          assert data['safety']['public_consumer_endpoint_change'] is False
+          assert data['safety']['old_instance_retained'] is True
           PY
 
-      - name: Verify production release safety
+      - name: Verify cutover runtime and protected deploy safety
         run: |
           set -euo pipefail
           test -f workers/virtual-sande-v35.1-production/wrangler.toml
           test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
+          grep -F 'AI_SEARCH_NAME = "protocol-ai-v4-final"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'withOriginalAiSearchSourceNames(worker)' workers/virtual-sande-v35.1-production/src/index.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
           ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
-          node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
           python3 - <<'PY'
           from pathlib import Path
-          text = Path('.github/workflows/deploy-virtual-sande-v35-1-production.yml').read_text()
-          required = ['workflow_dispatch:', 'environment: production', "test \"$GITHUB_REF\" = 'refs/heads/main'", 'Run production acceptance before public cutover', 'Public cutover performed: **No**']
-          missing = [x for x in required if x not in text]
-          if missing: raise SystemExit(f'Missing production controls: {missing}')
+          text = Path('.github/workflows/deploy-virtual-sande-ai-search-v4-final-cutover.yml').read_text()
+          required = [
+              'workflow_dispatch:',
+              'environment: production',
+              "test \"$GITHUB_REF\" = 'refs/heads/main'",
+              'EXPECTED_APPROVAL: APPROVE_AI_SEARCH_V4_FINAL_CUTOVER',
+              'CUTOVER_APPROVAL: ${{ inputs.approval }}',
+              'Verify clean built-in target before deploy',
+              'Verify production retrieval and original source names',
+              'Roll back production runtime on post-deploy failure',
+          ]
+          missing = [value for value in required if value not in text]
+          if missing:
+              raise SystemExit(f'Missing AI Search cutover controls: {missing}')
           PY
 
       - name: Readiness boundary
         run: |
           {
-            echo '## Virtual Sande v35.1 Production Readiness'
-            echo '- Explicit owner approval: **Recorded**'
-            echo '- Dedicated production package: **Ready**'
+            echo '## Virtual Sande AI Search v4 Production Readiness'
+            echo '- Certified runtime SHA: **Recorded**'
+            echo '- Built-in target: **protocol-ai-v4-final / 790 expected**'
+            echo '- Original source metadata adapter: **Tested**'
             echo '- Protected production deploy: **Required**'
-            echo '- Acceptance before cutover: **Required**'
+            echo '- Clean-target API preflight: **Required**'
+            echo '- Post-deploy retrieval acceptance: **Required**'
+            echo '- Automatic rollback to protocol-ai: **Required**'
             echo '- Deployment performed by this audit: **No**'
           } >> "$GITHUB_STEP_SUMMARY"
