@@ -71,13 +71,20 @@ jobs:
           text = Path('.github/workflows/deploy-virtual-sande-ai-search-v4-final-cutover.yml').read_text()
           required = [
               'workflow_dispatch:',
+              'preflight:',
+              'environment: staging',
+              'cutover:',
+              'needs: preflight',
               'environment: production',
               "test \"$GITHUB_REF\" = 'refs/heads/main'",
               'EXPECTED_APPROVAL: APPROVE_AI_SEARCH_V4_FINAL_CUTOVER',
               'CUTOVER_APPROVAL: ${{ inputs.approval }}',
               'Verify clean built-in target before deploy',
+              'virtual-sande-ai-search-v4-final-preflight-evidence',
               'Verify production retrieval and original source names',
+              'wpa-[0-9a-f]{48}',
               'Roll back production runtime on post-deploy failure',
+              'virtual-sande-ai-search-v4-final-cutover-evidence',
           ]
           missing = [value for value in required if value not in text]
           if missing:
@@ -91,8 +98,8 @@ jobs:
             echo '- Certified runtime SHA: **Recorded**'
             echo '- Built-in target: **protocol-ai-v4-final / 790 expected**'
             echo '- Original source metadata adapter: **Tested**'
+            echo '- Read-only staging preflight: **Required**'
             echo '- Protected production deploy: **Required**'
-            echo '- Clean-target API preflight: **Required**'
             echo '- Post-deploy retrieval acceptance: **Required**'
             echo '- Automatic rollback to protocol-ai: **Required**'
             echo '- Deployment performed by this audit: **No**'
