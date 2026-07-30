@@ -4,10 +4,13 @@ on:
   pull_request:
     paths:
       - 'workers/virtual-sande-v35.1-production/**'
-      - '.github/workflows/deploy-virtual-sande-v35-1-production.yml'
+      - 'workers/virtual-sande-v35.1-staging/src/index.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs'
+      - '.github/workflows/deploy-virtual-sande-ai-search-v4-final-cutover.yml'
       - '.github/workflows/virtual-sande-v35-1-production-release-audit.yml'
-      - 'config/virtual-sande-v35.1-production-decision.json'
-      - 'config/virtual-sande-v35.1-production-candidate.json'
+      - 'config/virtual-sande-ai-search-v4-cutover.json'
+      - 'config/virtual-sande-current-state.json'
 
 permissions:
   contents: read
@@ -15,7 +18,7 @@ permissions:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
 
     steps:
       - name: Checkout exact release commit
@@ -24,111 +27,147 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Validate approved dedicated production package
+      - name: Validate current production and approved AI Search cutover
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          decision = json.loads(Path('config/virtual-sande-v35.1-production-decision.json').read_text())
-          candidate = json.loads(Path('config/virtual-sande-v35.1-production-candidate.json').read_text())
-          certified = '6a1822ba8e524a454dcf4a038f3d6bc38c3d500d'
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          cutover = json.loads(Path('config/virtual-sande-ai-search-v4-cutover.json').read_text())
 
-          assert decision['decision'] == 'GO_APPROVED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
-          assert decision['production_authorized'] is True
-          assert decision['public_cutover']['authorized'] is True
-          assert decision['staging_certification']['candidate_sha'] == certified
-          assert decision['recommended_architecture']['proposal_approved'] is True
-          assert decision['recommended_architecture']['legacy_worker_overwrite_allowed'] is False
-          assert candidate['production_authorized'] is True
-          assert candidate['certified_candidate_sha'] == certified
-          assert candidate['production_worker_name'] == 'wpa-virtual-sande-v35-1-production'
-          assert candidate['production_environment'] == 'production'
-          assert candidate['production_route_or_custom_domain'] == 'workers.dev only'
+          production = state['public_production']
+          assert production['version'] == 'v35.1.1'
+          assert production['worker'] == 'wpa-virtual-sande-v35-1-production'
+          assert production['deployment_status'] == 'DEPLOYED_AND_ACCEPTED'
+          assert production['public_cutover_status'] == 'COMPLETED'
+          assert production['endpoint'] == 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask'
+
+          assert cutover['status'] == 'AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
+          assert cutover['certified_runtime_sha'] == '9f4729759ef44a86b89825033d066bb49f533b61'
+          assert cutover['target_instance'] == 'protocol-ai-v4-final'
+          assert cutover['rollback_instance'] == 'protocol-ai'
+          assert cutover['expected_item_count'] == 790
+          assert cutover['expected_stats'] == {
+              'completed': 790, 'skipped': 0, 'error': 0,
+              'queued': 0, 'running': 0, 'outdated': 0,
+          }
+          assert cutover['target_key_sha256'] == '82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a'
+          assert cutover['source_identity']['canonical_metadata_field'] == 'metadata.source_key'
+          assert cutover['source_identity']['generated_storage_filename_is_not_public_source_name'] is True
+          assert cutover['deployment']['automatic_runtime_rollback_on_post_deploy_failure'] is True
+          assert cutover['safety']['old_instance_retained'] is True
+          assert cutover['safety']['r2_mutation'] is False
+          assert cutover['safety']['ai_search_instance_deletion'] is False
           PY
 
-      - name: Verify production config and runtime identity
+      - name: Verify production configuration and original-source adapter
         run: |
           set -euo pipefail
           test -f workers/virtual-sande-v35.1-production/wrangler.toml
           test -f workers/virtual-sande-v35.1-production/src/index.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
+          test -f tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs
           cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
           grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
-          grep -F 'workers_dev = true' workers/virtual-sande-v35.1-production/wrangler.toml
-          grep -F 'preview_urls = false' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'AI_SEARCH_NAME = "protocol-ai-v4-final"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'withOriginalAiSearchSourceNames(worker)' workers/virtual-sande-v35.1-production/src/index.mjs
+          grep -F 'metadata.source_key' config/virtual-sande-ai-search-v4-cutover.json
           ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
-          node --check tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs
-          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
           node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
           node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
             tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
             tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
 
-      - name: Verify protected deployment workflow
+      - name: Verify protected AI Search cutover workflow
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
-          text = Path('.github/workflows/deploy-virtual-sande-v35-1-production.yml').read_text()
+
+          path = Path('.github/workflows/deploy-virtual-sande-ai-search-v4-final-cutover.yml')
+          text = path.read_text()
           required = [
               'workflow_dispatch:',
               'permissions:\n  contents: read',
               'environment: production',
               "test \"$GITHUB_REF\" = 'refs/heads/main'",
               'persist-credentials: false',
-              'CERTIFIED_SHA: 6a1822ba8e524a454dcf4a038f3d6bc38c3d500d',
+              'CERTIFIED_RUNTIME_SHA: 9f4729759ef44a86b89825033d066bb49f533b61',
+              'EXPECTED_APPROVAL: APPROVE_AI_SEARCH_V4_FINAL_CUTOVER',
+              'CUTOVER_APPROVAL: ${{ inputs.approval }}',
+              'test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"',
+              'Verify clean built-in target before deploy',
+              'EXPECTED_TARGET_KEY_SHA256: 82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a',
               '--config workers/virtual-sande-v35.1-production/wrangler.toml',
-              'Wait for production propagation',
-              'for attempt in $(seq 1 24)',
-              'Production endpoint did not propagate a valid v35.1 health response within 120 seconds.',
-              'Run production acceptance before public cutover',
-              'Run legacy compatibility before public cutover',
-              'public_cutover_performed',
-              'Public cutover performed: **No**',
+              'Verify production retrieval and original source names',
+              'Generated storage filenames leaked as public sources',
+              'Roll back production runtime on post-deploy failure',
+              'AI_SEARCH_NAME = "protocol-ai"',
+              'old_ai_search_instance_retained',
+              'r2_objects_mutated',
+              'ai_search_instances_deleted',
           ]
           missing = [value for value in required if value not in text]
           if missing:
-              raise SystemExit(f'Missing protected production controls: {missing}')
+              raise SystemExit(f'Missing protected AI Search cutover controls: {missing}')
 
           forbidden = [
-              'push:',
-              'schedule:',
+              '\npush:',
+              '\nschedule:',
               'pull_request_target:',
               'contents: write',
+              'r2 put',
+              'r2 delete',
+              '/ai-search/instances/protocol-ai/delete',
           ]
           found = [value for value in forbidden if value in text]
           if found:
-              raise SystemExit(f'Forbidden production release surface: {found}')
+              raise SystemExit(f'Forbidden cutover surface: {found}')
           PY
 
-      - name: Confirm public consumers remain on legacy during deploy phase
+      - name: Confirm dedicated consumers and legacy rollback boundary
         run: |
           set -euo pipefail
           python3 - <<'PY'
+          import json
           from pathlib import Path
-          legacy = 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev'
+
+          production = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
           direct = ['index.html', 'papers.html', 'wpaws/book/index.html', 'wpaws/paper/index.html', 'wpaws/analysis/index.html']
           for path in direct:
               text = Path(path).read_text()
-              if f'{legacy}/ask' not in text:
-                  raise SystemExit(f'Legacy endpoint missing before deploy phase: {path}')
+              if f'{production}/ask' not in text:
+                  raise SystemExit(f'Dedicated production endpoint missing: {path}')
           constructed = Path('wpaws/index.html').read_text()
-          if legacy not in constructed or '/ask' not in constructed:
-              raise SystemExit('Constructed legacy consumer changed before deploy phase.')
+          if production not in constructed or '/ask' not in constructed:
+              raise SystemExit('Constructed dedicated production consumer is missing')
+
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          rollback = state['rollback']
+          assert rollback['legacy_endpoint'] == 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          assert rollback['legacy_worker_retained'] is True
+          assert rollback['status'] == 'READY'
           PY
 
       - name: Production release boundary
         run: |
           {
-            echo '## Virtual Sande v35.1 Production Release Audit'
+            echo '## Virtual Sande v35.1 AI Search v4 Release Audit'
             echo
-            echo '- Owner production approval recorded: **Yes**'
-            echo '- Dedicated production Worker package: **Valid**'
-            echo '- Protected production environment required: **Yes**'
-            echo '- Production propagation gate: **Required**'
-            echo '- Production acceptance before cutover: **Required**'
-            echo '- Public consumers changed in this PR: **No**'
-            echo '- Legacy rollback endpoint preserved: **Yes**'
+            echo '- Existing dedicated production Worker: **Deployed and accepted**'
+            echo '- AI Search v4 final target: **790/790 authorized for protected cutover**'
+            echo '- Original source metadata adapter: **Tested**'
+            echo '- Protected production environment: **Required**'
+            echo '- Cloudflare target preflight before deploy: **Required**'
+            echo '- Post-deploy source-identity acceptance: **Required**'
+            echo '- Automatic runtime rollback on failure: **Required**'
+            echo '- Public consumer endpoint changes in this PR: **No**'
+            echo '- Legacy rollback Worker retained: **Yes**'
           } >> "$GITHUB_STEP_SUMMARY"
