@@ -1,0 +1,501 @@
+name: DEPLOY Virtual Sande AI Search v4 FINAL CUTOVER
+
+on:
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: Type APPROVE_AI_SEARCH_V4_FINAL_CUTOVER
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: virtual-sande-ai-search-v4-final-cutover
+  cancel-in-progress: false
+
+env:
+  CERTIFIED_RUNTIME_SHA: 9f4729759ef44a86b89825033d066bb49f533b61
+  EXPECTED_APPROVAL: APPROVE_AI_SEARCH_V4_FINAL_CUTOVER
+  EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
+  EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+  EXPECTED_TARGET: protocol-ai-v4-final
+  ROLLBACK_TARGET: protocol-ai
+  EXPECTED_ITEM_COUNT: '790'
+  EXPECTED_TARGET_KEY_SHA256: 82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: staging
+    outputs:
+      verified: ${{ steps.target_preflight.outputs.verified }}
+
+    steps:
+      - name: Checkout protected cutover release from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require main, exact approval, and certified runtime
+        env:
+          CUTOVER_APPROVAL: ${{ inputs.approval }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"
+          git cat-file -e "$CERTIFIED_RUNTIME_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_RUNTIME_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-production/src/index.mjs \
+            workers/virtual-sande-v35.1-production/wrangler.toml
+
+      - name: Verify cutover manifest and runtime configuration
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path('config/virtual-sande-ai-search-v4-cutover.json').read_text())
+          assert manifest['status'] == 'AUTHORIZED_PENDING_PROTECTED_PRODUCTION_DEPLOY'
+          assert manifest['certified_runtime_sha'] == '9f4729759ef44a86b89825033d066bb49f533b61'
+          assert manifest['target_instance'] == 'protocol-ai-v4-final'
+          assert manifest['rollback_instance'] == 'protocol-ai'
+          assert manifest['expected_item_count'] == 790
+          assert manifest['expected_stats'] == {
+              'completed': 790, 'skipped': 0, 'error': 0,
+              'queued': 0, 'running': 0, 'outdated': 0,
+          }
+          assert manifest['target_key_sha256'] == '82c81d2c778630b907f42dd5579d1a15ab882101af59b901af790180200d0b4a'
+          assert manifest['source_identity']['canonical_metadata_field'] == 'metadata.source_key'
+          assert manifest['deployment']['automatic_runtime_rollback_on_post_deploy_failure'] is True
+          assert manifest['safety']['ai_search_instance_deletion'] is False
+          assert manifest['safety']['r2_mutation'] is False
+          PY
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'AI_SEARCH_NAME = "protocol-ai-v4-final"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'withOriginalAiSearchSourceNames(worker)' workers/virtual-sande-v35.1-production/src/index.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+
+      - name: Prepare preflight evidence
+        run: mkdir -p /tmp/ai-search-v4-preflight-evidence
+
+      - name: Verify clean built-in target before deploy
+        id: target_preflight
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import urllib.parse
+          import urllib.request
+          from collections import Counter
+
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          token = os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']
+          target = os.environ['EXPECTED_TARGET']
+          api = f'https://api.cloudflare.com/client/v4/accounts/{account}/ai-search/instances/{target}'
+
+          def get(url):
+              request = urllib.request.Request(url, headers={'Authorization': f'Bearer {token}'})
+              with urllib.request.urlopen(request, timeout=180) as response:
+                  payload = json.load(response)
+              if payload.get('success') is False:
+                  raise SystemExit(f'Cloudflare API failure: {payload}')
+              return payload
+
+          instance = dict(get(api).get('result') or {})
+          if instance.get('id') != target:
+              raise SystemExit(f'Unexpected target instance: {instance}')
+          if instance.get('type') not in (None, '', 'builtin'):
+              raise SystemExit(f'Target is not built-in: {instance}')
+
+          items = []
+          page = 1
+          total = None
+          while True:
+              query = urllib.parse.urlencode({'page': page, 'per_page': 50})
+              payload = get(f'{api}/items?{query}')
+              batch = list(payload.get('result') or [])
+              reported = (payload.get('result_info') or {}).get('total_count')
+              if reported is not None:
+                  reported = int(reported)
+                  if total is None:
+                      total = reported
+                  elif total != reported:
+                      raise SystemExit('Target total_count changed during preflight pagination')
+              items.extend(batch)
+              if (total is not None and len(items) >= total) or (total is None and len(batch) < 50):
+                  break
+              page += 1
+              if page > 30:
+                  raise SystemExit('Target pagination safety limit exceeded')
+
+          keys = sorted(str(item.get('key') or '') for item in items)
+          if any(not key for key in keys) or len(keys) != len(set(keys)):
+              raise SystemExit('Target contains empty or duplicate keys')
+          digest = hashlib.sha256(
+              json.dumps(keys, ensure_ascii=False, separators=(',', ':')).encode()
+          ).hexdigest()
+          if len(keys) != int(os.environ['EXPECTED_ITEM_COUNT']):
+              raise SystemExit(f'Expected 790 target items, got {len(keys)}')
+          if digest != os.environ['EXPECTED_TARGET_KEY_SHA256']:
+              raise SystemExit(f'Target key digest mismatch: {digest}')
+
+          counts = Counter(str(item.get('status') or '').lower() for item in items)
+          non_completed = [
+              item for item in items
+              if str(item.get('status') or '').lower() not in {'completed', 'complete', 'indexed', 'ok'}
+          ]
+          if non_completed:
+              raise SystemExit(
+                  f'Target has non-completed items: '
+                  f'{[(i.get("key"), i.get("status"), i.get("error")) for i in non_completed[:5]]}'
+              )
+          source_ids = {str(item.get('source_id') or '') for item in items}
+          if source_ids - {'builtin', ''}:
+              raise SystemExit(f'Target contains non-builtin source IDs: {sorted(source_ids)}')
+
+          stats = dict(get(f'{api}/stats').get('result') or {})
+          actual = {
+              'completed': int(stats.get('completed') or 0),
+              'skipped': int(stats.get('skipped') or 0),
+              'error': int(stats.get('error') or stats.get('errors') or 0),
+              'queued': int(stats.get('queued') or 0),
+              'running': int(stats.get('running') or 0),
+              'outdated': int(stats.get('outdated') or 0),
+          }
+          expected = {
+              'completed': 790, 'skipped': 0, 'error': 0,
+              'queued': 0, 'running': 0, 'outdated': 0,
+          }
+          if actual != expected:
+              raise SystemExit(f'Target stats mismatch: {actual}')
+          vectors = int(
+              (((stats.get('engine') or {}).get('vectorize') or {}).get('vectorsCount') or 0)
+          )
+          if vectors < 1:
+              raise SystemExit('Target has zero vectors')
+
+          evidence = {
+              'target': target,
+              'item_count': len(keys),
+              'target_key_sha256': digest,
+              'status_counts': dict(counts),
+              'stats': stats,
+              'vectors_count': vectors,
+              'r2_objects_mutated': False,
+              'ai_search_instances_deleted': False,
+          }
+          with open('/tmp/ai-search-v4-preflight-evidence/target-preflight.json', 'w') as handle:
+              json.dump(evidence, handle, indent=2)
+              handle.write('\n')
+          print(json.dumps(evidence, indent=2))
+          PY
+          echo 'verified=true' >> "$GITHUB_OUTPUT"
+
+      - name: Run certified runtime tests
+        run: |
+          set -euo pipefail
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs
+          node --test \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-consistency-integration.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.test.mjs
+
+      - name: Upload preflight evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-ai-search-v4-final-preflight-evidence
+          path: /tmp/ai-search-v4-preflight-evidence
+          retention-days: 90
+          if-no-files-found: warn
+
+  cutover:
+    needs: preflight
+    if: ${{ needs.preflight.outputs.verified == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    steps:
+      - name: Checkout verified cutover release from main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require verified preflight and unchanged certified runtime
+        env:
+          CUTOVER_APPROVAL: ${{ inputs.approval }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          test "$CUTOVER_APPROVAL" = "$EXPECTED_APPROVAL"
+          test "${{ needs.preflight.outputs.verified }}" = 'true'
+          git cat-file -e "$CERTIFIED_RUNTIME_SHA^{commit}"
+          git diff --quiet "$CERTIFIED_RUNTIME_SHA" "$GITHUB_SHA" -- \
+            tools/virtual-sande/wpa-protocol-bot-v35-protocolometry-connector.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-safe-entrypoint.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-response-contract.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.mjs \
+            tools/virtual-sande/wpa-protocol-bot-v35.1-ai-search-source-metadata.test.mjs \
+            workers/virtual-sande-v35.1-staging/src/index.mjs \
+            workers/virtual-sande-v35.1-production/src/index.mjs \
+            workers/virtual-sande-v35.1-production/wrangler.toml
+          echo "RELEASE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+
+      - name: Prepare cutover evidence
+        run: mkdir -p /tmp/ai-search-v4-cutover-evidence
+
+      - name: Deploy certified AI Search cutover
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 deploy \
+            --config workers/virtual-sande-v35.1-production/wrangler.toml \
+            2>&1 | tee /tmp/ai-search-v4-cutover-deploy.log
+          touch /tmp/ai-search-v4-cutover-deployed
+
+      - name: Resolve production URL
+        run: |
+          set -euo pipefail
+          PRODUCTION_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/ai-search-v4-cutover-deploy.log | tail -n 1 | sed 's:/$::')"
+          test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
+          echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
+
+      - name: Wait for stable production propagation
+        run: |
+          set -euo pipefail
+          consecutive=0
+          for attempt in $(seq 1 36); do
+            nonce="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            status=$(curl --silent --show-error \
+              --output /tmp/ai-search-v4-cutover-evidence/health.json \
+              --write-out '%{http_code}' \
+              "$PRODUCTION_URL/orchestrator/health?cutover_check=$nonce" || true)
+            if [ "$status" = '200' ] \
+              && grep -Fq '"ok": true' /tmp/ai-search-v4-cutover-evidence/health.json \
+              && grep -Fq 'v35.1' /tmp/ai-search-v4-cutover-evidence/health.json; then
+              consecutive=$((consecutive + 1))
+              if [ "$consecutive" -ge 2 ]; then
+                exit 0
+              fi
+            else
+              consecutive=0
+            fi
+            sleep 5
+          done
+          echo 'Production endpoint did not stabilize after AI Search cutover.' >&2
+          cat /tmp/ai-search-v4-cutover-evidence/health.json >&2 || true
+          exit 1
+
+      - name: Verify production retrieval and original source names
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Explain the U-shaped conference room seating configuration from the WPA sources.' \
+            --data-urlencode 'lang=en' \
+            --data-urlencode "cutover_check=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-cutover-evidence/u-shaped-seating.json
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Каква е врската меѓу дипломатскиот протокол и безбедноста според изворите?' \
+            --data-urlencode 'lang=mk' \
+            --data-urlencode "cutover_check=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-cutover-evidence/protocol-safety.json
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=What do the WPA sources say about ethical teachings and professional ethics?' \
+            --data-urlencode 'lang=en' \
+            --data-urlencode "cutover_check=$GITHUB_RUN_ID" \
+            > /tmp/ai-search-v4-cutover-evidence/professional-ethics.json
+
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          paths = [
+              Path('/tmp/ai-search-v4-cutover-evidence/u-shaped-seating.json'),
+              Path('/tmp/ai-search-v4-cutover-evidence/protocol-safety.json'),
+              Path('/tmp/ai-search-v4-cutover-evidence/professional-ethics.json'),
+          ]
+          payloads = [json.loads(path.read_text()) for path in paths]
+          for payload in payloads:
+              assert payload.get('ok') is True
+              assert isinstance(payload.get('answer'), str) and payload['answer'].strip()
+
+          contextual = [payload for payload in payloads if payload.get('hasContext') is True]
+          if not contextual:
+              raise SystemExit('No production acceptance query returned AI Search context')
+
+          def source_strings(payload):
+              values = []
+              for field in ('sources', 'sourceDetails'):
+                  value = payload.get(field)
+                  if isinstance(value, list):
+                      values.extend(
+                          json.dumps(item, ensure_ascii=False)
+                          if not isinstance(item, str) else item
+                          for item in value
+                      )
+              return values
+
+          values = [value for payload in contextual for value in source_strings(payload)]
+          if not values:
+              raise SystemExit('Contextual production responses exposed no source identity')
+          hashed = re.compile(r'\bwpa-[0-9a-f]{48}(?:\.[a-z0-9]{1,12})?\b', re.I)
+          bad = [value for value in values if hashed.search(value)]
+          if bad:
+              raise SystemExit(f'Generated storage filenames leaked as public sources: {bad[:3]}')
+          if not any('/' in value for value in values):
+              raise SystemExit(f'Original source paths were not exposed: {values[:3]}')
+
+          report = {
+              'queries': len(payloads),
+              'contextual_responses': len(contextual),
+              'source_identity_values': values,
+              'generated_hash_names_exposed': False,
+          }
+          Path('/tmp/ai-search-v4-cutover-evidence/source-identity-acceptance.json').write_text(
+              json.dumps(report, ensure_ascii=False, indent=2) + '\n'
+          )
+          print(json.dumps(report, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Verify unchanged public consumers and rollback availability
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          production = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'
+          direct = [
+              'index.html', 'papers.html', 'wpaws/book/index.html',
+              'wpaws/paper/index.html', 'wpaws/analysis/index.html',
+          ]
+          for path in direct:
+              text = Path(path).read_text()
+              if f'{production}/ask' not in text:
+                  raise SystemExit(f'Dedicated production endpoint missing: {path}')
+          constructed = Path('wpaws/index.html').read_text()
+          if production not in constructed or '/ask' not in constructed:
+              raise SystemExit('Constructed dedicated production consumer is missing')
+          state = json.loads(Path('config/virtual-sande-current-state.json').read_text())
+          assert state['rollback']['legacy_endpoint'] == 'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          assert state['rollback']['legacy_worker_retained'] is True
+          assert state['rollback']['status'] == 'READY'
+          PY
+
+      - name: Build cutover evidence
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              'schema_version': '1.0',
+              'component': 'Virtual Sande AI Search production cutover',
+              'certified_runtime_sha': os.environ['CERTIFIED_RUNTIME_SHA'],
+              'release_sha': os.environ['RELEASE_SHA'],
+              'production_url': os.environ['PRODUCTION_URL'],
+              'target_instance': os.environ['EXPECTED_TARGET'],
+              'rollback_instance': os.environ['ROLLBACK_TARGET'],
+              'target_preflight': 'PASSED_IN_STAGING_JOB',
+              'production_deploy': 'PASSED',
+              'production_retrieval_acceptance': 'PASSED',
+              'original_source_identity_acceptance': 'PASSED',
+              'public_consumer_change': False,
+              'old_ai_search_instance_retained': True,
+              'r2_objects_mutated': False,
+              'ai_search_instances_deleted': False,
+          }
+          Path('/tmp/ai-search-v4-cutover-evidence/cutover-evidence.json').write_text(
+              json.dumps(evidence, indent=2) + '\n'
+          )
+          PY
+
+      - name: Roll back production runtime on post-deploy failure
+        if: ${{ failure() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/ai-search-v4-cutover-deployed ]; then
+            echo 'Deploy did not complete; no runtime rollback is required.'
+            exit 0
+          fi
+          config=workers/virtual-sande-v35.1-production/wrangler.toml
+          cp "$config" /tmp/wrangler.ai-search-v4-cutover.toml
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('workers/virtual-sande-v35.1-production/wrangler.toml')
+          text = path.read_text()
+          old = 'AI_SEARCH_NAME = "protocol-ai-v4-final"'
+          new = 'AI_SEARCH_NAME = "protocol-ai"'
+          if text.count(old) != 1:
+              raise SystemExit('Rollback refused: expected target line is not unique')
+          path.write_text(text.replace(old, new))
+          PY
+          npx --yes wrangler@4 deploy --config "$config" \
+            2>&1 | tee /tmp/ai-search-v4-cutover-evidence/rollback-deploy.log
+          mv /tmp/wrangler.ai-search-v4-cutover.toml "$config"
+          echo '{"rollback_instance":"protocol-ai","rollback_deploy":"ATTEMPTED_AFTER_CUTOVER_FAILURE"}' \
+            > /tmp/ai-search-v4-cutover-evidence/rollback.json
+
+      - name: Upload cutover evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: virtual-sande-ai-search-v4-final-cutover-evidence
+          path: /tmp/ai-search-v4-cutover-evidence
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Production cutover boundary
+        if: ${{ success() }}
+        run: |
+          {
+            echo '## Virtual Sande AI Search v4 Final Cutover'
+            echo "- Certified runtime SHA: \`$CERTIFIED_RUNTIME_SHA\`"
+            echo "- Release SHA: \`$RELEASE_SHA\`"
+            echo "- Production URL: \`$PRODUCTION_URL\`"
+            echo "- Active AI Search: \`$EXPECTED_TARGET\`"
+            echo "- Rollback AI Search retained: \`$ROLLBACK_TARGET\`"
+            echo '- Staging preflight 790/790: **Passed**'
+            echo '- Production source-name acceptance: **Passed**'
+            echo '- Public consumer endpoint changes: **No**'
+            echo '- R2 mutations: **No**'
+            echo '- AI Search instance deletions: **No**'
+          } >> "$GITHUB_STEP_SUMMARY"
