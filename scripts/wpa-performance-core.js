@@ -188,7 +188,8 @@
     installAnchorFallback();
     installMobileMenu();
     installJournalLiveEntries();
-    addScript('wpa-home-typography-20260724', '/scripts/wpa-home-typography-20260724.js?v=20260724-1');
+    addScript('wpa-home-typography-20260730-v2', '/scripts/wpa-home-typography-20260724.js?v=20260730-2');
+    addScript('wpa-high-contrast-20260730-v3-loader', '/scripts/wpa-contrast-20260730-v3.js?v=634a99d34375');
     addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-offline3');
     addScript('wpa-corpus-20260729-v2', '/scripts/wpa-corpus-20260729-v2.js?v=20260729-2');
   }
