@@ -17,7 +17,7 @@
       mk: 'Мултиагентска дипломатија: Мандат, доказно потекло и институционална волја во мрежи од ВИ-агенти',
       en: 'Multi-Agent Diplomacy: Mandate, Provenance and Institutional Will in Networks of AI Agents',
       version: 'v1.0', date: '3 August 2026', pages: '45', doi: '10.5281/zenodo.21779849', conceptDoi: '10.5281/zenodo.21779848',
-      desc: 'A bilingual working paper extending liquid protocol into multi-agent chains through mandate non-amplification, provenance, admissibility gates, human approval validity and the WPA Network Right to Pause.'
+      desc: 'A bilingual Protocol Note extending liquid protocol into multi-agent chains through mandate non-amplification, provenance, admissibility gates, human approval validity and the WPA Network Right to Pause.'
     }
   };
 
@@ -67,7 +67,7 @@
     }
   }
 
-  function updateCounts() {
+  function updateCountsAndIdentity() {
     replaceTextNodes([
       [/6 WPA Protocol Notes/g, '8 WPA Protocol Notes'],
       [/six WPA Protocol Notes/gi, 'eight WPA Protocol Notes'],
@@ -84,6 +84,12 @@
       [/All twenty records/gi, 'All twenty-two records'],
       [/twenty total WPA Zenodo records/gi, 'twenty-two total WPA Zenodo records'],
       [/nineteen public DOI records/gi, 'twenty-one public DOI records'],
+      [/Автор · Истражувач · Основач и директор на WPA/g, 'Автор · Истражувач · Креатор на платформата'],
+      [/Author · Researcher · Founder and Director of WPA/g, 'Author · Researcher · Platform Creator'],
+      [/Основач и директор на WPA/g, 'Креатор на платформата'],
+      [/Founder and Director of WPA/g, 'Platform Creator'],
+      [/Digital Era \(2023\) · IMCSM26 \(2026\)/g, 'Digital Era (2023) · IMCSM26 (2026) · PN-005 · PN-006 · PN-007 · PN-008'],
+      [/WPA Protocol Notes се кратки, применети протоколометриски записи посветени на конкретни дипломатски настани\./g, 'WPA Protocol Notes се кратки, применети и теориско-развојни протоколометриски записи посветени на дипломатски настани, институционално управување, дигитален протокол и управување со вештачка интелигенција.'],
       [/Последно ажурирано: 29 јули 2026/g, 'Последно ажурирано: 3 август 2026'],
       [/Last updated: 29 July 2026/g, 'Last updated: 3 August 2026']
     ]);
@@ -165,7 +171,7 @@
     if (!card) return;
     setText(card.querySelector('.pub-meta'), 'СЕРИЈА · 02 · 8 ZENODO DOI RECORDS');
     setText(card.querySelector('h3'), 'WPA Protocol Notes 001–008');
-    setHTML(card.querySelector('p'), 'Посебна серија на кратки, применети и изворно дисциплинирани анализи. Најновите записи се <strong>WPA-PN-007: Liquid Protocol and AI Agents</strong> и <strong>WPA-PN-008: Multi-Agent Diplomacy</strong>.');
+    setHTML(card.querySelector('p'), 'Посебна серија на кратки, применети и теориско-развојни протоколометриски записи. Најновите записи се <strong>WPA-PN-007: Liquid Protocol and AI Agents</strong> и <strong>WPA-PN-008: Multi-Agent Diplomacy</strong>.');
     setText(card.querySelector('.pub-frequency'), 'Published · PN-001–PN-008 · 2026');
     var link = card.querySelector('a[href*="doi.org"],a[href*="zenodo"]');
     if (link) { link.href = doiUrl(RECORDS.pn008); setText(link, 'Отвори WPA-PN-008 на Zenodo →'); }
@@ -175,7 +181,7 @@
     if (path() !== '/papers.html') return;
     var notes = document.getElementById('wpa-protocol-notes');
     if (!notes) return;
-    setText(notes.querySelector('.section-header h3'), 'Eight applied protocolometry records — open access via Zenodo.');
+    setText(notes.querySelector('.section-header h3'), 'Eight applied and theoretical protocolometry records — open access via Zenodo.');
     setHTML(notes.querySelector('.section-header p'), '<strong>Publication status:</strong> PN-001–PN-008 are published Zenodo DOI records. The WPA series corpus contains 21 public DOI records: 13 Working Papers and 8 Protocol Notes.');
     var grid = notes.querySelector('.grid-3,.grid');
     if (grid && !document.getElementById('wpaPn007PapersCard')) grid.appendChild(simpleCard(RECORDS.pn007, 'wpaPn007PapersCard'));
@@ -188,7 +194,7 @@
     setText(document.querySelector('.hero .subtitle'), 'Working Papers 001–013 · Protocol Notes 001–008');
     setText(document.querySelector('.section-title span'), '13 Working Papers + 8 Protocol Notes + 1 Strategic Plan = 22 records');
     var intro = document.querySelector('.intro-box');
-    if (intro) setHTML(intro.querySelector('p'), '<strong>Published Zenodo Records:</strong> The WPA corpus contains twenty-one public DOI records in its two publication series — thirteen Working Papers and eight Protocol Notes — plus one Global Strategic Plan report, for twenty-two total WPA Zenodo records. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.');
+    if (intro) setHTML(intro.querySelector('p'), '<strong>Published Zenodo Records:</strong> The WPA corpus contains twenty-one public DOI records in its two publication series — thirteen Working Papers and eight Protocol Notes — plus one Global Strategic Plan report, for twenty-two total WPA Zenodo records. The Working Papers and Protocol Notes are author-approved public releases and are not presented as formal peer-reviewed journal articles.');
     var grid = document.getElementById('papersGrid');
     if (grid) {
       var dividers = qsa('.series-divider', grid);
@@ -197,7 +203,7 @@
       if (!document.getElementById('pn007')) grid.appendChild(researchCard(RECORDS.pn007, 'pn007', false));
       if (!document.getElementById('pn008')) grid.appendChild(researchCard(RECORDS.pn008, 'pn008', true));
     }
-    setText(document.querySelector('.author-responsibility p'), 'All twenty-two records — thirteen Working Papers, eight Protocol Notes and one Global Strategic Plan report — are issued under the authorship and final editorial responsibility of Sande Smiljanov. The Working Papers and Protocol Notes are author-reviewed public releases and are not presented as formal peer-reviewed journal articles.');
+    setText(document.querySelector('.author-responsibility p'), 'All twenty-two records — thirteen Working Papers, eight Protocol Notes and one Global Strategic Plan report — are issued under the authorship and final editorial responsibility of Sande Smiljanov. The Working Papers and Protocol Notes are author-approved public releases and are not presented as formal peer-reviewed journal articles.');
   }
 
   function updateBibliography() {
@@ -211,7 +217,7 @@
     qsa('.bib-note').forEach(function (note) {
       if (text(note).indexOf('WPA Research Metrics') === -1) return;
       setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>' +
-        '• 27 Academic Publications / Академски публикации<br>' +
+        '• 25 Academic Publications / Академски публикации<br>' +
         '• 13 WPA Working Papers (Zenodo DOI)<br>' +
         '• 8 WPA Protocol Notes (Zenodo DOI)<br>' +
         '• 21 WPA Series DOI Records<br>' +
@@ -230,7 +236,7 @@
 
   function apply() {
     if (!document.body) return;
-    updateCounts();
+    updateCountsAndIdentity();
     updateHome();
     updateInstitute();
     updatePapers();
