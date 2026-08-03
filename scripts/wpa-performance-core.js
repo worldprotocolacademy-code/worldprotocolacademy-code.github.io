@@ -1,4 +1,4 @@
-/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-07-30 */
+/* WPA interaction recovery, Journal Live entry points, contrast and corpus sync - 2026-08-03 */
 (function () {
   'use strict';
   if (window.WPA_INTERACTION_RECOVERY_LOADED) return;
@@ -152,11 +152,11 @@
 
   function installJournalLiveEntries() {
     ensureJournalStyles();
-    var path = String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
+    var currentPath = String(window.location.pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
     var page = String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
-    var isHome = page === 'index' || path === '/' || path === '/index.html';
-    var isInstitute = page === 'institute' || path === '/institute.html';
-    var isJournal = path === '/journal' || path === '/journal/index.html';
+    var isHome = page === 'index' || currentPath === '/' || currentPath === '/index.html';
+    var isInstitute = page === 'institute' || currentPath === '/institute.html';
+    var isJournal = currentPath === '/journal' || currentPath === '/journal/index.html';
     if (isHome) {
       var navList = document.querySelector('.site-nav ul');
       if (navList && !document.getElementById('wpaLiveHomeNavItem')) {
@@ -192,6 +192,7 @@
     addScript('wpa-high-contrast-20260730-v3-loader', '/scripts/wpa-contrast-20260730-v3.js?v=634a99d34375');
     addScript('wpa-public-virtual-sande-recovery-20260724', '/scripts/virtual-sande-public-widget.js?v=20260724-offline3');
     addScript('wpa-corpus-20260729-v2', '/scripts/wpa-corpus-20260729-v2.js?v=20260729-2');
+    addScript('wpa-pn007-pn008-sync-20260803', '/scripts/wpa-pn007-pn008-sync-20260803.js?v=20260803-1');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
