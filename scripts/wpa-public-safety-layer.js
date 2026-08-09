@@ -1,7 +1,8 @@
-/* WPA Public Safety Layer v1.6
+/* WPA Public Safety Layer v1.7
  * Civil, analytical, development-phase terminology and public-boundary enforcement.
  * No publishing, payment, credential or backend actions are performed here.
  * Analytical modules use public sources only and have no intelligence, surveillance, investigative or operational function.
+ * v1.7: the Institute-only royal stylesheet is no longer injected on the homepage.
  */
 (function(){
   'use strict';
@@ -45,7 +46,14 @@
   function guardCommercialActions(){document.querySelectorAll('a,button').forEach(function(el){var text=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();var href=(el.getAttribute&&el.getAttribute('href'))||'';var risky=/checkout|pay now|payment|плати|купи|buy now|побарај понуда|request quote|estimated fee/.test(text+' '+href);if(!risky)return;if(el.tagName==='A')el.setAttribute('href','mailto:worldprotocolacademy@gmail.com?subject='+encodeURIComponent('WPA expression of interest'));el.setAttribute('data-wpa-development-only','true');el.setAttribute('title','Development preview — no payment, contract or commercial commitment is created.');});}
   function loadScriptOnce(id,src){if(document.getElementById(id))return;var script=document.createElement('script');script.id=id;script.src=src;script.defer=true;document.head.appendChild(script);}
   function loadStyleOnce(id,href){if(document.getElementById(id))return;var link=document.createElement('link');link.id=id;link.rel='stylesheet';link.href=href;document.head.appendChild(link);}
-  function loadHomepageEnhancers(){var isHome=path==='/'||path==='/index.html';var isInstitute=path==='/institute.html';if(isHome||isInstitute)loadStyleOnce('wpa-royal-responsive','/styles/wpa-royal-responsive.css?v=20260719-1');if(!isHome)return;loadScriptOnce('wpa-about-interactive-loader','/scripts/wpa-about-interactive.js?v=20260718-1');loadScriptOnce('wpa-programme-families-loader','/scripts/wpa-programme-families-interactive.js?v=20260718-1');}
+  function loadHomepageEnhancers(){
+    var isHome=path==='/'||path==='/index.html';
+    var isInstitute=path==='/institute.html';
+    if(isInstitute)loadStyleOnce('wpa-royal-responsive','/styles/wpa-royal-responsive.css?v=20260809-2');
+    if(!isHome)return;
+    loadScriptOnce('wpa-about-interactive-loader','/scripts/wpa-about-interactive.js?v=20260718-1');
+    loadScriptOnce('wpa-programme-families-loader','/scripts/wpa-programme-families-interactive.js?v=20260718-1');
+  }
   function boot(){safeTextNodes(document.body);updateLinks();addBoundary();guardCommercialActions();loadHomepageEnhancers();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   document.addEventListener('wpa:lang-changed',function(){setTimeout(boot,60);});
