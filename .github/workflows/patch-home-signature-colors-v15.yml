@@ -1,4 +1,4 @@
-name: Patch WPA home signature colors v1.5
+name: Install WPA homepage semantic contrast system v6
 
 on:
   push:
@@ -10,124 +10,66 @@ permissions:
   contents: write
 
 jobs:
-  patch-home:
+  install-home-style:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply permanent homepage color patch
+      - name: Remove legacy inline color patch and install one stylesheet
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
-          marker = 'WPA HOME SIGNATURE COLOR PATCH v1.5'
 
-          text = text.replace('/languages/wpa-language-menu-10.js"', '/languages/wpa-language-menu-10.js?v=1.5"')
-          text = text.replace('/languages/wpa-language-menu-10.js?v=1.4"', '/languages/wpa-language-menu-10.js?v=1.5"')
+          # Remove the old broad v1.5 inline patch that caused light/dark conflicts.
+          text = re.sub(
+              r'\s*<style id="wpa-home-signature-color-v15">.*?</style>\s*',
+              '\n',
+              text,
+              flags=re.S,
+          )
 
-          if marker not in text:
-              css = '''
-          <style id="wpa-home-signature-color-v15">
-          /* WPA HOME SIGNATURE COLOR PATCH v1.5 */
-          html[data-wpa-page="index"]{
-            --wpa-signature-navy:#102A43;
-            --wpa-signature-ink:#263B4D;
-            --wpa-signature-teal:#0F5962;
-            --wpa-signature-teal-deep:#0A454C;
-            --wpa-signature-copper:#8B5E24;
-            --wpa-signature-gold:#C9A84C;
-            --wpa-signature-paper:#FFFDF8;
-            --muted:#31475C;
-            --goldd:#8B5E24;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) p,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) li,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .muted,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-lead,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card p,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-list li,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card p,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-text,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-list li,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card p,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--muted)"],
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--muted)"]{
-            color:var(--wpa-signature-ink)!important;
-            opacity:1!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-title,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h2,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h3,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h4{
-            color:var(--wpa-signature-navy)!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-kicker,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .domain-tag,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-meta{
-            color:var(--wpa-signature-teal)!important;
-            font-weight:800!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label::before{
-            background:linear-gradient(90deg,var(--wpa-signature-teal),var(--wpa-signature-gold))!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) strong,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--goldd)"],
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--goldd)"]{
-            color:var(--wpa-signature-copper)!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-link,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card a:not(.btn),
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card a:not(.btn),
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card a:not(.btn){
-            color:var(--wpa-signature-teal-deep)!important;
-            font-weight:750!important;
-          }
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-card,
-          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card{
-            background:linear-gradient(180deg,#fff 0%,var(--wpa-signature-paper) 100%)!important;
-            border-color:rgba(15,89,98,.26)!important;
-          }
-          html[data-wpa-page="index"] main .level-badge,
-          html[data-wpa-page="index"] main .price-badge{
-            background:var(--wpa-signature-navy)!important;
-            color:#F4E8C1!important;
-            border:1px solid rgba(201,168,76,.48)!important;
-          }
-          html[data-wpa-page="index"] main .price-card.featured .price-badge{
-            background:var(--wpa-signature-gold)!important;
-            color:#071326!important;
-          }
-          html[data-wpa-page="index"] main .dark-section,
-          html[data-wpa-page="index"] main .dark-section p,
-          html[data-wpa-page="index"] main .dark-section li{
-            color:rgba(255,255,255,.88)!important;
-          }
-          html[data-wpa-page="index"] main .dark-section .section-title,
-          html[data-wpa-page="index"] main .dark-section h2,
-          html[data-wpa-page="index"] main .dark-section h3,
-          html[data-wpa-page="index"] main .dark-section h4{
-            color:#fff!important;
-          }
-          html[data-wpa-page="index"] main .dark-section .section-label{
-            color:#E8D49A!important;
-          }
-          </style>
-          '''
-              if '</html>' in text:
-                  text = text.replace('</html>', css + '\n</html>', 1)
-              else:
-                  text += '\n' + css
+          # Remove older duplicate links to the semantic stylesheet, if any.
+          text = re.sub(
+              r'\s*<link[^>]+href=["\']/styles/wpa-home-emergency-readability\.css(?:\?[^"\']*)?["\'][^>]*>\s*',
+              '\n',
+              text,
+              flags=re.I,
+          )
+
+          # Install exactly one cache-busted source of truth at the end of <head>.
+          link = '<link rel="stylesheet" href="/styles/wpa-home-emergency-readability.css?v=6.0" data-wpa-style="semantic-contrast-v6">'
+          if '</head>' in text:
+              text = text.replace('</head>', link + '\n</head>', 1)
+          else:
+              raise SystemExit('index.html has no </head>')
+
+          # Cache-bust the language loader too, but it no longer controls homepage colors.
+          text = re.sub(
+              r'/languages/wpa-language-menu-10\.js(?:\?v=[^"\']*)?',
+              '/languages/wpa-language-menu-10.js?v=2.0',
+              text,
+          )
 
           path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit patch
+      - name: Validate one-source contrast architecture
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('index.html').read_text(encoding='utf-8')
+          assert 'wpa-home-signature-color-v15' not in text
+          assert text.count('wpa-home-emergency-readability.css?v=6.0') == 1
+          assert '/languages/wpa-language-menu-10.js?v=2.0' in text
+          print('OK: one semantic contrast stylesheet, no legacy inline color patch')
+          PY
+
+      - name: Commit root fix
         run: |
           if git diff --quiet; then
             echo "No changes needed"
@@ -136,5 +78,5 @@ jobs:
           git config user.name "wpa-style-bot"
           git config user.email "actions@users.noreply.github.com"
           git add index.html
-          git commit -m "Apply WPA signature color system v1.5 [skip ci]"
+          git commit -m "Root-fix WPA homepage contrast architecture [skip ci]"
           git push
