@@ -17,163 +17,117 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Apply permanent homepage color patch
-        shell: python
         run: |
+          python - <<'PY'
           from pathlib import Path
 
           path = Path('index.html')
           text = path.read_text(encoding='utf-8')
           marker = 'WPA HOME SIGNATURE COLOR PATCH v1.5'
 
-          # Always cache-bust the external loader so browsers/CDN fetch the newest version.
           text = text.replace('/languages/wpa-language-menu-10.js"', '/languages/wpa-language-menu-10.js?v=1.5"')
           text = text.replace('/languages/wpa-language-menu-10.js?v=1.4"', '/languages/wpa-language-menu-10.js?v=1.5"')
-          text = text.replace('/languages/wpa-language-menu-10.js?v=1.4.1"', '/languages/wpa-language-menu-10.js?v=1.5"')
 
           if marker not in text:
-              css = r'''
-<style id="wpa-home-signature-color-v15">
-/* WPA HOME SIGNATURE COLOR PATCH v1.5
-   Ceremonial Navy + Diplomatic Teal + Heritage Gold
-   Permanent late-cascade override for homepage readability. */
-html[data-wpa-page="index"]{
-  --wpa-signature-navy:#102A43;
-  --wpa-signature-ink:#263B4D;
-  --wpa-signature-teal:#0F5962;
-  --wpa-signature-teal-deep:#0A454C;
-  --wpa-signature-copper:#8B5E24;
-  --wpa-signature-gold:#C9A84C;
-  --wpa-signature-paper:#FFFDF8;
-  --muted:#31475C;
-  --goldd:#8B5E24;
-}
-
-/* Strong, readable body copy in every LIGHT homepage section. */
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) p,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) li,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .muted,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-lead,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card p,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-list li,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card p,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-text,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-list li,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card p,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--muted)"],
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--muted)"]{
-  color:var(--wpa-signature-ink) !important;
-  opacity:1 !important;
-}
-
-/* Headings: ceremonial navy. */
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-title,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h2,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h3,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h4,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card h4,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-card h4{
-  color:var(--wpa-signature-navy) !important;
-}
-
-/* Recognisable WPA accent: Diplomatic Teal. */
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-kicker,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .domain-tag,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-meta{
-  color:var(--wpa-signature-teal) !important;
-  font-weight:800 !important;
-}
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label::before{
-  background:linear-gradient(90deg,var(--wpa-signature-teal),var(--wpa-signature-gold)) !important;
-}
-
-/* Strong emphasis and links. */
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) strong,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--goldd)"],
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--goldd)"]{
-  color:var(--wpa-signature-copper) !important;
-}
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-link,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card a:not(.btn),
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card a:not(.btn),
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card a:not(.btn){
-  color:var(--wpa-signature-teal-deep) !important;
-  font-weight:750 !important;
-}
-
-/* Signature card surface. */
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-card,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card{
-  background:linear-gradient(180deg,#FFFFFF 0%,var(--wpa-signature-paper) 100%) !important;
-  border-color:rgba(15,89,98,.26) !important;
-}
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card:hover,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card:hover,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-card:hover,
-html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card:hover{
-  border-color:rgba(15,89,98,.58) !important;
-  box-shadow:0 14px 38px rgba(16,42,67,.14),0 0 0 1px rgba(201,168,76,.12) !important;
-}
-
-/* Programme/certificate/membership badges. */
-html[data-wpa-page="index"] main .level-badge,
-html[data-wpa-page="index"] main .price-badge{
-  background:var(--wpa-signature-navy) !important;
-  color:#F4E8C1 !important;
-  border:1px solid rgba(201,168,76,.48) !important;
-}
-html[data-wpa-page="index"] main .price-card.featured .price-badge{
-  background:var(--wpa-signature-gold) !important;
-  color:#071326 !important;
-}
-
-/* Public-boundary / legal / trust notices: strong and unmistakable. */
-html[data-wpa-page="index"] .wpa-public-boundary,
-html[data-wpa-page="index"] .public-boundary,
-html[data-wpa-page="index"] [data-wpa-boundary],
-html[data-wpa-page="index"] .wpa-status-ribbon,
-html[data-wpa-page="index"] .wpa-legal-disclaimer{
-  color:#F7E9C3 !important;
-  background:linear-gradient(90deg,#102A43,#0F5962) !important;
-  border-color:rgba(201,168,76,.60) !important;
-}
-html[data-wpa-page="index"] .wpa-public-boundary *,
-html[data-wpa-page="index"] .public-boundary *,
-html[data-wpa-page="index"] [data-wpa-boundary] *,
-html[data-wpa-page="index"] .wpa-status-ribbon *{
-  color:inherit !important;
-}
-
-/* Preserve intentionally dark sections as light-on-dark. */
-html[data-wpa-page="index"] main .dark-section,
-html[data-wpa-page="index"] main .dark-section p,
-html[data-wpa-page="index"] main .dark-section li{
-  color:rgba(255,255,255,.88) !important;
-}
-html[data-wpa-page="index"] main .dark-section .section-title,
-html[data-wpa-page="index"] main .dark-section h2,
-html[data-wpa-page="index"] main .dark-section h3,
-html[data-wpa-page="index"] main .dark-section h4{
-  color:#FFFFFF !important;
-}
-html[data-wpa-page="index"] main .dark-section .section-label{
-  color:#E8D49A !important;
-}
-</style>
-'''
-              # Insert at the absolute end of the document so it wins the CSS cascade,
-              # including legacy style blocks that appear after </body>.
+              css = '''
+          <style id="wpa-home-signature-color-v15">
+          /* WPA HOME SIGNATURE COLOR PATCH v1.5 */
+          html[data-wpa-page="index"]{
+            --wpa-signature-navy:#102A43;
+            --wpa-signature-ink:#263B4D;
+            --wpa-signature-teal:#0F5962;
+            --wpa-signature-teal-deep:#0A454C;
+            --wpa-signature-copper:#8B5E24;
+            --wpa-signature-gold:#C9A84C;
+            --wpa-signature-paper:#FFFDF8;
+            --muted:#31475C;
+            --goldd:#8B5E24;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) p,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) li,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .muted,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-lead,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card p,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-list li,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card p,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-text,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-list li,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card p,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--muted)"],
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--muted)"]{
+            color:var(--wpa-signature-ink)!important;
+            opacity:1!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-title,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h2,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h3,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) h4{
+            color:var(--wpa-signature-navy)!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-kicker,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .domain-tag,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-meta{
+            color:var(--wpa-signature-teal)!important;
+            font-weight:800!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .section-label::before{
+            background:linear-gradient(90deg,var(--wpa-signature-teal),var(--wpa-signature-gold))!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) strong,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color:var(--goldd)"],
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) [style*="color: var(--goldd)"]{
+            color:var(--wpa-signature-copper)!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card-link,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card a:not(.btn),
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card a:not(.btn),
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card a:not(.btn){
+            color:var(--wpa-signature-teal-deep)!important;
+            font-weight:750!important;
+          }
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .card,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .platform-card,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .price-card,
+          html[data-wpa-page="index"] main section:not(.dark-section):not(.hero) .pub-card{
+            background:linear-gradient(180deg,#fff 0%,var(--wpa-signature-paper) 100%)!important;
+            border-color:rgba(15,89,98,.26)!important;
+          }
+          html[data-wpa-page="index"] main .level-badge,
+          html[data-wpa-page="index"] main .price-badge{
+            background:var(--wpa-signature-navy)!important;
+            color:#F4E8C1!important;
+            border:1px solid rgba(201,168,76,.48)!important;
+          }
+          html[data-wpa-page="index"] main .price-card.featured .price-badge{
+            background:var(--wpa-signature-gold)!important;
+            color:#071326!important;
+          }
+          html[data-wpa-page="index"] main .dark-section,
+          html[data-wpa-page="index"] main .dark-section p,
+          html[data-wpa-page="index"] main .dark-section li{
+            color:rgba(255,255,255,.88)!important;
+          }
+          html[data-wpa-page="index"] main .dark-section .section-title,
+          html[data-wpa-page="index"] main .dark-section h2,
+          html[data-wpa-page="index"] main .dark-section h3,
+          html[data-wpa-page="index"] main .dark-section h4{
+            color:#fff!important;
+          }
+          html[data-wpa-page="index"] main .dark-section .section-label{
+            color:#E8D49A!important;
+          }
+          </style>
+          '''
               if '</html>' in text:
                   text = text.replace('</html>', css + '\n</html>', 1)
               else:
                   text += '\n' + css
 
           path.write_text(text, encoding='utf-8')
+          PY
 
       - name: Commit patch
-        shell: bash
         run: |
           if git diff --quiet; then
             echo "No changes needed"
