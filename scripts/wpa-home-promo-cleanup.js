@@ -1,4 +1,4 @@
-/* WPA homepage promotional cleanup v1.2 */
+/* WPA homepage promotional cleanup v1.3 */
 (function(){'use strict';
 function removeHomePn003(){
   var announce=document.querySelector('.announce .announce-inner');
@@ -7,6 +7,49 @@ function removeHomePn003(){
     var text=String(node.textContent||'');
     if(text.indexOf('New publication')!==-1&&text.indexOf('WPA-PN-003')!==-1){node.remove();}
   });
+}
+
+function addInstituteNavLink(){
+  var list=document.querySelector('header .site-nav ul');
+  if(!list)return;
+  var existing=Array.from(list.querySelectorAll('a')).find(function(a){
+    var href=String(a.getAttribute('href')||'').replace(/^\.\//,'').replace(/^\//,'');
+    return href==='institute.html';
+  });
+  if(existing){
+    if(String(existing.textContent||'').indexOf('🏛️')===-1){
+      existing.textContent='🏛️ Institute';
+      existing.setAttribute('translate','no');
+      existing.setAttribute('data-no-i18n','true');
+      existing.setAttribute('title','WPA Institute');
+    }
+    return;
+  }
+
+  var item=document.createElement('li');
+  item.id='wpaInstituteHomeNav';
+  var link=document.createElement('a');
+  link.href='institute.html';
+  link.textContent='🏛️ Institute';
+  link.title='WPA Institute';
+  link.setAttribute('translate','no');
+  link.setAttribute('data-no-i18n','true');
+  item.appendChild(link);
+
+  var institutionalProfile=Array.from(list.querySelectorAll('a')).find(function(a){
+    return String(a.getAttribute('href')||'').indexOf('wpa-one-page-service-profile.html')!==-1;
+  });
+  var targetItem=institutionalProfile&&institutionalProfile.closest('li');
+  if(targetItem){
+    list.insertBefore(item,targetItem);
+  }else{
+    var about=Array.from(list.querySelectorAll('a')).find(function(a){
+      return String(a.getAttribute('href')||'')==='#about';
+    });
+    var aboutItem=about&&about.closest('li');
+    if(aboutItem&&aboutItem.nextSibling)list.insertBefore(item,aboutItem.nextSibling);
+    else list.appendChild(item);
+  }
 }
 
 function addAcademicLinkedIn(){
@@ -102,6 +145,7 @@ function addGlobalChannels(){
 
 function run(){
   removeHomePn003();
+  addInstituteNavLink();
   addAcademicLinkedIn();
   addGlobalChannels();
 }
