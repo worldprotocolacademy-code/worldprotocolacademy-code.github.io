@@ -1,5 +1,8 @@
-/* WPA homepage promotional cleanup v1.3 */
+/* WPA homepage promotional cleanup v1.4 */
 (function(){'use strict';
+var instituteObserver=null;
+var instituteRepairTimer=null;
+
 function removeHomePn003(){
   var announce=document.querySelector('.announce .announce-inner');
   if(!announce)return;
@@ -11,27 +14,31 @@ function removeHomePn003(){
 
 function addInstituteNavLink(){
   var list=document.querySelector('header .site-nav ul');
-  if(!list)return;
+  if(!list)return false;
+
   var existing=Array.from(list.querySelectorAll('a')).find(function(a){
-    var href=String(a.getAttribute('href')||'').replace(/^\.\//,'').replace(/^\//,'');
+    var href=String(a.getAttribute('href')||'').split('#')[0].split('?')[0].replace(/^\.\//,'').replace(/^\//,'');
     return href==='institute.html';
   });
+
   if(existing){
-    if(String(existing.textContent||'').indexOf('🏛️')===-1){
-      existing.textContent='🏛️ Institute';
-      existing.setAttribute('translate','no');
-      existing.setAttribute('data-no-i18n','true');
-      existing.setAttribute('title','WPA Institute');
-    }
-    return;
+    existing.textContent='🏛️ Institute';
+    existing.setAttribute('translate','no');
+    existing.setAttribute('data-no-i18n','true');
+    existing.setAttribute('title','WPA Institute');
+    existing.setAttribute('aria-label','WPA Institute');
+    return true;
   }
 
   var item=document.createElement('li');
   item.id='wpaInstituteHomeNav';
+  item.setAttribute('data-wpa-persistent-nav','institute');
+
   var link=document.createElement('a');
-  link.href='institute.html';
+  link.href='/institute.html';
   link.textContent='🏛️ Institute';
   link.title='WPA Institute';
+  link.setAttribute('aria-label','WPA Institute');
   link.setAttribute('translate','no');
   link.setAttribute('data-no-i18n','true');
   item.appendChild(link);
@@ -40,6 +47,7 @@ function addInstituteNavLink(){
     return String(a.getAttribute('href')||'').indexOf('wpa-one-page-service-profile.html')!==-1;
   });
   var targetItem=institutionalProfile&&institutionalProfile.closest('li');
+
   if(targetItem){
     list.insertBefore(item,targetItem);
   }else{
@@ -50,6 +58,26 @@ function addInstituteNavLink(){
     if(aboutItem&&aboutItem.nextSibling)list.insertBefore(item,aboutItem.nextSibling);
     else list.appendChild(item);
   }
+  return true;
+}
+
+function protectInstituteNavLink(){
+  addInstituteNavLink();
+
+  var header=document.querySelector('header');
+  if(!header||instituteObserver)return;
+
+  instituteObserver=new MutationObserver(function(){
+    if(instituteRepairTimer)window.clearTimeout(instituteRepairTimer);
+    instituteRepairTimer=window.setTimeout(function(){
+      addInstituteNavLink();
+    },30);
+  });
+  instituteObserver.observe(header,{childList:true,subtree:true});
+
+  [100,300,750,1500,3000,6000].forEach(function(delay){
+    window.setTimeout(addInstituteNavLink,delay);
+  });
 }
 
 function addAcademicLinkedIn(){
@@ -145,7 +173,7 @@ function addGlobalChannels(){
 
 function run(){
   removeHomePn003();
-  addInstituteNavLink();
+  protectInstituteNavLink();
   addAcademicLinkedIn();
   addGlobalChannels();
 }
