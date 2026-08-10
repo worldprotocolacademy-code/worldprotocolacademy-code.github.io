@@ -1,0 +1,147 @@
+name: One-time generate WPA Symbols active runtime dataset
+
+on:
+  push:
+    paths:
+      - '.github/workflows/one-time-generate-symbols-active-runtime.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract active Symbols runtime data from page
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const path = require('path');
+
+          const sourcePath = 'wpaws/protocol-symbols/index.html';
+          const html = fs.readFileSync(sourcePath, 'utf8');
+
+          function extractAssignedValue(name) {
+            const re = new RegExp('(?:const|let|var)\\s+' + name.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '\\s*=\\s*', 'm');
+            const m = re.exec(html);
+            if (!m) return null;
+            let i = m.index + m[0].length;
+            while (/\\s/.test(html[i] || '')) i++;
+            const open = html[i];
+            if (open !== '[' && open !== '{') return null;
+            const close = open === '[' ? ']' : '}';
+            let depth = 0;
+            let quote = null;
+            let escape = false;
+            let end = -1;
+            for (let p = i; p < html.length; p++) {
+              const ch = html[p];
+              if (quote) {
+                if (escape) { escape = false; continue; }
+                if (ch === '\\') { escape = true; continue; }
+                if (ch === quote) quote = null;
+                continue;
+              }
+              if (ch === '"' || ch === "'" || ch === '`') { quote = ch; continue; }
+              if (ch === open) depth++;
+              else if (ch === close) {
+                depth--;
+                if (depth === 0) { end = p + 1; break; }
+              }
+            }
+            if (end < 0) throw new Error('Could not balance ' + name);
+            const literal = html.slice(i, end);
+            return vm.runInNewContext('(' + literal + ')', Object.create(null), { timeout: 2000 });
+          }
+
+          const worldData = extractAssignedValue('worldData') || [];
+          const orgs = extractAssignedValue('orgs') || [];
+          const nationalHolidays = extractAssignedValue('nationalHolidays') || [];
+          const flagsWithEagles = extractAssignedValue('flagsWithEagles') || {};
+          const instrumentalAnthems = extractAssignedValue('instrumentalAnthems') || {};
+          const funFacts = extractAssignedValue('funFacts') || {};
+
+          if (!Array.isArray(worldData) || worldData.length < 190) {
+            throw new Error('Expected active worldData >=190 records; got ' + (Array.isArray(worldData) ? worldData.length : 'non-array'));
+          }
+
+          const records = worldData.map((c) => ({
+            id: c.id,
+            name_mk: c.n,
+            capital_mk: c.cap,
+            population_display: c.pop,
+            area_display: c.area,
+            continent_mk: c.continent,
+            coordinates_display: c.g,
+            resources_mk: c.r,
+            flag_summary_mk: c.f,
+            anthem_code: c.anthem,
+            color_hint: c.color,
+            eagle_on_flag_note: flagsWithEagles[c.id] || null,
+            instrumental_anthem: instrumentalAnthems[c.id] || null,
+            fun_fact_mk: funFacts[c.id] || null,
+            national_days: nationalHolidays.filter((h) => h && h.countryId === c.id)
+          }));
+
+          const payload = {
+            schema_version: '1.0',
+            dataset_id: 'wpa-symbols-active-runtime',
+            generated_at: new Date().toISOString(),
+            generated_from: sourcePath,
+            governance: {
+              purpose: 'Active deterministic runtime feed for the WPA Protocol Symbols & Knowledge Module and connected Worker.',
+              no_llm_guessing_for_missing_fields: true,
+              current_or_sensitive_fields_require_authoritative_reverification: true,
+              note: 'This active runtime feed is not a claim that every field in every one of the 197 records has completed the same human-verification depth.'
+            },
+            counts: {
+              entities: records.length,
+              organizations: Array.isArray(orgs) ? orgs.length : 0,
+              national_day_records: Array.isArray(nationalHolidays) ? nationalHolidays.length : 0,
+              eagle_examples: Object.keys(flagsWithEagles || {}).length,
+              instrumental_anthem_examples: Object.keys(instrumentalAnthems || {}).length
+            },
+            records,
+            organizations: orgs,
+            national_days: nationalHolidays,
+            flags_with_eagles: flagsWithEagles,
+            instrumental_anthems: instrumentalAnthems
+          };
+
+          const out = 'wpaws/protocol-symbols/data/active-runtime-197.json';
+          fs.mkdirSync(path.dirname(out), { recursive: true });
+          fs.writeFileSync(out, JSON.stringify(payload, null, 2) + '\n', 'utf8');
+          console.log('Generated', out, payload.counts);
+          NODE
+
+      - name: Validate generated dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const d = require('./wpaws/protocol-symbols/data/active-runtime-197.json');
+          if (!d || !Array.isArray(d.records) || d.records.length < 190) process.exit(1);
+          if (!d.counts || d.counts.entities !== d.records.length) process.exit(1);
+          console.log(JSON.stringify(d.counts));
+          NODE
+
+      - name: Commit generated runtime feed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- wpaws/protocol-symbols/data/active-runtime-197.json; then
+            echo 'No generated change.'
+            exit 0
+          fi
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git add wpaws/protocol-symbols/data/active-runtime-197.json
+          git commit -m 'Generate active 197-entity Symbols runtime feed [skip ci]'
+          git push origin HEAD:main
