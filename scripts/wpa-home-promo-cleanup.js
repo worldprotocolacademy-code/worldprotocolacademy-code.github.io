@@ -1,4 +1,4 @@
-/* WPA homepage promotional cleanup v1.4 */
+/* WPA homepage promotional cleanup v1.5 */
 (function(){'use strict';
 var instituteObserver=null;
 var instituteRepairTimer=null;
@@ -10,6 +10,16 @@ function removeHomePn003(){
     var text=String(node.textContent||'');
     if(text.indexOf('New publication')!==-1&&text.indexOf('WPA-PN-003')!==-1){node.remove();}
   });
+}
+
+function placeInstituteSecond(list,item){
+  if(!list||!item)return;
+  var first=list.firstElementChild;
+  if(!first){list.appendChild(item);return;}
+  var desired=first.nextElementSibling;
+  if(desired===item)return;
+  if(desired)list.insertBefore(item,desired);
+  else list.appendChild(item);
 }
 
 function addInstituteNavLink(){
@@ -27,6 +37,12 @@ function addInstituteNavLink(){
     existing.setAttribute('data-no-i18n','true');
     existing.setAttribute('title','WPA Institute');
     existing.setAttribute('aria-label','WPA Institute');
+    var existingItem=existing.closest('li');
+    if(existingItem){
+      existingItem.id=existingItem.id||'wpaInstituteHomeNav';
+      existingItem.setAttribute('data-wpa-persistent-nav','institute');
+      placeInstituteSecond(list,existingItem);
+    }
     return true;
   }
 
@@ -43,21 +59,7 @@ function addInstituteNavLink(){
   link.setAttribute('data-no-i18n','true');
   item.appendChild(link);
 
-  var institutionalProfile=Array.from(list.querySelectorAll('a')).find(function(a){
-    return String(a.getAttribute('href')||'').indexOf('wpa-one-page-service-profile.html')!==-1;
-  });
-  var targetItem=institutionalProfile&&institutionalProfile.closest('li');
-
-  if(targetItem){
-    list.insertBefore(item,targetItem);
-  }else{
-    var about=Array.from(list.querySelectorAll('a')).find(function(a){
-      return String(a.getAttribute('href')||'')==='#about';
-    });
-    var aboutItem=about&&about.closest('li');
-    if(aboutItem&&aboutItem.nextSibling)list.insertBefore(item,aboutItem.nextSibling);
-    else list.appendChild(item);
-  }
+  placeInstituteSecond(list,item);
   return true;
 }
 
