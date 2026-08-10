@@ -65,13 +65,15 @@
     var style = document.createElement('style');
     style.id = 'wpa-institute-tools-runtime-style';
     style.textContent = [
-      'html[data-wpa-page="institute"] .wpa-institute-brand{cursor:default!important;text-decoration:none!important;}',
-      'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{overflow:hidden!important;border-radius:50%!important;}',
-      'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:cover!important;}',
-      'html[data-wpa-page="institute"] .wpa-institute-parent{display:block!important;white-space:nowrap!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-brand{cursor:default!important;text-decoration:none!important;display:flex!important;align-items:center!important;min-width:290px!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{display:none!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{display:flex!important;flex-direction:column!important;gap:2px!important;line-height:1.15!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-label{display:block!important;color:#e3c878!important;font:800 16px/1.1 Inter,system-ui,sans-serif!important;letter-spacing:.03em!important;white-space:nowrap!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-name-mk{display:block!important;color:#fbf8ee!important;font:700 11px/1.35 Inter,system-ui,sans-serif!important;letter-spacing:.01em!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-name-en{display:block!important;color:rgba(227,200,120,.82)!important;font:600 10px/1.35 Inter,system-ui,sans-serif!important;letter-spacing:.01em!important;}',
       'html[data-wpa-page="institute"] .wpa-pilot20-institute-nav-link,html[data-wpa-page="institute"] .wpa-journal-live-entry,html[data-wpa-page="institute"] .wpa-sublimate-institute-nav-link{font-weight:600!important;border-color:transparent!important;background:transparent!important;}',
       'html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{margin-left:0!important;}',
-      '@media(max-width:760px){html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{width:100%!important;}}'
+      '@media(max-width:760px){html[data-wpa-page="institute"] .wpa-institute-brand{min-width:0!important;width:100%!important;}html[data-wpa-page="institute"] .wpa-institute-label{font-size:14px!important;}html[data-wpa-page="institute"] .wpa-institute-name-mk,html[data-wpa-page="institute"] .wpa-institute-name-en{font-size:9.5px!important;}html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{width:100%!important;}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -83,24 +85,16 @@
     brand.removeAttribute('href');
     brand.removeAttribute('target');
     brand.classList.add('wpa-institute-brand');
-    brand.setAttribute('aria-label', 'World Protocol Academy Institute identity');
+    brand.setAttribute('aria-label', 'WPA Institute');
+    brand.setAttribute('translate', 'no');
+    brand.setAttribute('data-no-i18n', 'true');
 
     var mark = brand.querySelector('.brand-mark');
-    if (mark) {
-      mark.textContent = '';
-      var image = document.createElement('img');
-      image.src = '/logo.webp';
-      image.alt = 'World Protocol Academy logo';
-      image.width = 72;
-      image.height = 72;
-      image.loading = 'eager';
-      image.decoding = 'sync';
-      mark.appendChild(image);
-    }
+    if (mark) mark.remove();
 
     var text = brand.querySelector('.brand-text');
     if (text) {
-      text.innerHTML = '<span class="wpa-institute-title-row"><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-separator" aria-hidden="true">•</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span></span><span class="wpa-institute-parent">Светска академија за протокол · World Protocol Academy</span>';
+      text.innerHTML = '<span class="wpa-institute-label">🏛️ WPA Institute</span><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>';
     }
   }
 
