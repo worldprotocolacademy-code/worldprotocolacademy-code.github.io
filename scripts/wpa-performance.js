@@ -92,9 +92,22 @@
     var mark = brand.querySelector('.brand-mark');
     if (mark) mark.remove();
 
+    var logo = brand.querySelector('.wpa-institute-logo');
+    if (!logo) {
+      logo = document.createElement('img');
+      logo.className = 'wpa-institute-logo';
+      logo.src = '/logo.webp';
+      logo.alt = 'World Protocol Academy logo';
+      logo.width = 48;
+      logo.height = 48;
+      logo.loading = 'eager';
+      logo.decoding = 'sync';
+      brand.insertBefore(logo, brand.firstChild);
+    }
+
     var text = brand.querySelector('.brand-text');
     if (text) {
-      text.innerHTML = '<span class="wpa-institute-label">🏛️ WPA Institute</span><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>';
+      text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>';
     }
   }
 
