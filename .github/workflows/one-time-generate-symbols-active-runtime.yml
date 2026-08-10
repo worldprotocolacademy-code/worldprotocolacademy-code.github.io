@@ -136,7 +136,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- wpaws/protocol-symbols/data/active-runtime-197.json; then
+          if [ -z "$(git status --porcelain -- wpaws/protocol-symbols/data/active-runtime-197.json)" ]; then
             echo 'No generated change.'
             exit 0
           fi
