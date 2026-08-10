@@ -149,6 +149,20 @@
     list.appendChild(item);
   }
 
+  function activateHomeFiveRowNav() {
+    if (!isHome()) return;
+    var root = document.documentElement;
+    var list = document.querySelector('header .site-nav ul');
+    if (!list) return;
+
+    root.classList.add('wpa-home-five-row-nav');
+    list.classList.add('wpa-five-row-nav-grid');
+
+    var count = list.querySelectorAll(':scope > li').length;
+    var columns = Math.max(6, Math.ceil(count / 5));
+    list.style.setProperty('--wpa-nav-columns', String(columns));
+  }
+
   function updateTextOnce(selector, before, after) {
     var nodes = document.querySelectorAll(selector);
     for (var i = 0; i < nodes.length; i += 1) {
@@ -268,7 +282,10 @@
       normalizeInstituteBrand();
       placeInstituteTools();
     }
-    if (isHome()) placeHomePilot();
+    if (isHome()) {
+      placeHomePilot();
+      activateHomeFiveRowNav();
+    }
     if (isPapers()) placePn003OnPapers();
     placeVirtualSandeBranding();
   }
@@ -279,6 +296,7 @@
   } else {
     addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20260716-1');
   }
+  if (isHome()) addStylesheet('wpa-home-five-row-nav-css', '/styles/wpa-home-nav-five-rows.css?v=20260810-2');
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
   addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20260722');
 
