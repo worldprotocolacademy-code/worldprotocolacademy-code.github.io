@@ -1,4 +1,4 @@
-/* WPA Institute header — compact brand refinement */
+/* WPA Institute header — compact brand refinement v2.1 */
 
 html[data-wpa-page="institute"] .nav-wrap nav{
   max-width:1520px !important;
@@ -20,12 +20,11 @@ html[data-wpa-page="institute"] .topbar > span[data-i18n="institute.topbar.text"
   line-height:1.35 !important;
 }
 
-/* Second identity row: complete WPA bilingual name directly beneath the Institute title. */
+/* Institute identity block. Legacy W mark and duplicated academy-name treatment are superseded at runtime. */
 html[data-wpa-page="institute"] .nav-wrap nav > .brand,
 html[data-wpa-page="institute"] .wpa-institute-brand{
   width:100% !important;
   min-width:0 !important;
-  grid-template-columns:58px minmax(0,1fr) !important;
   gap:13px !important;
   padding:0 0 12px !important;
   transform:none !important;
@@ -33,18 +32,10 @@ html[data-wpa-page="institute"] .wpa-institute-brand{
   z-index:3 !important;
 }
 
+/* Old square W mark must never be visible. */
 html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark,
 html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{
-  width:56px !important;
-  height:56px !important;
-  min-width:56px !important;
-  box-shadow:0 0 0 1px rgba(201,168,76,.82),0 5px 16px rgba(0,0,0,.24) !important;
-}
-
-html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark img,
-html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{
-  width:56px !important;
-  height:56px !important;
+  display:none !important;
 }
 
 html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-text,
@@ -55,85 +46,67 @@ html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{
   justify-content:center !important;
   max-width:100% !important;
   min-width:0 !important;
-  line-height:1.04 !important;
-  overflow:visible !important;
-}
-
-html[data-wpa-page="institute"] .nav-wrap .brand-name{
-  display:flex !important;
-  align-items:baseline !important;
-  justify-content:flex-start !important;
-  flex-wrap:nowrap !important;
-  column-gap:0 !important;
-  order:2 !important;
-  width:100% !important;
-  max-width:100% !important;
-  min-width:0 !important;
-  margin:0 !important;
-  white-space:nowrap !important;
-  overflow:visible !important;
-  font-size:clamp(14px,1.18vw,19px) !important;
-  font-weight:620 !important;
-  letter-spacing:-.025em !important;
   line-height:1.08 !important;
+  overflow:visible !important;
 }
 
-html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
-  display:inline !important;
-  flex:0 0 auto !important;
-  margin:0 !important;
-  color:var(--gold-soft) !important;
-  font-size:.84em !important;
-  font-weight:520 !important;
-  letter-spacing:-.012em !important;
-  line-height:inherit !important;
+/* Current Institute label: real WPA logo + clean Institute name. */
+html[data-wpa-page="institute"] .wpa-institute-label{
+  display:flex !important;
+  align-items:center !important;
+  gap:11px !important;
+  min-height:48px !important;
+  margin:0 0 3px !important;
+  color:#e3c878 !important;
+  font-size:0 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
   white-space:nowrap !important;
 }
 
-html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en::before{
-  content:" · " !important;
-  color:var(--gold-soft) !important;
-  margin:0 .3em !important;
+html[data-wpa-page="institute"] .wpa-institute-label::before{
+  content:"" !important;
+  display:block !important;
+  width:46px !important;
+  height:46px !important;
+  flex:0 0 46px !important;
+  border-radius:50% !important;
+  background-image:url('/logo.webp') !important;
+  background-size:cover !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  box-shadow:0 0 0 1px rgba(201,168,76,.82),0 5px 16px rgba(0,0,0,.24) !important;
 }
 
-/* The Institute wording is already the first row in the topbar; avoid a duplicated third line. */
-html[data-wpa-page="institute"] .nav-wrap .brand-sub{
-  display:none !important;
-}
-
-html[data-wpa-page="institute"] .wpa-institute-title-row{
-  width:100% !important;
-  max-width:100% !important;
-  gap:7px !important;
-  align-items:baseline !important;
-  white-space:nowrap !important;
+html[data-wpa-page="institute"] .wpa-institute-label::after{
+  content:"WPA Institute" !important;
+  display:block !important;
+  color:#e3c878 !important;
+  font:800 16px/1.1 Inter,system-ui,sans-serif !important;
+  letter-spacing:.03em !important;
 }
 
 html[data-wpa-page="institute"] .wpa-institute-name-mk{
-  font-size:clamp(15px,1.28vw,20px) !important;
-  font-weight:620 !important;
-  letter-spacing:-.025em !important;
-  line-height:1.04 !important;
-}
-
-html[data-wpa-page="institute"] .wpa-institute-name-separator{
-  font-size:13px !important;
-  margin:0 1px !important;
+  display:block !important;
+  color:#fbf8ee !important;
+  font:700 11px/1.35 Inter,system-ui,sans-serif !important;
+  letter-spacing:.01em !important;
 }
 
 html[data-wpa-page="institute"] .wpa-institute-name-en{
-  font-size:clamp(13px,1.04vw,17px) !important;
-  font-weight:520 !important;
-  letter-spacing:-.018em !important;
-  line-height:1.04 !important;
+  display:block !important;
+  color:rgba(227,200,120,.82) !important;
+  font:600 10px/1.35 Inter,system-ui,sans-serif !important;
+  letter-spacing:.01em !important;
 }
 
-html[data-wpa-page="institute"] .wpa-institute-parent{
-  margin-top:5px !important;
-  font-size:9.2px !important;
-  font-weight:620 !important;
-  letter-spacing:.085em !important;
-  line-height:1.25 !important;
+/* Static legacy fallback is kept hidden if it flashes before runtime normalization. */
+html[data-wpa-page="institute"] .nav-wrap .brand-name,
+html[data-wpa-page="institute"] .nav-wrap .brand-sub,
+html[data-wpa-page="institute"] .wpa-institute-parent,
+html[data-wpa-page="institute"] .wpa-institute-title-row,
+html[data-wpa-page="institute"] .wpa-institute-name-separator{
+  display:none !important;
 }
 
 html[data-wpa-page="institute"] .nav-wrap .nav-links{
@@ -141,7 +114,7 @@ html[data-wpa-page="institute"] .nav-wrap .nav-links{
 }
 
 html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-  margin-top:38px !important;
+  margin-top:24px !important;
   padding-top:0 !important;
   clear:both !important;
   position:relative !important;
@@ -162,25 +135,8 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
   html[data-wpa-page="institute"] .topbar > span[data-i18n="institute.topbar.text"]{
     white-space:normal !important;
   }
-  html[data-wpa-page="institute"] .nav-wrap .brand-name{
-    flex-wrap:nowrap !important;
-    white-space:nowrap !important;
-    font-size:clamp(12px,1.32vw,16px) !important;
-    letter-spacing:-.035em !important;
-  }
-  html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
-    white-space:nowrap !important;
-  }
-  html[data-wpa-page="institute"] .wpa-institute-title-row{
-    white-space:normal !important;
-    row-gap:2px !important;
-  }
-  html[data-wpa-page="institute"] .wpa-institute-name-mk,
-  html[data-wpa-page="institute"] .wpa-institute-name-en{
-    flex:1 1 100% !important;
-  }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:30px !important;
+    margin-top:20px !important;
   }
 }
 
@@ -193,45 +149,32 @@ html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
   }
   html[data-wpa-page="institute"] .nav-wrap nav > .brand,
   html[data-wpa-page="institute"] .wpa-institute-brand{
-    grid-template-columns:50px minmax(0,1fr) !important;
     gap:10px !important;
     padding-bottom:8px !important;
     transform:none !important;
   }
-  html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark,
-  html[data-wpa-page="institute"] .nav-wrap nav > .brand .brand-mark img,
-  html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark,
-  html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark img{
-    width:48px !important;
-    height:48px !important;
-    min-width:48px !important;
+  html[data-wpa-page="institute"] .wpa-institute-label{
+    min-height:42px !important;
+    gap:9px !important;
   }
-  html[data-wpa-page="institute"] .nav-wrap .brand-name{
-    font-size:clamp(9px,2.55vw,13px) !important;
-    line-height:1.12 !important;
-    flex-wrap:nowrap !important;
-    white-space:nowrap !important;
-    letter-spacing:-.045em !important;
+  html[data-wpa-page="institute"] .wpa-institute-label::before{
+    width:40px !important;
+    height:40px !important;
+    flex-basis:40px !important;
   }
-  html[data-wpa-page="institute"] .nav-wrap .brand-name .wpa-brand-en{
-    font-size:.8em !important;
-    white-space:nowrap !important;
+  html[data-wpa-page="institute"] .wpa-institute-label::after{
+    font-size:14px !important;
   }
   html[data-wpa-page="institute"] .wpa-institute-name-mk{
-    font-size:15px !important;
-    line-height:1.12 !important;
+    font-size:10px !important;
+    line-height:1.3 !important;
   }
   html[data-wpa-page="institute"] .wpa-institute-name-en{
-    font-size:12px !important;
-    line-height:1.14 !important;
-  }
-  html[data-wpa-page="institute"] .wpa-institute-parent{
-    font-size:7.8px !important;
-    letter-spacing:.065em !important;
-    margin-top:4px !important;
+    font-size:9.2px !important;
+    line-height:1.3 !important;
   }
   html[data-wpa-page="institute"] body .nav-wrap nav .nav-links{
-    margin-top:18px !important;
+    margin-top:14px !important;
   }
   html[data-wpa-page="institute"] body .hero .hero-cta a.wpa-sublimate-hero-button,
   html[data-wpa-page="institute"] body .hero .hero-cta #wpaLiveInstituteHeroLink{
