@@ -1,7 +1,7 @@
-/* WPA homepage promotional cleanup v1.5 */
+/* WPA homepage promotional cleanup v1.6 */
 (function(){'use strict';
-var instituteObserver=null;
-var instituteRepairTimer=null;
+var navObserver=null;
+var navRepairTimer=null;
 
 function removeHomePn003(){
   var announce=document.querySelector('.announce .announce-inner');
@@ -10,6 +10,39 @@ function removeHomePn003(){
     var text=String(node.textContent||'');
     if(text.indexOf('New publication')!==-1&&text.indexOf('WPA-PN-003')!==-1){node.remove();}
   });
+}
+
+function navList(){
+  return document.querySelector('header .site-nav ul');
+}
+
+function hrefText(a){
+  return String((a&&a.getAttribute('href'))||'').toLowerCase();
+}
+
+function findNavLink(list,fragments){
+  if(!list)return null;
+  var links=Array.from(list.querySelectorAll('a'));
+  return links.find(function(a){
+    var href=hrefText(a);
+    return fragments.some(function(fragment){return href.indexOf(String(fragment).toLowerCase())!==-1;});
+  })||null;
+}
+
+function insertAfter(reference,node){
+  if(!reference||!reference.parentNode||!node)return false;
+  if(reference.nextSibling)reference.parentNode.insertBefore(node,reference.nextSibling);
+  else reference.parentNode.appendChild(node);
+  return true;
+}
+
+function setCoreLinkIdentity(link,label,title){
+  if(!link)return;
+  if(String(link.textContent||'').trim()!==label)link.textContent=label;
+  link.setAttribute('translate','no');
+  link.setAttribute('data-no-i18n','true');
+  link.setAttribute('title',title||label);
+  link.setAttribute('aria-label',title||label);
 }
 
 function placeInstituteSecond(list,item){
@@ -23,20 +56,12 @@ function placeInstituteSecond(list,item){
 }
 
 function addInstituteNavLink(){
-  var list=document.querySelector('header .site-nav ul');
+  var list=navList();
   if(!list)return false;
 
-  var existing=Array.from(list.querySelectorAll('a')).find(function(a){
-    var href=String(a.getAttribute('href')||'').split('#')[0].split('?')[0].replace(/^\.\//,'').replace(/^\//,'');
-    return href==='institute.html';
-  });
-
+  var existing=findNavLink(list,['institute.html']);
   if(existing){
-    existing.textContent='🏛️ Institute';
-    existing.setAttribute('translate','no');
-    existing.setAttribute('data-no-i18n','true');
-    existing.setAttribute('title','WPA Institute');
-    existing.setAttribute('aria-label','WPA Institute');
+    setCoreLinkIdentity(existing,'🏛️ Institute','WPA Institute');
     var existingItem=existing.closest('li');
     if(existingItem){
       existingItem.id=existingItem.id||'wpaInstituteHomeNav';
@@ -49,36 +74,141 @@ function addInstituteNavLink(){
   var item=document.createElement('li');
   item.id='wpaInstituteHomeNav';
   item.setAttribute('data-wpa-persistent-nav','institute');
-
   var link=document.createElement('a');
   link.href='/institute.html';
-  link.textContent='🏛️ Institute';
-  link.title='WPA Institute';
-  link.setAttribute('aria-label','WPA Institute');
-  link.setAttribute('translate','no');
-  link.setAttribute('data-no-i18n','true');
+  setCoreLinkIdentity(link,'🏛️ Institute','WPA Institute');
   item.appendChild(link);
-
   placeInstituteSecond(list,item);
   return true;
 }
 
-function protectInstituteNavLink(){
+function ensureNavEntry(config){
+  var list=navList();
+  if(!list)return null;
+
+  var existing=findNavLink(list,config.fragments);
+  if(existing){
+    setCoreLinkIdentity(existing,config.label,config.title);
+    var existingItem=existing.closest('li');
+    if(existingItem)existingItem.setAttribute('data-wpa-core-nav',config.key);
+    return existing;
+  }
+
+  var item=document.createElement('li');
+  item.id='wpaCoreNav_'+config.key;
+  item.setAttribute('data-wpa-core-nav',config.key);
+  var link=document.createElement('a');
+  link.href=config.href;
+  setCoreLinkIdentity(link,config.label,config.title);
+  item.appendChild(link);
+
+  var anchor=config.after&&findNavLink(list,config.after);
+  var anchorItem=anchor&&anchor.closest('li');
+  if(anchorItem)insertAfter(anchorItem,item);
+  else list.appendChild(item);
+  return link;
+}
+
+function ensureCoreNavigation(){
+  var list=navList();
+  if(!list)return;
+
   addInstituteNavLink();
 
-  var header=document.querySelector('header');
-  if(!header||instituteObserver)return;
-
-  instituteObserver=new MutationObserver(function(){
-    if(instituteRepairTimer)window.clearTimeout(instituteRepairTimer);
-    instituteRepairTimer=window.setTimeout(function(){
-      addInstituteNavLink();
-    },30);
+  /* Core methodology: immediately after Institute. */
+  ensureNavEntry({
+    key:'protocolometry',
+    fragments:['protocolometry-center.html'],
+    href:'/protocolometry-center.html',
+    label:'📐 Protocolometry',
+    title:'WPA Protocolometry Center',
+    after:['institute.html']
   });
-  instituteObserver.observe(header,{childList:true,subtree:true});
+
+  /* Symbols is already an important WPA system; ensure it is visible and unmistakable. */
+  ensureNavEntry({
+    key:'symbols',
+    fragments:['wpaws/protocol-symbols/','protocol-symbols/index.html','protocol-symbols.html'],
+    href:'/wpaws/protocol-symbols/',
+    label:'🌍 Симболи',
+    title:'WPA Protocol Symbols',
+    after:['tools/wpa-digital-pavilion/']
+  });
+
+  /* Diplomatic Analysis Lab belongs beside Symbols as a second specialist lab. */
+  ensureNavEntry({
+    key:'analysis-lab',
+    fragments:['diplomatic-analysis-lab/'],
+    href:'/diplomatic-analysis-lab/',
+    label:'🔬 Analysis Lab',
+    title:'WPA Diplomatic Analysis Lab',
+    after:['wpaws/protocol-symbols/','protocol-symbols/index.html','protocol-symbols.html']
+  });
+
+  /* Academic search and public-source watch tools belong beside WPAWS. */
+  ensureNavEntry({
+    key:'academic-search',
+    fragments:['tools/academic-search-hub/'],
+    href:'/tools/academic-search-hub/',
+    label:'🔎 Academic Search',
+    title:'WPA Academic Search Hub',
+    after:['wpaws/index.html','/wpaws/']
+  });
+  ensureNavEntry({
+    key:'wpa-watch',
+    fragments:['tools/wpa-watch/'],
+    href:'/tools/wpa-watch/',
+    label:'📡 WPA Watch',
+    title:'WPA Watch',
+    after:['tools/academic-search-hub/']
+  });
+
+  /* Publication system: Journal Live, Journal, Journal Watch and Working Papers are distinct destinations. */
+  ensureNavEntry({
+    key:'journal',
+    fragments:['journal/index.html'],
+    href:'/journal/index.html',
+    label:'📘 WPA Journal',
+    title:'WPA Journal',
+    after:['journal/live/']
+  });
+  ensureNavEntry({
+    key:'journal-watch',
+    fragments:['journal/watch/'],
+    href:'/journal/watch/',
+    label:'🧭 Journal Watch',
+    title:'WPA Journal Watch',
+    after:['journal/index.html']
+  });
+  ensureNavEntry({
+    key:'working-papers',
+    fragments:['working-papers/'],
+    href:'/working-papers/',
+    label:'📚 Working Papers',
+    title:'WPA Working Papers',
+    after:['papers.html']
+  });
+
+  /* Recalculate the desktop grid after any repaired/added entry. */
+  document.documentElement.classList.add('wpa-home-five-row-nav');
+  list.classList.add('wpa-five-row-nav-grid');
+  var count=list.querySelectorAll(':scope > li').length;
+  list.style.setProperty('--wpa-nav-columns',String(Math.max(6,Math.ceil(count/5))));
+}
+
+function protectHomeNavigation(){
+  ensureCoreNavigation();
+  var header=document.querySelector('header');
+  if(!header||navObserver)return;
+
+  navObserver=new MutationObserver(function(){
+    if(navRepairTimer)window.clearTimeout(navRepairTimer);
+    navRepairTimer=window.setTimeout(ensureCoreNavigation,40);
+  });
+  navObserver.observe(header,{childList:true,subtree:true});
 
   [100,300,750,1500,3000,6000].forEach(function(delay){
-    window.setTimeout(addInstituteNavLink,delay);
+    window.setTimeout(ensureCoreNavigation,delay);
   });
 }
 
@@ -175,7 +305,7 @@ function addGlobalChannels(){
 
 function run(){
   removeHomePn003();
-  protectInstituteNavLink();
+  protectHomeNavigation();
   addAcademicLinkedIn();
   addGlobalChannels();
 }
