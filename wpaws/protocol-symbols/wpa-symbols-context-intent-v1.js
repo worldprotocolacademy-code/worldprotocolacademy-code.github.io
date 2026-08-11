@@ -1,8 +1,9 @@
-/* WPA Symbols Context Intent Guard v1.6 — 2026-08-11
+/* WPA Symbols Context Intent Guard v1.7 — 2026-08-11
    Central question-first guard for natural WPA Symbols queries.
 
    Covered specialist intents:
    - natural/mineral resources
+   - national vs state/government/civil flag terminology
    - funeral/coffin use of the state flag, incl. Macedonian Latin transliteration
    - anthem ceremony timing/order
    - flag handling / Saudi special legal rules
@@ -55,7 +56,7 @@
       .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
 
-  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context7')
+  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context8')
     .then(function(d){
       if(d&&Array.isArray(d.records)){
         active=d;
@@ -127,6 +128,27 @@
     if(!resources||resources==='—') return null;
     if(isMk(q)) return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources;
     return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources+' (resources listed in the active WPA dataset).';
+  }
+
+  /* ---------------- Flag terminology ---------------- */
+
+  function flagTerminologyIntent(q){
+    var z=norm(q);
+    var flag=/(знаме|знамето|знамиња|zname|znameto|znaminja|flag|flags)/.test(z);
+    var national=/(националн|nacionaln|national)/.test(z);
+    var state=/(државн|drzavn|state flag|government flag|governmental flag)/.test(z);
+    var civil=/(цивилн|civil flag|civil ensign)/.test(z);
+    var distinction=/(разлик|разлика|исто|разликува|што значи|која е|што е|razlik|isto|razlikuva|sto znaci|shto znaci|what is the difference|difference between|same|distinction|meaning)/.test(z);
+    return flag&&distinction&&((national&&state)||(state&&civil)||(national&&civil));
+  }
+
+  function flagTerminologyAnswer(q){
+    if(!flagTerminologyIntent(q)) return null;
+    var mk=isMk(q);
+    if(mk){
+      return '🏳️ „Национално“ и „државно“ знаме многу често се користат како синоними за официјалното знаме што ја претставува суверената држава. Но во стручната вексилолошка и правна терминологија понекогаш има потесна разлика: „national flag“ е општото национално знаме, а „state/government flag“ може да биде посебна варијанта резервирана за државни органи, често различна од „civil flag“ што ја користат граѓаните. Значи, нема една универзална разлика што важи за сите држави — се проверува законодавството и системот на конкретната земја. Во македонскиот закон што го користиме се уредува едно знаме на државата, без посебна поделба на civil/state варијанти. Знамето на ОН е нешто друго: тоа е знаме на меѓународна организација, не национално или државно знаме.';
+    }
+    return '🏳️ “National flag” and “state flag” are often used as synonyms for the official flag representing a sovereign country. In specialist vexillological/legal usage, however, “state/government flag” can mean a variant reserved for public authorities, distinct from a “civil flag” used by citizens. There is no single universal distinction across all countries; the terminology depends on each country’s law and flag system. The UN flag is different again: it is the flag of an international organization, not a national/state flag.';
   }
 
   /* ---------------- Funeral / coffin flag protocol ---------------- */
@@ -414,11 +436,11 @@
   /* ---------------- Dispatcher / wrapper ---------------- */
 
   function directAnswer(q){
-    return resourceAnswer(q)||funeralFlagAnswer(q)||anthemProtocolAnswer(q)||flagHandlingAnswer(q)||flagGeometryAnswer(q)||null;
+    return resourceAnswer(q)||flagTerminologyAnswer(q)||funeralFlagAnswer(q)||anthemProtocolAnswer(q)||flagHandlingAnswer(q)||flagGeometryAnswer(q)||null;
   }
 
   function hasDirectIntent(q){
-    return isResourceQuestion(q)||funeralFlagIntent(q)||anthemProtocolIntent(q)||flagHandlingIntent(q)||flagGeometryIntent(q);
+    return isResourceQuestion(q)||flagTerminologyIntent(q)||funeralFlagIntent(q)||anthemProtocolIntent(q)||flagHandlingIntent(q)||flagGeometryIntent(q);
   }
 
   function add(role,text){
