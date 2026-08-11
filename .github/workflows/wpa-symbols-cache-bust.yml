@@ -6,6 +6,7 @@ on:
     paths:
       - 'wpaws/protocol-symbols/wpa-symbols-comprehensive-v3.js'
       - 'wpaws/protocol-symbols/wpa-symbols-ratio-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-comparison-v1.js'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
 
 permissions:
@@ -21,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bust Symbols assistant script cache and ensure ratio layer
+      - name: Bust Symbols assistant script cache and ensure expert layers
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
@@ -50,6 +51,23 @@ jobs:
               if not marker:
                   raise SystemExit('No Symbols comprehensive script tag found.')
               text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + ratio_tag, 1)
+
+          comparison_tag = f'<script src="./wpa-symbols-comparison-v1.js?v={version}" defer></script>'
+          if 'wpa-symbols-comparison-v1.js' in text2:
+              text2 = re.sub(
+                  r'<script src="\./wpa-symbols-comparison-v1\.js\?v=[^"]+" defer></script>',
+                  comparison_tag,
+                  text2,
+              )
+          else:
+              ratio_marker = re.search(r'(<script src="\./wpa-symbols-ratio-v1\.js\?v=[^"]+" defer></script>)', text2)
+              if ratio_marker:
+                  text2 = text2.replace(ratio_marker.group(1), ratio_marker.group(1) + '\n' + comparison_tag, 1)
+              else:
+                  marker = re.search(r'(<script src="\./wpa-symbols-comprehensive-v3\.js\?v=[^"]+" defer></script>)', text2)
+                  if not marker:
+                      raise SystemExit('No Symbols script marker found.')
+                  text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + comparison_tag, 1)
 
           if text2 == text:
               raise SystemExit('No Symbols cache-bust change was needed.')
