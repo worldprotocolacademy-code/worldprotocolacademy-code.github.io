@@ -1,4 +1,4 @@
-/* WPA Symbols Conference Flags Guard v1.1 — 2026-08-11
+/* WPA Symbols Conference Flags Guard v1.2 — 2026-08-11
    Question-first handling for flag placement at international conferences,
    including UN, NATO, EU and sensitive Serbia/Kosovo participation scenarios.
 
@@ -17,6 +17,20 @@
    - sensitive-status cases: never convert a unilateral objection into an ad-hoc
      recognition decision; apply the pre-agreed participation/status formula of
      the organizer and escalate to the competent protocol/legal authority
+   - when a flag dispute threatens the event, a defensible status-neutral
+     de-escalation option is symmetrical withdrawal of ALL participant national
+     flags, while retaining only organizer/organization and host symbolism if the
+     approved event protocol permits it. Never remove only one participant flag
+     as an improvised political judgment.
+
+   WPA case lesson — Skopje, EU–Western Balkans format:
+   The organizer's professional case experience supplied to WPA records a practical
+   solution used after a Serbian-side objection concerning Kosovo symbolism: all
+   participant national flags were removed rather than singling out one side. The
+   recollection is that EU and host/North Macedonian symbolism remained. Treat the
+   exact archival detail of which flags remained as recollection unless documented;
+   the durable lesson is the symmetry principle: neutralize the disputed category
+   for everyone instead of selectively disadvantaging one participant.
 
    Serbia/Kosovo governance basis:
    - Council of the EU currently lists Kosovo* among the six Western Balkans
@@ -67,21 +81,23 @@
     if(!serbiaKosovoDisputeIntent(q)) return null;
     if(isMk(q)){
       return [
-        '⚖️ Во таков случај не би го менувал распоредот на знамињата само по усна или еднострана интервенција на една делегација. Прво се применува однапред одобрениот протокол и формулата за учество на организаторот/домаќинот.',
-        '🇪🇺 Ако станува збор за формат ЕУ–Западен Балкан, ЕУ официјално го наведува Косово* како еден од шесте западнобалкански партнери, со статусно-неутрална фуснота дека ознаката не ги прејудицира позициите за статусот и е во согласност со Резолуцијата 1244/1999 на СБ на ОН и мислењето на МСП. Тоа значи дека протоколот не треба самостојно да претвори спор околу знаме во одлука за признавање или непризнавање.',
-        'Практична постапка: 1) ја проверувам поканата, concept note/протоколарниот план и договорената формула за претставување; 2) приговорот на српската делегација веднаш го евидентирам и го упатувам до шефот на протокол/политичкиот и правниот координатор на организаторот; 3) додека нема одлука од надлежниот организатор, не се отстранува еднострано само косовското знаме ако поставеноста веќе е официјално одобрена; 4) ако организаторот избере статусно-неутрално визуелно решение, тоа треба да биде конзистентно и недискриминаторно — на пример таблички со договорените називи и знаме/брендинг на ЕУ или на настанот наместо селективно отстранување на симбол само на еден учесник.',
-        'Важно: нема едно универзално правило дека на секој ЕУ–Западен Балкан настан мора да има или мора да нема косовско знаме. Конкретниот визуелен режим го определува официјалниот план на настанот. На самитот ЕУ–Западен Балкан во Брисел на 18 декември 2024 официјалната листа на учесници ги вклучува и Вјоса Османи-Садриу и Александар Вучиќ, што покажува дека двете страни можат истовремено да учествуваат во ЕУ формат; тоа само по себе не пропишува конкретна поставеност на знамињата.',
-        '🧭 WPA Protocol Rule: спор за статус или симбол не се решава ад хок од техничкиот протоколарец на лице место. Се применува однапред договорената формула на организаторот, се зачувува еднаквиот третман на учесниците и прашањето се ескалира до надлежното протоколарно/политичко ниво.',
-        'Напомена: ова е образовна и протоколарно-референтна насока; не претставува акт на дипломатско признавање или правно утврдување на статус.'
+        '⚖️ Во ваков чувствителен случај најважно е да не се донесе ад хок политичка одлука само за еден учесник. Ако приговорот за конкретно национално знаме се заканува да го блокира или политизира настанот, една силна статусно-неутрална протоколарна опција е да се тргнат СИТЕ национални знамиња на учесничките, а не само знамето на Косово.',
+        '🧭 На тој начин се применува принципот на симетрија: не се прифаќа еднострано барање со кое само една страна би била визуелно деградирана, туку спорната категорија на симбол — националните знамиња на учесниците — се отстранува подеднакво за сите. Ако официјалниот план го дозволува тоа, може да останат само знамето/брендингот на организацијата и знамето на домаќинот.',
+        '📘 WPA Case Lesson — Скопје, формат ЕУ–Западен Балкан: според професионалното искуство на организаторот внесено во WPA, по реакција од српската страна во една конкретна конференциска ситуација биле тргнати националните знамиња на сите учеснички, наместо селективно да се тргне само косовското. Сеќавањето е дека останале симболите на ЕУ и домаќинот. Ова го третираме како практична case lesson, а не како универзално правило за секој ЕУ настан.',
+        'Практична постапка: 1) веднаш се информира шефот на протокол/организаторот; 2) се проверува договорената формула за учество и визуелниот план; 3) ако нема однапред пропишано решение, се предлага симетрична неутрализација — сите учеснички без национални знамиња; 4) табличките со договорените називи, seating plan и организацискиот брендинг остануваат според официјалната формула; 5) одлуката се комуницира еднакво до сите делегации како организациско, а не статусно решение.',
+        '🇪🇺 Кај формат ЕУ–Западен Балкан, протоколарниот тим не треба сам да решава прашање на признавање преку визуелната поставеност. Затоа симетричното тргање на националните знамиња може да биде попрактично и политички понеутрално решение од селективно отстранување на еден симбол, ако организаторот го одобри.',
+        '⚠️ Важно: ова не значи дека на секој ЕУ–Западен Балкан настан треба да се тргаат знамињата. Тоа е кризно/деескалациско протоколарно решение за конкретна чувствителна ситуација. Прво важи однапред договорениот event protocol; ако тој не го решава спорот, симетричната неутрализација е една од најчистите опции.',
+        'Напомена: ова е образовна и протоколарно-референтна насока и case lesson; не претставува акт на дипломатско признавање или правно утврдување на статус.'
       ].join('\n\n');
     }
     return [
-      '⚖️ In that situation, I would not alter the flag display solely because of an oral or unilateral objection from one delegation. The organizer/host’s pre-approved protocol and participation formula controls.',
-      '🇪🇺 In the EU–Western Balkans framework, the EU officially lists Kosovo* among the six Western Balkans partners, with a status-neutral footnote stating that the designation is without prejudice to positions on status and is in line with UNSCR 1244/1999 and the ICJ opinion. Protocol staff should therefore not turn a flag dispute into an ad-hoc recognition decision.',
-      'Operationally: verify the invitation/concept note and approved display plan; record and escalate the Serbian delegation’s objection to the organizer’s chief of protocol/political-legal authority; do not selectively remove only Kosovo’s flag if the approved plan already provides for it; if the organizer adopts a status-neutral visual solution, apply it consistently to all participants, for example agreed nameplates plus EU/event branding rather than a one-sided removal.',
-      'There is no single universal rule that every EU–Western Balkans event must display or omit Kosovo’s flag. The event-specific protocol plan controls. The official participant list for the 18 December 2024 EU–Western Balkans summit included both Vjosa Osmani-Sadriu and Aleksandar Vucic, demonstrating simultaneous participation under an EU format but not prescribing one flag layout for every event.',
-      'WPA Protocol Rule: a status/symbol dispute is not decided ad hoc by technical protocol staff on site; apply the organizer’s agreed formula, preserve equal treatment and escalate to the competent protocol/political authority.',
-      'Note: this is an educational and protocol-reference guideline and does not constitute diplomatic recognition or a legal determination of status.'
+      '⚖️ In a sensitive case like this, protocol should avoid making an ad-hoc political judgment against only one participant. If a dispute over one national flag threatens to block or politicize the event, a strong status-neutral option is to remove ALL participant national flags rather than only Kosovo’s flag.',
+      'This applies a symmetry principle: the disputed category of symbol is neutralized for everyone, preventing one participant from being visually singled out. If the approved event plan allows, only the organization/event flag or branding and the host flag may remain.',
+      '📘 WPA Case Lesson — Skopje, EU–Western Balkans format: the organizer’s professional experience supplied to WPA records a concrete conference case in which, after a Serbian-side objection, all participant national flags were removed rather than only Kosovo’s. The recollection is that EU and host symbolism remained. This is treated as a practical case lesson, not a universal rule for every EU event.',
+      'Operationally: alert the chief of protocol/organizer; check the agreed participation formula and visual plan; if no pre-agreed rule resolves the dispute, propose symmetrical neutralization with no participant national flags; retain agreed nameplates, seating and organizational branding; communicate the change to all delegations as an organizational solution rather than a status determination.',
+      'For EU–Western Balkans formats, protocol staff should not decide recognition questions through an improvised visual arrangement. Symmetrical removal can therefore be a cleaner de-escalation technique than selectively removing one participant’s symbol, when approved by the organizer.',
+      'This is a crisis/de-escalation protocol option, not a universal requirement. The pre-agreed event protocol controls first.',
+      'Note: this is an educational protocol-reference case lesson and does not constitute diplomatic recognition or a legal determination of status.'
     ].join('\n\n');
   }
 
