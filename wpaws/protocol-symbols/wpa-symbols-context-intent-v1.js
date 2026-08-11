@@ -1,7 +1,7 @@
-/* WPA Symbols Context Intent Guard v1.1 — 2026-08-11
+/* WPA Symbols Context Intent Guard v1.2 — 2026-08-11
    Purpose: understand short natural follow-up questions in the Symbols assistant,
-   including natural/mineral-resource intent and flag geometry/ratio intent, and
-   prevent unrelated legacy answers from replacing a direct dataset answer.
+   including resources, flag geometry/ratio and flag-handling protocol, and prevent
+   unrelated legacy answers from replacing a direct expert answer.
 */
 (function(){
   'use strict';
@@ -35,7 +35,7 @@
       .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
 
-  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context2')
+  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context3')
     .then(function(d){
       if(d&&Array.isArray(d.records)){active=d;ready=d.records.length>=190;}
       return ready;
@@ -101,6 +101,42 @@
     if(!resources||resources==='—') return null;
     if(isMk(q)) return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources;
     return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources+' (resources listed in the active WPA dataset).';
+  }
+
+  function flagHandlingIntent(q){
+    var z=norm(q);
+    var flag=/(знаме|знамето|знамињ|flag|flags|banner)/.test(z);
+    var ground=/(земј|подот|под |floor|ground|влеч|drag|леж|лежи|постав.*земј|став.*земј|допир.*земј|touch.*ground|lowered.*ground)/.test(z);
+    return flag&&ground;
+  }
+
+  function asksWhichFlag(q){
+    return /(кое знаме|кои знамиња|кое од знамињ|which flag|which flags|what flag)/.test(norm(q));
+  }
+
+  function asksAccidentalContact(q){
+    return /(случај|ненамер|по грешка|accident|unintentional|by mistake)/.test(norm(q));
+  }
+
+  function flagHandlingAnswer(q){
+    if(!flagHandlingIntent(q)) return null;
+    var mk=isMk(q);
+
+    if(asksAccidentalContact(q)){
+      return mk
+        ? '🚩 Ако национално/државно знаме случајно ја допре земјата или подот, веднаш се подигнува и се постапува достоинствено; ако е извалкано или оштетено, се чисти или се заменува според правилата на конкретната држава. Случајниот допир сам по себе не значи автоматски дека знамето мора да се уништи.'
+        : '🚩 If a national flag accidentally touches the ground or floor, it should be lifted immediately and handled with dignity; if it is soiled or damaged, it should be cleaned or replaced according to that country’s rules. Accidental contact does not automatically mean the flag must be destroyed.';
+    }
+
+    if(asksWhichFlag(q)){
+      return mk
+        ? '🚩 Ниту едно национално/државно знаме не треба намерно да се поставува, остава или влече по земја или под во официјална протоколарна употреба. Не станува збор за едно „посебно“ знаме: сите национални знамиња се третираат со достоинство. Конкретната правна формулација може да се разликува по држава.'
+        : '🚩 No national/state flag should intentionally be placed, left or dragged on the ground or floor in official protocol use. This is not a rule for one special flag: national flags are treated with dignity. The exact legal wording can differ by country.';
+    }
+
+    return mk
+      ? '🚩 Не. Во професионалната протоколарна и церемонијална практика националните/државните знамиња не треба да се влечат по земја, да лежат на земја или под, ниту намерно да го допираат подот. Тоа е правило на достоинствено постапување со државниот симбол; конкретните правни правила и национални кодекси се разликуваат по држава.'
+      : '🚩 No. In professional protocol and ceremonial practice, national/state flags should not be dragged on the ground, left lying on the ground or floor, or intentionally allowed to touch it. This is a dignity rule for a national symbol; exact legal rules and national flag codes vary by country.';
   }
 
   function flagGeometryIntent(q){
@@ -174,8 +210,8 @@
     return null;
   }
 
-  function directAnswer(q){return resourceAnswer(q)||flagGeometryAnswer(q)||null;}
-  function hasDirectIntent(q){return isResourceQuestion(q)||flagGeometryIntent(q);}
+  function directAnswer(q){return resourceAnswer(q)||flagHandlingAnswer(q)||flagGeometryAnswer(q)||null;}
+  function hasDirectIntent(q){return isResourceQuestion(q)||flagHandlingIntent(q)||flagGeometryIntent(q);}
 
   function add(role,text){
     var body=document.getElementById('chatBody');if(!body)return;
