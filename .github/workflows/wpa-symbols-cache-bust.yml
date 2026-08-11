@@ -17,6 +17,7 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-capitals-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-diplomatic-premises-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-conference-flags-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-serbia-kosovo-case-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
       - 'wpaws/protocol-symbols/data/mk-flag-spec-v1.json'
       - 'wpaws/protocol-symbols/national-holidays-mfa-seed.json'
@@ -80,14 +81,14 @@ jobs:
           text2 = ensure_after(text2, 'wpa-symbols-capitals-v1.js', 'wpa-symbols-flag-spec-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-diplomatic-premises-v1.js', 'wpa-symbols-capitals-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-conference-flags-v1.js', 'wpa-symbols-diplomatic-premises-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-serbia-kosovo-case-v1.js', 'wpa-symbols-conference-flags-v1.js')
 
-          # Conference flag protocol must be the last expert layer. This prevents
-          # words such as "конференции" from being misread as a UN/ОН status query
-          # and keeps organization-specific event protocol ahead of generic matchers.
-          final_tag_re = r'<script src="\./wpa-symbols-conference-flags-v1\.js\?v=[^"]+" defer></script>\n?'
+          # Serbia-Kosovo case guard must be the final layer so the exact sensitive
+          # conference scenario cannot be swallowed by the generic conference guard.
+          final_tag_re = r'<script src="\./wpa-symbols-serbia-kosovo-case-v1\.js\?v=[^"]+" defer></script>\n?'
           m = re.search(final_tag_re, text2)
           if not m:
-              raise SystemExit('No Symbols conference-flags tag found after ensure step.')
+              raise SystemExit('No Symbols Serbia-Kosovo case tag found after ensure step.')
           final_tag = m.group(0).strip()
           text2 = re.sub(final_tag_re, '', text2)
           text2 = text2.replace('</body>', final_tag + '\n</body>', 1)
