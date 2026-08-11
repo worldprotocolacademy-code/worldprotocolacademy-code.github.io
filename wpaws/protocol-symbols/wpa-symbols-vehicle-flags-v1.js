@@ -1,4 +1,4 @@
-/* WPA Symbols Official Vehicle Flags Guard v1.0 — 2026-08-11
+/* WPA Symbols Official Vehicle Flags Guard v1.1 — 2026-08-11
    Dedicated handling for flag placement on official/state-visit vehicles.
 
    WPA/internal basis:
@@ -9,13 +9,15 @@
      is summarized as requiring the Macedonian state flag on the right side of
      the chassis as viewed from the front.
 
+   Routing hardening in v1.1:
+   - intercept the question before generic dataset/AI routing when possible;
+   - if another runtime layer still emits the generic "verified WPA Symbols
+     database has no record" fallback for a matching vehicle-flag question,
+     replace that fallback in the chat with the deterministic protocol answer.
+
    Comparative caution:
    - There is no universal treaty rule fixing guest/host vehicle-flag sides for
      every country. Host-state protocol and local usage control.
-   - India expressly uses host national flag right / foreign flag left on a
-     government-provided car carrying a foreign dignitary.
-   - Malta and Montenegro show different arrangements in some contexts, proving
-     why the answer must not be universalized beyond the applicable host protocol.
 */
 (function(){
   'use strict';
@@ -56,9 +58,9 @@
         parts.push('🚘🏳️ Кај официјално возило со две национални знамиња, WPA/македонскиот протоколарен стандард што го користиме е: домашното знаме ДЕСНО, странското знаме ЛЕВО.');
       }
       parts.push('За Македонија, во WPA академскиот материјал член 22 од Законот за употребата на грбот, знамето и химната е обработен со правило дека македонското државно знаме на моторно возило се поставува на десната страна на шасијата, гледано од предната страна на возилото. Во „Светски протокол“ истото е операционализирано за официјален кортеж: „домашното десно, странското лево“.');
-      parts.push('⚠️ Сепак, ова не треба да се претставува како едно универзално меѓународно правило. Распоредот на автомобилските знамиња зависи од протоколот на земјата домаќин. Постојат држави со различна практика, особено кога гостинот патува сам, кога двајца шефови на држави го делат истото возило или кога се користи централен јарбол.');
+      parts.push('⚠️ Ова не треба да се претставува како едно универзално меѓународно правило. Распоредот на автомобилските знамиња зависи од протоколот на земјата домаќин и од конкретната конфигурација на посетата.');
       if(!mkCtx){
-        parts.push('Затоа, ако прашањето е за конкретна странска држава, прво се проверува нејзиниот официјален протокол. Ако станува збор за посета во Северна Македонија, практичниот одговор е: македонското знаме десно, знамето на гостинот лево, кога се поставени две знамиња.');
+        parts.push('Ако станува збор за посета во Северна Македонија и на возилото се поставуваат две знамиња, практичниот одговор е: македонското знаме десно, знамето на гостинот лево.');
       }
       return parts.join('\n\n');
     }
@@ -66,13 +68,61 @@
     return [
       '🚘🏳️ For an official/state-visit vehicle in the North Macedonian/WPA protocol model, when two national flags are displayed, the host flag is on the RIGHT and the visiting foreign flag on the LEFT.',
       'The WPA academic material summarises Article 22 of the Macedonian flag-use framework as placing the Macedonian state flag on the right side of the chassis when viewed from the front. World Protocol operationalises this as “host right, foreign left” for an official motorcade.',
-      'This should not be universalised: vehicle-flag arrangements vary by host country and by whether the visitor travels alone, shares the car with the host Head of State, or a centre mast is used. Always follow the host State’s official protocol for the specific visit.'
+      'This should not be universalised: vehicle-flag arrangements vary by host country and by the configuration of the specific visit.'
     ].join('\n\n');
   }
 
   function add(role,text){
     var body=document.getElementById('chatBody');if(!body)return;
     var d=document.createElement('div');d.className='wpa-chat-msg '+role;d.textContent=text;body.appendChild(d);body.scrollTop=body.scrollHeight;
+  }
+
+  function isGenericNoRecord(text){
+    var z=norm(text);
+    return /тековната верифицирана wpa symbols база нема запис|нема запис за барањето|консултирајте ги официјалните државни извори|current verified wpa symbols database has no record|no record for the request|consult official state sources/.test(z);
+  }
+
+  function previousUserFor(node){
+    var p=node&&node.previousElementSibling;
+    while(p){
+      if(p.classList&&p.classList.contains('user')) return s(p.textContent).trim();
+      p=p.previousElementSibling;
+    }
+    var body=document.getElementById('chatBody');
+    if(!body)return'';
+    var users=body.querySelectorAll('.wpa-chat-msg.user');
+    return users.length?s(users[users.length-1].textContent).trim():'';
+  }
+
+  function repairFallbackNode(node){
+    if(!node||!node.classList||!node.classList.contains('bot'))return;
+    var text=s(node.textContent).trim();
+    if(!isGenericNoRecord(text))return;
+    var q=previousUserFor(node);
+    if(!q||!intent(q))return;
+    var a=answer(q);
+    if(a)node.textContent=a;
+  }
+
+  function installFallbackRepair(){
+    var body=document.getElementById('chatBody');
+    if(!body||body.__wpaVehicleFallbackObserver)return;
+    body.__wpaVehicleFallbackObserver=true;
+    Array.prototype.forEach.call(body.querySelectorAll('.wpa-chat-msg.bot'),repairFallbackNode);
+    if(typeof MutationObserver==='function'){
+      var observer=new MutationObserver(function(mutations){
+        mutations.forEach(function(m){
+          Array.prototype.forEach.call(m.addedNodes||[],function(n){
+            if(n&&n.nodeType===1){
+              repairFallbackNode(n);
+              if(n.querySelectorAll)Array.prototype.forEach.call(n.querySelectorAll('.wpa-chat-msg.bot'),repairFallbackNode);
+            }
+          });
+        });
+      });
+      observer.observe(body,{childList:true,subtree:true});
+      body.__wpaVehicleFallbackObserverRef=observer;
+    }
   }
 
   function install(){
@@ -93,12 +143,15 @@
       wrapped.__wpaVehicleFlagsV1=true;
       window.wpaBotAnswer=wrapped;
     }
+    installFallbackRepair();
   }
 
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installFallbackRepair,{once:true});
   install();
   setTimeout(install,800);
   setTimeout(install,1700);
   setTimeout(install,3200);
   setTimeout(install,5200);
   setTimeout(install,7200);
+  setTimeout(install,10000);
 })();
