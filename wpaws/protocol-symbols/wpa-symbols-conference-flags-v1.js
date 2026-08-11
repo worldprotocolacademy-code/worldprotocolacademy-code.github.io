@@ -1,6 +1,6 @@
-/* WPA Symbols Conference Flags Guard v1.0 — 2026-08-11
+/* WPA Symbols Conference Flags Guard v1.1 — 2026-08-11
    Question-first handling for flag placement at international conferences,
-   including UN, NATO and EU contexts.
+   including UN, NATO, EU and sensitive Serbia/Kosovo participation scenarios.
 
    Design principles:
    - generic conference questions must never be misrouted to UN membership/status
@@ -14,6 +14,18 @@
      based on alphabetical order in each Member State's source language
    - NATO: current Alliance membership must be checked from NATO; exact event flag
      layout should follow NATO/event protocol rather than be invented
+   - sensitive-status cases: never convert a unilateral objection into an ad-hoc
+     recognition decision; apply the pre-agreed participation/status formula of
+     the organizer and escalate to the competent protocol/legal authority
+
+   Serbia/Kosovo governance basis:
+   - Council of the EU currently lists Kosovo* among the six Western Balkans
+     partners and uses the status-neutral footnote: designation without prejudice
+     to positions on status, in line with UNSCR 1244/1999 and the ICJ opinion.
+   - The official participant list for the EU-Western Balkans summit of
+     18 December 2024 included both Vjosa Osmani-Sadriu and Aleksandar Vucic.
+   - These facts establish simultaneous participation under an EU format; they do
+     NOT by themselves prescribe one universal flag layout for every EU event.
 */
 (function(){
   'use strict';
@@ -27,7 +39,7 @@
 
   function conferenceIntent(q){
     var z=norm(q);
-    var conf=/(меѓународн.*конферен|меѓународн.*состан|конференц|конференз|кинфферен|конгрес|самит|делегац|учеснич|учесник|international conference|international meeting|summit|delegation|participants)/.test(z);
+    var conf=/(меѓународн.*конферен|меѓународн.*состан|конференц|конференз|кинфферен|конгрес|самит|делегац|учеснич|учесник|западен балкан|western balkans|international conference|international meeting|summit|delegation|participants)/.test(z);
     var flags=/(знаме|знамиња|flag|flags|постав|распоред|редослед|истак|подиг|position|placement|arrange|order|display|fly)/.test(z);
     var org=/(обединети нации|united nations|нато|nato|европска унија|european union)/.test(z)||hasToken(z,'он')||hasToken(z,'ун')||hasToken(z,'un')||hasToken(z,'eu');
     return (conf&&flags)||(org&&flags&&/(конферен|состан|самит|meeting|conference|summit|flags|знамиња)/.test(z));
@@ -41,7 +53,41 @@
     return out;
   }
 
+  function serbiaKosovoDisputeIntent(q){
+    var z=norm(q);
+    var serbia=/(србија|српск|serbia|serbian)/.test(z);
+    var kosovo=/(косово|kosovo)/.test(z);
+    var flag=/(знаме|знамето|знамиња|flag|flags)/.test(z);
+    var dispute=/(интервен|приговор|приговори|оспор|протест|бара.*трг|бара.*отстран|отстрани|тргне|не прифаќ|не прифак|object|objection|protest|dispute|remove|take down|complain)/.test(z);
+    var context=/(еус|европска унија|западен балкан|western balkans|меѓународн|конферен|самит|состан|eu)/.test(z)||hasToken(z,'eu');
+    return serbia&&kosovo&&flag&&dispute&&context;
+  }
+
+  function serbiaKosovoAnswer(q){
+    if(!serbiaKosovoDisputeIntent(q)) return null;
+    if(isMk(q)){
+      return [
+        '⚖️ Во таков случај не би го менувал распоредот на знамињата само по усна или еднострана интервенција на една делегација. Прво се применува однапред одобрениот протокол и формулата за учество на организаторот/домаќинот.',
+        '🇪🇺 Ако станува збор за формат ЕУ–Западен Балкан, ЕУ официјално го наведува Косово* како еден од шесте западнобалкански партнери, со статусно-неутрална фуснота дека ознаката не ги прејудицира позициите за статусот и е во согласност со Резолуцијата 1244/1999 на СБ на ОН и мислењето на МСП. Тоа значи дека протоколот не треба самостојно да претвори спор околу знаме во одлука за признавање или непризнавање.',
+        'Практична постапка: 1) ја проверувам поканата, concept note/протоколарниот план и договорената формула за претставување; 2) приговорот на српската делегација веднаш го евидентирам и го упатувам до шефот на протокол/политичкиот и правниот координатор на организаторот; 3) додека нема одлука од надлежниот организатор, не се отстранува еднострано само косовското знаме ако поставеноста веќе е официјално одобрена; 4) ако организаторот избере статусно-неутрално визуелно решение, тоа треба да биде конзистентно и недискриминаторно — на пример таблички со договорените називи и знаме/брендинг на ЕУ или на настанот наместо селективно отстранување на симбол само на еден учесник.',
+        'Важно: нема едно универзално правило дека на секој ЕУ–Западен Балкан настан мора да има или мора да нема косовско знаме. Конкретниот визуелен режим го определува официјалниот план на настанот. На самитот ЕУ–Западен Балкан во Брисел на 18 декември 2024 официјалната листа на учесници ги вклучува и Вјоса Османи-Садриу и Александар Вучиќ, што покажува дека двете страни можат истовремено да учествуваат во ЕУ формат; тоа само по себе не пропишува конкретна поставеност на знамињата.',
+        '🧭 WPA Protocol Rule: спор за статус или симбол не се решава ад хок од техничкиот протоколарец на лице место. Се применува однапред договорената формула на организаторот, се зачувува еднаквиот третман на учесниците и прашањето се ескалира до надлежното протоколарно/политичко ниво.',
+        'Напомена: ова е образовна и протоколарно-референтна насока; не претставува акт на дипломатско признавање или правно утврдување на статус.'
+      ].join('\n\n');
+    }
+    return [
+      '⚖️ In that situation, I would not alter the flag display solely because of an oral or unilateral objection from one delegation. The organizer/host’s pre-approved protocol and participation formula controls.',
+      '🇪🇺 In the EU–Western Balkans framework, the EU officially lists Kosovo* among the six Western Balkans partners, with a status-neutral footnote stating that the designation is without prejudice to positions on status and is in line with UNSCR 1244/1999 and the ICJ opinion. Protocol staff should therefore not turn a flag dispute into an ad-hoc recognition decision.',
+      'Operationally: verify the invitation/concept note and approved display plan; record and escalate the Serbian delegation’s objection to the organizer’s chief of protocol/political-legal authority; do not selectively remove only Kosovo’s flag if the approved plan already provides for it; if the organizer adopts a status-neutral visual solution, apply it consistently to all participants, for example agreed nameplates plus EU/event branding rather than a one-sided removal.',
+      'There is no single universal rule that every EU–Western Balkans event must display or omit Kosovo’s flag. The event-specific protocol plan controls. The official participant list for the 18 December 2024 EU–Western Balkans summit included both Vjosa Osmani-Sadriu and Aleksandar Vucic, demonstrating simultaneous participation under an EU format but not prescribing one flag layout for every event.',
+      'WPA Protocol Rule: a status/symbol dispute is not decided ad hoc by technical protocol staff on site; apply the organizer’s agreed formula, preserve equal treatment and escalate to the competent protocol/political authority.',
+      'Note: this is an educational and protocol-reference guideline and does not constitute diplomatic recognition or a legal determination of status.'
+    ].join('\n\n');
+  }
+
   function answer(q){
+    var sensitive=serbiaKosovoAnswer(q);
+    if(sensitive) return sensitive;
     if(!conferenceIntent(q)) return null;
     var mk=isMk(q),os=orgs(q);
 
@@ -82,7 +128,7 @@
       var prev=window.sendChat;
       var fn=function(){
         var input=document.getElementById('chatInput');if(!input)return prev();
-        var q=input.value.trim();if(!q||!conferenceIntent(q))return prev();
+        var q=input.value.trim();if(!q||(!conferenceIntent(q)&&!serbiaKosovoDisputeIntent(q)))return prev();
         var a=answer(q);if(!a)return prev();
         add('user',q);input.value='';add('bot',a);input.focus();
       };
