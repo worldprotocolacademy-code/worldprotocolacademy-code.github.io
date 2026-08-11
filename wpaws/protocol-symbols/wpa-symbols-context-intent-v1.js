@@ -1,4 +1,4 @@
-/* WPA Symbols Context Intent Guard v1.4 — 2026-08-11
+/* WPA Symbols Context Intent Guard v1.5 — 2026-08-11
    Purpose: understand short natural follow-up questions in the Symbols assistant,
    including resources, flag geometry/ratio, flag-handling protocol and anthem
    ceremony timing/order, and prevent unrelated legacy answers from replacing a
@@ -7,6 +7,12 @@
    Selected protocol source notes:
    - Law of the Flag of the Kingdom of Saudi Arabia (Bureau of Experts, in force)
      https://laws.boe.gov.sa/BoeLaws/Laws/LawDetails/03de5462-eda0-4dd6-9efa-a9a700f1f802/2
+   - Law on the Use of the Coat of Arms, Flag and Anthem of the Republic of
+     Macedonia, Official Gazette No. 32/97, Arts. 27-28: the anthem may be played
+     at the beginning, middle or end of a manifestation depending on how it is
+     afforded the greatest dignity; when played in the Republic together with a
+     foreign anthem, the foreign anthem is played first and the Macedonian anthem
+     follows.
    - Canadian Armed Forces Heritage Manual, Ch.7 Sec.3: where several anthems are
      played, timing/order differs depending on whether they are at the beginning
      or end of an event.
@@ -34,7 +40,7 @@
 
   var EXTRA_ALIASES={
     us:['сад','соединети американски држави','америка','united states','united states of america','usa','america'],
-    mk:['северна македонија','македонија','north macedonia','macedonia'],
+    mk:['северна македонија','македонија','република македонија','north macedonia','macedonia','republic of macedonia'],
     gb:['обединето кралство','велика британија','британија','united kingdom','great britain','britain','uk'],
     cz:['чешка','чешка република','чешката република','czechia','czech republic'],
     va:['ватикан','држава ватикан','државата ватикан','ватикан сити','светата столица','holy see','vatican','vatican city','vatican city state'],
@@ -49,7 +55,7 @@
       .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
 
-  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context5')
+  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context6')
     .then(function(d){
       if(d&&Array.isArray(d.records)){active=d;ready=d.records.length>=190;}
       return ready;
@@ -120,8 +126,13 @@
   function anthemProtocolIntent(q){
     var z=norm(q);
     var anthem=/(химн|anthem|anthems)/.test(z);
-    var protocol=/(меѓународн|правил|протокол|церемон|настан|почет|средин|крај|отворањ|затворањ|пред почет|по заврш|кога|редослед|позициј|момент|timing|international rule|protocol|ceremon|event|begin|start|middle|end|opening|closing|when|order)/.test(z);
+    var protocol=/(меѓународн|правил|протокол|церемон|настан|манифест|почет|средин|крај|отворањ|затворањ|пред почет|по заврш|кога|редослед|позициј|момент|достоинство|timing|international rule|protocol|ceremon|event|manifestation|begin|start|middle|end|opening|closing|when|order|dignity)/.test(z);
     return anthem&&protocol;
+  }
+
+  function isMacedonianAnthemContext(q){
+    var z=norm(q);
+    return /(македон|република македонија|северна македонија|нашата химна|нашата државна химна|кај нас|во нашата држава|macedonia|north macedonia|republic of macedonia|our anthem)/.test(z);
   }
 
   function anthemProtocolAnswer(q){
@@ -129,10 +140,23 @@
     var z=norm(q), mk=isMk(q);
     var sports=/(спорт|фудбал|натпревар|меч|sport|football|match|game)/.test(z);
     var medals=/(медал|победник|наград|victory|medal|award|winner)/.test(z);
-    var order=/(редослед|која прва|која последна|домаќин|гостин|повеќе химн|две химн|order|host|guest|which first|which last|multiple anthem|two anthem)/.test(z);
+    var order=/(редослед|која прва|која последна|домаќин|гостин|повеќе химн|две химн|странска химн|order|host|guest|which first|which last|multiple anthem|two anthem|foreign anthem)/.test(z);
     var middle=/(средин|middle|during the event|during event)/.test(z);
     var ending=/(крај|затворањ|по заврш|end|closing|at the end)/.test(z);
     var beginning=/(почет|отворањ|пред почет|begin|start|opening|pre match|pre-match)/.test(z);
+    var mkContext=isMacedonianAnthemContext(q);
+
+    if(mkContext&&order){
+      return mk
+        ? '🎼 Според член 28 од Законот за употреба на грбот, знамето и химната на Република Македонија (Сл. весник бр. 32/97), кога химната се изведува во Република Македонија заедно со химна на странска држава или свечена песна на меѓународна/странска организација, прво се изведува странската химна или свечената песна, а потоа химната на Република Македонија.'
+        : '🎼 Under Article 28 of the Law on the Use of the Coat of Arms, Flag and Anthem of the Republic of Macedonia (Official Gazette No. 32/97), when the anthem is performed in the Republic together with a foreign national anthem or ceremonial song of an international/foreign organization, the foreign anthem/song is performed first and the Macedonian anthem follows.';
+    }
+
+    if(mkContext){
+      return mk
+        ? '🎼 Да — кај нас сите три позиции се изречно дозволени во законскиот текст. Член 27 од Законот за употреба на грбот, знамето и химната на Република Македонија (Сл. весник бр. 32/97) предвидува дека химната може да се свири на почетокот, средината или крајот од манифестацијата, зависно од тоа на кој начин ќе ѝ се даде најголемо достоинство. Истиот член бара химната секогаш да се свири со достоинство и да не се користи како дел од друг вид музика.'
+        : '🎼 Yes — the cited Macedonian law expressly permits all three positions. Article 27 of the Law on the Use of the Coat of Arms, Flag and Anthem of the Republic of Macedonia (Official Gazette No. 32/97) provides that the anthem may be played at the beginning, middle or end of a manifestation, depending on which placement gives it the greatest dignity. The same article requires dignified performance and says the anthem is not to be used as part of another kind of music.';
+    }
 
     if(sports&&medals){
       return mk
@@ -148,31 +172,31 @@
 
     if(order){
       return mk
-        ? '🎼 Редоследот на повеќе национални химни не треба да се претставува како едно универзално меѓународно правило. Тој зависи од видот на церемонијата и од протоколот на домаќинот/организаторот. На пример, канадскиот воен протокол предвидува дека ако повеќе химни се свират на почеток, канадската како домаќин се свири прва, а ако се свират на крај — последна. За билатерален или државен настан треба да се примени конкретниот протокол на државата домаќин.'
-        : '🎼 The order of multiple national anthems should not be presented as one universal international rule. It depends on the ceremony and the host/organizer’s protocol. For example, Canadian military protocol places the Canadian host anthem first when several anthems are played at the beginning, and last when they are played at the end. For bilateral or state events, use the specific host-state protocol.';
+        ? '🎼 Редоследот на повеќе национални химни не е едно универзално меѓународно правило; зависи од државата домаќин, видот на церемонијата и применливиот протокол. Како конкретен национален пример, член 28 од македонскиот закон предвидува дека во Републиката прво се изведува химната на странската држава/свечената песна на меѓународната организација, а потоа домашната химна. Други држави и организации можат да имаат поинаков пропишан редослед.'
+        : '🎼 The order of multiple national anthems is not governed by one universal international rule; it depends on the host state, ceremony type and applicable protocol. As a concrete national example, Article 28 of the Macedonian law provides that in the Republic the foreign anthem/ceremonial song is performed first and the domestic anthem follows. Other states and organizations may prescribe a different order.';
     }
 
     if(middle&&!beginning&&!ending){
       return mk
-        ? '🎼 Химна може да се свири и во текот на настанот, но само кога е врзана за конкретен формален чин — на пример доделување медал/одликување, подигање знаме или друга пропишана церемонијална секвенца. Не се користи како обична музичка пауза или позадинска музика.'
-        : '🎼 An anthem may be played during an event when it is tied to a specific formal act, such as an award, flag raising or another prescribed ceremonial sequence. It should not be treated as ordinary intermission or background music.';
+        ? '🎼 Да, химна може да се свири и во средината на настанот ако применливиот национален или организациски протокол го дозволува тоа и ако со таа позиција се зачувува потребното достоинство. Македонскиот закон е експлицитен пример: член 27 дозволува почеток, средина или крај, зависно од тоа каде на химната ќе ѝ се даде најголемо достоинство. Химната не треба да се третира како обична позадинска музика.'
+        : '🎼 Yes, an anthem may be played in the middle of an event when the applicable national or organizational protocol allows it and the placement preserves the required dignity. The Macedonian law is an explicit example: Article 27 permits beginning, middle or end depending on where the anthem is afforded the greatest dignity. An anthem should not be treated as ordinary background music.';
     }
 
     if(ending&&!beginning){
       return mk
-        ? '🎼 Да, химна може да биде предвидена и на крајот на настанот, ако тоа го бара конкретниот национален, институционален или организациски протокол. Но тоа не е универзално правило за сите настани; редоследот и позицијата мора да се утврдат според видот на церемонијата и домаќинот.'
-        : '🎼 Yes, an anthem may be prescribed at the end of an event if the relevant national, institutional or organizational protocol calls for it. That is not a universal rule for every event; placement and order must follow the ceremony type and host protocol.';
+        ? '🎼 Да, химна може да биде предвидена и на крајот на настанот. Македонскиот закон, на пример, изречно го дозволува крајот како една од трите позиции, под критериумот на најголемо достоинство. Кај други држави и организации треба да се примени нивниот конкретен протокол.'
+        : '🎼 Yes, an anthem may be prescribed at the end of an event. The Macedonian law, for example, expressly permits the end as one of three possible positions under the criterion of greatest dignity. Other states and organizations may apply their own protocol.';
     }
 
     if(beginning&&!middle&&!ending){
       return mk
-        ? '🎼 Да, националните химни многу често се свират во отворачката или пречекувачката церемонијална секвенца, но не постои една единствена позиција што важи за секој меѓународен настан. Точниот момент зависи од видот на настанот и од правилата на домаќинот или надлежната организација.'
-        : '🎼 Yes, national anthems are very often used in an opening or arrival ceremonial sequence, but there is no single placement that applies to every international event. The exact moment depends on the event type and the rules of the host or governing organization.';
+        ? '🎼 Да, химната може да се свири на почетокот. Македонскиот закон изречно го наведува почетокот како дозволена позиција, заедно со средината и крајот, при што критериум е каде ќе ѝ се даде најголемо достоинство. За меѓународен настан секогаш се проверува и протоколот на домаќинот/организаторот.'
+        : '🎼 Yes, an anthem may be played at the beginning. The Macedonian law expressly lists the beginning as a permitted position together with the middle and end, with greatest dignity as the governing criterion. For an international event, the host/organizer’s protocol must also be checked.';
     }
 
     return mk
-      ? '🎼 Не постои една единствена позиција на националната химна што важи за сите меѓународни настани. На почеток — често се користи при отворање, пречек или пред официјалниот/спортскиот дел; во текот — само ако е врзана за конкретен церемонијален чин, како подигање знаме или доделување награда; на крај — може да биде предвидена со национален или организациски протокол. Клучно е химната да не се користи како обична позадинска музика. За точен распоред мора да се знаат видот на настанот, државата домаќин и надлежниот протокол.'
-      : '🎼 There is no single anthem position that applies to every international event. At the beginning it is often used for an opening, arrival or pre-event ceremonial sequence; during the event it may accompany a defined ceremonial act such as a flag raising or award; at the end it may be prescribed by national or organizational protocol. The key is that a national anthem is not ordinary background music. Exact placement depends on the event type, host state and governing protocol.';
+      ? '🎼 Да — почетокот, средината и крајот можат да бидат правилна позиција, зависно од применливиот национален или организациски протокол; нема една единствена позиција што важи за сите меѓународни настани. Македонскиот закон е особено јасен пример: член 27 изречно дозволува химната да се свири на почетокот, средината или крајот од манифестацијата, зависно од тоа каде ќе ѝ се даде најголемо достоинство. Химната не се користи како обична позадинска музика.'
+      : '🎼 Yes — beginning, middle and end can all be correct placements depending on the applicable national or organizational protocol; there is no single position that governs every international event. The Macedonian law is a particularly clear example: Article 27 expressly permits the anthem at the beginning, middle or end of a manifestation depending on which placement affords it the greatest dignity. An anthem is not ordinary background music.';
   }
 
   function isSaudiMention(q){
