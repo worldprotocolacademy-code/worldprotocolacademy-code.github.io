@@ -9,8 +9,10 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-comparison-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-focus-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-un-status-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-national-days-focus-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-attribution-policy-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
+      - 'wpaws/protocol-symbols/national-holidays-mfa-seed.json'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
 
 permissions:
@@ -75,12 +77,20 @@ jobs:
               if not marker: raise SystemExit('No Symbols focus marker found.')
               text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + un_tag, 1)
 
+          national_days_tag = f'<script src="./wpa-symbols-national-days-focus-v1.js?v={version}" defer></script>'
+          if 'wpa-symbols-national-days-focus-v1.js' in text2:
+              text2 = re.sub(r'<script src="\./wpa-symbols-national-days-focus-v1\.js\?v=[^"]+" defer></script>', national_days_tag, text2)
+          else:
+              marker = re.search(r'(<script src="\./wpa-symbols-un-status-v1\.js\?v=[^"]+" defer></script>)', text2)
+              if not marker: raise SystemExit('No Symbols UN status marker found.')
+              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + national_days_tag, 1)
+
           attribution_tag = f'<script src="./wpa-symbols-attribution-policy-v1.js?v={version}" defer></script>'
           if 'wpa-symbols-attribution-policy-v1.js' in text2:
               text2 = re.sub(r'<script src="\./wpa-symbols-attribution-policy-v1\.js\?v=[^"]+" defer></script>', attribution_tag, text2)
           else:
-              marker = re.search(r'(<script src="\./wpa-symbols-un-status-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols UN status marker found.')
+              marker = re.search(r'(<script src="\./wpa-symbols-national-days-focus-v1\.js\?v=[^"]+" defer></script>)', text2)
+              if not marker: raise SystemExit('No Symbols national-days marker found.')
               text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + attribution_tag, 1)
 
           if text2 == text:
