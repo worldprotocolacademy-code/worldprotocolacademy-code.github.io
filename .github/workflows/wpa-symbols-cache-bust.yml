@@ -7,6 +7,7 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-comprehensive-v3.js'
       - 'wpaws/protocol-symbols/wpa-symbols-ratio-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-comparison-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-focus-v1.js'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
 
 permissions:
@@ -68,6 +69,23 @@ jobs:
                   if not marker:
                       raise SystemExit('No Symbols script marker found.')
                   text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + comparison_tag, 1)
+
+          focus_tag = f'<script src="./wpa-symbols-focus-v1.js?v={version}" defer></script>'
+          if 'wpa-symbols-focus-v1.js' in text2:
+              text2 = re.sub(
+                  r'<script src="\./wpa-symbols-focus-v1\.js\?v=[^"]+" defer></script>',
+                  focus_tag,
+                  text2,
+              )
+          else:
+              comparison_marker = re.search(r'(<script src="\./wpa-symbols-comparison-v1\.js\?v=[^"]+" defer></script>)', text2)
+              if comparison_marker:
+                  text2 = text2.replace(comparison_marker.group(1), comparison_marker.group(1) + '\n' + focus_tag, 1)
+              else:
+                  marker = re.search(r'(<script src="\./wpa-symbols-comprehensive-v3\.js\?v=[^"]+" defer></script>)', text2)
+                  if not marker:
+                      raise SystemExit('No Symbols script marker found for focus layer.')
+                  text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + focus_tag, 1)
 
           if text2 == text:
               raise SystemExit('No Symbols cache-bust change was needed.')
