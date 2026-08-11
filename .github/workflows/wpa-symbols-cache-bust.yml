@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'wpaws/protocol-symbols/wpa-symbols-comprehensive-v3.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-ratio-v1.js'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
 
 permissions:
@@ -20,7 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bust Symbols assistant script cache
+      - name: Bust Symbols assistant script cache and ensure ratio layer
         env:
           COMMIT_SHA: ${{ github.sha }}
         run: |
@@ -30,14 +31,29 @@ jobs:
           p = Path('wpaws/protocol-symbols/index.html')
           text = p.read_text(encoding='utf-8')
           version = os.environ['COMMIT_SHA'][:12]
-          new = re.sub(
+
+          text2 = re.sub(
               r'wpa-symbols-comprehensive-v3\.js\?v=[^"\']+',
               f'wpa-symbols-comprehensive-v3.js?v={version}',
               text,
           )
-          if new == text:
-              raise SystemExit('No Symbols script tag found to update.')
-          p.write_text(new, encoding='utf-8')
+
+          ratio_tag = f'<script src="./wpa-symbols-ratio-v1.js?v={version}" defer></script>'
+          if 'wpa-symbols-ratio-v1.js' in text2:
+              text2 = re.sub(
+                  r'<script src="\./wpa-symbols-ratio-v1\.js\?v=[^"]+" defer></script>',
+                  ratio_tag,
+                  text2,
+              )
+          else:
+              marker = re.search(r'(<script src="\./wpa-symbols-comprehensive-v3\.js\?v=[^"]+" defer></script>)', text2)
+              if not marker:
+                  raise SystemExit('No Symbols comprehensive script tag found.')
+              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + ratio_tag, 1)
+
+          if text2 == text:
+              raise SystemExit('No Symbols cache-bust change was needed.')
+          p.write_text(text2, encoding='utf-8')
           PY
 
       - name: Commit cache-bust version
