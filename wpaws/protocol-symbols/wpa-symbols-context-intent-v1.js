@@ -53,7 +53,6 @@
     if(!alias) return 0;
     var padded=' '+text+' ', exact=' '+alias+' ';
     if(padded.indexOf(exact)>=0) return 1000+alias.length;
-    // Long country names may be followed by a typo suffix (e.g. „Венецуелал“).
     if(alias.length>=5 && text.indexOf(alias)>=0) return 700+alias.length;
     return 0;
   }
@@ -140,16 +139,13 @@
     if(!r) return null;
     var id=s(r.id).toLowerCase(), g=geometryFromRecord(r), mk=isMk(q);
 
-    // Verified geometry facts used for direct protocol answers:
-    // Vatican City and Switzerland use square national flags (1:1).
-    // Nepal's national flag is non-rectangular and is defined by a geometric construction.
     if(id==='va'){
       if(mk){
         if(asksPhysicalSize(q)){
           return '📐 Знамето на Државата Ватикан нема една фиксна физичка големина; може да се изработува во различни димензии, но мора да ја задржи квадратната форма со сразмер 1:1 (ширина = висина).';
         }
         if(asksDifference(q)){
-          return '📐 Знамето на Државата Ватикан е квадратno, со сразмер 1:1. По формата е исклучок меѓу националните знамиња: квадратна национална форма има и Швајцарија, додека повеќето државни знамиња се правоаголни; Непал има неправаголна, двојно-триаголна форма.';
+          return '📐 Знамето на Државата Ватикан е квадратно, со сразмер 1:1. По формата е исклучок меѓу националните знамиња: квадратна национална форма има и Швајцарија, додека повеќето државни знамиња се правоаголни; Непал има неправаголна, двојно-триаголна форма.';
         }
         return '📐 Знамето на Државата Ватикан има квадратна форма и сразмер 1:1 — ширината и висината се еднакви. И Швајцарија има квадратна национална форма; повеќето други национални знамиња се правоаголни.';
       }
@@ -160,7 +156,7 @@
 
     if(id==='ch'){
       return mk
-        ? '📐 Знамето на Швајцарија е квадратno, со сразмер 1:1. Државата Ватикан исто така има квадратна национална форма.'
+        ? '📐 Знамето на Швајцарија е квадратно, со сразмер 1:1. Државата Ватикан исто така има квадратна национална форма.'
         : '📐 The Swiss national flag is square, with a 1:1 ratio. Vatican City State also has a square national flag.';
     }
 
@@ -178,13 +174,8 @@
     return null;
   }
 
-  function directAnswer(q){
-    return resourceAnswer(q)||flagGeometryAnswer(q)||null;
-  }
-
-  function hasDirectIntent(q){
-    return isResourceQuestion(q)||flagGeometryIntent(q);
-  }
+  function directAnswer(q){return resourceAnswer(q)||flagGeometryAnswer(q)||null;}
+  function hasDirectIntent(q){return isResourceQuestion(q)||flagGeometryIntent(q);}
 
   function add(role,text){
     var body=document.getElementById('chatBody');if(!body)return;
@@ -221,7 +212,6 @@
 
   install();
   loadPromise.then(install).catch(function(){});
-  // Re-capture after older layers that reinstall themselves later.
   setTimeout(install,900);
   setTimeout(install,2000);
   setTimeout(install,2900);
