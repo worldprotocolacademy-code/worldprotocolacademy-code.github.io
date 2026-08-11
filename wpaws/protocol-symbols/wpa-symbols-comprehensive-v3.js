@@ -1,14 +1,17 @@
-/* WPA Symbols Comprehensive Assistant v3.1 HYBRID
+/* WPA Symbols Expert Assistant v4.0 HYBRID DOMAIN ENGINE
    World Protocol Academy · 2026-08-11
 
-   Preserves the deterministic 197-entity Symbols/Flags engine and adds:
-   - WPA logo branding in the launcher and assistant header
-   - the visible bot name "WPA Symbols Expert Assistant"
-   - resilient AI fallback for free-form questions via the existing WPA production workers
-   - hard request timeouts so the widget never remains indefinitely in a thinking state
-
-   Specialist symbol/flag/protocol logic remains first. The AI fallback is used only
-   when the local WPA engine returns its generic scope message or no useful answer.
+   Goals:
+   1) Keep the deterministic WPA 197-entity Symbols/Flags tools first.
+   2) Never stop at a generic "no matches" message when the question belongs to
+      the Symbols domain; fall through to WPA AI instead.
+   3) Give the AI layer a strong WPA Symbols Expert scope prompt covering flags,
+      anthems, geography, GPS/coordinates, capitals, population, area, natural
+      and mineral resources, national days, organizations, state symbols and
+      protocol/ceremonial use.
+   4) Preserve strict distinctions: flag != coat of arms != emblem/seal;
+      officially instrumental/textless anthem != an instrumental performance.
+   5) Never leave the user in an endless thinking state.
 */
 (function(){
   'use strict';
@@ -17,121 +20,159 @@
   var chatBusy = false;
   var chatHistory = [];
   var LOGO_URL = '../../logo.png';
+
+  /* Generic/legacy WPA AI first because the dedicated production endpoint has
+     a deterministic symbols router in front of the AI. If that router has no
+     local match, the second endpoint remains available as a fallback. */
   var AI_ENDPOINTS = [
-    'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask',
-    'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+    'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask',
+    'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask'
   ];
 
+  var SYMBOLS_EXPERT_PROMPT_MK = [
+    'Ти си WPA Symbols Expert Assistant на World Protocol Academy.',
+    'Одговарај директно и корисно на СИТЕ прашања што се поврзани со: државни и национални знамиња; историски и актуелни верзии на знамиња; бои, пропорции, елементи и симболи на знамињата; грбови, амблеми, печати и други државни симболи; национални химни, наслови, протоколарна употреба и разлика меѓу официјално инструментална/безтекстна химна и инструментална изведба; држави, главни градови, континенти и региони; географски и GPS/координатни податоци; население и површина; природни ресурси и рудни богатства; национални денови, државни празници и независност; меѓународни организации; protocol display/use на знамиња, химни и симболи; редослед, поставување, споредба, Reverse ID, Symbol DNA, Protocol Trap и Protocol Risk; како и други тесно поврзани факти за држави и нивната симболика.',
+    'Не одбивај релевантно прашање само затоа што локалниот deterministic dataset нема пополнето поле. Во таков случај користи го WPA AI/retrieval знаењето и одговори со најдобрата достапна потврдена информација.',
+    'Никогаш не мешај знаме со грб, амблем или печат. Не префрлај симбол од грбот на знамето ако не е навистина на знамето.',
+    'Кај химни јасно разликувај официјално инструментална/безтекстна химна од химна што само се изведува инструментално во протоколарна практика.',
+    'За временски чувствителни или официјално-правни тврдења кажи кога е потребна повторна проверка од примарен државен, дипломатски или законски извор.',
+    'Одговарај на македонски освен ако корисникот избрал англиски.'
+  ].join(' ');
+
+  var SYMBOLS_EXPERT_PROMPT_EN = [
+    'You are the WPA Symbols Expert Assistant of World Protocol Academy.',
+    'Answer directly and usefully ALL questions related to: national and state flags; historical and current flag versions; flag colours, proportions, elements and symbols; coats of arms, emblems, seals and other state symbols; national anthems, titles, protocol use and the distinction between an officially instrumental/textless anthem and an instrumental performance; countries, capitals, continents and regions; geographic and GPS/coordinate data; population and area; natural and mineral resources; national days, state holidays and independence days; international organizations; protocol display/use of flags, anthems and symbols; ordering, placement, comparison, Reverse ID, Symbol DNA, Protocol Trap and Protocol Risk; and closely related country/symbol facts.',
+    'Do not refuse a relevant question merely because the local deterministic dataset has an empty field. In that case use WPA AI/retrieval knowledge and provide the best available verified answer.',
+    'Never confuse a flag with a coat of arms, emblem or seal, and never transfer a coat-of-arms symbol onto the flag unless it is actually present on the flag.',
+    'For anthems, clearly distinguish an officially instrumental/textless anthem from an anthem that is merely performed instrumentally in protocol practice.',
+    'For time-sensitive or official/legal claims, state when primary state, diplomatic or legal-source verification is appropriate.',
+    'Answer in English when English is selected.'
+  ].join(' ');
+
   function s(v){ return String(v == null ? '' : v); }
-  function n(v){ return s(v).toLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}°²:.,><=+-]+/gu,' ').replace(/\s+/g,' ').trim(); }
+  function n(v){
+    return s(v).toLowerCase().normalize('NFKC')
+      .replace(/[^\p{L}\p{N}°²:.,><=+-]+/gu,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+  }
   function rows(){ return Array.isArray(window.worldData) ? window.worldData : []; }
-  function mk(q){ return /[А-Яа-яЃѓЌќЅѕЈјЉљЊњЏџ]/.test(s(q)) || window.WPA_CHAT_LANG !== 'en'; }
+  function isMk(question){
+    return /[А-Яа-яЃѓЌќЅѕЈјЉљЊњЏџ]/.test(s(question)) || window.WPA_CHAT_LANG !== 'en';
+  }
   function num(v){ return Number(s(v).replace(/[^0-9.]/g,'')) || 0; }
-  function country(q){
-    var x = n(q);
+  function country(question){
+    var q = n(question);
     return rows().find(function(c){
-      return x.indexOf(n(c.n)) >= 0 || new RegExp('(^|\\s)'+n(c.id)+'($|\\s)').test(x);
+      var name = n(c.n), id = n(c.id);
+      return (name && q.indexOf(name) >= 0) || (id && new RegExp('(^|\\s)'+id+'($|\\s)').test(q));
     }) || null;
   }
-  function days(c){
+  function nationalDays(c){
     var a = Array.isArray(window.nationalHolidays) ? window.nationalHolidays : [];
     return a.filter(function(h){ return h && h.countryId === c.id; });
   }
   function eagle(c){ return window.flagsWithEagles && window.flagsWithEagles[c.id]; }
-  function instr(c){ return window.instrumentalAnthems && window.instrumentalAnthems[c.id]; }
+  function instrumental(c){ return window.instrumentalAnthems && window.instrumentalAnthems[c.id]; }
   function fact(c){ return window.funFacts && window.funFacts[c.id]; }
   function header(t){ return '◆ WPA WORLD STATE & PROTOCOL ENGINE · ' + t; }
 
-  function profile(c,isMk){
-    var d = days(c), i = instr(c), e = eagle(c);
+  function profile(c,mk){
+    var d = nationalDays(c), i = instrumental(c), e = eagle(c);
     return [
-      header(isMk ? 'ЦЕЛОСЕН ПРОФИЛ' : 'COMPREHENSIVE PROFILE'),
+      header(mk ? 'ЦЕЛОСЕН ПРОФИЛ' : 'COMPREHENSIVE PROFILE'),
       '🌍 ' + c.n + ' (' + s(c.id).toUpperCase() + ')',
-      (isMk ? '🏙️ Главен град: ' : '🏙️ Capital: ') + s(c.cap || '—'),
-      (isMk ? '🗺️ Континент / регион: ' : '🗺️ Continent / region: ') + s(c.continent || '—'),
-      (isMk ? '📍 Геолокација / координати: ' : '📍 Geolocation / coordinates: ') + s(c.g || '—'),
-      (isMk ? '👥 Население: ' : '👥 Population: ') + s(c.pop || '—'),
-      (isMk ? '📐 Површина: ' : '📐 Area: ') + s(c.area || '—'),
-      (isMk ? '⛏️ Природни и рудни ресурси: ' : '⛏️ Natural and mineral resources: ') + s(c.r || '—'),
-      (isMk ? '🏳️ Знаме: ' : '🏳️ Flag: ') + s(c.f || '—'),
-      (isMk ? '🎼 Химна: ' : '🎼 Anthem: ') + (i ? s(i.name || i.title || c.anthem) : (c.anthem ? 'WPA code: ' + c.anthem : '—')),
-      (isMk ? '🎵 Инструментална ознака: ' : '🎵 Instrumental marker: ') + (i ? (isMk ? 'да' : 'yes') : (isMk ? 'не е посебно означено во активниот слој' : 'not specially marked in active layer')),
-      (isMk ? '🦅 Орел на знамето: ' : '🦅 Eagle on flag: ') + (e ? (isMk ? 'да — ' : 'yes — ') + s(e) : (isMk ? 'не е означено како потврден пример' : 'not marked as a confirmed example')),
-      (isMk ? '📅 Национален ден: ' : '📅 National day: ') + (d.length ? d.map(function(x){ return s(x.date || ((x.month || '') + '-' + (x.day || ''))) + ' — ' + s(x.title || x.titleMk || ''); }).join('; ') : (isMk ? 'нема активен запис' : 'no active record')),
-      fact(c) ? (isMk ? '💡 WPA факт: ' : '💡 WPA fact: ') + fact(c) : '',
-      isMk
-        ? '⚖️ Правило: недостапните полиња не ги претпоставувам; за официјална употреба временски чувствителните податоци се проверуваат повторно.'
-        : '⚖️ Rule: missing fields are not inferred; time-sensitive data should be reconfirmed for official use.'
+      (mk ? '🏙️ Главен град: ' : '🏙️ Capital: ') + s(c.cap || '—'),
+      (mk ? '🗺️ Континент / регион: ' : '🗺️ Continent / region: ') + s(c.continent || '—'),
+      (mk ? '📍 Геолокација / координати: ' : '📍 Geolocation / coordinates: ') + s(c.g || '—'),
+      (mk ? '👥 Население: ' : '👥 Population: ') + s(c.pop || '—'),
+      (mk ? '📐 Површина: ' : '📐 Area: ') + s(c.area || '—'),
+      (mk ? '⛏️ Природни и рудни ресурси: ' : '⛏️ Natural and mineral resources: ') + s(c.r || '—'),
+      (mk ? '🏳️ Знаме: ' : '🏳️ Flag: ') + s(c.f || '—'),
+      (mk ? '🎼 Химна: ' : '🎼 Anthem: ') + (i ? s(i.name || i.title || c.anthem) : (c.anthem ? 'WPA code: ' + c.anthem : '—')),
+      (mk ? '🎵 Инструментална ознака: ' : '🎵 Instrumental marker: ') + (i ? (mk ? 'да' : 'yes') : (mk ? 'не е посебно означено во активниот локален слој' : 'not specially marked in the active local layer')),
+      (mk ? '🦅 Орел на знамето: ' : '🦅 Eagle on flag: ') + (e ? (mk ? 'да — ' : 'yes — ') + s(e) : (mk ? 'не е означено како потврден пример во локалниот слој' : 'not marked as a confirmed example in the local layer')),
+      (mk ? '📅 Национален ден: ' : '📅 National day: ') + (d.length ? d.map(function(x){ return s(x.date || ((x.month || '') + '-' + (x.day || ''))) + ' — ' + s(x.title || x.titleMk || ''); }).join('; ') : (mk ? 'нема активен локален запис' : 'no active local record')),
+      fact(c) ? (mk ? '💡 WPA факт: ' : '💡 WPA fact: ') + fact(c) : '',
+      mk
+        ? '⚖️ WPA правило: за официјална употреба временски чувствителните податоци повторно се проверуваат од примарен извор.'
+        : '⚖️ WPA rule: time-sensitive information should be reconfirmed from a primary source for official use.'
     ].filter(Boolean).join('\n');
   }
 
-  function field(c,q,isMk){
-    if(/координат|геолокац|location|geolocation/.test(q)) return '📍 ' + c.n + ': ' + s(c.g || '—');
+  function singleField(c,q,mk){
+    if(/координат|геолокац|gps|location|geolocation/.test(q)) return '📍 ' + c.n + ': ' + s(c.g || '—');
     if(/ресурс|рудн|богатств|mineral|resources/.test(q)) return '⛏️ ' + c.n + ': ' + s(c.r || '—');
     if(/население|population/.test(q)) return '👥 ' + c.n + ': ' + s(c.pop || '—');
     if(/површина|големина|area|size/.test(q)) return '📐 ' + c.n + ': ' + s(c.area || '—');
     if(/главен град|capital/.test(q)) return '🏙️ ' + c.n + ': ' + s(c.cap || '—');
-    if(/континент|continent/.test(q)) return '🗺️ ' + c.n + ': ' + s(c.continent || '—');
+    if(/континент|continent|регион|region/.test(q)) return '🗺️ ' + c.n + ': ' + s(c.continent || '—');
     if(/национален ден|national day|празник|holiday/.test(q)){
-      var d = days(c);
-      return '📅 ' + c.n + ': ' + (d.length ? d.map(function(x){ return s(x.date) + ' — ' + s(x.title || x.titleMk || ''); }).join('; ') : (isMk ? 'нема активен запис' : 'no active record'));
+      var d = nationalDays(c);
+      if(!d.length) return null;
+      return '📅 ' + c.n + ': ' + d.map(function(x){ return s(x.date) + ' — ' + s(x.title || x.titleMk || ''); }).join('; ');
     }
     return null;
   }
 
-  var resources = {
+  var RESOURCE_GROUPS = {
     gold:['злато','gold'], oil:['нафта','oil'], gas:['природен гас','natural gas'], coal:['јаглен','coal'],
     copper:['бакар','copper'], iron:['железо','iron'], diamonds:['дијамант','diamond'], uranium:['ураниум','uranium'],
     silver:['сребро','silver'], nickel:['никел','nickel'], phosphate:['фосфат','phosphate']
   };
-  var symbols = {
+  var SYMBOL_GROUPS = {
     eagle:['орел','eagle'], lion:['лав','lion'], sun:['сонце','sun'], crescent:['полумес','crescent'],
     star:['ѕвезд','star'], cross:['крст','cross'], crown:['круна','crown'], sword:['сабја','меч','sword','sabre']
   };
+
   function hasAny(text,arr){
     var z = n(text);
     return arr.some(function(x){ return z.indexOf(n(x)) >= 0; });
   }
 
-  function filtered(q,isMk){
+  function filtered(q,mk){
     var all = rows().slice(), reasons = [];
     var continents = [
       ['африка','Африка'],['africa','Африка'],['азија','Азија'],['asia','Азија'],['европа','Европа'],['europe','Европа'],
       ['океанија','Океанија'],['oceania','Океанија'],['северна америка','Северна Америка'],['north america','Северна Америка'],
       ['јужна америка','Јужна Америка'],['south america','Јужна Америка']
     ];
-    var ch = continents.find(function(x){ return q.indexOf(x[0]) >= 0; });
-    if(ch){ all = all.filter(function(c){ return c.continent === ch[1]; }); reasons.push(ch[1]); }
 
-    Object.keys(resources).some(function(k){
-      if(hasAny(q,resources[k])){
-        all = all.filter(function(c){ return hasAny(c.r,resources[k]); });
+    var continentHit = continents.find(function(x){ return q.indexOf(x[0]) >= 0; });
+    if(continentHit){
+      all = all.filter(function(c){ return c.continent === continentHit[1]; });
+      reasons.push(continentHit[1]);
+    }
+
+    Object.keys(RESOURCE_GROUPS).some(function(k){
+      if(hasAny(q,RESOURCE_GROUPS[k])){
+        all = all.filter(function(c){ return hasAny(c.r,RESOURCE_GROUPS[k]); });
         reasons.push(k);
         return true;
       }
       return false;
     });
 
-    Object.keys(symbols).some(function(k){
-      if(hasAny(q,symbols[k])){
-        all = all.filter(function(c){ return hasAny(c.f,symbols[k]) || (k === 'eagle' && !!eagle(c)); });
+    Object.keys(SYMBOL_GROUPS).some(function(k){
+      if(hasAny(q,SYMBOL_GROUPS[k])){
+        all = all.filter(function(c){ return hasAny(c.f,SYMBOL_GROUPS[k]) || (k === 'eagle' && !!eagle(c)); });
         reasons.push(k);
         return true;
       }
       return false;
     });
 
-    if(/инструментал|instrumental|без текст/.test(q)){
-      all = all.filter(function(c){ return !!instr(c); });
+    if(/инструментал|instrumental|без текст|textless|without lyrics/.test(q)){
+      all = all.filter(function(c){ return !!instrumental(c); });
       reasons.push('instrumental anthem');
     }
 
-    var m = q.match(/(?:над|over|more than|>)\s*([0-9][0-9.,]*)\s*(милион|million)?/);
-    if(m && /површина|area|km|км/.test(q)){
-      var t = Number(m[1].replace(/,/g,''));
-      if(m[2]) t *= 1000000;
-      all = all.filter(function(c){ return num(c.area) > t; });
-      reasons.push('area > ' + t + ' km²');
+    var gt = q.match(/(?:над|over|more than|>)\s*([0-9][0-9.,]*)\s*(милион|million)?/);
+    if(gt && /површина|area|km|км/.test(q)){
+      var threshold = Number(gt[1].replace(/,/g,''));
+      if(gt[2]) threshold *= 1000000;
+      all = all.filter(function(c){ return num(c.area) > threshold; });
+      reasons.push('area > ' + threshold + ' km²');
     }
 
     if(/најголем|largest|biggest/.test(q) && /држав|country|површина|area/.test(q)){
@@ -151,37 +192,44 @@
     }
 
     if(!reasons.length) return null;
-    if(!all.length) return isMk ? 'Не најдов совпаѓања во активниот WPA dataset.' : 'No matches found in the active WPA dataset.';
+
+    /* CRITICAL v4 CHANGE:
+       An empty deterministic result is NOT a final answer. Returning null makes
+       the hybrid chat continue to the WPA AI/retrieval layer. */
+    if(!all.length) return null;
 
     return [
-      header(isMk ? 'CROSS-DATASET REASONING' : 'CROSS-DATASET REASONING'),
-      (isMk ? 'Филтри: ' : 'Filters: ') + reasons.join(' · '),
+      header(mk ? 'CROSS-DATASET REASONING' : 'CROSS-DATASET REASONING'),
+      (mk ? 'Филтри: ' : 'Filters: ') + reasons.join(' · '),
       all.slice(0,30).map(function(c,i){
-        return (i+1) + '. ' + c.n + ' — ' + c.cap + ' · ' + c.area + ' · ' + c.pop + (c.r ? ' · ' + c.r : '') + (c.f ? ' · ' + c.f : '');
+        return (i+1) + '. ' + c.n + ' — ' + s(c.cap || '—') + ' · ' + s(c.area || '—') + ' · ' + s(c.pop || '—') + (c.r ? ' · ' + c.r : '') + (c.f ? ' · ' + c.f : '');
       }).join('\n'),
-      isMk
-        ? 'Резултатот е детерминистички изведен од активните WPA полиња, без LLM претпоставки.'
-        : 'Result is deterministically derived from active WPA fields without LLM guessing.'
+      mk
+        ? 'Резултатот е изведен од активните WPA полиња. За официјална употреба применете примарна проверка каде што е потребно.'
+        : 'The result is derived from active WPA fields. Apply primary-source verification where required for official use.'
     ].join('\n');
   }
 
-  function reverse(q,isMk){
+  function reverse(q,mk){
     if(!/(која држава|which country|кој ентитет|which entity)/.test(q)) return null;
-    var a = rows().map(function(c){
-      var sc = 0, w = [];
-      if(c.cap && q.indexOf(n(c.cap)) >= 0){ sc += 7; w.push(c.cap); }
-      Object.keys(symbols).forEach(function(k){
-        if(hasAny(q,symbols[k]) && (hasAny(c.f,symbols[k]) || (k === 'eagle' && !!eagle(c)))){
-          sc += 3;
-          w.push(k);
+    var scored = rows().map(function(c){
+      var score = 0, clues = [];
+      if(c.cap && q.indexOf(n(c.cap)) >= 0){ score += 7; clues.push(c.cap); }
+      Object.keys(SYMBOL_GROUPS).forEach(function(k){
+        if(hasAny(q,SYMBOL_GROUPS[k]) && (hasAny(c.f,SYMBOL_GROUPS[k]) || (k === 'eagle' && !!eagle(c)))){
+          score += 3;
+          clues.push(k);
         }
       });
-      if(/инструментал|instrumental/.test(q) && instr(c)){ sc += 3; w.push('instrumental anthem'); }
-      return {c:c,sc:sc,w:w};
-    }).filter(function(x){ return x.sc > 0; }).sort(function(a,b){ return b.sc - a.sc; });
+      if(/инструментал|instrumental/.test(q) && instrumental(c)){
+        score += 3;
+        clues.push('instrumental anthem');
+      }
+      return {c:c,score:score,clues:clues};
+    }).filter(function(x){ return x.score > 0; }).sort(function(a,b){ return b.score - a.score; });
 
-    if(!a.length) return null;
-    return header('REVERSE ID') + '\n🎯 ' + a[0].c.n + '\n' + (isMk ? 'Траги: ' : 'Clues: ') + a[0].w.join(', ') + '\n' + a[0].c.f;
+    if(!scored.length) return null;
+    return header('REVERSE ID') + '\n🎯 ' + scored[0].c.n + '\n' + (mk ? 'Траги: ' : 'Clues: ') + scored[0].clues.join(', ') + '\n' + s(scored[0].c.f || '');
   }
 
   function installDeterministicLayer(){
@@ -189,22 +237,22 @@
       setTimeout(installDeterministicLayer,80);
       return;
     }
-    if(window.wpaBotAnswer.__wpaComprehensiveV31) return;
+    if(window.wpaBotAnswer.__wpaSymbolsExpertV4) return;
 
     previous = window.wpaBotAnswer;
     var fn = function(question){
-      var q = n(question), isMk = mk(question);
-      var rev = reverse(q,isMk);
+      var q = n(question), mk = isMk(question);
+      var rev = reverse(q,mk);
       if(rev) return rev;
 
       var c = country(question);
       if(c){
-        if(/кажи ми с[еè]|кажи ми сè|сè за|се за|целосен профил|complete profile|all about|country profile/.test(q)) return profile(c,isMk);
-        var f = field(c,q,isMk);
-        if(f) return f;
+        if(/кажи ми с[еè]|кажи ми сè|сè за|се за|целосен профил|complete profile|all about|country profile/.test(q)) return profile(c,mk);
+        var direct = singleField(c,q,mk);
+        if(direct) return direct;
       }
 
-      var list = filtered(q,isMk);
+      var list = filtered(q,mk);
       if(list) return list;
       return previous(question);
     };
@@ -213,6 +261,7 @@
     fn.__wpaSymbolsV21 = true;
     fn.__wpaComprehensiveV3 = true;
     fn.__wpaComprehensiveV31 = true;
+    fn.__wpaSymbolsExpertV4 = true;
     window.wpaBotAnswer = fn;
 
     enhanceQuickTools();
@@ -221,9 +270,9 @@
   }
 
   function enhanceQuickTools(){
-    var p = document.getElementById('chatPanel');
-    if(!p || document.getElementById('wpaComprehensiveQuickRow')) return;
-    var base = p.querySelector('[onclick*="sendQuick"]');
+    var panel = document.getElementById('chatPanel');
+    if(!panel || document.getElementById('wpaComprehensiveQuickRow')) return;
+    var base = panel.querySelector('[onclick*="sendQuick"]');
     if(!base) return;
 
     var parent = base.parentElement;
@@ -267,8 +316,8 @@
 
   function applyBranding(){
     installBrandStyles();
-
     var panel = document.getElementById('chatPanel');
+
     if(panel){
       var title = panel.querySelector('.wpa-chat-title');
       if(title && !title.dataset.wpaSymbolsBranded){
@@ -299,8 +348,8 @@
       if(firstBot && !firstBot.dataset.wpaHybridWelcome){
         firstBot.dataset.wpaHybridWelcome = '1';
         firstBot.textContent = window.WPA_CHAT_LANG === 'en'
-          ? 'Welcome to WPA Symbols Expert Assistant. Ask about flags, coats of arms, state symbols, anthems, countries, protocol risks, Symbol DNA, Reverse ID — or ask a free-form question. Specialist WPA data is used first, with the WPA AI service as a fallback.'
-          : 'Добредојдовте во WPA Symbols Expert Assistant. Прашајте за знамиња, грбови, државни симболи, химни, држави, протоколарни ризици, Symbol DNA, Reverse ID — или поставете слободно прашање. Прво се користи специјализираната WPA база, а потоа WPA AI како дополнителен слој.';
+          ? 'Welcome to WPA Symbols Expert Assistant. I answer questions across the full Symbols domain: flags, coats of arms, state symbols, anthems, countries, capitals, geography/GPS coordinates, population, area, natural and mineral resources, national days, organizations and protocol use. WPA structured data is used first; when it is insufficient, WPA AI/retrieval continues the answer.'
+          : 'Добредојдовте во WPA Symbols Expert Assistant. Одговарам на прашања од целиот Symbols домен: знамиња, грбови, државни симболи, химни, држави, главни градови, географија/GPS координати, население, површина, природни и рудни богатства, национални денови, организации и протоколарна употреба. Прво ја користам структурираната WPA база, а кога таа не е доволна продолжувам со WPA AI/retrieval.';
       }
     }
 
@@ -318,13 +367,18 @@
     }
   }
 
-  function isGenericScopeAnswer(answer){
+  function isInsufficientAnswer(answer){
     var z = n(answer);
     if(!z) return true;
     return z.indexOf('јас сум wpa protocol assistant') >= 0 ||
       z.indexOf('i am the wpa protocol assistant') >= 0 ||
       z.indexOf('прашај за држава знаме химна главен град географија') >= 0 ||
-      z.indexOf('ask about countries flags anthems capitals geography') >= 0;
+      z.indexOf('ask about countries flags anthems capitals geography') >= 0 ||
+      z.indexOf('не најдов совпаѓања во активниот wpa dataset') >= 0 ||
+      z.indexOf('no matches found in the active wpa dataset') >= 0 ||
+      z.indexOf('no matches were found in the active wpa dataset') >= 0 ||
+      z.indexOf('не најдов доволно сигурен погодок') >= 0 ||
+      z.indexOf('did not find a sufficiently reliable match') >= 0;
   }
 
   function answerFrom(data){
@@ -344,20 +398,57 @@
     return fetch(url,opts).finally(function(){ clearTimeout(timer); });
   }
 
+  function domainPrompt(question,lang){
+    var q = n(question);
+    var base = lang === 'en' ? SYMBOLS_EXPERT_PROMPT_EN : SYMBOLS_EXPERT_PROMPT_MK;
+    var focus = '';
+
+    if(/химн|anthem|инструментал|lyrics|текст/.test(q)){
+      focus = lang === 'en'
+        ? ' Focus especially on anthem status, title and protocol distinction between officially textless/instrumental status and instrumental performance.'
+        : ' Посебно фокусирај се на статусот и насловот на химната и на протоколарната разлика меѓу официјално безтекстна/инструментална химна и инструментална изведба.';
+    }else if(/знаме|flag|орел|eagle|симбол|symbol|грб|coat|emblem/.test(q)){
+      focus = lang === 'en'
+        ? ' Focus especially on exact flag content and do not transfer symbols from a coat of arms onto the flag.'
+        : ' Посебно фокусирај се на точната содржина на знамето и не пренесувај симболи од грбот на знамето.';
+    }else if(/ресурс|рудн|mineral|resource|богатств/.test(q)){
+      focus = lang === 'en'
+        ? ' Focus especially on natural/mineral resources and distinguish reserves, production and general resource presence when relevant.'
+        : ' Посебно фокусирај се на природните и рудните ресурси и, кога е релевантно, разликувај резерви, производство и општо присуство на ресурс.';
+    }else if(/координат|gps|географ|geograph|location|локац/.test(q)){
+      focus = lang === 'en'
+        ? ' Focus especially on geography and coordinates; state whether coordinates are approximate country-centre/reference coordinates when exact points are not specified.'
+        : ' Посебно фокусирај се на географијата и координатите; ако не е наведена точна точка, означи дека координатите се референтни/приближни за државата.';
+    }else if(/национален ден|national day|holiday|празник|independence|независност/.test(q)){
+      focus = lang === 'en'
+        ? ' Focus especially on the exact national-day occasion and date, and flag time-sensitive annual exceptions for verification.'
+        : ' Посебно фокусирај се на точниот повод и датум на националниот ден и означи ако годишна промена бара повторна проверка.';
+    }
+    return base + focus;
+  }
+
   async function requestAI(question){
     var lang = window.WPA_CHAT_LANG === 'en' ? 'en' : 'mk';
+    var expertPrompt = domainPrompt(question,lang);
+    var promptHistory = [{ role:'assistant', content: expertPrompt }].concat(chatHistory.slice(-6));
+
     var payload = {
       message: question,
       question: question,
       query: question,
       lang: lang,
       language: lang,
-      history: chatHistory.slice(-8),
-      quality: '3layer_academic',
-      context: 'World Protocol Academy · WPA Symbols Expert Assistant · public Protocol Symbols page. Answer the user directly in the requested language. Preserve strict distinctions between flag, coat of arms, emblem, seal, anthem and protocol practice. For time-sensitive or official-use claims, signal when primary-source verification is appropriate.'
+      history: promptHistory,
+      context: expertPrompt,
+      system_prompt: expertPrompt,
+      instructions: expertPrompt,
+      wpa_symbols_expert: true,
+      quality: '3layer_academic'
     };
 
     var lastError = null;
+    var lastInsufficient = '';
+
     for(var i=0;i<AI_ENDPOINTS.length;i++){
       try{
         var response = await withTimeout(AI_ENDPOINTS[i],{
@@ -367,16 +458,19 @@
           credentials:'omit',
           headers:{'Content-Type':'application/json','Accept':'application/json'},
           body:JSON.stringify(payload)
-        },7000);
+        },7500);
+
         if(!response.ok) throw new Error('HTTP ' + response.status);
         var data = await response.json();
         var answer = answerFrom(data);
-        if(answer) return answer;
-        throw new Error('Empty answer');
+        if(answer && !isInsufficientAnswer(answer)) return answer;
+        if(answer) lastInsufficient = answer;
       }catch(err){
         lastError = err;
       }
     }
+
+    if(lastInsufficient) throw new Error('Only insufficient WPA answers returned');
     throw lastError || new Error('WPA AI unavailable');
   }
 
@@ -405,31 +499,32 @@
       if(typeof window.wpaBotAnswer === 'function') local = s(window.wpaBotAnswer(question)).trim();
     }catch(e){ local = ''; }
 
-    if(local && !isGenericScopeAnswer(local)) return {text:local,source:'local'};
+    if(local && !isInsufficientAnswer(local)) return {text:local,source:'local'};
 
     try{
       var ai = await requestAI(question);
       if(ai) return {text:ai,source:'ai'};
     }catch(e){
-      // Never leave the interface hanging. Fall through to an explicit local/technical response.
+      /* Do not hang. Explicitly fall through. */
     }
 
-    if(local) return {text:local,source:'local-fallback'};
+    if(local && !isInsufficientAnswer(local)) return {text:local,source:'local-fallback'};
+
     return {
-      text: mk(question)
-        ? 'WPA AI сервисот моментално не одговара. Специјализираните Symbols алатки остануваат активни; обидете се повторно за кратко.'
-        : 'The WPA AI service is temporarily unavailable. The specialist Symbols tools remain active; please try again shortly.',
+      text: isMk(question)
+        ? 'WPA AI/retrieval сервисот моментално не успеа да врати доволно сигурен одговор. Специјализираните Symbols алатки остануваат активни; обидете се повторно за кратко или наведете конкретна држава/симбол.'
+        : 'The WPA AI/retrieval service did not return a sufficiently reliable answer at this moment. The specialist Symbols tools remain active; please try again shortly or name a specific country/symbol.',
       source:'technical-fallback'
     };
   }
 
   function installHybridChat(){
-    if(window.__WPA_SYMBOLS_HYBRID_CHAT_V31__) return;
+    if(window.__WPA_SYMBOLS_HYBRID_CHAT_V4__) return;
     if(!document.getElementById('chatInput') || !document.getElementById('chatBody')){
       setTimeout(installHybridChat,100);
       return;
     }
-    window.__WPA_SYMBOLS_HYBRID_CHAT_V31__ = true;
+    window.__WPA_SYMBOLS_HYBRID_CHAT_V4__ = true;
 
     window.sendChat = async function(){
       var input = document.getElementById('chatInput');
@@ -451,13 +546,12 @@
         chatHistory = chatHistory.slice(-12);
       }catch(e){
         if(typing && typing.parentNode) typing.parentNode.removeChild(typing);
-        var err = window.WPA_CHAT_LANG === 'en'
+        addMsg('bot',window.WPA_CHAT_LANG === 'en'
           ? 'A temporary connection problem occurred. Please try again.'
-          : 'Настана привремен проблем со поврзувањето. Обидете се повторно.';
-        addMsg('bot',err);
+          : 'Настана привремен проблем со поврзувањето. Обидете се повторно.');
       }finally{
         setChatBusy(false);
-        if(input){ input.focus(); }
+        if(input) input.focus();
       }
     };
 
