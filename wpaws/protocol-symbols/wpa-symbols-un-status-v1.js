@@ -1,5 +1,8 @@
-/* WPA Symbols UN Status & Recognition Guard v1.0 — 2026-08-11
+/* WPA Symbols UN Status & Recognition Guard v1.1 — 2026-08-11
    Primary-source deterministic handling for UN membership / observer / recognition questions.
+   v1.1 fixes false positives from the Cyrillic token "ОН" occurring inside
+   unrelated words such as "конференции". UN/ОН/УН must now be standalone
+   tokens unless the full organization name is written.
 */
 (function(){
   'use strict';
@@ -7,7 +10,7 @@
   window.__WPA_SYMBOLS_UN_STATUS_V1__=true;
 
   var snapshot=null;
-  var loadPromise=fetch('./data/un-status-v1.json?v=20260811-un1',{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}})
+  var loadPromise=fetch('./data/un-status-v1.json?v=20260811-un11',{cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}})
     .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
     .then(function(d){snapshot=d;return d;})
     .catch(function(){return null;});
@@ -16,9 +19,11 @@
   function clean(v){return s(v).toLowerCase().normalize('NFKC').replace(/[^\p{L}\p{N}]+/gu,' ').replace(/\s+/g,' ').trim();}
   function mk(q){return window.WPA_CHAT_LANG!=='en'||/[А-Яа-яЃѓЌќЅѕЈјЉљЊњЏџ]/.test(s(q));}
 
+  function hasToken(z,token){return (' '+z+' ').indexOf(' '+token+' ')>=0;}
+
   function isUNStatusQuestion(q){
     var z=clean(q);
-    var un=/(обединетите нации|обединети нации|он|united nations|\bun\b)/.test(z);
+    var un=/(обединетите нации|обединети нации|united nations)/.test(z)||hasToken(z,'он')||hasToken(z,'ун')||hasToken(z,'un');
     var status=/(признат|непризнат|признавање|recogn|член|членка|membership|member|набљудувач|observer|статус|status)/.test(z);
     return un&&status;
   }
