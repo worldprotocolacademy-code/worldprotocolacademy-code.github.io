@@ -14,6 +14,7 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-attribution-policy-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-context-intent-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-flag-spec-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-capitals-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
       - 'wpaws/protocol-symbols/data/mk-flag-spec-v1.json'
       - 'wpaws/protocol-symbols/national-holidays-mfa-seed.json'
@@ -74,16 +75,17 @@ jobs:
           text2 = ensure_after(text2, 'wpa-symbols-attribution-policy-v1.js', 'wpa-symbols-national-days-runtime-bridge-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-context-intent-v1.js', 'wpa-symbols-attribution-policy-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-flag-spec-v1.js', 'wpa-symbols-context-intent-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-capitals-v1.js', 'wpa-symbols-flag-spec-v1.js')
 
-          # The flag-spec guard must be the last expert layer so short follow-ups
-          # such as "Кој е кодот на бојата?" cannot be swallowed by older wrappers.
-          flag_tag_re = r'<script src="\./wpa-symbols-flag-spec-v1\.js\?v=[^"]+" defer></script>\n?'
-          m = re.search(flag_tag_re, text2)
+          # Capitals must be the last expert layer for deterministic country->capital
+          # answers across MK Cyrillic, MK Latin transliteration and English.
+          capital_tag_re = r'<script src="\./wpa-symbols-capitals-v1\.js\?v=[^"]+" defer></script>\n?'
+          m = re.search(capital_tag_re, text2)
           if not m:
-              raise SystemExit('No Symbols flag-spec tag found after ensure step.')
-          flag_tag = m.group(0).strip()
-          text2 = re.sub(flag_tag_re, '', text2)
-          text2 = text2.replace('</body>', flag_tag + '\n</body>', 1)
+              raise SystemExit('No Symbols capitals tag found after ensure step.')
+          capital_tag = m.group(0).strip()
+          text2 = re.sub(capital_tag_re, '', text2)
+          text2 = text2.replace('</body>', capital_tag + '\n</body>', 1)
 
           if text2 == text:
               raise SystemExit('No Symbols cache-bust change was needed.')
