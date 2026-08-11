@@ -1,7 +1,12 @@
-/* WPA Symbols Context Intent Guard v1.2 — 2026-08-11
+/* WPA Symbols Context Intent Guard v1.3 — 2026-08-11
    Purpose: understand short natural follow-up questions in the Symbols assistant,
    including resources, flag geometry/ratio and flag-handling protocol, and prevent
    unrelated legacy answers from replacing a direct expert answer.
+
+   Saudi special-case source note:
+   - Law of the Flag of the Kingdom of Saudi Arabia (Bureau of Experts, in force)
+     https://laws.boe.gov.sa/BoeLaws/Laws/LawDetails/03de5462-eda0-4dd6-9efa-a9a700f1f802/2
+   - Saudipedia summary sourced to the Bureau of Experts / Ministry of Culture.
 */
 (function(){
   'use strict';
@@ -27,6 +32,7 @@
     va:['ватикан','држава ватикан','државата ватикан','ватикан сити','светата столица','holy see','vatican','vatican city','vatican city state'],
     ch:['швајцарија','switzerland','swiss'],
     np:['непал','nepal'],
+    sa:['саудиска арабија','кралството саудиска арабија','саудиско знаме','саудиското знаме','saudi arabia','kingdom of saudi arabia','saudi flag'],
     ps:['палестина','државата палестина','state of palestine','palestine']
   };
 
@@ -35,7 +41,7 @@
       .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
 
-  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context3')
+  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context4')
     .then(function(d){
       if(d&&Array.isArray(d.records)){active=d;ready=d.records.length>=190;}
       return ready;
@@ -103,11 +109,8 @@
     return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources+' (resources listed in the active WPA dataset).';
   }
 
-  function flagHandlingIntent(q){
-    var z=norm(q);
-    var flag=/(знаме|знамето|знамињ|flag|flags|banner)/.test(z);
-    var ground=/(земј|подот|под |floor|ground|влеч|drag|леж|лежи|постав.*земј|став.*земј|допир.*земј|touch.*ground|lowered.*ground)/.test(z);
-    return flag&&ground;
+  function isSaudiMention(q){
+    return /(саудиск|саудиј|saudi arabia|saudi flag|kingdom of saudi)/.test(norm(q));
   }
 
   function asksWhichFlag(q){
@@ -118,9 +121,68 @@
     return /(случај|ненамер|по грешка|accident|unintentional|by mistake)/.test(norm(q));
   }
 
+  function asksGround(q){
+    return /(земј|тло|подот|под |floor|ground|влеч|drag|леж|лежи|постав.*земј|став.*земј|допир.*земј|touch.*ground|touch.*floor)/.test(norm(q));
+  }
+
+  function asksWater(q){
+    return /(вод|water|sea surface)/.test(norm(q));
+  }
+
+  function asksHalfMast(q){
+    return /(половина копје|пола копје|половина јарбол|пола јарбол|полу јарбол|half mast|half staff|half-mast|half-staff)/.test(norm(q));
+  }
+
+  function asksCommercial(q){
+    return /(комерц|реклам|трговск|маиц|топк|спортск.*опрем|commercial|advertis|trademark|shirt|jersey|ball|merch)/.test(norm(q));
+  }
+
+  function flagHandlingIntent(q){
+    var z=norm(q);
+    var flag=/(знаме|знамето|знамињ|flag|flags|banner)/.test(z);
+    var handling=asksGround(q)||asksWater(q)||asksHalfMast(q)||asksCommercial(q);
+    return flag&&handling;
+  }
+
+  function saudiSpecialAnswer(q){
+    var mk=isMk(q);
+    var special=isSaudiMention(q)||(asksWhichFlag(q)&&(asksGround(q)||asksWater(q)||asksHalfMast(q)));
+    if(!special) return null;
+
+    if(asksHalfMast(q)){
+      return mk
+        ? '🇸🇦 Посебен законски пример е Саудиска Арабија. Според Законот за знамето, националното знаме, знамето на Кралот и другите саудиски знамиња што ја носат Шахадата или курански стих не се спуштаат на половина копје. Ова е изречно кодифицирано правило, поврзано со светоста на религиозниот текст на знамето.'
+        : '🇸🇦 Saudi Arabia is a special codified case. Under the Saudi Flag Law, the national flag, the King’s flag, and other Saudi flags bearing the Shahada or a Quranic verse are not flown at half-mast. This is an explicit legal rule connected with the sacred text carried on the flag.';
+    }
+
+    if(asksCommercial(q)){
+      return mk
+        ? '🇸🇦 За саудиското знаме важат и строги ограничувања за употреба: Законот забранува националното знаме да се користи како трговска марка, за комерцијално рекламирање или за други цели надвор од оние предвидени со закон. За конкретни производи (на пр. маици, топки или сувенири) треба да се провери и важечкото официјално упатство за употреба, наместо автоматски да се претпостави апсолутна забрана за секој предмет.'
+        : '🇸🇦 The Saudi flag is also subject to strict use restrictions: the law prohibits using the national flag as a trademark, for commercial advertising, or for purposes outside those provided by law. For specific products such as shirts, balls or souvenirs, the current official usage guideline should also be checked rather than assuming an absolute ban on every item.';
+    }
+
+    if(asksGround(q)||asksWater(q)){
+      var base=mk
+        ? '🇸🇦 Посебен и експлицитно кодифициран пример е националното знаме на Саудиска Арабија. Законот за знамето изречно предвидува дека националното знаме и знамето на Кралот не смеат да ги допираат површините на земјата и водата. На знамето е испишана Шахадата — исламската изјава на верата — па со него се постапува со особена почит.'
+        : '🇸🇦 A special, explicitly codified example is the national flag of Saudi Arabia. The Saudi Flag Law provides that the national flag and the King’s flag must not touch the surfaces of land or water. The flag bears the Shahada, the Islamic declaration of faith, and is therefore handled with particular reverence.';
+      if(asksWhichFlag(q)){
+        base += mk
+          ? ' Во поширока протоколарна практика и другите национални знамиња не треба намерно да се влечат или оставаат на земја, но кај Саудиска Арабија оваа забрана е посебно и јасно пропишана со закон.'
+          : ' In broader flag etiquette, other national flags should not intentionally be dragged or left on the ground either, but Saudi Arabia has a particularly explicit statutory prohibition.';
+      }
+      return base;
+    }
+
+    return mk
+      ? '🇸🇦 Саудиското национално знаме е посебен протоколарно-правен пример поради Шахадата: не се спушта на половина копје и националното/кралското знаме не смеат да ги допираат површините на земјата и водата.'
+      : '🇸🇦 The Saudi national flag is a special protocol-and-law case because it bears the Shahada: it is not flown at half-mast, and the national/royal flag must not touch the surfaces of land or water.';
+  }
+
   function flagHandlingAnswer(q){
     if(!flagHandlingIntent(q)) return null;
     var mk=isMk(q);
+    var sa=saudiSpecialAnswer(q);
+    if(sa) return sa;
 
     if(asksAccidentalContact(q)){
       return mk
@@ -128,15 +190,9 @@
         : '🚩 If a national flag accidentally touches the ground or floor, it should be lifted immediately and handled with dignity; if it is soiled or damaged, it should be cleaned or replaced according to that country’s rules. Accidental contact does not automatically mean the flag must be destroyed.';
     }
 
-    if(asksWhichFlag(q)){
-      return mk
-        ? '🚩 Ниту едно национално/државно знаме не треба намерно да се поставува, остава или влече по земја или под во официјална протоколарна употреба. Не станува збор за едно „посебно“ знаме: сите национални знамиња се третираат со достоинство. Конкретната правна формулација може да се разликува по држава.'
-        : '🚩 No national/state flag should intentionally be placed, left or dragged on the ground or floor in official protocol use. This is not a rule for one special flag: national flags are treated with dignity. The exact legal wording can differ by country.';
-    }
-
     return mk
-      ? '🚩 Не. Во професионалната протоколарна и церемонијална практика националните/државните знамиња не треба да се влечат по земја, да лежат на земја или под, ниту намерно да го допираат подот. Тоа е правило на достоинствено постапување со државниот симбол; конкретните правни правила и национални кодекси се разликуваат по држава.'
-      : '🚩 No. In professional protocol and ceremonial practice, national/state flags should not be dragged on the ground, left lying on the ground or floor, or intentionally allowed to touch it. This is a dignity rule for a national symbol; exact legal rules and national flag codes vary by country.';
+      ? '🚩 Во професионалната протоколарна и церемонијална практика националните/државните знамиња не треба намерно да се влечат по земја, да лежат на земја или под, ниту да се третираат на начин што го нарушува достоинството на државниот симбол. Конкретните правни правила и национални кодекси се разликуваат по држава.'
+      : '🚩 In professional protocol and ceremonial practice, national/state flags should not intentionally be dragged on the ground, left lying on the ground or floor, or handled in a way that diminishes the dignity of the national symbol. Exact legal rules and national flag codes vary by country.';
   }
 
   function flagGeometryIntent(q){
