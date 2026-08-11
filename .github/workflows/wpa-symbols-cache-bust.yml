@@ -11,6 +11,7 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-un-status-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-national-days-focus-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-attribution-policy-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-context-intent-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
       - 'wpaws/protocol-symbols/national-holidays-mfa-seed.json'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
@@ -92,6 +93,14 @@ jobs:
               marker = re.search(r'(<script src="\./wpa-symbols-national-days-focus-v1\.js\?v=[^"]+" defer></script>)', text2)
               if not marker: raise SystemExit('No Symbols national-days marker found.')
               text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + attribution_tag, 1)
+
+          context_tag = f'<script src="./wpa-symbols-context-intent-v1.js?v={version}" defer></script>'
+          if 'wpa-symbols-context-intent-v1.js' in text2:
+              text2 = re.sub(r'<script src="\./wpa-symbols-context-intent-v1\.js\?v=[^"]+" defer></script>', context_tag, text2)
+          else:
+              marker = re.search(r'(<script src="\./wpa-symbols-attribution-policy-v1\.js\?v=[^"]+" defer></script>)', text2)
+              if not marker: raise SystemExit('No Symbols attribution-policy marker found.')
+              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + context_tag, 1)
 
           if text2 == text:
               raise SystemExit('No Symbols cache-bust change was needed.')
