@@ -1,12 +1,20 @@
-/* WPA Symbols Context Intent Guard v1.3 — 2026-08-11
+/* WPA Symbols Context Intent Guard v1.4 — 2026-08-11
    Purpose: understand short natural follow-up questions in the Symbols assistant,
-   including resources, flag geometry/ratio and flag-handling protocol, and prevent
-   unrelated legacy answers from replacing a direct expert answer.
+   including resources, flag geometry/ratio, flag-handling protocol and anthem
+   ceremony timing/order, and prevent unrelated legacy answers from replacing a
+   direct expert answer.
 
-   Saudi special-case source note:
+   Selected protocol source notes:
    - Law of the Flag of the Kingdom of Saudi Arabia (Bureau of Experts, in force)
      https://laws.boe.gov.sa/BoeLaws/Laws/LawDetails/03de5462-eda0-4dd6-9efa-a9a700f1f802/2
-   - Saudipedia summary sourced to the Bureau of Experts / Ministry of Culture.
+   - Canadian Armed Forces Heritage Manual, Ch.7 Sec.3: where several anthems are
+     played, timing/order differs depending on whether they are at the beginning
+     or end of an event.
+     https://www.canada.ca/en/services/defence/caf/military-identity-system/heritage-manual/chapter-7/section-3.html
+   - FIFA World Cup 2026 protocol: national anthems are a pre-match ceremony element.
+     https://legal.fifa.com/organisation/media-releases/debut-fan-centric-pre-match-ceremony-world-cup-2026
+   - IOC Olympic Values Education Programme: winner's national anthem is played
+     during the medal ceremony while flags are raised.
 */
 (function(){
   'use strict';
@@ -41,7 +49,7 @@
       .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
   }
 
-  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context4')
+  var loadPromise=fetchJson('./data/active-runtime-197.json?v=20260811-context5')
     .then(function(d){
       if(d&&Array.isArray(d.records)){active=d;ready=d.records.length>=190;}
       return ready;
@@ -107,6 +115,64 @@
     if(!resources||resources==='—') return null;
     if(isMk(q)) return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources;
     return '⛏️ '+s(r.name_mk||r.id).trim()+' — '+resources+' (resources listed in the active WPA dataset).';
+  }
+
+  function anthemProtocolIntent(q){
+    var z=norm(q);
+    var anthem=/(химн|anthem|anthems)/.test(z);
+    var protocol=/(меѓународн|правил|протокол|церемон|настан|почет|средин|крај|отворањ|затворањ|пред почет|по заврш|кога|редослед|позициј|момент|timing|international rule|protocol|ceremon|event|begin|start|middle|end|opening|closing|when|order)/.test(z);
+    return anthem&&protocol;
+  }
+
+  function anthemProtocolAnswer(q){
+    if(!anthemProtocolIntent(q)) return null;
+    var z=norm(q), mk=isMk(q);
+    var sports=/(спорт|фудбал|натпревар|меч|sport|football|match|game)/.test(z);
+    var medals=/(медал|победник|наград|victory|medal|award|winner)/.test(z);
+    var order=/(редослед|која прва|која последна|домаќин|гостин|повеќе химн|две химн|order|host|guest|which first|which last|multiple anthem|two anthem)/.test(z);
+    var middle=/(средин|middle|during the event|during event)/.test(z);
+    var ending=/(крај|затворањ|по заврш|end|closing|at the end)/.test(z);
+    var beginning=/(почет|отворањ|пред почет|begin|start|opening|pre match|pre-match)/.test(z);
+
+    if(sports&&medals){
+      return mk
+        ? '🎼 Кај спортските церемонии позицијата на химната зависи од конкретниот протокол. На олимписка церемонија на доделување медали, химната на победникот се свири во рамките на церемонијата додека се подигаат знамињата — значи не мора да биде на самиот почеток или крај на целиот настан.'
+        : '🎼 In sports ceremonies, anthem timing depends on the governing protocol. At an Olympic medal ceremony, the winner’s national anthem is played within the ceremony while the flags are raised, so it is not necessarily at the very beginning or end of the whole event.';
+    }
+
+    if(sports){
+      return mk
+        ? '🎼 Во спортот нема едно правило за сите дисциплини и федерации. На пример, FIFA ги поставува националните химни во преднатпреварувачката церемонија, пред почетокот на натпреварот; кај церемонии на медали химната може да се свири подоцна, во моментот на доделувањето.'
+        : '🎼 In sport there is no single placement rule for every federation and competition. FIFA, for example, places national anthems in the pre-match ceremony before play begins, while medal ceremonies may use the anthem later at the moment of the award.';
+    }
+
+    if(order){
+      return mk
+        ? '🎼 Редоследот на повеќе национални химни не треба да се претставува како едно универзално меѓународно правило. Тој зависи од видот на церемонијата и од протоколот на домаќинот/организаторот. На пример, канадскиот воен протокол предвидува дека ако повеќе химни се свират на почеток, канадската како домаќин се свири прва, а ако се свират на крај — последна. За билатерален или државен настан треба да се примени конкретниот протокол на државата домаќин.'
+        : '🎼 The order of multiple national anthems should not be presented as one universal international rule. It depends on the ceremony and the host/organizer’s protocol. For example, Canadian military protocol places the Canadian host anthem first when several anthems are played at the beginning, and last when they are played at the end. For bilateral or state events, use the specific host-state protocol.';
+    }
+
+    if(middle&&!beginning&&!ending){
+      return mk
+        ? '🎼 Химна може да се свири и во текот на настанот, но само кога е врзана за конкретен формален чин — на пример доделување медал/одликување, подигање знаме или друга пропишана церемонијална секвенца. Не се користи како обична музичка пауза или позадинска музика.'
+        : '🎼 An anthem may be played during an event when it is tied to a specific formal act, such as an award, flag raising or another prescribed ceremonial sequence. It should not be treated as ordinary intermission or background music.';
+    }
+
+    if(ending&&!beginning){
+      return mk
+        ? '🎼 Да, химна може да биде предвидена и на крајот на настанот, ако тоа го бара конкретниот национален, институционален или организациски протокол. Но тоа не е универзално правило за сите настани; редоследот и позицијата мора да се утврдат според видот на церемонијата и домаќинот.'
+        : '🎼 Yes, an anthem may be prescribed at the end of an event if the relevant national, institutional or organizational protocol calls for it. That is not a universal rule for every event; placement and order must follow the ceremony type and host protocol.';
+    }
+
+    if(beginning&&!middle&&!ending){
+      return mk
+        ? '🎼 Да, националните химни многу често се свират во отворачката или пречекувачката церемонијална секвенца, но не постои една единствена позиција што важи за секој меѓународен настан. Точниот момент зависи од видот на настанот и од правилата на домаќинот или надлежната организација.'
+        : '🎼 Yes, national anthems are very often used in an opening or arrival ceremonial sequence, but there is no single placement that applies to every international event. The exact moment depends on the event type and the rules of the host or governing organization.';
+    }
+
+    return mk
+      ? '🎼 Не постои една единствена позиција на националната химна што важи за сите меѓународни настани. На почеток — често се користи при отворање, пречек или пред официјалниот/спортскиот дел; во текот — само ако е врзана за конкретен церемонијален чин, како подигање знаме или доделување награда; на крај — може да биде предвидена со национален или организациски протокол. Клучно е химната да не се користи како обична позадинска музика. За точен распоред мора да се знаат видот на настанот, државата домаќин и надлежниот протокол.'
+      : '🎼 There is no single anthem position that applies to every international event. At the beginning it is often used for an opening, arrival or pre-event ceremonial sequence; during the event it may accompany a defined ceremonial act such as a flag raising or award; at the end it may be prescribed by national or organizational protocol. The key is that a national anthem is not ordinary background music. Exact placement depends on the event type, host state and governing protocol.';
   }
 
   function isSaudiMention(q){
@@ -266,8 +332,8 @@
     return null;
   }
 
-  function directAnswer(q){return resourceAnswer(q)||flagHandlingAnswer(q)||flagGeometryAnswer(q)||null;}
-  function hasDirectIntent(q){return isResourceQuestion(q)||flagHandlingIntent(q)||flagGeometryIntent(q);}
+  function directAnswer(q){return resourceAnswer(q)||anthemProtocolAnswer(q)||flagHandlingAnswer(q)||flagGeometryAnswer(q)||null;}
+  function hasDirectIntent(q){return isResourceQuestion(q)||anthemProtocolIntent(q)||flagHandlingIntent(q)||flagGeometryIntent(q);}
 
   function add(role,text){
     var body=document.getElementById('chatBody');if(!body)return;
