@@ -17,6 +17,7 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-capitals-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-diplomatic-premises-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-conference-flags-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-flag-apparel-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-serbia-kosovo-case-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
       - 'wpaws/protocol-symbols/data/mk-flag-spec-v1.json'
@@ -81,10 +82,12 @@ jobs:
           text2 = ensure_after(text2, 'wpa-symbols-capitals-v1.js', 'wpa-symbols-flag-spec-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-diplomatic-premises-v1.js', 'wpa-symbols-capitals-v1.js')
           text2 = ensure_after(text2, 'wpa-symbols-conference-flags-v1.js', 'wpa-symbols-diplomatic-premises-v1.js')
-          text2 = ensure_after(text2, 'wpa-symbols-serbia-kosovo-case-v1.js', 'wpa-symbols-conference-flags-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-flag-apparel-v1.js', 'wpa-symbols-conference-flags-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-serbia-kosovo-case-v1.js', 'wpa-symbols-flag-apparel-v1.js')
 
-          # Serbia-Kosovo case guard must be the final layer so the exact sensitive
-          # conference scenario cannot be swallowed by the generic conference guard.
+          # Serbia-Kosovo case guard remains the final layer for that exact
+          # sensitive conference scenario. Flag-apparel sits immediately before it
+          # so clothing/fashion questions cannot fall into generic ground handling.
           final_tag_re = r'<script src="\./wpa-symbols-serbia-kosovo-case-v1\.js\?v=[^"]+" defer></script>\n?'
           m = re.search(final_tag_re, text2)
           if not m:
