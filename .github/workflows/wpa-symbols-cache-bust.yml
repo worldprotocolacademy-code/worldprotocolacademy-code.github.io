@@ -12,7 +12,9 @@ on:
       - 'wpaws/protocol-symbols/wpa-symbols-national-days-focus-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-attribution-policy-v1.js'
       - 'wpaws/protocol-symbols/wpa-symbols-context-intent-v1.js'
+      - 'wpaws/protocol-symbols/wpa-symbols-flag-spec-v1.js'
       - 'wpaws/protocol-symbols/data/un-status-v1.json'
+      - 'wpaws/protocol-symbols/data/mk-flag-spec-v1.json'
       - 'wpaws/protocol-symbols/national-holidays-mfa-seed.json'
       - '.github/workflows/wpa-symbols-cache-bust.yml'
 
@@ -46,61 +48,40 @@ jobs:
               text,
           )
 
-          ratio_tag = f'<script src="./wpa-symbols-ratio-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-ratio-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-ratio-v1\.js\?v=[^"]+" defer></script>', ratio_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-comprehensive-v3\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols comprehensive script tag found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + ratio_tag, 1)
+          def ensure_after(text, filename, marker_filename):
+              tag = f'<script src="./{filename}?v={version}" defer></script>'
+              if filename in text:
+                  return re.sub(
+                      rf'<script src="\./{re.escape(filename)}\?v=[^"]+" defer></script>',
+                      tag,
+                      text,
+                  )
+              marker = re.search(
+                  rf'(<script src="\./{re.escape(marker_filename)}\?v=[^"]+" defer></script>)',
+                  text,
+              )
+              if not marker:
+                  raise SystemExit(f'No Symbols marker found for {filename}: {marker_filename}')
+              return text.replace(marker.group(1), marker.group(1) + '\n' + tag, 1)
 
-          comparison_tag = f'<script src="./wpa-symbols-comparison-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-comparison-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-comparison-v1\.js\?v=[^"]+" defer></script>', comparison_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-ratio-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols ratio marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + comparison_tag, 1)
+          text2 = ensure_after(text2, 'wpa-symbols-ratio-v1.js', 'wpa-symbols-comprehensive-v3.js')
+          text2 = ensure_after(text2, 'wpa-symbols-comparison-v1.js', 'wpa-symbols-ratio-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-focus-v1.js', 'wpa-symbols-comparison-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-un-status-v1.js', 'wpa-symbols-focus-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-national-days-focus-v1.js', 'wpa-symbols-un-status-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-attribution-policy-v1.js', 'wpa-symbols-national-days-focus-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-context-intent-v1.js', 'wpa-symbols-attribution-policy-v1.js')
+          text2 = ensure_after(text2, 'wpa-symbols-flag-spec-v1.js', 'wpa-symbols-context-intent-v1.js')
 
-          focus_tag = f'<script src="./wpa-symbols-focus-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-focus-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-focus-v1\.js\?v=[^"]+" defer></script>', focus_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-comparison-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols comparison marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + focus_tag, 1)
-
-          un_tag = f'<script src="./wpa-symbols-un-status-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-un-status-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-un-status-v1\.js\?v=[^"]+" defer></script>', un_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-focus-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols focus marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + un_tag, 1)
-
-          national_days_tag = f'<script src="./wpa-symbols-national-days-focus-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-national-days-focus-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-national-days-focus-v1\.js\?v=[^"]+" defer></script>', national_days_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-un-status-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols UN status marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + national_days_tag, 1)
-
-          attribution_tag = f'<script src="./wpa-symbols-attribution-policy-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-attribution-policy-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-attribution-policy-v1\.js\?v=[^"]+" defer></script>', attribution_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-national-days-focus-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols national-days marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + attribution_tag, 1)
-
-          context_tag = f'<script src="./wpa-symbols-context-intent-v1.js?v={version}" defer></script>'
-          if 'wpa-symbols-context-intent-v1.js' in text2:
-              text2 = re.sub(r'<script src="\./wpa-symbols-context-intent-v1\.js\?v=[^"]+" defer></script>', context_tag, text2)
-          else:
-              marker = re.search(r'(<script src="\./wpa-symbols-attribution-policy-v1\.js\?v=[^"]+" defer></script>)', text2)
-              if not marker: raise SystemExit('No Symbols attribution-policy marker found.')
-              text2 = text2.replace(marker.group(1), marker.group(1) + '\n' + context_tag, 1)
+          # The flag-spec guard must be the last expert layer so short follow-ups
+          # such as "Кој е кодот на бојата?" cannot be swallowed by older wrappers.
+          flag_tag_re = r'<script src="\./wpa-symbols-flag-spec-v1\.js\?v=[^"]+" defer></script>\n?'
+          m = re.search(flag_tag_re, text2)
+          if not m:
+              raise SystemExit('No Symbols flag-spec tag found after ensure step.')
+          flag_tag = m.group(0).strip()
+          text2 = re.sub(flag_tag_re, '', text2)
+          text2 = text2.replace('</body>', flag_tag + '\n</body>', 1)
 
           if text2 == text:
               raise SystemExit('No Symbols cache-bust change was needed.')
