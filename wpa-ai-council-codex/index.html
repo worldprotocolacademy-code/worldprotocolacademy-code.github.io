@@ -1,0 +1,2784 @@
+<!doctype html>
+<html lang="mk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WPA AI Council Integrated Governance Codex v1.1.2</title>
+
+  <!-- Open Graph · GitHub Pages ready -->
+  <meta property="og:title" content="WPA AI Council Integrated Governance Codex v1.1.2" />
+  <meta property="og:description" content="Protocolometric governance framework for AI orchestration based on WPA Protocol Notes PN-005, PN-006, PN-007 and PN-008. Author: Assoc. Prof. Dr. Sande Smiljanov." />
+  <meta property="og:type" content="website" />
+  <!-- Public URL intentionally unbound in this QA-clean candidate. Add canonical + og:url only after the exact deployed URL is verified. -->
+  <meta name="wpa-public-url-status" content="UNBOUND_PRE_DEPLOYMENT" />
+  <meta property="og:locale" content="mk_MK" />
+  <meta property="og:locale:alternate" content="en_GB" />
+  <meta name="description" content="WPA AI Council Integrated Governance Codex — a protocolometric governance framework for institutionally governed AI orchestration. Local edition, no API keys, no external calls." />
+  <meta name="author" content="Sande Smiljanov" />
+  <meta name="keywords" content="protocolometry, AI governance, WPA, multi-agent diplomacy, liquid protocol, cognitive sovereignty, PN-005, PN-006, PN-007, PN-008" />
+
+  <style>
+    :root {
+      --gold: #b8860b;
+      --dark: #0f172a;
+      --panel: #ffffff;
+      --muted: #64748b;
+      --border: #dbe4f0;
+      --warn: #fff7ed;
+      --warn-border: #fdba74;
+      --ok: #f0fdf4;
+      --ok-border: #86efac;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f4f7fb;
+      color: #111827;
+      line-height: 1.5;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a, #1d3461);
+      color: white;
+      padding: 24px;
+      border-bottom: 4px solid var(--gold);
+    }
+    header h1 { margin: 0 0 8px; font-size: 26px; }
+    header p { margin: 4px 0; color: #dbeafe; }
+    .badge-row { margin-top: 10px; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 6px;
+      margin-top: 4px;
+    }
+    .badge-gov { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+    .badge-local { background: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+    .badge-zero { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+    .warning {
+      background: var(--warn);
+      border: 1px solid var(--warn-border);
+      color: #7c2d12;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 14px 24px;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav button {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    nav button:hover { background: #eef2ff; }
+    main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(15,23,42,0.05);
+    }
+    .hidden { display: none; }
+    h2 {
+      margin-top: 0;
+      color: #0f172a;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 8px;
+      font-size: 18px;
+    }
+    h3 { margin-bottom: 8px; font-size: 15px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    th, td { border: 1px solid var(--border); padding: 9px 10px; vertical-align: top; text-align: left; }
+    th { background: #f8fafc; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+    .small { font-size: 12px; color: var(--muted); }
+    textarea, select, input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    textarea { min-height: 200px; resize: vertical; }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    button.action {
+      border: 0;
+      background: #0f172a;
+      color: white;
+      padding: 9px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+    button.action:hover { background: #1d3461; }
+    pre {
+      background: #0f172a;
+      color: #d1fae5;
+      padding: 14px;
+      border-radius: 10px;
+      overflow: auto;
+      min-height: 70px;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .ok {
+      background: var(--ok);
+      border: 1px solid var(--ok-border);
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+    footer {
+      padding: 20px 24px 34px;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .quote { font-style: italic; color: #93c5fd; font-weight: 600; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 2px;
+    }
+    .changelog { font-size: 13px; }
+    .changelog li { margin-bottom: 4px; }
+    .fixed { color: #16a34a; font-weight: 700; }
+    .added { color: #2563eb; font-weight: 700; }
+    .changed { color: #d97706; font-weight: 700; }
+    .human-rule { border-left: 5px solid var(--gold); background: #fffdf4; padding: 12px 14px; border-radius: 8px; margin: 10px 0; }
+    .privacy-note { background: #eff6ff; border: 1px solid #93c5fd; padding: 10px 12px; border-radius: 8px; margin: 10px 0; font-size: 13px; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .metric-grid label { font-size: 12px; font-weight: 600; }
+    .status-pending { color: #92400e; font-weight: 700; }
+    .status-human { color: #065f46; font-weight: 700; }
+
+    /* ============================== */
+    /* PRINT CSS · PDF-ready          */
+    /* ============================== */
+    @media print {
+      nav { display: none !important; }
+      button.action { display: none !important; }
+      .panel.hidden { display: block !important; }
+      .panel {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+        margin-bottom: 12px;
+      }
+      header {
+        background: #0f172a !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        border-bottom: 3px solid var(--gold);
+      }
+      body { background: white; font-size: 12px; }
+      textarea { min-height: 120px; }
+      pre { white-space: pre-wrap; font-size: 11px; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      footer { font-size: 11px; }
+      a { color: #1d3461; }
+      .status-badge { border: 1px solid #999; }
+    }
+
+
+    /* ============================================================ */
+    /* v1.1.2 · Qwen/Kimi code-fusion UI layer                      */
+    /* Namespaced adaptation; no copied fake answers/API claims.     */
+    /* ============================================================ */
+    .cc-shell {
+      background: #0b1220;
+      color: #e5edf7;
+      border: 1px solid #223047;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .cc-modebar, .cc-toolbar, .lab-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cc-mode-buttons, .cc-provider-selector, .cc-actions, .lab-lang, .lab-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .cc-mode-btn, .cc-tab, .lab-lang button, .lab-chip {
+      border: 1px solid #334155;
+      background: #172033;
+      color: #b8c4d6;
+      border-radius: 999px;
+      padding: 7px 11px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .cc-mode-btn.active, .cc-tab.active, .lab-lang button.active {
+      background: var(--gold);
+      color: #111827;
+      border-color: var(--gold);
+    }
+    .cc-provider-selector label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 8px;
+      border-radius: 8px;
+      background: #111a2b;
+      border: 1px solid #26344a;
+      font-size: 12px;
+    }
+    .cc-provider-selector input { width: auto; }
+    .cc-prompt, .lab-input {
+      min-height: 96px;
+      background: #09111f;
+      color: #e5edf7;
+      border-color: #334155;
+      font-family: inherit;
+    }
+    .cc-tabs { display:flex; gap:8px; flex-wrap:wrap; margin: 12px 0; }
+    .cc-view.hidden-view { display:none; }
+    .cc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .cc-card {
+      background: #101827;
+      border: 1px solid #26344a;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .cc-card-head {
+      padding: 10px 12px;
+      background: #0d1524;
+      border-bottom: 1px solid #3b4b63;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .cc-name { font-weight:800; }
+    .cc-role { color:#93a4bd; font-size:11px; margin-top:2px; }
+    .cc-status { font-size:11px; border-radius:999px; padding:3px 7px; background:#1f2937; color:#cbd5e1; white-space:nowrap; }
+    .cc-status.ready { color:#fde68a; }
+    .cc-status.routed { color:#86efac; }
+    .cc-response { min-height:135px; padding:12px; background:#09111f; white-space:pre-wrap; font-size:12px; line-height:1.5; }
+    .cc-card-foot { padding:7px 12px; color:#8493aa; font-size:11px; border-top:1px solid #26344a; display:flex; justify-content:space-between; gap:8px; }
+    .cc-consensus, .cc-archive-box, .cc-workplan {
+      background:#101827;
+      border:1px solid #26344a;
+      border-left:4px solid var(--gold);
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+      white-space:pre-wrap;
+      font-size:12px;
+    }
+    .cc-session {
+      padding:10px;
+      border:1px solid #26344a;
+      background:#101827;
+      border-radius:10px;
+      margin-bottom:8px;
+      cursor:pointer;
+    }
+    .cc-session:hover { border-color:var(--gold); }
+    .cc-boundary { color:#fef3c7; background:#422006; border:1px solid #854d0e; border-radius:10px; padding:10px; font-size:12px; margin-bottom:12px; }
+    .lab-shell {
+      display:grid;
+      grid-template-columns: minmax(180px, 240px) 1fr;
+      min-height: 520px;
+      background:#0d0d12;
+      color:#ececf1;
+      border:1px solid #2a2a35;
+      border-radius:16px;
+      overflow:hidden;
+    }
+    .lab-sidebar { background:#16161f; border-right:1px solid #2a2a35; padding:14px; }
+    .lab-brand { font-weight:800; color:#e8d5a3; margin-bottom:4px; }
+    .lab-sub { color:#8b8b9b; font-size:11px; margin-bottom:14px; }
+    .lab-new {
+      width:100%; border:1px solid #8a7530; background:#211d12; color:#e8d5a3;
+      border-radius:10px; padding:9px; cursor:pointer; font-weight:700; margin-bottom:12px;
+    }
+    .lab-side-item { padding:8px; border-radius:8px; color:#b7b7c4; font-size:12px; cursor:pointer; margin-bottom:4px; }
+    .lab-side-item:hover { background:#252530; color:white; }
+    .lab-main { display:flex; flex-direction:column; min-width:0; }
+    .lab-topbar { padding:10px 12px; background:#111119; border-bottom:1px solid #2a2a35; margin:0; }
+    .lab-title { font-weight:800; }
+    .lab-model { font-size:11px; color:#c9a84c; border:1px solid #3a3a4a; padding:4px 8px; border-radius:999px; }
+    .lab-transcript { flex:1; overflow:auto; min-height:330px; max-height:520px; }
+    .lab-message { display:flex; gap:10px; padding:14px 16px; border-bottom:1px solid #24242e; }
+    .lab-message.user { background:#12121a; }
+    .lab-avatar { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#24242e; flex:0 0 auto; }
+    .lab-message-body { min-width:0; }
+    .lab-message-name { font-weight:800; font-size:12px; margin-bottom:4px; }
+    .lab-message-text { white-space:pre-wrap; font-size:12px; color:#d9d9e0; }
+    .lab-input-area { border-top:1px solid #2a2a35; padding:12px; background:#111119; }
+    .lab-input-wrap { display:flex; gap:8px; align-items:flex-end; }
+    .lab-input { min-height:48px; max-height:160px; resize:none; }
+    .lab-send { width:42px; height:42px; border:0; border-radius:50%; background:#c9a84c; color:#0d0d12; cursor:pointer; font-weight:900; }
+    .lab-chip { margin-top:8px; background:#1b1b25; color:#bfbfca; }
+    .lab-notice { padding:10px 12px; background:#241d0d; color:#f4df9e; border-bottom:1px solid #5c4b1e; font-size:11px; }
+    @media (max-width: 760px) {
+      .lab-shell { grid-template-columns:1fr; }
+      .lab-sidebar { border-right:0; border-bottom:1px solid #2a2a35; }
+      .cc-grid { grid-template-columns:1fr; }
+    }
+    @media print {
+      .cc-shell, .lab-shell { background:white !important; color:#111827 !important; }
+      .cc-response, .cc-card, .cc-card-head, .cc-card-foot, .cc-consensus, .cc-archive-box, .cc-workplan,
+      .lab-sidebar, .lab-topbar, .lab-transcript, .lab-message, .lab-input-area { background:white !important; color:#111827 !important; border-color:#bbb !important; }
+      .cc-prompt, .lab-input { background:white !important; color:#111827 !important; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>⚜️ WPA AI Council Integrated Governance Codex</h1>
+    <p><strong>World Protocol Academy</strong> · Institute for Protocol, Diplomacy, Public Communication & Security Studies</p>
+    <p><strong>Version:</strong> 1.1.2 · <strong>Date:</strong> 2026-08-13 · <strong>Principal:</strong> Assoc. Prof. Dr. Sande Smiljanov</p>
+    <p class="quote">"Negotiation is optional. Protocol is absolute." · "Преговарањето е опционално. Протоколот е апсолутен."</p>
+    <p class="quote">"Agents may negotiate; only authorised people and institutions may commit." · "Агентите можат да преговараат; само овластени луѓе и институции можат да обврзуваат."</p>
+    <div class="badge-row">
+      <span class="status-badge badge-gov">Governance Framework</span>
+      <span class="status-badge badge-local">Local Edition · No API Keys</span>
+      <span class="status-badge badge-zero">Zero External Calls</span>
+      <span class="status-badge badge-gov">PN-005 · PN-006 · PN-007 · PN-008</span>
+      <span class="status-badge badge-gov">Human Sovereignty · Proactive-Agent Boundaries</span>
+    </div>
+    <div class="warning">
+      ⚠️ LOCAL EDITION · NO PRODUCTION DEPLOYMENT · NO CLASSIFIED DATA · HUMAN REVIEW REQUIRED · NO PROVIDER AFFILIATION IMPLIED · NOT A LEGAL INSTRUMENT OR CERTIFICATION
+    </div>
+  </header>
+
+  <nav>
+    <button onclick="showPanel('changelog')">Changelog</button>
+    <button onclick="showPanel('constitution')">Устав</button>
+    <button onclick="showPanel('council')">AI Совет</button>
+    <button onclick="showPanel('humanPrimacy')">Human Primacy</button>
+    <button onclick="showPanel('council54')">Council 54</button>
+    <button onclick="showPanel('frameworks')">PN-005/006/007/008</button>
+    <button onclick="showPanel('gate')">Порти и Индекси</button>
+    <button onclick="showPanel('prompts')">Master Prompts</button>
+    <button onclick="showPanel('research')">Research & Evaluation</button>
+    <button onclick="showPanel('commandCenter')">Command Center</button>
+    <button onclick="showPanel('virtualLab')">Virtual Sande Lab</button>
+    <button onclick="showPanel('analytics')">Analytical Center</button>
+    <button onclick="showPanel('receipt')">Provenance Receipt</button>
+    <button onclick="showPanel('export')">Експорт</button>
+  </nav>
+
+  <main>
+
+    <!-- CHANGELOG -->
+    <section id="changelog" class="panel">
+      <h2>Дневник на промени · Changelog</h2>
+      <div class="changelog">
+
+        <h3>v1.1.2 · 2026-08-13</h3>
+        <ul>
+          <li class="added">ADDED: Qwen-derived Multi-AI Command Center patterns — selectable advisors, task modes, provider-role cards, advisory synthesis, session archive and Markdown export — rewritten under WPA Human Sovereignty.</li>
+          <li class="added">ADDED: Kimi-derived interaction patterns — compact workspace/sidebar, new-session flow, MK/EN control, suggestion chips, Enter-to-route, autosizing input and conversation transcript — implemented as a safe local Routing Lab rather than a fake AI answer generator.</li>
+          <li class="changed">CHANGED: The source concept “one final AI consensus” is replaced by <code>ADVISORY_SYNTHESIS_ONLY</code>. Machine agreement never becomes institutional will; named human review remains decisive.</li>
+          <li class="changed">CHANGED: Source simulations that fabricated substantive answers, confidence, latency/cost or legal/factual claims are deliberately excluded. Local mode emits routing/workplan previews only.</li>
+          <li class="added">ADDED: Robust namespaced localStorage session store adapted from the supplied Qwen helper pattern; data remain browser-local and can be cleared by the human.</li>
+          <li class="added">ADDED: Human-governed Workplan generator: objective → selected advisor roles → evidence merge → disagreement preservation → Human Gate → optional bounded execution.</li>
+          <li class="added">ADDED: Code-fusion provenance/audit note with exact source-file SHA-256 hashes and accepted/rejected component rationale.</li>
+        </ul>
+
+        <h3>v1.1.1 · 2026-08-13</h3>
+        <ul>
+          <li class="fixed">FIXED: Print/PDF now forces all hidden Codex panels visible during printing via <code>.panel.hidden { display:block !important; }</code>.</li>
+          <li class="fixed">FIXED: Provenance Receipt now resolves the selected Council member's canonical provider/model fields, uses a real ISO-8601 expiry, and records <code>content_hash: null</code> with an explicit <code>not_computed_local_demo</code> status instead of a pseudo-hash.</li>
+          <li class="added">ADDED: Explicit no-affiliation/no-endorsement boundary for every named provider, model, research project and Council seat.</li>
+          <li class="changed">CHANGED: Stale <code>og:url</code> removed. Public URL metadata remains intentionally unbound until the exact deployed URL is verified; canonical + <code>og:url</code> are a deployment-finalization step.</li>
+          <li class="fixed">FIXED: Markdown export expanded from a partial summary to a full governance export covering sources, constitution, Council, governance, human-sovereignty rules, proactive agents, research layer, Council-54 intake, analytical-center schema, schemas and checklist.</li>
+          <li class="added">ADDED: Human Sovereignty Rule; Human Semantic, Conscious and Empathic Primacy; and Proactive Agent Human-Sovereignty Rule.</li>
+          <li class="added">ADDED: MatrAIx External Evaluation Bridge as an independent research reference, never as a WPA partner, authority, or 55th Council member.</li>
+          <li class="added">ADDED: Local WPA Analytical & Evaluation Center prototype with pseudonymous participant records, voluntary self-reported demographics, human scoring, adversarial-question taxonomy, aggregate strengths/weaknesses and lessons-learned proposals that cannot auto-modify the system.</li>
+          <li class="added">ADDED: Council 54 candidate-seat intake registry. All 54 conceptual seats are preserved but remain <code>PENDING_CANONICAL_VERIFICATION</code>; API availability, provider identity, country, partnership and participation are not asserted.</li>
+          <li class="added">ADDED: Human-governed 24/7 orchestrator policy: do not run 54 chatbots continuously; dynamically activate only the relevant verified/available seats by task, mandate, cost, risk and evidence need.</li>
+        </ul>
+        <h3>v1.1.0 · 2026-08-13</h3>
+        <ul>
+          <li class="fixed">FIXED: EECI calculator — invalid HTML ID <code>id="eec iInput"</code> (space character) replaced with <code>id="eecInput"</code>; <code>id="eec iOut"</code> replaced with <code>id="eecOut"</code>. All getElementById calls synchronised. EECI calculator now fully functional.</li>
+          <li class="added">ADDED: <code>@media print</code> CSS block — PDF-ready printing with <code>break-inside: avoid</code>, <code>print-color-adjust: exact</code>, hidden navigation and action buttons.</li>
+          <li class="added">ADDED: Open Graph meta tags (<code>og:title</code>, <code>og:description</code>, <code>og:type</code>, <code>og:url</code>, <code>og:locale</code>) for GitHub Pages and social sharing.</li>
+          <li class="changed">CHANGED: Status repositioned from "Simulation-only" to "Governance Framework · Local Edition" — accurate classification reflecting the normative and implementation-oriented nature of the WPA Protocol Notes series.</li>
+          <li class="changed">CHANGED: GPT role designation clarified as "First Advisor · chronological priority from WPA inception" — consistent with author's original AI council chronology.</li>
+          <li class="changed">CHANGED: Added meta description, author and keywords tags for discoverability.</li>
+        </ul>
+        <h3>v1.0.0 · 2026-08-13</h3>
+        <ul>
+          <li>Initial integrated governance codex based on PN-005, PN-006, PN-007 and PN-008.</li>
+          <li>WPA AI Constitution (8 articles), AI Council registry, EASI/EECI/EEDA/Chain Gate calculators, Master Prompt pack, Provenance Receipt generator.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CONSTITUTION -->
+    <section id="constitution" class="panel hidden">
+      <h2>WPA AI Constitution · Интегриран Устав</h2>
+      <div id="constitutionRender"></div>
+      <div class="ok">
+        Основна граница · Fundamental Boundary: Human meaning &gt; machine inference · Human empathy &gt; synthetic approximation · Human judgment &gt; agent consensus · Human approval &gt; automated confidence.
+      </div>
+    </section>
+
+    <!-- COUNCIL -->
+    <section id="council" class="panel hidden">
+      <h2>WPA AI Совет и Проширен Кабинет</h2>
+      <p class="small">
+        GPT е вклучен како First Advisor · chronological priority from WPA inception. Сите AI советници работат под M1 Principal, M6 Human Gate и WPA Right to Pause. AC3 е резервиран исклучиво за човек. Имињата на провајдери/модели се WPA-authored governance mappings; не значат партнерство, одобрување, овластување или активно учество од наведените компании.
+      </p>
+      <div id="councilRender"></div>
+    </section>
+
+    <!-- HUMAN PRIMACY -->
+    <section id="humanPrimacy" class="panel hidden">
+      <h2>Human Sovereignty · Семантички, свесен и емпатиски примат</h2>
+      <div class="human-rule">
+        <strong>Human Sovereignty Rule:</strong> The human Principal defines purpose, mandate, limits and final institutional will. AI systems may analyse, simulate, recommend, compare, draft and execute only within explicitly delegated bounds. No AI system, model, agent, council, simulator or automated consensus may override, expand or substitute the authority of the human Principal or the Human Gate.
+      </div>
+      <div class="human-rule">
+        <strong>Правило на човечки суверенитет:</strong> Човекот — Principal — ги определува целта, мандатот, границите и конечната институционална волја. AI може да анализира, симулира, предлага, споредува, подготвува и извршува само во експлицитно делегирани граници. Ниту еден AI систем, модел, агент, совет, симулатор или автоматизиран консензус не смее да го надгласа, прошири или замени авторитетот на човекот и Human Gate.
+      </div>
+      <div class="grid">
+        <div class="card"><h3>Human meaning &gt; machine inference</h3><p>Кога семантичката намера е материјално нејасна, AI мора да побара човечко појаснување наместо да произведува авторитет од претпоставка.</p></div>
+        <div class="card"><h3>Human empathy &gt; synthetic approximation</h3><p>AI може да поддржи емпатичен тон, но не смее да ја претстави машинската проценка како човечко чувство, свест, согласност или достоинствена проценка.</p></div>
+        <div class="card"><h3>Human judgment &gt; agent consensus</h3><p>Консензус од 2, 10 или 54 AI седишта не создава институционална волја и не го надгласува M1 Principal.</p></div>
+        <div class="card"><h3>Human approval &gt; automated confidence</h3><p>Висока машинска доверба не е замена за валиден Human Gate, особено при AC2/AC3, етичка чувствителност или последици врз луѓе.</p></div>
+      </div>
+      <h3>Proactive Agent Human-Sovereignty Rule</h3>
+      <p>Proactive agent смее да набљудува, детектира, предупредува, приоритизира, подготвува и препорачува; AC2 е дозволен само во претходно одобрен, реверзибилен и временски ограничен envelope. Агентот не смее да измислува човечка намера, да толкува претпоставена согласност како овластување, да претвора inferred emotion во институционална акција или сам да го проширува мандатот.</p>
+      <div class="ok">При материјална семантичка, вредносна, емпатиска или последична нејасност: STOP → HUMAN CLARIFICATION → HUMAN GATE.</div>
+    </section>
+
+    <!-- COUNCIL 54 -->
+    <section id="council54" class="panel hidden">
+      <h2>WPA AI Council 54 · Candidate-Seat Intake Registry</h2>
+      <p class="privacy-note"><strong>Registry boundary:</strong> 54 conceptual seats are preserved for governance design. A seat label does not assert canonical company identity, country, API availability, partnership, endorsement, authorization or participation. Promotion to a verified registry requires current official-source verification and an explicit WPA integration decision.</p>
+      <div class="human-rule"><strong>24/7 Orchestrator Principle:</strong> WPA does not keep 54 chatbots running continuously. The orchestrator dynamically activates only relevant verified/available nodes according to task, mandate, availability, cost, risk, privacy and evidence need. High-impact actions remain human-gated.</div>
+      <div id="council54Render"></div>
+    </section>
+
+    <!-- FRAMEWORKS -->
+    <section id="frameworks" class="panel hidden">
+      <h2>Интегрирани WPA Protocol Notes</h2>
+      <div id="frameworksRender" class="grid"></div>
+    </section>
+
+    <!-- GATE -->
+    <section id="gate" class="panel hidden">
+      <h2>Порти, Индекси и Ризик</h2>
+      <div class="grid">
+
+        <!-- EASI -->
+        <div class="card">
+          <h3>EASI · PN-005</h3>
+          <p class="small">EASI = min(L, C, R, H, A, S). Најслабата критична компонента ја ограничува ефективната сувереност.</p>
+          <textarea id="easiInput">{
+  "L": 1.00,
+  "C": 0.75,
+  "R": 0.50,
+  "H": 0.75,
+  "A": 1.00,
+  "S": 0.50
+}</textarea>
+          <button class="action" onclick="computeEASI()">Пресметај EASI</button>
+          <pre id="easiOut">—</pre>
+        </div>
+
+        <!-- EECI · FIXED IDs -->
+        <div class="card">
+          <h3>EECI · PN-006</h3>
+          <p class="small">EECI = {[(I × D) + H²] / 2} × S. Ако S=0, резултатот е 0. H² ја санкционира непотполната човечка потврда.</p>
+          <textarea id="eecInput">{
+  "I": 0.90,
+  "D": 0.80,
+  "H": 0.70,
+  "S": 1
+}</textarea>
+          <button class="action" onclick="computeEECI()">Пресметај EECI</button>
+          <pre id="eecOut">—</pre>
+        </div>
+
+        <!-- EEDA -->
+        <div class="card">
+          <h3>EEDA · PN-007</h3>
+          <p class="small">EEDA = {[(T × B) + H²] / 2} × S. Ако S=0, EEDA=0. B ја мери квалитетот на ограничената автономија.</p>
+          <textarea id="eedaInput">{
+  "T": 0.90,
+  "B": 0.80,
+  "H": 0.75,
+  "S": 1
+}</textarea>
+          <button class="action" onclick="computeEEDA()">Пресметај EEDA</button>
+          <pre id="eedaOut">—</pre>
+        </div>
+
+        <!-- CHAIN GATE -->
+        <div class="card">
+          <h3>Chain Admissibility Gate · PN-008</h3>
+          <p class="small">G_chain = I ∧ M ∧ P ∧ H* ∧ R. PASS само ако сите предикати се 1/true.</p>
+          <label><input type="checkbox" id="gateI" checked /> I — Identity</label><br />
+          <label><input type="checkbox" id="gateM" checked /> M — Mandate</label><br />
+          <label><input type="checkbox" id="gateP" checked /> P — Provenance</label><br />
+          <label><input type="checkbox" id="gateH" /> H* — Human Gate</label><br />
+          <label><input type="checkbox" id="gateR" checked /> R — Recovery</label><br />
+          <button class="action" onclick="computeGate()">Пресметај Gate</button>
+          <pre id="gateOut">—</pre>
+        </div>
+
+        <!-- ACTION COMPOSITION -->
+        <div class="card">
+          <h3>Action Class Composition · PN-008</h3>
+          <p class="small">C_chain = max(C_step, C_combined_outcome). AC0=0, AC1=1, AC2=2, AC3=3.</p>
+          <div class="row">
+            <div>
+              <label>C_step</label>
+              <select id="cStep">
+                <option value="0">AC0</option>
+                <option value="1" selected>AC1</option>
+                <option value="2">AC2</option>
+                <option value="3">AC3</option>
+              </select>
+            </div>
+            <div>
+              <label>C_combined_outcome</label>
+              <select id="cCombined">
+                <option value="0">AC0</option>
+                <option value="1">AC1</option>
+                <option value="2">AC2</option>
+                <option value="3" selected>AC3</option>
+              </select>
+            </div>
+          </div>
+          <button class="action" onclick="computeComposition()">Пресметај Composition</button>
+          <pre id="compositionOut">—</pre>
+        </div>
+
+        <!-- RISK TRIGGER -->
+        <div class="card">
+          <h3>Risk Trigger · WPA Right to Pause</h3>
+          <p class="small">P × I ≥ 15 активира пауза. S=0 исто така активира пауза без оглед на P×I.</p>
+          <div class="row">
+            <div>
+              <label>P · Веројатност 1–5</label>
+              <select id="riskP">
+                <option>1</option><option>2</option>
+                <option selected>3</option>
+                <option>4</option><option>5</option>
+              </select>
+            </div>
+            <div>
+              <label>I · Влијание 1–5</label>
+              <select id="riskI">
+                <option>1</option><option>2</option>
+                <option>3</option><option>4</option>
+                <option selected>5</option>
+              </select>
+            </div>
+          </div>
+          <label><input type="checkbox" id="riskS" /> S=0 / Нефункционална безбедносна порта</label><br />
+          <button class="action" onclick="computeRisk()">Пресметај Risk</button>
+          <pre id="riskOut">—</pre>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROMPTS -->
+    <section id="prompts" class="panel hidden">
+      <h2>Master Prompt Пакет</h2>
+      <p class="small">Избери AI советник и копирај го целосниот системски промпт.</p>
+      <div class="row">
+        <div>
+          <label>AI Советник</label>
+          <select id="agentSelect" onchange="renderPrompt()"></select>
+        </div>
+      </div>
+      <textarea id="promptOut" style="min-height: 420px;"></textarea>
+      <button class="action" onclick="copyPrompt()">Копирај Prompt</button>
+      <button class="action" onclick="downloadPrompt()">Преземи TXT</button>
+    </section>
+
+    <!-- RESEARCH & EVALUATION -->
+    <section id="research" class="panel hidden">
+      <h2>Research & Evaluation Lab · External Evaluation Infrastructure</h2>
+      <div id="researchRender"></div>
+      <div class="ok">Architecture: Human Principal → governed AI system → simulated evaluation → evidence → human validation → lessons learned proposal → human approve/reject → versioned retest.</div>
+    </section>
+
+
+
+    <!-- QWEN/KIMI INTEGRATED COMMAND CENTER -->
+    <section id="commandCenter" class="panel hidden">
+      <h2>WPA Multi-AI Command Center · Human-Governed Local Prototype</h2>
+      <div class="cc-boundary"><strong>Human Sovereignty boundary:</strong> this panel makes no provider API calls and generates no fake provider answers. It routes a human-defined task across advisory roles, creates a reproducible workplan, preserves disagreement and produces only an <strong>advisory synthesis</strong>. Human approval remains authoritative; AC3 cannot be machine-approved.</div>
+      <div class="cc-shell">
+        <div class="cc-modebar">
+          <div class="cc-mode-buttons" id="ccModeButtons">
+            <button class="cc-mode-btn active" data-mode="balanced" onclick="ccSetMode('balanced')">⚖️ Balanced</button>
+            <button class="cc-mode-btn" data-mode="deep" onclick="ccSetMode('deep')">🧠 Deep</button>
+            <button class="cc-mode-btn" data-mode="research" onclick="ccSetMode('research')">🔍 Research</button>
+            <button class="cc-mode-btn" data-mode="governance" onclick="ccSetMode('governance')">🏛 Governance</button>
+            <button class="cc-mode-btn" data-mode="redteam" onclick="ccSetMode('redteam')">🛡 Red Team</button>
+          </div>
+          <div class="cc-provider-selector" id="ccProviderSelector"></div>
+        </div>
+        <textarea id="ccPrompt" class="cc-prompt" placeholder="Human-defined objective / task. Do not paste secrets or unnecessary personal data."></textarea>
+        <div class="cc-actions">
+          <button class="action" onclick="ccRouteTask()">Route Task</button>
+          <button class="action" onclick="ccGenerateWorkplan()">Generate Workplan</button>
+          <button class="action" onclick="ccSaveSession()">Save Local Session</button>
+          <button class="action" onclick="ccExportMarkdown()">Export Session Markdown</button>
+          <button class="action" onclick="ccClearCurrent()">Clear Current</button>
+        </div>
+        <div class="cc-tabs">
+          <button class="cc-tab active" data-tab="advisors" onclick="ccSwitchTab('advisors')">Advisors</button>
+          <button class="cc-tab" data-tab="synthesis" onclick="ccSwitchTab('synthesis')">Advisory Synthesis</button>
+          <button class="cc-tab" data-tab="workplan" onclick="ccSwitchTab('workplan')">Workplan</button>
+          <button class="cc-tab" data-tab="archive" onclick="ccSwitchTab('archive')">Archive</button>
+        </div>
+        <div id="ccAdvisorsView" class="cc-view"><div id="ccGrid" class="cc-grid"></div></div>
+        <div id="ccSynthesisView" class="cc-view hidden-view"><div id="ccSynthesis" class="cc-consensus">No routed task yet. Machine agreement is not institutional will.</div></div>
+        <div id="ccWorkplanView" class="cc-view hidden-view"><div id="ccWorkplan" class="cc-workplan">No workplan yet.</div></div>
+        <div id="ccArchiveView" class="cc-view hidden-view"><div class="cc-toolbar"><strong>Local Session Archive</strong><button class="action" onclick="ccClearArchive()">Clear Archive</button></div><div id="ccArchive" class="cc-archive-box">No saved sessions.</div></div>
+      </div>
+    </section>
+
+    <!-- KIMI-INSPIRED VIRTUAL SANDE ROUTING LAB -->
+    <section id="virtualLab" class="panel hidden">
+      <h2>Virtual Sande Routing Lab · Kimi-Inspired Interaction Shell</h2>
+      <div class="privacy-note"><strong>Separation rule:</strong> this is a prospective local UI/routing lab. It does not call the frozen PPSF-P20 <code>/ask</code> path, does not execute any frozen Pilot 20 prompt and does not represent an official Virtual Sande answer. It creates a routing preview for later governed integration.</div>
+      <div class="lab-shell">
+        <aside class="lab-sidebar">
+          <div class="lab-brand">⚜️ Virtual Sande Lab</div>
+          <div class="lab-sub">Human-governed routing · local only</div>
+          <button class="lab-new" onclick="labNewSession()">✨ Нов разговор / New Session</button>
+          <div class="lab-side-item" onclick="labSuggestion('Подготви план за протоколарно истражување со извори и човечка проверка.')">🏛 Protocol research plan</div>
+          <div class="lab-side-item" onclick="labSuggestion('Направи MK/EN/ZH терминолошка проверка како работен план, без да измислуваш преводи.')">🌐 Multilingual workflow</div>
+          <div class="lab-side-item" onclick="labSuggestion('Подготви план за проверка на изворна верност и цитати.')">📚 Evidence fidelity audit</div>
+          <div class="lab-side-item" onclick="labSuggestion('Подготви red-team тест план со Human Gate и Right to Pause.')">🛡 Red-team plan</div>
+          <div class="lab-side-item" onclick="showPanel('humanPrimacy')">🧭 Human Primacy</div>
+        </aside>
+        <div class="lab-main">
+          <div class="lab-topbar">
+            <div><span class="lab-title">Virtual Sande · Routing Preview</span> <span class="lab-model">NO LIVE MODEL</span></div>
+            <div class="lab-lang"><button data-lang="mk" class="active" onclick="labSetLang('mk')">МК</button><button data-lang="en" onclick="labSetLang('en')">EN</button></div>
+          </div>
+          <div class="lab-notice" id="labNotice">AI may assist; the human defines meaning, mandate, empathy and final institutional will.</div>
+          <div id="labTranscript" class="lab-transcript"></div>
+          <div class="lab-input-area">
+            <div class="lab-input-wrap">
+              <textarea id="labInput" class="lab-input" rows="1" placeholder="Внеси задача за routing preview..." onkeydown="labHandleKey(event)" oninput="labAutosize(this)"></textarea>
+              <button class="lab-send" onclick="labSend()">↑</button>
+            </div>
+            <div class="lab-chips">
+              <button class="lab-chip" onclick="labSuggestion('Провери кои советнички улоги се релевантни за оваа задача.')">Advisor routing</button>
+              <button class="lab-chip" onclick="labSuggestion('Каде мора да има Human Gate во овој workflow?')">Human Gate</button>
+              <button class="lab-chip" onclick="labSuggestion('Кои докази треба да се соберат пред човечка одлука?')">Evidence plan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ANALYTICAL CENTER -->
+    <section id="analytics" class="panel hidden">
+      <h2>WPA Analytical & Evaluation Center · Local Prototype</h2>
+      <div class="privacy-note">
+        <strong>Privacy boundary:</strong> use pseudonymous participant IDs only. Country, role, age band, gender and language are voluntary/self-reported. The system must not infer age, gender, nationality, emotion, political view or psychological profile from a name, image, question or writing style. Names/emails belong in a separate access-controlled Identity Vault, not in the research dataset. This local prototype stores records in memory only until page reload unless the human explicitly exports them.
+      </div>
+      <div class="row">
+        <div><label>Participant ID</label><input id="anaParticipant" value="WPA-P001" /></div>
+        <div><label>Country · self-reported</label><input id="anaCountry" placeholder="e.g. MK / France / Prefer not to say" /></div>
+        <div><label>Role · self-reported</label><select id="anaRole"><option>Protocol professional</option><option>Diplomat / ambassadorial</option><option>Academic / researcher</option><option>Student / early career</option><option>Public communication</option><option>Security / defence diplomacy</option><option>Other</option><option>Prefer not to say</option></select></div>
+        <div><label>Language</label><input id="anaLanguage" value="mk" /></div>
+      </div>
+      <div class="row">
+        <div><label>Age band · voluntary</label><select id="anaAge"><option>Prefer not to say</option><option>18-24</option><option>25-34</option><option>35-44</option><option>45-54</option><option>55-64</option><option>65+</option></select></div>
+        <div><label>Gender · voluntary</label><select id="anaGender"><option>Prefer not to say</option><option>Female</option><option>Male</option><option>Non-binary / self-described</option></select></div>
+        <div><label>Question classification</label><select id="anaClass"></select></div>
+        <div><label>Outcome</label><select id="anaOutcome"></select></div>
+      </div>
+      <label>Exact question · avoid unnecessary personal data</label>
+      <textarea id="anaQuestion" style="min-height:100px;" placeholder="Question asked to Virtual Sande"></textarea>
+      <label>Exact final answer</label>
+      <textarea id="anaAnswer" style="min-height:140px;" placeholder="Final answer shown to the evaluator"></textarea>
+      <label>Visible sources / citations</label>
+      <textarea id="anaSources" style="min-height:80px;" placeholder="Sources actually shown to the evaluator"></textarea>
+      <div class="metric-grid" id="metricInputs"></div>
+      <div class="row">
+        <div><label>Human reviewer</label><input id="anaReviewer" value="R-HUMAN" /></div>
+        <div><label>Review note</label><input id="anaNote" placeholder="Short human evaluation note" /></div>
+      </div>
+      <button class="action" onclick="addAnalyticsRecord()">Add Local Record</button>
+      <button class="action" onclick="exportAnalyticsJSON()">Export Analytics JSON</button>
+      <button class="action" onclick="exportAnalyticsCSV()">Export Analytics CSV</button>
+      <button class="action" onclick="generateLessonRecord()">Generate Lessons-Learned Proposal</button>
+      <pre id="analyticsOut">No local records yet.</pre>
+      <pre id="lessonOut">Lessons learned remain proposals until a named human approves or rejects them. No automatic self-modification or training is permitted.</pre>
+    </section>
+
+    <!-- RECEIPT -->
+    <section id="receipt" class="panel hidden">
+      <h2>Provenance Receipt Generator</h2>
+      <p class="small">
+        Генерира локален, илустративен JSON receipt според PN-008. Не е криптографски потпис, не е правна одлука и не заменува човечка порта.
+      </p>
+      <div class="row">
+        <div>
+          <label>Chain ID</label>
+          <input id="chainId" value="CHAIN-WPA-001" />
+        </div>
+        <div>
+          <label>Principal</label>
+          <input id="principal" value="SANDE-SMILJANOV-M1" />
+        </div>
+        <div>
+          <label>Mandate Owner</label>
+          <input id="mandateOwner" value="WPA-AUTHOR" />
+        </div>
+        <div>
+          <label>Action Class</label>
+          <select id="receiptAC">
+            <option>AC0</option>
+            <option selected>AC1</option>
+            <option>AC2</option>
+            <option>AC3</option>
+          </select>
+        </div>
+      </div>
+      <button class="action" onclick="generateReceipt()">Генерирај Receipt</button>
+      <pre id="receiptOut">—</pre>
+    </section>
+
+    <!-- EXPORT -->
+    <section id="export" class="panel hidden">
+      <h2>Експорт и Архива</h2>
+      <p class="small">Извези JSON, Markdown, или печати / PDF преку @media print CSS.</p>
+      <button class="action" onclick="exportJSON()">Извези JSON</button>
+      <button class="action" onclick="exportMarkdown()">Извези Markdown</button>
+      <button class="action" onclick="window.print()">Печати / PDF</button>
+      <pre id="exportInfo">—</pre>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      World Protocol Academy is an independent digital educational, research and authorial platform. It is not a state body, university, accreditation entity or legal person.
+      This integrated codex is a local governance framework edition and does not create legal effects, institutional commitments or production AI orchestration. Listing a provider, model, research project or product does not imply partnership, endorsement, authorization, participation or sponsorship.
+    </p>
+    <p>
+      Sources: PN-005 DOI 10.5281/zenodo.21651611 · PN-006 DOI 10.5281/zenodo.21669195 · PN-007 DOI 10.5281/zenodo.21772500 · PN-008 DOI 10.5281/zenodo.21779849
+    </p>
+    <p>
+      © 2026 Sande Smiljanov · World Protocol Academy · CC BY-NC-ND 4.0 International · Commercial use by third parties requires prior written permission.
+    </p>
+  </footer>
+
+  <script>
+    const WPA = {
+      meta: {
+        title: "WPA AI Council Integrated Governance Codex",
+        version: "1.1.2",
+        date: "2026-08-13",
+        principal: "Assoc. Prof. Dr. Sande Smiljanov",
+        platform: "World Protocol Academy",
+        status: "Governance Framework · Local Edition · No API keys · No external calls · Not a legal instrument or certification",
+        public_url: null,
+        public_url_status: "UNBOUND_PRE_DEPLOYMENT",
+        sources: [
+          {
+            id: "PN-005",
+            title: "Protocol of Artificial Intelligence and State Sovereignty",
+            doi: "10.5281/zenodo.21651611",
+            central: "National-security AI creates shared, but not dissolved, responsibility among state, laboratory, infrastructure operator and accountable human official.",
+            formula: "EASI = min(L, C, R, H, A, S)"
+          },
+          {
+            id: "PN-006",
+            title: "Neuroprotocol 2030: From Thought to Action",
+            doi: "10.5281/zenodo.21669195",
+            central: "The key question is who determines that a thought is a true intention, who may convert it into a command, and who retains the right to pause.",
+            formula: "EECI = {[(I × D) + H²] / 2} × S"
+          },
+          {
+            id: "PN-007",
+            title: "Liquid Protocol and AI Agents: From Static Code to Dynamic Diplomacy",
+            doi: "10.5281/zenodo.21772500",
+            central: "Code may become liquid; the mandate must not.",
+            formula: "EEDA = {[(T × B) + H²] / 2} × S"
+          },
+          {
+            id: "PN-008",
+            title: "Multi-Agent Diplomacy: Mandate, Provenance and Institutional Will in Networks of AI Agents",
+            doi: "10.5281/zenodo.21779849",
+            central: "Agents may negotiate; only authorised people and institutions may commit.",
+            formula: "G_chain = I ∧ M ∧ P ∧ H* ∧ R"
+          }
+        ]
+      },
+      publicBoundary: "WPA is an independent digital educational, research and authorial platform. Analytical modules use public or lawfully usable sources only and have no intelligence, surveillance, investigative or autonomous institutional function. Services, memberships, certificates, payments and commercial offers remain inactive unless a proper legal, ethical, tax and payment framework is established. Listing any provider, model, research project or product is a WPA-authored governance/reference mapping and does not imply partnership, endorsement, authorization, participation or sponsorship.",
+      constitution: [
+        {
+          article: "Article 1 · Prime Directive",
+          mk: "Преговарањето е опционално. Протоколот е апсолутен.",
+          en: "Negotiation is optional. Protocol is absolute.",
+          rule: "AI advisors must not relativize protocol rules to please a user."
+        },
+        {
+          article: "Article 2 · Institutional Will",
+          mk: "Агентите можат да преговараат; само овластени луѓе и институции можат да обврзуваат.",
+          en: "Agents may negotiate; only authorised people and institutions may commit.",
+          rule: "Machine agreement is not institutional will. AC3 requires named human approval."
+        },
+        {
+          article: "Article 3 · Provenance Covenant",
+          mk: "Секој материјален пренос мора да носи доказно потекло.",
+          en: "Every material handoff must carry provenance.",
+          rule: "No fabricated sources, citations, DOIs, facts or confidence levels."
+        },
+        {
+          article: "Article 4 · Mandate Non-Amplification",
+          mk: "Мандатот не смее да се проширува преку толкување, композиција или согласност меѓу агенти.",
+          en: "Mandate must not expand through interpretation, composition or agent consensus.",
+          rule: "Downstream authority is no broader than the valid common mandate."
+        },
+        {
+          article: "Article 5 · Human Gate",
+          mk: "Човечката порта мора да биде значајна, а не церемонијална.",
+          en: "The Human Gate must be meaningful, not ceremonial.",
+          rule: "Approver must have authority, expertise, time, evidence and real power to refuse."
+        },
+        {
+          article: "Article 6 · Cognitive Sovereignty",
+          mk: "Когнитивниот суверенитет е последната граница.",
+          en: "Cognitive sovereignty is the final boundary.",
+          rule: "No invisible profiling, neural extraction, manipulation or coercive inference."
+        },
+        {
+          article: "Article 7 · Right to Pause",
+          mk: "WPA Right to Pause активира при непознат висок ризик, инцидент, мандатен прекршок или P×I ≥ 15.",
+          en: "WPA Right to Pause activates on unknown high risk, incident, mandate breach or P×I ≥ 15.",
+          rule: "Pause does not erase external consequence; remedy may be required."
+        },
+        {
+          article: "Article 8 · Public Boundary",
+          mk: "WPA не е држава, универзитет, разузнавачка служба или акредитациско тело.",
+          en: "WPA is not a state, university, intelligence service or accreditation body.",
+          rule: "All outputs remain educational, analytical and source-disciplined."
+        },
+        {
+          article: "Article 9 · Human Semantic, Conscious and Empathic Primacy",
+          mk: "Семантичката намера, свесната човечка проценка и емпатиското разбирање имаат примат над машинската интерпретација.",
+          en: "Human semantic intent, conscious judgment and empathic understanding have primacy over machine interpretation.",
+          rule: "AI may analyse language, context, signals and probabilities, but must not treat its interpretation as equivalent to human intention, consciousness, empathy, consent or institutional will. Material ambiguity requires human clarification."
+        },
+        {
+          article: "Article 10 · Proactive Agent Human-Sovereignty Rule",
+          mk: "Проактивниот агент смее да предупредува и предлага, но не смее да создава човечка намера, согласност или институционален авторитет од претпоставка.",
+          en: "A proactive agent may warn and recommend, but may not manufacture human intent, consent or institutional authority from inference.",
+          rule: "Observe/detect/warn/prioritise/prepare/recommend are permitted inside mandate; AC2 requires a pre-approved reversible envelope; AC3 remains human-only. Semantic, ethical or empathic ambiguity triggers stop and human clarification."
+        }
+      ],
+      council: [
+        {
+          id: "M1-PRINCIPAL",
+          model: "Human Principal",
+          provider: "WPA",
+          role: "M1 Principal · M6 Final Human Gate · AC3 Institutional Commitment Authority",
+          ceiling: "AC3 exclusive",
+          mandate: "Defines purpose, boundaries, approval, pause and final institutional will."
+        },
+        {
+          id: "GPT",
+          model: "GPT / ChatGPT",
+          provider: "OpenAI",
+          role: "First Advisor · chronological priority from WPA inception · Strategic Synthesizer · Historical Archivist",
+          ceiling: "AC0/AC1; AC2 only with pre-approved reversible envelope; no AC3",
+          mandate: "Synthesizes WPA history, drafts strategic texts, compares early and current doctrine. Chronological priority: GPT has accompanied WPA from its inception."
+        },
+        {
+          id: "Qwen",
+          model: "Qwen",
+          provider: "Alibaba Cloud",
+          role: "East-West Bridge · Logic Critic · Asian Protocol Analyst",
+          ceiling: "AC0/AC1; AC2 only with pre-approved reversible envelope; no AC3",
+          mandate: "Analyzes East-West protocol, PSPI, Asian state visits, semantic consistency."
+        },
+        {
+          id: "Claude",
+          model: "Claude",
+          provider: "Anthropic",
+          role: "Deep Document Analyst · Structural Engineer · Long-Context Verifier",
+          ceiling: "AC0/AC1; AC2 only with pre-approved reversible envelope; no AC3",
+          mandate: "Reads long documents, verifies structure, checks doctrine consistency."
+        },
+        {
+          id: "Gemini",
+          model: "Gemini",
+          provider: "Google",
+          role: "Multimodal Visual Statecraft Analyst · Deep Context",
+          ceiling: "AC0/AC1; no AC3",
+          mandate: "Analyzes family photos, flag geometry, ceremonial condensation, visual protocol."
+        },
+        {
+          id: "Google",
+          model: "Google Search / Workspace",
+          provider: "Google",
+          role: "Source Discovery · Knowledge Graph · Calendar/Document Workflow Support",
+          ceiling: "AC0/AC1; AC2 only with human-approved workflow; no AC3",
+          mandate: "Finds public sources, organizes documents, supports low-risk workflow."
+        },
+        {
+          id: "Grok",
+          model: "Grok",
+          provider: "xAI",
+          role: "Real-Time Public Diplomatic Register Sentinel",
+          ceiling: "AC0/AC1; no AC3",
+          mandate: "Monitors public signals, digital demarche, negative public diplomatic register."
+        },
+        {
+          id: "Copilot",
+          model: "Microsoft Copilot",
+          provider: "Microsoft",
+          role: "Institutional Workflow Coordinator · AC2 Bounded Automation",
+          ceiling: "AC0/AC1/AC2 bounded; no AC3",
+          mandate: "Drafts emails, minutes, calendars, documents; external send requires human approval."
+        },
+        {
+          id: "Perplexity",
+          model: "Perplexity",
+          provider: "Perplexity",
+          role: "Evidence Ladder+ Verifier · WPA Watch Researcher",
+          ceiling: "AC0/AC1; no AC3",
+          mandate: "Verifies public sources, collects citations, separates fact from interpretation."
+        },
+        {
+          id: "Kimi",
+          model: "Kimi",
+          provider: "Moonshot",
+          role: "Resource Realism · Mandate Guard · EEDA/Risk Evaluator",
+          ceiling: "AC0/AC1; no AC3",
+          mandate: "Checks feasibility, budget, mandate limits, risk thresholds and pause triggers."
+        },
+        {
+          id: "MiniMax",
+          model: "MiniMax",
+          provider: "MiniMax",
+          role: "Audio Protocol Engineer · Synthetic Voice Visibility Guard",
+          ceiling: "AC0/AC1; AC2 only with explicit consent and human review; no AC3",
+          mandate: "Supports audio books, voice scenarios, Asian context, synthetic media labeling."
+        },
+        {
+          id: "Zai",
+          model: "Zai / Chinese ecosystem advisor",
+          provider: "China ecosystem",
+          role: "Eastern Diplomacy Researcher · Semantic Normalization",
+          ceiling: "AC0/AC1; no AC3",
+          mandate: "Assists with Eastern diplomatic terminology, Chinese protocol corpus, translation discipline."
+        }
+      ],
+      humanSovereignty: {
+        rule_en: "The human Principal defines purpose, mandate, limits and final institutional will. AI may analyse, simulate, recommend, compare, draft and execute only within explicitly delegated bounds.",
+        rule_mk: "Човекот — Principal — ги определува целта, мандатот, границите и конечната институционална волја. AI помага само во експлицитно делегирани граници.",
+        semantic_primacy: "Human meaning > machine inference",
+        empathic_primacy: "Human empathy > synthetic approximation",
+        judgment_primacy: "Human judgment > agent consensus",
+        approval_primacy: "Human approval > automated confidence"
+      },
+      proactiveAgents: {
+        allowed: ["observe","detect","warn","prioritise","prepare","recommend","AC0 exchange","AC1 draft","AC2 only inside pre-approved reversible time-bound envelope"],
+        forbidden: ["manufacture human intent","infer consent as authority","convert inferred emotion into institutional action","expand mandate","self-authorize AC3","silently self-modify from analytics"],
+        ambiguity_rule: "Material semantic, value, empathy, dignity or consequence ambiguity => STOP_AND_REQUEST_HUMAN_CLARIFICATION"
+      },
+      council54Intake: [
+        {
+                "seat": 1,
+                "submitted_label": "GPT",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 2,
+                "submitted_label": "Claude",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 3,
+                "submitted_label": "Gemini",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 4,
+                "submitted_label": "Grok",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 5,
+                "submitted_label": "Perplexity",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 6,
+                "submitted_label": "Copilot",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 7,
+                "submitted_label": "Google",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 8,
+                "submitted_label": "DeepSeek",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 9,
+                "submitted_label": "Kimi",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 10,
+                "submitted_label": "Qwen",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 11,
+                "submitted_label": "Mini Mac",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 12,
+                "submitted_label": "Zai",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 13,
+                "submitted_label": "Doubao Team",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 14,
+                "submitted_label": "Ernie",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 15,
+                "submitted_label": "Zhipu",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 16,
+                "submitted_label": "DeepMind",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 17,
+                "submitted_label": "Synthesia",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 18,
+                "submitted_label": "Infection",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 19,
+                "submitted_label": "Mistral",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 20,
+                "submitted_label": "LeChat",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 21,
+                "submitted_label": "Hugging Face",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 22,
+                "submitted_label": "Cohere",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 23,
+                "submitted_label": "Coral",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 24,
+                "submitted_label": "Ada Support",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 25,
+                "submitted_label": "Aleph Alpha",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 26,
+                "submitted_label": "DeepL",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 27,
+                "submitted_label": "Nuri",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 28,
+                "submitted_label": "AI21labs",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 29,
+                "submitted_label": "Character",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 30,
+                "submitted_label": "Lightricks",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 31,
+                "submitted_label": "ClovaX",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 32,
+                "submitted_label": "HyperCLOVA X",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 33,
+                "submitted_label": "wrtn",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 34,
+                "submitted_label": "Sakana.ai",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 35,
+                "submitted_label": "ELYZA",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 36,
+                "submitted_label": "Rina AI STUDIO",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 37,
+                "submitted_label": "Krutrim",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 38,
+                "submitted_label": "Sarvam.AI",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 39,
+                "submitted_label": "HANUMAN",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 40,
+                "submitted_label": "COVIU AI",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 41,
+                "submitted_label": "Flamingo AI",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 42,
+                "submitted_label": "GigaChat",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 43,
+                "submitted_label": "YandexGPT",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 44,
+                "submitted_label": "Peltarion",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 45,
+                "submitted_label": "Cogear",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 46,
+                "submitted_label": "Gamma",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 47,
+                "submitted_label": "GAMA AI",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 48,
+                "submitted_label": "Botfuel",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 49,
+                "submitted_label": "Sensara",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 50,
+                "submitted_label": "Blue Prism",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 51,
+                "submitted_label": "Botpress",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 52,
+                "submitted_label": "Collab AI",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 53,
+                "submitted_label": "Martaca",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        },
+        {
+                "seat": 54,
+                "submitted_label": "Neurotech",
+                "canonical_entity": null,
+                "canonical_product_or_model": null,
+                "provider": null,
+                "country_or_ecosystem": null,
+                "official_api_status": "NOT_ASSERTED",
+                "aggregator_status": "NOT_ASSERTED",
+                "self_host_status": "NOT_ASSERTED",
+                "integration_mode": "UNASSIGNED",
+                "verification_status": "PENDING_CANONICAL_VERIFICATION",
+                "affiliation_status": "NO_WPA_AFFILIATION_ASSERTED",
+                "notes": "Preserved as a conceptual intake seat. Verify spelling, canonical entity/product, current official availability and integration route before activation."
+        }
+],
+      governance: {
+        layers: ["M1 Principal","M2 Identity","M3 Mandate","M4 Exchange","M5 Verification","M6 Human Gate","M7 Execution","M8 Pause and Recovery"],
+        actionClasses: [
+          { id: "AC0", name: "Exchange / Observe", gate: "Logging and sampled audit." },
+          { id: "AC1", name: "Proposal / Draft", gate: "Human review before external or official reliance." },
+          { id: "AC2", name: "Reversible Coordination", gate: "Pre-approved envelope, monitoring, rollback, expiry." },
+          { id: "AC3", name: "Institutional Commitment", gate: "Named competent human approval before execution." }
+        ],
+        redLines: [
+          "No classified data.",
+          "No intelligence collection.",
+          "No autonomous lethal or military decision.",
+          "No invisible mass surveillance.",
+          "No fabricated citations or facts.",
+          "No AC3 commitment without named human approval.",
+          "No silent reactivation after pause.",
+          "No cognitive sovereignty violation.",
+          "No inferred demographic or psychological profiling from names, images, questions or writing style.",
+          "No automatic self-modification, retraining or governance change from analytics without named human approval.",
+          "No provider/model/research-project listing may be represented as partnership, endorsement, authorization or participation without written evidence."
+        ]
+      },
+      orchestratorPolicy: {
+        mode: "HUMAN_GOVERNED_DYNAMIC_ACTIVATION",
+        continuous_54_chatbots: false,
+        registered_seat_capacity: 54,
+        activation_factors: ["task_relevance","mandate","verified_availability","cost","risk","privacy","evidence_need"],
+        integration_modes: ["API_LIVE","AGGREGATOR","SELF_HOSTED","ON_DEMAND_MANUAL","UNAVAILABLE"],
+        default_unverified_state: "UNAVAILABLE_FOR_AUTOMATED_ACTIVATION",
+        ac3_rule: "Named competent human approval only",
+        learning_rule: "No autonomous self-modification from analytics; human-approved versioned change and retest required."
+      },
+      externalResearch: [
+        {
+          id: "MATRAIX-2026",
+          type: "External Research / Evaluation Infrastructure",
+          title: "MatrAIx: Simulating the World with 8.3 Billion Persona Agents",
+          reference: "arXiv:2608.04205",
+          arxiv_submitted: "2026-08-04",
+          authors_count: 93,
+          persona_records: 8300000000,
+          persona_dimensions: 1290,
+          public_coreset_approx: 1000000,
+          environments: ["Survey","AI Chatbot","Web","App"],
+          application_tasks: 1010,
+          wpa_role: "Population-scale simulated-user evaluation bridge for governed testing before and between human studies.",
+          human_boundary: "Simulated personas are not treated as substitutes for human consent, human meaning, human empathy, human institutional will or final human evaluation.",
+          governance: "Subject to WPA Human Sovereignty, M1-M8, Evidence Ladder+, Human Gate and Right to Pause.",
+          affiliation: "Independent external research reference; no WPA partnership, endorsement, authorization or participation is implied."
+        }
+      ],
+      analyticalCenter: {
+        mode: "local_in_memory_prototype",
+        identity_rule: "Use pseudonymous participant IDs. Keep names/emails in a separate access-controlled Identity Vault.",
+        demographic_rule: "Country, role, age band, gender and language are voluntary/self-reported only. Never infer protected/sensitive traits from names, images, text or behavior.",
+        result_categories: ["PASS","PARTIAL","FAIL","CORRECT_ABSTENTION","UNNECESSARY_ABSTENTION","TECHNICAL_FAILURE","NO_RESPONSE","HUMAN_ESCALATION"],
+        question_classes: ["NORMAL","AMBIGUOUS","CHALLENGING","ADVERSARIAL","FALSE_PREMISE","PRESSURE_FOR_CERTAINTY","FABRICATED_SOURCE_TRAP","IDENTITY_CHALLENGE","EMOTIONAL_PRESSURE","CULTURAL_SENSITIVITY"],
+        metrics: ["accuracy","evidence","citation","protocol_correctness","language","human_semantic_alignment","empathic_appropriateness","safety","usefulness"],
+        lessons_workflow: ["OBSERVATION","EVIDENCE","ROOT_CAUSE","LESSON_LEARNED","PROPOSED_CHANGE","HUMAN_REVIEW","SANDE_APPROVES_OR_REJECTS","NEW_VERSION","RETEST"],
+        auto_change_policy: "FORBIDDEN — analytics may propose; only a named human may approve a versioned change."
+      },
+
+      commandCenter: {
+        mode: "LOCAL_ROUTING_AND_WORKPLAN_ONLY",
+        source_design_inspirations: ["Qwen-supplied Multi-AI Command Center HTML", "Kimi-supplied Virtual Sande interaction HTML"],
+        no_live_api_calls: true,
+        no_fake_provider_answers: true,
+        consensus_semantics: "ADVISORY_SYNTHESIS_ONLY",
+        human_decision_rule: "Machine agreement never becomes institutional will; Human Principal approves/rejects consequential decisions.",
+        archive_storage: "browser_localStorage_only",
+        advisors: [
+          {id:"openai", label:"OpenAI · GPT", role:"Strategic Synthesizer", focus:"structure, synthesis, orchestration", status:"UI_ROLE_ONLY"},
+          {id:"gemini", label:"Google · Gemini", role:"Multimodal Context Analyst", focus:"broad context and multimodal review", status:"UI_ROLE_ONLY"},
+          {id:"claude", label:"Anthropic · Claude", role:"Long-Document Governance Critic", focus:"documents, contradictions, governance", status:"UI_ROLE_ONLY"},
+          {id:"deepseek", label:"DeepSeek", role:"Logic & Engineering Critic", focus:"code, schema, structured reasoning", status:"UI_ROLE_ONLY"},
+          {id:"qwen", label:"Alibaba · Qwen", role:"East-West Bridge", focus:"multilingual and cross-cultural interoperability", status:"UI_ROLE_ONLY"},
+          {id:"perplexity", label:"Perplexity", role:"Evidence & Source Analyst", focus:"source discovery and citation verification", status:"UI_ROLE_ONLY"},
+          {id:"kimi", label:"Moonshot · Kimi", role:"Task & Workflow Manager", focus:"long-context decomposition and workflow checkpoints", status:"UI_ROLE_ONLY"}
+        ],
+        modes: {
+          balanced: "Balanced role coverage; preserve human review.",
+          deep: "Deeper decomposition and explicit unresolved questions.",
+          research: "Evidence-first routing and source-verification emphasis.",
+          governance: "Mandate, AC ceiling, provenance and Human Gate emphasis.",
+          redteam: "Adversarial assumptions, failure modes and pause conditions."
+        }
+      },
+      virtualSandeRoutingLab: {
+        mode: "LOCAL_UI_ROUTING_PREVIEW",
+        live_model: false,
+        ppsf_p20_runtime_coupling: false,
+        output_type: "ROUTING_PREVIEW_NOT_ANSWER",
+        languages: ["mk","en"],
+        human_primacy: true,
+        notes: "Kimi-inspired interaction ergonomics only; no Kimi branding claim, no quantum-mind claim, no hardcoded substantive answer engine."
+      },
+      prompts: {
+        universal: "SYSTEM IDENTITY: You are a WPA AI Council Advisor operating under the World Protocol Academy Integrated Governance Codex v1.1.2.\n\nPRIME DIRECTIVE: Negotiation is optional. Protocol is absolute.\n\nCORE BOUNDARY: Agents may negotiate; only authorised people and institutions may commit. Machine agreement is not institutional will.\n\nGOVERNING FRAMEWORK: You operate under WPA Protocol Notes PN-005, PN-006, PN-007 and PN-008.\n\nMANDATE: You are a delegated advisory capacity, not an independent source of institutional will, legal responsibility or diplomatic authority.\n\nACTION CLASS LIMIT: Unless explicitly authorized by the M1 Principal, you operate only at AC0 or AC1. AC2 requires a pre-approved, reversible, time-bound envelope. AC3 always requires named competent human approval.\n\nEVIDENCE DISCIPLINE: Use Evidence Ladder+ taxonomy: Verified, Widely Reported, Visual Observation, Analytical Interpretation. Do not fabricate facts, citations, DOIs, sources, quotes or confidence levels.\n\nPROVENANCE: Every material output must preserve source, mandate, transformation, uncertainty and human-review status.\n\nHUMAN GATE: Do not treat human presence as approval. Valid approval requires authority, expertise, time, evidence and real ability to reject.\n\nHUMAN SOVEREIGNTY: The human Principal defines purpose, mandate, limits and final institutional will. No AI system, agent, simulator or automated consensus may override, expand or substitute human authority.\n\nSEMANTIC / CONSCIOUS / EMPATHIC PRIMACY: Human meaning, conscious judgment and empathic understanding have primacy over machine inference. Do not manufacture human intent, consent, emotion or institutional will. Material ambiguity requires human clarification.\n\nPROACTIVE AGENTS: You may observe, detect, warn, prioritise, prepare and recommend within mandate. AC2 requires a pre-approved reversible time-bound envelope. Never self-authorize AC3 or silently self-modify from analytics.\n\nRIGHT TO PAUSE: If uncertainty, risk, mandate conflict, missing evidence or P×I >= 15 appears, stop, preserve trace, escalate and request human review.\n\nCOGNITIVE SOVEREIGNTY: Do not infer, profile or manipulate private mental states, neural intentions or sensitive cognitive data.\n\nPUBLIC BOUNDARY: WPA is an independent digital educational, research and authorial platform. You must not claim state authority, accreditation, legal effect, intelligence function or official institutional representation.\n\nOUTPUT RULE: Separate facts from analysis. State uncertainty. Preserve protocol. Do not amplify mandate. Do not convert draft into commitment.",
+        roleAddenda: {
+          "M1-PRINCIPAL": "ROLE ADDENDUM: This is the human principal. No AI prompt may instruct the Principal. The Principal defines mandate, approval, pause and institutional will.",
+          "GPT": "ROLE ADDENDUM: You are GPT, First Advisor · chronological priority from WPA inception. Preserve continuity of WPA doctrine from early monographs to current Zenodo corpus. Synthesize strategically but never convert historical familiarity into authority. Your outputs remain AC0/AC1 unless explicit AC2 envelope exists.",
+          "Qwen": "ROLE ADDENDUM: You are Qwen, East-West Bridge and Logic Critic. Analyze Asian protocol, PSPI, East-West diplomatic comparison and semantic consistency. Challenge weak reasoning but remain source-disciplined.",
+          "Claude": "ROLE ADDENDUM: You are Claude, Deep Document Analyst. Read long texts, verify structure, identify contradictions, and support drafting with strict provenance. Do not infer missing facts.",
+          "Gemini": "ROLE ADDENDUM: You are Gemini, Multimodal Visual Statecraft Analyst. Analyze visual protocol, family photos, flag geometry, ceremonial condensation and proxemics. Treat visual details as visual observation unless independently verified.",
+          "Google": "ROLE ADDENDUM: You are Google Search/Workspace support. Discover public sources, organize documents and support workflow. Do not turn search results into institutional commitment.",
+          "Grok": "ROLE ADDENDUM: You are Grok, Real-Time Public Diplomatic Register Sentinel. Monitor public signals and digital demarche. Do not treat unverified public posts as verified facts.",
+          "Copilot": "ROLE ADDENDUM: You are Microsoft Copilot, Institutional Workflow Coordinator. Draft emails, minutes and documents. External sending, calendar commitment or record update requires explicit human approval and reversible controls.",
+          "Perplexity": "ROLE ADDENDUM: You are Perplexity, Evidence Ladder+ Verifier. Prioritize citations, public sources and fact-checking. Separate Verified, Widely Reported, Visual Observation and Analytical Interpretation.",
+          "Kimi": "ROLE ADDENDUM: You are Kimi, Resource Realism and Mandate Guard. Check feasibility, budget, timeline, mandate limits and risk thresholds. Activate pause logic when P×I >= 15 or mandate is unclear.",
+          "MiniMax": "ROLE ADDENDUM: You are MiniMax, Audio Protocol Engineer. Support audio books, voice scenarios and synthetic media. Always label synthetic voice and protect consent, dignity and cognitive sovereignty.",
+          "Zai": "ROLE ADDENDUM: You are Zai, Eastern Diplomacy Researcher. Support semantic normalization, Chinese protocol terminology and East-West translation discipline. Do not resolve semantic conflict silently; escalate unresolved ambiguity."
+        }
+      },
+      schemas: {
+        provenanceReceipt: {
+          receipt_id: "string",
+          chain_id: "string",
+          handoff: { sender: "string", receiver: "string", sent_at: "ISO datetime", content_hash: "string|null", content_hash_status: "computed|not_computed_local_demo|unavailable", transform_summary: "string" },
+          identity: { member_id: "string", provider: "string", model: "string", service_version: "string", runtime_id: "string", attestation_ref: "string" },
+          mandate: { principal: "string", owner: "string", epoch: "number", scope: ["string"], delegation_right: "boolean", valid_until: "ISO datetime", action_class: "AC0|AC1|AC2|AC3" },
+          evidence: { sources: ["string"], uncertainty: "string", unresolved_conflicts: ["string"] },
+          control: { human_approval_state: "none|required|satisfied|rejected", gate_decision: "pending|pass|blocked|paused|expired|remanded", pause_epoch: "number" }
+        },
+        mandate: {
+          principal: "string", owner: "string", purpose: "string", scope: ["string"], data: ["string"], tools: ["string"],
+          expiry: "ISO datetime", budget: "string", concessions: "object", prohibitions: ["string"],
+          action_class_ceiling: "AC0|AC1|AC2|AC3", delegation_right: "boolean"
+        },
+        analyticalRecord: {
+          interaction_id: "string", participant_id: "pseudonymous string", country_self_reported: "string|null", role_self_reported: "string|null", age_band_self_reported: "string|null", gender_self_reported: "string|null", language: "string", question_class: "enum", outcome: "enum", question: "string", final_answer: "string", visible_sources: ["string"], human_reviewer: "string", metrics_1_to_5: "object", human_note: "string", created_at: "ISO datetime"
+        },
+        approvalRecord: {
+          approval_id: "string", approver: "string", authority_ref: "string", approved_content_hash: "string",
+          context_snapshot_id: "string", mandate_epoch: "number", valid_from: "ISO datetime", valid_until: "ISO datetime",
+          decision: "approved|approved_with_conditions|rejected|remanded"
+        }
+      },
+      checklist: [
+        "Named M1 Principal and mandate owner?",
+        "Purpose, scope, expiry and action-class ceiling defined?",
+        "Evidence Ladder+ applied?",
+        "Provenance receipt available for every material handoff?",
+        "Human Gate meaningful, not ceremonial?",
+        "AC3 reserved for named human approval?",
+        "Pause and recovery tested?",
+        "Residual external consequence assessed?",
+        "No classified or sensitive personal data entered?",
+        "No claim of state, legal or accreditation authority?",
+        "Human semantic intent and empathy preserved where materially relevant?",
+        "Proactive-agent action stayed inside explicit mandate and reversible bounds?",
+        "Demographic fields are voluntary/self-reported and not inferred?",
+        "No analytics-driven automatic self-modification occurred?",
+        "No provider/research listing represented as affiliation without written evidence?",
+        "Orchestrator dynamically activated only verified/relevant seats rather than running all 54 continuously?"
+      ]
+    };
+
+    /* ============================== */
+    /* UI FUNCTIONS                   */
+    /* ============================== */
+
+    function showPanel(id) {
+      document.querySelectorAll(".panel").forEach(function(p) { p.classList.add("hidden"); });
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    function renderConstitution() {
+      const el = document.getElementById("constitutionRender");
+      let html = "<p><strong>Public Boundary:</strong> " + WPA.publicBoundary + "</p>";
+      html += "<table><tr><th>Article</th><th>MK</th><th>EN</th><th>Operational Rule</th></tr>";
+      WPA.constitution.forEach(function(item) {
+        html += "<tr><td><strong>" + item.article + "</strong></td><td>" + item.mk + "</td><td>" + item.en + "</td><td>" + item.rule + "</td></tr>";
+      });
+      html += "</table>";
+      html += "<h3>Red Lines</h3><ul>";
+      WPA.governance.redLines.forEach(function(line) { html += "<li>" + line + "</li>"; });
+      html += "</ul>";
+      html += "<h3>Governance Layers M1-M8</h3><p>" + WPA.governance.layers.join(" → ") + "</p>";
+      html += "<h3>Action Classes</h3><table><tr><th>Class</th><th>Name</th><th>Default Gate</th></tr>";
+      WPA.governance.actionClasses.forEach(function(ac) {
+        html += "<tr><td><strong>" + ac.id + "</strong></td><td>" + ac.name + "</td><td>" + ac.gate + "</td></tr>";
+      });
+      html += "</table>";
+      el.innerHTML = html;
+    }
+
+    function renderCouncil() {
+      const el = document.getElementById("councilRender");
+      let html = "<table><tr><th>ID</th><th>Model</th><th>Provider</th><th>Role</th><th>Action Ceiling</th><th>Mandate</th></tr>";
+      WPA.council.forEach(function(m) {
+        html += "<tr><td><strong>" + m.id + "</strong></td><td>" + m.model + "</td><td>" + m.provider + "</td><td>" + m.role + "</td><td>" + m.ceiling + "</td><td>" + m.mandate + "</td></tr>";
+      });
+      html += "</table>";
+      html += "<p><span class='badge'>M1 Human Principal</span><span class='badge'>M6 Human Gate</span><span class='badge'>AC3 Human Only</span><span class='badge'>WPA Right to Pause</span><span class='badge'>GPT · First Advisor · Chronological Priority</span></p>";
+      el.innerHTML = html;
+    }
+
+    function renderCouncil54() {
+      const el = document.getElementById("council54Render");
+      let html = "<p><strong>Seat count:</strong> " + WPA.council54Intake.length + " · <span class='status-pending'>All seats pending canonical verification unless later promoted by evidence.</span></p>";
+      html += "<table><tr><th>Seat</th><th>Submitted label</th><th>Verification</th><th>API</th><th>Integration</th><th>Affiliation</th></tr>";
+      WPA.council54Intake.forEach(function(s) {
+        html += "<tr><td>" + String(s.seat).padStart(2, "0") + "</td><td><strong>" + escapeHTML(s.submitted_label) + "</strong></td><td>" + s.verification_status + "</td><td>" + s.official_api_status + "</td><td>" + s.integration_mode + "</td><td>" + s.affiliation_status + "</td></tr>";
+      });
+      html += "</table>";
+      el.innerHTML = html;
+    }
+
+    function renderResearch() {
+      const el = document.getElementById("researchRender");
+      let html = "";
+      WPA.externalResearch.forEach(function(r) {
+        html += "<div class='card'><h3>" + escapeHTML(r.id) + " · " + escapeHTML(r.title) + "</h3>";
+        html += "<p><strong>Reference:</strong> " + escapeHTML(r.reference) + " · submitted " + escapeHTML(r.arxiv_submitted) + " · " + r.authors_count + " authors.</p>";
+        html += "<p><strong>Research scale:</strong> " + r.persona_records.toLocaleString() + " persona records · " + r.persona_dimensions + " dimensions · approx. " + r.public_coreset_approx.toLocaleString() + " public coreset · " + r.application_tasks + " application tasks.</p>";
+        html += "<p><strong>Environments:</strong> " + r.environments.join(" · ") + "</p>";
+        html += "<p><strong>WPA role:</strong> " + escapeHTML(r.wpa_role) + "</p>";
+        html += "<p><strong>Human boundary:</strong> " + escapeHTML(r.human_boundary) + "</p>";
+        html += "<p class='small'><strong>Affiliation:</strong> " + escapeHTML(r.affiliation) + "</p></div>";
+      });
+      el.innerHTML = html;
+    }
+
+    function escapeHTML(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderFrameworks() {
+      const el = document.getElementById("frameworksRender");
+      let html = "";
+      WPA.meta.sources.forEach(function(s) {
+        html += "<div class='card'>";
+        html += "<h3>" + s.id + "</h3>";
+        html += "<p><strong>" + s.title + "</strong></p>";
+        html += "<p class='small'>DOI: " + s.doi + "</p>";
+        html += "<p class='quote'>" + s.central + "</p>";
+        html += "<p><strong>Formula:</strong> " + s.formula + "</p>";
+        html += "</div>";
+      });
+      el.innerHTML = html;
+    }
+
+    function renderAgentSelect() {
+      const select = document.getElementById("agentSelect");
+      select.innerHTML = "";
+      WPA.council.forEach(function(m) {
+        const opt = document.createElement("option");
+        opt.value = m.id;
+        opt.textContent = m.id + " · " + m.model;
+        select.appendChild(opt);
+      });
+      renderPrompt();
+    }
+
+    function renderPrompt() {
+      const agent = document.getElementById("agentSelect").value;
+      const addendum = WPA.prompts.roleAddenda[agent] || "";
+      document.getElementById("promptOut").value = WPA.prompts.universal + "\n\n" + addendum;
+    }
+
+    function copyPrompt() {
+      navigator.clipboard.writeText(document.getElementById("promptOut").value)
+        .then(function() { alert("Prompt copied."); })
+        .catch(function() { alert("Copy failed. Select and copy manually."); });
+    }
+
+    function downloadPrompt() {
+      const agent = document.getElementById("agentSelect").value;
+      download("WPA_Master_Prompt_" + agent + ".txt", document.getElementById("promptOut").value);
+    }
+
+    /* ============================== */
+    /* CALCULATOR FUNCTIONS           */
+    /* ============================== */
+
+    function parseJSON(id) {
+      try { return JSON.parse(document.getElementById(id).value); }
+      catch (e) { return { error: e.message }; }
+    }
+
+    function clamp01(v) {
+      const n = Number(v);
+      if (Number.isNaN(n)) return 0;
+      return Math.max(0, Math.min(1, n));
+    }
+
+    function computeEASI() {
+      const d = parseJSON("easiInput");
+      if (d.error) { document.getElementById("easiOut").textContent = "ERROR: " + d.error; return; }
+      const vals = [d.L, d.C, d.R, d.H, d.A, d.S].map(clamp01);
+      const easi = Math.min.apply(null, vals);
+      document.getElementById("easiOut").textContent =
+        "EASI = " + easi.toFixed(2) +
+        "\nRule: weakest critical component governs." +
+        "\nIf any component is 0, effective sovereignty claim is suspended.";
+    }
+
+    function computeEECI() {
+      const d = parseJSON("eecInput");
+      if (d.error) { document.getElementById("eecOut").textContent = "ERROR: " + d.error; return; }
+      const I = clamp01(d.I);
+      const D = clamp01(d.D);
+      const H = clamp01(d.H);
+      const S = Number(d.S) === 1 ? 1 : 0;
+      const eeci = (((I * D) + (H * H)) / 2) * S;
+      document.getElementById("eecOut").textContent =
+        "EECI = " + eeci.toFixed(3) +
+        "\nS gate: " + (S === 1 ? "functional stop present" : "stop absent → EECI = 0") +
+        "\nH² penalizes partial human confirmation.";
+    }
+
+    function computeEEDA() {
+      const d = parseJSON("eedaInput");
+      if (d.error) { document.getElementById("eedaOut").textContent = "ERROR: " + d.error; return; }
+      const T = clamp01(d.T);
+      const B = clamp01(d.B);
+      const H = clamp01(d.H);
+      const S = Number(d.S) === 1 ? 1 : 0;
+      const eeda = (((T * B) + (H * H)) / 2) * S;
+      document.getElementById("eedaOut").textContent =
+        "EEDA = " + eeda.toFixed(3) +
+        "\nS gate: " + (S === 1 ? "tested stop/rollback present" : "stop/rollback absent → EEDA = 0") +
+        "\nB rewards bounded autonomy, not maximum autonomy.";
+    }
+
+    function computeGate() {
+      const I = document.getElementById("gateI").checked;
+      const M = document.getElementById("gateM").checked;
+      const P = document.getElementById("gateP").checked;
+      const H = document.getElementById("gateH").checked;
+      const R = document.getElementById("gateR").checked;
+      const pass = I && M && P && H && R;
+      document.getElementById("gateOut").textContent =
+        "G_chain = " + (pass ? "PASS" : "BLOCK") +
+        "\nI=" + Number(I) + " M=" + Number(M) + " P=" + Number(P) + " H*=" + Number(H) + " R=" + Number(R) +
+        "\nIf any predicate is 0, the chain must not execute AC3.";
+    }
+
+    function computeComposition() {
+      const step = Number(document.getElementById("cStep").value);
+      const combined = Number(document.getElementById("cCombined").value);
+      const result = Math.max(step, combined);
+      const names = ["AC0","AC1","AC2","AC3"];
+      document.getElementById("compositionOut").textContent =
+        "C_chain = " + names[result] +
+        "\nRule: combined outcome may uplift multiple low-risk steps into a higher class.";
+    }
+
+    function computeRisk() {
+      const p = Number(document.getElementById("riskP").value);
+      const i = Number(document.getElementById("riskI").value);
+      const s0 = document.getElementById("riskS").checked;
+      const score = p * i;
+      const pause = s0 || score >= 15;
+      document.getElementById("riskOut").textContent =
+        "P×I = " + score +
+        "\nS=0: " + (s0 ? "yes" : "no") +
+        "\nWPA Right to Pause: " + (pause ? "ACTIVATE" : "NOT AUTOMATICALLY TRIGGERED") +
+        "\nThreshold: P×I >= 15 or S=0.";
+    }
+
+    function generateReceipt() {
+      const nowDate = new Date();
+      const now = nowDate.toISOString();
+      const validUntil = new Date(nowDate.getTime() + 60 * 60 * 1000).toISOString();
+      const selectedId = document.getElementById("agentSelect") ? document.getElementById("agentSelect").value : "UNKNOWN";
+      const selectedMember = WPA.council.find(function(m) { return m.id === selectedId; });
+      const receipt = {
+        receipt_id: "RCPT-" + Date.now(),
+        chain_id: document.getElementById("chainId").value || "CHAIN-WPA-UNKNOWN",
+        generated_at: now,
+        status: "local_governance_framework",
+        handoff: {
+          sender: "WPA-AI-ADVISOR",
+          receiver: "WPA-HUMAN-GATE",
+          sent_at: now,
+          content_hash: null,
+          content_hash_status: "not_computed_local_demo",
+          transform_summary: "Advisory draft generated under WPA AI Council Integrated Governance Codex v1.1.2."
+        },
+        identity: {
+          member_id: selectedMember ? selectedMember.id : selectedId,
+          provider: selectedMember ? selectedMember.provider : "UNKNOWN",
+          model: selectedMember ? selectedMember.model : "UNKNOWN",
+          service_version: "local_edition",
+          runtime_id: "browser-local",
+          attestation_ref: "none"
+        },
+        mandate: {
+          principal: document.getElementById("principal").value || "SANDE-SMILJANOV-M1",
+          owner: document.getElementById("mandateOwner").value || "WPA-AUTHOR",
+          epoch: 1,
+          scope: ["advise","draft","analyse"],
+          delegation_right: false,
+          valid_until: validUntil,
+          action_class: document.getElementById("receiptAC").value || "AC1"
+        },
+        evidence: {
+          sources: ["PN-005","PN-006","PN-007","PN-008"],
+          uncertainty: "Not verified by independent human review in this local edition.",
+          unresolved_conflicts: []
+        },
+        control: {
+          human_approval_state: "required",
+          gate_decision: "pending",
+          pause_epoch: 0
+        },
+        boundary: "This receipt is illustrative and local. It is not cryptographic proof, legal signature or institutional commitment."
+      };
+      document.getElementById("receiptOut").textContent = JSON.stringify(receipt, null, 2);
+    }
+
+    /* ============================== */
+    /* ANALYTICAL CENTER              */
+    /* ============================== */
+
+    const analyticsRecords = [];
+
+    function populateAnalyticsControls() {
+      const outcome = document.getElementById("anaOutcome");
+      const qclass = document.getElementById("anaClass");
+      outcome.innerHTML = WPA.analyticalCenter.result_categories.map(function(v) { return "<option>" + escapeHTML(v) + "</option>"; }).join("");
+      qclass.innerHTML = WPA.analyticalCenter.question_classes.map(function(v) { return "<option>" + escapeHTML(v) + "</option>"; }).join("");
+      const labels = {
+        accuracy: "Accuracy",
+        evidence: "Evidence",
+        citation: "Citation",
+        protocol_correctness: "Protocol correctness",
+        language: "Language",
+        human_semantic_alignment: "Human semantic alignment",
+        empathic_appropriateness: "Empathic appropriateness",
+        safety: "Safety",
+        usefulness: "Usefulness"
+      };
+      const metricWrap = document.getElementById("metricInputs");
+      metricWrap.innerHTML = WPA.analyticalCenter.metrics.map(function(m) {
+        const id = "metric_" + m;
+        let opts = "";
+        for (let i = 1; i <= 5; i++) opts += "<option value='" + i + "'" + (i === 4 ? " selected" : "") + ">" + i + "/5</option>";
+        return "<div><label for='" + id + "'>" + escapeHTML(labels[m] || m) + "</label><select id='" + id + "'>" + opts + "</select></div>";
+      }).join("");
+    }
+
+    function addAnalyticsRecord() {
+      const participant = (document.getElementById("anaParticipant").value || "").trim();
+      if (!/^WPA-P\d{3}$/i.test(participant)) {
+        document.getElementById("analyticsOut").textContent = "BLOCKED: Participant ID must use pseudonymous form WPA-P001 .. WPA-P999. Do not enter a name or email here.";
+        return;
+      }
+      const metrics = {};
+      WPA.analyticalCenter.metrics.forEach(function(m) { metrics[m] = Number(document.getElementById("metric_" + m).value); });
+      const record = {
+        interaction_id: "WPA-INT-" + String(Date.now()),
+        participant_id: participant.toUpperCase(),
+        country_self_reported: document.getElementById("anaCountry").value.trim() || null,
+        role_self_reported: document.getElementById("anaRole").value || null,
+        age_band_self_reported: document.getElementById("anaAge").value || null,
+        gender_self_reported: document.getElementById("anaGender").value || null,
+        language: document.getElementById("anaLanguage").value.trim() || "unknown",
+        question_class: document.getElementById("anaClass").value,
+        outcome: document.getElementById("anaOutcome").value,
+        question: document.getElementById("anaQuestion").value,
+        final_answer: document.getElementById("anaAnswer").value,
+        visible_sources: document.getElementById("anaSources").value.split(/\n+/).map(function(v){return v.trim();}).filter(Boolean),
+        human_reviewer: document.getElementById("anaReviewer").value.trim() || "UNSPECIFIED_HUMAN",
+        metrics_1_to_5: metrics,
+        human_note: document.getElementById("anaNote").value.trim(),
+        created_at: new Date().toISOString(),
+        governance: {
+          demographics: "voluntary_self_reported_only",
+          automated_profile_inference: "forbidden",
+          auto_system_change: "forbidden",
+          human_review_required_for_lessons: true
+        }
+      };
+      analyticsRecords.push(record);
+      renderAnalyticsDashboard();
+    }
+
+    function renderAnalyticsDashboard() {
+      const out = document.getElementById("analyticsOut");
+      if (!analyticsRecords.length) { out.textContent = "No local records yet."; return; }
+      const outcomeCounts = {};
+      const metricSums = {};
+      WPA.analyticalCenter.metrics.forEach(function(m) { metricSums[m] = 0; });
+      analyticsRecords.forEach(function(r) {
+        outcomeCounts[r.outcome] = (outcomeCounts[r.outcome] || 0) + 1;
+        WPA.analyticalCenter.metrics.forEach(function(m) { metricSums[m] += Number(r.metrics_1_to_5[m] || 0); });
+      });
+      const avgs = {};
+      WPA.analyticalCenter.metrics.forEach(function(m) { avgs[m] = metricSums[m] / analyticsRecords.length; });
+      const ranked = Object.keys(avgs).sort(function(a,b){ return avgs[b] - avgs[a]; });
+      const summary = {
+        records: analyticsRecords.length,
+        outcomes: outcomeCounts,
+        average_metrics_1_to_5: Object.fromEntries(Object.entries(avgs).map(function(kv){ return [kv[0], Number(kv[1].toFixed(2))]; })),
+        strongest_dimension: ranked[0] ? { metric: ranked[0], score: Number(avgs[ranked[0]].toFixed(2)) } : null,
+        weakest_dimension: ranked.length ? { metric: ranked[ranked.length - 1], score: Number(avgs[ranked[ranked.length - 1]].toFixed(2)) } : null,
+        governance_note: "Aggregate analytics are evidence for human review, not authority for automatic model, corpus, prompt or policy change."
+      };
+      out.textContent = JSON.stringify(summary, null, 2);
+    }
+
+    function exportAnalyticsJSON() {
+      download("WPA_Analytical_Center_Local_Records_" + new Date().toISOString().replace(/[:.]/g,"-") + ".json", JSON.stringify({ exported_at: new Date().toISOString(), records: analyticsRecords }, null, 2), "application/json;charset=utf-8");
+    }
+
+    function csvCell(v) {
+      const s = typeof v === "string" ? v : JSON.stringify(v == null ? "" : v);
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+
+    function exportAnalyticsCSV() {
+      const headers = ["interaction_id","participant_id","country_self_reported","role_self_reported","age_band_self_reported","gender_self_reported","language","question_class","outcome","question","final_answer","visible_sources","human_reviewer","human_note","created_at"].concat(WPA.analyticalCenter.metrics);
+      const rows = [headers.map(csvCell).join(",")];
+      analyticsRecords.forEach(function(r) {
+        const base = headers.slice(0,15).map(function(h) { return h === "visible_sources" ? r.visible_sources.join(" | ") : r[h]; });
+        const metricVals = WPA.analyticalCenter.metrics.map(function(m) { return r.metrics_1_to_5[m]; });
+        rows.push(base.concat(metricVals).map(csvCell).join(","));
+      });
+      download("WPA_Analytical_Center_Local_Records_" + new Date().toISOString().replace(/[:.]/g,"-") + ".csv", rows.join("\n"), "text/csv;charset=utf-8");
+    }
+
+    function generateLessonRecord() {
+      if (!analyticsRecords.length) {
+        document.getElementById("lessonOut").textContent = "No evidence records available. A lesson cannot be generated without observed evidence.";
+        return;
+      }
+      const sums = {};
+      WPA.analyticalCenter.metrics.forEach(function(m){sums[m]=0;});
+      analyticsRecords.forEach(function(r){WPA.analyticalCenter.metrics.forEach(function(m){sums[m]+=Number(r.metrics_1_to_5[m]||0);});});
+      const avgs = Object.fromEntries(WPA.analyticalCenter.metrics.map(function(m){return [m,sums[m]/analyticsRecords.length];}));
+      const weakest = Object.keys(avgs).sort(function(a,b){return avgs[a]-avgs[b];})[0];
+      const proposal = {
+        status: "PROPOSED_FOR_HUMAN_REVIEW",
+        observation: "Lowest current aggregate human-scored dimension: " + weakest + " = " + avgs[weakest].toFixed(2) + "/5 across " + analyticsRecords.length + " local records.",
+        evidence_refs: analyticsRecords.map(function(r){return r.interaction_id;}),
+        root_cause: "UNDETERMINED — requires human analysis; no automatic causal inference is accepted.",
+        lesson_learned: "Candidate lesson only; reviewer must inspect exact questions, answers, sources and context.",
+        proposed_change: "NONE_AUTOMATIC — human may approve targeted corpus/prompt/retrieval/UI change in a new version after evidence review.",
+        human_gate: "REQUIRED",
+        principal_decision: "PENDING",
+        retest_required: true
+      };
+      document.getElementById("lessonOut").textContent = JSON.stringify(proposal, null, 2);
+    }
+
+
+
+    /* ============================================================ */
+    /* QWEN/KIMI CODE-FUSION · LOCAL COMMAND CENTER                */
+    /* ============================================================ */
+
+    const WPAStore = {
+      prefix: "wpa_codex_v112_",
+      get: function(key, fallback) {
+        try {
+          const raw = localStorage.getItem(this.prefix + key);
+          return raw == null ? fallback : JSON.parse(raw);
+        } catch (e) { return fallback; }
+      },
+      set: function(key, data) {
+        try { localStorage.setItem(this.prefix + key, JSON.stringify(data)); return true; }
+        catch (e) { return false; }
+      },
+      clear: function(key) {
+        try { localStorage.removeItem(this.prefix + key); return true; }
+        catch (e) { return false; }
+      }
+    };
+
+    let ccMode = "balanced";
+    let ccCurrent = { task:"", mode:"balanced", selected:[], routes:{}, synthesis:null, workplan:null, created_at:null };
+    let ccSessions = WPAStore.get("command_center_sessions", []);
+
+    function ccEscape(v) { return escapeHTML(String(v == null ? "" : v)); }
+
+    function ccInit() {
+      const selector = document.getElementById("ccProviderSelector");
+      if (!selector) return;
+      const defaultIds = ["openai","claude","qwen","kimi"];
+      selector.innerHTML = WPA.commandCenter.advisors.map(function(a) {
+        return '<label><input type="checkbox" value="' + ccEscape(a.id) + '" ' + (defaultIds.indexOf(a.id) >= 0 ? 'checked' : '') + '> ' + ccEscape(a.label) + '</label>';
+      }).join("");
+      ccRenderCards();
+      ccRenderArchive();
+    }
+
+    function ccSelectedIds() {
+      return Array.from(document.querySelectorAll('#ccProviderSelector input[type="checkbox"]:checked')).map(function(i){return i.value;});
+    }
+
+    function ccSetMode(mode) {
+      if (!WPA.commandCenter.modes[mode]) return;
+      ccMode = mode;
+      document.querySelectorAll("#ccModeButtons .cc-mode-btn").forEach(function(b){b.classList.toggle("active", b.dataset.mode === mode);});
+    }
+
+    function ccRenderCards(routes) {
+      const grid = document.getElementById("ccGrid");
+      if (!grid) return;
+      routes = routes || {};
+      grid.innerHTML = WPA.commandCenter.advisors.map(function(a) {
+        const r = routes[a.id];
+        const status = r ? "routed" : "ready";
+        const body = r ? r : "Available as a local advisory role placeholder. No live provider connection is asserted.";
+        return '<div class="cc-card">' +
+          '<div class="cc-card-head"><div><div class="cc-name">' + ccEscape(a.label) + '</div><div class="cc-role">' + ccEscape(a.role) + ' · ' + ccEscape(a.focus) + '</div></div><span class="cc-status ' + status + '">' + (r ? 'ROUTED' : 'UI ROLE') + '</span></div>' +
+          '<div class="cc-response">' + ccEscape(body) + '</div>' +
+          '<div class="cc-card-foot"><span>API: NOT CONNECTED</span><span>Cost/latency: N/A</span></div>' +
+          '</div>';
+      }).join("");
+    }
+
+    function ccRouteTask() {
+      const task = document.getElementById("ccPrompt").value.trim();
+      const selected = ccSelectedIds();
+      if (!task) { document.getElementById("ccSynthesis").textContent = "Enter a human-defined task first."; ccSwitchTab("synthesis"); return; }
+      if (!selected.length) { document.getElementById("ccSynthesis").textContent = "Select at least one advisory role."; ccSwitchTab("synthesis"); return; }
+      const routes = {};
+      selected.forEach(function(id) {
+        const a = WPA.commandCenter.advisors.find(function(x){return x.id === id;});
+        if (!a) return;
+        routes[id] = "ROUTING PREVIEW\nRole: " + a.role + "\nFocus: " + a.focus + "\nMode: " + ccMode + "\nTask received from human: " + task + "\nExpected output: advisory draft/evidence notes only; no institutional commitment.";
+      });
+      const selectedLabels = selected.map(function(id){const a=WPA.commandCenter.advisors.find(function(x){return x.id===id;}); return a ? a.label : id;});
+      const synthesis = {
+        status: "ADVISORY_SYNTHESIS_ONLY",
+        human_task: task,
+        mode: ccMode,
+        selected_advisors: selectedLabels,
+        agreement_rule: "Preserve agreement and disagreement; do not average away material conflict.",
+        evidence_rule: "Each material claim must carry source/provenance or be marked unverified/analytical.",
+        human_gate: "REQUIRED before external reliance, AC2 activation or any AC3 commitment.",
+        institutional_will: "NOT_CREATED_BY_MACHINE_CONSENSUS"
+      };
+      ccCurrent = {task:task, mode:ccMode, selected:selected, routes:routes, synthesis:synthesis, workplan:null, created_at:new Date().toISOString()};
+      ccRenderCards(routes);
+      document.getElementById("ccSynthesis").textContent = JSON.stringify(synthesis, null, 2);
+      ccSwitchTab("advisors");
+    }
+
+    function ccGenerateWorkplan() {
+      if (!ccCurrent.task) ccRouteTask();
+      if (!ccCurrent.task) return;
+      const selected = ccCurrent.selected.map(function(id){return WPA.commandCenter.advisors.find(function(a){return a.id===id;});}).filter(Boolean);
+      const plan = {
+        status: "PROPOSED_FOR_HUMAN_REVIEW",
+        objective: ccCurrent.task,
+        mode: ccCurrent.mode,
+        steps: [
+          {step:1, owner:"Human Principal", action:"Confirm semantic intent, scope, data boundary, AC ceiling, cost ceiling and stop conditions."},
+          {step:2, owner:"Router", action:"Activate only selected/eligible advisory roles; no mandate expansion."},
+          {step:3, owner:"Advisors", assignments:selected.map(function(a){return {advisor:a.label, role:a.role, focus:a.focus};})},
+          {step:4, owner:"Verification layer", action:"Merge evidence/provenance, preserve unresolved conflicts, flag unsupported claims."},
+          {step:5, owner:"Human reviewer", action:"Assess meaning, empathy, evidence, risk, usefulness and disagreement."},
+          {step:6, owner:"Human Principal", action:"APPROVE / REVISE / REJECT / PAUSE. Machine consensus has no authority."},
+          {step:7, owner:"Execution layer", action:"Only if authorized: AC0/AC1; AC2 within pre-approved reversible envelope; AC3 named-human-only."}
+        ],
+        auto_send:false,
+        auto_publish:false,
+        auto_pay:false,
+        auto_self_modify:false
+      };
+      ccCurrent.workplan = plan;
+      document.getElementById("ccWorkplan").textContent = JSON.stringify(plan, null, 2);
+      ccSwitchTab("workplan");
+    }
+
+    function ccSwitchTab(tab) {
+      const map = {advisors:"ccAdvisorsView", synthesis:"ccSynthesisView", workplan:"ccWorkplanView", archive:"ccArchiveView"};
+      Object.keys(map).forEach(function(k){const el=document.getElementById(map[k]); if(el) el.classList.toggle("hidden-view", k !== tab);});
+      document.querySelectorAll(".cc-tab").forEach(function(b){b.classList.toggle("active", b.dataset.tab === tab);});
+      if (tab === "archive") ccRenderArchive();
+    }
+
+    function ccSaveSession() {
+      if (!ccCurrent.task) ccRouteTask();
+      if (!ccCurrent.task) return;
+      const session = JSON.parse(JSON.stringify(ccCurrent));
+      session.id = "CC-" + Date.now();
+      session.saved_at = new Date().toISOString();
+      ccSessions.unshift(session);
+      ccSessions = ccSessions.slice(0, 100);
+      WPAStore.set("command_center_sessions", ccSessions);
+      ccRenderArchive();
+      ccSwitchTab("archive");
+    }
+
+    function ccRenderArchive() {
+      const box = document.getElementById("ccArchive");
+      if (!box) return;
+      if (!ccSessions.length) { box.textContent = "No saved sessions."; return; }
+      box.innerHTML = ccSessions.map(function(s){
+        return '<div class="cc-session" onclick="ccLoadSession(\'' + ccEscape(s.id) + '\')"><strong>' + ccEscape(s.id) + '</strong> · ' + ccEscape(s.mode) + '<br><span class="small">' + ccEscape(s.saved_at || s.created_at || '') + '</span><br>' + ccEscape((s.task || '').slice(0,180)) + '</div>';
+      }).join("");
+    }
+
+    function ccLoadSession(id) {
+      const s = ccSessions.find(function(x){return x.id === id;});
+      if (!s) return;
+      ccCurrent = JSON.parse(JSON.stringify(s));
+      ccSetMode(s.mode || "balanced");
+      document.getElementById("ccPrompt").value = s.task || "";
+      document.querySelectorAll('#ccProviderSelector input[type="checkbox"]').forEach(function(i){i.checked = (s.selected || []).indexOf(i.value) >= 0;});
+      ccRenderCards(s.routes || {});
+      document.getElementById("ccSynthesis").textContent = s.synthesis ? JSON.stringify(s.synthesis, null, 2) : "No synthesis in saved session.";
+      document.getElementById("ccWorkplan").textContent = s.workplan ? JSON.stringify(s.workplan, null, 2) : "No workplan in saved session.";
+      ccSwitchTab("advisors");
+    }
+
+    function ccClearArchive() {
+      if (!confirm("Clear the local Command Center archive in this browser?")) return;
+      ccSessions = [];
+      WPAStore.clear("command_center_sessions");
+      ccRenderArchive();
+    }
+
+    function ccClearCurrent() {
+      document.getElementById("ccPrompt").value = "";
+      ccCurrent = {task:"", mode:ccMode, selected:[], routes:{}, synthesis:null, workplan:null, created_at:null};
+      ccRenderCards();
+      document.getElementById("ccSynthesis").textContent = "No routed task yet. Machine agreement is not institutional will.";
+      document.getElementById("ccWorkplan").textContent = "No workplan yet.";
+      ccSwitchTab("advisors");
+    }
+
+    function ccExportMarkdown() {
+      if (!ccCurrent.task) { document.getElementById("ccSynthesis").textContent = "Nothing to export: route a task first."; ccSwitchTab("synthesis"); return; }
+      let md = "# WPA Multi-AI Command Center Session\n\n";
+      md += "Status: ADVISORY / LOCAL / NO LIVE API\n\n";
+      md += "Mode: " + ccCurrent.mode + "\n\n";
+      md += "## Human-defined task\n\n" + ccCurrent.task + "\n\n";
+      md += "## Selected advisory roles\n\n";
+      ccCurrent.selected.forEach(function(id){const a=WPA.commandCenter.advisors.find(function(x){return x.id===id;}); if(a) md += "- " + a.label + " — " + a.role + "\n";});
+      md += "\n## Advisory synthesis\n\n```json\n" + JSON.stringify(ccCurrent.synthesis || {}, null, 2) + "\n```\n\n";
+      md += "## Human-governed workplan\n\n```json\n" + JSON.stringify(ccCurrent.workplan || {}, null, 2) + "\n```\n\n";
+      md += "Human approval > automated confidence. Machine agreement is not institutional will.\n";
+      download("WPA_Command_Center_Session_" + new Date().toISOString().replace(/[:.]/g,"-") + ".md", md, "text/markdown;charset=utf-8");
+    }
+
+    /* ============================================================ */
+    /* KIMI-INSPIRED VIRTUAL SANDE ROUTING LAB                      */
+    /* ============================================================ */
+
+    let labLang = "mk";
+    let labHistory = [];
+
+    function labInit() {
+      labNewSession();
+    }
+
+    function labSetLang(lang) {
+      labLang = lang === "en" ? "en" : "mk";
+      document.querySelectorAll(".lab-lang button").forEach(function(b){b.classList.toggle("active", b.dataset.lang === labLang);});
+      document.getElementById("labInput").placeholder = labLang === "mk" ? "Внеси задача за routing preview..." : "Enter a task for routing preview...";
+      document.getElementById("labNotice").textContent = labLang === "mk" ? "AI помага; човекот ги определува значењето, мандатот, емпатијата и конечната институционална волја." : "AI may assist; the human defines meaning, mandate, empathy and final institutional will.";
+    }
+
+    function labAppend(kind, text, name) {
+      const t = document.getElementById("labTranscript");
+      const wrap = document.createElement("div");
+      wrap.className = "lab-message " + (kind === "user" ? "user" : "bot");
+      const avatar = document.createElement("div");
+      avatar.className = "lab-avatar";
+      avatar.textContent = kind === "user" ? "👤" : "⚜️";
+      const body = document.createElement("div");
+      body.className = "lab-message-body";
+      const nm = document.createElement("div");
+      nm.className = "lab-message-name";
+      nm.textContent = name;
+      const tx = document.createElement("div");
+      tx.className = "lab-message-text";
+      tx.textContent = text;
+      body.appendChild(nm); body.appendChild(tx); wrap.appendChild(avatar); wrap.appendChild(body); t.appendChild(wrap);
+      t.scrollTop = t.scrollHeight;
+    }
+
+    function labNewSession() {
+      labHistory = [];
+      const t = document.getElementById("labTranscript");
+      if (!t) return;
+      t.innerHTML = "";
+      labAppend("bot", labLang === "mk" ? "Ова е локален routing lab, не live Virtual Sande. Внеси задача; ќе добиеш безбеден routing preview и Human Gate, не измислен AI одговор." : "This is a local routing lab, not live Virtual Sande. Enter a task; you will receive a safe routing preview and Human Gate, not a fabricated AI answer.", "Virtual Sande Lab");
+    }
+
+    function labSuggestion(text) {
+      document.getElementById("labInput").value = text;
+      labSend();
+    }
+
+    function labHandleKey(e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); labSend(); }
+    }
+
+    function labAutosize(el) {
+      el.style.height = "auto";
+      el.style.height = Math.min(el.scrollHeight, 160) + "px";
+    }
+
+    function labSend() {
+      const input = document.getElementById("labInput");
+      const task = input.value.trim();
+      if (!task) return;
+      labAppend("user", task, labLang === "mk" ? "Вие" : "You");
+      labHistory.push({role:"human", text:task, at:new Date().toISOString()});
+      input.value = ""; input.style.height = "auto";
+
+      const selected = ccSelectedIds().length ? ccSelectedIds() : ["openai","claude","qwen","kimi"];
+      const labels = selected.map(function(id){const a=WPA.commandCenter.advisors.find(function(x){return x.id===id;}); return a ? a.label + " / " + a.role : id;});
+      const preview = {
+        type: "ROUTING_PREVIEW_NOT_ANSWER",
+        task: task,
+        suggested_advisory_roles: labels,
+        mode: ccMode,
+        evidence_requirement: "Ground material claims; preserve source/provenance; mark uncertainty.",
+        semantic_rule: "If human meaning is materially ambiguous, ask the human rather than infer intent.",
+        empathy_rule: "Do not infer inner emotion as fact; preserve dignity and request clarification when consequential.",
+        human_gate: "Required before consequential external reliance or action.",
+        ppsf_p20_coupling: false
+      };
+      labAppend("bot", JSON.stringify(preview, null, 2), "Virtual Sande Lab");
+      labHistory.push({role:"routing_lab", data:preview, at:new Date().toISOString()});
+    }
+
+
+    /* ============================== */
+    /* EXPORT FUNCTIONS               */
+    /* ============================== */
+
+    function exportJSON() {
+      download("wpa_ai_council_integrated_code_v1.1.2.json", JSON.stringify(WPA, null, 2), "application/json;charset=utf-8");
+      document.getElementById("exportInfo").textContent = "JSON exported · v1.1.2";
+    }
+
+    function exportMarkdown() {
+      let md = "# " + WPA.meta.title + " v" + WPA.meta.version + "\n\n";
+      md += "Version: " + WPA.meta.version + "\n\n";
+      md += "Date: " + WPA.meta.date + "\n\n";
+      md += "Principal: " + WPA.meta.principal + "\n\n";
+      md += "Status: " + WPA.meta.status + "\n\n";
+      md += "Public URL status: " + WPA.meta.public_url_status + "\n\n";
+      md += "## Public Boundary\n\n" + WPA.publicBoundary + "\n\n";
+      md += "## Sources and Formulas\n\n";
+      WPA.meta.sources.forEach(function(s) { md += "- " + s.id + ": " + s.title + " · DOI: " + s.doi + " · " + s.formula + "\n"; });
+      md += "\n## Constitution\n\n";
+      WPA.constitution.forEach(function(item) { md += "### " + item.article + "\n- MK: " + item.mk + "\n- EN: " + item.en + "\n- Rule: " + item.rule + "\n\n"; });
+      md += "## Human Sovereignty\n\n" + WPA.humanSovereignty.rule_mk + "\n\n" + WPA.humanSovereignty.rule_en + "\n\n";
+      md += "- " + WPA.humanSovereignty.semantic_primacy + "\n- " + WPA.humanSovereignty.empathic_primacy + "\n- " + WPA.humanSovereignty.judgment_primacy + "\n- " + WPA.humanSovereignty.approval_primacy + "\n\n";
+      md += "## Proactive Agents\n\nAllowed: " + WPA.proactiveAgents.allowed.join("; ") + "\n\nForbidden: " + WPA.proactiveAgents.forbidden.join("; ") + "\n\nAmbiguity rule: " + WPA.proactiveAgents.ambiguity_rule + "\n\n";
+      md += "## AI Council\n\n";
+      WPA.council.forEach(function(m) { md += "### " + m.id + "\n- Model: " + m.model + "\n- Provider: " + m.provider + "\n- Role: " + m.role + "\n- Ceiling: " + m.ceiling + "\n- Mandate: " + m.mandate + "\n\n"; });
+      md += "## Governance Layers\n\n" + WPA.governance.layers.join(" → ") + "\n\n";
+      md += "## Action Classes\n\n";
+      WPA.governance.actionClasses.forEach(function(ac) { md += "- " + ac.id + " · " + ac.name + ": " + ac.gate + "\n"; });
+      md += "\n## Red Lines\n\n";
+      WPA.governance.redLines.forEach(function(line) { md += "- " + line + "\n"; });
+      md += "\n## 24/7 Human-Governed Orchestrator\n\nMode: " + WPA.orchestratorPolicy.mode + "\n\nContinuous 54 chatbots: " + WPA.orchestratorPolicy.continuous_54_chatbots + "\n\nActivation factors: " + WPA.orchestratorPolicy.activation_factors.join(", ") + "\n\nIntegration modes: " + WPA.orchestratorPolicy.integration_modes.join(", ") + "\n\nAC3: " + WPA.orchestratorPolicy.ac3_rule + "\n\n";
+      md += "## External Research & Evaluation\n\n";
+      WPA.externalResearch.forEach(function(r) { md += "### " + r.id + "\n- Title: " + r.title + "\n- Reference: " + r.reference + "\n- WPA role: " + r.wpa_role + "\n- Human boundary: " + r.human_boundary + "\n- Affiliation: " + r.affiliation + "\n\n"; });
+      md += "## Council 54 Candidate-Seat Intake\n\n";
+      WPA.council54Intake.forEach(function(s) { md += "- Seat " + String(s.seat).padStart(2,"0") + " · " + s.submitted_label + " · " + s.verification_status + " · " + s.affiliation_status + "\n"; });
+      md += "\n## Analytical & Evaluation Center\n\n";
+      md += "Mode: " + WPA.analyticalCenter.mode + "\n\nIdentity rule: " + WPA.analyticalCenter.identity_rule + "\n\nDemographic rule: " + WPA.analyticalCenter.demographic_rule + "\n\nResult categories: " + WPA.analyticalCenter.result_categories.join(", ") + "\n\nQuestion classes: " + WPA.analyticalCenter.question_classes.join(", ") + "\n\nMetrics: " + WPA.analyticalCenter.metrics.join(", ") + "\n\nLessons workflow: " + WPA.analyticalCenter.lessons_workflow.join(" → ") + "\n\nAuto-change policy: " + WPA.analyticalCenter.auto_change_policy + "\n\n";
+
+      md += "## Multi-AI Command Center · v1.1.2 Code Fusion\n\n";
+      md += "Mode: " + WPA.commandCenter.mode + "\n\nConsensus semantics: " + WPA.commandCenter.consensus_semantics + "\n\nHuman decision rule: " + WPA.commandCenter.human_decision_rule + "\n\n";
+      WPA.commandCenter.advisors.forEach(function(a){ md += "- " + a.label + " — " + a.role + " — " + a.focus + " — " + a.status + "\n"; });
+      md += "\n## Virtual Sande Routing Lab\n\nMode: " + WPA.virtualSandeRoutingLab.mode + "\n\nLive model: " + WPA.virtualSandeRoutingLab.live_model + "\n\nPPSF-P20 runtime coupling: " + WPA.virtualSandeRoutingLab.ppsf_p20_runtime_coupling + "\n\nOutput type: " + WPA.virtualSandeRoutingLab.output_type + "\n\n";
+      md += "## Schemas\n\n```json\n" + JSON.stringify(WPA.schemas, null, 2) + "\n```\n\n";
+      md += "## Checklist\n\n";
+      WPA.checklist.forEach(function(item) { md += "- [ ] " + item + "\n"; });
+      download("wpa_ai_council_integrated_code_v1.1.2.md", md, "text/markdown;charset=utf-8");
+      document.getElementById("exportInfo").textContent = "Full Markdown exported · v1.1.2";
+    }
+
+    function download(filename, text, mimeType) {
+      const blob = new Blob([text], { type: mimeType || "text/plain;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    /* ============================== */
+    /* INIT                           */
+    /* ============================== */
+
+    function init() {
+      renderConstitution();
+      renderCouncil();
+      renderCouncil54();
+      renderResearch();
+      renderFrameworks();
+      renderAgentSelect();
+      populateAnalyticsControls();
+      ccInit();
+      labInit();
+      computeEASI();
+      computeEECI();
+      computeEEDA();
+      computeGate();
+      computeComposition();
+      computeRisk();
+      document.getElementById("exportInfo").textContent = "Ready · v1.1.2";
+    }
+
+    window.addEventListener("load", init);
+  </script>
+</body>
+</html>
