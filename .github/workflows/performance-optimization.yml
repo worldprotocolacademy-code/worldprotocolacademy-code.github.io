@@ -1,12 +1,24 @@
 name: WPA Performance Optimization
+
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      approval:
+        description: Type APPROVE_WPA_PERFORMANCE_OPTIMIZATION
+        required: true
+        default: DO_NOT_APPROVE
+        type: string
+
 permissions:
   contents: write
+
+concurrency:
+  group: wpa-performance-optimization
+  cancel-in-progress: false
+
 jobs:
   optimize:
+    if: ${{ inputs.approval == 'APPROVE_WPA_PERFORMANCE_OPTIMIZATION' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
