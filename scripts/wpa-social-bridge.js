@@ -122,11 +122,12 @@
       share.appendChild(b);
     });
 
-    var target = document.querySelector('main') || document.querySelector('.wrap') || document.querySelector('.console') || document.body;
-    if (target && target.parentNode) {
+    var target = document.querySelector('main') || document.querySelector('.wrap') || document.querySelector('.console');
+    if (target) {
       if (target.tagName && target.tagName.toLowerCase() === 'main') target.appendChild(box);
-      else target.parentNode.insertBefore(box, target.nextSibling);
-    } else {
+      else if (target.parentNode) target.parentNode.insertBefore(box, target.nextSibling);
+      else if (document.body) document.body.appendChild(box);
+    } else if (document.body) {
       document.body.appendChild(box);
     }
   }
