@@ -2,58 +2,58 @@
 
 ## 1. Introduction (MK)
 
-Оваа политика ја дефинира безбедноста на WPA платформата, корисничките податоци, сертификатите, AI системите и административните пристапи.
+Оваа работна политика ја дефинира насоката за безбедносно управување на WPA платформата, корисничките податоци, сертификатите, AI системите и административните пристапи. Таа е документ за governance и readiness и не претставува тврдење за формална сертификација или целосна имплементација на секоја наведена контрола.
 
 ## 2. Organisation (MK)
 
-Улоги: super_admin, content_manager, certification_officer, support_agent, viewer, security_auditor. Сите администратори користат 2FA.
+Целниот модел на улоги вклучува: super_admin, content_manager, certification_officer, support_agent, viewer и security_auditor. Привилегираните административни сметки треба да користат силна автентикација и 2FA каде што системот го поддржува тоа.
 
 ## 3. Risk Management (MK)
 
-Критични ризици: AI халуцинации, лажни сертификати, компромитиран admin пристап, истекување податоци, плагијат, политички несоодветен јазик.
+Клучни ризици за следење се: неподдржани AI тврдења, лажни сертификати, компромитиран административен пристап, истекување податоци, плагијат, несоодветен институционален јазик и supply-chain ризици.
 
-## 4. Controls (MK)
+## 4. Control Objectives (MK)
 
-WPA користи HTTPS, HSTS, RBAC, SHA-256, QR verification, PKI digital signature, encrypted backups, audit logs, AI Hallucination Firewall и Diplomatic Language Filter.
+Безбедносните цели на WPA вклучуваат HTTPS, HSTS каде што е технички применливо, role-based access control, криптографски хеширања, проверливи сертификати, шифрирани резервни копии каде што се користат, audit logging, контролирани AI одговори и дипломатски/институционален јазичен филтер. Секоја контрола треба да има сопствен доказ за имплементација пред да се смета за оперативно воспоставена.
 
 ## 5. Incident Response (MK)
 
-Секој инцидент се пријавува до super_admin и WPA Trust Layer. Critical incidents се блокираат, ескалираат и се испраќа email alert. За лични податоци, 72-часовна GDPR логика за известување.
+Безбедносните инциденти треба да се евидентираат, проценат, ескалираат и затворат со audit trail. За инциденти со лични податоци се применува проценка на важечките GDPR обврски и рокови; не секој настан автоматски создава обврска за известување.
 
-## 6. Compliance (MK)
+## 6. Compliance & Readiness (MK)
 
-WPA се усогласува со GDPR, ISO/IEC 27001, EU AI Act и TÜV сертификациски барања.
+WPA работи кон усогласување и readiness со применливите барања на GDPR, ISO/IEC 27001:2022 и релевантните обврски од EU AI Act каде што се применливи. WPA не тврди ISO/IEC 27001 сертификација, TÜV сертификација или независна ревизија освен ако таков статус не е документарно потврден.
 
 ## 7. Review (MK)
 
-Внатрешна ревизија на секои 6 месеци. Надворешна ревизија еднаш годишно. SoA рок: 45 дена. DPIA рок: 60 дена.
+Политиката се ревидира периодично и при значајна промена на ризик, инфраструктура или регулаторни барања. Роковите за SoA, DPIA, внатрешна ревизија и надворешна проценка се планирачки цели и треба да се потврдат во формален ISMS план.
 
 ---
 
 ## 1. Introduction (EN)
 
-This policy defines the security framework for the WPA platform, user data, certificates, AI systems and administrative access.
+This working policy defines the security-governance direction for the WPA platform, user data, certificates, AI systems and administrative access. It is a governance and readiness document and does not claim formal certification or complete implementation of every listed control.
 
 ## 2. Organisation (EN)
 
-Roles: super_admin, content_manager, certification_officer, support_agent, viewer, security_auditor. All administrators must use 2FA.
+The target role model includes: super_admin, content_manager, certification_officer, support_agent, viewer and security_auditor. Privileged administrative accounts should use strong authentication and 2FA where supported by the relevant system.
 
 ## 3. Risk Management (EN)
 
-Critical risks: AI hallucinations, forged certificates, compromised administrator access, data leakage, plagiarism and politically inappropriate language.
+Key risks to monitor include unsupported AI claims, forged certificates, compromised administrator access, data leakage, plagiarism, inappropriate institutional language and software supply-chain risks.
 
-## 4. Controls (EN)
+## 4. Control Objectives (EN)
 
-WPA uses HTTPS, HSTS, RBAC, SHA-256, QR verification, PKI digital signatures, encrypted backups, audit logs, AI Hallucination Firewall and Diplomatic Language Filter.
+WPA security objectives include HTTPS, HSTS where technically applicable, role-based access control, cryptographic hashing, verifiable certificates, encrypted backups where used, audit logging, controlled AI responses and diplomatic/institutional language safeguards. Each control requires implementation evidence before it is treated as operationally established.
 
 ## 5. Incident Response (EN)
 
-Every incident is reported to the super_admin and WPA Trust Layer. Critical incidents are blocked, escalated and reported via email alerts. For personal data incidents, WPA applies 72-hour GDPR notification logic.
+Security incidents should be logged, assessed, escalated and closed with an audit trail. Personal-data incidents require assessment against applicable GDPR notification obligations and deadlines; not every event automatically creates a notification duty.
 
-## 6. Compliance (EN)
+## 6. Compliance & Readiness (EN)
 
-WPA aligns with GDPR, ISO/IEC 27001, the EU AI Act and TÜV certification requirements.
+WPA works toward alignment and readiness with applicable GDPR requirements, ISO/IEC 27001:2022 and relevant EU AI Act obligations where applicable. WPA does not claim ISO/IEC 27001 certification, TÜV certification or independent audit status unless that status is supported by documentary evidence.
 
 ## 7. Review (EN)
 
-Internal review every six months. External review annually. SoA deadline: 45 days. DPIA deadline: 60 days.
+The policy is reviewed periodically and after material changes in risk, infrastructure or regulatory requirements. SoA, DPIA, internal-review and external-assessment dates are planning targets and should be confirmed through a formal ISMS plan.
