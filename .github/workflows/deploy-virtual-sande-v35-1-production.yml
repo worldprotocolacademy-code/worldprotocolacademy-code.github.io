@@ -2,6 +2,12 @@ name: DEPLOY Virtual Sande v35.1 PRODUCTION
 
 on:
   workflow_dispatch:
+    inputs:
+      approval:
+        description: "Type APPROVE_VIRTUAL_SANDE_V35_1_PRODUCTION_DEPLOY to authorize this production deployment"
+        required: true
+        default: "DO_NOT_APPROVE"
+        type: string
 
 permissions:
   contents: read
@@ -17,6 +23,7 @@ env:
 
 jobs:
   deploy:
+    if: ${{ inputs.approval == 'APPROVE_VIRTUAL_SANDE_V35_1_PRODUCTION_DEPLOY' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production

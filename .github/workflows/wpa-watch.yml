@@ -1,9 +1,13 @@
 name: WPA Watch
 
 on:
-  workflow_dispatch: {}
-  schedule:
-    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      approval:
+        description: "Type APPROVE_WPA_WATCH_WRITE to allow this run to write generated feed files"
+        required: true
+        default: "DO_NOT_APPROVE"
+        type: string
 
 permissions:
   contents: write
@@ -14,6 +18,7 @@ concurrency:
 
 jobs:
   watch:
+    if: ${{ inputs.approval == 'APPROVE_WPA_WATCH_WRITE' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
