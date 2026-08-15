@@ -1,6 +1,21 @@
 {
-  "version": "0.1",
-  "purpose": "Map WPA Watch domains to WPA Journal disciplines and article types.",
+  "version": "0.2",
+  "purpose": "Map WPA Watch domains to WPA Journal disciplines and article types with backward-compatible aliases.",
+  "domain_aliases": {
+    "protocol": "protokol",
+    "protokol": "protokol",
+    "diplomacy": "diplomatija",
+    "diplomatija": "diplomatija",
+    "pr": "pr",
+    "public_communication": "pr",
+    "security": "bezbednost",
+    "bezbednost": "bezbednost",
+    "communicology": "komunikologija",
+    "komunikologija": "komunikologija",
+    "academic": "akademski",
+    "akademski": "akademski",
+    "general": "komunikologija"
+  },
   "domain_to_journal": {
     "protokol": {
       "discipline": "protocol",
@@ -43,10 +58,11 @@
       ]
     },
     "akademski": {
-      "discipline": "communicology",
+      "discipline": "academic",
       "preferred_types": [
-        "Book review",
         "Methodology note",
+        "Research infrastructure note",
+        "Book review",
         "Teaching note"
       ]
     }
@@ -56,6 +72,7 @@
     "Every topic candidate requires editorial screening.",
     "Every research article requires peer review.",
     "Security-sensitive topics require additional human review.",
+    "Noise or placeholder signals are held for classification review rather than deleted automatically.",
     "AI may assist drafting editorial notes but cannot be an author or reviewer."
   ]
 }
