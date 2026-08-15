@@ -1,21 +1,23 @@
-# WPA TÜV ISO 27001 Readiness Checklist
+# WPA ISO/IEC 27001:2022 Pre-Audit Readiness Checklist
 
-| # | Item | Evidence | Deadline |
+This is an internal readiness checklist. It does **not** claim ISO/IEC 27001 certification, TÜV certification, accreditation, or completion of an independent audit.
+
+| # | Item | Expected evidence | Planning target |
 |---|---|---|---|
-| 1 | ISMS scope | ISMS Scope Document | Month 1 |
-| 2 | Security Policy | Security Policy v1.0 | Month 1 |
-| 3 | Risk Register | Risk Register | Month 1 |
-| 4 | SoA | Statement of Applicability | Month 2 |
-| 5 | Asset Inventory | Asset Register | Month 2 |
-| 6 | Access Control Policy | RBAC matrix | Month 2 |
-| 7 | Logging Policy | Audit log evidence | Month 3 |
-| 8 | Cryptography Policy | SHA-256/PKI/encryption evidence | Month 3 |
-| 9 | Incident Response Plan | IR Plan + contact chain | Month 3 |
-| 10 | GDPR/DPIA | DPIA for Virtual Sande + Student Desk | Month 3 |
-| 11 | Admin Training | Training attendance + test results | Month 3 |
+| 1 | ISMS scope | Approved ISMS Scope Document | Month 1 |
+| 2 | Security Policy | Approved Security Policy | Month 1 |
+| 3 | Risk Register | Current Risk Register | Month 1 |
+| 4 | Statement of Applicability | Approved SoA | Month 2 |
+| 5 | Asset Inventory | Maintained Asset Register | Month 2 |
+| 6 | Access Control | RBAC / access-control matrix | Month 2 |
+| 7 | Logging | Audit-log policy and evidence | Month 3 |
+| 8 | Cryptography | Documented cryptographic controls and evidence | Month 3 |
+| 9 | Incident Response | Incident-response plan and contact chain | Month 3 |
+| 10 | Privacy / DPIA | DPIA or documented applicability assessment for relevant systems | Month 3 |
+| 11 | Admin Training | Training records and assessment evidence | Month 3 |
 | 12 | Internal Audit | Internal audit report | Month 5 |
-| 13 | Management Review | Signed review minutes | Month 5 |
-| 14 | Stage 1 readiness | Documentation package | Month 6 |
-| 15 | Stage 2 readiness | Implementation evidence | Month 9–12 |
+| 13 | Management Review | Management-review minutes | Month 5 |
+| 14 | Stage 1 readiness | Documentation package prepared for independent assessment | Month 6 |
+| 15 | Stage 2 readiness | Implementation evidence prepared for independent assessment | Month 9–12 |
 
-**ISO 27001 certification typically proceeds through Stage 1 (documentation) and Stage 2 (implementation) audits, followed by surveillance audits.**
+Certification bodies commonly separate documentation/readiness review from implementation assessment, but the exact process, terminology and timing depend on the selected accredited certification body and scope.
