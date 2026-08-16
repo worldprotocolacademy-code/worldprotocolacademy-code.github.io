@@ -78,3 +78,31 @@
   setTimeout(install,400);
   setTimeout(install,1400);
 })();
+
+/* WPA temporary commercial freeze — public premium sales UI stays in source, hidden until re-authorised. */
+(function(){
+  'use strict';
+  function freezeCommercialUi(){
+    document.querySelectorAll('.wpa-premium-section').forEach(function(el){
+      el.hidden=true;
+      el.style.setProperty('display','none','important');
+      el.setAttribute('aria-hidden','true');
+    });
+    document.querySelectorAll('a[href*="premium-reference-2026"],a[href*="gumroad.com"]').forEach(function(el){
+      var section=el.closest('.wpa-premium-section');
+      if(section){
+        section.hidden=true;
+        section.style.setProperty('display','none','important');
+        section.setAttribute('aria-hidden','true');
+      }else{
+        el.hidden=true;
+        el.style.setProperty('display','none','important');
+        el.setAttribute('aria-hidden','true');
+      }
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',freezeCommercialUi,{once:true});
+  else freezeCommercialUi();
+  setTimeout(freezeCommercialUi,250);
+  setTimeout(freezeCommercialUi,1000);
+})();
