@@ -196,6 +196,7 @@
     addScript('wpa-bibliography-order-20260803', '/scripts/wpa-bibliography-order-20260803.js?v=20260803-1');
     addScript('wpa-publications-sync-20260817', '/scripts/wpa-publications-sync-20260817.js?v=20260817-1');
     addScript('wpa-home-metrics-sync-20260817', '/scripts/wpa-home-metrics-sync-20260817.js?v=20260817-1');
+    addScript('wpa-bibliography-final-order-20260817', '/scripts/wpa-bibliography-final-order-20260817.js?v=20260817-2');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
