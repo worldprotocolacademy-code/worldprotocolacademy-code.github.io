@@ -194,6 +194,7 @@
     addScript('wpa-corpus-20260729-v2', '/scripts/wpa-corpus-20260729-v2.js?v=20260729-2');
     addScript('wpa-pn007-pn008-sync-20260803', '/scripts/wpa-pn007-pn008-sync-20260803.js?v=20260803-1');
     addScript('wpa-bibliography-order-20260803', '/scripts/wpa-bibliography-order-20260803.js?v=20260803-1');
+    addScript('wpa-publications-sync-20260817', '/scripts/wpa-publications-sync-20260817.js?v=20260817-1');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true }); else boot();
