@@ -1,4 +1,4 @@
-/* WPA bibliography final order and visibility fix - 2026-08-17 */
+/* WPA bibliography final order, numbering and visibility fix - 2026-08-17 */
 (function () {
   'use strict';
   if (window.WPA_BIB_FINAL_ORDER_20260817) return;
@@ -22,21 +22,51 @@
     })[0] || null;
   }
 
+  function setEntryNumber(entry, number) {
+    if (!entry) return;
+    var num = entry.querySelector('.bib-num');
+    if (num) num.textContent = String(number).padStart(2, '0');
+  }
+
+  function renumberBetween(startHeading, stopHeading, startNumber) {
+    if (!startHeading) return startNumber;
+    var node = startHeading.nextElementSibling;
+    var number = startNumber;
+    while (node && node !== stopHeading) {
+      if (node.matches && node.matches('.bib-entry')) {
+        setEntryNumber(node, number++);
+      } else if (node.querySelectorAll) {
+        Array.prototype.slice.call(node.querySelectorAll('.bib-entry')).forEach(function (entry) {
+          setEntryNumber(entry, number++);
+        });
+      }
+      node = node.nextElementSibling;
+    }
+    return number;
+  }
+
   function apply() {
     var p = path();
     if (p !== '/bibliography' && p !== '/bibliography/index.html') return;
 
     var book26 = document.getElementById('pub-26') || findEntry(/978-608-66168-5-4|69316613|Protocol of State Symbols/i);
+    var dissertationHeading = document.getElementById('dissertation');
+    var papersHeading = document.getElementById('papers-section');
+    var workingPapersHeading = document.getElementById('zenodo-working-papers');
+
     if (book26) {
       book26.hidden = false;
       book26.style.display = '';
-      var num = book26.querySelector('.bib-num');
-      if (num) num.textContent = '26';
-      var dissertationHeading = document.getElementById('dissertation');
+      setEntryNumber(book26, 6);
       if (dissertationHeading && dissertationHeading.parentNode && book26.parentNode === dissertationHeading.parentNode) {
         dissertationHeading.parentNode.insertBefore(book26, dissertationHeading);
       }
     }
+
+    /* Academic publication sequence after inserting the sixth book:
+       01-06 books, 07 dissertation, 08-26 papers. */
+    if (dissertationHeading) renumberBetween(dissertationHeading, papersHeading, 7);
+    if (papersHeading) renumberBetween(papersHeading, workingPapersHeading, 8);
 
     var pn009 = document.getElementById('pn-009') || findEntry(/WPA-PN-009|21933739|AI Transparency and the Protocol of Authorship/i);
     var strategic = findEntry(/Global Strategic Plan 2026|Глобален стратешки план 2026|21675100|21396831/i);
