@@ -1,0 +1,40 @@
+name: WPA Comprehensive Hardening Run
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wpa-comprehensive-hardening-run.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  run-hardening:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply comprehensive institutional hardening
+        run: python3 scripts/wpa_comprehensive_institutional_hardening.py
+      - name: Validate
+        run: |
+          python3 -m json.tool data/wpa-comprehensive-institutional-audit-2026-08-22.json >/dev/null
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
+          node --check languages/wpa-language-menu-10.js
+          git diff --check
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes required."
+          else
+            git commit -m "Implement comprehensive WPA institutional architecture hardening"
+            git push origin HEAD:main
+          fi
