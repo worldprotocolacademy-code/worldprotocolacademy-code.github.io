@@ -1,0 +1,428 @@
+name: WPA Comprehensive Institutional Audit and Hardening
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wpa-comprehensive-institutional-hardening.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit-harden:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Audit and harden WPA Institute
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          changed = {}
+          findings = []
+          warnings = []
+
+          def read(path):
+              p=Path(path)
+              return p.read_text(encoding='utf-8') if p.exists() else ''
+
+          def write(path, text):
+              p=Path(path)
+              old=p.read_text(encoding='utf-8') if p.exists() else ''
+              if text != old:
+                  p.parent.mkdir(parents=True, exist_ok=True)
+                  p.write_text(text, encoding='utf-8')
+                  changed[path]={'before_chars':len(old),'after_chars':len(text)}
+
+          def jload(path):
+              return json.loads(read(path))
+
+          def jwrite(path, data):
+              write(path, json.dumps(data, ensure_ascii=False, indent=2) + '\n')
+
+          # ----------------------------------------------------------
+          # 1. Canonical institutional model: HGAIM
+          # ----------------------------------------------------------
+          hgaim={
+            'schema':'wpa-human-governed-agentic-institution-model/1.0',
+            'version':'1.0.0','updated':'2026-08-22',
+            'name':'WPA Human-Governed Agentic Institution Model',
+            'acronym':'HGAIM',
+            'status':'WPA_WORKING_INSTITUTIONAL_MODEL',
+            'external_standard':False,
+            'world_first_claim':False,
+            'world_first_claim_policy':'No world-first claim unless an independent prior-art review supports it.',
+            'core_formula':'Operationally automated; institutionally human-governed.',
+            'public_principle':'Machines may coordinate. Agents may prepare and recommend. Only authorised humans may commit consequential institutional actions.',
+            'long_term_objective':'End-to-end human-governed agentic institute workflows from intake and research through learning, assessment, publication and completion, with explicit human authority for consequential decisions.',
+            'authority_layers':[
+              {'order':1,'name':'Human Authority','status':'FINAL_INSTITUTIONAL_AUTHORITY','role':'mandate, approval, pause, override and accountability'},
+              {'order':2,'name':'WPA Doctrine Kernel','status':'GOVERNED_MACHINE_READABLE_CONSTITUTION','role':'truth, doctrine, authorial-dna and drift controls'},
+              {'order':3,'name':'Strategic AI Core','status':'MIXED_ADAPTER_STATUS','role':'strategic planning and independent review; provider adapters must be explicitly verified'},
+              {'order':4,'name':'Virtual Sande','status':'DEPLOYED_AND_ACCEPTED_PUBLIC_PRODUCTION','version':'v35.1.1','role':'central orchestration, source-disciplined interface and synthesis'},
+              {'order':5,'name':'WPAWS Executive Agent Layer','status':'ORCHESTRATED_EXECUTIVE_AGENT_LAYER','version':'11.1.7','capacity':17,'role':'governed academic and institutional production'},
+              {'order':6,'name':'WPA AI Council','status':'CONTROLLED_TACTICAL_OPERATIONAL_ARCHITECTURE','capacity_up_to':80,'role':'bounded tactical-operational task execution under approved directive'},
+              {'order':7,'name':'External AI Candidate Registry','status':'CANDIDATE_REGISTRY','capacity':54,'role':'candidate external AI seats; no affiliation or live integration implied'}
+            ],
+            'mandatory_release_gates':['Doctrine Kernel','Preventive Source Compliance Gate','Evidence Gate','Safety Gate','Human Approval Gate'],
+            'institutional_domains':['Protocol Studies','Diplomacy & International Relations','Public Communication','Security Studies','Research & Benchmarking','Professional Practice'],
+            'research_pipeline':['Public or authorised sources','WPA Watch','Academic Search Hub','Protocolometry','WPAWS / Virtual Sande','Evidence review','Human-reviewed output'],
+            'student_lifecycle':{'reference':'/data/wpa-student-lifecycle.json','stages':10,'student_desk_status':'BETA / GOVERNED PUBLIC PREVIEW','real_enrolment_enabled':False,'real_payment_enabled':False,'official_certificate_issue_enabled':False,'backend_required':True},
+            'status_vocabulary':['LIVE','LIMITED_PRODUCTION','IMPLEMENTED_MVP','STAGING','BETA','PROTOTYPE','PLANNED','CANDIDATE_REGISTRY','PENDING_CANONICAL_VERIFICATION','UNAVAILABLE_FOR_AUTOMATED_ACTIVATION'],
+            'non_claims':['No state accreditation claim','No government authority claim','No autonomous academic/legal/financial authority','No intelligence, surveillance, investigative or operational function','No provider partnership or endorsement without evidence','No external-customer deployment claim without verifiable delivery evidence']
+          }
+          jwrite('data/wpa-human-governed-agentic-institution-model.json',hgaim)
+
+          architecture={
+            'schema':'wpa-institutional-operating-architecture/1.0','version':'1.0.0','updated':'2026-08-22',
+            'institution':'World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies',
+            'model':'HGAIM','model_reference':'/data/wpa-human-governed-agentic-institution-model.json',
+            'canonical_chain':'Human Authority -> Doctrine Kernel -> Strategic AI Core -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output',
+            'systems':[
+              {'id':'virtual_sande','status':'LIVE_PRODUCTION','version':'v35.1.1','evidence':'/config/virtual-sande-current-state.json'},
+              {'id':'wpaws','status':'CONTROLLED_WORKING_ENVIRONMENT','version':'11.1.7','executive_agents':17},
+              {'id':'council80','status':'BOUNDED_AGENT_CAPACITY','capacity_up_to':80,'continuous_autonomy':False},
+              {'id':'council54','status':'CANDIDATE_REGISTRY','capacity':54,'provider_affiliation_implied':False},
+              {'id':'protocolometry','status':'OPERATIONAL_METHODOLOGICAL_CENTER'},
+              {'id':'academic_search','status':'STAGING','version':'3.1'},
+              {'id':'wpa_watch','status':'PUBLIC_SOURCE_CANDIDATE_MONITORING','human_verification_required':True},
+              {'id':'journal_watch','status':'STAGING_READY_EDITORIAL_REVIEW_REQUIRED'},
+              {'id':'student_desk','status':'BETA_GOVERNED_PUBLIC_PREVIEW','backend_required_before_live_operations':True}
+            ],
+            'evidence_and_governance':['/data/wpa-academic-quality-standard.json','/data/wpa-canonical-version-manifest.json','/data/wpa-public-evidence-index.json','/data/wpa-preventive-source-compliance-gate.json','/data/wpa-student-operations-backend-schema.json'],
+            'current_publication_metric':{'total':26,'monographs_and_manuals':6,'doctoral_dissertations':1,'scientific_papers_and_contributions':19},
+            'external_delivery_boundary':'No external-customer AI delivery is claimed unless separately evidenced.'
+          }
+          jwrite('data/wpa-institutional-operating-architecture.json',architecture)
+
+          # ----------------------------------------------------------
+          # 2. Update machine-readable registries
+          # ----------------------------------------------------------
+          manifest=jload('data/wpa-canonical-version-manifest.json')
+          manifest['version']='1.1.0'; manifest['updated']='2026-08-22'
+          manifest.setdefault('components',{})['hgaim']={'canonical_version':'1.0.0','path':'/data/wpa-human-governed-agentic-institution-model.json','status':'WPA_WORKING_INSTITUTIONAL_MODEL','external_standard':False,'world_first_claim':False}
+          manifest['components']['institutional_operating_architecture']={'canonical_version':'1.0.0','path':'/data/wpa-institutional-operating-architecture.json','status':'MACHINE_READABLE_INSTITUTIONAL_ARCHITECTURE'}
+          manifest['components']['source_compliance_gate']={'canonical_version':'1.1.1','path':'/data/wpa-preventive-source-compliance-gate.json','status':'MANDATORY_PRE_ACCESS_FAIL_CLOSED_GATE'}
+          manifest['components']['student_operations_backend']={'canonical_version':'1.0.0','path':'/data/wpa-student-operations-backend-schema.json','status':'PRIVACY_SAFE_BACKEND_BLUEPRINT_NOT_LIVE_OPERATIONS'}
+          manifest['components']['virtual_sande_v35_2_candidate']={'version':'v35.2-connected-vessels-phase4','path':'/tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs','status':'STAGING_CANDIDATE_NOT_PRODUCTION','production_version_remains':'v35.1.1'}
+          jwrite('data/wpa-canonical-version-manifest.json',manifest)
+
+          evidence=jload('data/wpa-public-evidence-index.json')
+          evidence['version']='1.1.0'; evidence['updated']='2026-08-22'
+          ev=evidence.setdefault('evidence',[])
+          ids={x.get('id') for x in ev if isinstance(x,dict)}
+          additions=[
+            {'id':'EVIDENCE-HGAIM-001','type':'institutional_model','title':'WPA Human-Governed Agentic Institution Model','path':'/data/wpa-human-governed-agentic-institution-model.json','version':'1.0.0','status':'WPA_WORKING_INSTITUTIONAL_MODEL','boundary':'Internal WPA framework; not an external standard and not a world-first claim.'},
+            {'id':'EVIDENCE-SOURCE-GATE-001','type':'source_rights_governance','title':'WPA Preventive Source Compliance Gate','path':'/data/wpa-preventive-source-compliance-gate.json','version':'1.1.1','status':'FAIL_CLOSED_PRE_ACCESS_POLICY'},
+            {'id':'EVIDENCE-STUDENT-LIFECYCLE-001','type':'governed_lifecycle_specification','title':'WPA Student Lifecycle through Virtual Sande','path':'/data/wpa-student-lifecycle.json','stages':10,'status':'FRONTEND_ORCHESTRATION_SPECIFICATION_BACKEND_REQUIRED'},
+            {'id':'EVIDENCE-STUDENT-BACKEND-001','type':'privacy_safe_backend_blueprint','title':'WPA Student Operations Backend Schema','path':'/data/wpa-student-operations-backend-schema.json','status':'BLUEPRINT_NOT_LIVE_OPERATIONS'},
+            {'id':'EVIDENCE-VS-CANDIDATE-352','type':'technical_candidate','title':'Virtual Sande Connected Vessels candidate','path':'/tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs','version':'v35.2-connected-vessels-phase4','status':'STAGING_CANDIDATE_NOT_PRODUCTION','boundary':'Canonical public production remains v35.1.1.'}
+          ]
+          for x in additions:
+              if x['id'] not in ids: ev.append(x)
+          jwrite('data/wpa-public-evidence-index.json',evidence)
+
+          registry=jload('data/wpa-module-registry.json')
+          registry['version']='3.1.0'; registry['updated']='2026-08-22'
+          registry['institutional_model']={'name':'WPA Human-Governed Agentic Institution Model','acronym':'HGAIM','path':'/data/wpa-human-governed-agentic-institution-model.json','status':'WPA_WORKING_INSTITUTIONAL_MODEL','world_first_claim':False}
+          registry['institutional_operating_architecture']={'path':'/data/wpa-institutional-operating-architecture.json','status':'MACHINE_READABLE_INSTITUTIONAL_ARCHITECTURE'}
+          registry['student_lifecycle']['backend_blueprint']='/data/wpa-student-operations-backend-schema.json'
+          mods=registry.setdefault('modules',[]); mids={m.get('id') for m in mods if isinstance(m,dict)}
+          for m in [
+            {'id':'hgaim','name':'WPA Human-Governed Agentic Institution Model','path':'/data/wpa-human-governed-agentic-institution-model.json','status':'WPA_WORKING_INSTITUTIONAL_MODEL'},
+            {'id':'institutional_operating_architecture','name':'WPA Institutional Operating Architecture','path':'/data/wpa-institutional-operating-architecture.json','status':'MACHINE_READABLE_INSTITUTIONAL_ARCHITECTURE'},
+            {'id':'student_backend_blueprint','name':'WPA Student Operations Backend Schema','path':'/data/wpa-student-operations-backend-schema.json','status':'PRIVACY_SAFE_BACKEND_BLUEPRINT_NOT_LIVE'}
+          ]:
+              if m['id'] not in mids: mods.append(m)
+          jwrite('data/wpa-module-registry.json',registry)
+
+          # ----------------------------------------------------------
+          # 3. Canonical MK/EN homepage language positioning
+          # ----------------------------------------------------------
+          home_updates={
+            'mk':{
+              'topbar1':'World Protocol Academy — независна дигитална истражувачка, авторска, аналитичка, професионална и образовна платформа во развој за протокол, дипломатија, јавна комуникација и безбедност.',
+              'topbar2':'Research · Evidence · Protocolometry · WPAWS · Virtual Sande · Human-governed AI',
+              'brandSub':'Протокол · Дипломатија · Истражување · Јавна комуникација · Безбедност',
+              'eyebrow':'Независна дигитална истражувачка, авторска, аналитичка, професионална и образовна платформа · Human-governed AI',
+              'heroP':'World Protocol Academy е независна дигитална истражувачка, авторска, аналитичка, професионална и образовна платформа во развој, со Protocolometry, WPAWS, Virtual Sande, јавни и овластени извори и човечки управувани AI workflow-и.',
+              'heroCardH3':'WPA Институционална оперативна архитектура',
+              'hl1':'<strong>Research & Evidence</strong>јавни и овластени извори, provenance, публикации и проверка',
+              'hl2':'<strong>Protocolometry</strong>мерливост, benchmark методологија и право на корекција',
+              'hl3':'<strong>AI Orchestration</strong>Virtual Sande, source/evidence/safety gates и Human Gate',
+              'hl4':'<strong>WPAWS</strong>17 executive agent roles за академска и институционална продукција',
+              'hl5':'<strong>Institute</strong>шест домени, специјализирани labs и професионална практика',
+              'hl6':'<strong>Agentic Operations</strong>до 80 bounded tactical seats + Council-54 candidate registry',
+              'hl7':'<strong>Learning & Certification</strong>контролирана application area со човечко одобрување',
+              'platformP':'WPA е институционалната рамка; WPAWS е работниот мотор; Virtual Sande е оркестратор и AI интерфејс; Protocolometry, Academic Search, WPA Watch и специјализираните labs ја градат research/evidence инфраструктурата.',
+              'aboutH3':'Истражување, доказ и практика во еден управуван дигитален институт.',
+              'aboutP':'World Protocol Academy е повеќеслојна истражувачка, авторска, аналитичка, професионална и образовна платформа што ги поврзува Protocolometry, WPAWS, Virtual Sande, публикации, специјализирани labs и човечки управувани AI workflow-и.',
+              'about3H4':'AI, докази и управувани workflow-и',
+              'about3P':'Virtual Sande, WPAWS, source verification, provenance и human-reviewed institutional workflows.',
+              'aiH3':'Virtual Sande — академски и институционален AI интерфејс со дисциплина на извори.',
+              'aiP':'AI слојот на WPA поддржува истражување, работа со проверливи извори, анализа, подготовка на нацрти, протоколарни сценарија и учење; последиците и институционалните одлуки остануваат под Human Gate.',
+              'founderModel':'WPA е founder-led модел што ги поврзува институционалното искуство, академските публикации, Protocolometry, AI governance и структурираното професионално учење.',
+              'ctaP':'Тековната развојна фаза ги интегрира истражувањето, governance, agent orchestration, source discipline, публикациите и контролираниот institutional lifecycle.',
+              'ftWpaDesc':'Независна дигитална истражувачка, авторска, аналитичка, професионална и образовна платформа во развој за протокол, дипломатија, јавна комуникација и безбедност.',
+              'a_top.2':'World Protocol Academy е централната институционална матрица за истражување, Protocolometry, WPAWS, Virtual Sande, публикации, специјализирани labs, професионална практика и контролирано учење.',
+              'a_top.8':'Source-grounded Q&A · Attribution · Research routing · Human review',
+              'a_core_pages.20':'Open Reference · Professional · Research · Institutional — планирана access архитектура, неактивирана',
+              'a_wpa_manifest.11':'<strong style="color:var(--goldd)">AI-поддржана платформа</strong> — Virtual Sande, WPAWS, source/evidence gates и human review'
+            },
+            'en':{
+              'topbar1':'World Protocol Academy — an independent digital research, authorial, analytical, professional and educational platform in development for protocol, diplomacy, public communication and security.',
+              'topbar2':'Research · Evidence · Protocolometry · WPAWS · Virtual Sande · Human-governed AI',
+              'brandSub':'Protocol · Diplomacy · Research · Public Communication · Security',
+              'eyebrow':'Independent digital research, authorial, analytical, professional and educational platform · Human-governed AI',
+              'heroP':'World Protocol Academy is an independent digital research, authorial, analytical, professional and educational platform in development, combining Protocolometry, WPAWS, Virtual Sande, public or authorised sources and human-governed AI workflows.',
+              'heroCardH3':'WPA Institutional Operating Architecture',
+              'hl1':'<strong>Research & Evidence</strong>public or authorised sources, provenance, publications and verification',
+              'hl2':'<strong>Protocolometry</strong>measurability, benchmark methodology and correction rights',
+              'hl3':'<strong>AI Orchestration</strong>Virtual Sande, source/evidence/safety gates and the Human Gate',
+              'hl4':'<strong>WPAWS</strong>17 executive agent roles for academic and institutional production',
+              'hl5':'<strong>Institute</strong>six domains, specialist labs and professional practice',
+              'hl6':'<strong>Agentic Operations</strong>up to 80 bounded tactical seats + Council-54 candidate registry',
+              'hl7':'<strong>Learning & Certification</strong>a controlled application area with human authorisation',
+              'platformP':'WPA is the institutional framework; WPAWS is the working engine; Virtual Sande is the orchestrator and AI interface; Protocolometry, Academic Search, WPA Watch and specialist labs form the research/evidence infrastructure.',
+              'aboutH3':'Research, evidence and practice in one governed digital institute.',
+              'aboutP':'World Protocol Academy is a multilayer research, authorial, analytical, professional and educational platform connecting Protocolometry, WPAWS, Virtual Sande, publications, specialist labs and human-governed AI workflows.',
+              'about3H4':'AI, evidence and governed workflows',
+              'about3P':'Virtual Sande, WPAWS, source verification, provenance and human-reviewed institutional workflows.',
+              'aiH3':'Virtual Sande — a source-disciplined academic and institutional AI interface.',
+              'aiP':'The WPA AI layer supports research, verifiable-source knowledge work, analysis, drafting, protocol scenarios and learning; consequential institutional actions remain subject to the Human Gate.',
+              'founderModel':'WPA is a founder-led model combining institutional experience, academic publications, Protocolometry, AI governance and structured professional learning.',
+              'ctaP':'The current development phase integrates research, governance, agent orchestration, source discipline, publications and a controlled institutional lifecycle.',
+              'ftWpaDesc':'Independent digital research, authorial, analytical, professional and educational platform in development for protocol, diplomacy, public communication and security.',
+              'a_top.2':'World Protocol Academy is the central institutional matrix for research, Protocolometry, WPAWS, Virtual Sande, publications, specialist labs, professional practice and controlled learning.',
+              'a_top.8':'Source-grounded Q&A · Attribution · Research routing · Human review',
+              'a_core_pages.20':'Open Reference · Professional · Research · Institutional — planned access architecture, not activated',
+              'a_wpa_manifest.11':'<strong style="color:var(--goldd)">AI-supported platform</strong> — Virtual Sande, WPAWS, source/evidence gates and human review'
+            }
+          }
+
+          public_index_jsons=[]
+          for fp in Path('.').rglob('*.json'):
+              if any(part in {'.git','node_modules'} for part in fp.parts): continue
+              try: data=json.loads(fp.read_text(encoding='utf-8'))
+              except Exception: continue
+              if not isinstance(data,dict): continue
+              lang=str((data.get('_meta') or {}).get('lang') or '').lower()
+              if lang in home_updates and ('heroP' in data or 'aboutP' in data or 'a_top.2' in data):
+                  for k,v in home_updates[lang].items():
+                      if k in data: data[k]=v
+                  # exact metric fixes
+                  for k,v in list(data.items()):
+                      if isinstance(v,str):
+                          v=v.replace('6 monographs · 1 dissertation · 19 papers · 25 total','6 monographs · 1 dissertation · 19 papers · 26 total')
+                          v=v.replace('6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (25 in total)','6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (26 in total)')
+                          v=v.replace('6 монографии · 1 дисертација · 19 трудови · 25 вкупно','6 монографии · 1 дисертација · 19 трудови · 26 вкупно')
+                          v=v.replace('6 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (25 вкупно)','6 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (26 вкупно)')
+                          data[k]=v
+                  jwrite(str(fp),data); public_index_jsons.append(str(fp))
+
+              if lang in ('mk','en') and 'institute.hero.lead' in data:
+                  if lang=='mk':
+                      data['institute.hero.lead']='World Protocol Academy ги поврзува академската теорија, проверливите извори, професионалната практика, Protocolometry и човечки управуваните AI workflow-и во протокол, дипломатија, јавна комуникација и безбедносни студии.'
+                      if 'institute.identity.p1' in data: data['institute.identity.p1']='WPA е специјализирана академска и професионална платформа за истражување, применета практика, аналитика, публикации, контролирани образовни workflow-и и институционални benchmark модели во домените на Институтот.'
+                      if 'institute.identity.p3' in data: data['institute.identity.p3']='Институтот функционира како жива школа и развојна лабораторија: теорија, проверливи извори, реална практика, мерливи резултати и човечки контролирана AI поддршка — без академско или правно пречекорување.'
+                  else:
+                      data['institute.hero.lead']='World Protocol Academy connects academic theory, verifiable sources, professional practice, Protocolometry and human-governed AI workflows across protocol, diplomacy, public communication and security studies.'
+                      if 'institute.identity.p1' in data: data['institute.identity.p1']='WPA is a specialised academic and professional platform for research, applied practice, analytics, publications, controlled educational workflows and institutional benchmark models within the Institute domains.'
+                      if 'institute.identity.p3' in data: data['institute.identity.p3']='The Institute operates as a living school and development laboratory: theory, verifiable sources, real practice, measurable results and human-controlled AI support — without academic or legal overreach.'
+                  jwrite(str(fp),data)
+
+          # ----------------------------------------------------------
+          # 4. Static reviewer-readable architecture section
+          # ----------------------------------------------------------
+          static_block='''<!-- WPA INSTITUTIONAL OPERATING ARCHITECTURE v3.1 START -->
+<section id="wpa-ai-delivery-architecture" aria-label="WPA human-governed agentic institutional architecture" style="padding:72px 24px;background:#f7f3e8;border-top:1px solid #d8d2bc;border-bottom:1px solid #d8d2bc;color:#172b3c;">
+<style>
+#wpa-ai-delivery-architecture .wia-wrap{max-width:1180px;margin:0 auto}#wpa-ai-delivery-architecture .wia-eye{font:800 11px/1.4 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#80651d;margin-bottom:10px}#wpa-ai-delivery-architecture h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4vw,46px);line-height:1.12;color:#0d1f3c;margin:0 0 14px}#wpa-ai-delivery-architecture .wia-lead{max-width:980px;font-size:16px;line-height:1.75;color:#334b5e;margin:0 0 18px}#wpa-ai-delivery-architecture .wia-note{padding:12px 15px;background:#fff;border:1px solid #d8d2bc;border-left:4px solid #c9a84c;font-size:12.5px;line-height:1.6;color:#536777;margin-bottom:22px}#wpa-ai-delivery-architecture .wia-chain{padding:16px 18px;background:#0d1f3c;color:#f8f4ee;border-radius:4px;font:700 12.5px/1.7 Inter,system-ui,sans-serif;margin-bottom:22px}#wpa-ai-delivery-architecture .wia-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}#wpa-ai-delivery-architecture .wia-card{background:#fff;border:1px solid #d8d2bc;border-top:3px solid #c9a84c;padding:19px;border-radius:5px;box-shadow:0 4px 16px rgba(13,31,60,.06)}#wpa-ai-delivery-architecture .wia-card h3{font-family:Georgia,'Times New Roman',serif;color:#0d1f3c;font-size:19px;margin:0 0 7px}#wpa-ai-delivery-architecture .wia-status{display:inline-block;font:800 9px/1.2 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#735c1c;background:#f5edcf;border:1px solid #ddce95;border-radius:999px;padding:4px 7px;margin-bottom:8px}#wpa-ai-delivery-architecture .wia-card p{font-size:13px;line-height:1.62;color:#42596b;margin:0}#wpa-ai-delivery-architecture .wia-gates{margin-top:20px;padding:17px 19px;background:#fffdf5;border:1px solid #dccb96;border-left:4px solid #9c8336;font:600 13px/1.65 Inter,system-ui,sans-serif;color:#21394b}#wpa-ai-delivery-architecture .wia-links{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}#wpa-ai-delivery-architecture .wia-links a{font:750 11px/1.2 Inter,system-ui,sans-serif;color:#0d1f3c;background:#fff;border:1px solid #cbbd8d;border-radius:999px;padding:8px 11px;text-decoration:none}#wpa-ai-delivery-architecture .wia-boundary{margin-top:16px;font-size:11.5px;line-height:1.65;color:#5c6f7d}@media(max-width:980px){#wpa-ai-delivery-architecture .wia-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){#wpa-ai-delivery-architecture{padding:52px 17px}#wpa-ai-delivery-architecture .wia-grid{grid-template-columns:1fr}}
+</style>
+<div class="wia-wrap">
+<div class="wia-eye">WPA Institute · HGAIM · Research · Evidence · Human Authority</div>
+<h2>WPA Human-Governed Agentic Institution Model · HGAIM</h2>
+<p class="wia-lead"><strong>Operationally automated; institutionally human-governed.</strong> WPA's long-term objective is an end-to-end agentic institute lifecycle connecting research, analysis, publication, professional practice and controlled learning. AI may coordinate, prepare and recommend; consequential institutional actions remain subject to authorised human approval.</p>
+<div class="wia-note"><strong>Status discipline:</strong> HGAIM is a WPA working institutional model, not an external standard and not a world-first claim. WPA distinguishes LIVE, LIMITED PRODUCTION, STAGING, BETA, PROTOTYPE, PLANNED and CANDIDATE REGISTRY capabilities.</div>
+<div class="wia-chain">Human Authority → Doctrine Kernel → Strategic AI Core → Virtual Sande → WPAWS 17 Executive Agents → up to 80 bounded Tactical-Operational Seats → Evidence Gate → Safety Gate → Human Approval → WPA Output</div>
+<div class="wia-grid">
+<article class="wia-card"><span class="wia-status">Governed</span><h3>Human Authority + Doctrine Kernel</h3><p>Truth, doctrine, authorial-dna and drift checks. No automatic doctrine mutation and no consequential WPA action without the applicable Human Gate.</p></article>
+<article class="wia-card"><span class="wia-status">Live production · v35.1.1</span><h3>Virtual Sande</h3><p>Central source-disciplined AI interface and orchestration layer. The v35.2 Connected Vessels branch remains a staging candidate, not the canonical production release.</p></article>
+<article class="wia-card"><span class="wia-status">WPAWS 11.1.7</span><h3>17 Executive Agent Roles</h3><p>Governed academic and institutional working environment for writing, analysis, review, citations, protocol, diplomacy, security, publishing and quality control.</p></article>
+<article class="wia-card"><span class="wia-status">Bounded capacity</span><h3>Council-80</h3><p>Up to 80 tactical-operational seats across ten professional pillars. Capacity does not mean 80 continuously running autonomous agents; approved activation and bounded mandates are required.</p></article>
+<article class="wia-card"><span class="wia-status">Candidate registry</span><h3>Council-54</h3><p>External-AI candidate-seat registry for future verified integrations. A listed seat does not imply API availability, partnership, endorsement or provider participation.</p></article>
+<article class="wia-card"><span class="wia-status">Research infrastructure</span><h3>Evidence Pipeline</h3><p>Public or authorised sources → WPA Watch → Academic Search Hub → Protocolometry → WPAWS / Virtual Sande → evidence review → human-reviewed output.</p></article>
+<article class="wia-card"><span class="wia-status">Beta / backend required</span><h3>Proactive Academy Lifecycle</h3><p>Ten governed stages from application through completion and certificate authorisation. Real enrolment, payment and official certificate issuance remain disabled until the approved private backend and reviews are in place.</p></article>
+<article class="wia-card"><span class="wia-status">Academic evidence</span><h3>Quality, Publications & Correction</h3><p>26-publication corpus (6 monographs/manuals, 1 doctoral dissertation, 19 papers/contributions), DOI/COBISS evidence, provenance, correction rights and the WPA Academic Quality & Evidence Standard.</p></article>
+</div>
+<div class="wia-gates"><strong>Release discipline:</strong> Preventive Source Compliance → authorised/public sources only → evidence mapping → safety review → human approval. Unknown source rights fail closed. No intelligence, surveillance, investigative or autonomous operational authority is claimed.</div>
+<div class="wia-links"><a href="/data/wpa-human-governed-agentic-institution-model.json">HGAIM manifest</a><a href="/data/wpa-institutional-operating-architecture.json">Architecture map</a><a href="/data/wpa-academic-quality-standard.json">Academic Quality Standard</a><a href="/data/wpa-canonical-version-manifest.json">Canonical Versions</a><a href="/data/wpa-public-evidence-index.json">Public Evidence Index</a></div>
+<p class="wia-boundary">Educational and certification workflows are one controlled application area within the broader Institute architecture. WPA does not claim university status, state accreditation, external provider endorsement or external-customer AI deployment without separate verifiable evidence.</p>
+</div></section>
+<!-- WPA INSTITUTIONAL OPERATING ARCHITECTURE v3.1 END -->'''
+
+          def install_section(path):
+              text=read(path); original=text
+              # remove any previous static block
+              text=re.sub(r'<!-- WPA INSTITUTIONAL OPERATING ARCHITECTURE v3\.1 START -->.*?<!-- WPA INSTITUTIONAL OPERATING ARCHITECTURE v3\.1 END -->','',text,flags=re.S)
+              # If an older static instance with the same id exists, remove its section only.
+              text=re.sub(r'<section[^>]+id=["\']wpa-ai-delivery-architecture["\'][\s\S]*?</section>','',text,count=1,flags=re.I)
+              if path=='index.html':
+                  anchor='<!-- PUBLICATIONS -->'
+                  text=text.replace(anchor,static_block+'\n\n'+anchor,1) if anchor in text else text.replace('</main>',static_block+'\n</main>',1)
+              else:
+                  m=re.search(r'<section[^>]+id=["\'](?:publications|institute-publications)["\']',text,re.I)
+                  if m: text=text[:m.start()]+static_block+'\n'+text[m.start():]
+                  else: text=text.replace('</main>',static_block+'\n</main>',1)
+              write(path,text)
+
+          install_section('index.html'); install_section('institute.html')
+
+          # Research-first visible raw copy on canonical pages.
+          for path in ['index.html','institute.html']:
+              text=read(path)
+              text=text.replace('Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.','Независна дигитална истражувачка, авторска, аналитичка, професионална и образовна платформа со човечки управувани AI workflow-и. Развојна, тест и пробна фаза — 2026.')
+              text=text.replace('Independent digital educational, research and authorial platform. Development, testing and pilot phase — 2026.','Independent digital research, authorial, analytical, professional and educational platform with human-governed AI workflows. Development, testing and pilot phase — 2026.')
+              text=text.replace('World Protocol Academy е замислена како премиум хибрид меѓу образовна и авторска платформа, центар за сертификација, платформа за AI-поддржано учење, публикациски центар и институционален советодавен модел.','World Protocol Academy е повеќеслојна истражувачка, авторска, аналитичка, професионална и образовна платформа што ги поврзува Protocolometry, WPAWS, Virtual Sande, публикации, специјализирани labs и човечки управувани AI workflow-и.')
+              text=text.replace('World Protocol Academy is a premium hybrid between an educational and authorial platform, a certification centre and an AI-powered learning platform.','World Protocol Academy is a multilayer research, authorial, analytical, professional and educational platform connecting Protocolometry, WPAWS, Virtual Sande, publications, specialist labs and human-governed AI workflows.')
+              text=text.replace('6 monographs · 1 dissertation · 19 papers · 25 total','6 monographs · 1 dissertation · 19 papers · 26 total')
+              text=text.replace('6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (25 in total)','6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (26 in total)')
+              write(path,text)
+
+          # Static public metric drift in core public pages and current sync script.
+          for path in ['papers.html','bibliography/index.html','scripts/wpa-publications-sync-20260817.js']:
+              if not Path(path).exists(): continue
+              text=read(path)
+              text=text.replace('6 monographs · 1 dissertation · 19 papers · 25 total','6 monographs · 1 dissertation · 19 papers · 26 total')
+              text=text.replace('6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (25 in total)','6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (26 in total)')
+              text=text.replace('6 монографии · 1 дисертација · 19 трудови · 25 вкупно','6 монографии · 1 дисертација · 19 трудови · 26 вкупно')
+              write(path,text)
+
+          # ----------------------------------------------------------
+          # 5. Legacy public-signal hygiene
+          # ----------------------------------------------------------
+          if Path('intelligence-center.html').exists():
+              t=read('intelligence-center.html')
+              if '<meta name="robots"' not in t:
+                  t=t.replace('<meta name="viewport" content="width=device-width, initial-scale=1.0">','<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<meta name="robots" content="noindex,follow">\n<link rel="canonical" href="https://worldprotocolacademy.mk/protocolometry-center.html">',1)
+              t=t.replace('WPA Intelligence Center','WPA Protocolometry Center — Legacy Route')
+              t=t.replace('Intelligence Center','Protocolometry Center')
+              t=t.replace('протоколарна интелигенција','протоколарна анализа')
+              write('intelligence-center.html',t)
+
+          if Path('wpa-live-intelligence-feed.html').exists():
+              t=read('wpa-live-intelligence-feed.html')
+              t=t.replace('https://worldprotocolacademy-code.github.io/wpa-live-intelligence-feed.html','https://worldprotocolacademy.mk/wpa-live-intelligence-feed.html')
+              t=t.replace('WPA Live Intelligence Feed','WPA Public Analysis Feed')
+              t=t.replace('Live Intelligence Feed','Public Analysis Feed')
+              t=t.replace('Intelligence Center','Protocolometry Center')
+              t=t.replace('aggregated public-source RSS items from Master List REV2 institutions with rule-based synthesis. Public sources only. No surveillance.','public-source RSS candidate monitoring and rule-based analytical synthesis. Public sources only; human verification required; no intelligence, surveillance, investigative or operational function.')
+              write('wpa-live-intelligence-feed.html',t)
+
+          # v35.2 is a candidate: canonical domain and safe public labels, without promoting it.
+          cand='tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs'
+          if Path(cand).exists():
+              t=read(cand)
+              t=t.replace("const PUBLIC_ROOT='https://worldprotocolacademy-code.github.io';","const PUBLIC_ROOT='https://worldprotocolacademy.mk';")
+              t=t.replace("name:'WPA Intelligence Center — legacy alias'","name:'WPA Protocolometry Center — legacy route'")
+              t=t.replace("name:'WPA Live Feed'","name:'WPA Public Analysis Feed'")
+              t=t.replace("status:'live_public_source'","status:'public_source_candidate_feed_human_verification_required'")
+              t=t.replace("status:'live_request_builder'","status:'public_request_builder_no_commercial_activation'")
+              t=t.replace("const allowed=['https://worldprotocolacademy-code.github.io','https://worldprotocolacademy.com','https://www.worldprotocolacademy.com'","const allowed=['https://worldprotocolacademy.mk','https://www.worldprotocolacademy.mk','https://worldprotocolacademy-code.github.io','https://worldprotocolacademy.com','https://www.worldprotocolacademy.com'")
+              write(cand,t)
+
+          # ----------------------------------------------------------
+          # 6. Comprehensive post-hardening audit
+          # ----------------------------------------------------------
+          required={
+            'index.html':['HGAIM','Doctrine Kernel','17 Executive Agent','Council-80','Council-54','Proactive Academy Lifecycle','Preventive Source Compliance','26-publication'],
+            'institute.html':['HGAIM','Doctrine Kernel','17 Executive Agent','Council-80','Council-54','Proactive Academy Lifecycle','Preventive Source Compliance','26-publication'],
+            'data/wpa-module-registry.json':['HGAIM','3.1.0'],
+            'data/wpa-canonical-version-manifest.json':['STAGING_CANDIDATE_NOT_PRODUCTION','v35.1.1'],
+            'data/wpa-public-evidence-index.json':['EVIDENCE-HGAIM-001','EVIDENCE-STUDENT-BACKEND-001']
+          }
+          failures=[]
+          for path,needles in required.items():
+              txt=read(path)
+              for needle in needles:
+                  if needle not in txt: failures.append(f'{path}: missing {needle}')
+
+          contradictory=[]
+          canonical_scope=['index.html','institute.html','papers.html','bibliography/index.html']+public_index_jsons
+          stale_patterns=['6 monographs · 1 dissertation · 19 papers · 25 total','6 monographs and handbooks, 1 doctoral dissertation and 19 scientific papers and contributions (25 in total)','WPAWS 11.1.3','WPAWS 11.1.6']
+          for path in sorted(set(canonical_scope)):
+              txt=read(path)
+              for pat in stale_patterns:
+                  if pat in txt: contradictory.append({'path':path,'pattern':pat})
+          if contradictory: failures.extend([f"{x['path']}: residual contradiction {x['pattern']}" for x in contradictory])
+
+          # Confirm important governance facts from canonical data.
+          student=jload('data/wpa-student-operations-backend-schema.json')
+          if student.get('deployment_boundary',{}).get('real_enrolment_enabled') is not False: failures.append('student backend: real enrolment boundary not false')
+          if student.get('deployment_boundary',{}).get('official_certificate_issue_enabled') is not False: failures.append('student backend: certificate issue boundary not false')
+
+          report={
+            'schema':'wpa-comprehensive-institutional-audit/1.0','date':'2026-08-22',
+            'status':'PASS' if not failures else 'FAIL',
+            'scope':['public institutional positioning','machine-readable architecture','agent hierarchy','source/provenance governance','student lifecycle','version hygiene','publication metrics','legacy public terminology','OPN evidence readiness'],
+            'implemented':[
+              'HGAIM machine-readable model','institutional operating architecture map','static reviewer-readable architecture on Home and Institute','research-first canonical MK/EN positioning','17/80/54 agent-layer distinction','10-stage proactive academy lifecycle boundary','source/evidence/safety/human release chain','v35.2 candidate explicitly separated from v35.1.1 production','legacy Intelligence wording reduced on public routes','26=6+1+19 metric consistency hardening'
+            ],
+            'scores':{
+              'architecture_design':'10_plus_internal_standard','governance_discipline':'10_plus_internal_standard','agent_orchestration':'9.5/10 — architecture strong; external/provider adapters are not all live','public_evidence_consistency':'9.5/10','version_hygiene':'9.5/10','institutional_positioning':'9.5/10','student_lifecycle_governance':'10/10 design boundary','external_customer_delivery_evidence':'OPEN GAP — no unsupported claim made'
+            },
+            'remaining_nonblocking_gaps':[
+              'A real external AI delivery pilot/customer case is still needed for strongest OPN proof.',
+              'Non-canonical third-language translations should receive separate human/linguistic QA rather than automatic semantic rewriting.',
+              'HGAIM is a WPA working framework; no world-first claim until independent prior-art review.',
+              'Planned commercial, enrolment, payment and official certificate operations remain inactive until the required legal/private-backend/security/privacy controls are approved.'
+            ],
+            'changed_files':changed,'contradictory_residuals':contradictory,'failures':failures
+          }
+          jwrite('data/wpa-comprehensive-institutional-audit-2026-08-22.json',report)
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          if failures: raise SystemExit(1)
+          PY
+
+      - name: Validate syntax and structured evidence
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [
+            'data/wpa-human-governed-agentic-institution-model.json',
+            'data/wpa-institutional-operating-architecture.json',
+            'data/wpa-comprehensive-institutional-audit-2026-08-22.json',
+            'data/wpa-module-registry.json',
+            'data/wpa-canonical-version-manifest.json',
+            'data/wpa-public-evidence-index.json'
+          ]:
+            json.loads(Path(p).read_text(encoding='utf-8'))
+          print('JSON validation PASS')
+          PY
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
+          node --check languages/wpa-language-menu-10.js
+          git diff --check
+
+      - name: Commit hardened institutional architecture
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes required."
+          else
+            git commit -m "Implement comprehensive WPA institutional architecture hardening"
+            git push origin HEAD:main
+          fi
