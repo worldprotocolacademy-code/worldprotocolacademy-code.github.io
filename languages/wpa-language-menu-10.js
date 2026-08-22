@@ -1,7 +1,7 @@
-/* WPA Language Menu 10 loader + institutional capability sync v2.1
+/* WPA Language Menu 10 loader + academic institutional capability sync v3.0
    Homepage colours are intentionally NOT controlled here.
-   This conservative shared patch synchronizes public-facing facts and
-   capability positioning on the WPA homepage and Institute page.
+   This shared layer synchronizes public-facing facts, research-first positioning,
+   canonical URLs, evidence links and academic-governance boundaries.
 */
 (function(){
   "use strict";
@@ -28,9 +28,9 @@
   }
 
   function addInstituteClarityStyles(){
-    if (!isInstitutePage() || document.getElementById("wpa-institute-clarity-v21")) return;
+    if (!isInstitutePage() || document.getElementById("wpa-institute-clarity-v30")) return;
     var style = document.createElement("style");
-    style.id = "wpa-institute-clarity-v21";
+    style.id = "wpa-institute-clarity-v30";
     style.textContent = `
       html[data-wpa-page="institute"] main section:not(.wpa-identity){color:#182b3a;}
       html[data-wpa-page="institute"] main section:not(.wpa-identity) .section-title,
@@ -95,26 +95,27 @@
   }
 
   function addCapabilityStyles(){
-    if (!isRelevantPage() || document.getElementById("wpa-capability-sync-v21")) return;
+    if (!isRelevantPage() || document.getElementById("wpa-capability-sync-v30")) return;
     var style = document.createElement("style");
-    style.id = "wpa-capability-sync-v21";
+    style.id = "wpa-capability-sync-v30";
     style.textContent = `
       #wpa-ai-delivery-architecture{padding:72px 24px;background:#f7f3e8;border-top:1px solid #d8d2bc;border-bottom:1px solid #d8d2bc;color:#172b3c;}
       #wpa-ai-delivery-architecture .wpa-cap-wrap{max-width:1180px;margin:0 auto;}
       #wpa-ai-delivery-architecture .wpa-cap-eyebrow{font:700 11px/1.4 Inter,system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#8a6f25;margin-bottom:10px;}
       #wpa-ai-delivery-architecture h2{font-family:Georgia,'Times New Roman',serif;font-size:clamp(30px,4vw,44px);line-height:1.12;color:#0d1f3c;margin:0 0 14px;}
-      #wpa-ai-delivery-architecture .wpa-cap-lead{max-width:900px;font-size:16px;line-height:1.7;color:#334b5e;margin-bottom:28px;}
+      #wpa-ai-delivery-architecture .wpa-cap-lead{max-width:930px;font-size:16px;line-height:1.72;color:#334b5e;margin-bottom:28px;}
       #wpa-ai-delivery-architecture .wpa-cap-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
       #wpa-ai-delivery-architecture .wpa-cap-card{background:#fff;border:1px solid #d8d2bc;border-top:3px solid #c9a84c;padding:22px;border-radius:6px;box-shadow:0 5px 20px rgba(13,31,60,.07);}
       #wpa-ai-delivery-architecture .wpa-cap-card h3{font-family:Georgia,'Times New Roman',serif;font-size:21px;line-height:1.2;color:#0d1f3c;margin:0 0 9px;}
       #wpa-ai-delivery-architecture .wpa-cap-card p{font-size:14px;line-height:1.65;color:#42596b;margin:0;}
       #wpa-ai-delivery-architecture .wpa-cap-card a{display:inline-block;margin-top:12px;font-weight:700;color:#735c1c;text-decoration:underline;text-underline-offset:3px;}
-      #wpa-ai-delivery-architecture .wpa-evidence-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px;}
+      #wpa-ai-delivery-architecture .wpa-evidence-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:22px;}
       #wpa-ai-delivery-architecture .wpa-evidence{background:#0d1f3c;color:#f8f4ee;padding:18px 20px;border-left:3px solid #c9a84c;border-radius:4px;}
       #wpa-ai-delivery-architecture .wpa-evidence strong{display:block;color:#e3c878;margin-bottom:5px;}
       #wpa-ai-delivery-architecture .wpa-evidence span{font-size:13.5px;line-height:1.55;color:rgba(248,244,238,.88);}
       #wpa-ai-delivery-architecture .wpa-evidence a{color:#e3c878;text-decoration:underline;text-underline-offset:3px;}
-      #wpa-ai-delivery-architecture .wpa-boundary{margin-top:18px;padding:14px 16px;background:#fff;border:1px solid #d8d2bc;font-size:12.5px;line-height:1.6;color:#536777;}
+      #wpa-ai-delivery-architecture .wpa-boundary{margin-top:18px;padding:14px 16px;background:#fff;border:1px solid #d8d2bc;font-size:12.5px;line-height:1.65;color:#536777;}
+      #wpa-ai-delivery-architecture .wpa-arch-line{margin:20px 0 0;padding:15px 17px;background:#fffdf5;border:1px solid #dccb96;border-left:4px solid #9c8336;font:600 13px/1.65 Inter,system-ui,sans-serif;color:#21394b;}
       @media(max-width:900px){#wpa-ai-delivery-architecture .wpa-cap-grid{grid-template-columns:1fr 1fr;}#wpa-ai-delivery-architecture .wpa-evidence-row{grid-template-columns:1fr;}}
       @media(max-width:620px){#wpa-ai-delivery-architecture .wpa-cap-grid{grid-template-columns:1fr;}#wpa-ai-delivery-architecture{padding:54px 18px;}}
     `;
@@ -176,38 +177,66 @@
     }
   }
 
+  function setMeta(selector,value){
+    var el=document.querySelector(selector);
+    if(el)el.setAttribute("content",value);
+  }
+
   function updateMetadata(){
     if (!isRelevantPage()) return;
-    var desc = "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies: research, applied practice, analytics, governed AI workflows, WPAWS, Virtual Sande, publications and professional learning. Development, testing and pilot phase — 2026.";
-    var md = document.querySelector('meta[name="description"]');
-    if (md) md.setAttribute("content",desc);
-    var og = document.querySelector('meta[property="og:description"]');
-    if (og) og.setAttribute("content",desc);
-    var tw = document.querySelector('meta[name="twitter:description"]');
-    if (tw) tw.setAttribute("content",desc);
-    var kw = document.querySelector('meta[name="keywords"]');
-    if (kw) kw.setAttribute("content","World Protocol Academy, WPA Institute, WPAWS, Virtual Sande, protocol, diplomacy, public communication, security studies, AI governance, provenance, HARP-6, Protocolometry, research, analytics, publications");
+    var desc = "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies: independent digital research, authorial, analytical, professional and educational platform with Protocolometry, governed AI workflows, WPAWS, Virtual Sande, publications and human-reviewed institutional tools. Development, testing and pilot phase — 2026.";
+    setMeta('meta[name="description"]',desc);
+    setMeta('meta[property="og:description"]',desc);
+    setMeta('meta[name="twitter:description"]',desc);
+    setMeta('meta[name="keywords"]',"World Protocol Academy, WPA Institute, WPAWS, Virtual Sande, Protocolometry, protocol, diplomacy, public communication, security studies, research, analytics, AI governance, provenance, human authority, HARP-6, publications");
+
+    var canonicalUrl=isInstitutePage()?"https://worldprotocolacademy.mk/institute.html":"https://worldprotocolacademy.mk/";
+    var canonical=document.querySelector('link[rel="canonical"]');
+    if(canonical)canonical.setAttribute("href",canonicalUrl);
+    setMeta('meta[property="og:url"]',canonicalUrl);
+    setMeta('meta[property="og:image"]',"https://worldprotocolacademy.mk/logo.png");
+    setMeta('meta[name="twitter:image"]',"https://worldprotocolacademy.mk/logo.png");
+
+    if(isInstitutePage()){
+      document.title="WPA Institute | Research, Protocol, Diplomacy & Governed AI";
+      var ld=document.querySelector('script[type="application/ld+json"]');
+      if(ld){
+        try{
+          var data=JSON.parse(ld.textContent||"{}");
+          data["@type"]="Organization";
+          data.name="World Protocol Academy — WPA Institute";
+          data.url="https://worldprotocolacademy.mk/institute.html";
+          data.logo="https://worldprotocolacademy.mk/logo.png";
+          data.description=desc;
+          data.knowsAbout=["Protocol","Diplomacy","Public Communication","Security Studies","Protocolometry","Research Methodology","AI Governance"];
+          ld.textContent=JSON.stringify(data,null,2);
+        }catch(e){}
+      }
+    }
   }
 
   function capabilitySectionHTML(){
     return `
       <div class="wpa-cap-wrap">
-        <div class="wpa-cap-eyebrow">WPA Institute · AI · Research · Applied Practice</div>
+        <div class="wpa-cap-eyebrow">WPA Institute · Research · Evidence · Governed AI · Applied Practice</div>
         <h2>Институционална и техничка архитектура · Institutional & Technical Architecture</h2>
-        <p class="wpa-cap-lead">World Protocol Academy е повеќеслојна истражувачка, авторска, аналитичка, професионална и AI-поддржана платформа. Образованието и Student Desk се една application area во поширока архитектура што ги поврзува Institute, WPAWS, Virtual Sande, истражување, аналитика, публикации, безбедносни и дипломатски workflow-и и човечки управувана AI governance.</p>
+        <p class="wpa-cap-lead">World Protocol Academy е повеќеслојна истражувачка, авторска, аналитичка, професионална и образовна дигитална платформа. Образованието и Student Desk се една application area во поширока архитектура што ги поврзува Institute, WPAWS, Virtual Sande, Protocolometry, истражување, јавни извори, публикации, специјализирани labs и човечки управувана AI governance.</p>
         <div class="wpa-cap-grid">
-          <article class="wpa-cap-card"><h3>WPAWS · Working Engine</h3><p>World Protocol Academic Writing System — академски и production workspace за Doctrine, Research, Protocol, Diplomacy, Teaching и Press, со writing/research tools, source workflows и controlled output preparation.</p><a href="/wpaws/index.html">Open WPAWS →</a></article>
-          <article class="wpa-cap-card"><h3>Virtual Sande · AI Interface</h3><p>Source-grounded multilingual AI assistant со attribution logic, controlled retrieval, human review и јасна граница: AI предлага и образложува; човекот проверува, одобрува и останува одговорен.</p><a href="/virtual-sande-ai.html">Open Virtual Sande →</a></article>
-          <article class="wpa-cap-card"><h3>Six Institute Domains</h3><p>Protocol, Diplomacy, Public Communication, Security, Research & Benchmark Analysis и Professional Practice — поврзани во една применета институтска рамка.</p><a href="/institute.html#research-pillars">Explore Institute →</a></article>
-          <article class="wpa-cap-card"><h3>Analytics & Evidence</h3><p>Protocolometry, PSPI, Institute Index, public-source comparison, correction rights, source verification, benchmark methodology и measurable institutional outputs.</p><a href="/protocolometry-center.html">Protocolometry Center →</a></article>
-          <article class="wpa-cap-card"><h3>Specialist Labs & Five Engines</h3><p>Protocol Symbols Lab, Diplomatic Analysis Lab, Academic Search Hub, WPA Watch, Journal Watch и Five Engines создаваат специјализирани research, monitoring and analysis workflows.</p><a href="/tools/wpa-five-engines.html">WPA Five Engines →</a></article>
-          <article class="wpa-cap-card"><h3>Governance & Human Authority</h3><p>PN-005–PN-009, provenance, bounded action, human authorisation, Right to Pause, correction records и clear separation of public evidence, AI assistance and final human responsibility.</p><a href="/working-papers/">Working Papers & Protocol Notes →</a></article>
+          <article class="wpa-cap-card"><h3>WPAWS · Executive Working Layer</h3><p>World Protocol Academic Writing System — governed working environment со 17 executive agent roles за академско пишување, анализа, протокол, дипломатија, безбедност, цитати, редакција, peer-style review и publishing preparation.</p><a href="/wpaws/index.html">Open WPAWS →</a></article>
+          <article class="wpa-cap-card"><h3>Virtual Sande · Central AI Interface</h3><p>Source-disciplined AI interface и orchestration layer со attribution logic, controlled retrieval, human review и јасна граница: AI анализира, подготвува и препорачува; овластен човек одобрува consequential output.</p><a href="/virtual-sande-ai.html">Open Virtual Sande →</a></article>
+          <article class="wpa-cap-card"><h3>Protocolometry · Measurement Methodology</h3><p>Методолошка рамка за мерење, споредување, traceability, correction rights и evidence-based analysis во протокол, дипломатија, комуникација и security-aware professional practice.</p><a href="/protocolometry-center.html">Protocolometry Center →</a></article>
+          <article class="wpa-cap-card"><h3>Research & Source Infrastructure</h3><p>Academic Search Hub, WPA Watch и Journal Watch се legal-safe research and editorial workflows: public-source discovery, candidate monitoring, traceability, classification review и human academic verification.</p><a href="/tools/academic-search-hub/">Academic Search Hub →</a></article>
+          <article class="wpa-cap-card"><h3>Specialist Labs & Applied Tools</h3><p>Protocol Symbols Lab, Diplomatic Analysis Lab, Five Engines и Digital Pavilion обезбедуваат specialist datasets, simulations, protocol decision-support и public research interfaces со јасно означена зрелост.</p><a href="/tools/wpa-five-engines.html">WPA Five Engines →</a></article>
+          <article class="wpa-cap-card"><h3>Governance · Doctrine · Human Authority</h3><p>Doctrine Kernel, PN-005–PN-009, provenance, bounded agency, source-compliance, AC0–AC3, Right to Pause, evidence/safety gates и Human Gate ја ограничуваат автоматизацијата и ја задржуваат институционалната одговорност кај човекот.</p><a href="/working-papers/">Research & Governance →</a></article>
         </div>
+        <div class="wpa-arch-line"><strong>Canonical governed architecture:</strong> Human Authority → WPA Doctrine Kernel → strategic AI core → Virtual Sande → 17 WPAWS executive agents → up to 80 bounded tactical-operational agent seats → Evidence Gate → Safety Gate → Human Gate → WPA output. Council-54 е посебен external-AI candidate registry, не тврдење за 54 истовремено активни или партнерски системи.</div>
         <div class="wpa-evidence-row">
           <div class="wpa-evidence"><strong>Official bibliographic evidence · 2026 book</strong><span>Протокол на државни симболи, химни и национални денови · ISBN 978-608-66168-5-4 · COBISS.MK-ID 69316613 · 74 pages · MK/EN. <a href="https://plus.cobiss.net/cobiss/mk/mk/data/cobib/69316613">COBISS record →</a></span></div>
-          <div class="wpa-evidence"><strong>Latest AI-governance research evidence</strong><span>WPA-PN-009 · AI Transparency and the Protocol of Authorship · Version v1.0 FINAL DOI-LOCKED · DOI 10.5281/zenodo.21933739 · MK/EN. <a href="https://doi.org/10.5281/zenodo.21933739">Zenodo DOI →</a></span></div>
+          <div class="wpa-evidence"><strong>AI-governance research evidence</strong><span>WPA-PN-009 · AI Transparency and the Protocol of Authorship · v1.0 FINAL DOI-LOCKED · DOI 10.5281/zenodo.21933739 · MK/EN. <a href="https://doi.org/10.5281/zenodo.21933739">Zenodo DOI →</a></span></div>
+          <div class="wpa-evidence"><strong>Academic Quality & Evidence Standard</strong><span>Internal machine-readable quality discipline for identity, provenance, capability status, version hygiene, human authority, publication integrity, rights compliance and auditability. <a href="/data/wpa-academic-quality-standard.json">Open standard →</a></span></div>
+          <div class="wpa-evidence"><strong>Public Evidence & Version Control</strong><span>Canonical component versions and verifiable technical/public evidence are separated from marketing claims and legacy labels. <a href="/data/wpa-public-evidence-index.json">Evidence index →</a> · <a href="/data/wpa-canonical-version-manifest.json">Version manifest →</a></span></div>
         </div>
-        <div class="wpa-boundary"><strong>Status boundary:</strong> WPA distinguishes live, limited-production, staging, beta and planned capabilities. Analytical modules use public sources and do not claim intelligence, surveillance, investigative or autonomous operational authority. Consequential outputs remain subject to human review and authorization.</div>
+        <div class="wpa-boundary"><strong>Status boundary:</strong> WPA distinguishes LIVE, LIMITED PRODUCTION, IMPLEMENTED MVP, STAGING, BETA, PROTOTYPE, PLANNED and CANDIDATE REGISTRY states. Analytical modules use public or otherwise authorised sources and do not claim intelligence, surveillance, investigative or autonomous operational authority. External-customer delivery, partnership, accreditation and production maturity are claimed only when supported by evidence. Consequential outputs remain subject to human review and authorization.</div>
       </div>`;
   }
 
