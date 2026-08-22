@@ -1,3 +1,6 @@
+// WPAWS LEGACY NON-CANONICAL MODULE
+// Canonical public WPAWS version: 11.1.7. This file is retained for compatibility/reference.
+// It must not imply that an external AI adapter is live when none is configured.
 // WPAWS 11.1.7 - Главна апликација
 // World Protocol Academy
 // Доктрина: "Преговарањето е опционално. Протоколот е апсолутен."
@@ -215,8 +218,7 @@ async function executeAgent() {
         const fullPrompt = getAgentPrompt(currentAgent.number, userInput);
         const motor = getAgentMotor(currentAgent.number);
         
-        // ТУКА ЌЕ СЕ ПОВИКУВА AI API
-        // За сега – симулиран одговор или приказ на промптот
+        // LEGACY ADAPTER STUB — no external AI call is made in this non-canonical module.
         
         outputArea.innerHTML = `
             <div class="output-card">
@@ -232,10 +234,7 @@ async function executeAgent() {
                     <div class="ai-response">
                         <strong>🤖 ОДГОВОР ОД AI:</strong>
                         <div class="response-placeholder">
-                            ⚠️ Ова е местото каде ќе дојде одговорот од ${motor.toUpperCase()} API.
-                            <br><br>
-                            За да работи, треба да се интегрира вистински API повик до:
-                            ${motor === 'claude' ? 'Anthropic Claude API' : motor === 'gpt' ? 'OpenAI GPT API' : 'Локален шаблон'}
+                            ⚠️ External AI adapter is not configured in this legacy module. No external AI call was made. Use the canonical WPAWS 11.1.7 runtime or an explicitly approved/configured adapter.
                         </div>
                     </div>
                 </div>
