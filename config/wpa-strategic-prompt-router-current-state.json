@@ -1,0 +1,46 @@
+{
+  "schema": "wpa-strategic-prompt-router-current-state/1.0",
+  "recorded_at": "2026-08-24",
+  "component": "WPA Strategic Prompt Router",
+  "router_version": "wpa-strategic-prompt-router-1.0.0",
+  "framework_version": "1.0.0",
+  "framework_path": "/data/wpa-strategic-prompt-framework.json",
+  "prompt_desk_path": "/tools/wpa-prompt-desk/",
+  "prompt_count": 8,
+  "default_major_wpa_prompt": "SP08",
+  "central_orchestrator": {
+    "version": "wpa-central-orchestrator-1.7.0",
+    "integration": "REPOSITORY_INTEGRATED",
+    "automatic_routing": true,
+    "ordinary_query_bypass": true,
+    "prompt_route_can_inform_agent_selection": true,
+    "prompt_route_creates_authority": false,
+    "human_gate_unchanged": true
+  },
+  "worker_sources": {
+    "staging": "ROUTER_WRAPPER_INTEGRATED",
+    "production": "ROUTER_WRAPPER_INTEGRATED",
+    "symbol_router_precedence_preserved": true,
+    "existing_virtual_sande_response_contract_preserved_by_design": true
+  },
+  "deployment": {
+    "workflow": "/.github/workflows/deploy-wpa-strategic-prompt-router-production.yml",
+    "workflow_trigger": "push_or_manual",
+    "deployment_requested": true,
+    "production_acceptance_required": true,
+    "production_verified": false,
+    "status": "DEPLOYMENT_AND_POST_DEPLOY_ACCEPTANCE_PENDING_VERIFICATION",
+    "verification_rule": "Do not describe the router as production-verified until the deployment workflow completes successfully and the /prompt-router/health, SP06, SP08, ordinary-query bypass and routed /ask acceptance checks pass."
+  },
+  "governance": {
+    "doctrine_kernel_applies": true,
+    "source_compliance_applies_when_sources_are_used": true,
+    "evidence_gate_required_for_material_factual_claims": true,
+    "safety_gate_required": true,
+    "consequential_actions_require_human_authorisation": true,
+    "accuracy_over_deadline": true,
+    "no_guaranteed_10x_claims": true,
+    "no_psychological_diagnosis": true,
+    "no_coercive_identity_reprogramming": true
+  }
+}
