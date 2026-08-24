@@ -99,7 +99,7 @@ jobs:
           }
 
           retry_get health /prompt-router/health /tmp/wpa-prompt-router-evidence/health.json
-          grep -F 'wpa-strategic-prompt-router-1.0.0' /tmp/wpa-prompt-router-evidence/health.json
+          grep -F 'wpa-strategic-prompt-router-1.0.1' /tmp/wpa-prompt-router-evidence/health.json
           grep -F '"prompts": 8' /tmp/wpa-prompt-router-evidence/health.json
           grep -F '"human_gate_required": true' /tmp/wpa-prompt-router-evidence/health.json
 
@@ -114,6 +114,13 @@ jobs:
             --data-urlencode 'lang=mk'
           grep -F '"id": "SP08"' /tmp/wpa-prompt-router-evidence/sp08.json
           grep -F 'major_wpa_mission' /tmp/wpa-prompt-router-evidence/sp08.json
+
+          retry_get explicit-sp08 /prompt-router/route /tmp/wpa-prompt-router-evidence/explicit-sp08.json \
+            --data-urlencode 'message=Користи SP08 за оваа задача' \
+            --data-urlencode 'lang=mk'
+          grep -F '"id": "SP08"' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
+          grep -F '"automatic": false' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
+          grep -F 'explicit_prompt_selection' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
 
           retry_get plain /prompt-router/route /tmp/wpa-prompt-router-evidence/plain.json \
             --data-urlencode 'message=Што е агреман?' \
@@ -145,10 +152,11 @@ jobs:
         run: |
           {
             echo '## WPA Strategic Prompt Router · Production'
-            echo '- Router: **wpa-strategic-prompt-router-1.0.0**'
+            echo '- Router: **wpa-strategic-prompt-router-1.0.1**'
             echo '- Prompt library: **8 governed prompts**'
             echo '- Central Orchestrator: **1.7.0 integration**'
             echo '- Router ↔ Orchestrator integration tests: **Passed**'
+            echo '- Explicit SP08 routing regression: **Passed**'
             echo '- Propagation-safe post-deploy verification: **Passed**'
             echo '- Ordinary factual query bypass: **Passed**'
             echo '- SP06 automatic route: **Passed**'
