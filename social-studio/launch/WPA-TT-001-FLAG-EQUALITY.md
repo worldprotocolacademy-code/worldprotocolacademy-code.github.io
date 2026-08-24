@@ -1,13 +1,28 @@
 # WPA TikTok Launch Asset 001 — Flag Equality Test
 
 **Asset ID:** WPA-TT-001  
-**Status:** READY FOR HUMAN REVIEW / SANDE GATE  
+**Status:** SOURCE-LOCKED · READY FOR HUMAN REVIEW / SANDE GATE  
 **Primary job:** Discovery  
 **Pillar:** Spot the Protocol Mistake + Symbols & Ceremonies  
 **Experiment:** Hook Lab #1  
 **Primary CTA:** Comment the answer  
 **Platform:** TikTok first; clean master adaptable to Reels and Shorts  
 **Language:** English global master
+
+## Source lock
+
+This asset is now grounded in the author's 2026 academic submission manuscript on wrong flag display as protocol breach and security-communication failure. The underlying DOCX is **not stored in this public repository**.
+
+Source-backed points used in this asset:
+
+- wrong flag display includes errors of identity, orientation, precedence, dimension, height, order and contextual dignity;
+- unequal treatment can visually lower the dignity of a participating state symbol;
+- exact legal and precedence rules vary by jurisdiction and event context;
+- operational prevention requires checking identity, orientation, position, order, dimensions and condition;
+- an independent four-eyes verification step is part of the recommended operational model;
+- a brief visual error can become a durable public message through media circulation.
+
+The video deliberately teaches the general **risk principle**, not a universal legal ordering rule.
 
 ## Why this goes first
 
@@ -19,13 +34,13 @@ The first public objective is not direct revenue. It is to test whether a clear 
 
 Use a fictional bilateral teaching setup with two generic national-flag placeholders, not a claim about a real event.
 
-Approved editorial wording:
+Approved editorial principle:
 
-> In a bilateral official display, placing one national flag visibly lower or materially smaller than the other can create an unintended hierarchy. Exact order and placement depend on the applicable protocol rules; equal dignity is the principle to protect.
+> Size and height are not decoration. They create visual hierarchy. In official protocol, unequal treatment can make one state symbol appear subordinate. Exact precedence depends on the applicable jurisdiction and setting.
 
 Do not imply that one universal flag-order rule applies to every jurisdiction or event format.
 
-## Final 22–28 second script
+## Final 22–28 second script — SOURCE-LOCKED VERSION
 
 ### 0.0–2.5 sec — Hook
 
@@ -33,7 +48,7 @@ Do not imply that one universal flag-order rule applies to every jurisdiction or
 
 > CAN YOU SPOT THE PROTOCOL MISTAKE IN 3 SECONDS?
 
-Visual: two generic flag panels on poles. Flag A is visibly higher and larger; Flag B is lower and smaller.
+Visual: two fictional flag panels on poles. Flag A is visibly higher and larger; Flag B is lower and smaller.
 
 Spoken:
 
@@ -45,36 +60,35 @@ Add a small 3–2–1 visual countdown. No logo intro.
 
 Spoken:
 
-> “Most people look at the order first. That is not the first problem here.”
+> “Most people look at the order first. That is not the only risk here.”
 
-Visual: quick crop toward the two poles; subtle highlight around the unequal height/scale.
+Visual: quick crop toward the unequal height and scale.
 
-### 6.0–15.0 sec — Reveal / Value
+### 6.0–14.0 sec — Reveal / Value
 
 Spoken:
 
-> “In a bilateral official display, one national flag should not be made to look subordinate by being visibly lower or materially smaller.”
+> “Size and height create visual hierarchy. Unequal treatment can make one state symbol look subordinate.”
 
 On-screen keywords:
 
-> EQUAL DIGNITY
+> SIZE · HEIGHT · DIGNITY
 
-### 15.0–21.0 sec — Professional nuance
+### 14.0–21.0 sec — Professional nuance
 
 Spoken:
 
-> “The exact order can change with the setting and the host rules. The principle of equal dignity does not.”
+> “Exact precedence depends on the country and the setting. That is why professionals verify identity, orientation, position and dimensions before the public sees the flags.”
 
 On screen, smaller:
 
-> Exact placement = context-specific  
-> Equal dignity = core check
+> VERIFY BEFORE DISPLAY
 
 ### 21.0–26.0 sec — CTA
 
 Spoken:
 
-> “Did you spot it before the countdown ended? Comment YES or NO.”
+> “Did you catch the risk before the countdown ended? Comment YES or NO.”
 
 On screen:
 
@@ -82,6 +96,12 @@ On screen:
 > YES / NO ↓
 
 End with a small WPA mark only. No product pitch.
+
+## Optional tighter 20–22 second cut
+
+If the full take feels slow, use this cut without changing the factual content:
+
+> “Would you approve this setup? Most people look at the order first — but size and height also create hierarchy. Unequal treatment can make one state symbol look subordinate. Exact precedence depends on the country and setting, so professionals verify before display. Did you catch it? YES or NO?”
 
 ## First-frame design
 
@@ -102,11 +122,13 @@ Alternative if filming is not available: voice-led motion graphic using the same
 
 Tone: calm, confident, curious. Do not sound accusatory or theatrical.
 
-## Caption v1
+## Caption v2 — source-disciplined
 
 **Would you approve this flag setup at an official bilateral event?**
 
-The first mistake is not necessarily the order. Look at the visual hierarchy.
+Order is not the only protocol risk. Size, height, orientation and placement can also change the visual message.
+
+Exact rules depend on the jurisdiction and event context — which is why professional verification matters.
 
 #Protocol #Diplomacy #FlagProtocol #OfficialEvents #WorldProtocolAcademy
 
@@ -150,16 +172,16 @@ Because the current account has only a very small number of prior posts, record 
 
 Create adjacent controlled tests while preserving the visual-puzzle mechanic:
 
-1. Three flags: where does the host flag belong in this defined teaching scenario?
-2. EU flag + national flags: what changes and what does not?
-3. Flag behind a lectern: spot the visual imbalance.
-4. Two heads of delegation: which background would you approve?
-5. Mourning display: what must be verified before lowering a flag?
-6. Table flags: spot the asymmetry.
-7. Indoor vs outdoor flag display: what changes?
-8. Press-conference background: identify the protocol risk.
-9. Four flags: why alphabetical/host rules matter.
-10. “Order is not the only flag mistake” — compilation follow-up.
+1. **Identity test:** visually similar flags — why memory is not enough.
+2. **Orientation test:** can you spot which flag is inverted?
+3. **Three-flag arrangement:** identify the precedence risk in a defined jurisdiction.
+4. **Table flags:** spot the substitution risk.
+5. **Press-conference background:** identify visual imbalance.
+6. **Indoor display:** speaker-side placement in a defined legal context.
+7. **Flag dimensions:** why size equality matters.
+8. **Condition test:** faded/torn flag as institutional signal.
+9. **Four-eyes check:** the 15-second pre-event verification routine.
+10. **“The flag is not decoration”** — authority follow-up explaining why a seconds-long error can become a durable public message.
 
 Each follow-up must be independently source-checked for the exact jurisdiction/context it teaches.
 
@@ -189,7 +211,7 @@ Do not claim or imply that changing the profile text itself causes algorithmic r
 
 The current profile includes a post attributing the sentence “You can negotiate with terrorists, but you cannot negotiate with Protocol” to former U.S. President George H. W. Bush.
 
-Before reusing, pinning or promoting that quote, verify the exact wording and attribution from a reliable primary or authoritative historical source. A preliminary search did not establish a reliable source for the exact quotation. If verification fails, remove the attribution or replace the post with a sourced WPA editorial statement.
+Before reusing, pinning or promoting that quote, verify the exact wording and attribution from a reliable primary or authoritative historical source. If verification fails, remove the attribution or replace the post with a sourced WPA editorial statement.
 
 ## Governance
 
