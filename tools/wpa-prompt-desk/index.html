@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Prompt Desk | Strategic Prompt Framework</title>
+<meta name="description" content="WPA Strategic Prompt Framework: eight governed reusable prompts for strategy, learning, mastery, workflow improvement, leverage, professional development and major WPA missions.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/tools/wpa-prompt-desk/">
+<style>
+:root{--navy:#0d1f3c;--gold:#c9a84c;--cream:#f8f4ee;--ink:#1c2733;--muted:#5d6b78;--line:#d8cfbb;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--cream);color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:28px 20px;border-bottom:3px solid var(--gold)}
+.wrap{max-width:1180px;margin:0 auto}.eyebrow{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:#eadba9;font-weight:800}.title{font-family:Georgia,serif;font-size:clamp(30px,4vw,48px);margin:8px 0 10px}.lead{max-width:900px;color:#dce5ee;line-height:1.7}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;padding:9px 12px;border-radius:6px;font-weight:700;cursor:pointer}.btn.active,.btn:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+main{padding:34px 20px 60px}.notice{background:#fff8dd;border:1px solid #dccb96;border-left:4px solid var(--gold);padding:14px 16px;line-height:1.6;margin-bottom:22px;border-radius:4px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{background:var(--white);border:1px solid var(--line);border-top:3px solid var(--gold);border-radius:6px;padding:20px;box-shadow:0 5px 18px rgba(13,31,60,.06)}
+.card h2{font-family:Georgia,serif;color:var(--navy);font-size:22px;margin:0 0 5px}.meta{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#7a6731;font-weight:800;margin-bottom:12px}.use{font-size:12px;color:var(--muted);margin-bottom:12px}.prompt{white-space:pre-wrap;background:#f7f8fa;border:1px solid #e3e7eb;border-radius:5px;padding:14px;line-height:1.6;font-size:13px;max-height:320px;overflow:auto}.actions{display:flex;gap:8px;margin-top:12px}.copy{background:var(--navy);color:#fff;border:0;border-radius:5px;padding:9px 12px;font-weight:700;cursor:pointer}.copy:hover{background:#18345e}.small{font-size:11px;color:var(--muted);margin-top:8px}
+.contract{margin-top:28px;background:#fff;border:1px solid var(--line);padding:20px;border-radius:6px}.contract h3{font-family:Georgia,serif;color:var(--navy);font-size:23px;margin-top:0}.contract ol{line-height:1.7}.status{margin-top:20px;font-size:12px;color:var(--muted)}
+@media(max-width:780px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">World Protocol Academy · WPAWS · Governed Prompt Library</div><div class="title">WPA Prompt Desk</div><div class="lead">Eight reusable prompts for strategy, learning, expert mastery, workflow improvement, sustainable high performance, time leverage, professional development and major WPA missions. The framework is governed by WPA source, evidence, safety and Human Gate rules.</div><div class="controls"><button class="btn active" data-lang="mk">MK</button><button class="btn" data-lang="en">EN</button></div></div></header>
+<main><div class="wrap">
+<div class="notice"><strong>Governance boundary:</strong> prompts improve structure and execution; they do not create authority. No guaranteed “10×” outcomes, no psychological diagnosis or coercive “reprogramming”, no invented facts, partnerships or deployment claims. Consequential institutional actions remain subject to human authorisation.</div>
+<div id="grid" class="grid" aria-live="polite"></div>
+<div class="contract"><h3 id="contractTitle">WPA Common Output Contract</h3><ol id="contract"></ol><div id="verify" class="small"></div></div>
+<div class="status">Canonical data: <a href="/data/wpa-strategic-prompt-framework.json">/data/wpa-strategic-prompt-framework.json</a> · Default major WPA mission prompt: SP08.</div>
+</div></main>
+<script>
+let DATA=null,lang='mk';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){if(!DATA)return;const g=document.getElementById('grid');g.innerHTML=DATA.prompts.map(p=>{const title=p['title_'+lang],prompt=p['prompt_'+lang];return `<article class="card"><div class="meta">${esc(p.id)} · ${esc(p.slug)}</div><h2>${esc(title)}</h2><div class="use">Best for: ${esc((p.best_for||[]).join(' · '))}</div><div class="prompt" id="${p.id}-${lang}">${esc(prompt)}</div><div class="actions"><button class="copy" data-id="${p.id}">${lang==='mk'?'Копирај prompt':'Copy prompt'}</button></div></article>`}).join('');
+document.getElementById('contract').innerHTML=(DATA.common_output_contract[lang]||[]).map(x=>`<li>${esc(x.replace(/^\d+\)\s*/,''))}</li>`).join('');document.getElementById('verify').textContent=DATA.common_output_contract['verification_clause_'+lang]||'';document.getElementById('contractTitle').textContent=lang==='mk'?'WPA Common Output Contract':'WPA Common Output Contract';document.querySelectorAll('.copy').forEach(b=>b.onclick=async()=>{const p=DATA.prompts.find(x=>x.id===b.dataset.id);const text=p['prompt_'+lang]+'\n\n'+(DATA.common_output_contract['verification_clause_'+lang]||'');try{await navigator.clipboard.writeText(text);b.textContent=lang==='mk'?'Копирано ✓':'Copied ✓';setTimeout(()=>b.textContent=lang==='mk'?'Копирај prompt':'Copy prompt',1200)}catch(e){alert(text)}})}
+document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;document.querySelectorAll('[data-lang]').forEach(x=>x.classList.toggle('active',x===b));document.documentElement.lang=lang;render()});
+fetch('/data/wpa-strategic-prompt-framework.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).then(d=>{DATA=d;render()}).catch(e=>{document.getElementById('grid').innerHTML='<div class="notice">Prompt registry could not be loaded.</div>';console.error(e)});
+</script>
+</body></html>
