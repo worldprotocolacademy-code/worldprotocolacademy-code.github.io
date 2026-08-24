@@ -1,16 +1,20 @@
 {
-  "schema": "wpa-strategic-prompt-router-current-state/1.0",
+  "schema": "wpa-strategic-prompt-router-current-state/1.1",
   "recorded_at": "2026-08-24",
   "component": "WPA Strategic Prompt Router",
-  "router_version": "wpa-strategic-prompt-router-1.0.0",
+  "router_version": "wpa-strategic-prompt-router-1.0.1",
   "framework_version": "1.0.0",
   "framework_path": "/data/wpa-strategic-prompt-framework.json",
   "prompt_desk_path": "/tools/wpa-prompt-desk/",
   "prompt_count": 8,
   "default_major_wpa_prompt": "SP08",
+  "explicit_prompt_id_aliases": {
+    "SP01_to_SP08": true,
+    "SP1_to_SP8_normalized_to_canonical_zero_padded_ids": true
+  },
   "central_orchestrator": {
     "version": "wpa-central-orchestrator-1.7.0",
-    "integration": "REPOSITORY_INTEGRATED",
+    "integration": "PRODUCTION_VERIFIED_INTEGRATION",
     "automatic_routing": true,
     "ordinary_query_bypass": true,
     "prompt_route_can_inform_agent_selection": true,
@@ -19,18 +23,42 @@
   },
   "worker_sources": {
     "staging": "ROUTER_WRAPPER_INTEGRATED",
-    "production": "ROUTER_WRAPPER_INTEGRATED",
+    "production": "ROUTER_WRAPPER_INTEGRATED_AND_ACCEPTED",
     "symbol_router_precedence_preserved": true,
-    "existing_virtual_sande_response_contract_preserved_by_design": true
+    "existing_virtual_sande_response_contract_preserved": true,
+    "virtual_sande_response_contract_version": "v35.1.1"
   },
   "deployment": {
     "workflow": "/.github/workflows/deploy-wpa-strategic-prompt-router-production.yml",
-    "workflow_trigger": "push_or_manual",
-    "deployment_requested": true,
-    "production_acceptance_required": true,
-    "production_verified": false,
-    "status": "DEPLOYMENT_AND_POST_DEPLOY_ACCEPTANCE_PENDING_VERIFICATION",
-    "verification_rule": "Do not describe the router as production-verified until the deployment workflow completes successfully and the /prompt-router/health, SP06, SP08, ordinary-query bypass and routed /ask acceptance checks pass."
+    "workflow_trigger": "manual_workflow_dispatch",
+    "production_verified": true,
+    "status": "PRODUCTION_VERIFIED",
+    "verified_run_id": 32701887795,
+    "verified_head_sha": "612a68470cc8637a64cb890b791a12b790184004",
+    "cloudflare_worker": "wpa-virtual-sande-v35-1-production",
+    "production_url": "https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev",
+    "cloudflare_version_id": "f2f96e33-7643-40b1-8b41-a23a301bf2e3",
+    "evidence_artifact": {
+      "name": "wpa-strategic-prompt-router-production-evidence",
+      "artifact_id": 9510846370,
+      "sha256": "e1dc45d91a8fea998241781f023cf8f2efeac1d180c6b86728eebad4347d7eaf",
+      "retention_days": 90
+    },
+    "acceptance": {
+      "runtime_and_framework_validation": "PASSED",
+      "tests_passed": 29,
+      "production_worker_boundary": "PASSED",
+      "exact_version_propagation": "PASSED",
+      "health": "PASSED",
+      "sp06_automatic_route": "PASSED",
+      "sp08_major_wpa_route": "PASSED",
+      "explicit_sp08_route": "PASSED",
+      "ordinary_query_bypass": "PASSED",
+      "greeting_contract": "PASSED",
+      "routed_ask": "PASSED",
+      "human_gate_boundary": "PRESERVED",
+      "virtual_sande_v35_1_1_contract": "PRESERVED"
+    }
   },
   "governance": {
     "doctrine_kernel_applies": true,
