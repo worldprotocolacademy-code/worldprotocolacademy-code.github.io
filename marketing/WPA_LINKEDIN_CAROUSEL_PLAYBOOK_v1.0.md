@@ -127,38 +127,74 @@ CTA: Institutional Protocol Audit / full paper.
 
 ---
 
-# Carousel 3 — “Neuroprotocol 2030 / EECI / Right to Pause”
+# Carousel 3 — Neuroprotocol 2030 / WPA-PN-006
 
-**Publication status:** RED / HOLD.
+**Publication status:** GREEN WITH EDITS — canonical publication verified.
 
-## Reason for hold
+## Canonical source
 
-At the time of this review, the proposed public identifiers and attributions — including **WPA-PN-006**, **Neuroprotocol 2030**, **Effective Embodied Command Index (EECI)**, **Right to Pause**, and the statement **DOI-LOCKED** — were not sufficiently verified against a canonical public WPA record.
+- **Title:** *Neuroprotocol 2030: From Thought to Action* / *Невропротокол 2030: Од мисла до дејство*
+- **Identifier:** WPA-PN-006
+- **Version:** 1.6
+- **Format:** Bilingual MK/EN
+- **Persistent DOI:** `10.5281/zenodo.21669195`
 
-They must not be presented as an already published WPA Protocol Note or DOI-backed framework until the source exists and has been checked.
+The canonical public description confirms the **Effective Embodied Command Index (EECI)** and the **WPA Right to Pause**. EECI links clarity of intention, decoding reliability, human confirmation and a functional physical stop. The publication also distinguishes verified medical and assistive capabilities from unrestricted “mind-reading” narratives and treats forecasts of superintelligence, abundance and optional work as scenarios rather than established facts.
 
-## Safe options
+## Why it works
+- distinctive WPA thought-leadership territory;
+- connects protocol, AI governance, neurotechnology and cognitive sovereignty;
+- provides a strong human-authority thesis without sensationalism;
+- suitable for LinkedIn authority and discussion content.
 
-### Option A — Hold until canonical publication
-Create the underlying paper / note, complete editorial and bibliographic review, register / publish it, then build the carousel from the canonical text.
+## Required corrections
 
-### Option B — Reframe as an explicitly labelled discussion concept
-Possible working title:
+1. Use the verified title, identifier, version and DOI exactly as above.
+2. Do **not** label PN-006 “DOI-LOCKED” unless that exact status is present in the canonical record being cited. Prefer **persistent Zenodo DOI**.
+3. Do not imply unrestricted mind reading or guaranteed 2030 deployment. Keep future-facing claims explicitly scenario-based where the source does.
+4. Describe EECI only with source-faithful components.
+5. Frame the WPA Right to Pause with the publication's actual scope, including its narrowly bounded emergency clinical exception where relevant.
 
-**HUMAN AUTHORITY IN AI-ASSISTED PROTOCOL**  
-*What should never be delegated without a human gate?*
+## Recommended 5-page structure
 
-This version must not use unverified index names or publication identifiers. It may use already canonical WPA doctrine only where the wording is verifiably published / approved.
+### Page 1 — Cover
+**NEUROPROTOCOL 2030**  
+**From thought to action**
 
-## Publication gate
+Small line: *A WPA research explainer based on WPA-PN-006.*
 
-Do not release until each of the following is verified:
-- exact document title;
-- exact identifier;
-- publication status;
-- canonical URL / DOI where claimed;
-- exact definitions of any coined index;
-- attribution of “Right to Pause” or equivalent doctrine.
+### Page 2 — The governance problem
+**When intention can trigger digital or physical action, where must human authority sit?**
+
+Neuroprotocol examines the passage from human intention, through a brain-computer interface and algorithmic interpretation, to digital or physical action.
+
+### Page 3 — The WPA framework
+**EECI: Effective Embodied Command Index**
+
+Keep the four verified components concise:
+- clarity of intention;
+- decoding reliability;
+- human confirmation;
+- functional physical stop.
+
+### Page 4 — Human safeguard
+**WPA Right to Pause**
+
+Editorial framing: human operators need a meaningful, functional ability to interrupt or stop automated action. Use the exact PN-006 wording when quoting or defining the doctrine.
+
+### Page 5 — Source / CTA
+**The future of interfaces is also a governance question.**
+
+Source: *WPA-PN-006 — Neuroprotocol 2030: From Thought to Action*, v1.6.  
+DOI: `10.5281/zenodo.21669195`
+
+CTA options to test:
+- “Read the full Protocol Note.”
+- “Follow WPA for source-disciplined AI governance and protocol research.”
+- “What should never be delegated without a human stop?”
+
+## Hashtags
+Use a small relevant set; for example: `#AIGovernance #Neurotechnology #CognitiveSovereignty #Protocol #WorldProtocolAcademy`.
 
 ---
 
@@ -174,7 +210,13 @@ Do not release until each of the following is verified:
 
 ## Main issue
 
-The proposed version attributes several strong propositions to a “2020 handbook” but does not provide the exact canonical title / page basis in the draft. Several lines read as absolute doctrine rather than sourced guidance.
+The underlying 2020 handbook is canonically verified as:
+
+*Прирачник за организирање на конференции и настани во јавна/државна институција: од А до Ш — Како до совршена конференција?*  
+*Handbook on the Organization of Conferences and Events by a Public/State Institution: from A to Z*  
+2020 · ISBN `978-608-66168-1-6`.
+
+However, the proposed carousel still needs page-level verification before several strong propositions are presented as direct handbook doctrine.
 
 Examples needing source verification or reframing:
 - “The protocol map dictates the budget.”
@@ -209,7 +251,7 @@ Respect agreed timing and maintain an appropriate event record, decisions, final
 
 CTA: `worldprotocolacademy.mk/start/` or `/resources/official-event-quick-check/`.
 
-If the 2020 handbook is used as the source, add the exact title and bibliographic reference after verification.
+If the 2020 handbook is used as the source, add the exact title and page-level reference after verification.
 
 ---
 
@@ -231,7 +273,7 @@ If the 2020 handbook is used as the source, add the exact title and bibliographi
 
 1. **Plan B in Protocol** — broad practical B2B value.
 2. **Vatican Protocol** — distinctive authority / research content.
-3. **Five Checks Before a Professional Conference Opens** — broad utility / funnel to Quick Check.
-4. **AI / Neuroprotocol concept** — only after publication-status verification or explicit concept reframing.
+3. **Neuroprotocol 2030** — verified future-facing thought leadership.
+4. **Five Checks Before a Professional Conference Opens** — broad utility / funnel to Quick Check after page-level handbook verification.
 
 This playbook operates under `WPA_SOCIAL_CONTENT_DIRECTIVES_v1.0.md` and `WPA_MARKETING_OPERATING_SYSTEM_v1.0.md`.
