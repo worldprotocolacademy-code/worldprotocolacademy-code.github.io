@@ -1,57 +1,88 @@
 {
-  "schema": "wpa-institutional-operating-architecture/1.0",
-  "version": "1.0.0",
-  "updated": "2026-08-22",
+  "schema": "wpa-institutional-operating-architecture/1.1",
+  "version": "1.1.0",
+  "updated": "2026-08-24",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "model": "HGAIM",
   "model_reference": "/data/wpa-human-governed-agentic-institution-model.json",
-  "canonical_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
+  "authority_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
+  "canonical_runtime_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Strategic Prompt Router control layer -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
+  "control_layers": [
+    {
+      "id": "strategic_prompt_router",
+      "version": "wpa-strategic-prompt-router-1.0.1",
+      "position": "between_strategic_ai_core_and_virtual_sande",
+      "base_status": "LIVE",
+      "qualifier": "PRODUCTION_VERIFIED_CONTROL_LAYER",
+      "creates_authority": false,
+      "human_gate_unchanged": true,
+      "evidence": "/config/wpa-strategic-prompt-router-current-state.json"
+    }
+  ],
   "systems": [
     {
       "id": "virtual_sande",
       "status": "LIVE_PRODUCTION",
+      "base_status": "LIVE",
+      "qualifier": "PUBLIC_PRODUCTION_DEPLOYED_AND_ACCEPTED",
       "version": "v35.1.1",
       "evidence": "/config/virtual-sande-current-state.json"
     },
     {
       "id": "wpaws",
       "status": "CONTROLLED_WORKING_ENVIRONMENT",
+      "base_status": "IMPLEMENTED_MVP",
+      "qualifier": "CONTROLLED_WORKING_ENVIRONMENT; 17 governed executive roles; provider adapter availability varies by approved configuration",
       "version": "11.1.7",
       "executive_agents": 17
     },
     {
       "id": "council80",
       "status": "BOUNDED_AGENT_CAPACITY",
+      "base_status": "IMPLEMENTED_MVP",
+      "qualifier": "BOUNDED_AGENT_CAPACITY_REQUIRES_APPROVED_ACTIVATION",
       "capacity_up_to": 80,
       "continuous_autonomy": false
     },
     {
       "id": "council54",
       "status": "CANDIDATE_REGISTRY",
+      "base_status": "CANDIDATE_REGISTRY",
+      "qualifier": "NO_PROVIDER_AFFILIATION_OR_LIVE_INTEGRATION_IMPLIED",
       "capacity": 54,
       "provider_affiliation_implied": false
     },
     {
       "id": "protocolometry",
-      "status": "OPERATIONAL_METHODOLOGICAL_CENTER"
+      "status": "OPERATIONAL_METHODOLOGICAL_CENTER",
+      "base_status": "IMPLEMENTED_MVP",
+      "qualifier": "OPERATIONAL_METHODOLOGICAL_CENTER"
     },
     {
       "id": "academic_search",
       "status": "STAGING",
+      "base_status": "STAGING",
+      "qualifier": "LEGAL_SAFE_EXTERNAL_DISCOVERY; HUMAN_ACADEMIC_VERIFICATION_REQUIRED",
       "version": "3.1"
     },
     {
       "id": "wpa_watch",
       "status": "PUBLIC_SOURCE_CANDIDATE_MONITORING",
+      "base_status": "IMPLEMENTED_MVP",
+      "qualifier": "PUBLIC_SOURCE_CANDIDATE_MONITORING; HUMAN_VERIFICATION_REQUIRED",
       "human_verification_required": true
     },
     {
       "id": "journal_watch",
-      "status": "STAGING_READY_EDITORIAL_REVIEW_REQUIRED"
+      "status": "STAGING_READY_EDITORIAL_REVIEW_REQUIRED",
+      "base_status": "STAGING",
+      "qualifier": "EDITORIAL_REVIEW_REQUIRED"
     },
     {
       "id": "student_desk",
       "status": "BETA_GOVERNED_PUBLIC_PREVIEW",
+      "base_status": "BETA",
+      "qualifier": "GOVERNED_PUBLIC_PREVIEW; BACKEND_REQUIRED_BEFORE_LIVE_OPERATIONS",
       "backend_required_before_live_operations": true
     }
   ],
@@ -60,7 +91,8 @@
     "/data/wpa-canonical-version-manifest.json",
     "/data/wpa-public-evidence-index.json",
     "/data/wpa-preventive-source-compliance-gate.json",
-    "/data/wpa-student-operations-backend-schema.json"
+    "/data/wpa-student-operations-backend-schema.json",
+    "/data/wpa-opn-readiness-current-state.json"
   ],
   "current_publication_metric": {
     "total": 26,
