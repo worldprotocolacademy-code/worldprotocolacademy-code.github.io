@@ -1,4 +1,4 @@
-export const VERSION='wpa-strategic-prompt-router-1.0.0';
+export const VERSION='wpa-strategic-prompt-router-1.0.1';
 export const FRAMEWORK_PATH='/data/wpa-strategic-prompt-framework.json';
 export const PROMPT_DESK_PATH='/tools/wpa-prompt-desk/';
 export const DEFAULT_MODEL='@cf/meta/llama-3.3-70b-instruct-fp8-fast';
@@ -22,6 +22,7 @@ export const PROMPTS={
 const clean=value=>String(value||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const has=(q,terms)=>terms.some(term=>q.includes(clean(term)));
 const language=(message,lang='')=>lang==='en'?'en':lang==='mk'?'mk':/[а-шѓќѕџјљњ]/i.test(message)?'mk':'en';
+const normalizePromptId=id=>{const match=String(id||'').toUpperCase().match(/^SP0?([1-8])$/);return match?`SP0${match[1]}`:String(id||'').toUpperCase();};
 const validId=id=>Object.prototype.hasOwnProperty.call(PROMPTS,String(id||'').toUpperCase());
 
 const SIGNALS={
@@ -42,8 +43,8 @@ function scoreRoute(q,id){let score=0;for(const term of SIGNALS[id])if(q.include
 
 export function routeStrategicPrompt(message='',options={}){
   const raw=String(message||'').trim(),q=clean(raw),lang=language(raw,options.lang||'');
-  const override=String(options.promptId||options.prompt_id||'').toUpperCase();
-  const explicit=(raw.match(/\bSP0?[1-8]\b/i)||[])[0]?.toUpperCase().replace('SP0','SP');
+  const override=normalizePromptId(options.promptId||options.prompt_id||'');
+  const explicit=normalizePromptId((raw.match(/\bSP0?[1-8]\b/i)||[])[0]||'');
   const requested=validId(override)?override:validId(explicit)?explicit:null;
   if(requested){const p=PROMPTS[requested];return {selected:true,automatic:false,id:requested,slug:p.slug,title:p[`title_${lang}`],language:lang,confidence:'explicit',score:100,reason:'explicit_prompt_selection',recommended_agent_ids:p.agents,framework_path:FRAMEWORK_PATH,prompt_desk_path:PROMPT_DESK_PATH,directive:p[`directive_${lang}`],common_output_contract:COMMON_OUTPUT_CONTRACT[lang]};}
   if(!q)return {selected:false,automatic:true,id:null,language:lang,confidence:'none',score:0,reason:'empty_message',framework_path:FRAMEWORK_PATH};
