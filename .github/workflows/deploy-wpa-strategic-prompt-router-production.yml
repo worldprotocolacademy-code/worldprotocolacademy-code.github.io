@@ -8,6 +8,7 @@ on:
       - '.github/workflows/deploy-wpa-strategic-prompt-router-production.yml'
       - 'tools/virtual-sande/wpa-strategic-prompt-router.mjs'
       - 'tools/virtual-sande/wpa-strategic-prompt-router.test.mjs'
+      - 'tools/virtual-sande/wpa-strategic-prompt-orchestrator.integration.test.mjs'
       - 'tools/virtual-sande/wpa-central-orchestrator.mjs'
       - 'tools/virtual-sande/wpa-central-orchestrator.test.mjs'
       - 'workers/virtual-sande-v35.1-production/src/index.mjs'
@@ -58,6 +59,7 @@ jobs:
           node --check workers/virtual-sande-v35.1-staging/src/index.mjs
           node --test \
             tools/virtual-sande/wpa-strategic-prompt-router.test.mjs \
+            tools/virtual-sande/wpa-strategic-prompt-orchestrator.integration.test.mjs \
             tools/virtual-sande/wpa-central-orchestrator.test.mjs
 
       - name: Verify production worker boundary
@@ -136,6 +138,7 @@ jobs:
             echo '- Router: **wpa-strategic-prompt-router-1.0.0**'
             echo '- Prompt library: **8 governed prompts**'
             echo '- Central Orchestrator: **1.7.0 integration**'
+            echo '- Router ↔ Orchestrator integration tests: **Passed**'
             echo '- Ordinary factual query bypass: **Passed**'
             echo '- SP06 automatic route: **Passed**'
             echo '- SP08 major WPA route: **Passed**'
