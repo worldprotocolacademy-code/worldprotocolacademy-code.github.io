@@ -1,10 +1,10 @@
 {
   "schema": "wpa-canonical-version-manifest/1.0",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-08-24",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "purpose": "Single machine-readable reference for current canonical WPA component versions and deployment-status boundaries.",
-  "rule": "Canonical means the currently designated reference version. It does not convert a prototype, staging component or candidate registry into production.",
+  "rule": "Canonical means the currently designated reference version. It does not convert a prototype, staging component, deployment request or candidate registry into production.",
   "components": {
     "wpa_institute": {
       "public_url": "https://worldprotocolacademy.mk/institute.html",
@@ -27,14 +27,17 @@
       "role": "WPA central orchestrator, source-disciplined AI interface and synthesis layer"
     },
     "wpa_central_orchestrator": {
-      "canonical_version": "wpa-central-orchestrator-1.6.0",
+      "canonical_version": "wpa-central-orchestrator-1.7.0",
       "path": "/tools/virtual-sande/wpa-central-orchestrator.mjs",
-      "status": "GOVERNED_ORCHESTRATION_CODE"
+      "status": "GOVERNED_ORCHESTRATION_CODE_WITH_STRATEGIC_PROMPT_ROUTING",
+      "prompt_router_integration": true,
+      "human_gate_unchanged": true
     },
     "wpa_module_registry": {
       "canonical_version": "3.1.0",
       "path": "/data/wpa-module-registry.json",
-      "status": "MACHINE_READABLE_ARCHITECTURE_REGISTRY"
+      "status": "MACHINE_READABLE_ARCHITECTURE_REGISTRY",
+      "note": "Prompt-router registry sync is tracked separately until the next module-registry revision."
     },
     "academic_quality_standard": {
       "canonical_version": "1.0.0",
@@ -51,6 +54,19 @@
       "default_major_wpa_prompt": "SP08",
       "status": "GOVERNED_OPERATIONAL_PROMPT_LIBRARY",
       "boundary": "Prompt templates improve analysis and execution structure but do not create institutional authority; consequential actions remain subject to WPA Human Gate rules."
+    },
+    "strategic_prompt_router": {
+      "canonical_version": "wpa-strategic-prompt-router-1.0.0",
+      "path": "/tools/virtual-sande/wpa-strategic-prompt-router.mjs",
+      "current_state": "/config/wpa-strategic-prompt-router-current-state.json",
+      "deployment_workflow": "/.github/workflows/deploy-wpa-strategic-prompt-router-production.yml",
+      "repository_integration": "COMPLETE",
+      "production_source_integration": "COMPLETE",
+      "production_verification": "PENDING_POST_DEPLOY_ACCEPTANCE",
+      "status": "DEPLOYMENT_AND_POST_DEPLOY_ACCEPTANCE_PENDING_VERIFICATION",
+      "routing_policy": "Automatic only when strategic intent is sufficiently confident; ordinary or ambiguous factual queries bypass the strategic prompt library.",
+      "creates_authority": false,
+      "human_gate_unchanged": true
     },
     "council_80": {
       "capacity": 80,
@@ -95,8 +111,8 @@
       "production_version_remains": "v35.1.1"
     }
   },
-  "canonical_command_chain": "Sande Smiljanov -> WPA Doctrine Kernel -> strategic AI core -> Virtual Sande orchestrator -> 17 WPAWS executive agents -> up to 80 bounded tactical-operational agent seats -> evidence/safety/human gates -> WPA output",
-  "governance_note": "Council-54 is a separate candidate integration registry and is not added arithmetically to the 17+80 active architecture as if all 54 seats were live agents.",
+  "canonical_command_chain": "Sande Smiljanov -> WPA Doctrine Kernel -> strategic AI core -> strategic prompt router control layer -> Virtual Sande orchestrator -> 17 WPAWS executive agents -> up to 80 bounded tactical-operational agent seats -> evidence/safety/human gates -> WPA output",
+  "governance_note": "The Strategic Prompt Router is a control/routing layer, not a new authority layer. Council-54 is a separate candidate integration registry and is not added arithmetically to the 17+80 active architecture as if all 54 seats were live agents.",
   "human_authority": {
     "final_institutional_authority": "Sande Smiljanov / authorised human authority",
     "automatic_ac3": false,
