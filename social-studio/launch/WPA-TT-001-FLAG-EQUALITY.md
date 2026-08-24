@@ -11,7 +11,17 @@
 
 ## Source lock
 
-This asset is now grounded in the author's 2026 academic submission manuscript on wrong flag display as protocol breach and security-communication failure. The underlying DOCX is **not stored in this public repository**.
+This asset is grounded in two author sources:
+
+### Public published foundation
+
+**Sande Smiljanov, “(Un)intentional Mistakes in Field of Protocol: A Question Mark for the World Diplomacy,” International Scientific Journal Security, No. 5/2020, pp. 56–70.**
+
+The published paper establishes that protocol mistakes at high-profile events can become the dominant public story, damage perceptions of professional readiness and create political or interstate consequences. It documents the September 2018 Austrian-Chancellor flag incident and identifies inadequate checking, coordination and verification as failure mechanisms.
+
+### Current author manuscript
+
+The author's 2026 academic submission manuscript on wrong flag display as protocol breach and security-communication failure develops the flag-specific framework further. The underlying DOCX is **not stored in this public repository**.
 
 Source-backed points used in this asset:
 
