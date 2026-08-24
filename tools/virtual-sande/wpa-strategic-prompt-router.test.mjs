@@ -20,6 +20,12 @@ test('routes professional self-development to SP07',()=>{const r=routeStrategicP
 
 test('routes major WPA mission to SP08',()=>{const r=routeStrategicPrompt('Направи сеопфатен WPA institutional architecture audit и OPN evidence package',{lang:'mk'});assert.equal(r.id,'SP08');assert.equal(r.reason,'major_wpa_mission');});
 
+test('accepts explicit SP08 in user text',()=>{const r=routeStrategicPrompt('Користи SP08 за оваа задача',{lang:'mk'});assert.equal(r.selected,true);assert.equal(r.automatic,false);assert.equal(r.id,'SP08');assert.equal(r.reason,'explicit_prompt_selection');});
+
+test('normalizes explicit SP8 alias to SP08',()=>{const r=routeStrategicPrompt('Користи SP8 за оваа задача',{lang:'mk'});assert.equal(r.selected,true);assert.equal(r.id,'SP08');});
+
+test('normalizes promptId override to canonical ID',()=>{const r=routeStrategicPrompt('Тест',{lang:'mk',promptId:'sp8'});assert.equal(r.selected,true);assert.equal(r.id,'SP08');});
+
 test('does not force an ordinary factual query through the strategic prompt library',()=>{const r=routeStrategicPrompt('Што е агреман?',{lang:'mk'});assert.equal(r.selected,false);assert.equal(r.id,null);});
 
 test('refinement prompt preserves evidence and Human Gate boundaries',()=>{const r=routeStrategicPrompt('Забрзај го проектот со automation и bottleneck',{lang:'mk'});const s=buildRefinementSystemPrompt(r);assert.match(s,/Human Gate/);assert.match(s,/Не додавај факти/);assert.match(s,/10×/);});
