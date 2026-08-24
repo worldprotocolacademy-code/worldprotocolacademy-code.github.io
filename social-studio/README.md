@@ -36,6 +36,20 @@ Each asset is assigned:
 - `/protocol-symbols.html` — protocol and symbols environment.
 - `/wpa-services.html#proposal` — institutional proposal route.
 
+## Active launch assets
+
+### WPA-TT-001 — Flag Equality Test
+
+**Primary job:** Discovery  
+**Experiment:** Hook Lab #1  
+**Primary CTA:** Comment YES / NO  
+**Status:** Ready for recording, final human review and Sande Gate.
+
+- Production console: `/social-studio/launch/WPA-TT-001/`
+- Canonical launch brief: `social-studio/launch/WPA-TT-001-FLAG-EQUALITY.md`
+
+The first asset intentionally does not sell a product. Its job is to test whether a visual protocol puzzle earns attention, comments, shares, profile visits and follows. If it wins, the visual-puzzle mechanic expands into 5–10 controlled adjacent tests under the Winner Loop.
+
 ## Governing documents
 
 - `marketing/WPA_MARKETING_OPERATING_SYSTEM_v1.0.md`
