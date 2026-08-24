@@ -13,6 +13,7 @@ concurrency:
 env:
   EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
   EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+  EXPECTED_ROUTER_VERSION: wpa-strategic-prompt-router-1.0.1
 
 jobs:
   test-and-deploy:
@@ -41,6 +42,7 @@ jobs:
           assert data['governance']['no_guaranteed_10x_claims'] is True
           print('Prompt framework JSON PASS')
           PY
+          grep -F "export const VERSION='$EXPECTED_ROUTER_VERSION';" tools/virtual-sande/wpa-strategic-prompt-router.mjs
           node --check tools/virtual-sande/wpa-strategic-prompt-router.mjs
           node --check tools/virtual-sande/wpa-central-orchestrator.mjs
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
@@ -70,7 +72,7 @@ jobs:
           test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
           echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
 
-      - name: Post-deploy prompt-router acceptance with propagation retries
+      - name: Post-deploy prompt-router acceptance with version-aware propagation retries
         run: |
           set -euo pipefail
           mkdir -p /tmp/wpa-prompt-router-evidence
@@ -79,61 +81,60 @@ jobs:
             label="$1"
             path="$2"
             out="$3"
-            shift 3
+            expected="$4"
+            shift 4
             for attempt in $(seq 1 24); do
               status=$(curl --silent --show-error --get \
                 --output "$out" --write-out '%{http_code}' \
                 "$PRODUCTION_URL$path" \
                 --data-urlencode "check=$GITHUB_RUN_ID-$label-$attempt" \
                 "$@" || true)
-              if [ "$status" = '200' ]; then
-                echo "$label accepted on attempt $attempt"
+              if [ "$status" = '200' ] && grep -Fq "$expected" "$out"; then
+                echo "$label accepted on attempt $attempt with expected marker: $expected"
                 return 0
               fi
-              echo "$label attempt $attempt returned HTTP $status; waiting for propagation"
+              echo "$label attempt $attempt returned HTTP $status without expected marker; waiting for exact-version propagation"
               sleep 5
             done
-            echo "$label failed after propagation retries"
+            echo "$label failed after exact-version propagation retries"
             cat "$out" || true
             return 1
           }
 
-          retry_get health /prompt-router/health /tmp/wpa-prompt-router-evidence/health.json
-          grep -F 'wpa-strategic-prompt-router-1.0.1' /tmp/wpa-prompt-router-evidence/health.json
+          retry_get health /prompt-router/health /tmp/wpa-prompt-router-evidence/health.json "$EXPECTED_ROUTER_VERSION"
           grep -F '"prompts": 8' /tmp/wpa-prompt-router-evidence/health.json
           grep -F '"human_gate_required": true' /tmp/wpa-prompt-router-evidence/health.json
 
-          retry_get sp06 /prompt-router/route /tmp/wpa-prompt-router-evidence/sp06.json \
+          retry_get sp06 /prompt-router/route /tmp/wpa-prompt-router-evidence/sp06.json "$EXPECTED_ROUTER_VERSION" \
             --data-urlencode 'message=Забрзај го проектот со automation, parallel work, bottleneck и 80 20' \
             --data-urlencode 'lang=mk'
           grep -F '"id": "SP06"' /tmp/wpa-prompt-router-evidence/sp06.json
           grep -F '"selected": true' /tmp/wpa-prompt-router-evidence/sp06.json
 
-          retry_get sp08 /prompt-router/route /tmp/wpa-prompt-router-evidence/sp08.json \
+          retry_get sp08 /prompt-router/route /tmp/wpa-prompt-router-evidence/sp08.json "$EXPECTED_ROUTER_VERSION" \
             --data-urlencode 'message=Направи сеопфатен WPA institutional architecture audit и OPN evidence package' \
             --data-urlencode 'lang=mk'
           grep -F '"id": "SP08"' /tmp/wpa-prompt-router-evidence/sp08.json
           grep -F 'major_wpa_mission' /tmp/wpa-prompt-router-evidence/sp08.json
 
-          retry_get explicit-sp08 /prompt-router/route /tmp/wpa-prompt-router-evidence/explicit-sp08.json \
+          retry_get explicit-sp08 /prompt-router/route /tmp/wpa-prompt-router-evidence/explicit-sp08.json "$EXPECTED_ROUTER_VERSION" \
             --data-urlencode 'message=Користи SP08 за оваа задача' \
             --data-urlencode 'lang=mk'
           grep -F '"id": "SP08"' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
           grep -F '"automatic": false' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
           grep -F 'explicit_prompt_selection' /tmp/wpa-prompt-router-evidence/explicit-sp08.json
 
-          retry_get plain /prompt-router/route /tmp/wpa-prompt-router-evidence/plain.json \
+          retry_get plain /prompt-router/route /tmp/wpa-prompt-router-evidence/plain.json "$EXPECTED_ROUTER_VERSION" \
             --data-urlencode 'message=Што е агреман?' \
             --data-urlencode 'lang=mk'
           grep -F '"selected": false' /tmp/wpa-prompt-router-evidence/plain.json
 
-          retry_get greeting /ask /tmp/wpa-prompt-router-evidence/greeting.json \
+          retry_get greeting /ask /tmp/wpa-prompt-router-evidence/greeting.json '"version": "v35.1.1"' \
             --data-urlencode 'message=Здраво' \
             --data-urlencode 'lang=mk'
-          grep -F '"version": "v35.1.1"' /tmp/wpa-prompt-router-evidence/greeting.json
           grep -F '"mode": "greeting"' /tmp/wpa-prompt-router-evidence/greeting.json
 
-          retry_get routed-ask /ask /tmp/wpa-prompt-router-evidence/routed-ask.json \
+          retry_get routed-ask /ask /tmp/wpa-prompt-router-evidence/routed-ask.json "$EXPECTED_ROUTER_VERSION" \
             --data-urlencode 'message=Забрзај го WPA проектот со automation, parallel work и bottleneck' \
             --data-urlencode 'lang=mk'
           grep -F '"strategic_prompt"' /tmp/wpa-prompt-router-evidence/routed-ask.json
@@ -141,12 +142,13 @@ jobs:
           grep -F '"human_gate_required": true' /tmp/wpa-prompt-router-evidence/routed-ask.json
 
       - name: Upload production evidence
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: wpa-strategic-prompt-router-production-evidence
           path: /tmp/wpa-prompt-router-evidence
           retention-days: 90
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Deployment summary
         run: |
@@ -157,7 +159,7 @@ jobs:
             echo '- Central Orchestrator: **1.7.0 integration**'
             echo '- Router ↔ Orchestrator integration tests: **Passed**'
             echo '- Explicit SP08 routing regression: **Passed**'
-            echo '- Propagation-safe post-deploy verification: **Passed**'
+            echo '- Exact-version propagation verification: **Passed**'
             echo '- Ordinary factual query bypass: **Passed**'
             echo '- SP06 automatic route: **Passed**'
             echo '- SP08 major WPA route: **Passed**'
