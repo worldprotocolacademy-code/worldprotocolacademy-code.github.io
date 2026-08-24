@@ -1,10 +1,10 @@
 {
-  "version": "3.1.0",
-  "updated": "2026-08-22",
-  "architecture": "WPA six-level governed constitutional command architecture",
+  "version": "3.2.0",
+  "updated": "2026-08-24",
+  "architecture": "WPA six-level governed constitutional command architecture with a non-authority strategic prompt routing control layer",
   "public_brand": "WPA Protocolometry Ecosystem",
   "institutional_positioning": "Human-governed AI-native research, knowledge, analytical, professional and educational platform in development, testing and pilot phase",
-  "canonical_chain": "Sande Smiljanov -> WPA Doctrine Kernel -> strategic AI core -> Virtual Sande orchestrator -> 17 executive agents -> up to 80 tactical-operational agents -> evidence/safety/human gates -> WPA output",
+  "canonical_chain": "Sande Smiljanov -> WPA Doctrine Kernel -> strategic AI core -> strategic prompt router control layer -> Virtual Sande orchestrator -> 17 WPAWS executive agents -> up to 80 bounded tactical-operational agent seats -> evidence/safety/human gates -> WPA output",
   "command_hierarchy": {
     "level_1": {
       "authority": "Sande Smiljanov",
@@ -51,6 +51,23 @@
       "authority": "bounded_task_execution"
     }
   },
+  "control_layers": {
+    "strategic_prompt_router": {
+      "name": "WPA Strategic Prompt Router",
+      "canonical_version": "wpa-strategic-prompt-router-1.0.1",
+      "path": "/tools/virtual-sande/wpa-strategic-prompt-router.mjs",
+      "framework": "/data/wpa-strategic-prompt-framework.json",
+      "position": "after_strategic_ai_core_before_virtual_sande",
+      "automatic_routing": true,
+      "explicit_routing": true,
+      "ordinary_query_bypass": true,
+      "creates_authority": false,
+      "human_gate_unchanged": true,
+      "production_status": "PRODUCTION_VERIFIED",
+      "verified_run_id": 32701887795,
+      "verified_head_sha": "612a68470cc8637a64cb890b791a12b790184004"
+    }
+  },
   "central_orchestration": {
     "id": "virtual_sande",
     "name": "Virtual Sande",
@@ -60,7 +77,11 @@
       "claude"
     ],
     "canonical_public_production_version": "v35.1.1",
+    "central_orchestrator_version": "wpa-central-orchestrator-1.7.0",
+    "strategic_prompt_router_version": "wpa-strategic-prompt-router-1.0.1",
+    "strategic_prompt_framework_version": "1.0.0",
     "canonical_state_record": "/config/virtual-sande-current-state.json",
+    "prompt_router_state_record": "/config/wpa-strategic-prompt-router-current-state.json",
     "doctrine_kernel_required": true,
     "source_compliance_gate_required": true,
     "diplomatic_protocol_core_required": true,
@@ -69,6 +90,33 @@
     "sande_human_approval_required": true,
     "wpaws_agents": 17,
     "council_seats": 80
+  },
+  "strategic_prompt_routing": {
+    "framework_version": "1.0.0",
+    "framework_path": "/data/wpa-strategic-prompt-framework.json",
+    "prompt_desk_path": "/tools/wpa-prompt-desk/",
+    "prompt_count": 8,
+    "prompt_ids": [
+      "SP01",
+      "SP02",
+      "SP03",
+      "SP04",
+      "SP05",
+      "SP06",
+      "SP07",
+      "SP08"
+    ],
+    "default_major_wpa_prompt": "SP08",
+    "router_version": "wpa-strategic-prompt-router-1.0.1",
+    "router_path": "/tools/virtual-sande/wpa-strategic-prompt-router.mjs",
+    "automatic_routing_verified": true,
+    "explicit_sp08_routing_verified": true,
+    "sp8_alias_normalization_verified": true,
+    "ordinary_query_bypass_verified": true,
+    "exact_version_propagation_verified": true,
+    "human_gate_unchanged": true,
+    "creates_authority": false,
+    "status": "PRODUCTION_VERIFIED"
   },
   "doctrine_kernel": {
     "document": "/data/wpa-doctrine-kernel.json",
@@ -151,12 +199,15 @@
     "doctrine_change_requires_sande": true,
     "external_customer_delivery_claim_requires_evidence": true,
     "capability_status_must_be_explicit": true,
-    "versioned_change_required": true
+    "versioned_change_required": true,
+    "strategic_prompt_router_creates_authority": false,
+    "strategic_prompt_router_human_gate_unchanged": true
   },
   "pipeline": [
     "sande_smiljanov",
     "wpa_doctrine_kernel",
     "strategic_ai_core",
+    "strategic_prompt_router_control_layer",
     "virtual_sande_orchestrator",
     "source_compliance_gate",
     "public_or_licensed_sources_only",
@@ -175,6 +226,26 @@
       "name": "WPA Doctrine Kernel",
       "path": "/data/wpa-doctrine-kernel.json",
       "status": "GOVERNED_MACHINE_READABLE_CONSTITUTION"
+    },
+    {
+      "id": "strategic_prompt_framework",
+      "name": "WPA Strategic Prompt Framework",
+      "path": "/data/wpa-strategic-prompt-framework.json",
+      "public_path": "/tools/wpa-prompt-desk/",
+      "canonical_version": "1.0.0",
+      "prompt_count": 8,
+      "default_major_wpa_prompt": "SP08",
+      "status": "GOVERNED_OPERATIONAL_PROMPT_LIBRARY"
+    },
+    {
+      "id": "strategic_prompt_router",
+      "name": "WPA Strategic Prompt Router",
+      "path": "/tools/virtual-sande/wpa-strategic-prompt-router.mjs",
+      "state_record": "/config/wpa-strategic-prompt-router-current-state.json",
+      "canonical_version": "wpa-strategic-prompt-router-1.0.1",
+      "status": "PRODUCTION_VERIFIED_CONTROL_ROUTING_LAYER",
+      "creates_authority": false,
+      "human_gate_unchanged": true
     },
     {
       "id": "source_compliance_gate",
@@ -236,6 +307,7 @@
       "name": "Virtual Sande",
       "path": "/virtual-sande-ai.html",
       "canonical_version": "v35.1.1",
+      "central_orchestrator_version": "wpa-central-orchestrator-1.7.0",
       "status": "DEPLOYED_AND_ACCEPTED_PUBLIC_PRODUCTION"
     },
     {
