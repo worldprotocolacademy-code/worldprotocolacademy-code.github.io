@@ -1,0 +1,144 @@
+name: DEPLOY WPA Strategic Prompt Router PRODUCTION
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-wpa-strategic-prompt-router-production.yml'
+      - 'tools/virtual-sande/wpa-strategic-prompt-router.mjs'
+      - 'tools/virtual-sande/wpa-strategic-prompt-router.test.mjs'
+      - 'tools/virtual-sande/wpa-central-orchestrator.mjs'
+      - 'tools/virtual-sande/wpa-central-orchestrator.test.mjs'
+      - 'workers/virtual-sande-v35.1-production/src/index.mjs'
+      - 'workers/virtual-sande-v35.1-staging/src/index.mjs'
+      - 'data/wpa-strategic-prompt-framework.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-strategic-prompt-router-production
+  cancel-in-progress: false
+
+env:
+  EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
+  EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate strategic prompt framework and runtime syntax
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = 'refs/heads/main'
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('data/wpa-strategic-prompt-framework.json').read_text())
+          assert data['version']=='1.0.0'
+          assert len(data['prompts'])==8
+          assert data['recommended_default_for_major_wpa_work']=='SP08'
+          assert data['governance']['human_review_required_for_consequential_actions'] is True
+          assert data['governance']['no_guaranteed_10x_claims'] is True
+          print('Prompt framework JSON PASS')
+          PY
+          node --check tools/virtual-sande/wpa-strategic-prompt-router.mjs
+          node --check tools/virtual-sande/wpa-central-orchestrator.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --test \
+            tools/virtual-sande/wpa-strategic-prompt-router.test.mjs \
+            tools/virtual-sande/wpa-central-orchestrator.test.mjs
+
+      - name: Verify production worker boundary
+        run: |
+          set -euo pipefail
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'workers_dev = true' workers/virtual-sande-v35.1-production/wrangler.toml
+          ! grep -Eq 'routes?\s*=|custom_domain|kv_namespaces|d1_databases' workers/virtual-sande-v35.1-production/wrangler.toml
+          grep -F 'withStrategicPromptRouting' workers/virtual-sande-v35.1-production/src/index.mjs
+          grep -F 'tryHandleSymbols' workers/virtual-sande-v35.1-production/src/index.mjs
+
+      - name: Deploy router-integrated source to existing production Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 deploy --config workers/virtual-sande-v35.1-production/wrangler.toml 2>&1 | tee /tmp/router-deploy.log
+          PRODUCTION_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/router-deploy.log | tail -n 1 | sed 's:/$::')"
+          test "$PRODUCTION_URL" = "$EXPECTED_PRODUCTION_URL"
+          echo "PRODUCTION_URL=$PRODUCTION_URL" >> "$GITHUB_ENV"
+
+      - name: Post-deploy prompt-router acceptance
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wpa-prompt-router-evidence
+          for attempt in $(seq 1 24); do
+            status=$(curl --silent --show-error --output /tmp/wpa-prompt-router-evidence/health.json --write-out '%{http_code}' "$PRODUCTION_URL/prompt-router/health?check=$GITHUB_RUN_ID-$attempt" || true)
+            if [ "$status" = '200' ] && grep -Fq 'wpa-strategic-prompt-router-1.0.0' /tmp/wpa-prompt-router-evidence/health.json; then break; fi
+            sleep 5
+          done
+          grep -F '"prompts": 8' /tmp/wpa-prompt-router-evidence/health.json
+          grep -F '"human_gate_required": true' /tmp/wpa-prompt-router-evidence/health.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/prompt-router/route" \
+            --data-urlencode 'message=Забрзај го проектот со automation, parallel work, bottleneck и 80 20' \
+            --data-urlencode 'lang=mk' | tee /tmp/wpa-prompt-router-evidence/sp06.json
+          grep -F '"id": "SP06"' /tmp/wpa-prompt-router-evidence/sp06.json
+          grep -F '"selected": true' /tmp/wpa-prompt-router-evidence/sp06.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/prompt-router/route" \
+            --data-urlencode 'message=Направи сеопфатен WPA institutional architecture audit и OPN evidence package' \
+            --data-urlencode 'lang=mk' | tee /tmp/wpa-prompt-router-evidence/sp08.json
+          grep -F '"id": "SP08"' /tmp/wpa-prompt-router-evidence/sp08.json
+          grep -F 'major_wpa_mission' /tmp/wpa-prompt-router-evidence/sp08.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/prompt-router/route" \
+            --data-urlencode 'message=Што е агреман?' \
+            --data-urlencode 'lang=mk' | tee /tmp/wpa-prompt-router-evidence/plain.json
+          grep -F '"selected": false' /tmp/wpa-prompt-router-evidence/plain.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Здраво' --data-urlencode 'lang=mk' | tee /tmp/wpa-prompt-router-evidence/greeting.json
+          grep -F '"version": "v35.1.1"' /tmp/wpa-prompt-router-evidence/greeting.json
+          grep -F '"mode": "greeting"' /tmp/wpa-prompt-router-evidence/greeting.json
+
+          curl --fail --silent --show-error --get "$PRODUCTION_URL/ask" \
+            --data-urlencode 'message=Забрзај го WPA проектот со automation, parallel work и bottleneck' \
+            --data-urlencode 'lang=mk' | tee /tmp/wpa-prompt-router-evidence/routed-ask.json
+          grep -F '"strategic_prompt"' /tmp/wpa-prompt-router-evidence/routed-ask.json
+          grep -E '"id": "SP0[168]"' /tmp/wpa-prompt-router-evidence/routed-ask.json
+          grep -F '"human_gate_required": true' /tmp/wpa-prompt-router-evidence/routed-ask.json
+
+      - name: Upload production evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: wpa-strategic-prompt-router-production-evidence
+          path: /tmp/wpa-prompt-router-evidence
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Deployment summary
+        run: |
+          {
+            echo '## WPA Strategic Prompt Router · Production'
+            echo '- Router: **wpa-strategic-prompt-router-1.0.0**'
+            echo '- Prompt library: **8 governed prompts**'
+            echo '- Central Orchestrator: **1.7.0 integration**'
+            echo '- Ordinary factual query bypass: **Passed**'
+            echo '- SP06 automatic route: **Passed**'
+            echo '- SP08 major WPA route: **Passed**'
+            echo '- Human Gate boundary: **Preserved**'
+            echo '- Existing Virtual Sande v35.1.1 response contract: **Preserved**'
+          } >> "$GITHUB_STEP_SUMMARY"
