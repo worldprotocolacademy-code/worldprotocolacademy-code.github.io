@@ -1,0 +1,73 @@
+{
+  "schema": "wpa-end-to-end-institutional-state-machine/1.0",
+  "version": "1.0.0",
+  "updated": "2026-08-25",
+  "name": "WPA End-to-End Institutional State Machine",
+  "name_mk": "WPA институционален state machine од влез до излез",
+  "status": "CANONICAL_WORKING_ORCHESTRATION_MODEL",
+  "external_standard": false,
+  "purpose": "Provide one governed lifecycle for research, institutional services, educational workflows, publications, corrections and other WPA work while preserving Human Gate authority at consequential transitions.",
+  "entry_points": [
+    "public request",
+    "institutional request",
+    "research question",
+    "student or learner request",
+    "editorial candidate",
+    "correction request",
+    "internal strategic directive"
+  ],
+  "states": [
+    {"order":1,"id":"intake","name":"Intake","name_mk":"Прием","automation":"LIVE_OR_IMPLEMENTED_MVP_DEPENDING_ON_CHANNEL","human_gate":"HG0_OR_HG1","output":"classified request with owner, purpose and initial scope"},
+    {"order":2,"id":"scope_and_mandate","name":"Scope & Mandate","name_mk":"Опфат и мандат","automation":"ASSISTED","human_gate":"HG1; escalate to HG2-HG4 if consequence or authority expands","output":"bounded task specification and authority class"},
+    {"order":3,"id":"source_compliance","name":"Source Compliance","name_mk":"Проверка на извори и права","automation":"MANDATORY_FAIL_CLOSED_GATE","human_gate":"escalate on unclear rights","output":"approved source set or blocked/quarantined request"},
+    {"order":4,"id":"research_and_discovery","name":"Research & Discovery","name_mk":"Истражување и откривање","automation":"IMPLEMENTED_MVP_TO_LIVE_BY_TOOL","human_gate":"HG0_OR_HG1","output":"evidence candidates with provenance"},
+    {"order":5,"id":"verification","name":"Verification","name_mk":"Проверка","automation":"ASSISTED","human_gate":"required for material conflicts, high consequence or source uncertainty","output":"verified evidence set with unresolved uncertainty visible"},
+    {"order":6,"id":"analysis_and_modelling","name":"Analysis & Modelling","name_mk":"Анализа и моделирање","automation":"WPAWS_VIRTUAL_SANDE_ASSISTED","human_gate":"HG1; HG2+ before consequential use","output":"bounded analysis, draft, model or recommendation"},
+    {"order":7,"id":"evidence_and_safety_gate","name":"Evidence & Safety Gate","name_mk":"Доказна и безбедносна порта","automation":"MANDATORY_GOVERNANCE_GATE","human_gate":"escalate on fail, uncertainty or consequential impact","output":"release candidate or blocked/revision state"},
+    {"order":8,"id":"human_authorisation","name":"Human Authorisation","name_mk":"Човечко овластување","automation":"NO_AUTONOMOUS_FINAL_AUTHORITY","human_gate":"HG2_HG3_OR_HG4_AS_CLASSIFIED","output":"approve, reject, return for revision, pause or narrow scope"},
+    {"order":9,"id":"release_or_application","name":"Release / Application","name_mk":"Објавување / примена","automation":"ONLY_WITHIN_APPROVED_ENVELOPE","human_gate":"release condition inherited from prior authorisation","output":"human-approved publication, deliverable, action or authorised institutional record"},
+    {"order":10,"id":"measurement","name":"Outcome Measurement","name_mk":"Мерење на исход","automation":"PROTOCOLometry_ASSISTED","human_gate":"HG0_OR_HG1; escalate material adverse result","output":"measured outcome and variance record"},
+    {"order":11,"id":"correction","name":"Correction & Review","name_mk":"Корекција и ревизија","automation":"ASSISTED","human_gate":"HG2 for material public or institutional correction; HG3-HG4 where applicable","output":"verified correction, incident response, no-change decision or reopened task"},
+    {"order":12,"id":"knowledge_reintegration","name":"Knowledge Reintegration","name_mk":"Повторно внесување на знаењето","automation":"ASSISTED_UNDER_PROVENANCE_CONTROL","human_gate":"no silent doctrine change; doctrine changes require HG4","output":"verified lesson, updated research question, programme insight or governed corpus candidate"},
+    {"order":13,"id":"closure","name":"Closure","name_mk":"Затворање","automation":"ASSISTED","human_gate":"required when closure creates legal, credential, financial or official institutional effect","output":"closed audit-traceable case with reopen path"}
+  ],
+  "transition_rules": [
+    "Every state transition must preserve case_id or equivalent trace identifier.",
+    "A transition may narrow scope automatically only within a preapproved mandate; it may not expand authority automatically.",
+    "Any move into a higher Human Gate class requires escalation before release.",
+    "A failed mandatory gate returns the case to revision, pause or blocked state; it never silently bypasses the gate.",
+    "Human approval is a state-changing event and must be attributable for HG2-HG4.",
+    "Release and application are distinct from preparation; draft completion is not institutional release.",
+    "Measured adverse outcomes may reopen a closed case.",
+    "Learning may update working knowledge only with provenance; Doctrine Kernel changes are a separate HG4 action."
+  ],
+  "cross_domain_profiles": {
+    "research_publication": ["intake","scope_and_mandate","source_compliance","research_and_discovery","verification","analysis_and_modelling","evidence_and_safety_gate","human_authorisation","release_or_application","measurement","correction","knowledge_reintegration","closure"],
+    "institutional_service": ["intake","scope_and_mandate","source_compliance","research_and_discovery","verification","analysis_and_modelling","evidence_and_safety_gate","human_authorisation","release_or_application","measurement","correction","knowledge_reintegration","closure"],
+    "student_lifecycle": "mapped separately in /data/wpa-student-lifecycle.json; HG3 transitions remain backend-blocked until approved private infrastructure exists",
+    "correction_request": ["intake","scope_and_mandate","source_compliance","verification","analysis_and_modelling","evidence_and_safety_gate","human_authorisation","release_or_application","measurement","knowledge_reintegration","closure"]
+  },
+  "activation_status": {
+    "architecture_complete": true,
+    "universal_state_model_defined": true,
+    "human_gate_policy_defined": true,
+    "public_research_orchestration": "PARTIAL_LIVE_AND_IMPLEMENTED_MVP",
+    "virtual_sande_public_runtime": "LIVE_PRODUCTION_V35_1_1",
+    "wpaws": "CONTROLLED_WORKING_ENVIRONMENT_11_1_7",
+    "protocolometry": "OPERATIONAL_METHODOLOGICAL_CENTER",
+    "student_sensitive_backend": "NOT_ACTIVE",
+    "official_student_records": "NOT_ACTIVE",
+    "official_certificate_issuance": "NOT_ACTIVE",
+    "payments": "NOT_ACTIVE",
+    "claim_of_full_end_to_end_autonomous_institution": false
+  },
+  "references": [
+    "/data/wpa-human-gate-policy.json",
+    "/data/wpa-human-governed-agentic-institution-model.json",
+    "/data/wpa-institutional-operating-architecture.json",
+    "/data/wpa-continuous-institutional-learning-loop.json",
+    "/data/wpa-preventive-source-compliance-gate.json",
+    "/data/wpa-student-lifecycle.json",
+    "/data/wpa-student-operations-backend-schema.json"
+  ]
+}
