@@ -1,0 +1,47 @@
+name: WPA Student Ops Backend CI
+
+on:
+  push:
+    paths:
+      - 'workers/wpa-student-ops-backend/**'
+      - 'data/wpa-student-ops-backend-current-state.json'
+      - 'data/wpa-human-gate-policy.json'
+      - 'data/wpa-student-lifecycle.json'
+      - '.github/workflows/wpa-student-ops-backend-ci.yml'
+  pull_request:
+    paths:
+      - 'workers/wpa-student-ops-backend/**'
+      - 'data/wpa-student-ops-backend-current-state.json'
+      - 'data/wpa-human-gate-policy.json'
+      - 'data/wpa-student-lifecycle.json'
+      - '.github/workflows/wpa-student-ops-backend-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: workers/wpa-student-ops-backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: workers/wpa-student-ops-backend/package-lock.json
+
+      - name: Install dependencies without lifecycle scripts
+        run: npm install --ignore-scripts --package-lock-only && npm ci --ignore-scripts
+
+      - name: Verify backend remains fail-closed in source config
+        run: |
+          node -e "const fs=require('fs');const c=fs.readFileSync('wrangler.jsonc','utf8');if(!c.includes('\\\"WPA_BACKEND_MODE\\\": \\\"DISABLED\\\"'))process.exit(1);if(!c.includes('\\\"workers_dev\\\": false'))process.exit(1);if(!c.includes('\\\"preview_urls\\\": false'))process.exit(1);"
+
+      - name: Compile Worker only - no deployment
+        run: npm run dry-run
