@@ -1,0 +1,36 @@
+name: WPA Journal public hygiene 2026-08-25
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wpa-journal-public-hygiene-20260825.yml'
+      - '.github/scripts/patch_journal_public_hygiene_20260825.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-journal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch canonical Journal public layer
+        run: python3 .github/scripts/patch_journal_public_hygiene_20260825.py
+      - name: Verify controlled diff
+        run: git diff --check && git diff -- journal
+      - name: Commit Journal public hygiene
+        shell: bash
+        run: |
+          if git diff --quiet -- journal; then
+            echo "No changes required."
+            exit 0
+          fi
+          git config user.name "WPA source maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git add journal
+          git commit -m "Harden WPA Journal public contacts and editorial line"
+          git push origin HEAD:main
