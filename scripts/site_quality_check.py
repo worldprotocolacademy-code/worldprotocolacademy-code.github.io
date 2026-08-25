@@ -8,7 +8,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_URL = "https://worldprotocolacademy-code.github.io"
+BASE_URL = "https://worldprotocolacademy.mk"
 
 ALLOWED_SITEMAP_PATHS = {
     "/",
@@ -155,7 +155,7 @@ def check_robots(errors: list[str]) -> None:
         add_error(errors, "Missing robots.txt")
         return
     text = read_text(robots)
-    expected = "Sitemap: https://worldprotocolacademy-code.github.io/sitemap.xml"
+    expected = "Sitemap: https://worldprotocolacademy.mk/sitemap.xml"
     if expected not in text:
         add_error(errors, "robots.txt does not point to the canonical sitemap.xml")
     for group in parse_robots_groups(text):
