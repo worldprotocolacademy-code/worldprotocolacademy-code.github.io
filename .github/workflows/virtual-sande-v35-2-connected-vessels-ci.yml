@@ -1,5 +1,14 @@
 name: Virtual Sande Connected Vessels and AI Council CI
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/virtual-sande/**'
+      - 'data/wpa-doctrine-kernel.json'
+      - 'data/wpa-human-gate-policy.json'
+      - 'data/wpa-strategic-speed-directive.json'
+      - 'data/wpa-cognitive-conscience-integrity-strategy.json'
+      - '.github/workflows/virtual-sande-v35-2-connected-vessels-ci.yml'
   pull_request: {}
   workflow_dispatch: {}
 permissions:
@@ -42,10 +51,12 @@ jobs:
           ! grep -q '/student-desk/student-desk/' tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
       - name: JSON governance
         run: |
-          node -e "const fs=require('fs');for(const f of ['data/wpa-module-registry.json','data/wpa-ai-council-80.json','data/wpa-preventive-source-compliance-gate.json','data/wpa-doctrine-kernel.json','data/wpa-student-lifecycle.json','data/wpa-student-question-bank-r2-manifest.json','student-desk/data/wpa-student-curriculum.json','data/wpa-student-operations-backend-schema.json','data/wpa-ai-search-corpus-policy.json'])JSON.parse(fs.readFileSync(f,'utf8'));"
+          node -e "const fs=require('fs');for(const f of ['data/wpa-module-registry.json','data/wpa-ai-council-80.json','data/wpa-preventive-source-compliance-gate.json','data/wpa-doctrine-kernel.json','data/wpa-human-gate-policy.json','data/wpa-strategic-speed-directive.json','data/wpa-cognitive-conscience-integrity-strategy.json','data/wpa-student-lifecycle.json','data/wpa-student-question-bank-r2-manifest.json','student-desk/data/wpa-student-curriculum.json','data/wpa-student-operations-backend-schema.json','data/wpa-ai-search-corpus-policy.json'])JSON.parse(fs.readFileSync(f,'utf8'));"
           node -e "const q=require('./data/wpa-student-question-bank-r2-manifest.json');if(q.storage.bucket!=='protocol-kb'||q.storage.public_access!==false||q.classification.tier!=='S'||q.classification.certification_pool!==false||q.access.answer_release!=='after_candidate_response'||q.access.direct_r2_urls_allowed!==false)process.exit(1)"
           node -e "const s=require('./data/wpa-student-lifecycle.json');if(s.orchestrator!=='virtual_sande'||s.stages.length!==10||s.boundaries.certificate_is_not_issued_without_authorised_backend_record!==true)process.exit(1)"
           node -e "const p=require('./data/wpa-ai-search-corpus-policy.json');if(p.mode!=='fail_closed_allowlist_required'||p.automatic_cutover!==false||p.automatic_deletion!==false||!p.mandatory_exclusions.includes('**/student_records/**')||!p.mandatory_exclusions.includes('**/*answer_key*'))process.exit(1)"
+          node -e "const h=require('./data/wpa-human-gate-policy.json');if(h.cognitive_conscience_triggers.fear_is_consent!==false||h.cognitive_conscience_triggers.prediction_is_permission!==false||h.cognitive_conscience_triggers.interface_proximity_creates_authority!==false)process.exit(1)"
+          node -e "const d=require('./data/wpa-doctrine-kernel.json');for(const x of ['cognitive_sovereignty','conscience_integrity','inner_human_domain','authentic_human_authorisation'])if(!d.protected_assets.includes(x))process.exit(1);for(const x of ['no_fear_mediated_consent','no_inferred_consent_from_emotion_prediction_behaviour_biometrics_or_profiling','no_covert_manipulation_of_informed_contestable_choice','no_intimate_interface_authority_escalation'])if(!d.red_lines.includes(x))process.exit(1)"
       - name: Route protocolometry
         run: node --test --test-name-pattern='routes protocolometry requests' tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.test.mjs
       - name: Route output surfaces
