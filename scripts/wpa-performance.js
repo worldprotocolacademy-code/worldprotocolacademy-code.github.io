@@ -293,7 +293,7 @@
       placeHomePilot();
       activateHomeFiveRowNav();
     }
-    if (isPapers()) placePn003OnPapers();
+    // Legacy PN-003/25-publication patch retired 2026-08-25; public facts are maintained in /data/wpa-canonical-public-facts.json.
     placeVirtualSandeBranding();
   }
 
