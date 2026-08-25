@@ -33,15 +33,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: workers/wpa-student-ops-backend/package-lock.json
 
       - name: Install dependencies without lifecycle scripts
         run: npm install --ignore-scripts --package-lock-only && npm ci --ignore-scripts
 
       - name: Verify backend remains fail-closed in source config
         run: |
-          node -e "const fs=require('fs');const c=fs.readFileSync('wrangler.jsonc','utf8');if(!c.includes('\\\"WPA_BACKEND_MODE\\\": \\\"DISABLED\\\"'))process.exit(1);if(!c.includes('\\\"workers_dev\\\": false'))process.exit(1);if(!c.includes('\\\"preview_urls\\\": false'))process.exit(1);"
+          grep -q '"WPA_BACKEND_MODE": "DISABLED"' wrangler.jsonc
+          grep -q '"workers_dev": false' wrangler.jsonc
+          grep -q '"preview_urls": false' wrangler.jsonc
 
       - name: Compile Worker only - no deployment
         run: npm run dry-run
