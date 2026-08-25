@@ -1,0 +1,36 @@
+name: WPA Journal editorial label fix 2026-08-25
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/wpa-journal-editorial-label-20260825.yml'
+      - '.github/scripts/patch_journal_editorial_label_20260825.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-journal:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fix editorial labels
+        run: python3 .github/scripts/patch_journal_editorial_label_20260825.py
+      - name: Verify controlled diff
+        run: git diff --check && git diff -- journal
+      - name: Commit editorial label fix
+        shell: bash
+        run: |
+          if git diff --quiet -- journal; then
+            echo "No changes required."
+            exit 0
+          fi
+          git config user.name "WPA source maintenance"
+          git config user.email "actions@users.noreply.github.com"
+          git add journal
+          git commit -m "Normalize WPA Journal editorial principle labels"
+          git push origin HEAD:main
