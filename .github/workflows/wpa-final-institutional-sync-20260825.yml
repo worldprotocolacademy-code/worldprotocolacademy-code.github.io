@@ -1,0 +1,183 @@
+name: WPA final institutional sync 2026-08-25
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/wpa-final-sync-trigger.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply guarded institutional synchronization
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path('.')
+          OLD = 'https://worldprotocolacademy-code.github.io'
+          NEW = 'https://worldprotocolacademy.mk'
+          GMAIL = 'worldprotocolacademy@gmail.com'
+
+          # Only active/public HTML surfaces. Historical markdown, changelogs, audit reports,
+          # source snapshots and archived documentation are intentionally excluded.
+          public_html = [
+              p for p in ROOT.rglob('*.html')
+              if '.git' not in p.parts
+              and not any(part in {'archive','archives','backup','backups','node_modules'} for part in p.parts)
+          ]
+
+          changed = []
+          domain_replacements = 0
+          email_replacements = 0
+          motto_replacements = 0
+          status_insertions = 0
+          version_insertions = 0
+
+          # 1) Canonical host migration for public HTML only.
+          for p in public_html:
+              text = p.read_text(encoding='utf-8')
+              new = text.replace(OLD, NEW)
+              n = text.count(OLD)
+              if n:
+                  domain_replacements += n
+              if new != text:
+                  p.write_text(new, encoding='utf-8')
+                  changed.append(str(p))
+
+          # 2) Institutional email migration on selected active public surfaces.
+          #    Journal-specific editor/journal addresses remain untouched where already specialized.
+          contact_targets = [
+              'privacy.html','rights-takedown.html','public-disclaimer.html','correction-request.html',
+              'security.html','institute.html','partnerships/index.html','certification.html',
+              'virtual-sande-ai.html','protocolometry-center.html','wpa-services.html',
+              'wpa-briefings.html','wpa-one-page-service-profile.html','wpa-global-institutions-master-list.html'
+          ]
+          for rel in contact_targets:
+              p = ROOT / rel
+              if not p.exists():
+                  raise SystemExit(f'Missing required active page: {rel}')
+              text = p.read_text(encoding='utf-8')
+              new = text.replace(GMAIL, 'info@worldprotocolacademy.mk')
+              n = text.count(GMAIL)
+              if n:
+                  email_replacements += n
+              if new != text:
+                  p.write_text(new, encoding='utf-8')
+                  if rel not in changed: changed.append(rel)
+
+          # 3) Doctrine: replace the unconditional institutional motto only on active institutional pages.
+          # Historical/source documents are intentionally preserved.
+          doctrine_targets = [
+              'protocolometry-center.html','public-disclaimer.html','rights-takedown.html',
+              'correction-request.html','wpa-services.html','wpa-briefings.html',
+              'wpa-one-page-service-profile.html','partnerships/index.html','institute.html'
+          ]
+          replacements = [
+              ('Преговарањето е опционално. Протоколот е апсолутен.',
+               'Протоколот обезбедува ред, легитимност и институционална јасност.'),
+              ('„Преговарањето е опционално. Протоколот е апсолутен.“',
+               '„Протоколот обезбедува ред, легитимност и институционална јасност.“'),
+              ('Negotiation is optional. Protocol is absolute.',
+               'Protocol provides order, legitimacy and institutional clarity.'),
+              ('“Negotiation is optional. Protocol is absolute.”',
+               '“Protocol provides order, legitimacy and institutional clarity.”'),
+              ('Protocol is absolute.', 'Protocol provides institutional order and clarity.')
+          ]
+          for rel in doctrine_targets:
+              p = ROOT / rel
+              text = p.read_text(encoding='utf-8')
+              new = text
+              for before, after in replacements:
+                  count = new.count(before)
+                  motto_replacements += count
+                  new = new.replace(before, after)
+              if new != text:
+                  p.write_text(new, encoding='utf-8')
+                  if rel not in changed: changed.append(rel)
+
+          # 4) Certification: make demo/framework status explicit near the top if not already present.
+          p = ROOT / 'certification.html'
+          text = p.read_text(encoding='utf-8')
+          if 'Framework / Demo · Issuance not yet active' not in text:
+              anchor = '<body>'
+              if text.count(anchor) != 1:
+                  raise SystemExit('certification.html: expected exactly one <body> anchor')
+              badge = ('<div style="background:#fff3cd;color:#624b00;border-bottom:1px solid #e4cc7a;'
+                       'padding:9px 18px;text-align:center;font:800 12px/1.4 Inter,system-ui,sans-serif;'
+                       'letter-spacing:.03em" role="status">'
+                       'Framework / Demo · Issuance not yet active · Рамка / демо · Издавањето сè уште не е активно'
+                       '</div>')
+              text = text.replace(anchor, anchor + '\n' + badge, 1)
+              p.write_text(text, encoding='utf-8')
+              status_insertions += 1
+              if str(p) not in changed: changed.append(str(p))
+
+          # 5) Virtual Sande: distinguish interface label from canonical runtime state.
+          p = ROOT / 'virtual-sande-ai.html'
+          text = p.read_text(encoding='utf-8')
+          if 'Interface v1.0 · Runtime governed separately' not in text:
+              old = "<span style='color:var(--gold)'>Source-disciplined v1.0</span>"
+              if text.count(old) != 1:
+                  raise SystemExit('virtual-sande-ai.html: interface version anchor mismatch')
+              new = "<span style='color:var(--gold)'>Interface v1.0 · Runtime governed separately</span>"
+              text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8')
+              version_insertions += 1
+              if str(p) not in changed: changed.append(str(p))
+
+          # 6) Fail-closed validations.
+          must_exist = [
+              ('robots.txt', 'Sitemap: https://worldprotocolacademy.mk/sitemap.xml'),
+              ('sitemap.xml', '<loc>https://worldprotocolacademy.mk/</loc>'),
+              ('ai.txt', 'Contact: info@worldprotocolacademy.mk'),
+              ('.well-known/ai.txt', 'Contact: info@worldprotocolacademy.mk'),
+              ('certification.html', 'Framework / Demo · Issuance not yet active'),
+              ('virtual-sande-ai.html', 'Interface v1.0 · Runtime governed separately')
+          ]
+          for rel, needle in must_exist:
+              data = (ROOT / rel).read_text(encoding='utf-8')
+              if needle not in data:
+                  raise SystemExit(f'Validation failed: {needle!r} missing from {rel}')
+
+          # No old GitHub Pages host may remain in public HTML canonical/metadata/content references.
+          old_host_files = []
+          for p in public_html:
+              if OLD in p.read_text(encoding='utf-8'):
+                  old_host_files.append(str(p))
+          if old_host_files:
+              raise SystemExit('Old public host remains in HTML: ' + ', '.join(old_host_files[:20]))
+
+          print(f'Changed files: {len(set(changed))}')
+          print(f'Domain replacements: {domain_replacements}')
+          print(f'Institutional email replacements: {email_replacements}')
+          print(f'Doctrine replacements: {motto_replacements}')
+          print(f'Certification status insertions: {status_insertions}')
+          print(f'Virtual Sande version clarifications: {version_insertions}')
+          PY
+
+          git diff --check
+          git status --short
+
+      - name: Commit synchronized public layer
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No synchronization changes required."
+            exit 0
+          fi
+          git config user.name "worldprotocolacademy-code"
+          git config user.email "worldprotocolacademy@gmail.com"
+          git add -- '*.html'
+          git commit -m "Finalize WPA institutional public-layer synchronization"
+          git push origin HEAD:main
