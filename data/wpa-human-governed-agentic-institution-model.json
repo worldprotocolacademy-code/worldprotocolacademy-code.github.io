@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-human-governed-agentic-institution-model/1.1",
-  "version": "1.1.0",
+  "schema": "wpa-human-governed-agentic-institution-model/1.2",
+  "version": "1.2.0",
   "updated": "2026-08-25",
   "name": "WPA Human-Governed Agentic Institution Model",
   "acronym": "HGAIM",
@@ -12,111 +12,43 @@
   "public_principle": "Machines may coordinate. Agents may prepare and recommend. Only authorised humans may commit consequential institutional actions.",
   "long_term_objective": "End-to-end human-governed agentic institute workflows from intake and research through learning, assessment, publication and completion, with explicit human authority for consequential decisions.",
   "continuous_learning_reference": "/data/wpa-continuous-institutional-learning-loop.json",
+  "human_gate_policy_reference": "/data/wpa-human-gate-policy.json",
+  "end_to_end_state_machine_reference": "/data/wpa-end-to-end-institutional-state-machine.json",
   "continuous_learning_principle": "Institutional strength is not the sum of its components; it is the quality of the governed connections between them.",
   "ai_acceleration_boundary": "AI may accelerate discovery, comparison, modelling, synthesis and iteration; it does not inherit institutional mandate, legitimacy or final responsibility.",
   "authority_layers": [
-    {
-      "order": 1,
-      "name": "Human Authority",
-      "status": "FINAL_INSTITUTIONAL_AUTHORITY",
-      "role": "mandate, approval, pause, override and accountability"
-    },
-    {
-      "order": 2,
-      "name": "WPA Doctrine Kernel",
-      "status": "GOVERNED_MACHINE_READABLE_CONSTITUTION",
-      "role": "truth, doctrine, authorial-dna and drift controls"
-    },
-    {
-      "order": 3,
-      "name": "Strategic AI Core",
-      "status": "MIXED_ADAPTER_STATUS",
-      "role": "strategic planning and independent review; provider adapters must be explicitly verified"
-    },
-    {
-      "order": 4,
-      "name": "Virtual Sande",
-      "status": "DEPLOYED_AND_ACCEPTED_PUBLIC_PRODUCTION",
-      "version": "v35.1.1",
-      "role": "central orchestration, source-disciplined interface and synthesis"
-    },
-    {
-      "order": 5,
-      "name": "WPAWS Executive Agent Layer",
-      "status": "ORCHESTRATED_EXECUTIVE_AGENT_LAYER",
-      "version": "11.1.7",
-      "capacity": 17,
-      "role": "governed academic and institutional production"
-    },
-    {
-      "order": 6,
-      "name": "WPA AI Council",
-      "status": "CONTROLLED_TACTICAL_OPERATIONAL_ARCHITECTURE",
-      "capacity_up_to": 80,
-      "role": "bounded tactical-operational task execution under approved directive"
-    },
-    {
-      "order": 7,
-      "name": "External AI Candidate Registry",
-      "status": "CANDIDATE_REGISTRY",
-      "capacity": 54,
-      "role": "candidate external AI seats; no affiliation or live integration implied"
-    }
+    {"order":1,"name":"Human Authority","status":"FINAL_INSTITUTIONAL_AUTHORITY","role":"mandate, approval, pause, override and accountability"},
+    {"order":2,"name":"WPA Doctrine Kernel","status":"GOVERNED_MACHINE_READABLE_CONSTITUTION","role":"truth, doctrine, authorial-dna and drift controls"},
+    {"order":3,"name":"Strategic AI Core","status":"MIXED_ADAPTER_STATUS","role":"strategic planning and independent review; provider adapters must be explicitly verified"},
+    {"order":4,"name":"Virtual Sande","status":"DEPLOYED_AND_ACCEPTED_PUBLIC_PRODUCTION","version":"v35.1.1","role":"central orchestration, source-disciplined interface and synthesis"},
+    {"order":5,"name":"WPAWS Executive Agent Layer","status":"ORCHESTRATED_EXECUTIVE_AGENT_LAYER","version":"11.1.7","capacity":17,"role":"governed academic and institutional production"},
+    {"order":6,"name":"WPA AI Council","status":"CONTROLLED_TACTICAL_OPERATIONAL_ARCHITECTURE","capacity_up_to":80,"role":"bounded tactical-operational task execution under approved directive"},
+    {"order":7,"name":"External AI Candidate Registry","status":"CANDIDATE_REGISTRY","capacity":54,"role":"candidate external AI seats; no affiliation or live integration implied"}
   ],
-  "mandatory_release_gates": [
-    "Doctrine Kernel",
-    "Preventive Source Compliance Gate",
-    "Evidence Gate",
-    "Safety Gate",
-    "Human Approval Gate"
-  ],
-  "institutional_domains": [
-    "Protocol Studies",
-    "Diplomacy & International Relations",
-    "Public Communication",
-    "Security Studies",
-    "Research & Benchmarking",
-    "Professional Practice"
-  ],
-  "research_pipeline": [
-    "Public or authorised sources",
-    "WPA Watch",
-    "Academic Search Hub",
-    "Protocolometry",
-    "WPAWS / Virtual Sande",
-    "Evidence review",
-    "Human-reviewed output",
-    "Outcome measurement",
-    "Correction",
-    "Publication or institutional application",
-    "Knowledge reintegration"
-  ],
-  "continuous_institutional_learning_loop": [
-    "Observe",
-    "Research",
-    "Verify",
-    "Model",
-    "Human Gate",
-    "Apply",
-    "Measure",
-    "Correct",
-    "Publish",
-    "Learn",
-    "Re-enter the cycle"
+  "mandatory_release_gates": ["Doctrine Kernel","Preventive Source Compliance Gate","Evidence Gate","Safety Gate","Human Approval Gate"],
+  "human_gate_classes": {
+    "HG0":"informational and reversible",
+    "HG1":"bounded operational under preapproved mandate",
+    "HG2":"consequential institutional; human preapproval required",
+    "HG3":"legal, financial, academic, credential or privacy sensitive; approved private backend and human preapproval required",
+    "HG4":"constitutional doctrine, new authority or official commitment; machine cannot be final decision maker"
+  },
+  "institutional_domains": ["Protocol Studies","Diplomacy & International Relations","Public Communication","Security Studies","Research & Benchmarking","Professional Practice"],
+  "research_pipeline": ["Public or authorised sources","WPA Watch","Academic Search Hub","Protocolometry","WPAWS / Virtual Sande","Evidence review","Human-reviewed output","Outcome measurement","Correction","Publication or institutional application","Knowledge reintegration"],
+  "continuous_institutional_learning_loop": ["Observe","Research","Verify","Model","Human Gate","Apply","Measure","Correct","Publish","Learn","Re-enter the cycle"],
+  "end_to_end_institutional_cycle": ["Intake","Scope & Mandate","Source Compliance","Research & Discovery","Verification","Analysis & Modelling","Evidence & Safety Gate","Human Authorisation","Release / Application","Outcome Measurement","Correction & Review","Knowledge Reintegration","Closure"],
+  "transition_invariants": [
+    "Authority may be narrowed automatically within mandate but never expanded automatically.",
+    "A higher consequence class requires Human Gate escalation before release.",
+    "Failed mandatory gates block, pause or return the task for revision; they do not silently bypass.",
+    "Draft completion is not institutional release.",
+    "Doctrine changes are separate HG4 events.",
+    "Every consequential handoff preserves provenance, scope, uncertainty, human ownership and release condition."
   ],
   "capability_resilience_rule": "Every new institutional capability must be evaluated together with the dependency, vulnerability, misuse path and authority risk it creates.",
   "outcome_based_protocolometry": {
     "principle": "Measure institutional performance by evidence-backed outcomes and correction capacity, not by the number of units, documents, agents or organisational labels.",
-    "candidate_metrics": [
-      "time_to_detect_protocol_risk",
-      "time_to_verified_correction",
-      "verified_source_coverage",
-      "human_review_completion_rate",
-      "repeat_error_rate",
-      "mandate_traceability",
-      "correction_loop_time",
-      "decision_provenance_completeness"
-    ]
+    "candidate_metrics": ["time_to_detect_protocol_risk","time_to_verified_correction","verified_source_coverage","human_review_completion_rate","repeat_error_rate","mandate_traceability","correction_loop_time","decision_provenance_completeness"]
   },
   "student_lifecycle": {
     "reference": "/data/wpa-student-lifecycle.json",
@@ -124,28 +56,24 @@
     "student_desk_status": "BETA / GOVERNED PUBLIC PREVIEW",
     "real_enrolment_enabled": false,
     "real_payment_enabled": false,
+    "official_assessment_record_enabled": false,
     "official_certificate_issue_enabled": false,
-    "backend_required": true
+    "backend_required": true,
+    "sensitive_transitions_class": "HG3"
   },
-  "status_vocabulary": [
-    "LIVE",
-    "LIMITED_PRODUCTION",
-    "IMPLEMENTED_MVP",
-    "STAGING",
-    "BETA",
-    "PROTOTYPE",
-    "PLANNED",
-    "CANDIDATE_REGISTRY",
-    "PENDING_CANONICAL_VERIFICATION",
-    "UNAVAILABLE_FOR_AUTOMATED_ACTIVATION"
-  ],
-  "non_claims": [
-    "No state accreditation claim",
-    "No government authority claim",
-    "No autonomous academic/legal/financial authority",
-    "No intelligence, surveillance, investigative or operational function",
-    "No provider partnership or endorsement without evidence",
-    "No external-customer deployment claim without verifiable delivery evidence",
-    "No Human Gate bypass through continuous learning or AI acceleration"
-  ]
+  "activation_reality": {
+    "architecture_for_end_to_end_governance": "DEFINED",
+    "public_virtual_sande_runtime": "LIVE_PRODUCTION_V35_1_1",
+    "wpaws": "CONTROLLED_WORKING_ENVIRONMENT_11_1_7",
+    "protocolometry": "OPERATIONAL_METHODOLOGICAL_CENTER",
+    "research_and_publication_orchestration": "PARTIAL_LIVE_AND_IMPLEMENTED_MVP",
+    "student_sensitive_backend": "NOT_ACTIVE",
+    "real_enrolment": false,
+    "real_payment": false,
+    "official_assessment_record": false,
+    "official_certificate_issue": false,
+    "full_end_to_end_autonomous_institution_claimed": false
+  },
+  "status_vocabulary": ["LIVE","LIMITED_PRODUCTION","IMPLEMENTED_MVP","STAGING","BETA","PROTOTYPE","PLANNED","CANDIDATE_REGISTRY","PENDING_CANONICAL_VERIFICATION","UNAVAILABLE_FOR_AUTOMATED_ACTIVATION"],
+  "non_claims": ["No state accreditation claim","No government authority claim","No autonomous academic/legal/financial authority","No intelligence, surveillance, investigative or operational function","No provider partnership or endorsement without evidence","No external-customer deployment claim without verifiable delivery evidence","No Human Gate bypass through continuous learning or AI acceleration","No claim that every end-to-end institutional workflow is fully automated today"]
 }
