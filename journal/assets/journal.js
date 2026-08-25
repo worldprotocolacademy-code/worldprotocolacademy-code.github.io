@@ -3,7 +3,7 @@
  * File: journal/assets/journal.js
  * Version: v1.0
  * Owner: World Protocol Academy
- * Doctrine: „Преговарањето е опционално. Протоколот е апсолутен."
+ * Editorial principle: evidence discipline and human editorial responsibility.
  *
  * Privacy note:
  * This script does not transmit data; it only builds a local mailto draft
