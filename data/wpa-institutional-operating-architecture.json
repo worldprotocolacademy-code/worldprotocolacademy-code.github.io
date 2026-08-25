@@ -1,12 +1,15 @@
 {
-  "schema": "wpa-institutional-operating-architecture/1.1",
-  "version": "1.1.0",
-  "updated": "2026-08-24",
+  "schema": "wpa-institutional-operating-architecture/1.2",
+  "version": "1.2.0",
+  "updated": "2026-08-25",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "model": "HGAIM",
   "model_reference": "/data/wpa-human-governed-agentic-institution-model.json",
+  "continuous_learning_reference": "/data/wpa-continuous-institutional-learning-loop.json",
   "authority_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
   "canonical_runtime_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Strategic Prompt Router control layer -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
+  "institutional_learning_cycle": "Observe -> Research -> Verify -> Model -> Human Gate -> Apply -> Measure -> Correct -> Publish -> Learn -> Re-enter the cycle",
+  "governed_connection_principle": "Institutional strength is not the sum of its components; it is the quality of the governed connections between them.",
   "control_layers": [
     {
       "id": "strategic_prompt_router",
@@ -26,7 +29,8 @@
       "base_status": "LIVE",
       "qualifier": "PUBLIC_PRODUCTION_DEPLOYED_AND_ACCEPTED",
       "version": "v35.1.1",
-      "evidence": "/config/virtual-sande-current-state.json"
+      "evidence": "/config/virtual-sande-current-state.json",
+      "continuous_learning_role": "source-disciplined synthesis and governed knowledge reintegration"
     },
     {
       "id": "wpaws",
@@ -34,7 +38,8 @@
       "base_status": "IMPLEMENTED_MVP",
       "qualifier": "CONTROLLED_WORKING_ENVIRONMENT; 17 governed executive roles; provider adapter availability varies by approved configuration",
       "version": "11.1.7",
-      "executive_agents": 17
+      "executive_agents": 17,
+      "continuous_learning_role": "governed production, comparison, modelling and iteration"
     },
     {
       "id": "council80",
@@ -56,27 +61,32 @@
       "id": "protocolometry",
       "status": "OPERATIONAL_METHODOLOGICAL_CENTER",
       "base_status": "IMPLEMENTED_MVP",
-      "qualifier": "OPERATIONAL_METHODOLOGICAL_CENTER"
+      "qualifier": "OPERATIONAL_METHODOLOGICAL_CENTER",
+      "continuous_learning_role": "measurement, comparison, outcome evaluation and correction feedback",
+      "outcome_based": true
     },
     {
       "id": "academic_search",
       "status": "STAGING",
       "base_status": "STAGING",
       "qualifier": "LEGAL_SAFE_EXTERNAL_DISCOVERY; HUMAN_ACADEMIC_VERIFICATION_REQUIRED",
-      "version": "3.1"
+      "version": "3.1",
+      "continuous_learning_role": "public or authorised discovery and source verification support"
     },
     {
       "id": "wpa_watch",
       "status": "PUBLIC_SOURCE_CANDIDATE_MONITORING",
       "base_status": "IMPLEMENTED_MVP",
       "qualifier": "PUBLIC_SOURCE_CANDIDATE_MONITORING; HUMAN_VERIFICATION_REQUIRED",
-      "human_verification_required": true
+      "human_verification_required": true,
+      "continuous_learning_role": "public-source signal detection and candidate discovery"
     },
     {
       "id": "journal_watch",
       "status": "STAGING_READY_EDITORIAL_REVIEW_REQUIRED",
       "base_status": "STAGING",
-      "qualifier": "EDITORIAL_REVIEW_REQUIRED"
+      "qualifier": "EDITORIAL_REVIEW_REQUIRED",
+      "continuous_learning_role": "editorial candidate routing and research-question formation"
     },
     {
       "id": "student_desk",
@@ -86,13 +96,52 @@
       "backend_required_before_live_operations": true
     }
   ],
+  "continuous_learning_connections": [
+    {
+      "from": "WPA Watch / Academic Search Hub",
+      "to": "Protocolometry Center",
+      "governed_handoff": "candidate signals become evidence-checkable research objects"
+    },
+    {
+      "from": "Protocolometry Center",
+      "to": "WPAWS / Virtual Sande",
+      "governed_handoff": "verified measurements and comparisons become bounded synthesis inputs"
+    },
+    {
+      "from": "WPAWS / Virtual Sande",
+      "to": "Human Gate",
+      "governed_handoff": "AI-assisted output remains recommendation or draft until authorised human review"
+    },
+    {
+      "from": "Human-approved application or publication",
+      "to": "Protocolometry Center",
+      "governed_handoff": "outcomes and corrections are measured and returned as new evidence"
+    },
+    {
+      "from": "Measured outcomes",
+      "to": "WPA knowledge corpus",
+      "governed_handoff": "verified lessons re-enter research, programmes and institutional practice"
+    }
+  ],
+  "capability_resilience_pairing": {
+    "required": true,
+    "rule": "Every new institutional capability must be evaluated together with the dependency, vulnerability, misuse path and authority risk it creates.",
+    "release_questions": [
+      "What new capability is created?",
+      "What new dependency is introduced?",
+      "What can fail or be misused?",
+      "Who can pause, override or revoke?",
+      "What evidence is required before release?"
+    ]
+  },
   "evidence_and_governance": [
     "/data/wpa-academic-quality-standard.json",
     "/data/wpa-canonical-version-manifest.json",
     "/data/wpa-public-evidence-index.json",
     "/data/wpa-preventive-source-compliance-gate.json",
     "/data/wpa-student-operations-backend-schema.json",
-    "/data/wpa-opn-readiness-current-state.json"
+    "/data/wpa-opn-readiness-current-state.json",
+    "/data/wpa-continuous-institutional-learning-loop.json"
   ],
   "current_publication_metric": {
     "total": 26,
