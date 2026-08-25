@@ -1,0 +1,72 @@
+{
+  "schema": "wpa-student-ops-backend-current-state/1.0",
+  "version": "0.1.0",
+  "recorded_at": "2026-08-25",
+  "component": "WPA Student Operations Backend",
+  "canonical_state_record": true,
+  "human_gate_class": "HG3",
+  "implementation": {
+    "path": "/workers/wpa-student-ops-backend/",
+    "runtime": "Cloudflare Worker candidate",
+    "database": "Cloudflare D1 candidate",
+    "identity_perimeter": "Cloudflare Access candidate",
+    "access_jwt_defence_in_depth": true,
+    "rbac": true,
+    "append_only_human_approvals": true,
+    "append_only_audit_events": true,
+    "certificate_double_human_gate": true
+  },
+  "deployment": {
+    "status": "NOT_DEPLOYED",
+    "backend_mode": "DISABLED",
+    "workers_dev": false,
+    "preview_urls": false,
+    "d1_bound": false,
+    "access_application_configured": false,
+    "production_route_configured": false,
+    "real_personal_data_allowed": false
+  },
+  "capability_status": {
+    "application_api_code": "IMPLEMENTED_SCAFFOLD",
+    "access_authentication_code": "IMPLEMENTED_SCAFFOLD",
+    "role_based_access_code": "IMPLEMENTED_SCAFFOLD",
+    "admission_hg3_code": "IMPLEMENTED_SCAFFOLD",
+    "assessment_hg3_code": "IMPLEMENTED_SCAFFOLD",
+    "certificate_authorisation_code": "IMPLEMENTED_SCAFFOLD",
+    "certificate_issue_code": "IMPLEMENTED_SCAFFOLD",
+    "credential_public_verification_code": "IMPLEMENTED_SCAFFOLD",
+    "payments": "NOT_IMPLEMENTED",
+    "identity_document_handling": "NOT_IMPLEMENTED",
+    "live_student_accounts": "NOT_ACTIVE",
+    "official_certificate_issue": "NOT_ACTIVE"
+  },
+  "activation_gates": [
+    "private D1 creation and non-production migration test",
+    "Cloudflare Access application and identity policy",
+    "least-privilege role seeding",
+    "authentication and authorisation test suite",
+    "HG3 transition-negative tests",
+    "audit immutability tests",
+    "certificate double-gate tests",
+    "privacy and retention review",
+    "security and recovery review",
+    "explicit Sande staging authorisation",
+    "staging acceptance",
+    "separate explicit Sande production authorisation"
+  ],
+  "references": [
+    "/data/wpa-human-gate-policy.json",
+    "/data/wpa-student-lifecycle.json",
+    "/data/wpa-student-operations-backend-schema.json",
+    "/data/wpa-end-to-end-institutional-state-machine.json",
+    "/workers/wpa-student-ops-backend/README.md"
+  ],
+  "non_claims": [
+    "No live enrolment is enabled.",
+    "No live payment processing is enabled.",
+    "No official assessment record is enabled.",
+    "No official certificate issuance is enabled.",
+    "No production database or Access deployment is claimed.",
+    "No real student personal data belongs in the public repository."
+  ]
+}
