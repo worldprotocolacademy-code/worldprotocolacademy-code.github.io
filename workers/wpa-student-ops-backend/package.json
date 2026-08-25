@@ -1,0 +1,21 @@
+{
+  "name": "@wpa/student-ops-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Private human-governed WPA Student Operations backend scaffold for HG3 workflows.",
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.jsonc",
+    "dry-run": "wrangler deploy --dry-run --outdir dist --config wrangler.jsonc",
+    "deploy": "wrangler deploy --config wrangler.jsonc",
+    "db:migrate:local": "wrangler d1 migrations apply wpa-student-ops --local --config wrangler.jsonc",
+    "db:migrate:remote": "wrangler d1 migrations apply wpa-student-ops --remote --config wrangler.jsonc"
+  },
+  "dependencies": {
+    "jose": "6.2.10",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "wrangler": "4.125.0"
+  }
+}
