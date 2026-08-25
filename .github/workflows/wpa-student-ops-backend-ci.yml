@@ -5,6 +5,7 @@ on:
     paths:
       - 'workers/wpa-student-ops-backend/**'
       - 'data/wpa-student-ops-backend-current-state.json'
+      - 'data/wpa-student-operations-backend-schema.json'
       - 'data/wpa-human-gate-policy.json'
       - 'data/wpa-student-lifecycle.json'
       - '.github/workflows/wpa-student-ops-backend-ci.yml'
@@ -12,6 +13,7 @@ on:
     paths:
       - 'workers/wpa-student-ops-backend/**'
       - 'data/wpa-student-ops-backend-current-state.json'
+      - 'data/wpa-student-operations-backend-schema.json'
       - 'data/wpa-human-gate-policy.json'
       - 'data/wpa-student-lifecycle.json'
       - '.github/workflows/wpa-student-ops-backend-ci.yml'
@@ -42,6 +44,9 @@ jobs:
           grep -q '"WPA_BACKEND_MODE": "DISABLED"' wrangler.jsonc
           grep -q '"workers_dev": false' wrangler.jsonc
           grep -q '"preview_urls": false' wrangler.jsonc
+
+      - name: Run HG3 security invariant tests
+        run: python3 tests/verify_invariants.py
 
       - name: Compile Worker only - no deployment
         run: npm run dry-run
