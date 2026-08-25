@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-human-gate-policy/1.0",
-  "version": "1.0.0",
+  "schema": "wpa-human-gate-policy/1.1",
+  "version": "1.1.0",
   "updated": "2026-08-25",
   "name": "WPA Human Gate Policy",
   "name_mk": "Политика на Човечката порта на WPA",
@@ -8,7 +8,9 @@
   "external_standard": false,
   "core_rule": "Automation may prepare, route, compare, model and execute reversible bounded tasks. It may not create its own institutional authority or release consequential institutional action without the required human authorisation.",
   "core_rule_mk": "Автоматизацијата може да подготвува, насочува, споредува, моделира и извршува ограничени обратливи задачи. Таа не може сама да создава институционално овластување ниту да ослободи последично значајно институционално дејство без потребното човечко овластување.",
-  "default_mode": "FAIL_CLOSED_WHEN_AUTHORITY_OR_CONSEQUENCE_IS_UNCLEAR",
+  "cognitive_conscience_rule": "Fear, emotional vulnerability, prediction, profiling or technological proximity do not create consent, mandate or authority. Intimate interfaces require stronger human safeguards, not greater machine authority.",
+  "cognitive_conscience_rule_mk": "Стравот, емоционалната ранливост, предвидувањето, профилирањето или технолошката близина не создаваат согласност, мандат или овластување. Интимните интерфејси бараат посилни човечки заштитни механизми, а не поголемо машинско овластување.",
+  "default_mode": "FAIL_CLOSED_WHEN_AUTHORITY_CONSENT_OR_CONSEQUENCE_IS_UNCLEAR",
   "decision_classes": [
     {
       "class": "HG0",
@@ -24,13 +26,13 @@
       "examples": ["routing", "draft generation", "comparison", "research queue preparation", "reversible workflow assistance"],
       "automation": "ALLOWED_UNDER_PREAPPROVED_MANDATE",
       "human_preapproval": false,
-      "human_escalation": "required_on_exception_uncertainty_or_scope_change",
+      "human_escalation": "required_on_exception_uncertainty_scope_change_or_cognitive_conscience_trigger",
       "audit": "required_for_material_handoffs"
     },
     {
       "class": "HG2",
       "name": "Consequential institutional",
-      "examples": ["official publication release", "institutional statement", "external deliverable", "material correction", "public benchmark conclusion"],
+      "examples": ["official publication release", "institutional statement", "external deliverable", "material correction", "public benchmark conclusion", "material personalised persuasion affecting informed choice"],
       "automation": "PREPARE_ONLY_UNTIL_APPROVED",
       "human_preapproval": true,
       "release_without_human_gate": false,
@@ -38,9 +40,9 @@
     },
     {
       "class": "HG3",
-      "name": "Legally financially academically or credential sensitive",
-      "examples": ["identity verification", "enrolment", "payment status decision", "official assessment record", "certificate authorisation", "certificate issue or revocation", "privacy-sensitive record change"],
-      "automation": "ASSIST_ONLY_UNLESS_PRIVATE_BACKEND_AND_SPECIFIC_AUTHORISATION_EXIST",
+      "name": "Legally financially academically credential cognitively or privacy sensitive",
+      "examples": ["identity verification", "enrolment", "payment status decision", "official assessment record", "certificate authorisation", "certificate issue or revocation", "privacy-sensitive record change", "neural or biometric inference", "health-linked embodied interface", "highly intimate human-machine interface"],
+      "automation": "ASSIST_ONLY_UNLESS_PRIVATE_BACKEND_SPECIFIC_AUTHORISATION_AND_COGNITIVE_CONSCIENCE_SAFEGUARDS_EXIST",
       "human_preapproval": true,
       "private_backend_required": true,
       "role_based_access_required": true,
@@ -49,7 +51,7 @@
     {
       "class": "HG4",
       "name": "Constitutional doctrine and mandate",
-      "examples": ["Doctrine Kernel change", "new institutional authority", "Human Gate weakening", "provider partnership claim", "accreditation claim", "official external commitment"],
+      "examples": ["Doctrine Kernel change", "new institutional authority", "Human Gate weakening", "provider partnership claim", "accreditation claim", "official external commitment", "rule purporting to convert prediction emotion profiling or interface proximity into consent or authority"],
       "automation": "PROHIBITED_AS_FINAL_DECISION_MAKER",
       "human_preapproval": true,
       "authorised_human_authority_required": true,
@@ -65,7 +67,9 @@
     "material_uncertainty",
     "responsible_human_owner",
     "pause_or_override_path",
-    "release_condition"
+    "release_condition",
+    "consent_basis_when_relevant",
+    "cognitive_or_conscience_risk_when_relevant"
   ],
   "pause_conditions": [
     "unclear mandate",
@@ -76,8 +80,23 @@
     "scope expansion",
     "irreversible or difficult-to-reverse consequence",
     "new external commitment",
-    "credential or payment consequence"
+    "credential or payment consequence",
+    "coercive or fear-mediated influence",
+    "emotional vulnerability exploitation",
+    "consent inferred from emotion prediction behaviour biometrics or profiling",
+    "cognitive or neural inference with material consequence",
+    "intimate human-machine interface without strengthened safeguards",
+    "covert manipulation that may materially impair informed and contestable choice"
   ],
+  "cognitive_conscience_triggers": {
+    "minimum_escalation": "HG2",
+    "hg3_when_sensitive_data_or_embodied_interface": true,
+    "human_only_fallback_required_when_material": true,
+    "right_to_pause_refuse_and_contest_required": true,
+    "prediction_is_permission": false,
+    "fear_is_consent": false,
+    "interface_proximity_creates_authority": false
+  },
   "override_policy": {
     "machine_override_of_human_gate": false,
     "human_override_requires_reason": true,
@@ -88,6 +107,7 @@
   },
   "references": [
     "/data/wpa-doctrine-kernel.json",
+    "/data/wpa-cognitive-conscience-integrity-strategy.json",
     "/data/wpa-preventive-source-compliance-gate.json",
     "/data/wpa-academic-quality-standard.json",
     "/data/wpa-continuous-institutional-learning-loop.json",
@@ -96,7 +116,7 @@
   "non_claims": [
     "This policy does not mean every WPA workflow is fully automated today.",
     "This policy does not activate enrolment, payments, official assessment records or certificates.",
-    "This policy does not create government, legal, financial or accreditation authority.",
-    "This policy does not permit surveillance, intelligence or autonomous operational authority."
+    "This policy does not create government, legal, financial, clinical or accreditation authority.",
+    "This policy does not permit surveillance, intelligence, psychological profiling, neural inference or autonomous operational authority merely because the technology is capable of it."
   ]
 }
