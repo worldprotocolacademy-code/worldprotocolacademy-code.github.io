@@ -1,4 +1,4 @@
-/* WPA professional public contact layer — 2026-07-22 */
+/* WPA professional public contact layer — 2026-08-25 */
 (function () {
   'use strict';
 
@@ -10,6 +10,7 @@
     contact: 'contact@worldprotocolacademy.mk',
     office: 'office@worldprotocolacademy.mk',
     sande: 'sande@worldprotocolacademy.mk',
+    sandeDirect: 'sande@wpa.mk',
     institute: 'institute@worldprotocolacademy.mk',
     journal: 'journal@worldprotocolacademy.mk',
     editor: 'editor@worldprotocolacademy.mk'
@@ -324,7 +325,8 @@
           ['Администрација · Administration', ADDRESSES.office],
           ['WPA Institute', ADDRESSES.institute],
           ['WPA Journal', ADDRESSES.journal],
-          ['Доц. д-р Санде Смиљанов · Author', ADDRESSES.sande]
+          ['Доц. д-р Санде Смиљанов · Author', ADDRESSES.sande],
+          ['Директна WPA адреса · WPA direct', ADDRESSES.sandeDirect]
         ];
         var fragment = document.createDocumentFragment();
         for (var i = 0; i < entries.length; i += 1) {
