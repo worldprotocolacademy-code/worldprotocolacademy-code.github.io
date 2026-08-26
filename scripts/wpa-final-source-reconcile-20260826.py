@@ -92,9 +92,11 @@ def patch_bibliography():
     t=t.replace('Assoc. Prof. Dr. Sande Smiljanov','Doc. Dr Sande Smiljanov').replace('assoc. prof. dr. sande smiljanov','doc. dr sande smiljanov')
     # WP-009: v1.1 is deposited; concept DOI is safe for latest-facing resolution.
     t=t.replace('english with macedonian abstract · v1.0 | author-reviewed final release doi 10.5281/zenodo.20641841','english with macedonian abstract · v1.1 | author-reviewed release concept doi 10.5281/zenodo.20641840 prior v1.0 version doi 10.5281/zenodo.20641841')
+    t=t.replace('data-doi="10.5281/zenodo.20641841" data-index="doi zenodo" data-search="wp-009','data-doi="10.5281/zenodo.20641840" data-index="doi zenodo" data-search="wp-009',1)
     old='<strong>2026</strong>  |  DPRK / PRC Protocol and Visual Statecraft Case Study · English with Macedonian abstract · v1.0  |  Author-Reviewed Final Release<br/>\n        DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20641841" rel="noopener" target="_blank">10.5281/zenodo.20641841</a>'
     new='<strong>2026</strong>  |  DPRK / PRC Protocol and Visual Statecraft Case Study · English with Macedonian abstract · v1.1  |  Author-Reviewed Release<br/>\n        Concept DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.20641840" rel="noopener" target="_blank">10.5281/zenodo.20641840</a> · latest-version resolver<br/>\n        <span style="font-size:12px;color:var(--muted)">Prior v1.0 version DOI: 10.5281/zenodo.20641841. The v1.1 version-specific DOI is not asserted here until captured from the live Zenodo record.</span>'
     t=t.replace(old,new)
+    t=t.replace('<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20641841" rel="noopener" target="_blank">Zenodo record →</a>','<a class="bib-link-btn" href="https://doi.org/10.5281/zenodo.20641840" rel="noopener" target="_blank">Latest Zenodo version →</a>',1)
     # Rebalance 12-item distribution to 13 and add WP-013.
     m=re.search(r'(<div aria-label="Distribution of WPA Working Papers by type" class="zenodo-bar-segmented">)(.*?)(</div>\s*<div class="zenodo-legend">)',t,re.S)
     if m and 'data-wpa-wp013-segment' not in m.group(2):
@@ -128,7 +130,8 @@ def verify():
     assert 'WP-001–WP-013' in inst
     assert 'Doc. Dr Sande Smiljanov' in bib
     assert 'data-wpa-wp013-category="1"' in bib
-    assert 'v1.1' in bib and '10.5281/zenodo.20641840' in bib
+    assert 'v1.1' in bib and 'data-doi="10.5281/zenodo.20641840"' in bib
+    assert 'href="https://doi.org/10.5281/zenodo.20641840" rel="noopener" target="_blank">Latest Zenodo version →</a>' in bib
     assert "id:'009'" in wp and "Version 1.1" in wp and '10.5281/zenodo.20641840' in wp
 
 if __name__=='__main__':
