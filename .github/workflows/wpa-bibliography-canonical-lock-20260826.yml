@@ -1,0 +1,44 @@
+name: WPA bibliography canonical lock 2026-08-26
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/wpa-bibliography-canonical-lock-20260826.py
+      - .github/workflows/wpa-bibliography-canonical-lock-20260826.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  lock:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply bibliography canonical lock
+        run: python3 scripts/wpa-bibliography-canonical-lock-20260826.py
+      - name: Verify metrics
+        run: |
+          grep -q 'WPA Zenodo Corpus · 23 Public Records' institute.html
+          grep -q '13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan' institute.html
+          grep -q '26 Academic Publications' institute.html
+          grep -q '23 Total WPA Zenodo Records' institute.html
+          grep -q '<div class="counter-num">26</div>' bibliography/index.html
+          grep -q '<div class="counter-num">6</div>' bibliography/index.html
+          grep -q '23 Total WPA Zenodo Records' bibliography/index.html
+      - name: Commit synchronized public metrics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add institute.html bibliography/index.html
+          if git diff --cached --quiet; then
+            echo "No bibliography metric changes needed."
+          else
+            git commit -m "Synchronize WPA publication metrics with official bibliography"
+            git push origin HEAD:main
+          fi
