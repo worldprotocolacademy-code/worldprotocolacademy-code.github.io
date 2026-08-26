@@ -29,8 +29,8 @@ def patch_money_tokens(text):
         r"€\s*\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?(?:\s*/\s*(?:year|month|day))?",
         r"\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*€(?:\s*/\s*(?:year|month|day))?",
         r"\$\s*\d+(?:[.,]\d+)?",
-        r"\d+(?:[.,]\d+)?\s*USD\b",
-        r"\d+(?:[.,]\d+)?\s*EUR\b",
+        r"\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*USD\b",
+        r"\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*EUR\b",
     ]
     for pattern in patterns:
         text = re.sub(pattern, "[financial display inactive]", text, flags=re.I)
@@ -109,7 +109,6 @@ def patch_journal_flipbook():
     t = t.replace("Open Access · Fair Access.", "Open Access · financial framework inactive.")
     t = t.replace("Fair Access fee model", "financial framework currently inactive")
 
-    # Remove every known live-fee wording variant while preserving the Journal page.
     replacements = {
         "Симболична такса само по прифаќање. Достапни waivers.":
             "Во моментов нема активна такса за објавување или продукција.",
@@ -137,8 +136,41 @@ def patch_journal_flipbook():
     write(rel, t)
 
 
+def sanitize_journal_locale_text(t):
+    # Preserve editorial/academic copy while neutralising every known fee surface.
+    replacements = {
+        "Симболична такса само по прифаќање. Достапни waivers.":
+            "Во моментов нема активна такса за објавување или продукција.",
+        "Симболична такса само по прифаќање.":
+            "Во моментов нема активна такса за објавување или продукција.",
+        "Симболична такса само по прифаќање (waivers по барање); производство и архивирање.":
+            "Во моментов нема активна такса за објавување или продукција; производството и архивирањето остануваат во развојна рамка.",
+        "Симболична такса за објавување (само по прифаќање)":
+            "Такса за објавување — неактивна / замрзната",
+        "Само по прифаќање — symbolic publication fee (со достапни waivers).":
+            "Таксата за објавување е неактивна / замрзната.",
+        "A symbolic fee only after acceptance. Waivers available.":
+            "No publication or production fee is currently active.",
+        "A symbolic fee only after acceptance.":
+            "No publication or production fee is currently active.",
+        "Symbolic fee only after acceptance (waivers on request); production and archiving.":
+            "No publication or production fee is currently active; production and archiving remain within the development framework.",
+        "Symbolic publication fee — only after acceptance":
+            "Publication fee — inactive / frozen",
+        "symbolic publication fee only after acceptance · waivers available on request.":
+            "publication fee inactive / frozen.",
+        '"Fee Model"': '"Financial Framework · Inactive"',
+        '"Модел на такси"': '"Финансиска рамка · неактивна"',
+        '"Fee"': '"Status"',
+        '"Цена"': '"Статус"',
+    }
+    for old, new in replacements.items():
+        t = t.replace(old, new)
+    t = patch_money_tokens(t)
+    return t
+
+
 def patch_journal_locale_fallbacks():
-    # These files can repopulate visible Journal copy after a language switch.
     candidates = [
         "journal/locales/journal/en.json",
         "journal/locales/journal/mk.json",
@@ -147,28 +179,10 @@ def patch_journal_locale_fallbacks():
         "locales/en/core.json",
         "locales/mk/core.json",
     ]
-    replacements = {
-        "A symbolic fee only after acceptance. Waivers available.":
-            "No publication or production fee is currently active.",
-        "Symbolic fee only after acceptance (waivers on request); production and archiving.":
-            "No publication or production fee is currently active; production and archiving remain within the development framework.",
-        "Symbolic publication fee — only after acceptance":
-            "Publication fee — inactive / frozen",
-        "symbolic publication fee only after acceptance · waivers available on request.":
-            "publication fee inactive / frozen.",
-        "Симболична такса само по прифаќање. Достапни waivers.":
-            "Во моментов нема активна такса за објавување или продукција.",
-        "Симболична такса само по прифаќање (waivers по барање); производство и архивирање.":
-            "Во моментов нема активна такса за објавување или продукција; производството и архивирањето остануваат во развојна рамка.",
-    }
     for rel in candidates:
         p = ROOT / rel
-        if not p.exists():
-            continue
-        t = p.read_text(encoding="utf-8")
-        for old, new in replacements.items():
-            t = t.replace(old, new)
-        p.write_text(t, encoding="utf-8")
+        if p.exists():
+            p.write_text(sanitize_journal_locale_text(p.read_text(encoding="utf-8")), encoding="utf-8")
 
 
 def patch_digital_licence_archive():
@@ -225,6 +239,8 @@ def verify():
 
     forbidden_journal = (
         "Симболична такса само по прифаќање",
+        "Симболична такса за објавување (само по прифаќање)",
+        "Само по прифаќање — symbolic publication fee",
         "A symbolic fee only after acceptance",
         "Symbolic fee only after acceptance",
         "Symbolic publication fee — only after acceptance",
@@ -236,7 +252,7 @@ def verify():
         assert phrase not in journal, phrase
     assert "Во моментов нема активна такса за објавување или продукција" in journal
     assert "No publication or production fee is currently active" in journal
-    assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d", journal)
+    assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d|\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*(?:EUR|USD)\b", journal, re.I)
 
     for rel in (
         "journal/locales/journal/en.json",
@@ -251,6 +267,7 @@ def verify():
             text = p.read_text(encoding="utf-8")
             for phrase in forbidden_journal:
                 assert phrase not in text, f"{rel}: {phrase}"
+            assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d|\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*(?:EUR|USD)\b", text, re.I), rel
 
     licence = read("wpa-digital-licence-terms.html")
     assert "ARCHIVED / INACTIVE" in licence
