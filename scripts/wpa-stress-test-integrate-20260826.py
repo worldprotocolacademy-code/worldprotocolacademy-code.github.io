@@ -61,3 +61,4 @@ data['updated'] = '2026-08-26'
 p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 print('WPA Stress-Test integration complete')
+# Triggered after workflow installation.
