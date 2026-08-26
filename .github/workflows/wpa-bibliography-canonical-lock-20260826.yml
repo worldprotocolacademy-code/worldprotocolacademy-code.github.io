@@ -20,9 +20,9 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Apply bibliography canonical lock
+      - name: Apply publication canonical lock
         run: python3 scripts/wpa-bibliography-canonical-lock-20260826.py
-      - name: Verify metrics
+      - name: Verify canonical publication metrics
         run: |
           grep -q 'WPA Zenodo Corpus · 23 Public Records' institute.html
           grep -q '13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan' institute.html
@@ -31,14 +31,39 @@ jobs:
           grep -q '<div class="counter-num">26</div>' bibliography/index.html
           grep -q '<div class="counter-num">6</div>' bibliography/index.html
           grep -q '23 Total WPA Zenodo Records' bibliography/index.html
+          grep -q '23 записи = 13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan' wpa-metrics-status.html
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path('data/wpa-canonical-metrics-status.json').read_text(encoding='utf-8'))
+          z = p['zenodo_doi_corpus']
+          assert z['total_records'] == 23
+          assert z['working_papers'] == 13
+          assert z['protocol_notes'] == 9
+          assert z['global_strategic_plans'] == 1
+          assert z['series_doi_records'] == 22
+          PY
+          ! grep -q '15 Total Zenodo DOI Records' bibliography/index.html
+          ! grep -q '15 WPA Zenodo DOI Records' bibliography/index.html
+          ! grep -q '12 WPA Working Papers + 3 WPA Protocol Notes' wpa-metrics-status.html
       - name: Commit synchronized public metrics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add institute.html bibliography/index.html
+          git add \
+            institute.html \
+            bibliography/index.html \
+            wpa-metrics-status.html \
+            data/wpa-canonical-metrics-status.json \
+            index.html \
+            papers.html \
+            protocol-notes/index.html \
+            intelligence-center.html \
+            strategy/master-strategy-2026-2030.html \
+            journal/vol-1-issue-1-2026.html
           if git diff --cached --quiet; then
-            echo "No bibliography metric changes needed."
+            echo "No publication metric changes needed."
           else
-            git commit -m "Synchronize WPA publication metrics with official bibliography"
+            git commit -m "Synchronize WPA publication metrics with 23-record Zenodo corpus"
             git push origin HEAD:main
           fi
