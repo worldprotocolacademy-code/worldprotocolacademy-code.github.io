@@ -109,20 +109,24 @@ def patch_journal_flipbook():
     t = t.replace("Open Access · Fair Access.", "Open Access · financial framework inactive.")
     t = t.replace("Fair Access fee model", "financial framework currently inactive")
 
-    # Phrase-level replacements deliberately survive inline HTML such as <strong> around
-    # the preceding words. They patch visible prose and data-* translations alike.
-    t = re.sub(
-        r"Симболична\s+такса\s+само\s+по\s+прифаќање\.\s*Достапни\s+waivers\.",
-        "Во моментов нема активна такса за објавување или продукција.",
-        t,
-        flags=re.I,
-    )
-    t = re.sub(
-        r"A\s+symbolic\s+fee\s+only\s+after\s+acceptance\.\s*Waivers\s+available\.",
-        "No publication or production fee is currently active.",
-        t,
-        flags=re.I,
-    )
+    # Remove every known live-fee wording variant while preserving the Journal page.
+    replacements = {
+        "Симболична такса само по прифаќање. Достапни waivers.":
+            "Во моментов нема активна такса за објавување или продукција.",
+        "Симболична такса само по прифаќање (waivers по барање); производство и архивирање.":
+            "Во моментов нема активна такса за објавување или продукција; производството и архивирањето остануваат во развојна рамка.",
+        "A symbolic fee only after acceptance. Waivers available.":
+            "No publication or production fee is currently active.",
+        "Symbolic fee only after acceptance (waivers on request); production and archiving.":
+            "No publication or production fee is currently active; production and archiving remain within the development framework.",
+        "Symbolic publication fee — only after acceptance":
+            "Publication fee — inactive / frozen",
+        "symbolic publication fee only after acceptance · waivers available on request.":
+            "publication fee inactive / frozen.",
+    }
+    for old, new in replacements.items():
+        t = t.replace(old, new)
+
     t = t.replace(
         "The WPA Journal commits to the principle of accessibility without compromise of integrity.",
         "The WPA Journal commits to accessibility without compromise of integrity."
@@ -131,6 +135,40 @@ def patch_journal_flipbook():
     t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
     t = patch_money_tokens(t)
     write(rel, t)
+
+
+def patch_journal_locale_fallbacks():
+    # These files can repopulate visible Journal copy after a language switch.
+    candidates = [
+        "journal/locales/journal/en.json",
+        "journal/locales/journal/mk.json",
+        "journal/locales/journal-issue-1/en.json",
+        "journal/locales/journal-issue-1/mk.json",
+        "locales/en/core.json",
+        "locales/mk/core.json",
+    ]
+    replacements = {
+        "A symbolic fee only after acceptance. Waivers available.":
+            "No publication or production fee is currently active.",
+        "Symbolic fee only after acceptance (waivers on request); production and archiving.":
+            "No publication or production fee is currently active; production and archiving remain within the development framework.",
+        "Symbolic publication fee — only after acceptance":
+            "Publication fee — inactive / frozen",
+        "symbolic publication fee only after acceptance · waivers available on request.":
+            "publication fee inactive / frozen.",
+        "Симболична такса само по прифаќање. Достапни waivers.":
+            "Во моментов нема активна такса за објавување или продукција.",
+        "Симболична такса само по прифаќање (waivers по барање); производство и архивирање.":
+            "Во моментов нема активна такса за објавување или продукција; производството и архивирањето остануваат во развојна рамка.",
+    }
+    for rel in candidates:
+        p = ROOT / rel
+        if not p.exists():
+            continue
+        t = p.read_text(encoding="utf-8")
+        for old, new in replacements.items():
+            t = t.replace(old, new)
+        p.write_text(t, encoding="utf-8")
 
 
 def patch_digital_licence_archive():
@@ -185,13 +223,34 @@ def verify():
     assert "financial layer inactive" in card
     assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d", card)
 
+    forbidden_journal = (
+        "Симболична такса само по прифаќање",
+        "A symbolic fee only after acceptance",
+        "Symbolic fee only after acceptance",
+        "Symbolic publication fee — only after acceptance",
+        "symbolic publication fee only after acceptance",
+    )
     journal = read("journal/vol-1-issue-1-2026.html")
     assert "Financial framework · INACTIVE / FROZEN" in journal
-    assert "Симболична такса само по прифаќање" not in journal
-    assert "A symbolic fee only after acceptance" not in journal
+    for phrase in forbidden_journal:
+        assert phrase not in journal, phrase
     assert "Во моментов нема активна такса за објавување или продукција" in journal
     assert "No publication or production fee is currently active" in journal
     assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d", journal)
+
+    for rel in (
+        "journal/locales/journal/en.json",
+        "journal/locales/journal/mk.json",
+        "journal/locales/journal-issue-1/en.json",
+        "journal/locales/journal-issue-1/mk.json",
+        "locales/en/core.json",
+        "locales/mk/core.json",
+    ):
+        p = ROOT / rel
+        if p.exists():
+            text = p.read_text(encoding="utf-8")
+            for phrase in forbidden_journal:
+                assert phrase not in text, f"{rel}: {phrase}"
 
     licence = read("wpa-digital-licence-terms.html")
     assert "ARCHIVED / INACTIVE" in licence
@@ -214,6 +273,7 @@ if __name__ == "__main__":
     patch_opc("opc2026/opc2026-conference.html")
     patch_wpa_card_checkout()
     patch_journal_flipbook()
+    patch_journal_locale_fallbacks()
     patch_digital_licence_archive()
     patch_canonical_note()
     verify()
