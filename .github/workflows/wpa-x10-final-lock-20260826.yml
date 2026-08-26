@@ -1,0 +1,52 @@
+name: WPA X10 Final Public Lock
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wpa-x10-final-lock-20260826.py'
+      - 'index.html'
+      - 'bibliography/index.html'
+      - 'certification.html'
+      - 'tools/wpa-digital-pavilion/virtual-tour.html'
+      - 'tools/wpa-digital-pavilion/institute-passport.html'
+      - 'institute/index/components/wpa-identity-embeddable.html'
+      - 'protocol-symbols/index.html'
+      - 'protocol-symbols/methodology.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wpa-x10-final-public-lock
+  cancel-in-progress: false
+
+jobs:
+  harden-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply X10 residual hardening
+        run: python scripts/wpa-x10-final-lock-20260826.py
+
+      - name: Commit canonical residual fixes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "X10 public surfaces already canonical."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html bibliography/index.html certification.html \
+            tools/wpa-digital-pavilion/virtual-tour.html \
+            tools/wpa-digital-pavilion/institute-passport.html \
+            institute/index/components/wpa-identity-embeddable.html \
+            protocol-symbols/index.html protocol-symbols/methodology.md
+          git commit -m "Close WPA X10 canonical residuals"
+          git push
