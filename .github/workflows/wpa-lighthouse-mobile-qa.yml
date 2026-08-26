@@ -1,0 +1,116 @@
+name: WPA Lighthouse and Mobile QA
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'brand-architecture.html'
+      - 'bibliography/index.html'
+      - 'working-papers/index.html'
+      - 'virtual-sande-ai.html'
+      - 'audio-media-engine.html'
+  workflow_dispatch:
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-lighthouse-mobile-qa
+  cancel-in-progress: true
+
+jobs:
+  mobile-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify public endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=(
+            'https://worldprotocolacademy.mk/'
+            'https://worldprotocolacademy.mk/institute.html'
+            'https://worldprotocolacademy.mk/brand-architecture.html'
+            'https://worldprotocolacademy.mk/bibliography/'
+            'https://worldprotocolacademy.mk/working-papers/'
+            'https://worldprotocolacademy.mk/virtual-sande-ai.html'
+            'https://worldprotocolacademy.mk/audio-media-engine.html'
+          )
+          for url in "${urls[@]}"; do
+            echo "Checking $url"
+            curl --fail --silent --show-error --location --max-time 30 --output /dev/null "$url"
+          done
+
+      - name: Run Lighthouse mobile reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p lighthouse-reports
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$chrome" ]; then
+            echo 'Chrome/Chromium was not found on the runner.' >&2
+            exit 1
+          fi
+          echo "Using Chrome: $chrome"
+          export CHROME_PATH="$chrome"
+          specs=(
+            'home|https://worldprotocolacademy.mk/'
+            'institute|https://worldprotocolacademy.mk/institute.html'
+            'brand-architecture|https://worldprotocolacademy.mk/brand-architecture.html'
+            'bibliography|https://worldprotocolacademy.mk/bibliography/'
+            'research-publications|https://worldprotocolacademy.mk/working-papers/'
+            'virtual-sande|https://worldprotocolacademy.mk/virtual-sande-ai.html'
+            'audio-media-engine|https://worldprotocolacademy.mk/audio-media-engine.html'
+          )
+          for spec in "${specs[@]}"; do
+            name="${spec%%|*}"
+            url="${spec#*|}"
+            echo "Lighthouse mobile: $name -> $url"
+            npx --yes lighthouse@12.2.1 "$url" \
+              --quiet \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --output=json \
+              --output-path="lighthouse-reports/${name}.json"
+          done
+
+      - name: Summarize Lighthouse scores
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const dir = 'lighthouse-reports';
+          const files = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort();
+          const rows = files.map(file => {
+            const r = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
+            const c = r.categories || {};
+            const pct = key => Math.round(((c[key] && c[key].score) || 0) * 100);
+            return [file.replace(/\.json$/, ''), pct('performance'), pct('accessibility'), pct('best-practices'), pct('seo')];
+          });
+          const lines = [
+            '## WPA Lighthouse Mobile QA',
+            '',
+            '| Surface | Performance | Accessibility | Best Practices | SEO |',
+            '|---|---:|---:|---:|---:|',
+            ...rows.map(r => `| ${r[0]} | ${r[1]} | ${r[2]} | ${r[3]} | ${r[4]} |`),
+            '',
+            'This workflow is a diagnostic QA layer. Scores are monitored as engineering signals and are not institutional or accessibility certification claims.'
+          ];
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
+          console.log(lines.join('\n'));
+          NODE
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-lighthouse-mobile-reports
+          path: lighthouse-reports
+          if-no-files-found: warn
+          retention-days: 30
