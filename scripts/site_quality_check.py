@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""WPA public-site quality check."""
+"""WPA public-site quality and canonical-drift check."""
 from __future__ import annotations
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -77,11 +77,30 @@ def check_governance_invariants(errors):
         text=read_text(metrics)
         for token in ['"total_records": 23','"working_papers": 13','"protocol_notes": 9','"global_strategic_plans": 1']:
             if token not in text:add_error(errors,f"Canonical metrics missing publication invariant: {token}")
+        if '"status": "FORMATION_PHASE"' not in text:add_error(errors,"Canonical metrics missing AAB formation boundary")
+    else:add_error(errors,"Missing canonical metrics JSON")
     corr=ROOT/"forms"/"wpa-index-correction-request-form.md"
     if corr.exists():
         text=read_text(corr)
         if "A–D, G–I, R" not in text:add_error(errors,"Index correction form missing current REV2 taxonomy")
         if "AAB decision is final" in text:add_error(errors,"Index correction form prematurely claims a final AAB decision")
+    dash=ROOT/"wpa-metrics-status.html"
+    if dash.exists():
+        text=read_text(dash)
+        if 'data-canonical-metrics="true"' not in text:add_error(errors,"Public metrics dashboard is not marked canonical-driven")
+        if "/data/wpa-canonical-metrics-status.json" not in text:add_error(errors,"Public metrics dashboard does not load canonical metrics JSON")
+        for stale in ("15 записи = 12 WPA Working Papers + 3 WPA Protocol Notes","12 WPA Working Papers + 3 WPA Protocol Notes"):
+            if stale in text:add_error(errors,f"Public metrics dashboard contains stale publication claim: {stale}")
+        if "/aab-governance.html" not in text:add_error(errors,"Public metrics dashboard does not link dedicated AAB governance")
+    else:add_error(errors,"Missing public metrics dashboard")
+    profile=ROOT/"wpa-one-page-service-profile.html"
+    if profile.exists():
+        text=read_text(profile)
+        if 'data-canonical-metrics="true"' not in text:add_error(errors,"One-page service profile is not marked canonical-driven")
+        if "/data/wpa-canonical-metrics-status.json" not in text:add_error(errors,"One-page service profile does not load canonical metrics JSON")
+        for stale in ("25 Academic Publications","9 WPA Working Papers"):
+            if stale in text:add_error(errors,f"One-page service profile contains stale publication claim: {stale}")
+    else:add_error(errors,"Missing one-page service profile")
 def main():
     errors=[];check_sitemap(errors);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors);check_governance_invariants(errors)
     if errors:

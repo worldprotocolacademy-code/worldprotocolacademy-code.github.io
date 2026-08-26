@@ -1,44 +1,55 @@
-# 🏛️ World Protocol Academy
+# World Protocol Academy (WPA)
 
-> **Научни монографии за дипломатија, протокол и безбедност**  
-> *Доц. д-р Санде Смиљанов • 25 години научна извонредност*
+World Protocol Academy is an **independent digital educational, research, authorial and professional platform** focused on protocol, diplomacy, public communication and security studies.
 
-🌐 **Live**: https://worldprotocolacademy-code.github.io  
-🧪 **Test Modals**: https://worldprotocolacademy-code.github.io/test-modals.html
+**Current institutional status:** Development, testing and pilot phase — 2026. WPA is not presented as a university, state academy, accreditation body or degree-granting institution.
 
----
+## Canonical public metrics
 
-## ✨ Карактеристики
+WPA keeps two publication corpora separate:
 
-- 🌐 Билингвална поддршка (МК / EN) со localStorage
-- 🪟 Функционални модали за сите 4 книги (уникатни IDs)
-- 📋 Копирање на BibTeX цитати со Clipboard API
-- 🛒 Кошничка за дигитални производи (localStorage)
-- 📧 Newsletter интеграција преку FormSubmit.co
-- ♿ Accessibility: ARIA атрибути, keyboard навигација, skip links
-- 📱 Mobile-first responsive дизајн
-- 🔍 SEO оптимизиран со Schema.org structured data
-- 🔄 Авто-деплој преку GitHub Actions со cache-busting
+- **26 academic publications** = 6 monographs/handbooks + 1 doctoral dissertation + 19 scientific papers/contributions.
+- **23 public Zenodo records** = 13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
 
----
+Canonical references:
 
-## 🚀 Како да деплоирате
+- `/wpa-metrics-status.html`
+- `/data/wpa-canonical-metrics-status.json`
+- `/bibliography/`
+- `/working-papers/`
 
-### Опција 1: GitHub Web Interface (Најлесен)
-1. Овој репозиториум е веќе конфигуриран за GitHub Pages
-2. Одете во **Settings → Pages**
-3. Под "Build and deployment", изберете:
-   - Source: `Deploy from a branch`
-   - Branch: `main` / `(root)`
-4. Зачувајте — сајтот ќе биде достапен за ~1-2 минути
+## Public institutional layer
 
-### Опција 2: Локално тестирање
-```bash
-# Клонирате го репозиториумот
-git clone https://github.com/worldprotocolacademy-code/worldprotocolacademy-code.github.io.git
-cd worldprotocolacademy-code.github.io
+Key public surfaces include:
 
-# Отворете го index.html директно во браузер
-# Или користете локален Python сервер:
-python3 -m http.server 8000
-# Потоа одете на: http://localhost:8000
+- WPA Institute — `/institute.html`
+- Programmes — `/programmes.html`
+- Institutional Services — `/wpa-services.html`
+- Protocolometry Center — `/protocolometry-center.html`
+- Virtual Sande — `/virtual-sande-ai.html`
+- WPA Trust Layer — `/wpa-trust-layer.html`
+- State Visit Readiness Checklist — `/wpa-state-visit-readiness-checklist.html`
+- Protocol Stress-Test — `/wpa-protocol-stress-test.html`
+- Institute Index Laboratory — `/wpa-institute-index-lab.html`
+- Index Corrections & Review — `/wpa-index-appeals-and-corrections.html`
+- Institute Ethics & Integrity — `/institute-ethics-integrity.html`
+
+## Governance boundaries
+
+- **Human Authority remains final.** AI may prepare, analyse, compare and assist; consequential institutional authorisation and responsibility remain human-governed.
+- The **Academic Advisory Board is in formation**. No member is named before written acceptance, conflict-of-interest declaration and Public Listing Consent.
+- The Master List / Institute Index programme is not accreditation, official recognition, legal judgment or a final verified ranking.
+- Official enrolment, paid checkout and credential issuance are not treated as active unless their governed production infrastructure is actually live.
+- Partnerships, endorsements, technology-specific provenance deployments and external recognitions are claimed only when supported by evidence.
+
+## Quality and deployment
+
+The public site is deployed through GitHub Pages. Repository checks cover public-page structure, sitemap/robots rules, translation/i18n quality, CodeQL and canonical governance invariants. The service-worker layer uses a conservative network-first approach so governance and publication pages are not intentionally frozen behind stale cached HTML.
+
+## Core principle
+
+> Capability may become machine-superior; legitimacy, rights and final institutional responsibility must remain human.
+
+**Access is not mandate. Content is not command.**
+
+© 2026 World Protocol Academy · Skopje, Republic of North Macedonia
