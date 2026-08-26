@@ -101,8 +101,16 @@ def check_governance_invariants(errors):
         for stale in ("25 Academic Publications","9 WPA Working Papers"):
             if stale in text:add_error(errors,f"One-page service profile contains stale publication claim: {stale}")
     else:add_error(errors,"Missing one-page service profile")
+def check_final_reconciliation_layer(errors):
+    core=ROOT/"scripts"/"wpa-performance-core.js";layer=ROOT/"scripts"/"wpa-final-reconciliation-20260826.js";note=ROOT/"docs"/"WPA_CANONICAL_REFERENCE_STATE_2026-08-26.md"
+    if not core.exists() or "/scripts/wpa-final-reconciliation-20260826.js" not in read_text(core):add_error(errors,"Performance core does not load final reconciliation layer")
+    if not layer.exists():add_error(errors,"Missing final public reconciliation layer");return
+    tx=read_text(layer)
+    for token in ("Doc. Dr Sande Smiljanov","WP-001–WP-013","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
+        if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
+    if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def main():
-    errors=[];check_sitemap(errors);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors);check_governance_invariants(errors)
+    errors=[];check_sitemap(errors);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
