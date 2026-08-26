@@ -108,13 +108,24 @@ def patch_journal_flipbook():
     t = t.replace("Open Access with Fair Access fee model.", "Open Access; financial framework inactive.")
     t = t.replace("Open Access · Fair Access.", "Open Access · financial framework inactive.")
     t = t.replace("Fair Access fee model", "financial framework currently inactive")
-    t = t.replace(
-        "Submission, peer review и уредничка одлука се бесплатни. Симболична такса само по прифаќање. Достапни waivers.",
-        "Submission, peer review и уредничка одлука се бесплатни. Во моментов нема активна такса за објавување или продукција."
+
+    # Phrase-level replacements deliberately survive inline HTML such as <strong> around
+    # the preceding words. They patch visible prose and data-* translations alike.
+    t = re.sub(
+        r"Симболична\s+такса\s+само\s+по\s+прифаќање\.\s*Достапни\s+waivers\.",
+        "Во моментов нема активна такса за објавување или продукција.",
+        t,
+        flags=re.I,
+    )
+    t = re.sub(
+        r"A\s+symbolic\s+fee\s+only\s+after\s+acceptance\.\s*Waivers\s+available\.",
+        "No publication or production fee is currently active.",
+        t,
+        flags=re.I,
     )
     t = t.replace(
-        "The WPA Journal commits to the principle of accessibility without compromise of integrity. Submission, peer review, and editorial decision are free. A symbolic fee only after acceptance. Waivers available.",
-        "The WPA Journal commits to accessibility without compromise of integrity. Submission, peer review, and editorial decision are free. No publication or production fee is currently active."
+        "The WPA Journal commits to the principle of accessibility without compromise of integrity.",
+        "The WPA Journal commits to accessibility without compromise of integrity."
     )
     t = t.replace('"honorificPrefix": "Assoc. Prof. Dr."', '"honorificPrefix": "Doc. Dr"')
     t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
@@ -178,6 +189,7 @@ def verify():
     assert "Financial framework · INACTIVE / FROZEN" in journal
     assert "Симболична такса само по прифаќање" not in journal
     assert "A symbolic fee only after acceptance" not in journal
+    assert "Во моментов нема активна такса за објавување или продукција" in journal
     assert "No publication or production fee is currently active" in journal
     assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d", journal)
 
