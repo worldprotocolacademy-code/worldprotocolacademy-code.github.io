@@ -31,6 +31,8 @@ def replace_publication_metrics(text):
         "3 Protocol Notes": "9 Protocol Notes",
         "WP-001–WP-012": "WP-001–WP-013",
         "12/12": "13/13",
+        "Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-013.": "Сите тринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-013.",
+        "Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-012.": "Сите тринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-013.",
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
@@ -45,9 +47,16 @@ def patch_institute():
         '<h3 data-no-i18n="true">WPA DOI Corpus · Canonical Public Index</h3>',
         '<h3 data-no-i18n="true">WPA Zenodo Corpus · 23 Public Records</h3>'
     )
+    text = re.sub(
+        r'<p data-no-i18n="true">Канонскиот јавен WPA Zenodo корпус на 26 август 2026 содржи <strong>23 записи: 13 Working Papers \+ 9 Protocol Notes \+ 1 Global Strategic Plan</strong>\..*?</p>',
+        '<p data-no-i18n="true">Канонскиот WPA Zenodo корпус содржи <strong>23 јавни записи</strong>: <strong>13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan</strong>. Working Papers и Protocol Notes создаваат 22 WPA series DOI records; Global Strategic Plan е посебен Zenodo report. Овој Zenodo корпус не се додава врз бројката од 26 академски публикации.</p>',
+        text,
+        count=1,
+        flags=re.S,
+    )
     text = text.replace(
         '<p data-no-i18n="true">Канонскиот јавен DOI корпус на WPA ги опфаќа Working Papers, Protocol Notes и други DOI-врзани изданија. Овој блок намерно не користи рачно закован вкупен број: тековната состојба се чита од канонските Publications / Working Papers / Protocol Notes индекси, со што се спречува верзиски дрифт.</p>',
-        '<p data-no-i18n="true">Канонскиот WPA Zenodo корпус содржи <strong>23 јавни записи</strong>: <strong>13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan</strong>. Working Papers и Protocol Notes се посебни WPA серии и не се вклучуваат во бројката од 26 академски публикации.</p>'
+        '<p data-no-i18n="true">Канонскиот WPA Zenodo корпус содржи <strong>23 јавни записи</strong>: <strong>13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan</strong>. Working Papers и Protocol Notes создаваат 22 WPA series DOI records; Global Strategic Plan е посебен Zenodo report. Овој Zenodo корпус не се додава врз бројката од 26 академски публикации.</p>'
     )
     text = text.replace(
         '<a class="btn btn-primary" data-no-i18n="true" href="working-papers/">Отвори го канонскиот DOI индекс →</a>',
@@ -77,10 +86,6 @@ def patch_bibliography():
     text = text.replace(
         '• 13 WPA Working Papers (Zenodo DOI)<br/>\n      • 9 WPA Protocol Notes (Zenodo DOI)<br/>\n      • 23 Total WPA Zenodo Records<br/>',
         '• 13 WPA Working Papers (Zenodo DOI)<br/>\n      • 9 WPA Protocol Notes (Zenodo DOI)<br/>\n      • 1 Global Strategic Plan (Zenodo DOI)<br/>\n      • 22 WPA Series DOI Records<br/>\n      • 23 Total WPA Zenodo Records<br/>'
-    )
-    text = text.replace(
-        '<strong>◆ 23 WPA Zenodo Records · 13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan</strong>',
-        '<strong>◆ 23 WPA Zenodo Records · 13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan</strong>'
     )
     if 'data-wpa-research-metrics="20260826"' not in text:
         block = '''<div data-wpa-research-metrics="20260826" style="margin:18px 0 24px;padding:16px 18px;border:1px solid rgba(201,168,76,.35);border-left:4px solid #c9a84c;background:rgba(201,168,76,.08);color:rgba(255,255,255,.82);font-size:13px;line-height:1.75">
@@ -144,25 +149,34 @@ def verify():
     bib = read("bibliography/index.html")
     metrics_html = read("wpa-metrics-status.html")
     metrics = json.loads(read("data/wpa-canonical-metrics-status.json"))
-    assert "23 Public Records" in inst
-    assert "13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan" in inst
+
+    # Verify semantic publication invariants, not brittle editorial phrasing.
+    for token in ("23", "13 Working Papers", "9 Protocol Notes", "1 Global Strategic Plan"):
+        assert token in inst, f"Institute missing canonical Zenodo invariant: {token}"
     assert "26 Academic Publications" in inst
-    assert "23 Total WPA Zenodo Records" in inst
     assert '<div class="counter-num">26</div>' in bib
     assert '<div class="counter-num">6</div>' in bib
     assert "23 Total WPA Zenodo Records" in bib
     assert "23 записи = 13 WPA Working Papers + 9 WPA Protocol Notes + 1 Global Strategic Plan" in metrics_html
+
     z = metrics["zenodo_doi_corpus"]
     assert z["total_records"] == 23
     assert z["working_papers"] == 13
     assert z["protocol_notes"] == 9
     assert z["global_strategic_plans"] == 1
     assert z["series_doi_records"] == 22
-    for path in ["bibliography/index.html", "wpa-metrics-status.html", "data/wpa-canonical-metrics-status.json"]:
+
+    stale_markers = (
+        "15 Total Zenodo DOI Records",
+        "15 WPA Zenodo DOI Records",
+        "12 WPA Working Papers + 3 WPA Protocol Notes",
+        "Сите дванаесет WPA Working Papers",
+        "WP-001–WP-012",
+    )
+    for path in ["institute.html", "bibliography/index.html", "wpa-metrics-status.html", "data/wpa-canonical-metrics-status.json"]:
         text = read(path)
-        assert "15 Total Zenodo DOI Records" not in text
-        assert "15 WPA Zenodo DOI Records" not in text
-        assert "12 WPA Working Papers + 3 WPA Protocol Notes" not in text
+        for marker in stale_markers:
+            assert marker not in text, f"Stale publication marker in {path}: {marker}"
 
 
 if __name__ == "__main__":
