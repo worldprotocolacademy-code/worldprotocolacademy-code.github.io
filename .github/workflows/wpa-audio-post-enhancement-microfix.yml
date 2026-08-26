@@ -1,0 +1,39 @@
+name: WPA Audio Post-Enhancement Microfix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wpa-audio-post-enhancement-microfix.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Apply microfix
+        run: python3 scripts/wpa-audio-post-enhancement-microfix.py
+      - name: Verify terminology and freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'audio, video, PPT, lesson, course item, delivery note.' audio-media-engine.html
+          ! grep -q 'PPP' audio-media-engine.html
+          ! grep -q 'EUR 4,820' audio-media-engine.html
+          ! grep -q '>Монетизација<' audio-media-engine.html
+      - name: Commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add audio-media-engine.html
+          git commit -m 'Polish Audio Engine post-lock terminology'
+          git push origin main
