@@ -68,3 +68,14 @@ AAB remains **FORMATION_PHASE**. No AAB reviewer/member is publicly activated wi
 - Partnerships, endorsements, accreditation, official credentials, payment capability, physical premises and technology-specific provenance deployment are claimed only when supported by evidence.
 
 This file is a reconciliation snapshot, not a substitute for primary registries. Where a live primary record legitimately changes after 26 August 2026, update this note and downstream public surfaces together.
+
+
+## Public commercial / financial status
+
+**INACTIVE / FROZEN.** Until the author explicitly lifts this boundary after the relevant personal administrative/legal clearance is resolved, WPA public surfaces must not display or activate pricing, fees, paid services, ticket prices, payment/checkout flows, paid subscriptions, paid licences, Gumroad sales links, or official paid credential issuance.
+
+Allowed during the freeze: informational content, public research, non-commercial previews, enquiries and expressions of interest that do not create a contract, payment obligation, paid delivery promise or credential entitlement.
+
+Gumroad products may be retained as **unpublished drafts**; they are not to be deleted merely because the commercial layer is frozen.
+
+Journal, OPC, Certification, Services, Protocol Symbols and related pages are **preserved**; only their transaction/financial layer is frozen.
