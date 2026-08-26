@@ -1,0 +1,31 @@
+name: WPA Bibliography Record Sync 2026-08-26
+
+on:
+  push:
+    paths:
+      - 'scripts/wpa-bibliography-record-sync-20260826.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/wpa-bibliography-record-sync-20260826.py
+      - run: git diff --check
+      - shell: bash
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add bibliography/index.html
+          git commit -m 'Synchronize canonical bibliography record corpus'
+          git push
