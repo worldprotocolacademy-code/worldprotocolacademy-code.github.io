@@ -1,203 +1,82 @@
-# WPA Institute Index — Public Disclaimer
+# WPA Institute Index / Master List — Public Disclaimer
 
-**Document ID:** WPA-INDEX-DISC-2026-001
-**Status:** PUBLIC-READY
-**Date:** 20 May 2026
-**Institution:** World Protocol Academy
+**Document ID:** WPA-INDEX-DISC-2026-001  
+**Version:** 1.1 — REV2 GOVERNANCE ALIGNMENT  
+**Date:** 26 August 2026  
+**Institution:** World Protocol Academy  
 **Place:** Skopje, Republic of North Macedonia
-**Correction contact:** worldprotocolacademy@gmail.com
-**Media contact:** worldprotocolacademy@outlook.com
 
-**Doctrine:** *„Преговарањето е опционално. Протоколот е апсолутен."*
+## Current object and status
 
----
+The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2**.
 
-## 1. Македонска верзија (јавна страница)
+Current dataset facts are governed by the canonical status source and presently include:
 
-### За WPA Institute Index
+- 160 total records;
+- 159 external records;
+- 155 distinct external institutions;
+- 1 internal WPA reference record;
+- 8 external comparison groups: **A–D, G–I, R**;
+- source verification still in progress.
 
-WPA Institute Index — полно име *WPA Global Index for Protocol, Diplomacy, Public Communication & Security Studies* — е независен аналитички инструмент развиен од World Protocol Academy, специјализиран независен институт за протокол, дипломатија, јавна комуникација и безбедносни студии со седиште во Скопје, Република Северна Македонија.
+Earlier references to an A–I external taxonomy, seven groups, 125 institutions or a fully verified ranking are legacy wording and are not current REV2 claims.
 
-### Што е WPA Institute Index
+## What this programme is
 
-- независен аналитички инструмент;
-- глобален по обем — мапира институции од Балкан, Европа, Индија, Кина, Русија, Австралија, Северна Америка, Латинска Америка, Кариби, Африка, Среден Исток, Централна Азија, Југоисточна Азија, Источна Азија и меѓународни организации;
-- базиран на јавно проверливи извори;
-- организиран категориски (A–I + R + WPA);
-- структурно отворен за исправка, рекатегоризација, формален одговор и takedown.
+A public-source institutional mapping and methodological research programme intended to study documented institutional capacity, transparency, research, programmes and professional practice.
 
-### Што WPA Institute Index НЕ е
+## What it is not
 
-- **Не е акредитација.** WPA не доделува и не претендира на државна акредитација.
-- **Не е официјално државно признавање.** Никаква државна агенција не го одобрува овој Индекс.
-- **Не е универзитетска ранг-листа** во класична смисла.
-- **Не е платено рангирање.** Институциите што се мерат не плаќаат. Никаква уплата не може да го промени резултатот, позицијата или категоријата.
-- **Не е замена** за Scopus, Web of Science, ORCID, Google Scholar, QS, Shanghai Ranking, AD Scientific Index, ResearchGate, DOAJ или Crossref.
-- **Не е финална оценка** без право на исправка.
+It is not:
 
-### Принципи на интегритет
+- state or international accreditation;
+- official recognition or licensing;
+- a legal judgment;
+- a classical university ranking;
+- a paid ranking;
+- an endorsement merely because an institution is listed;
+- a final verified benchmark while record-level source verification remains incomplete.
 
-- WPA **не прима плаќање** во замена за повисок резултат, повисока позиција, повластен третман, инклузија во AAB или Board, или повластена аналитичка анализа.
-- Институциите кои се мерат **не плаќаат ништо**. Услугата е бесплатна. Право на исправка е бесплатно.
-- Аналитичкиот тим е строго одделен од комерцијалните активности (курсеви, сертификати, training).
-- Тежините на критериумите се **провизорни** до прегледот од WPA Academic Advisory Board (AAB).
-- Сите AI-асистирани делови минуваат низ човечка ревизија.
-- Сите јавни тврдења се поткрепени со примарни или peer-reviewed извори.
+## Evidence discipline
 
-### Како се третира недостаток на податок
+- URL presence does not equal source verification.
+- Official or authoritative sources are preferred where reasonably available.
+- Missing data does not automatically mean poor performance.
+- `VERIFIED` status requires evidence for the relevant claim and a logged review trail.
+- Material disputes should remain visible as pending/disputed rather than being silently rewritten.
+- AI may assist research or comparison, but consequential public judgments require human review.
 
-Недостатокот на податок **не значи лош резултат**. Тоа значи дека податокот не е достапен. WPA Institute Index **никогаш** не создава дефамациски заклучоци од отсуство на податок. Институции со „weak" Data Completeness **не се прикажуваат јавно**.
+## Commercial independence
 
-### Само јавни извори
+Institutions being mapped or assessed do not buy a better score, category, verification state or correction outcome. Membership, training, sponsorship, advisory work or any other commercial relationship must not influence analytical treatment.
 
-WPA Institute Index се потпира **исклучиво** на јавно проверливи извори: официјални институционални страници, peer-reviewed публикации, официјални меѓународни документи (UN, EU, NATO, AU, OAS, ASEAN), реномирани медиуми (Reuters, BBC, AFP, AP, NYT, FT) и други јавно достапни извори со јасно означување.
+## Correction and review rights
 
-### Не-дефамациско правило
+A materially identified institution or individual may request, free of charge:
 
-WPA Institute Index никогаш не:
+1. factual correction;
+2. group / recategorisation review;
+3. formal reply;
+4. takedown review;
+5. provenance/source review;
+6. review of a material methodology application.
 
-- именува институција во дефамациски контекст;
-- се користи за политички напади;
-- се користи за конкурентско ослабнување;
-- се користи за реторика без поткрепа.
+Submit through the procedure described at `/wpa-index-appeals-and-corrections.html` or by email to **worldprotocolacademy@gmail.com**.
 
-### Право на исправка
+## AAB appeal status
 
-Секоја институција или поединец што се споредува, цитира или споменува во WPA Institute Index има право на:
+The WPA Academic Advisory Board is currently in **FORMATION_PHASE**. WPA therefore does **not** claim that an AAB appeal route is currently issuing final decisions.
 
-1. **исправка** на конкретна податочна точка;
-2. **рекатегоризација** ако смета дека е во погрешна категорија;
-3. **формален одговор** (максимум 500 зборови) објавен заедно со WPA анализата;
-4. **takedown** на цел профил;
-5. **апел до WPA Academic Advisory Board (AAB)** во случај на одбивање.
+A second-stage AAB appeal activates only after the AAB is formally constituted under the published governance process. Until then, unresolved material disputes remain pending/disputed and receive human re-review; no final independent AAB determination is claimed.
 
-**Контакт:** worldprotocolacademy@gmail.com.
-**Време на одговор:** 30 календарски дена.
-**Право на исправка е БЕСПЛАТНО.**
+## Non-defamation and dignity rule
 
-### Апелациски рут
+The programme must not be used for unsupported attacks, political retaliation, competitive weakening or defamatory inference from missing data. Analytical language should distinguish verified fact, interpretation, uncertainty and unresolved dispute.
 
-Ако WPA одговорот не е задоволителен, барателот има право на апел до WPA Academic Advisory Board (AAB). AAB одлуката е финална.
+## Short public footer
 
-### Изјава за непостоечка акредитација
+> **WPA institutional mapping is an independent public-source research programme. It is not accreditation, official recognition, legal judgment or paid ranking. REV2 source verification remains in progress. Corrections are free. AAB second-stage appeals are not claimed operational while the AAB remains in formation.**
 
-WPA Institute Index не претставува државна или меѓународна акредитација. Институциите што се прикажани во Index-от **не се** автоматски акредитирани, признаени, лиценцирани или одобрени од WPA или од било која држава. Прикажувањето во Index-от не претставува препорака.
-
-### Изјава за неплатено рангирање
-
-WPA Institute Index **никогаш** не прима плаќање во замена за рангирање, позиција или score. Sponsored content е јасно одделен и не влијае на Index data.
-
----
-
-## 2. English version (public page)
-
-### About the WPA Institute Index
-
-The WPA Institute Index — full name *WPA Global Index for Protocol, Diplomacy, Public Communication & Security Studies* — is an independent analytical instrument developed by World Protocol Academy, a specialised independent institute for protocol, diplomacy, public communication and security studies, based in Skopje, Republic of North Macedonia.
-
-### What the WPA Institute Index is
-
-- an independent analytical instrument;
-- global in scope — mapping institutions from the Balkans, Europe, India, China, Russia, Australia, North America, Latin America, Caribbean, Africa, Middle East, Central Asia, Southeast Asia, East Asia, and international organisations;
-- based on publicly verifiable sources;
-- organised by category (A–I + R + WPA);
-- structurally open to correction, recategorisation, formal reply and takedown.
-
-### What the WPA Institute Index is NOT
-
-- **Not accreditation.** WPA neither grants nor claims state accreditation.
-- **Not official state recognition.** No state agency endorses this Index.
-- **Not a university ranking** in the classical sense.
-- **Not paid ranking.** Institutions being measured do not pay. No payment can change the score, position or category.
-- **Not a substitute** for Scopus, Web of Science, ORCID, Google Scholar, QS, Shanghai Ranking, AD Scientific Index, ResearchGate, DOAJ or Crossref.
-- **Not a final assessment** without the right of correction.
-
-### Integrity principles
-
-- WPA **does not accept payment** in exchange for a higher score, position, preferential treatment, AAB or Board access, or favoured analytical treatment.
-- Institutions being measured **do not pay anything**. The service is free of charge. The right of correction is free of charge.
-- The analytical team is strictly separated from commercial activities (courses, certificates, training).
-- Criterion weights are **provisional** until review by the WPA Academic Advisory Board (AAB).
-- All AI-assisted parts undergo human review.
-- All public statements are supported by primary or peer-reviewed sources.
-
-### How missing data is treated
-
-Missing data **does not mean a low score**. It means the data is not available. The WPA Institute Index **never** creates defamatory conclusions from the absence of data. Institutions with "weak" Data Completeness **are not publicly displayed**.
-
-### Public-source only
-
-The WPA Institute Index relies **exclusively** on publicly verifiable sources: official institutional pages, peer-reviewed publications, official international documents (UN, EU, NATO, AU, OAS, ASEAN), reputable media (Reuters, BBC, AFP, AP, NYT, FT), and other publicly available sources with clear attribution.
-
-### Non-defamation rule
-
-The WPA Institute Index never:
-
-- names an institution in a defamatory context;
-- is used for political attacks;
-- is used for competitive weakening;
-- is used for unsupported rhetoric.
-
-### Right of correction
-
-Every institution or individual compared, cited or mentioned in the WPA Institute Index has the right to:
-
-1. **correction** of a specific data point;
-2. **recategorisation** if they consider themselves in the wrong category;
-3. **formal reply** (maximum 500 words) published alongside the WPA analysis;
-4. **takedown** of the entire profile;
-5. **appeal to the WPA Academic Advisory Board (AAB)** in case of refusal.
-
-**Contact:** worldprotocolacademy@gmail.com.
-**Response time:** 30 calendar days.
-**The right of correction is FREE OF CHARGE.**
-
-### Appeal route
-
-If the WPA response is unsatisfactory, the requester has the right to appeal to the WPA Academic Advisory Board (AAB). The AAB decision is final.
-
-### Statement of non-accreditation
-
-The WPA Institute Index does not constitute state or international accreditation. Institutions displayed in the Index **are not** automatically accredited, recognised, licensed or approved by WPA or by any state. Display in the Index does not constitute endorsement.
-
-### Statement of non-paid ranking
-
-The WPA Institute Index **never** accepts payment in exchange for ranking, position or score. Sponsored content is clearly separated and does not affect Index data.
-
----
-
-## 3. Short footer version (за било која страница)
-
-### Macedonian
-
-> *WPA Institute Index е независен аналитички инструмент. Не е акредитација, не е универзитетска ранг-листа, не е платено рангирање. Институциите што се мерат не плаќаат. Право на исправка е бесплатно. Контакт: worldprotocolacademy@gmail.com. „Преговарањето е опционално. Протоколот е апсолутен."*
-
-### English
-
-> *The WPA Institute Index is an independent analytical instrument. It is not accreditation, not a university ranking, not paid ranking. Institutions being measured do not pay. The right of correction is free of charge. Contact: worldprotocolacademy@gmail.com. "Negotiation is optional. Protocol is absolute."*
-
----
-
-## 4. Correction request explanation
-
-Секоја институција може да побара исправка, рекатегоризација, формален одговор или takedown преку формата `wpa-index-correction-request-form.md` (FILE 6 во овој пакет). Барањето се испраќа на **worldprotocolacademy@gmail.com**. WPA одговара во рок од 30 календарски дена. Право на исправка е бесплатно.
-
-## 5. Takedown explanation
-
-Институција може да побара целосен takedown на својот WPA Institute Index профил преку истата форма. Takedown барањето мора да биде поднесено од овластен претставник на институцијата. WPA одговара во рок од 30 календарски дена. По одобрување, профилот се отстранува од јавните WPA канали и од internal Index базата. Takedown е бесплатен.
-
----
-
-**Контакти:**
-
-- **worldprotocolacademy@gmail.com** — академски, correction, takedown, AAB апели
-- **worldprotocolacademy@outlook.com** — медиумски, институционални
-
-**Седиште:** Скопје, Република Северна Македонија
-
----
-
-*„Преговарањето е опционално. Протоколот е апсолутен."*
-— World Protocol Academy, 2026
-
-— *Крај на WPA Institute Index Public Disclaimer v1.0 —*
+**Correction contact:** worldprotocolacademy@gmail.com  
+**Public procedure:** `/wpa-index-appeals-and-corrections.html`  
+**AAB status:** `/aab-governance.html`

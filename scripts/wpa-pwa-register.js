@@ -1,0 +1,1 @@
+(function(){'use strict';if(!('serviceWorker'in navigator)||location.protocol!=='https:')return;window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){/* fail silently: PWA is enhancement, not authority */})})})();

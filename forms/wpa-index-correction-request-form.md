@@ -1,364 +1,159 @@
-# WPA Institute Index — Correction Request Form
+# WPA Institute Index — Correction & Review Request Form
 
-**Document ID:** WPA-INDEX-CORR-FORM-2026-001
-**Series:** WPA Public Forms
-**Version:** 1.0 — PUBLIC-READY
-**Date:** 20 May 2026
-**Institution:** World Protocol Academy
-**Place:** Skopje, Republic of North Macedonia
+**Document ID:** WPA-INDEX-CORR-FORM-2026-001  
+**Version:** 1.1 — REV2 GOVERNANCE ALIGNMENT  
+**Date:** 26 August 2026  
+**Institution:** World Protocol Academy  
+**Place:** Skopje, Republic of North Macedonia  
 **Submit to:** worldprotocolacademy@gmail.com
-**Media contact:** worldprotocolacademy@outlook.com
 
-**Doctrine:** *„Преговарањето е опционално. Протоколот е апсолутен."*
+## Current scope
+
+This form applies to the **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2** and to any future public Institute Index record that explicitly adopts this procedure.
+
+Current REV2 group scheme: **A–D, G–I, R**. One internal WPA reference record is tracked separately and is not an external comparison group.
+
+The Master List / Institute Index programme is **not accreditation, official recognition, legal judgment or a final verified ranking**. Source verification remains evidence-gated.
+
+## Active rights
+
+Any institution, organisation or individual materially identified in a WPA analytical record may request, free of charge:
+
+1. correction of a factual data point;
+2. recategorisation / group review;
+3. a formal reply of up to 500 words;
+4. takedown review where an applicable ground is stated;
+5. provenance or source review;
+6. review of a material methodological application.
+
+**No payment, donation, membership, sponsorship or commercial relationship can improve a score, category, verification state or correction outcome.**
+
+## Important AAB status
+
+The WPA Academic Advisory Board (AAB) is currently in **FORMATION_PHASE**. A second-stage AAB appeal becomes operational only after the AAB is formally constituted under written acceptance, conflict-of-interest and public-listing governance.
+
+Until then:
+
+- WPA does **not** claim that an AAB decision has occurred;
+- an unresolved material dispute remains `DISPUTED_OR_CORRECTION_REVIEW` or otherwise visibly pending;
+- no disputed candidate score should be represented as a final independent determination;
+- the matter receives human re-review under WPA Human Authority, with recusal where a conflict exists.
+
+## Submission template
+
+### A. Requester
+
+- Date: [YYYY-MM-DD]
+- Full name:
+- Role / function:
+- Institution / organisation:
+- Official institutional email (where applicable):
+- Country:
+- Authority to submit: [authorised institutional representative / named individual / other — explain]
+
+### B. Record concerned
+
+- WPA record ID (if known):
+- Institution / record name:
+- Current REV2 group: [A / B / C / D / G / H / I / R / internal WPA reference / unknown]
+- Public WPA URL (if any):
+- Version / access date:
+
+### C. Request type
+
+Select one or more:
+
+- [ ] factual correction
+- [ ] recategorisation / group review
+- [ ] formal reply (max 500 words)
+- [ ] takedown review
+- [ ] source / provenance review
+- [ ] methodology application review
+- [ ] second-stage appeal request (will be queued only if the AAB route is operational)
+
+### D. Claim or field challenged
+
+Quote the current wording/value exactly:
+
+> [current wording/value]
+
+Proposed correction or requested action:
+
+> [proposed wording/value/action]
+
+Reason:
+
+> [brief explanation]
+
+### E. Evidence
+
+Prefer official or authoritative sources where reasonably available.
+
+1. Primary source URL:
+2. Source owner / institution:
+3. Access date:
+4. Claim supported by the source:
+5. Secondary source (optional):
+6. Attached document description (optional):
+
+A search result, directory listing or URL presence alone does not automatically establish `VERIFIED` status.
+
+### F. Takedown ground, if applicable
+
+- [ ] factual inaccuracy
+- [ ] rights / privacy concern
+- [ ] copyright / trademark concern
+- [ ] record is obsolete, closed or wrongly identified
+- [ ] serious unfair characterisation
+- [ ] other — explain
+
+### G. Formal reply, if requested
+
+Maximum 500 words:
+
+> [reply]
+
+### H. Public correction note preference
+
+- [ ] I consent to a public correction note and dated trail.
+- [ ] I request removal/replacement of the challenged wording rather than republication of the original wording.
+- [ ] I request an internal review before any public note; I understand public-record integrity may still require a minimal correction trail.
+
+### I. Urgency
+
+- [ ] standard
+- [ ] urgent — explain the ongoing material harm or time-sensitive event
+- [ ] legal/rights-sensitive — explain without sharing confidential material unnecessarily
+
+WPA's operational target is a substantive response **generally within 30 calendar days**. This is a governance target, not a statutory or contractual service-level guarantee.
+
+### J. Accuracy declaration
+
+- [ ] The information supplied is accurate to the best of my knowledge.
+- [ ] I have not offered payment or benefit for a favourable correction, category or score.
+- [ ] I understand that a correction request does not create accreditation, endorsement or partnership.
+- [ ] I understand that the AAB second-stage route is not claimed operational while the AAB remains in formation.
+
+Name:  
+Date:  
+Signature / written electronic confirmation:
+
+## WPA handling record
+
+WPA should log:
+
+- request reference;
+- date received;
+- record/version affected;
+- reviewer / governance reference;
+- conflict or recusal note;
+- evidence checked;
+- decision: accepted / partly accepted / rejected / pending / disputed;
+- correction date and public trail if applicable;
+- whether a second-stage independent review route was operational at the time.
 
 ---
 
-## 1. Како се користи оваа форма (How to use this form)
-
-Оваа форма ja користи **секоја институција, организација или поединец** кој се појавува, се мери или се цитира во WPA Institute Index и сака да побара:
-
-- **исправка** на конкретна податочна точка;
-- **рекатегоризација** во WPA Institute Index категориите (A–I, R, WPA);
-- **формален одговор** (максимум 500 зборови) објавен заедно со WPA анализата;
-- **takedown** на цел профил;
-- **апел до WPA Academic Advisory Board (AAB)** во случај на одбивање.
-
-**Право на исправка е БЕСПЛАТНО.**
-WPA не прима плаќање во замена за исправка, рекатегоризација, формален одговор или takedown.
-
-**Како да се поднесе:**
-
-1. По е-пошта на **worldprotocolacademy@gmail.com** со пополнетата форма во телото на пораката или како прикачен документ.
-2. Или потпишан скен на печатена верзија како PDF, прикачен на истата е-пошта.
-
-**Време на одговор:** WPA се обврзува да одговори во рок од **30 календарски дена**.
-
-**Апелациски рут:** Ако одговорот не е задоволителен, барателот има право на апел до WPA Academic Advisory Board (AAB). Апелот се поднесува на истиот email со ознака „AAB APPEAL — [Institution]". AAB одлуката е финална.
-
----
-
-## 2. Форма (Form)
-
-```
-═══════════════════════════════════════════════════════════
-   WPA INSTITUTE INDEX — CORRECTION REQUEST FORM
-═══════════════════════════════════════════════════════════
-
-Дата на барањето / Date of request:    [YYYY-MM-DD]
-
-───────────────────────────────────────────────────────────
-А. ПОДАТОЦИ ЗА ИНСТИТУЦИЈАТА (Institution data)
-───────────────────────────────────────────────────────────
-
-Полно официјално име на институцијата
-(на оригинален јазик):
-________________________________________________________
-
-Официјално име (латиница):
-________________________________________________________
-
-Држава:
-________________________________________________________
-
-Регион (R01_Balkans, R02_Europe, R03_India, R04_China,
-R05_Russia, R06_Australia, R07_North_America,
-R08_Latin_America, R09_Caribbean, R10_Africa,
-R11_Middle_East, R12_Central_Asia, R13_Southeast_Asia,
-R14_East_Asia, R15_Global):
-________________________________________________________
-
-Град:
-________________________________________________________
-
-Официјална веб-страница:
-________________________________________________________
-
-───────────────────────────────────────────────────────────
-Б. ПОДАТОЦИ ЗА ЛИЦЕТО КОЕ ГО ПОДНЕСУВА БАРАЊЕТО
-   (Person submitting the correction)
-───────────────────────────────────────────────────────────
-
-Име и презиме:
-________________________________________________________
-
-Улога / Функција во институцијата:
-________________________________________________________
-
-Официјален институционален email:
-________________________________________________________
-
-Телефон (опционално):
-________________________________________________________
-
-Овластување за поднесување:
-[ ] Сум формално овластен/а од институцијата да го
-    поднесам ова барање.
-[ ] Поднесувам како индивидуа спомената во WPA Index.
-
-───────────────────────────────────────────────────────────
-В. ЗАПИС ВО WPA INSTITUTE INDEX
-   (WPA Institute Index record concerned)
-───────────────────────────────────────────────────────────
-
-Institution_ID во WPA Index (ако е познат):
-WPAIDX___________
-
-Категорија како моментално е прикажана
-(A | B | C | D | E | F | G | H | I | R | WPA):
-________________________________________________________
-
-URL на WPA Index записот (ако е јавно достапен):
-________________________________________________________
-
-Датум на верификација на записот (ако е познат):
-[YYYY-MM-DD]
-
-───────────────────────────────────────────────────────────
-Г. КАТЕГОРИЈА НА БАРАЊЕТО (Correction category)
-   Изберете една или повеќе:
-───────────────────────────────────────────────────────────
-
-[ ] 1. Исправка на конкретна податочна точка
-       (correction)
-[ ] 2. Рекатегоризација во друга WPA категорија
-       (recategorisation)
-[ ] 3. Формален одговор (max 500 зборови) —
-       прикачен подолу
-       (formal reply)
-[ ] 4. Takedown на цел профил
-       (takedown)
-[ ] 5. Апел до AAB (само ако постои претходно одбивање)
-       (AAB appeal)
-
-───────────────────────────────────────────────────────────
-Д. ИСПРАВКА — ДЕТАЛИ
-   (Correction details — ако сте избрале 1 или 2)
-───────────────────────────────────────────────────────────
-
-Поле кое треба да се коригира
-(пр. Official_Name_Original, Country, Category,
-Faculty_Transparency, Protocol_Relevance, итн.):
-________________________________________________________
-
-Тековна вредност во WPA Index
-(точно прецитирана):
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-Предложена точна вредност:
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-Доколку барате РЕКАТЕГОРИЗАЦИЈА —
-предложена нова категорија и образложение
-(2–3 реченици):
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-───────────────────────────────────────────────────────────
-Ѓ. ДОКАЗИ (Evidence)
-───────────────────────────────────────────────────────────
-
-Примарен evidence URL
-(официјална институциска страница, владин документ
-или peer-reviewed извор):
-
-1. ________________________________________________
-
-Секундарен evidence URL (независна верификација):
-
-2. ________________________________________________
-
-Дополнителни evidence URLs (опционално):
-
-3. ________________________________________________
-4. ________________________________________________
-5. ________________________________________________
-
-Прикачени документи (placeholder):
-[ ] Скенирана официјална потврда
-[ ] PDF на институционален документ
-[ ] Други: __________________________________________
-
-───────────────────────────────────────────────────────────
-Е. ОСНОВ ЗА TAKEDOWN
-   (Grounds — само ако сте избрале опција 4)
-───────────────────────────────────────────────────────────
-
-[ ] Фактичка неточност (factual inaccuracy)
-[ ] Неправедна карактеризација (unfair characterisation)
-[ ] Повреда на лични права (personal rights violation)
-[ ] Повреда на авторски права (copyright infringement)
-[ ] Повреда на трговска марка (trademark infringement)
-[ ] Институцијата не постои или е затворена
-[ ] Друго: __________________________________________
-
-Детално образложение:
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-───────────────────────────────────────────────────────────
-Ж. ФОРМАЛЕН ОДГОВОР (Formal reply — max 500 words)
-   Опционално. Се објавува заедно со WPA анализата.
-───────────────────────────────────────────────────────────
-
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-(Продолжете на посебна страница ако е потребно.)
-
-───────────────────────────────────────────────────────────
-З. СОГЛАСНОСТ ЗА ЈАВНА КОРЕКЦИСКА БЕЛЕШКА
-   (Consent to public correction note)
-───────────────────────────────────────────────────────────
-
-[ ] Се согласувам корекцијата да биде објавена како
-    јавна белешка покрај изменетото поле, со датум.
-[ ] НЕ се согласувам корекцијата да биде објавена;
-    барам само интерна исправка во WPA Index базата.
-[ ] Се согласувам само ако WPA го отстрани оригиналното
-    тврдење наместо да го прикаже како „коригирано".
-
-───────────────────────────────────────────────────────────
-Ѕ. УРГЕНТНОСТ (Urgency)
-───────────────────────────────────────────────────────────
-
-[ ] Стандардна обработка (до 30 календарски дена)
-[ ] Ургентна обработка — институционална штета е во тек
-    (WPA се стреми да одговори во рок од 14 дена)
-[ ] Критична — правен ризик за институцијата
-    (WPA се стреми да одговори во рок од 7 дена)
-
-Ако е ургентно или критично — образложение
-(1–3 реченици):
-________________________________________________________
-________________________________________________________
-
-───────────────────────────────────────────────────────────
-И. АПЕЛ ДО AAB
-   (Само ако веќе постои претходно одбивање од WPA)
-───────────────────────────────────────────────────────────
-
-Број на претходно барање / референца:
-________________________________________________________
-
-Датум на претходен одговор од WPA:
-[YYYY-MM-DD]
-
-Краток сумирач на образложението за апел
-(до 200 зборови):
-________________________________________________________
-________________________________________________________
-________________________________________________________
-________________________________________________________
-
-───────────────────────────────────────────────────────────
-Ј. ДЕКЛАРАЦИЈА ЗА ТОЧНОСТ
-   (Declaration of accuracy)
-───────────────────────────────────────────────────────────
-
-[ ] Потврдувам дека информациите во оваа форма се точни
-    врз основа на моето најдобро знаење.
-[ ] Потврдувам дека имам овластување да го поднесам ова
-    барање во име на наведената институција / поединец.
-[ ] Разбирам дека WPA се обврзува да одговори во рок од
-    30 календарски дена (или пократки рокови ако е
-    ургентно/критично).
-[ ] Разбирам дека во случај на одбивање имам право на
-    апел до WPA Academic Advisory Board (AAB).
-[ ] Потврдувам дека НЕ сум понудил/а никакво плаќање,
-    подарок или повластен третман во замена за ова
-    барање.
-[ ] Разбирам дека правото на исправка е БЕСПЛАТНО и не
-    се однесува на финансиски трансакции со WPA.
-
-───────────────────────────────────────────────────────────
-К. ПОТПИС (Signature)
-───────────────────────────────────────────────────────────
-
-Потпис:                Дата:
-___________________    ___________________
-
-Печат на институцијата (опционално):
-
-[                   ]
-
-───────────────────────────────────────────────────────────
-Л. ПОДНЕСУВАЊЕ (Submission)
-───────────────────────────────────────────────────────────
-
-Email:    worldprotocolacademy@gmail.com
-Subject:  "WPA Index Correction Request — [Institution]"
-
-WPA одговара во рок од 30 календарски дена.
-Право на исправка е БЕСПЛАТНО.
-
-───────────────────────────────────────────────────────────
-„Преговарањето е опционално. Протоколот е апсолутен."
-═══════════════════════════════════════════════════════════
-```
-
----
-
-## 3. WPA Response Timeline
-
-| Тип на барање | Стандардно време | Ургентно | Критично |
-|----------------|-------------------|-----------|-----------|
-| Correction | 30 кал. дена | 14 дена | 7 дена |
-| Recategorisation | 30 кал. дена | — | — |
-| Formal reply | 30 кал. дена | — | — |
-| Takedown | 30 кал. дена | 14 дена | 7 дена |
-| AAB Appeal | 60 кал. дена | — | — |
-
-## 4. WPA Internal Processing
-
-WPA внатрешно ja процесира корекцијата преку:
-
-1. **Receipt logging** — секое барање добива WPA internal ticket ID (WPA-CORR-YYYY-NNNN).
-2. **Editorial Office triage** — првичен преглед од Editorial Office.
-3. **Аналитички тим преглед** — верификација на доказите.
-4. **Одлука** — accept / reject / partial accept / escalate to AAB.
-5. **Соопштување** — одговор на барателот во рок.
-6. **Имплементација** — Index запис се ажурира; ако е јавна корекција — се објавува correction note.
-7. **Архивирање** — барањето и одлуката се архивираат во `/WPA_Governance/Index_Corrections/`.
-
-## 5. Анти-корупциски одредби
-
-WPA се обврзува:
-
-- ❌ **Никакво плаќање не може да го забрза процесот.**
-- ❌ **Никакво плаќање не може да го промени исходот.**
-- ❌ **Никаков подарок или повластен третман не се прима.**
-- ❌ **AAB апел не се наплатува.**
-- ✅ Сите барања се обработуваат **еднакво**, без обзир на големина или престиж на институцијата.
-
----
-
-**Контакти:**
-
-- **worldprotocolacademy@gmail.com** — поднесување, исправки, takedown, AAB апели
-- **worldprotocolacademy@outlook.com** — медиумски прашања
-
-**Седиште:** Скопје, Република Северна Македонија
-
----
-
-*„Преговарањето е опционално. Протоколот е апсолутен."*
-— World Protocol Academy, 2026
-
-— *Крај на WPA Institute Index Correction Request Form v1.0 —*
+**Public procedure:** `/wpa-index-appeals-and-corrections.html`  
+**AAB governance:** `/aab-governance.html`  
+**Master List verification:** `/master-list-verification.html`
