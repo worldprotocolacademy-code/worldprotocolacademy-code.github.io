@@ -1,0 +1,43 @@
+name: WPA Claude Audit Delta 2026-08-26
+
+on:
+  push:
+    paths:
+      - 'scripts/wpa-claude-audit-delta-20260826.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply verified delta
+        run: python scripts/wpa-claude-audit-delta-20260826.py
+
+      - name: Diff integrity
+        run: git diff --check
+
+      - name: Commit synchronized public corpus
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html institute.html working-papers/index.html protocol-notes/index.html bibliography/index.html locales index mk.json en.json 2>/dev/null || true
+          git commit -m 'Apply verified Claude audit delta synchronization'
+          git push
