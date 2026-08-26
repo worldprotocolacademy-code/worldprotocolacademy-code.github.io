@@ -1,0 +1,54 @@
+name: WPA Kimi audit delta remediation 2026-08-26
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/wpa-kimi-delta-remediation-20260826.py
+      - .github/workflows/wpa-kimi-delta-remediation-20260826.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  remediate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Apply guarded delta remediation
+        run: python3 scripts/wpa-kimi-delta-remediation-20260826.py
+
+      - name: Verify canonical outputs
+        run: |
+          grep -q 'data-wpa-nav="institute-20260826"' institute.html
+          grep -q 'data-wpa-nav="home-20260826"' index.html
+          grep -q 'WPA Protocol Notes · PN-001–PN-009' institute.html
+          grep -q '<div class="counter-num">26</div>' bibliography/index.html
+          grep -q '<div class="counter-num">6</div>' bibliography/index.html
+          grep -q 'id="pub-26"' bibliography/index.html
+          grep -q '978-608-66168-5-4' bibliography/index.html
+          grep -q '69316613' bibliography/index.html
+          test -f terms.html
+          test -f cookies.html
+          test -f docs/WPA_KIMI_AUDIT_DELTA_2026-08-26.md
+          ! grep -q '15 DOI Records' institute.html
+          ! grep -q '10 јуни 2026' institute.html
+
+      - name: Commit remediation outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html institute.html bibliography/index.html privacy.html terms.html cookies.html docs/WPA_KIMI_AUDIT_DELTA_2026-08-26.md
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Apply verified WPA Kimi audit delta remediation"
+            git push origin HEAD:main
+          fi
