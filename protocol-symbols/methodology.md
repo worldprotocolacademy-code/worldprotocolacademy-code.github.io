@@ -1,8 +1,8 @@
 # ЗАДАЧА A — Verification Methodology v1.1
-## WPA Protocol Symbols Lab — Zero Hallucination Standard
+## WPA Protocol Symbols Lab — Source Verification Standard
 
 **Authority:** World Protocol Academy (WPA), Skopje  
-**Director:** Assoc. Prof. Dr. Sande Smiljanov  
+**Director:** Doc. Dr Sande Smiljanov  
 **Document ID:** WPA-MTH-2026-001 (rev. 1)  
 **Status:** Production-grade methodology — pilot phase complete, Tranche A imminent  
 **Effective:** 23 May 2026
@@ -20,7 +20,7 @@
 
 > Преговарањето е опционално. Протоколот е апсолутен.
 
-The Protocol Symbols Lab (PSL) is the **verified academic core** of the World Protocol Academy. Its public credibility rests on a single non-negotiable commitment: **zero hallucination**. No record enters the canonical database unless it has been independently corroborated by three authoritative sources and survives the structured verification workflow defined herein.
+The Protocol Symbols Lab (PSL) is the **verified academic core** of the World Protocol Academy. Its public credibility rests on a strict **zero-hallucination target and verification standard — not an absolute guarantee**. No record enters the canonical database unless it has been independently corroborated by three authoritative sources and survives the structured verification workflow defined herein.
 
 ---
 
@@ -130,7 +130,7 @@ The methodology was piloted on five records covering five continents and three m
 
 **Schema validation:** 5/5 records pass strict JSON Schema validation with zero errors.
 
-**Methodology outcome:** The 3-tier strict procedure successfully surfaces minor publication-vs-signing discrepancies that single-source verification would miss, while leaving zero core fields ambiguous. This is the **zero-hallucination guarantee** in action — every uncertainty is **named**, not buried.
+**Methodology outcome:** The 3-tier strict procedure successfully surfaces minor publication-vs-signing discrepancies that single-source verification would miss, while leaving zero core fields ambiguous. This demonstrates the **zero-hallucination target and verification standard** in practice — every identified uncertainty is **named**, not buried.
 
 ---
 
