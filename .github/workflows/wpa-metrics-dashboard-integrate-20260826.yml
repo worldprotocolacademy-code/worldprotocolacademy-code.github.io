@@ -1,0 +1,39 @@
+name: WPA Metrics Dashboard Integration 2026-08-26
+
+on:
+  push:
+    paths:
+      - '.github/workflows/wpa-metrics-dashboard-integrate-20260826.yml'
+      - 'scripts/wpa-metrics-dashboard-integrate-20260826.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Integrate dashboard references
+        run: python scripts/wpa-metrics-dashboard-integrate-20260826.py
+      - name: Validate JSON
+        run: |
+          python -m json.tool data/wpa-canonical-metrics-status.json >/dev/null
+          python -m json.tool data/wpa-module-registry.json >/dev/null
+      - name: Commit integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html institute.html sitemap.xml data/wpa-module-registry.json
+          if git diff --cached --quiet; then
+            echo "No integration changes needed"
+          else
+            git commit -m "Integrate canonical WPA metrics dashboard"
+            git push
+          fi
