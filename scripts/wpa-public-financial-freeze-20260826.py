@@ -25,7 +25,6 @@ def write(rel, text):
 
 
 def patch_money_tokens(text):
-    # Public-facing numeric prices are not shown while the commercial layer is frozen.
     patterns = [
         r"€\s*\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?(?:\s*/\s*(?:year|month|day))?",
         r"\d+(?:[.,]\d+)?(?:\s*[–-]\s*\d+(?:[.,]\d+)?)?\s*€(?:\s*/\s*(?:year|month|day))?",
@@ -40,8 +39,6 @@ def patch_money_tokens(text):
 
 def patch_opc(rel):
     t = read(rel)
-
-    # Canonical event boundary: date and venue remain TBC; Ohrid is proposed only.
     t = t.replace(
         "Прва меѓународна конференција за протокол, дипломатија, јавна комуникација и безбедносни студии. Декември 2026 · Hotel Inex Olgica · Охрид, Северна Македонија.",
         "OPC conference framework. Date and venue to be confirmed; Ohrid, North Macedonia is a proposed location."
@@ -53,8 +50,6 @@ def patch_opc(rel):
     t = t.replace("Hotel Inex Olgica", "Venue to be confirmed")
     t = t.replace("Декември 2026", "Датумот ќе биде потврден")
     t = t.replace("December 2026", "Date to be confirmed")
-
-    # Preserve the conference page, but remove the commercial/ticket layer.
     frozen_section = (
         '<section class="section" id="tickets">\n'
         '  <span class="section-label">Commercial status</span>\n'
@@ -64,18 +59,12 @@ def patch_opc(rel):
     )
     t = re.sub(
         r'<section(?=[^>]*\bid=["\']tickets["\'])[^>]*>.*?</section>',
-        frozen_section,
-        t,
-        count=1,
-        flags=re.S | re.I,
+        frozen_section, t, count=1, flags=re.S | re.I,
     )
-
-    # Fail closed if older ticket cards survive under another wrapper.
     t = re.sub(
         r'<div class="ticket-price">.*?</div>',
         '<div class="ticket-price">Commercial display inactive</div>',
-        t,
-        flags=re.S | re.I,
+        t, flags=re.S | re.I,
     )
     t = t.replace("Early Bird", "Registration preview")
     t = t.replace("PAYMENT POLICY", "COMMERCIAL STATUS")
@@ -98,10 +87,7 @@ def patch_wpa_card_checkout():
     )
     t = re.sub(
         r'<section\s+aria-labelledby=["\']model-title["\'][^>]*>.*?</section>',
-        replacement,
-        t,
-        count=1,
-        flags=re.S | re.I,
+        replacement, t, count=1, flags=re.S | re.I,
     )
     t = patch_money_tokens(t)
     write(rel, t)
@@ -110,8 +96,6 @@ def patch_wpa_card_checkout():
 def patch_journal_flipbook():
     rel = "journal/vol-1-issue-1-2026.html"
     t = read(rel)
-
-    # Keep the Journal and its design; remove only the public fee display.
     fee_notice = (
         '<div class="notice notice--strict" style="margin:16px 0;">'
         '<strong>Financial framework · INACTIVE / FROZEN</strong>'
@@ -124,6 +108,14 @@ def patch_journal_flipbook():
     t = t.replace("Open Access with Fair Access fee model.", "Open Access; financial framework inactive.")
     t = t.replace("Open Access · Fair Access.", "Open Access · financial framework inactive.")
     t = t.replace("Fair Access fee model", "financial framework currently inactive")
+    t = t.replace(
+        "Submission, peer review и уредничка одлука се бесплатни. Симболична такса само по прифаќање. Достапни waivers.",
+        "Submission, peer review и уредничка одлука се бесплатни. Во моментов нема активна такса за објавување или продукција."
+    )
+    t = t.replace(
+        "The WPA Journal commits to the principle of accessibility without compromise of integrity. Submission, peer review, and editorial decision are free. A symbolic fee only after acceptance. Waivers available.",
+        "The WPA Journal commits to accessibility without compromise of integrity. Submission, peer review, and editorial decision are free. No publication or production fee is currently active."
+    )
     t = t.replace('"honorificPrefix": "Assoc. Prof. Dr."', '"honorificPrefix": "Doc. Dr"')
     t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
     t = patch_money_tokens(t)
@@ -133,8 +125,6 @@ def patch_journal_flipbook():
 def patch_digital_licence_archive():
     rel = "wpa-digital-licence-terms.html"
     t = read(rel)
-
-    # Preserve the terms page as an archival legal/reference surface, not a live sales page.
     t = t.replace('<meta name="robots" content="index,follow">', '<meta name="robots" content="noindex,nofollow">')
     t = t.replace(
         "WPA Premium Digital Product Licence · Лиценца за премиум дигитални производи | World Protocol Academy",
@@ -155,9 +145,7 @@ def patch_digital_licence_archive():
     t = re.sub(
         r'<div class="box">\s*<p style="margin:0;">Со завршување на купувањето.*?</div>',
         '<div class="box"><p style="margin:0;"><strong>INACTIVE / FROZEN.</strong> These archived terms are retained for reference and are not an active checkout, purchase invitation or current commercial offer.</p><p class="en" lang="en" style="margin:4px 0 0;">No transaction is enabled from this page.</p></div>',
-        t,
-        count=1,
-        flags=re.S,
+        t, count=1, flags=re.S,
     )
     t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
     t = patch_money_tokens(t)
@@ -174,7 +162,6 @@ def patch_canonical_note():
 
 
 def verify():
-    # Doctrine/status guards.
     for rel in ("opc2026/index.html", "opc2026/opc2026-conference.html"):
         t = read(rel)
         assert "Hotel Inex Olgica" not in t, rel
@@ -189,6 +176,9 @@ def verify():
 
     journal = read("journal/vol-1-issue-1-2026.html")
     assert "Financial framework · INACTIVE / FROZEN" in journal
+    assert "Симболична такса само по прифаќање" not in journal
+    assert "A symbolic fee only after acceptance" not in journal
+    assert "No publication or production fee is currently active" in journal
     assert not re.search(r"€\s*\d|\d\s*€|\$\s*\d", journal)
 
     licence = read("wpa-digital-licence-terms.html")
