@@ -469,6 +469,11 @@ body > *{position:relative;z-index:1}
   .bib-main{padding:20px 0}.bib-entry,.zenodo-graph{box-shadow:none;break-inside:avoid;page-break-inside:avoid;border-color:#999}.part-heading{break-after:avoid;color:#000;border-bottom:1px solid #000}
   a{color:#000!important;text-decoration:none}.wpa-legal-disclaimer,.bib-footer{background:#fff!important;color:#000!important;border-top:1px solid #999}.bib-footer p{color:#000!important}
 }
+
+/* ── ACADEMIC EXPORTS · controlled enhancement 2026-08-26 ── */
+.bib-export-panel{background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 var(--r2) var(--r2) 0;padding:20px 22px;margin:0 0 30px;box-shadow:var(--sh)}
+.bib-export-panel h3{font-family:var(--fp);color:var(--navy);font-size:19px;margin-bottom:5px}.bib-export-panel p{color:var(--muted);font-size:13px;margin-bottom:12px}.bib-export-actions{display:flex;gap:8px;flex-wrap:wrap}.bib-export-actions button{background:var(--navy);color:var(--goldl);border:1px solid var(--gold);border-radius:3px;padding:9px 13px;font:700 11px var(--fb);text-transform:uppercase;letter-spacing:.4px;cursor:pointer}
+
 </style>
 
 <!-- WPA-BIB-001 v1.4 Interactive · canonical count synchronized 2026-08-26. -->
@@ -615,6 +620,7 @@ body > *{position:relative;z-index:1}
 <!-- ═══════════════════════════════════════════
          I. МОНОГРАФИИ И ПРИРАЧНИЦИ
          ═══════════════════════════════════════════ -->
+<section class="bib-export-panel" id="academic-exports"><h3>Academic exports · Академски извоз</h3><p>Export the current public bibliography in BibTeX, RIS or CSV. The files are generated locally in the browser from the visible bibliography entries and do not alter the canonical source.</p><div class="bib-export-actions"><button type="button" data-bib-export="bib">Export BibTeX</button><button type="button" data-bib-export="ris">Export RIS</button><button type="button" data-bib-export="csv">Export CSV</button></div></section>
 <h2 class="part-heading" id="monographs">I. Монографии и прирачници · Monographs and Handbooks</h2>
 <!-- 01 -->
 <div class="bib-entry" data-doi="" data-index="isbn cobiss" data-search="01 воспоставување на единствен државен протокол на ниво на република македонија establishing a single state protocol in republic of macedonia 2018 | стручна монографија | скопје: с. смиљанов isbn 978-608-66168-0-9 монографија 1. издание cobiss / library record →" data-title="Воспоставување на единствен државен протокол на ниво на Република Македонија" data-type="monograph" data-year="2018" id="pub-01">
@@ -1820,5 +1826,23 @@ DOI <a class="bib-link" href="https://doi.org/10.5281/zenodo.21390763" rel="noop
   apply();
 })();
 </script>
+
+<script id="wpa-bibliography-export-v1">
+(function(){
+  function clean(s){return (s||'').replace(/\s+/g,' ').trim()}
+  function entries(){return Array.from(document.querySelectorAll('.bib-entry')).map(function(el,i){
+    var mk=clean((el.querySelector('.bib-mk')||{}).textContent), en=clean((el.querySelector('.bib-en')||{}).textContent), meta=clean((el.querySelector('.bib-meta')||{}).textContent);
+    var doiLink=el.querySelector('a[href*="doi.org"]'); var url=doiLink?doiLink.href:''; var y=(meta.match(/\b(19|20)\d{2}\b/)||['2026'])[0];
+    return {id:i+1,title:en||mk,title_mk:mk,year:y,meta:meta,url:url};
+  })}
+  function key(r){return 'Smiljanov'+r.year+'WPA'+String(r.id).padStart(2,'0')}
+  function bib(rows){return rows.map(function(r){return '@misc{'+key(r)+',\n  author = {Smiljanov, Sande},\n  title = {'+r.title.replace(/[{}]/g,'')+'},\n  year = {'+r.year+'},\n  publisher = {World Protocol Academy},'+(r.url?'\n  url = {'+r.url+'},':'')+'\n  note = {'+r.meta.replace(/[{}]/g,'')+'}\n}'}).join('\n\n')}
+  function ris(rows){return rows.map(function(r){return ['TY  - GEN','AU  - Smiljanov, Sande','TI  - '+r.title,'PY  - '+r.year,'PB  - World Protocol Academy'].concat(r.url?['UR  - '+r.url]:[]).concat(['N1  - '+r.meta,'ER  - ']).join('\n')}).join('\n\n')}
+  function csv(rows){var q=function(v){return '"'+String(v||'').replace(/"/g,'""')+'"'};return ['id,title_en,title_mk,author,year,publisher,url,metadata'].concat(rows.map(function(r){return [r.id,r.title,r.title_mk,'Sande Smiljanov',r.year,'World Protocol Academy',r.url,r.meta].map(q).join(',')})).join('\n')}
+  function save(kind){var rows=entries(), text=kind==='bib'?bib(rows):kind==='ris'?ris(rows):csv(rows), mime=kind==='csv'?'text/csv;charset=utf-8':'text/plain;charset=utf-8', ext=kind==='bib'?'bib':kind;var blob=new Blob([text],{type:mime}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='WPA-BIB-001.'+ext;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},0)}
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-bib-export]');if(b)save(b.getAttribute('data-bib-export'))});
+})();
+</script>
+
 </body>
 </html>
