@@ -1,9 +1,10 @@
 {
-  "schema_version": "0.2-candidate",
+  "schema_version": "0.3-candidate",
   "updated": "2026-08-27",
   "status": "ACTIVE_METHODOLOGY_DEVELOPMENT_MODEL",
   "title": "WPA Institute Index / Protocolometry — Four-Pillar Operating Model",
   "principle": "The global corpus tests the methodology; the methodology must not erase the diversity of the corpus.",
+  "institutional_dna_reuse_principle": "Verified institutional practices extracted under Pillar 2 are not confined to ranking. After provenance and human review, they may inform research, programmes, simulations, publications, practitioner learning, strategy, governance, AI-assisted knowledge systems and future institutional development across WPA.",
   "pillars": [
     {
       "id": "P1",
@@ -16,26 +17,26 @@
     {
       "id": "P2",
       "name": "Institutional Core Extraction Engine",
-      "objective": "Extract the documented institutional DNA of each resolved institution from public, lawful and attributable evidence.",
+      "objective": "Extract the documented institutional DNA of each resolved institution from public, lawful and attributable evidence and convert approved insights into source-traceable Institutional Practice Atoms for governed reuse across WPA.",
       "inputs": ["official programme pages", "public curricula", "research/publication pages", "governance pages", "public reports and policies", "authoritative external records"],
-      "outputs": ["Institution Evidence Dossier", "source register", "distinctive-practice register", "I01-I20 evidence map", "uncertainty/contradiction notes"],
-      "controls": ["public evidence only", "no access-control bypass", "NE is not zero", "source tier A-D", "no autonomous consequential publication"]
+      "outputs": ["Institution Evidence Dossier", "source register", "distinctive-practice register", "I01-I20 evidence map", "uncertainty/contradiction notes", "Institutional Practice Atoms", "reuse recommendations"],
+      "controls": ["public evidence only", "no access-control bypass", "NE is not zero", "source tier A-D", "no autonomous consequential publication", "provenance preserved in every reuse", "no proprietary copying"]
     },
     {
       "id": "P3",
       "name": "Methodology Validation",
-      "objective": "Use extracted practices to test whether I01-I20 are complete, non-duplicative, fair across peer types and stable under reasonable weighting choices.",
-      "inputs": ["approved evidence dossiers", "20-indicator candidate methodology", "peer types", "correction records"],
-      "outputs": ["practice-to-indicator coverage matrix", "double-scoring reliability report", "weight sensitivity report", "correlation/redundancy report", "peer-type fairness report", "missingness report"],
+      "objective": "Use extracted practices to test whether I01-I20 are complete, non-duplicative, fair across peer types and stable under reasonable weighting choices; distinguish methodology lessons from broader institutional-learning lessons.",
+      "inputs": ["approved evidence dossiers", "approved Practice Atoms", "20-indicator candidate methodology", "peer types", "correction records"],
+      "outputs": ["practice-to-indicator coverage matrix", "double-scoring reliability report", "weight sensitivity report", "correlation/redundancy report", "peer-type fairness report", "missingness report", "cross-corpus institutional learning register"],
       "controls": ["no weight tuning for preferred winners", "high correlation is a review trigger", "edge-case testing", "evidence thresholds", "correction test"]
     },
     {
       "id": "P4",
       "name": "Human Governance and Publication Gate",
-      "objective": "Keep institutional authority, dispute resolution and consequential publication under accountable human control.",
-      "inputs": ["candidate dossiers", "QA findings", "corrections", "COI records", "validation reports"],
-      "outputs": ["human-reviewed inclusion decisions", "accepted/revised/withheld scores", "correction outcomes", "v1.0 freeze decision", "separate public-ranking decision if ever authorised"],
-      "controls": ["AAB review only after formal constitution", "COI declaration", "right of correction", "measurement is not accreditation", "public ordinal ranking disabled until separate decision"]
+      "objective": "Keep institutional authority, dispute resolution, consequential publication and material reuse under accountable human control.",
+      "inputs": ["candidate dossiers", "Practice Atoms", "reuse proposals", "QA findings", "corrections", "COI records", "validation reports"],
+      "outputs": ["human-reviewed inclusion decisions", "approved/revised/withheld Practice Atoms", "bounded reuse decisions", "accepted/revised/withheld scores", "correction outcomes", "v1.0 freeze decision", "separate public-ranking decision if ever authorised"],
+      "controls": ["AAB review only after formal constitution", "COI declaration", "right of correction", "measurement is not accreditation", "public ordinal ranking disabled until separate decision", "doctrine change remains HG4"]
     }
   ],
   "agent_roles": [
@@ -44,13 +45,32 @@
     "Evidence Agent",
     "Indicator-Mapping Agent",
     "Methodology-Learning Agent",
+    "Practice-Atom Routing Agent",
     "QA / Contradiction Agent"
+  ],
+  "institutional_dna_reuse_domains": [
+    "Protocolometry and Institute Index",
+    "Research and Working Papers",
+    "WPA Journal",
+    "Programmes and Curriculum Architecture",
+    "Simulations, Case Studies and Scenario Labs",
+    "Practitioner Lecture Programme",
+    "Student Desk and Learning Tools",
+    "Virtual Sande and WPAWS",
+    "Institutional Briefings and Advisory Architecture",
+    "Governance, Trust and Quality Assurance",
+    "Strategy and Institutional Development",
+    "Public Communication and Knowledge Translation",
+    "OPC and Future Events",
+    "Annual Reporting and Foresight"
   ],
   "canonical_files": {
     "coverage_wave_1": "/data/global-institutions/rev4-coverage-expansion-candidate.json",
     "global_coverage_pass_v1": "/data/global-institutions/rev4-global-coverage-pass-v1.json",
     "dossier_schema": "/data/institute-index/institution-evidence-dossier.schema.json",
     "dossier_registry_queue": "/data/institute-index/dossier-registry-and-queue.json",
+    "practice_atom_schema": "/data/institute-index/institutional-practice-atom.schema.json",
+    "institutional_dna_reuse_layer": "/data/institute-index/institutional-dna-reuse-layer.json",
     "agent_protocol": "/data/institute-index/public-evidence-agent-protocol.md",
     "validation_protocol": "/data/institute-index/methodology-validation-protocol.md",
     "methodology": "/data/institute-index-methodology-candidate.json",
@@ -70,11 +90,14 @@
     "next_priority_dossier_queue": 38,
     "entity_resolution_before_dossier_queue": 7,
     "evidence_dossier_schema_active": true,
+    "practice_atom_schema_active": true,
+    "institutional_dna_reuse_layer_active": true,
     "public_evidence_agent_protocol_active": true,
     "methodology_validation_protocol_active": true,
     "real_institution_public_ranking_active": false,
     "methodology_final": false
   },
   "coverage_completion_rule": "Global Coverage Pass v1 is complete as a reproducible first-pass search and verification milestone across the five target regions. It is not a claim that no additional institution can later be discovered, corrected or added.",
-  "dossier_factory_rule": "Agents create source-bounded dossiers one by one from the controlled queue. Dossier completion never creates an authoritative score; human review and later methodology-validation gates remain mandatory."
+  "dossier_factory_rule": "Agents create source-bounded dossiers one by one from the controlled queue. Dossier completion never creates an authoritative score; human review and later methodology-validation gates remain mandatory.",
+  "reuse_rule": "Approved institutional DNA must be made available for governed reuse across eligible WPA Institute domains through Practice Atoms. Reuse preserves provenance, limitations and human authority and may not silently modify doctrine, policy or consequential institutional outputs."
 }
