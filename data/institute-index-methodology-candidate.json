@@ -1,44 +1,160 @@
 {
-  "schema_version": "0.9-candidate",
-  "updated": "2026-08-26",
+  "schema_version": "0.9.1-candidate",
+  "updated": "2026-08-27",
   "status": "PUBLIC_METHODOLOGY_CANDIDATE_AAB_REVIEW_PENDING",
   "title": "WPA Institute Index Methodology Candidate",
-  "principle": "Measure documented institutional capacity and transparency through public evidence; do not imply accreditation, official recognition or legal judgment.",
+  "subtitle": "20-Indicator Computational Specification",
+  "principle": "Measure documented institutional capacity and transparency through public evidence; do not imply accreditation, official recognition, legal judgment or paid ranking.",
+  "doctrine": {
+    "public_formula": "We do not rank. We measure.",
+    "measurement_model": "standard-referenced first; peer benchmarking second",
+    "missing_evidence_rule": "Not evidenced is not zero and is not estimated.",
+    "human_gate": "Consequential public scoring, corrections and methodology changes require authorised human review."
+  },
   "dimensions": [
     {
       "id": "D1",
       "name": "Research and publications",
       "provisional_weight_percent": 30,
-      "evidence_examples": ["books and peer-reviewed or scholarly publications", "working papers and documented research outputs", "ORCID or comparable author identifiers where applicable", "citation or discovery evidence when verifiable"]
+      "indicator_weight_percent": 6,
+      "indicators": [
+        {"id": "I01", "name": "Verified research output", "definition": "Verified books, scholarly articles, working papers, policy papers, manuals, studies or comparable research outputs relevant to the institution's mission."},
+        {"id": "I02", "name": "Research traceability", "definition": "Persistent and verifiable research identifiers and metadata such as DOI, ISBN, ISSN, repository records, ORCID or comparable authoritative records where applicable."},
+        {"id": "I03", "name": "Citation and reference visibility", "definition": "Verifiable citation, reference, discovery or scholarly visibility evidence; popularity metrics alone do not qualify."},
+        {"id": "I04", "name": "Protocol and diplomacy knowledge contribution", "definition": "Documented original contribution to protocol, diplomacy, foreign-service education, ceremonial practice or closely related institutional knowledge."},
+        {"id": "I05", "name": "International research collaboration", "definition": "Verified cross-institutional or international research collaboration, co-authorship or research participation supported by public evidence."}
+      ]
     },
     {
       "id": "D2",
-      "name": "Programmes and certification discipline",
+      "name": "Programmes and learning assurance",
       "provisional_weight_percent": 25,
-      "evidence_examples": ["programme structure", "learning outcomes", "assessment rules", "credential verification and transparency", "clear non-degree or accreditation status where applicable"]
+      "indicator_weight_percent": 5,
+      "indicators": [
+        {"id": "I06", "name": "Programme architecture", "definition": "Publicly understandable programme structure, levels, modules, duration or equivalent learning pathway."},
+        {"id": "I07", "name": "Learning outcomes", "definition": "Explicit, mission-relevant learning outcomes or competence statements."},
+        {"id": "I08", "name": "Assessment discipline", "definition": "Documented assessment, examination, simulation, practical evaluation or comparable learning-assurance rules."},
+        {"id": "I09", "name": "Faculty and practitioner transparency", "definition": "Publicly verifiable information on instructors, faculty, trainers or practitioners and the expertise relevant to their teaching role."},
+        {"id": "I10", "name": "Credential and completion integrity", "definition": "Transparent status, verification and issuance rules for certificates, diplomas, completion records or equivalent credentials, including clear non-degree or accreditation boundaries where applicable."}
+      ]
     },
     {
       "id": "D3",
       "name": "Professional practice",
       "provisional_weight_percent": 25,
-      "evidence_examples": ["documented practitioner activity", "applied research", "institutional implementation", "publicly evidenced professional practice"]
+      "indicator_weight_percent": 5,
+      "indicators": [
+        {"id": "I11", "name": "Documented institutional practice", "definition": "Public evidence of real institutional, diplomatic, protocol, ceremonial or related professional practice."},
+        {"id": "I12", "name": "Applied protocol and diplomacy cases", "definition": "Documented applied cases, case studies, field exercises or institutional applications relevant to protocol and diplomacy."},
+        {"id": "I13", "name": "Simulations and practice-based training", "definition": "Structured simulations, exercises, scenario work, practical workshops or comparable experiential learning."},
+        {"id": "I14", "name": "Practitioner integration", "definition": "Documented integration of diplomats, protocol officers, ceremonial professionals, public officials or other relevant practitioners into learning or research."},
+        {"id": "I15", "name": "Knowledge transfer and documented impact", "definition": "Verifiable transfer of expertise into institutions, professional communities, public guidance, training outcomes or other documented mission-relevant impact."}
+      ]
     },
     {
       "id": "D4",
-      "name": "Transparency and collaboration",
+      "name": "Transparency, governance and cooperation",
       "provisional_weight_percent": 20,
-      "evidence_examples": ["publication openness", "institutional clarity", "public governance and contact information", "international cooperation when evidenced"]
+      "indicator_weight_percent": 4,
+      "indicators": [
+        {"id": "I16", "name": "Institutional identity and governance clarity", "definition": "Clear public identity, legal or organisational status where applicable, governance structure, responsible contacts and non-misleading institutional representation."},
+        {"id": "I17", "name": "Evidence, provenance and correction mechanism", "definition": "Public-source discipline, source traceability, correction or review route and visible handling of uncertainty or disputed information."},
+        {"id": "I18", "name": "Verified international cooperation", "definition": "International cooperation supported by documentary or authoritative public evidence; unverified partnership language does not qualify."},
+        {"id": "I19", "name": "Digital and multilingual public transparency", "definition": "Accessible institutional information, programme and research discoverability, multilingual clarity where relevant and usable public contact routes; follower counts are not treated as quality."},
+        {"id": "I20", "name": "Ethics, COI, data and credential governance", "definition": "Public evidence of ethics, conflict-of-interest, data/privacy, academic-integrity and credential-governance safeguards appropriate to the institution's activities."}
+      ]
     }
   ],
-  "scoring_status": "NOT_FINAL",
+  "scoring": {
+    "status": "NOT_FINAL",
+    "scale": [
+      {"value": 0, "label": "Verified non-conformance", "anchor": "Sufficient evidence shows that the criterion is absent, contradicted or materially fails the published standard."},
+      {"value": 1, "label": "Minimal", "anchor": "A limited or ad hoc element exists, with weak structure or verification."},
+      {"value": 2, "label": "Basic", "anchor": "A recognisable practice exists but remains incomplete, inconsistent or weakly evidenced."},
+      {"value": 3, "label": "Established", "anchor": "The criterion is clearly implemented and supported by adequate evidence."},
+      {"value": 4, "label": "Strong", "anchor": "The criterion is mature, consistently implemented and supported by strong primary or authoritative evidence."},
+      {"value": 5, "label": "Exemplary", "anchor": "The criterion demonstrates unusually strong, reproducible and well-governed practice supported by high-quality evidence."},
+      {"value": "NE", "label": "Not evidenced", "anchor": "Public evidence is insufficient to assign a score. NE is neither zero nor an estimated value."}
+    ],
+    "indicator_formula": "contribution = (score / 5) * indicator_weight_percent",
+    "evidence_coverage_formula": "evidenced_weight_percent = sum(indicator_weight_percent for all non-NE indicators)",
+    "candidate_composite_formula": "candidate_composite = 100 * sum(contribution for non-NE indicators) / evidenced_weight_percent",
+    "overall_minimum_evidence_coverage_percent": 80,
+    "dimension_minimum_evidence_coverage_percent": 60,
+    "publication_if_below_threshold": "INSUFFICIENT_EVIDENCE_FOR_COMPOSITE",
+    "imputation": "PROHIBITED",
+    "country_average_substitution": "PROHIBITED",
+    "missing_data_penalty": "PROHIBITED"
+  },
+  "evidence_model": {
+    "source_tiers": [
+      {"tier": "A", "name": "Primary or official", "examples": ["official institutional page or document", "government or legal registry", "official repository record", "DOI/ISBN/ISSN or equivalent primary metadata"]},
+      {"tier": "B", "name": "Authoritative external", "examples": ["recognised bibliographic or scholarly index", "authoritative international organisation", "independent registry or established academic database"]},
+      {"tier": "C", "name": "Reputable secondary", "examples": ["reputable university or research source", "established professional publication", "credible secondary documentation"]},
+      {"tier": "D", "name": "Uncorroborated or promotional", "examples": ["marketing copy", "social post", "directory without provenance", "self-asserted partnership without corroboration"]}
+    ],
+    "rules": [
+      "Official or authoritative evidence is preferred wherever reasonably available.",
+      "A score of 4 or 5 should normally include at least one Tier A or Tier B source directly supporting the criterion.",
+      "Tier D evidence cannot by itself support a score above 2.",
+      "URL presence alone does not equal verification.",
+      "Follower counts, likes and general popularity are not academic or professional quality indicators.",
+      "Each scored claim should retain source URL or identifier, retrieval date and assessor note."
+    ],
+    "default_research_activity_window_years": 5,
+    "temporal_note": "A five-year window may be used for time-bounded activity metrics. Foundational monographs, enduring standards and historical institutional evidence may remain relevant for traceability but should not be double-counted as current activity."
+  },
+  "peer_comparison": {
+    "principle": "Absolute criterion score first; peer comparison second.",
+    "group_a_peer_types": [
+      "STATE_FOREIGN_SERVICE",
+      "INDEPENDENT_PROTOCOL",
+      "UNIVERSITY_LINKED",
+      "INTERNATIONAL_TRAINING"
+    ],
+    "peer_type_field_status": "OPTIONAL_CANDIDATE_FIELD_FOR_NEXT_SCORING_DATASET",
+    "percentile_status": "SECONDARY_DIAGNOSTIC_ONLY",
+    "minimum_peer_sample_for_percentile": 5,
+    "public_ordinal_ranking": "DISABLED_PENDING_V1_0_AND_SEPARATE_GOVERNANCE_DECISION"
+  },
+  "validation_plan": {
+    "pilot": "Pilot 20 dry run before any public real-institution scoring.",
+    "double_scoring": "At least two independent scoring passes for the pilot, with disagreements logged and reconciled through human review.",
+    "weight_sensitivity": [
+      "30/25/25/20 canonical candidate",
+      "25/25/30/20 diagnostic alternative",
+      "25/25/25/25 equal-weight diagnostic"
+    ],
+    "indicator_correlation": "Check whether indicators are duplicating the same signal. High correlation is a review trigger, not an automatic deletion rule.",
+    "edge_case_testing": "Test small specialist academies, state diplomatic academies, university-linked schools and international training bodies separately.",
+    "correction_window": "Real-institution pilot findings must allow a documented factual correction and evidence-submission window before any consequential publication.",
+    "aab_gate": "AAB methodological review activates only after the AAB is formally constituted and conflicts of interest are documented.",
+    "v1_freeze_gate": "Before v1.0, freeze the exact indicator definitions, weights, formulas, source rules, dataset snapshot date, changelog and correction procedure."
+  },
+  "required_outputs": [
+    "four dimension scores",
+    "candidate composite when evidence thresholds are satisfied",
+    "weighted evidence coverage percentage",
+    "indicator-level evidence status",
+    "peer type where assigned",
+    "secondary peer percentile only when sample-size rules are satisfied",
+    "methodology version and dataset snapshot date",
+    "correction/dispute status"
+  ],
   "finalisation_gates": [
     "Record-level evidence and source-verification procedure documented.",
-    "AAB or equivalent independent methodological review completed and logged.",
-    "Conflict-of-interest and correction procedure published.",
-    "At least three worked examples tested for consistency and edge cases.",
-    "Public wording distinguishes measurement from accreditation, legal recognition and official ranking."
+    "Twenty indicator definitions and 0-5/NE scoring anchors tested for consistency.",
+    "Pilot 20 dry run completed without public ordinal ranking.",
+    "Independent double-scoring completed and material disagreements logged.",
+    "Weight-sensitivity and indicator-correlation diagnostics completed.",
+    "Evidence-coverage thresholds tested against edge cases.",
+    "Conflict-of-interest and correction procedure published and tested.",
+    "AAB or equivalent independent methodological review completed and logged after formal constitution.",
+    "Public wording distinguishes measurement from accreditation, legal recognition and official ranking.",
+    "Exact v1.0 methodology, dataset snapshot, formulas and changelog frozen before any public ordinal ranking decision."
   ],
-  "publication_rule": "This candidate may be publicly inspected but must not be represented as Institute Index v1.0 until the finalisation gates are satisfied.",
+  "publication_rule": "This candidate may be publicly inspected and used for synthetic or controlled pilot testing. It must not be represented as Institute Index v1.0, accreditation, official recognition or a final global ranking. Real-institution ordinal ranking remains disabled until the finalisation gates and a separate governance decision are satisfied.",
   "human_review_required": true,
-  "correction_right_required": true
+  "correction_right_required": true,
+  "commercial_independence_required": true
 }
