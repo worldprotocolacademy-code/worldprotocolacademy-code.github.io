@@ -1,4 +1,4 @@
-/* WPA Public Square Runtime v1.1.0
+/* WPA Public Square Runtime v1.2.0
  * Programmes -> Certification -> WPA Card -> Partnerships & Member Benefits.
  * Development/pilot only. Pre-commercial partner operations may be active;
  * enrolment, issuance, paid membership, payments and benefit redemption remain inactive.
@@ -27,6 +27,12 @@
   }
   var KEY=pageKey();
   if(!KEY)return;
+
+  function loadCredentialOperations(){
+    if(KEY==='passive-revenue'||window.WPA_CREDENTIAL_JOURNEY_LOADED||document.getElementById('wpa-credential-journey-v2'))return;
+    var s=document.createElement('script');s.id='wpa-credential-journey-v2';s.src='/scripts/wpa-credential-journey.js?v=20260827-2';s.defer=true;document.head.appendChild(s);
+  }
+  loadCredentialOperations();
 
   function L(mk,en){return String(document.documentElement.lang||'mk').toLowerCase().indexOf('en')===0?en:mk;}
   function addStyle(){
@@ -59,7 +65,7 @@
       ops.append(op,eq);wrap.appendChild(ops);
     }
     var anchor=document.querySelector('main');if(anchor&&anchor.firstElementChild)anchor.insertBefore(section,anchor.firstElementChild);else document.body.insertBefore(section,document.body.firstChild);
-    window.WPA_PUBLIC_SQUARE=Object.freeze({version:'1.1.0',page:KEY,model:model||null,humanGate:true,precommercialPartnerOperations:KEY==='passive-revenue',commercialActivation:false,credentialIssuance:false});
+    window.WPA_PUBLIC_SQUARE=Object.freeze({version:'1.2.0',page:KEY,model:model||null,humanGate:true,credentialOperationsLoaded:KEY!=='passive-revenue',precommercialPartnerOperations:KEY==='passive-revenue',commercialActivation:false,credentialIssuance:false});
     document.dispatchEvent(new CustomEvent('wpa:public-square-ready',{detail:{page:KEY,status:r.status||'DEVELOPMENT'}}));
   }
   fetch(MODEL,{cache:'no-store',headers:{accept:'application/json'}}).then(function(r){if(!r.ok)throw new Error('model');return r.json()}).then(render).catch(function(){render(null)});
