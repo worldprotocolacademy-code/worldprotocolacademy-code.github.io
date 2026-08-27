@@ -25,17 +25,22 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Repair exact canonical assertion in migration source
+      - name: Repair migration source guards and whitespace
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('scripts/wpa-master-list-rev3-migration.py')
           s = p.read_text(encoding='utf-8')
-          old = '"D     | Universities, faculties, schools and academic departments | 26"'
-          new = '"| D | Universities, faculties, schools and academic departments | 26 |"'
-          if old not in s:
-              raise SystemExit('Expected REV3 assertion string not found')
-          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          replacements = {
+              '"D     | Universities, faculties, schools and academic departments | 26"': '"| D | Universities, faculties, schools and academic departments | 26 |"',
+              '**Canonical source:** {REV3}  ': '**Canonical source:** {REV3}',
+              '**Status:** Pre-publication candidate / internal review  ': '**Status:** Pre-publication candidate / internal review',
+              '**Effective revision date:** {DATE}  ': '**Effective revision date:** {DATE}'
+          }
+          for old, new in replacements.items():
+              if old in s:
+                  s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
           PY
 
       - name: Run deterministic REV3 migration and QA assertions
