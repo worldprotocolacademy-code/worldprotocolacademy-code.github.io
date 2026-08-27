@@ -51,6 +51,7 @@
     loadScript('/scripts/wpa-ai-hub-clarity.js?v=20260719-2', 'data-wpa-ai-hub-clarity');
     loadScript('/scripts/wpa-home-promo-cleanup.js?v=20260810-3', 'data-wpa-home-promo-cleanup');
     loadScript('/scripts/wpa-home-symbols-card-update.js?v=20260810-1', 'data-wpa-home-symbols-card-update');
+    loadScript('/scripts/wpa-home-professional-english-icons.js?v=20260827-1', 'data-wpa-home-professional-english-icons');
   }
 
   if (/\/professional-english\.html$/.test(path)) {
