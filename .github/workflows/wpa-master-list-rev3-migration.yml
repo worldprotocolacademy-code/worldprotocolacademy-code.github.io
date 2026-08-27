@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Repair migration source guards and whitespace
+      - name: Harden migration source guards, whitespace and public paths
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -40,6 +40,21 @@ jobs:
           for old, new in replacements.items():
               if old in s:
                   s = s.replace(old, new)
+
+          marker = '    write(path, s)\n\n\ndef update_verification_page():'
+          if 'REV3_PUBLIC_PATH_HARDENING' not in s:
+              block = '''    # REV3_PUBLIC_PATH_HARDENING: the global version-label replacement above can\n    # leave the old directory with a new filename; normalize current download paths.\n    s = s.replace(\n        "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3",\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3"\n    )\n    s = s.replace(\n        "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md",\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md"\n    )\n    write(path, s)\n\n\ndef update_verification_page():'''
+              if marker not in s:
+                  raise SystemExit('Could not locate update_master_list_page write marker')
+              s = s.replace(marker, block, 1)
+
+          assertion_anchor = '    if "CORRECTED-4F-REV3" not in page or \'statTotal">161\' not in page or \'statExternal">160\' not in page:\n        raise RuntimeError("Master List public page not synchronized to REV3")'
+          if 'malformed_rev2_rev3_path' not in s:
+              hardened = assertion_anchor + '''\n    malformed_rev2_rev3_path = "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3"\n    if malformed_rev2_rev3_path in page:\n        raise RuntimeError("Master List public page contains mixed REV2-directory/REV3-filename download path")\n    required_public_paths = [\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.json",\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.csv",\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.md",\n        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md"\n    ]\n    for public_path in required_public_paths:\n        if public_path not in page:\n            raise RuntimeError(f"Master List public page missing REV3 download path: {public_path}")'''
+              if assertion_anchor not in s:
+                  raise SystemExit('Could not locate final public page assertion anchor')
+              s = s.replace(assertion_anchor, hardened, 1)
+
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -54,6 +69,8 @@ jobs:
           test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.csv
           test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.md
           test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md
+          ! grep -q 'v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3' wpa-global-institutions-master-list.html
+          grep -q 'v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.json' wpa-global-institutions-master-list.html
 
       - name: Commit REV3 only after QA passes
         run: |
@@ -83,5 +100,5 @@ jobs:
             tools/assets/wpa-five-engines.js \
             tools/qa-institute.sh \
             forms/wpa-index-public-disclaimer.md
-          git commit -m "Promote Master List REV3 with 160 external records"
+          git commit -m "Harden Master List REV3 download paths"
           git push origin HEAD:main
