@@ -1,0 +1,39 @@
+{
+  "schema": "wpa-social-distribution-queue/1.0",
+  "version": "1.0.0",
+  "updated": "2026-08-27",
+  "status": "ACTIVE_GOVERNED_QUEUE_MODEL",
+  "purpose": "Queue human-reviewable, source-traceable WPA communication candidates for official social channels without claiming automatic platform publishing.",
+  "channels": {
+    "facebook": {"status": "ACTIVE_OFFICIAL_CHANNEL", "publishing_adapter": "NOT_CONNECTED"},
+    "instagram": {"status": "ACTIVE_OFFICIAL_CHANNEL", "publishing_adapter": "NOT_CONNECTED"},
+    "x": {"status": "ACTIVE_OFFICIAL_CHANNEL", "publishing_adapter": "NOT_CONNECTED"},
+    "tiktok": {"status": "ACTIVE_OFFICIAL_CHANNEL", "publishing_adapter": "NOT_CONNECTED"},
+    "youtube": {"status": "ACTIVE_OFFICIAL_CHANNEL", "publishing_adapter": "NOT_CONNECTED"},
+    "wechat": {"status": "PLANNED", "publishing_adapter": "NOT_CONNECTED"},
+    "telegram": {"status": "PLANNED", "publishing_adapter": "NOT_CONNECTED"},
+    "whatsapp": {"status": "PLANNED", "publishing_adapter": "NOT_CONNECTED"},
+    "vk": {"status": "PLANNED", "publishing_adapter": "NOT_CONNECTED"}
+  },
+  "queue_states": [
+    "CANDIDATE",
+    "SOURCE_CHECKED",
+    "DRAFTED",
+    "HUMAN_REVIEW_PENDING",
+    "APPROVED_FOR_MANUAL_OR_AUTHORISED_API_PUBLISHING",
+    "PUBLISHED",
+    "WITHHELD",
+    "CORRECTION_REQUIRED"
+  ],
+  "required_fields_for_release": [
+    "trace_id",
+    "source_or_wpa_output_reference",
+    "factual_core",
+    "target_channels",
+    "human_review_status",
+    "correction_route"
+  ],
+  "platform_adaptation_rule": "The same approved factual core may generate platform-specific variants for length, format and audience, but no platform variant may alter the factual meaning or provenance.",
+  "human_gate_rule": "External publication remains Human Gate controlled until an official platform adapter and bounded publishing mandate are separately verified.",
+  "items": []
+}
