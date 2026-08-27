@@ -1,5 +1,5 @@
 {
-  "schema_version": "0.1-candidate",
+  "schema_version": "0.2-candidate",
   "updated": "2026-08-27",
   "status": "ACTIVE_METHODOLOGY_DEVELOPMENT_MODEL",
   "title": "WPA Institute Index / Protocolometry — Four-Pillar Operating Model",
@@ -10,7 +10,7 @@
       "name": "Global Coverage Expansion",
       "objective": "Build the most defensible global corpus of diplomatic academies, foreign-service institutes, protocol schools and closely related institutions without treating 160 as a ceiling.",
       "inputs": ["REV3 frozen baseline", "IFDT discovery directory", "national MFA sites", "official institutional sites", "authoritative corroborating sources"],
-      "outputs": ["REV4 candidate intake", "country/region coverage register", "entity-resolution queue", "successor/alias/branch decisions"],
+      "outputs": ["REV4 candidate intake", "regional coverage-pass register", "country/region coverage register", "entity-resolution queue", "successor/alias/branch decisions"],
       "controls": ["no automatic canonical merge", "primary source preferred", "duplicate/successor review", "Human Gate"]
     },
     {
@@ -47,21 +47,34 @@
     "QA / Contradiction Agent"
   ],
   "canonical_files": {
-    "coverage_candidate": "/data/global-institutions/rev4-coverage-expansion-candidate.json",
+    "coverage_wave_1": "/data/global-institutions/rev4-coverage-expansion-candidate.json",
+    "global_coverage_pass_v1": "/data/global-institutions/rev4-global-coverage-pass-v1.json",
     "dossier_schema": "/data/institute-index/institution-evidence-dossier.schema.json",
+    "dossier_registry_queue": "/data/institute-index/dossier-registry-and-queue.json",
     "agent_protocol": "/data/institute-index/public-evidence-agent-protocol.md",
     "validation_protocol": "/data/institute-index/methodology-validation-protocol.md",
     "methodology": "/data/institute-index-methodology-candidate.json",
-    "laboratory": "/wpa-institute-index-lab.html"
+    "laboratory": "/wpa-institute-index-lab.html",
+    "public_programme": "/wpa-global-institutional-evidence-programme.html"
   },
   "current_state": {
     "rev3_baseline_frozen": true,
     "rev4_candidate_intake_active": true,
-    "wave_1_candidate_records": 20,
+    "systematic_global_coverage_pass_v1_complete": true,
+    "coverage_regions": 5,
+    "rev4_candidate_or_entity_review_cases": 51,
+    "wave_1_cases": 20,
+    "additional_cases_in_global_pass_v1": 31,
+    "first_pass_evidence_dossiers_completed": 6,
+    "dossiers_human_review_pending": 6,
+    "next_priority_dossier_queue": 38,
+    "entity_resolution_before_dossier_queue": 7,
     "evidence_dossier_schema_active": true,
     "public_evidence_agent_protocol_active": true,
     "methodology_validation_protocol_active": true,
     "real_institution_public_ranking_active": false,
     "methodology_final": false
-  }
+  },
+  "coverage_completion_rule": "Global Coverage Pass v1 is complete as a reproducible first-pass search and verification milestone across the five target regions. It is not a claim that no additional institution can later be discovered, corrected or added.",
+  "dossier_factory_rule": "Agents create source-bounded dossiers one by one from the controlled queue. Dossier completion never creates an authoritative score; human review and later methodology-validation gates remain mandatory."
 }
