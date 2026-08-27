@@ -1,0 +1,195 @@
+{
+  "schema": "wpa-public-square-operating-model/1.0",
+  "version": "1.0.0",
+  "updated": "2026-08-27",
+  "status": "DEVELOPMENT_OPERATIONAL_MODEL",
+  "public_boundary": {
+    "platform_status": "development_test_pilot",
+    "services_active": false,
+    "memberships_active": false,
+    "certificate_issuance_active": false,
+    "payments_active": false,
+    "partner_benefits_active": false,
+    "qr_registry_active": false,
+    "human_gate_required": true,
+    "note": "Programmes, certification, WPA Card and partner/member-benefit surfaces may be operationally modelled and previewed, but commercial, credential-issuing and benefit-redemption actions remain inactive until the appropriate legal, ethical, tax, payment, privacy and technical controls are established."
+  },
+  "public_square": {
+    "sequence": [
+      "programmes",
+      "certification",
+      "wpa_card",
+      "partnerships_member_benefits",
+      "renewal_and_continuing_learning"
+    ],
+    "principle": "No credential, status, membership tier, partner benefit or QR verification claim exists solely because a visual card or certificate has been rendered. The governed record is authoritative; the visual artifact is a representation of that record."
+  },
+  "programme_levels": [
+    {
+      "id": "foundation",
+      "level": 1,
+      "label_mk": "Foundation / Основно ниво",
+      "label_en": "Foundation",
+      "purpose": "entry professional literacy and institutional orientation",
+      "progression_to": "professional"
+    },
+    {
+      "id": "professional",
+      "level": 2,
+      "label_mk": "Professional / Професионално ниво",
+      "label_en": "Professional",
+      "purpose": "applied state and diplomatic protocol, communication and ceremonial practice",
+      "progression_to": "advanced"
+    },
+    {
+      "id": "advanced",
+      "level": 3,
+      "label_mk": "Advanced / Напредно ниво",
+      "label_en": "Advanced",
+      "purpose": "complex institutional scenarios, multilateral environments and advanced professional judgement",
+      "progression_to": "trainer"
+    },
+    {
+      "id": "trainer",
+      "level": 4,
+      "label_mk": "Trainer / Обучувачко-советодавно ниво",
+      "label_en": "Trainer",
+      "purpose": "facilitation, training design, advisory practice and knowledge transfer",
+      "progression_to": "continuing_professional_development"
+    }
+  ],
+  "programme_state_machine": [
+    "PUBLIC_INFORMATION",
+    "EXPRESSION_OF_INTEREST",
+    "ELIGIBILITY_REVIEW",
+    "ADMISSION_AUTHORISED",
+    "ENROLMENT_AUTHORISED",
+    "LEARNING_IN_PROGRESS",
+    "ASSESSMENT_ELIGIBLE",
+    "ASSESSMENT_COMPLETED",
+    "HUMAN_RESULT_REVIEW",
+    "COMPLETION_CONFIRMED",
+    "CERTIFICATE_ELIGIBLE"
+  ],
+  "certification": {
+    "levels": 4,
+    "score_bands": [
+      {"id": "pass", "label": "Pass"},
+      {"id": "distinction", "label": "Distinction"},
+      {"id": "high_distinction", "label": "High Distinction"}
+    ],
+    "required_before_issue": [
+      "programme_or_assessment_basis_confirmed",
+      "identity_confirmed_under_approved_process",
+      "assessment_result_confirmed",
+      "human_authorisation_recorded",
+      "serial_generated_by_registry",
+      "verification_record_created"
+    ],
+    "credential_states": [
+      "DRAFT",
+      "ELIGIBLE",
+      "PENDING_HUMAN_AUTHORISATION",
+      "ISSUED",
+      "SUSPENDED",
+      "REVOKED",
+      "SUPERSEDED"
+    ],
+    "visual_prototype_rule": "Prototype certificate designs, sample serials, seals and QR graphics are design references only and must never be interpreted as issued credentials unless the verification registry returns an authorised ISSUED record."
+  },
+  "wpa_card": {
+    "public_model_tiers": [
+      "WPA Free",
+      "WPA Pro",
+      "Academic Pro",
+      "Institutional"
+    ],
+    "identity_states": [
+      "PUBLIC_VISITOR",
+      "INTEREST_RECORDED",
+      "MEMBERSHIP_ELIGIBLE",
+      "PENDING_ACTIVATION",
+      "ACTIVE",
+      "EXPIRED",
+      "SUSPENDED",
+      "REVOKED"
+    ],
+    "activation_active": false,
+    "qr_active": false,
+    "rule": "A card visual does not establish membership. Membership status must come from an authorised registry record."
+  },
+  "partnerships_member_benefits": {
+    "architecture": "17+3",
+    "status": "development_partner_model",
+    "commercial_activation": false,
+    "benefit_redemption_active": false,
+    "partner_states": [
+      "DISCOVERY",
+      "DUE_DILIGENCE",
+      "PROPOSAL",
+      "HUMAN_APPROVED",
+      "CONTRACTED",
+      "ACTIVE",
+      "PAUSED",
+      "ENDED"
+    ],
+    "benefit_states": [
+      "CONCEPT",
+      "ELIGIBILITY_DEFINED",
+      "LEGAL_REVIEW",
+      "PARTNER_CONFIRMED",
+      "ACTIVE",
+      "PAUSED",
+      "WITHDRAWN"
+    ],
+    "rule": "No partner logo, discount, benefit, access right or recurring value may be represented as active before partner confirmation and WPA Human Gate approval."
+  },
+  "verification_contract": {
+    "future_public_endpoint": "/verify/",
+    "minimum_fields": [
+      "record_type",
+      "public_id",
+      "status",
+      "issued_or_activated_at",
+      "valid_until_if_applicable",
+      "programme_or_basis",
+      "verification_url",
+      "last_updated"
+    ],
+    "privacy_rule": "Public verification should disclose the minimum information necessary to establish authenticity and status. Sensitive personal data must not be encoded directly in a public QR payload."
+  },
+  "next_valid_actions": {
+    "programmes": {
+      "status": "INFORMATION_AND_ARCHITECTURE_ACTIVE",
+      "next": "Review programme level, family, format and assessment pathway; expression-of-interest route only until enrolment controls are activated.",
+      "href": "/certification.html"
+    },
+    "certification": {
+      "status": "FRAMEWORK_AND_DEMO_ACTIVE_ISSUANCE_INACTIVE",
+      "next": "Review certification rules, score bands and future verification logic. No issuance claim until registry and Human Gate are active.",
+      "href": "/wpa-card.html"
+    },
+    "wpa_card": {
+      "status": "MEMBERSHIP_AND_IDENTITY_MODEL_ACTIVE_ACTIVATION_INACTIVE",
+      "next": "Review proposed access tiers and future identity/verification relationship. No active membership or QR status is implied.",
+      "href": "/passive-revenue.html"
+    },
+    "partnerships_member_benefits": {
+      "status": "PARTNER_AND_BENEFIT_MODEL_ACTIVE_COMMERCIAL_ACTIVATION_INACTIVE",
+      "next": "Use the 17+3 architecture for partner discovery and due diligence only; benefits and revenue require separate approval and activation.",
+      "href": "/programmes.html"
+    }
+  },
+  "visual_direction": {
+    "source": "WPA certificate and card prototype concepts developed during 2026",
+    "status": "DESIGN_REFERENCE_ONLY",
+    "principles": [
+      "navy_gilt_cream_institutional_palette",
+      "clear_level_hierarchy",
+      "serial_and_qr_zone_reserved_for_verified_records",
+      "bilingual_mk_en_when_appropriate",
+      "no_fake_security_claims",
+      "no_visual_status_without_registry_status"
+    ]
+  }
+}

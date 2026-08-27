@@ -12,6 +12,7 @@
   if(typeof window.setUILang!=='function') window.setUILang=function(lang){try{localStorage.setItem('wpa.language',lang||'mk')}catch(e){} document.documentElement.lang=lang||'mk'; document.dispatchEvent(new CustomEvent('wpa:lang-changed'));};
   if(typeof window.setAILang!=='function') window.setAILang=function(lang){try{localStorage.setItem('wpaws_ai_lang',lang||'mk')}catch(e){} window.curLang=lang||'mk';};
   function loadProfessionalContacts(){if(document.querySelector('script[data-wpa-professional-contacts]'))return;const s=document.createElement('script');s.src='/scripts/wpa-professional-contacts.js?v=20260722';s.defer=true;s.setAttribute('data-wpa-professional-contacts','true');document.head.appendChild(s)}
+  function loadPublicSquare(){if(PAGE!=='passive-revenue'||document.getElementById('wpa-public-square-runtime'))return;const s=document.createElement('script');s.id='wpa-public-square-runtime';s.src='/scripts/wpa-public-square-runtime.js?v=20260827-1';s.defer=true;document.head.appendChild(s)}
 
   /* ========================= INSTITUTE COMMAND LAYER ========================= */
   function installInstitute(){
@@ -100,5 +101,5 @@
     document.addEventListener('DOMContentLoaded',()=>{const v=$('sb-ver');if(v)v.textContent='WPAWS 11.1.7 Heart Patch';});
   }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{loadProfessionalContacts();installInstitute();installWPAWS();}); else {loadProfessionalContacts();installInstitute();installWPAWS();}
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>{loadProfessionalContacts();loadPublicSquare();installInstitute();installWPAWS();}); else {loadProfessionalContacts();loadPublicSquare();installInstitute();installWPAWS();}
 })();
