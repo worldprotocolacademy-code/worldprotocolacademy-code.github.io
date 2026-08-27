@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldprotocolacademy.mk/data/institute-index/institution-evidence-dossier.schema.json",
+  "title": "WPA Institution Evidence Dossier",
+  "description": "Structured public-evidence dossier for the WPA Institute Index candidate methodology. It supports evidence extraction and human review; it does not by itself create a public score, rank, accreditation or recognition decision.",
+  "type": "object",
+  "required": ["dossier_version","institution_id","institution_name","country","peer_type","retrieved_on","source_register","indicator_evidence","human_review"],
+  "properties": {
+    "dossier_version": {"type": "string", "const": "0.1-candidate"},
+    "institution_id": {"type": "string"},
+    "institution_name": {"type": "string"},
+    "country": {"type": "string"},
+    "peer_type": {"type": "string", "enum": ["STATE_FOREIGN_SERVICE","INDEPENDENT_PROTOCOL","UNIVERSITY_LINKED","INTERNATIONAL_TRAINING","OTHER_REVIEW_REQUIRED"]},
+    "entity_resolution_status": {"type": "string", "enum": ["CANONICAL","CANDIDATE","ALIAS_OR_SUCCESSOR_REVIEW","BRANCH_OR_CHILD","DUPLICATE_CONTEXT_REVIEW"]},
+    "retrieved_on": {"type": "string", "format": "date"},
+    "public_evidence_only": {"type": "boolean", "const": true},
+    "source_register": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_id","url","source_tier","retrieved_on","source_type","supports"],
+        "properties": {
+          "source_id": {"type": "string"},
+          "url": {"type": "string", "format": "uri"},
+          "source_tier": {"type": "string", "enum": ["A","B","C","D"]},
+          "retrieved_on": {"type": "string", "format": "date"},
+          "source_type": {"type": "string"},
+          "title": {"type": "string"},
+          "publisher_or_owner": {"type": "string"},
+          "supports": {"type": "array", "items": {"type": "string"}},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "institutional_core": {
+      "type": "object",
+      "properties": {
+        "mission": {"type": ["string","null"]},
+        "governance": {"type": ["string","null"]},
+        "programme_model": {"type": ["string","null"]},
+        "learning_model": {"type": ["string","null"]},
+        "assessment_model": {"type": ["string","null"]},
+        "research_model": {"type": ["string","null"]},
+        "professional_practice_model": {"type": ["string","null"]},
+        "international_cooperation_model": {"type": ["string","null"]},
+        "credential_model": {"type": ["string","null"]},
+        "digital_transparency_model": {"type": ["string","null"]},
+        "distinctive_practices": {"type": "array", "items": {"type": "string"}},
+        "methodology_lessons_for_wpa": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "indicator_evidence": {
+      "type": "array",
+      "minItems": 20,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "required": ["indicator_id","evidence_status","source_ids","extraction_note"],
+        "properties": {
+          "indicator_id": {"type": "string", "pattern": "^I(0[1-9]|1[0-9]|20)$"},
+          "evidence_status": {"type": "string", "enum": ["SUPPORTED","PARTIALLY_SUPPORTED","NE","CONTRADICTED_OR_NONCONFORMING"]},
+          "source_ids": {"type": "array", "items": {"type": "string"}},
+          "extraction_note": {"type": "string"},
+          "candidate_score": {"oneOf": [{"type": "integer", "minimum": 0, "maximum": 5}, {"type": "string", "const": "NE"}]},
+          "candidate_score_rationale": {"type": "string"},
+          "human_score_status": {"type": "string", "enum": ["NOT_REVIEWED","ACCEPTED","REVISED","WITHHELD"]}
+        }
+      }
+    },
+    "agent_trace": {
+      "type": "object",
+      "properties": {
+        "agent_role": {"type": "string"},
+        "queries_or_routes": {"type": "array", "items": {"type": "string"}},
+        "access_boundaries_respected": {"type": "boolean"},
+        "access_notes": {"type": "string"},
+        "uncertainties": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "human_review": {
+      "type": "object",
+      "required": ["status","reviewer_authority_required"],
+      "properties": {
+        "status": {"type": "string", "enum": ["PENDING","APPROVED_FOR_METHOD_TEST","RETURNED_FOR_EVIDENCE","DISPUTED","WITHHELD"]},
+        "reviewer_authority_required": {"type": "boolean", "const": true},
+        "reviewed_on": {"type": ["string","null"]},
+        "review_notes": {"type": "string"},
+        "correction_status": {"type": "string", "enum": ["NOT_OPEN","OPEN","RESOLVED","NOT_APPLICABLE"]}
+      }
+    }
+  }
+}
