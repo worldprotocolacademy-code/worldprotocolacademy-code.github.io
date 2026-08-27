@@ -1,54 +1,102 @@
 {
   "name": "WPA Social Bridge Network",
-  "version": "1.0.0",
-  "status": "public-channel-registry",
-  "updated_at": "2026-07-13",
+  "version": "1.1.0",
+  "status": "CONNECTED_VESSELS_PUBLIC_CHANNEL_REGISTRY",
+  "updated_at": "2026-08-27",
+  "connected_vessels_reference": "/data/wpa-connected-vessels-system.json",
+  "distribution_queue_reference": "/data/wpa-social-distribution-queue.json",
   "governance": {
     "public_links_only": true,
     "automatic_posting": false,
     "api_credentials_required_for_publishing": true,
     "human_review_required": true,
-    "note": "This registry connects official public WPA channels with WPA web systems. It does not scrape private data or publish automatically without platform authorization."
+    "hourly_orchestration_ready": true,
+    "note": "This registry connects official public WPA channels with the WPA System of Connected Vessels. It does not scrape private data or publish automatically without official platform authorisation, verified credentials and the applicable Human Gate."
   },
   "channels": {
     "facebook": {
       "label": "Facebook",
       "url": "https://www.facebook.com/share/1G3Z8WabBx/",
-      "mode": "official-profile"
+      "status": "ACTIVE_OFFICIAL_CHANNEL",
+      "mode": "official-profile-and-web-share",
+      "publishing_adapter": "NOT_CONNECTED"
     },
     "instagram": {
       "label": "Instagram",
       "url": "https://www.instagram.com/worldprotocolacademy?igsh=MXJsMW9oNHczZmlyag%3D%3D",
-      "mode": "official-profile"
+      "status": "ACTIVE_OFFICIAL_CHANNEL",
+      "mode": "official-profile",
+      "publishing_adapter": "NOT_CONNECTED"
     },
     "x": {
       "label": "X / Twitter",
       "url": "https://x.com/world_acad66822",
-      "mode": "official-profile-and-web-share"
+      "status": "ACTIVE_OFFICIAL_CHANNEL",
+      "mode": "official-profile-and-web-share",
+      "publishing_adapter": "NOT_CONNECTED"
     },
     "tiktok": {
       "label": "TikTok",
       "url": "https://www.tiktok.com/@world.protocol.academy?_r=1&_t=ZS-93zc3YLmvG1",
-      "mode": "official-profile"
+      "status": "ACTIVE_OFFICIAL_CHANNEL",
+      "mode": "official-profile",
+      "publishing_adapter": "NOT_CONNECTED"
     },
     "youtube": {
       "label": "YouTube",
       "url": "https://www.youtube.com/@worldprotocolacademy",
-      "mode": "official-channel"
+      "status": "ACTIVE_OFFICIAL_CHANNEL",
+      "mode": "official-channel",
+      "publishing_adapter": "NOT_CONNECTED"
+    },
+    "wechat": {
+      "label": "WeChat",
+      "url": null,
+      "status": "PLANNED",
+      "mode": "roadmap-only",
+      "publishing_adapter": "NOT_CONNECTED"
+    },
+    "telegram": {
+      "label": "Telegram",
+      "url": null,
+      "status": "PLANNED",
+      "mode": "roadmap-only",
+      "publishing_adapter": "NOT_CONNECTED"
+    },
+    "whatsapp": {
+      "label": "WhatsApp",
+      "url": null,
+      "status": "PLANNED",
+      "mode": "roadmap-only",
+      "publishing_adapter": "NOT_CONNECTED"
+    },
+    "vk": {
+      "label": "VK",
+      "url": null,
+      "status": "PLANNED",
+      "mode": "roadmap-only",
+      "publishing_adapter": "NOT_CONNECTED"
     }
   },
   "connected_systems": {
+    "connected_vessels_system": "/data/wpa-connected-vessels-system.json",
+    "institutional_dna_reuse_layer": "/data/institute-index/institutional-dna-reuse-layer.json",
+    "global_institutional_evidence_programme": "/wpa-global-institutional-evidence-programme.html",
     "virtual_sande": "/virtual-sande-ai.html",
     "journal_live_global_monitor": "/journal/live/",
     "wpa_five_engines": "/tools/wpa-five-engines.html",
     "live_pavilion_console": "/tools/wpa-digital-pavilion/",
     "protocolometry_center": "/protocolometry-center.html",
-    "premium_briefings": "/wpa-briefings.html"
+    "premium_briefings": "/wpa-briefings.html",
+    "student_desk": "/student-desk/",
+    "wpaws": "/wpaws/"
   },
   "event_contract": {
     "browser_event": "wpa:social-action",
     "local_queue": "wpa.social.events",
+    "governed_distribution_queue": "/data/wpa-social-distribution-queue.json",
     "maximum_local_events": 100,
-    "fields": ["timestamp", "system", "network", "action", "target_url"]
-  }
+    "fields": ["timestamp", "system", "network", "action", "target_url", "trace_id"]
+  },
+  "publishing_boundary": "Active official channel does not mean active automated publishing. Platform API adapters remain NOT_CONNECTED until separately authorised and verified."
 }
