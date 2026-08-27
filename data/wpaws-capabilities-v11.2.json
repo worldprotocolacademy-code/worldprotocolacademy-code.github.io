@@ -1,0 +1,62 @@
+{
+  "schema": "wpaws-capabilities/1.0",
+  "version": "11.2.0-candidate",
+  "updated": "2026-08-27",
+  "status": "AUDIT_HARDENING_CANDIDATE",
+  "public_boundary": "Development/test prototype. Public or authorised sources only. No intelligence, surveillance, investigative or operational function. Human Gate remains final for consequential actions.",
+  "active": {
+    "agent_roles_loaded": 17,
+    "short_prompt_server_adapter": true,
+    "server_adapter_health_check": true,
+    "browser_provider_keys": false,
+    "local_preview_mode": true,
+    "local_browser_memory_opt_in": true,
+    "memory_retention_days": 30,
+    "txt_export": true,
+    "markdown_export": true,
+    "rtf_export": true,
+    "print_to_pdf_flow": true,
+    "provenance_trace": true,
+    "human_gate": true,
+    "document_only_integrity_screen": true
+  },
+  "conditional": {
+    "claude_adapter": "server-side provider configuration and health dependent",
+    "gpt_adapter": "server-side provider configuration and health dependent",
+    "governed_hybrid": "two independent server-routed responses; no autonomous merge",
+    "web_search": "server-side adapter only when configured; must not be simulated",
+    "wpa_knowledge_context": "available only when the server response actually provides context/sources"
+  },
+  "not_active_or_not_verified": {
+    "long_document_adapter": "NOT_ACTIVE",
+    "silent_prompt_truncation": "DISABLED_BY_HARDENING_LAYER",
+    "external_plagiarism_database_scan": "NOT_ACTIVE",
+    "google_scholar_fulltext_scan": "NOT_ACTIVE",
+    "jstor_fulltext_scan": "NOT_ACTIVE",
+    "cobiss_fulltext_scan": "NOT_ACTIVE",
+    "turnitin_or_ithenticate_adapter": "NOT_ACTIVE",
+    "automatic_plagiarism_verdict": "PROHIBITED",
+    "automatic_editorial_accept_reject": "PROHIBITED",
+    "automatic_publication": "PROHIBITED",
+    "autonomous_doctrine_change": "PROHIBITED",
+    "active_proactive_scheduler": "NOT_INDEPENDENTLY_VERIFIED",
+    "real_docx_generation": "NOT_ACTIVE_IN_BROWSER_RUNTIME",
+    "direct_binary_pdf_generation": "NOT_ACTIVE_IN_BROWSER_RUNTIME",
+    "reliable_pdf_text_extraction": "NOT_ACTIVE; CURRENT PDF PREVIEW IS EXPERIMENTAL"
+  },
+  "current_public_adapter_contract": {
+    "endpoint_class": "/ask",
+    "max_message_characters": 700,
+    "hardening_safe_preflight_characters": 680,
+    "rule": "Do not silently truncate. Block and disclose when the prompt exceeds the current adapter contract."
+  },
+  "truthfulness_rules": [
+    "A UI label must not imply a provider, database, corpus or scheduler is active unless runtime evidence confirms it.",
+    "Model brand labels describe routing preferences, not a guaranteed model version.",
+    "A similarity signal is not a plagiarism finding.",
+    "An AI review is advisory and cannot replace human editorial authority.",
+    "A local preview is not an external AI analysis.",
+    "A print-to-PDF flow must not be represented as direct PDF file generation.",
+    "RTF export may be described as Word/RTF, but not as a genuine DOCX file."
+  ]
+}

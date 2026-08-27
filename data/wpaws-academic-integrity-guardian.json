@@ -1,0 +1,56 @@
+{
+  "schema": "wpaws-academic-integrity-guardian/1.0",
+  "version": "1.0.0-candidate",
+  "updated": "2026-08-27",
+  "status": "GOVERNED_CANDIDATE",
+  "name": "WPA Proactive Academic Integrity Guardian",
+  "legacy_agent_alias": "Плагијат",
+  "purpose": "Detect and route similarity, attribution, provenance, self-reuse and source-integrity risks without making an autonomous plagiarism or disciplinary finding.",
+  "principles": [
+    "Similarity is evidence to review, not a plagiarism verdict.",
+    "No originality percentage may be produced without a defined, auditable comparison corpus and method.",
+    "No database coverage may be claimed unless the adapter and the specific search are verified at runtime.",
+    "Human Gate is mandatory for academic misconduct, rejection, correction, retraction or disciplinary conclusions.",
+    "Quoted, common, legal, institutional and bibliographic language requires false-positive handling.",
+    "Cross-language and translated similarity may be flagged only as a candidate unless source evidence is available."
+  ],
+  "coverage_levels": {
+    "LOCAL_DOCUMENT_ONLY": "Internal structural/repetition and attribution-risk screening inside the submitted document only.",
+    "WPA_CORPUS_VERIFIED": "Comparison against a specifically identified and authorised WPA corpus adapter.",
+    "EXTERNAL_SOURCE_VERIFIED": "Source-specific comparison against legally accessible, independently verified external evidence.",
+    "EXTERNAL_DISCOVERY_ONLY": "Candidate source discovery; not full-text similarity clearance."
+  },
+  "match_classes": ["EXACT","NEAR","SEMANTIC","TRANSLATED","SELF_REUSE","ATTRIBUTION_RISK"],
+  "source_statuses": ["VERIFIED","CANDIDATE","NOT_IDENTIFIED","NOT_SEARCHED"],
+  "attribution_statuses": ["CORRECT","MISSING","INCOMPLETE","UNCLEAR","NOT_APPLICABLE"],
+  "final_screening_statuses": ["CLEAR_WITHIN_COVERAGE","REVIEW","HIGH_RISK_CANDIDATE"],
+  "proactive_triggers": [
+    "new manuscript or chapter enters review workflow",
+    "substantial revision after editor or stylist",
+    "new externally sourced passage is introduced",
+    "citation or bibliography set materially changes",
+    "pre-publication final integrity gate",
+    "self-reuse risk when a WPA/Smiljanov work is reused",
+    "translation or cross-language adaptation of an existing work"
+  ],
+  "false_positive_guard": [
+    "properly quoted and attributed passages",
+    "bibliographic entries",
+    "standard legal or institutional names",
+    "standard protocol formulas and unavoidable terminology",
+    "common phrases",
+    "titles, DOI, ISBN and identifiers",
+    "authorised reuse or licence-compliant material"
+  ],
+  "workflow": ["Draft Gate","Document-only screening","Verified source/corpus check when an approved adapter exists","Attribution review","Reviewer","Editor","Final Integrity Gate","Human Gate","Publication or correction route"],
+  "quarantine_rule": "A serious but unverified match is routed to Academic Integrity Review Queue. It must not be labelled plagiarism until source-specific evidence and human academic review support that conclusion.",
+  "rights_rule": "Discovery is not permission to ingest. No paywall bypass, credential circumvention or unauthorised full-text harvesting.",
+  "current_runtime": {
+    "document_only_screen": true,
+    "external_fulltext_similarity_adapter": false,
+    "wpa_corpus_similarity_adapter": false,
+    "cross_language_external_verification": false,
+    "automatic_verdict": false,
+    "human_review_required": true
+  }
+}
