@@ -21,8 +21,8 @@ done
 
 echo "== C · MUST BE PRESENT (REV2 canonical + identity) =="
 present=(
- "160 records"
- "159 external records"
+ "161 records"
+ "160 external records"
  "155 distinct external institutions"
  "8 groups (A–D, G–I, R)"
  "Source verification pending"

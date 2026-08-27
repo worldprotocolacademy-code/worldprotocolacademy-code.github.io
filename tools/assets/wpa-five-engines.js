@@ -51,7 +51,7 @@
     "risk.desc": { mk: "Едукативна проценка на протоколарна подготвеност за формален настан.", en: "Educational assessment of protocol readiness for a formal event." },
     "map.kicker": { mk: "Engine 3 · Reference Atlas", en: "Engine 3 · Reference Atlas" },
     "map.title": { mk: "Global Protocol Reference Map", en: "Global Protocol Reference Map" },
-    "map.desc": { mk: "Едукативен атлас на 160 записи од WPA Master List REV2 — академии, think tank-ови, УН тела, судови и финансиски институции, групирани по континент и категорија.", en: "An educational atlas of 160 records from the WPA Master List REV2 — academies, think tanks, UN bodies, courts, and financial institutions, grouped by continent and category." },
+    "map.desc": { mk: "Едукативен атлас на 161 записи од WPA Master List REV3 — академии, think tank-ови, УН тела, судови и финансиски институции, групирани по континент и категорија.", en: "An educational atlas of 161 records from the WPA Master List REV3 — academies, think tanks, UN bodies, courts, and financial institutions, grouped by continent and category." },
     "precedence.kicker": { mk: "Engine 2 · Practical Tool", en: "Engine 2 · Practical Tool" },
     "precedence.title": { mk: "WPA Precedence Builder", en: "WPA Precedence Builder" },
     "precedence.desc": { mk: "Внеси учесници и добиј основна логика за ред на предимство, со предупредувања за проверка.", en: "Enter participants and get a baseline precedence order, with prompts to verify locally." },
@@ -794,7 +794,7 @@
   }
 
   /* ------------------------------------------------------------------
-     4. Global Protocol Reference Map — WPA Master List REV2 (160 records)
+     4. Global Protocol Reference Map — WPA Master List REV3 (161 records)
      ------------------------------------------------------------------ */
   let institutionsData = [];
   let mapActiveContinent = "";
@@ -816,14 +816,14 @@
 
     mount.innerHTML = `<p>${t("Се вчитува...", "Loading...")}</p>`;
 
-    fetch("data/institutions-master-rev2.json")
+    fetch("data/institutions-master-rev3.json")
       .then((r) => r.json())
       .then((json) => {
         institutionsData = json.institutions || [];
         renderReferenceMap(mount, json);
       })
       .catch(() => {
-        mount.innerHTML = `<p>${t("Податоците не можеа да се вчитаат. Провери дали data/institutions-master-rev2.json е поставен на истата патека.", "Data could not be loaded. Check that data/institutions-master-rev2.json is deployed at the matching path.")}</p>`;
+        mount.innerHTML = `<p>${t("Податоците не можеа да се вчитаат. Провери дали data/institutions-master-rev3.json е поставен на истата патека.", "Data could not be loaded. Check that data/institutions-master-rev3.json is deployed at the matching path.")}</p>`;
       });
   }
 

@@ -1,5 +1,17 @@
 # WPA Institute Ecosystem — CHANGELOG
 
+## Master List REV3 · 27 August 2026
+
+- Promoted `v1.0-CORRECTED-4F-REV3` as the current Master List candidate while preserving REV2 as archive.
+- Integrated D001/A010 entity resolution.
+- Restored National Defense University (USA) as D026.
+- Canonical arithmetic: 161 total / 160 external / 155 distinct external / 1 WPA internal.
+- Group D: 26 records.
+- Current JSON/CSV/Markdown, QA, URL status, metrics and verification surfaces synchronized.
+
+---
+
+
 ## Zenodo Metadata Harmonisation · 7 July 2026
 
 ### WPA-WP-005 — Metadata harmonised on Zenodo

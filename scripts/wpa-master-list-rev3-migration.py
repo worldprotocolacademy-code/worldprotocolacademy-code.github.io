@@ -393,8 +393,8 @@ def write_changelog():
 def write_canonical(group_counts, level_counts):
     text = f"""# WPA Global Institutions Master List — Canonical Counts
 
-**Canonical source:** {REV3}  
-**Status:** Pre-publication candidate / internal review  
+**Canonical source:** {REV3}
+**Status:** Pre-publication candidate / internal review
 **Effective revision date:** {DATE}
 
 This file is the single source of truth for current Master List counts and taxonomy wording. The complete REV2 package remains an archival snapshot and is not rewritten.
@@ -793,7 +793,7 @@ def final_assertions(rev2_hash):
     assert ids["A010"]["protocol_relevance_level"] == "B"
     assert ids["D001"]["verification_status"].startswith("VERIFIED")
     canonical = read(ROOT / "MASTER-LIST-CANONICAL.md")
-    for expected in ["Total records | 161", "External records | 160", "Distinct external institutions | 155", "D     | Universities, faculties, schools and academic departments | 26"]:
+    for expected in ["Total records | 161", "External records | 160", "Distinct external institutions | 155", "| D | Universities, faculties, schools and academic departments | 26 |"]:
         if expected not in canonical:
             raise RuntimeError(f"Canonical assertion missing: {expected}")
     page = read(ROOT / "wpa-global-institutions-master-list.html")

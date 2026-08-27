@@ -8,12 +8,12 @@
 
 ## Current object and status
 
-The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2**.
+The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV3**.
 
 Current dataset facts are governed by the canonical status source and presently include:
 
 - 160 total records;
-- 159 external records;
+- 160 external records;
 - 155 distinct external institutions;
 - 1 internal WPA reference record;
 - 8 external comparison groups: **A–D, G–I, R**;
