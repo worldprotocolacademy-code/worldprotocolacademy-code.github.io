@@ -1,16 +1,17 @@
-/* WPA Social Bridge Network v1.0.0
+/* WPA Social Bridge Network v1.1.0
    Official public channels + contextual sharing + local, privacy-safe event queue.
+   Connected to WPA System of Connected Vessels.
    No automatic posting, no credentials, no private-data collection. */
 (function () {
   'use strict';
 
-  var REGISTRY_URL = '/data/wpa-social-network.json?v=20260713-1';
+  var REGISTRY_URL = '/data/wpa-social-network.json?v=20260827-1';
   var FALLBACK = {
-    facebook: { label: 'Facebook', url: 'https://www.facebook.com/share/1G3Z8WabBx/' },
-    instagram: { label: 'Instagram', url: 'https://www.instagram.com/worldprotocolacademy?igsh=MXJsMW9oNHczZmlyag%3D%3D' },
-    x: { label: 'X / Twitter', url: 'https://x.com/world_acad66822' },
-    tiktok: { label: 'TikTok', url: 'https://www.tiktok.com/@world.protocol.academy?_r=1&_t=ZS-93zc3YLmvG1' },
-    youtube: { label: 'YouTube', url: 'https://www.youtube.com/@worldprotocolacademy' }
+    facebook: { label: 'Facebook', url: 'https://www.facebook.com/share/1G3Z8WabBx/', status: 'ACTIVE_OFFICIAL_CHANNEL' },
+    instagram: { label: 'Instagram', url: 'https://www.instagram.com/worldprotocolacademy?igsh=MXJsMW9oNHczZmlyag%3D%3D', status: 'ACTIVE_OFFICIAL_CHANNEL' },
+    x: { label: 'X / Twitter', url: 'https://x.com/world_acad66822', status: 'ACTIVE_OFFICIAL_CHANNEL' },
+    tiktok: { label: 'TikTok', url: 'https://www.tiktok.com/@world.protocol.academy?_r=1&_t=ZS-93zc3YLmvG1', status: 'ACTIVE_OFFICIAL_CHANNEL' },
+    youtube: { label: 'YouTube', url: 'https://www.youtube.com/@worldprotocolacademy', status: 'ACTIVE_OFFICIAL_CHANNEL' }
   };
   var MAX_EVENTS = 100;
 
@@ -26,12 +27,23 @@
     if (p.indexOf('/protocolometry-center') === 0) return 'protocolometry_center';
     if (p.indexOf('/wpa-briefings') === 0) return 'premium_briefings';
     if (p.indexOf('/virtual-sande-ai') === 0 || p.indexOf('/viral-sande-ai') === 0) return 'virtual_sande';
+    if (p.indexOf('/wpa-global-institutional-evidence-programme') === 0) return 'global_institutional_evidence_programme';
+    if (p.indexOf('/student-desk') === 0) return 'student_desk';
+    if (p.indexOf('/wpaws') === 0) return 'wpaws';
     return 'wpa_system';
+  }
+
+  function traceId() {
+    try {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') return 'SOC-' + window.crypto.randomUUID();
+    } catch (e) {}
+    return 'SOC-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
   }
 
   function queueEvent(network, action, targetUrl) {
     var detail = {
       timestamp: new Date().toISOString(),
+      trace_id: traceId(),
       system: systemId(),
       network: network || 'unknown',
       action: action || 'open',
@@ -58,6 +70,15 @@
     };
   }
 
+  function activeChannels(channels) {
+    var out = {};
+    Object.keys(channels || {}).forEach(function (key) {
+      var c = channels[key] || {};
+      if (c.url && (!c.status || c.status === 'ACTIVE_OFFICIAL_CHANNEL')) out[key] = c;
+    });
+    return out;
+  }
+
   function xShareUrl(context) {
     var text = context.title + ' — World Protocol Academy';
     return 'https://x.com/intent/post?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(context.url);
@@ -69,7 +90,9 @@
 
   function linkedAction(network, channels, action) {
     var context = pageContext();
-    var destination = channels[network] && channels[network].url;
+    var channel = channels[network];
+    if (!channel || !channel.url) return;
+    var destination = channel.url;
     if (action === 'share') {
       if (network === 'x') destination = xShareUrl(context);
       else if (network === 'facebook') destination = facebookShareUrl(context);
@@ -79,7 +102,6 @@
         return;
       }
     }
-    if (!destination) return;
     queueEvent(network, action || 'open-channel', context.url);
     window.open(destination, '_blank', 'noopener,noreferrer');
   }
@@ -99,7 +121,7 @@
     box.id = 'wpaSocialBridge';
     box.className = 'wpa-social-bridge';
     box.setAttribute('aria-label', 'WPA official social channels and sharing');
-    box.innerHTML = '<div class="wpa-social-bridge__head"><div><h2>WPA Social Bridge Network</h2><p>Официјални јавни канали поврзани со овој WPA систем. Споделувањето е рачно и бара човечка потврда.</p></div></div><div class="wpa-social-bridge__links"></div><div class="wpa-social-bridge__share"></div><div class="wpa-social-bridge__status">Public links only · no automatic posting · local interaction queue · human review required</div>';
+    box.innerHTML = '<div class="wpa-social-bridge__head"><div><h2>WPA Social Bridge Network</h2><p>Официјални јавни канали во WPA Системот на сврзани садови. Содржината може да се подготвува и насочува системски; надворешното објавување останува човечки/API контролирано.</p></div></div><div class="wpa-social-bridge__links"></div><div class="wpa-social-bridge__share"></div><div class="wpa-social-bridge__status">Connected Vessels · public links only · no automatic external posting without authorised adapters · provenance trace · Human Gate</div>';
 
     var links = box.querySelector('.wpa-social-bridge__links');
     Object.keys(channels).forEach(function (key) {
@@ -115,6 +137,7 @@
 
     var share = box.querySelector('.wpa-social-bridge__share');
     ['facebook', 'x', 'instagram', 'tiktok', 'youtube'].forEach(function (key) {
+      if (!channels[key]) return;
       var b = document.createElement('button');
       b.type = 'button';
       b.textContent = key === 'facebook' || key === 'x' ? 'Сподели на ' + (channels[key].label || key) : 'Сподели / отвори ' + (channels[key].label || key);
@@ -136,11 +159,13 @@
     fetch(REGISTRY_URL, { headers: { Accept: 'application/json' }, cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (data) {
-        var channels = data && data.channels ? data.channels : FALLBACK;
+        var all = data && data.channels ? data.channels : FALLBACK;
+        var channels = activeChannels(all);
         window.WPA_SOCIAL_BRIDGE = {
-          version: data && data.version ? data.version : '1.0.0-fallback',
+          version: data && data.version ? data.version : '1.1.0-fallback',
           system: systemId(),
           channels: channels,
+          planned_channels: Object.keys(all).filter(function (key) { return all[key] && all[key].status === 'PLANNED'; }),
           context: pageContext,
           open: function (network) { linkedAction(network, channels, 'open-channel'); },
           share: function (network) { linkedAction(network, channels, 'share'); },
@@ -151,8 +176,9 @@
         try { document.dispatchEvent(new CustomEvent('wpa:social-bridge-ready', { detail: { system: systemId(), version: window.WPA_SOCIAL_BRIDGE.version } })); } catch (e) {}
       })
       .catch(function () {
-        window.WPA_SOCIAL_BRIDGE = { version: '1.0.0-fallback', system: systemId(), channels: FALLBACK, context: pageContext, open: function (n) { linkedAction(n, FALLBACK, 'open-channel'); }, share: function (n) { linkedAction(n, FALLBACK, 'share'); }, track: queueEvent };
-        mount(FALLBACK);
+        var channels = activeChannels(FALLBACK);
+        window.WPA_SOCIAL_BRIDGE = { version: '1.1.0-fallback', system: systemId(), channels: channels, planned_channels: [], context: pageContext, open: function (n) { linkedAction(n, channels, 'open-channel'); }, share: function (n) { linkedAction(n, channels, 'share'); }, track: queueEvent };
+        mount(channels);
       });
   }
 
