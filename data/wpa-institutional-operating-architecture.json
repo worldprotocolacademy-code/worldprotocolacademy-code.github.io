@@ -1,17 +1,19 @@
 {
-  "schema": "wpa-institutional-operating-architecture/1.3",
-  "version": "1.3.0",
-  "updated": "2026-08-25",
+  "schema": "wpa-institutional-operating-architecture/1.4",
+  "version": "1.4.0",
+  "updated": "2026-08-27",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "model": "HGAIM",
   "model_reference": "/data/wpa-human-governed-agentic-institution-model.json",
   "continuous_learning_reference": "/data/wpa-continuous-institutional-learning-loop.json",
   "human_gate_policy_reference": "/data/wpa-human-gate-policy.json",
   "end_to_end_state_machine_reference": "/data/wpa-end-to-end-institutional-state-machine.json",
+  "institutional_dna_reuse_reference": "/data/institute-index/institutional-dna-reuse-layer.json",
+  "practice_atom_schema_reference": "/data/institute-index/institutional-practice-atom.schema.json",
   "authority_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
   "canonical_runtime_chain": "Human Authority -> Doctrine Kernel -> Strategic AI Core -> Strategic Prompt Router control layer -> Virtual Sande -> WPAWS 17 Executive Agents -> up to 80 bounded Tactical-Operational Seats -> Evidence/Safety/Human Gates -> WPA Output",
-  "institutional_learning_cycle": "Observe -> Research -> Verify -> Model -> Human Gate -> Apply -> Measure -> Correct -> Publish -> Learn -> Re-enter the cycle",
-  "end_to_end_operational_cycle": "Intake -> Scope & Mandate -> Source Compliance -> Research & Discovery -> Verification -> Analysis & Modelling -> Evidence & Safety Gate -> Human Authorisation -> Release / Application -> Outcome Measurement -> Correction & Review -> Knowledge Reintegration -> Closure",
+  "institutional_learning_cycle": "Observe -> Research -> Verify -> Extract Institutional DNA -> Model -> Human Gate -> Apply -> Measure -> Correct -> Publish -> Learn -> Reuse with provenance -> Re-enter the cycle",
+  "end_to_end_operational_cycle": "Intake -> Scope & Mandate -> Source Compliance -> Research & Discovery -> Verification -> Institutional DNA Extraction -> Analysis & Modelling -> Evidence & Safety Gate -> Human Authorisation -> Release / Application -> Outcome Measurement -> Correction & Review -> Knowledge Reintegration -> Closure",
   "governed_connection_principle": "Institutional strength is not the sum of its components; it is the quality of the governed connections between them.",
   "human_gate_classes": {
     "HG0":"informational and reversible",
@@ -24,18 +26,39 @@
     {"id":"strategic_prompt_router","version":"wpa-strategic-prompt-router-1.0.1","position":"between_strategic_ai_core_and_virtual_sande","base_status":"LIVE","qualifier":"PRODUCTION_VERIFIED_CONTROL_LAYER","creates_authority":false,"human_gate_unchanged":true,"evidence":"/config/wpa-strategic-prompt-router-current-state.json"}
   ],
   "systems": [
-    {"id":"virtual_sande","status":"LIVE_PRODUCTION","base_status":"LIVE","qualifier":"PUBLIC_PRODUCTION_DEPLOYED_AND_ACCEPTED","version":"v35.1.1","evidence":"/config/virtual-sande-current-state.json","continuous_learning_role":"source-disciplined synthesis and governed knowledge reintegration"},
-    {"id":"wpaws","status":"CONTROLLED_WORKING_ENVIRONMENT","base_status":"IMPLEMENTED_MVP","qualifier":"CONTROLLED_WORKING_ENVIRONMENT; 17 governed executive roles; provider adapter availability varies by approved configuration","version":"11.1.7","executive_agents":17,"continuous_learning_role":"governed production, comparison, modelling and iteration"},
+    {"id":"virtual_sande","status":"LIVE_PRODUCTION","base_status":"LIVE","qualifier":"PUBLIC_PRODUCTION_DEPLOYED_AND_ACCEPTED","version":"v35.1.1","evidence":"/config/virtual-sande-current-state.json","continuous_learning_role":"source-disciplined synthesis, Practice Atom retrieval and governed knowledge reintegration"},
+    {"id":"wpaws","status":"CONTROLLED_WORKING_ENVIRONMENT","base_status":"IMPLEMENTED_MVP","qualifier":"CONTROLLED_WORKING_ENVIRONMENT; 17 governed executive roles; provider adapter availability varies by approved configuration","version":"11.1.7","executive_agents":17,"continuous_learning_role":"governed production, comparison, modelling, Practice Atom routing and iteration"},
     {"id":"council80","status":"BOUNDED_AGENT_CAPACITY","base_status":"IMPLEMENTED_MVP","qualifier":"BOUNDED_AGENT_CAPACITY_REQUIRES_APPROVED_ACTIVATION","capacity_up_to":80,"continuous_autonomy":false},
     {"id":"council54","status":"CANDIDATE_REGISTRY","base_status":"CANDIDATE_REGISTRY","qualifier":"NO_PROVIDER_AFFILIATION_OR_LIVE_INTEGRATION_IMPLIED","capacity":54,"provider_affiliation_implied":false},
+    {"id":"global_institutional_evidence_programme","status":"ACTIVE_METHODOLOGY_DEVELOPMENT_PROGRAMME","base_status":"IMPLEMENTED_MVP","qualifier":"PUBLIC_EVIDENCE_ONLY; HUMAN_REVIEW_REQUIRED","continuous_learning_role":"global academy discovery, evidence dossiering and Institutional Practice Atom formation"},
+    {"id":"institutional_dna_reuse_layer","status":"ACTIVE_GOVERNED_REUSE_MODEL","base_status":"IMPLEMENTED_MVP","qualifier":"PROVENANCE_PRESERVING_REUSE; NO_AUTONOMOUS_POLICY_OR_DOCTRINE_MUTATION","continuous_learning_role":"routes approved Practice Atoms into eligible WPA domains and propagates material corrections"},
     {"id":"protocolometry","status":"OPERATIONAL_METHODOLOGICAL_CENTER","base_status":"IMPLEMENTED_MVP","qualifier":"OPERATIONAL_METHODOLOGICAL_CENTER","continuous_learning_role":"measurement, comparison, outcome evaluation and correction feedback","outcome_based":true},
     {"id":"academic_search","status":"STAGING","base_status":"STAGING","qualifier":"LEGAL_SAFE_EXTERNAL_DISCOVERY; HUMAN_ACADEMIC_VERIFICATION_REQUIRED","version":"3.1","continuous_learning_role":"public or authorised discovery and source verification support"},
     {"id":"wpa_watch","status":"PUBLIC_SOURCE_CANDIDATE_MONITORING","base_status":"IMPLEMENTED_MVP","qualifier":"PUBLIC_SOURCE_CANDIDATE_MONITORING; HUMAN_VERIFICATION_REQUIRED","human_verification_required":true,"continuous_learning_role":"public-source signal detection and candidate discovery"},
-    {"id":"journal_watch","status":"STAGING_READY_EDITORIAL_REVIEW_REQUIRED","base_status":"STAGING","qualifier":"EDITORIAL_REVIEW_REQUIRED","continuous_learning_role":"editorial candidate routing and research-question formation"},
-    {"id":"student_desk","status":"BETA_GOVERNED_PUBLIC_PREVIEW","base_status":"BETA","qualifier":"GOVERNED_PUBLIC_PREVIEW; HG3 BACKEND REQUIRED BEFORE LIVE OPERATIONS","backend_required_before_live_operations":true,"sensitive_transition_class":"HG3"}
+    {"id":"journal_watch","status":"STAGING_READY_EDITORIAL_REVIEW_REQUIRED","base_status":"STAGING","qualifier":"EDITORIAL_REVIEW_REQUIRED","continuous_learning_role":"editorial candidate routing and research-question formation from approved institutional evidence"},
+    {"id":"student_desk","status":"BETA_GOVERNED_PUBLIC_PREVIEW","base_status":"BETA","qualifier":"GOVERNED_PUBLIC_PREVIEW; HG3 BACKEND REQUIRED BEFORE LIVE OPERATIONS","backend_required_before_live_operations":true,"sensitive_transition_class":"HG3","continuous_learning_role":"bounded learning reuse of approved Practice Atoms for examples, scenarios and source-literacy exercises"}
+  ],
+  "institutional_dna_routes": [
+    {"from":"Evidence Dossiers","to":"Institutional Practice Atoms","governed_handoff":"source-supported institutional core is atomised with provenance, context, uncertainty and I01-I20 links"},
+    {"from":"Institutional Practice Atoms","to":"Protocolometry","governed_handoff":"approved atoms test indicators, rubrics, fairness and methodology gaps"},
+    {"from":"Institutional Practice Atoms","to":"Research / Working Papers / Protocol Notes","governed_handoff":"approved atoms generate comparative questions and source-grounded research objects"},
+    {"from":"Institutional Practice Atoms","to":"WPA Journal","governed_handoff":"atoms may inform themes and calls but never determine editorial acceptance"},
+    {"from":"Institutional Practice Atoms","to":"Programmes / Curriculum","governed_handoff":"approved patterns may inform modules, learning outcomes, assessment and career-stage architecture after human curriculum review"},
+    {"from":"Institutional Practice Atoms","to":"Simulations / Case Studies / Scenario Labs","governed_handoff":"approved practice patterns become abstracted teaching scenarios without copying proprietary expression"},
+    {"from":"Institutional Practice Atoms","to":"Practitioner Lecture Programme","governed_handoff":"practice gaps and patterns inform speaker profiles, themes and questions without implying affiliation"},
+    {"from":"Institutional Practice Atoms","to":"Student Desk / Learning Tools","governed_handoff":"approved atoms may become micro-lessons, quizzes and examples; sensitive student operations remain HG3"},
+    {"from":"Institutional Practice Atoms","to":"Virtual Sande / WPAWS","governed_handoff":"source-grounded retrieval and synthesis preserve provenance and cannot expand authority"},
+    {"from":"Institutional Practice Atoms","to":"Briefings / Advisory Architecture","governed_handoff":"approved public-source comparisons may inform readiness maps and training needs; paid activation remains frozen"},
+    {"from":"Institutional Practice Atoms","to":"Governance / Trust / QA","governed_handoff":"observed correction, COI, credential and provenance practices may inform WPA safeguards after policy review"},
+    {"from":"Institutional Practice Atoms","to":"Strategy / Institutional Development","governed_handoff":"cross-corpus patterns inform capability gaps and development priorities through human strategic decision"},
+    {"from":"Institutional Practice Atoms","to":"Public Communication","governed_handoff":"approved atoms may be translated into attributed explainers, visualisations and multilingual summaries"},
+    {"from":"Institutional Practice Atoms","to":"OPC / Events","governed_handoff":"global patterns inform panels, workshops and comparative tracks; event status remains separately governed"},
+    {"from":"Institutional Practice Atoms","to":"Annual Reporting / Foresight","governed_handoff":"aggregated approved atoms reveal trends, gaps and emerging institutional models"}
   ],
   "continuous_learning_connections": [
-    {"from":"WPA Watch / Academic Search Hub","to":"Protocolometry Center","governed_handoff":"candidate signals become evidence-checkable research objects"},
+    {"from":"WPA Watch / Academic Search Hub","to":"Global Institutional Evidence Programme","governed_handoff":"candidate signals become source-checkable institutional research objects"},
+    {"from":"Global Institutional Evidence Programme","to":"Institutional DNA Reuse Layer","governed_handoff":"human-reviewable dossiers and approved atoms become bounded reusable knowledge"},
+    {"from":"Institutional DNA Reuse Layer","to":"Protocolometry Center","governed_handoff":"approved practice patterns test measurement validity and methodology completeness"},
     {"from":"Protocolometry Center","to":"WPAWS / Virtual Sande","governed_handoff":"verified measurements and comparisons become bounded synthesis inputs"},
     {"from":"WPAWS / Virtual Sande","to":"Human Gate","governed_handoff":"AI-assisted output remains recommendation or draft until authorised human review"},
     {"from":"Human-approved application or publication","to":"Protocolometry Center","governed_handoff":"outcomes and corrections are measured and returned as new evidence"},
@@ -48,7 +71,10 @@
     "Mandatory source, evidence or safety gate failure blocks release.",
     "Preparation and institutional release are separate states.",
     "Material corrections are measured and fed back into governed learning.",
-    "Knowledge reintegration may not silently alter the Doctrine Kernel."
+    "Knowledge reintegration may not silently alter the Doctrine Kernel.",
+    "Every reused Practice Atom preserves source identity, retrieval date, source tier, context and review status.",
+    "A material correction or withdrawal must propagate to dependent WPA outputs where reasonably traceable and relevant.",
+    "Institutional learning does not imply copying proprietary curricula or claiming external practice as WPA authorship."
   ],
   "capability_resilience_pairing": {
     "required": true,
@@ -61,6 +87,8 @@
     "end_to_end_state_machine":"DEFINED",
     "virtual_sande":"LIVE_PRODUCTION_V35_1_1",
     "wpaws":"CONTROLLED_WORKING_ENVIRONMENT_11_1_7",
+    "global_institutional_evidence_programme":"ACTIVE_METHODOLOGY_DEVELOPMENT_PROGRAMME",
+    "institutional_dna_reuse_layer":"ACTIVE_GOVERNED_REUSE_MODEL",
     "protocolometry":"OPERATIONAL_METHODOLOGICAL_CENTER",
     "public_research_orchestration":"PARTIAL_LIVE_AND_IMPLEMENTED_MVP",
     "student_sensitive_backend":"NOT_ACTIVE",
@@ -79,7 +107,9 @@
     "/data/wpa-opn-readiness-current-state.json",
     "/data/wpa-continuous-institutional-learning-loop.json",
     "/data/wpa-human-gate-policy.json",
-    "/data/wpa-end-to-end-institutional-state-machine.json"
+    "/data/wpa-end-to-end-institutional-state-machine.json",
+    "/data/institute-index/institutional-practice-atom.schema.json",
+    "/data/institute-index/institutional-dna-reuse-layer.json"
   ],
   "current_publication_metric": {"total":26,"monographs_and_manuals":6,"doctoral_dissertations":1,"scientific_papers_and_contributions":19},
   "external_delivery_boundary": "No external-customer AI delivery is claimed unless separately evidenced."
