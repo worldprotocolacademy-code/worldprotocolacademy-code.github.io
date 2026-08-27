@@ -58,7 +58,7 @@
   }
 
   if (/\/(certification|programmes|wpa-card|institute|virtual-sande-ai)\.html$/.test(path)) {
-    loadScript('/scripts/wpa-credential-journey.js?v=20260719-2', 'data-wpa-credential-journey');
+    loadScript('/scripts/wpa-credential-journey.js?v=20260827-2', 'data-wpa-credential-journey');
   }
 
   if (/\/programmes\.html$/.test(path)) {
