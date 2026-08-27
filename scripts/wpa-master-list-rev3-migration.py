@@ -635,6 +635,16 @@ def update_master_list_page(level_counts):
     # REV3 data already contains the D001/A010 decision; remove the old browser overlay function.
     s = re.sub(r'\n    function applyD001A010Patch\(records\) \{.*?\n    \}\n\n    function renderGroups', '\n    function renderGroups', s, flags=re.S)
     s = s.replace("allRecords = applyD001A010Patch(rawRecords);", "allRecords = rawRecords;")
+    # REV3_PUBLIC_PATH_HARDENING: the global version-label replacement above can
+    # leave the old directory with a new filename; normalize current download paths.
+    s = s.replace(
+        "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3",
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3"
+    )
+    s = s.replace(
+        "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md",
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md"
+    )
     write(path, s)
 
 
@@ -799,6 +809,18 @@ def final_assertions(rev2_hash):
     page = read(ROOT / "wpa-global-institutions-master-list.html")
     if "CORRECTED-4F-REV3" not in page or 'statTotal">161' not in page or 'statExternal">160' not in page:
         raise RuntimeError("Master List public page not synchronized to REV3")
+    malformed_rev2_rev3_path = "data/global-institutions/v1.0-corrected-4f-rev2/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3"
+    if malformed_rev2_rev3_path in page:
+        raise RuntimeError("Master List public page contains mixed REV2-directory/REV3-filename download path")
+    required_public_paths = [
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.json",
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.csv",
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.md",
+        "data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md"
+    ]
+    for public_path in required_public_paths:
+        if public_path not in page:
+            raise RuntimeError(f"Master List public page missing REV3 download path: {public_path}")
 
 
 def main():
