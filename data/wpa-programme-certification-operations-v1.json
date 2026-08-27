@@ -1,0 +1,159 @@
+{
+  "schema": "wpa-programme-certification-operations/1.0",
+  "version": "1.0.0",
+  "updated": "2026-08-27",
+  "status": "OPERATIONAL_MODEL_ACTIVE_ENROLMENT_AND_ISSUANCE_INACTIVE",
+  "purpose": "Canonical programme-to-credential operating model for WPA. The model can support expressions of interest, eligibility review, programme guidance and demo assessment now, while enrolment, identity processing, official assessment decisions and credential issuance remain inactive until governed production controls exist.",
+  "activation_truth": {
+    "programme_information_active": true,
+    "expression_of_interest_active": true,
+    "eligibility_review_design_ready": true,
+    "programme_guidance_active": true,
+    "demo_assessment_active": true,
+    "formal_enrolment_active": false,
+    "identity_processing_active": false,
+    "official_assessment_decisions_active": false,
+    "certificate_issuance_active": false,
+    "membership_activation_active": false,
+    "human_gate_required": true
+  },
+  "levels": [
+    {
+      "id": "FND",
+      "level": 1,
+      "credential_code": "WPA-FND",
+      "label": "Foundation",
+      "purpose": "Entry professional literacy and institutional orientation.",
+      "progression_to": "PRO"
+    },
+    {
+      "id": "PRO",
+      "level": 2,
+      "credential_code": "WPA-PRO",
+      "label": "Professional",
+      "purpose": "Applied state and diplomatic protocol, communication and ceremonial practice.",
+      "progression_to": "ADV"
+    },
+    {
+      "id": "ADV",
+      "level": 3,
+      "credential_code": "WPA-ADV",
+      "label": "Advanced",
+      "purpose": "Complex institutional scenarios, multilateral environments and advanced professional judgement.",
+      "progression_to": "TTC"
+    },
+    {
+      "id": "TTC",
+      "level": 4,
+      "credential_code": "WPA-TTC",
+      "label": "Trainer / Consultant",
+      "purpose": "Facilitation, training design, advisory practice and knowledge transfer.",
+      "progression_to": "CPD"
+    }
+  ],
+  "state_machine": [
+    "PUBLIC_INFORMATION",
+    "EXPRESSION_OF_INTEREST",
+    "ELIGIBILITY_REVIEW",
+    "ADMISSION_AUTHORISED",
+    "ENROLMENT_AUTHORISED",
+    "LEARNING_IN_PROGRESS",
+    "ASSESSMENT_ELIGIBLE",
+    "ASSESSMENT_COMPLETED",
+    "HUMAN_RESULT_REVIEW",
+    "COMPLETION_CONFIRMED",
+    "CERTIFICATE_ELIGIBLE",
+    "PENDING_HUMAN_AUTHORISATION",
+    "ISSUED"
+  ],
+  "current_public_maximum_state": "ELIGIBILITY_REVIEW",
+  "locked_states_until_activation": [
+    "ADMISSION_AUTHORISED",
+    "ENROLMENT_AUTHORISED",
+    "LEARNING_IN_PROGRESS",
+    "ASSESSMENT_ELIGIBLE",
+    "ASSESSMENT_COMPLETED",
+    "HUMAN_RESULT_REVIEW",
+    "COMPLETION_CONFIRMED",
+    "CERTIFICATE_ELIGIBLE",
+    "PENDING_HUMAN_AUTHORISATION",
+    "ISSUED"
+  ],
+  "score_bands": [
+    {
+      "id": "not_eligible",
+      "min": 0,
+      "max": 69.99,
+      "label": "Not eligible"
+    },
+    {
+      "id": "pass",
+      "min": 70,
+      "max": 84.99,
+      "label": "Pass"
+    },
+    {
+      "id": "distinction",
+      "min": 85,
+      "max": 91.99,
+      "label": "Distinction"
+    },
+    {
+      "id": "high_distinction",
+      "min": 92,
+      "max": 100,
+      "label": "High Distinction"
+    }
+  ],
+  "credential_eligibility_requirements": [
+    "authorised_enrolment_record",
+    "required_learning_components_completed",
+    "assessment_basis_documented",
+    "assessment_result_confirmed",
+    "human_result_review_completed",
+    "identity_confirmed_under_approved_process",
+    "completion_confirmed",
+    "human_authorisation_recorded"
+  ],
+  "programme_to_credential_flow": [
+    "programme_selection",
+    "expression_of_interest",
+    "eligibility_review",
+    "future_authorised_enrolment",
+    "future_learning_record",
+    "future_assessment",
+    "human_result_review",
+    "completion_confirmation",
+    "certificate_eligibility",
+    "human_authorisation",
+    "registry_record",
+    "serial_and_verification_url",
+    "credential_render",
+    "future_wpa_card_relationship"
+  ],
+  "demo_policy": {
+    "assessment_simulator_allowed": true,
+    "demo_ids_allowed": true,
+    "required_demo_marker": "DEMO_NOT_ISSUED",
+    "rule": "A demo score or demo ID is educational guidance only and must not create enrolment, completion, credential eligibility, membership status or a registry record."
+  },
+  "human_gate": {
+    "required_for": [
+      "admission_authorisation",
+      "enrolment_authorisation",
+      "assessment_result_confirmation",
+      "completion_confirmation",
+      "certificate_eligibility_confirmation",
+      "credential_issuance",
+      "suspension_revocation_or_supersession"
+    ],
+    "final_authority": "WPA Human Authority"
+  },
+  "cross_system_contracts": {
+    "credential_security_master": "/data/wpa-credential-security-master-v1.json",
+    "public_square": "/data/wpa-public-square-operating-model.json",
+    "partner_revenue_operations": "/data/wpa-partner-revenue-operations-v1.json",
+    "wpa_card_rule": "Future WPA Card eligibility may consume authorised programme, credential or membership records; it must never infer status from a rendered certificate or demo score.",
+    "partner_benefit_rule": "Future partner benefits may consume only an authorised ACTIVE membership/card record and an ACTIVE confirmed benefit record. No benefit eligibility may be inferred from a visual card, certificate or self-declared score."
+  }
+}
