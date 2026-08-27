@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldprotocolacademy.mk/data/wpa-scholarly-knowledge-atom.schema.json",
+  "title": "WPA Scholarly Knowledge Atom",
+  "description": "A provenance-preserving, reusable unit of scholarly knowledge derived from legally accessible or manually authorised academic sources. It is not a substitute for the source and does not transfer copyright or authorship to WPA.",
+  "type": "object",
+  "required": [
+    "atom_id",
+    "source_type",
+    "title",
+    "discipline",
+    "source_identity",
+    "access_basis",
+    "evidence_status",
+    "knowledge_summary",
+    "reuse_status",
+    "human_review_status"
+  ],
+  "properties": {
+    "atom_id": {"type": "string", "pattern": "^SKA-[A-Z0-9-]+$"},
+    "source_type": {"enum": ["BOOK", "MONOGRAPH", "HANDBOOK", "JOURNAL_ARTICLE", "BOOK_CHAPTER", "THESIS", "DISSERTATION", "WORKING_PAPER", "PREPRINT", "REPORT", "STANDARD", "POLICY_PAPER", "CONFERENCE_PAPER", "DATASET", "OTHER"]},
+    "title": {"type": "string"},
+    "authors": {"type": "array", "items": {"type": "string"}},
+    "year": {"type": ["integer", "null"]},
+    "discipline": {
+      "type": "array",
+      "items": {"enum": ["PROTOCOL", "DIPLOMACY_AND_IR", "PUBLIC_COMMUNICATION_AND_PR", "SECURITY_STUDIES", "COMMUNICOLOGY", "ACADEMIC_INFRASTRUCTURE", "CROSS_DISCIPLINARY"]}
+    },
+    "source_identity": {
+      "type": "object",
+      "properties": {
+        "doi": {"type": ["string", "null"]},
+        "isbn": {"type": ["string", "null"]},
+        "issn": {"type": ["string", "null"]},
+        "publisher_or_journal": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"]},
+        "discovery_source": {"type": ["string", "null"]},
+        "retrieved": {"type": ["string", "null"]}
+      }
+    },
+    "access_basis": {
+      "enum": ["OPEN_ACCESS", "OPEN_METADATA_ONLY", "PUBLIC_ABSTRACT", "PUBLIC_DOMAIN", "OPEN_LICENSE", "MANUALLY_AUTHORISED", "EXTERNAL_DISCOVERY_ONLY", "RESTRICTED_NOT_INGESTED"]
+    },
+    "license": {"type": ["string", "null"]},
+    "authority_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "traceability_score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+    "evidence_status": {"enum": ["SUPPORTED", "PARTIALLY_SUPPORTED", "CONTESTED", "RETRACTED_OR_WITHDRAWN", "STALE_OR_UNCLEAR", "NE"]},
+    "knowledge_summary": {"type": "string"},
+    "research_question": {"type": ["string", "null"]},
+    "method_or_argument": {"type": ["string", "null"]},
+    "principal_findings_or_theses": {"type": "array", "items": {"type": "string"}},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "contradictions_or_counterevidence": {"type": "array", "items": {"type": "string"}},
+    "doctrine_relation": {
+      "enum": ["NOT_ASSESSED", "SUPPORTS_EXISTING_WPA_DOCTRINE", "REFINES_EXISTING_WPA_DOCTRINE", "CHALLENGES_EXISTING_WPA_DOCTRINE", "OPENS_NEW_DOCTRINAL_QUESTION", "NO_DIRECT_DOCTRINAL_RELATION"]
+    },
+    "doctrine_note": {"type": ["string", "null"]},
+    "strategy_relation": {
+      "type": "array",
+      "items": {"enum": ["RESEARCH_AGENDA", "METHODOLOGY", "PROTOCOLometry", "PROGRAMME_DESIGN", "CURRICULUM", "SIMULATION", "CASE_STUDY", "JOURNAL", "WORKING_PAPER", "PROTOCOL_NOTE", "BRIEFING", "FORESIGHT", "GOVERNANCE", "QUALITY_ASSURANCE", "PUBLIC_COMMUNICATION", "SOCIAL_COMMUNICATION", "EVENTS", "STUDENT_DESK", "VIRTUAL_SANDE", "WPAWS", "INSTITUTIONAL_STRATEGY"]}
+    },
+    "reuse_status": {"enum": ["HOLD", "ELIGIBLE_AFTER_HUMAN_REVIEW", "APPROVED_FOR_GOVERNED_REUSE", "WITHHELD"]},
+    "reuse_constraints": {"type": "array", "items": {"type": "string"}},
+    "human_review_status": {"enum": ["PENDING", "APPROVED", "REVISED", "WITHHELD"]},
+    "review_note": {"type": ["string", "null"]},
+    "correction_status": {"enum": ["NONE", "CHECK_REQUIRED", "CORRECTED", "SOURCE_WITHDRAWN", "DEPENDENT_OUTPUT_REVIEW_REQUIRED"]},
+    "version": {"type": ["string", "null"]},
+    "updated": {"type": ["string", "null"]}
+  },
+  "copyright_invariant": "WPA stores or reuses only material permitted by the access basis and applicable rights. Restricted sources may support discovery and manual verification but are not silently harvested, copied or used as full-text RAG content.",
+  "doctrine_invariant": "Scholarly evidence may support, refine, challenge or open review of WPA doctrine, but no Scholarly Knowledge Atom may autonomously change the Doctrine Kernel. Doctrine change remains an HG4 human-authority event.",
+  "reuse_invariant": "Reuse preserves source identity, authorship, context, uncertainty and limitations. A summary or synthesis does not become WPA authorship of the underlying scholarly work."
+}
