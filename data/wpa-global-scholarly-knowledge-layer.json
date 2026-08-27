@@ -1,0 +1,150 @@
+{
+  "schema": "wpa-global-scholarly-knowledge-layer/1.0",
+  "version": "1.0.0",
+  "updated": "2026-08-27",
+  "name": "WPA Global Scholarly Knowledge Layer",
+  "status": "ACTIVE_GOVERNED_KNOWLEDGE_REUSE_MODEL",
+  "purpose": "Continuously discover, verify, atomise and strategically reuse legally accessible scholarly knowledge across the WPA Institute without bypassing source rights, academic verification or human authority.",
+  "input_domains": [
+    "Protocol",
+    "Diplomacy and International Relations",
+    "Public Communication and Public Relations",
+    "Security Studies",
+    "Communicology",
+    "Academic Infrastructure and Research Integrity"
+  ],
+  "discovery_infrastructure": {
+    "academic_search_hub": "/tools/academic-search-hub/",
+    "current_version": "3.1",
+    "source_count": 37,
+    "core_open_sources": ["OpenAlex", "Crossref", "Semantic Scholar", "Zenodo", "DOAJ", "OpenAIRE", "CORE", "PubMed", "BASE", "ERIC"],
+    "regional_and_supplementary_examples": ["SciELO", "Redalyc", "AJOL", "Shamaa", "CyberLeninka", "HRČAK", "HAL", "Shodhganga", "Trove", "WorldCat", "Internet Archive"],
+    "restricted_external_only_examples": ["Google Scholar", "JSTOR", "Project MUSE", "CNKI", "CEEOL", "eLIBRARY.RU", "ResearchGate", "Academia.edu", "AD Scientific Index"],
+    "rule": "Restricted or login/paywall sources are discovery/manual-verification surfaces only unless lawful access and reuse permission are separately established."
+  },
+  "pipeline": [
+    "DISCOVER",
+    "SOURCE_COMPLIANCE",
+    "IDENTITY_AND_METADATA_VERIFY",
+    "AUTHORITY_AND_TRACEABILITY_SCORE",
+    "ACCESS_RIGHTS_CHECK",
+    "READ_OR_USE_PERMITTED_EVIDENCE",
+    "CREATE_SCHOLARLY_KNOWLEDGE_ATOM",
+    "CONTRADICTION_AND_LIMITATION_REVIEW",
+    "HUMAN_ACADEMIC_REVIEW",
+    "APPROVE_BOUNDED_REUSE",
+    "ROUTE_TO_ELIGIBLE_WPA_DOMAINS",
+    "MEASURE_IMPACT",
+    "CORRECT_OR_WITHDRAW_IF_SOURCE_CHANGES",
+    "REINTEGRATE_LEARNING"
+  ],
+  "atom_schema": "/data/wpa-scholarly-knowledge-atom.schema.json",
+  "rag_gate": {
+    "policy": "/tools/academic-search-hub/wpa-final-v3.1/RAG_GATE_POLICY.md",
+    "minimum_authority_score": 60,
+    "minimum_traceability_score": 50,
+    "additional_rule": "Source must be verified, open or manually approved; fabricated metadata is prohibited; external-only discovery results are never treated as harvested full text."
+  },
+  "reuse_domains": [
+    {
+      "domain": "Doctrine review",
+      "allowed": "Use approved atoms to support, refine, challenge or open a doctrinal question.",
+      "gate": "HG4 for any Doctrine Kernel change",
+      "forbidden": "No autonomous doctrinal mutation."
+    },
+    {
+      "domain": "Institutional strategy",
+      "allowed": "Use cross-literature patterns, counterevidence and emerging research to inform strategic options and foresight.",
+      "gate": "Human strategic decision for consequential change"
+    },
+    {
+      "domain": "Protocolometry",
+      "allowed": "Use empirical and methodological literature to test constructs, indicators, scoring anchors, evidence rules, fairness and robustness.",
+      "gate": "Methodology validation and Human Gate before v1.0 freeze"
+    },
+    {
+      "domain": "Research agenda",
+      "allowed": "Generate literature-grounded questions, gaps, comparative hypotheses and replication opportunities.",
+      "gate": "Academic review"
+    },
+    {
+      "domain": "Working Papers / Protocol Notes / Journal",
+      "allowed": "Use as attributed evidence, literature context, counterargument and research framing.",
+      "gate": "Editorial/peer-review rules remain independent"
+    },
+    {
+      "domain": "Programmes / Curriculum / Simulations",
+      "allowed": "Translate approved findings into learning outcomes, concepts, scenarios and assessment prompts without copying protected expression.",
+      "gate": "Human curriculum review"
+    },
+    {
+      "domain": "Briefings / Analysis / Foresight",
+      "allowed": "Use verified recent and foundational literature to improve depth, triangulation and uncertainty framing.",
+      "gate": "Evidence + Human Gate where consequential"
+    },
+    {
+      "domain": "Student Desk",
+      "allowed": "Use approved atoms for source-literacy exercises, examples, quizzes and reading pathways.",
+      "gate": "Sensitive student operations remain HG3"
+    },
+    {
+      "domain": "Virtual Sande / WPAWS",
+      "allowed": "Retrieve approved atoms as source-grounded context for synthesis, comparison and drafting.",
+      "gate": "RAG Gate + applicable release gate"
+    },
+    {
+      "domain": "Public and social communication",
+      "allowed": "Convert approved findings into attributed explainers and platform-specific drafts while preserving factual core and source trace.",
+      "gate": "Human publication approval unless a separately authorised bounded policy applies"
+    }
+  ],
+  "strategic_synthesis_rule": "Institutional DNA and Scholarly DNA must be compared, not conflated. Institutional practice answers what institutions do; scholarly evidence addresses what research, theory or documented analysis supports, contests or explains. WPA strategy should be strongest where both converge and should explicitly flag divergence.",
+  "triangulation_matrix": {
+    "practice_supported_by_scholarship": "HIGH_VALUE_CONVERGENCE",
+    "practice_without_scholarly_support": "PRACTICE_SIGNAL_RESEARCH_GAP",
+    "scholarship_without_observed_practice": "THEORY_OR_EVIDENCE_NOT_YET_INSTITUTIONALLY_OBSERVED",
+    "practice_contradicted_by_scholarship": "REVIEW_REQUIRED",
+    "scholarship_internally_contested": "UNCERTAINTY_MUST_REMAIN_VISIBLE"
+  },
+  "agent_roles": [
+    "Scholarly Discovery Agent",
+    "Metadata and Identity Agent",
+    "Rights and Access Agent",
+    "Authority/Traceability Agent",
+    "Knowledge Extraction Agent",
+    "Contradiction and Retraction Agent",
+    "Doctrine Relation Agent",
+    "Strategy Mapping Agent",
+    "Reuse Routing Agent",
+    "Correction Propagation Agent"
+  ],
+  "rights_and_access_boundaries": [
+    "No login, CAPTCHA, paywall or access-control bypass.",
+    "No silent full-text ingestion from external-only or restricted platforms.",
+    "No reproduction of protected books, chapters or articles beyond what is lawfully permitted.",
+    "Use metadata, abstracts, open text, public-domain/open-license text or manually authorised material according to the applicable rights.",
+    "Preserve authorship and source identity in every Scholarly Knowledge Atom.",
+    "Discovery does not equal permission to ingest or redistribute."
+  ],
+  "quality_rules": [
+    "Citation count alone is not an authority judgment.",
+    "Prestige of journal, country or institution is not a substitute for methodological relevance and traceability.",
+    "Retractions, corrections and expressions of concern must propagate to dependent knowledge objects.",
+    "Conflicting studies are retained as conflict, not averaged into false consensus.",
+    "Recent evidence does not automatically supersede foundational evidence; relevance and methodological quality must be assessed.",
+    "Systematic reviews, standards and high-quality primary studies may have different evidentiary roles and must not be mechanically collapsed into one scale."
+  ],
+  "24_7_ready": {
+    "architecture": true,
+    "continuous_discovery_target": true,
+    "active_scheduler_claimed": false,
+    "note": "The knowledge layer is architected for scheduled proactive discovery and queueing. Do not claim continuous execution until an active verified scheduler and source adapters are operational."
+  },
+  "non_claims": [
+    "Not a replacement for libraries, scholarly databases or peer review.",
+    "Not a copyright harvesting system.",
+    "Not an autonomous Doctrine Kernel editor.",
+    "Not a citation-ranking system.",
+    "Not an intelligence or surveillance function."
+  ]
+}
