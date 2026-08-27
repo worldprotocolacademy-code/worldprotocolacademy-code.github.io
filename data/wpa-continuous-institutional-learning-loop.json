@@ -1,19 +1,22 @@
 {
-  "schema": "wpa-continuous-institutional-learning-loop/1.0",
-  "version": "1.0.0",
-  "updated": "2026-08-25",
+  "schema": "wpa-continuous-institutional-learning-loop/1.1",
+  "version": "1.1.0",
+  "updated": "2026-08-27",
   "name": "WPA Continuous Institutional Learning Loop",
   "name_mk": "Континуиран циклус на институционално учење на WPA",
   "status": "WPA_WORKING_INSTITUTIONAL_METHOD",
   "external_standard": false,
   "world_first_claim": false,
-  "purpose": "Connect WPA research, Protocolometry, governed AI assistance, human authority, publication and institutional learning into one evidence-based feedback cycle.",
+  "purpose": "Connect WPA research, global institutional evidence, Protocolometry, governed AI assistance, human authority, publication and institutional learning into one evidence-based feedback cycle.",
   "public_principle": "Institutional strength is not the sum of its components; it is the quality of the governed connections between them.",
   "public_principle_mk": "Институционалната сила не е збир од нејзините компоненти; таа е квалитетот на управуваните врски меѓу нив.",
+  "institutional_dna_reference": "/data/institute-index/institutional-dna-reuse-layer.json",
+  "practice_atom_schema_reference": "/data/institute-index/institutional-practice-atom.schema.json",
   "loop": [
     "Observe",
     "Research",
     "Verify",
+    "Extract Institutional DNA",
     "Model",
     "Human Gate",
     "Apply",
@@ -21,12 +24,14 @@
     "Correct",
     "Publish",
     "Learn",
+    "Reuse with provenance",
     "Re-enter the cycle"
   ],
   "loop_mk": [
     "Набљудување",
     "Истражување",
     "Проверка",
+    "Извлекување институционална ДНК",
     "Моделирање",
     "Човечка порта",
     "Примена",
@@ -34,6 +39,7 @@
     "Корекција",
     "Објавување",
     "Учење",
+    "Повторна употреба со доказно потекло",
     "Повторно внесување во циклусот"
   ],
   "derived_principles": [
@@ -49,52 +55,30 @@
       "name": "WPA Knowledge & Protocol Foraging",
       "name_mk": "WPA систематско откривање знаење и протоколарни практики",
       "rule": "Use public or authorised sources to discover emerging standards, research, institutional practice, protocol cases and technology signals; verify provenance before institutional use.",
-      "pipeline": [
-        "Scan",
-        "Source",
-        "Verify",
-        "Classify",
-        "Compare",
-        "Human Review",
-        "Ingest"
-      ],
-      "boundaries": [
-        "No surveillance",
-        "No intelligence function",
-        "No cyber intrusion",
-        "No paywall or authentication bypass",
-        "No unverified RAG ingestion",
-        "No private-source harvesting without authorisation"
-      ]
+      "pipeline": ["Scan", "Source", "Verify", "Classify", "Compare", "Human Review", "Ingest"],
+      "boundaries": ["No surveillance", "No intelligence function", "No cyber intrusion", "No paywall or authentication bypass", "No unverified RAG ingestion", "No private-source harvesting without authorisation"]
+    },
+    {
+      "id": "institutional_dna_reuse",
+      "name": "Institutional DNA Reuse Principle",
+      "name_mk": "Принцип на повторна употреба на институционалната ДНК",
+      "rule": "Verified institutional practices extracted from Evidence Dossiers may inform all eligible WPA Institute domains through source-traceable Practice Atoms, while preserving context, attribution, uncertainty and Human Gate controls.",
+      "pipeline": ["Evidence Dossier", "Practice Atom", "Reuse Proposal", "Human Review", "Bounded Application", "Outcome Measurement", "Correction", "Knowledge Reintegration"],
+      "boundaries": ["No proprietary copying", "No false origin claim", "No implied affiliation", "No doctrine mutation without HG4", "No consequential reuse without the applicable Human Gate"]
     },
     {
       "id": "capability_resilience_pairing",
       "name": "Capability-Resilience Pairing Principle",
       "name_mk": "Принцип на спарување на способноста и отпорноста",
       "rule": "Every new institutional capability must be evaluated together with the dependency, vulnerability, misuse path and authority risk it creates.",
-      "questions": [
-        "What new capability is created?",
-        "What new dependency is introduced?",
-        "What can fail or be misused?",
-        "Who can pause, override or revoke?",
-        "What evidence is required before release?"
-      ]
+      "questions": ["What new capability is created?", "What new dependency is introduced?", "What can fail or be misused?", "Who can pause, override or revoke?", "What evidence is required before release?"]
     },
     {
       "id": "outcome_based_protocolometry",
       "name": "Outcome-Based Protocolometry",
       "name_mk": "Протоколометрија заснована на исходи",
       "rule": "Measure institutional performance by evidence-backed outcomes and correction capacity, not by the number of units, documents, agents or organisational labels.",
-      "candidate_metrics": [
-        "time_to_detect_protocol_risk",
-        "time_to_verified_correction",
-        "verified_source_coverage",
-        "human_review_completion_rate",
-        "repeat_error_rate",
-        "mandate_traceability",
-        "correction_loop_time",
-        "decision_provenance_completeness"
-      ]
+      "candidate_metrics": ["time_to_detect_protocol_risk", "time_to_verified_correction", "verified_source_coverage", "human_review_completion_rate", "repeat_error_rate", "mandate_traceability", "correction_loop_time", "decision_provenance_completeness"]
     },
     {
       "id": "ecosystem_connection_quality",
@@ -104,18 +88,21 @@
     }
   ],
   "wpa_system_mapping": {
-    "observation_and_discovery": ["WPA Watch", "Academic Search Hub", "public or authorised sources"],
+    "observation_and_discovery": ["WPA Watch", "Academic Search Hub", "Global Institutional Evidence Programme", "public or authorised sources"],
+    "institutional_core_extraction": ["Evidence Dossiers", "Institutional Practice Atoms", "Institutional DNA Reuse Layer"],
     "measurement_and_comparison": ["Protocolometry Center"],
     "governed_synthesis_and_production": ["WPAWS", "Virtual Sande"],
     "governance": ["Doctrine Kernel", "Preventive Source Compliance Gate", "Evidence Gate", "Safety Gate", "Human Approval Gate"],
+    "reuse_destinations": ["research", "Working Papers", "Protocol Notes", "WPA Journal", "programmes", "simulations", "practitioner lectures", "Student Desk", "briefings", "governance/QA", "strategy", "public communication", "OPC/events", "annual reporting/foresight"],
     "publication_and_learning": ["WPA Journal", "WPA publications", "programmes", "institutional practice"],
-    "feedback": ["measured outcomes", "corrections", "new research questions", "knowledge reintegration"]
+    "feedback": ["measured outcomes", "corrections", "new research questions", "knowledge reintegration", "Practice Atom revision/withdrawal"]
   },
   "non_claims": [
     "Not an external standard",
     "Not a military or intelligence model",
     "Not an autonomous decision system",
     "Not evidence of government affiliation",
-    "Not permission for agents to bypass Human Gate"
+    "Not permission for agents to bypass Human Gate",
+    "Not permission to copy proprietary curricula or protected expression"
   ]
 }
