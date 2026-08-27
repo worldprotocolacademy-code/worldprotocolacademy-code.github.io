@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0-candidate",
+  "updated": "2026-08-27",
+  "status": "ACTIVE_PRE_V1_EXECUTION_BLUEPRINT",
+  "title": "WPA Protocolometry / Institute Index v1.0 Execution Blueprint",
+  "purpose": "Operationalise the WPA measurement and future ranking strategy from global institutional discovery through evidence dossiers, scoring validation, shadow comparison, human governance and an optional later public ordinal release.",
+  "computational_kernel": "/data/institute-index-methodology-candidate.json",
+  "evidence_programme": "/data/institute-index/four-pillar-operating-model.json",
+  "dossier_registry": "/data/institute-index/dossier-registry-and-queue.json",
+  "governing_principles": [
+    "Measurement first; ranking, if ever activated, is a controlled derived output.",
+    "Public evidence only during the evidence-building phase.",
+    "NE means Not Evidenced; it is not zero, not an estimate and not a penalty.",
+    "Absolute standard-referenced scoring precedes peer comparison.",
+    "Institution size, country prestige, marketing reach and follower counts must not become hidden quality proxies.",
+    "Agents may discover, extract, map, test and flag; final consequential judgment remains human-governed.",
+    "Every published result must remain traceable to methodology version, dataset snapshot and evidence record.",
+    "Correction rights and conflict-of-interest controls are part of the measurement system, not post-publication extras."
+  ],
+  "strategic_output_model": {
+    "primary": "Institutional scorecard across D1-D4 and I01-I20 when evidence thresholds are met",
+    "required_companion": "Weighted Evidence Coverage percentage and indicator-level evidence status",
+    "secondary": "Peer-type diagnostic comparison when a defensible peer sample exists",
+    "optional_future": "Public ordinal ranking only after all release gates pass and a separate human governance decision activates it",
+    "preferred_publication_order": [
+      "evidence dossier",
+      "reviewed scorecard",
+      "dimension profile",
+      "peer diagnostic",
+      "ordinal ranking only if separately authorised"
+    ]
+  },
+  "execution_stages": [
+    {
+      "stage": "S0",
+      "name": "Universe and entity resolution",
+      "status": "ACTIVE",
+      "inputs": ["REV3 frozen canonical baseline", "REV4 coverage cases", "official/authoritative public sources"],
+      "outputs": ["resolved institution identity", "peer type candidate", "duplicate/successor/branch decision", "canonical merge recommendation"],
+      "release_effect": "No score and no rank"
+    },
+    {
+      "stage": "S1",
+      "name": "Evidence Dossier factory",
+      "status": "ACTIVE",
+      "inputs": ["resolved institution", "public source register", "I01-I20 methodology"],
+      "outputs": ["institutional core", "source register", "I01-I20 evidence statuses", "uncertainty register"],
+      "release_effect": "Evidence preparation only"
+    },
+    {
+      "stage": "S2",
+      "name": "Independent double scoring",
+      "status": "NOT_STARTED",
+      "inputs": ["human-reviewable completed dossiers"],
+      "outputs": ["two independent candidate score vectors", "disagreement log", "reconciliation record"],
+      "release_effect": "Internal candidate scoring only"
+    },
+    {
+      "stage": "S3",
+      "name": "Calibration and fairness",
+      "status": "NOT_STARTED",
+      "inputs": ["Pilot 20 double-scored cases"],
+      "outputs": ["anchor consistency results", "peer-type fairness review", "small/specialist institution edge-case review", "source-quality bias review"],
+      "release_effect": "No public ordinal rank"
+    },
+    {
+      "stage": "S4",
+      "name": "Robustness and sensitivity",
+      "status": "NOT_STARTED",
+      "inputs": ["Pilot 20 reconciled scores"],
+      "outputs": ["weight sensitivity", "indicator correlation/redundancy", "rank-order stability diagnostic", "evidence-threshold stress test"],
+      "release_effect": "Shadow comparison only"
+    },
+    {
+      "stage": "S5",
+      "name": "Shadow Index",
+      "status": "LOCKED",
+      "inputs": ["validated scoring model", "reviewed real-institution dossiers"],
+      "outputs": ["non-public comparative table", "score dispersion", "peer-type distributions", "outlier/contradiction review"],
+      "release_effect": "Names and ordinal positions remain non-public"
+    },
+    {
+      "stage": "S6",
+      "name": "Correction and institution review window",
+      "status": "LOCKED",
+      "inputs": ["reviewed scorecards", "evidence snapshots"],
+      "outputs": ["factual correction log", "accepted/rejected evidence decisions", "versioned score changes where justified"],
+      "release_effect": "No public ordinal rank until correction window closes"
+    },
+    {
+      "stage": "S7",
+      "name": "v1.0 methodology freeze",
+      "status": "LOCKED",
+      "inputs": ["validation results", "correction test results", "governance review"],
+      "outputs": ["frozen definitions", "frozen weights", "frozen formulas", "source rules", "dataset snapshot rule", "changelog", "appeals procedure"],
+      "release_effect": "Creates v1.0 eligibility, not automatic ranking publication"
+    },
+    {
+      "stage": "S8",
+      "name": "Public release decision",
+      "status": "LOCKED",
+      "inputs": ["all readiness gates passed", "formal human governance decision"],
+      "outputs": ["scorecard-only release", "banded comparison release", "or ordinal ranking release"],
+      "release_effect": "Consequential publication only if explicitly authorised"
+    }
+  ],
+  "anti_gaming_and_fairness_rules": [
+    "Do not award quality for institutional size, budget, national power, fame or social-media audience unless an indicator explicitly measures a mission-relevant documented practice.",
+    "Do not infer quality from absence of English-language material where authoritative material exists in another language.",
+    "Do not double-count the same underlying factual achievement as multiple independent achievements across indicators.",
+    "Do not convert promotional claims into high scores without corroborating primary or authoritative evidence.",
+    "Do not reward quantity of partnerships; score verified cooperation quality and evidence relevant to I18.",
+    "Do not treat missing public evidence as institutional failure unless verified evidence establishes non-conformance.",
+    "Do not compare raw ordinal positions across incompatible peer types without displaying the standard-referenced score first.",
+    "Do not allow paid relationships, sponsorship, partnerships or participation fees to affect inclusion, scoring or correction decisions."
+  ],
+  "current_state": {
+    "canonical_baseline_total_records": 161,
+    "canonical_baseline_external_records": 160,
+    "canonical_baseline_distinct_external_institutions": 155,
+    "rev4_candidate_or_entity_review_cases": 51,
+    "first_pass_dossiers": 6,
+    "queued_for_dossier": 38,
+    "entity_resolution_first": 7,
+    "public_ordinal_ranking": false
+  },
+  "next_operational_milestones": [
+    "Complete the seven entity-resolution-first cases sufficiently for dossier eligibility or documented exclusion/withhold.",
+    "Complete the remaining thirty-eight first-pass Evidence Dossiers.",
+    "Select a balanced Pilot 20 from the resolved dossier universe using the published pilot-selection protocol.",
+    "Run two independent scoring passes on Pilot 20.",
+    "Run calibration, fairness, sensitivity and redundancy diagnostics.",
+    "Run a non-public Shadow Index and inspect unstable ordinal movements.",
+    "Test the factual correction process on real dossiers.",
+    "Freeze Protocolometry v1.0 only after evidence from those tests justifies the final model."
+  ],
+  "hard_release_rule": "No real-institution public ordinal ranking may be produced merely because scores can be calculated. Ordinal publication requires passed readiness gates, a frozen v1.0 methodology, a closed correction test and an explicit authorised human governance decision."
+}
