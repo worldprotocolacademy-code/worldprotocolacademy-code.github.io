@@ -1,6 +1,6 @@
 {
   "schema": "wpa-connected-vessels-system/1.0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "updated": "2026-08-27",
   "name": "WPA System of Connected Vessels",
   "name_mk": "WPA Систем на сврзани садови",
@@ -11,8 +11,9 @@
   "principle_mk": "Еден проверен влез може да се пренесе до секој соодветен WPA систем, но само со доказно потекло, ограничена намена, верзиска дисциплина и применливата Човечка порта.",
   "formula": "Signal -> Source Compliance -> Evidence -> Institutional DNA / WPA Knowledge Object -> Governed Routing -> Eligible WPA Systems -> Human Gate where required -> Application / Publication -> Measurement -> Correction -> Knowledge Reintegration",
   "always_on_semantics": {
-    "meaning": "24/7-ready means scheduled monitoring, queueing, validation and routing may run without a human continuously present where technical infrastructure and lawful source access are active. It does not mean that all agents, social APIs or external platforms are continuously connected or autonomously publishing.",
-    "hourly_heartbeat": true,
+    "meaning": "24/7-ready means monitoring, queueing, validation and routing are architected for scheduled operation where technical infrastructure and lawful source access are active. It does not mean that all agents, social APIs or external platforms are continuously connected or autonomously publishing.",
+    "hourly_heartbeat_designed": true,
+    "hourly_scheduler_active": false,
     "continuous_queue_readiness": true,
     "automatic_authority_expansion": false,
     "automatic_doctrine_mutation": false,
@@ -20,56 +21,14 @@
     "consequential_release_requires_human_gate": true
   },
   "vessels": [
-    {
-      "id": "V01",
-      "name": "Public Signal Vessel",
-      "systems": ["WPA Watch", "Academic Search Hub", "official institutional sources", "authorised public feeds", "official WPA social channels"],
-      "role": "detect public signals and create source-checkable candidates",
-      "boundary": "No surveillance, private tracking, access-control bypass or prohibited scraping"
-    },
-    {
-      "id": "V02",
-      "name": "Evidence Vessel",
-      "systems": ["Preventive Source Compliance Gate", "Global Institutional Evidence Programme", "Evidence Dossiers", "source registers"],
-      "role": "verify provenance, identity, context, uncertainty and correction state"
-    },
-    {
-      "id": "V03",
-      "name": "Institutional DNA Vessel",
-      "systems": ["Institutional Practice Atoms", "Institutional DNA Reuse Layer", "Protocolometry"],
-      "role": "turn verified institutional practice into reusable, source-traceable knowledge objects"
-    },
-    {
-      "id": "V04",
-      "name": "Research and Editorial Vessel",
-      "systems": ["Working Papers", "Protocol Notes", "WPA Journal", "Case Studies", "Policy Briefs", "Annual Report", "Foresight"],
-      "role": "route verified knowledge into research questions, comparative analysis and editorial candidates without automatic acceptance"
-    },
-    {
-      "id": "V05",
-      "name": "Learning and Practice Vessel",
-      "systems": ["WPA Programmes", "Curriculum", "Simulations", "Student Desk", "Practitioner Lectures", "OPC / Events"],
-      "role": "reuse approved patterns as teaching structures, scenarios, examples and practice questions"
-    },
-    {
-      "id": "V06",
-      "name": "AI and Orchestration Vessel",
-      "systems": ["Virtual Sande", "WPAWS 17 Executive Agents", "up to 80 bounded tactical-operational seats", "Strategic Prompt Router"],
-      "role": "coordinate discovery, synthesis, routing, QA and bounded production without inheriting final institutional authority"
-    },
-    {
-      "id": "V07",
-      "name": "Public Communication and Social Vessel",
-      "systems": ["WPA website", "Facebook", "Instagram", "X / Twitter", "TikTok", "YouTube", "future regional channels"],
-      "role": "prepare and distribute human-approved public communication across official WPA channels",
-      "boundary": "Automatic external publishing requires separately authorised official platform adapters and credentials; absent those, the vessel prepares queues and human-share actions only."
-    },
-    {
-      "id": "V08",
-      "name": "Trust, Measurement and Correction Vessel",
-      "systems": ["Protocolometry", "Trust & Corrections", "Human Gate", "QA", "governance decision log"],
-      "role": "measure outcomes, process corrections, propagate material changes and return lessons to the knowledge corpus"
-    }
+    {"id":"V01","name":"Public Signal Vessel","systems":["WPA Watch","Academic Search Hub","official institutional sources","authorised public feeds","official WPA social channels"],"role":"detect public signals and create source-checkable candidates","boundary":"No surveillance, private tracking, access-control bypass or prohibited scraping"},
+    {"id":"V02","name":"Evidence Vessel","systems":["Preventive Source Compliance Gate","Global Institutional Evidence Programme","Evidence Dossiers","source registers"],"role":"verify provenance, identity, context, uncertainty and correction state"},
+    {"id":"V03","name":"Institutional DNA Vessel","systems":["Institutional Practice Atoms","Institutional DNA Reuse Layer","Protocolometry"],"role":"turn verified institutional practice into reusable, source-traceable knowledge objects"},
+    {"id":"V04","name":"Research and Editorial Vessel","systems":["Working Papers","Protocol Notes","WPA Journal","Case Studies","Policy Briefs","Annual Report","Foresight"],"role":"route verified knowledge into research questions, comparative analysis and editorial candidates without automatic acceptance"},
+    {"id":"V05","name":"Learning and Practice Vessel","systems":["WPA Programmes","Curriculum","Simulations","Student Desk","Practitioner Lectures","OPC / Events"],"role":"reuse approved patterns as teaching structures, scenarios, examples and practice questions"},
+    {"id":"V06","name":"AI and Orchestration Vessel","systems":["Virtual Sande","WPAWS 17 Executive Agents","up to 80 bounded tactical-operational seats","Strategic Prompt Router"],"role":"coordinate discovery, synthesis, routing, QA and bounded production without inheriting final institutional authority"},
+    {"id":"V07","name":"Public Communication and Social Vessel","systems":["WPA website","Facebook","Instagram","X / Twitter","TikTok","YouTube","future regional channels"],"role":"prepare and distribute human-approved public communication across official WPA channels","boundary":"Automatic external publishing requires separately authorised official platform adapters and credentials; absent those, the vessel prepares queues and human-share actions only."},
+    {"id":"V08","name":"Trust, Measurement and Correction Vessel","systems":["Protocolometry","Trust & Corrections","Human Gate","QA","governance decision log"],"role":"measure outcomes, process corrections, propagate material changes and return lessons to the knowledge corpus"}
   ],
   "governed_handoffs": [
     "A signal may become evidence only after source-compliance checks.",
@@ -82,8 +41,8 @@
   "social_integration": {
     "registry": "/data/wpa-social-network.json",
     "distribution_queue": "/data/wpa-social-distribution-queue.json",
-    "active_official_channels": ["facebook", "instagram", "x", "tiktok", "youtube"],
-    "planned_channels": ["wechat", "telegram", "whatsapp", "vk"],
+    "active_official_channels": ["facebook","instagram","x","tiktok","youtube"],
+    "planned_channels": ["wechat","telegram","whatsapp","vk"],
     "listening_rule": "Use only official APIs, authorised feeds, public pages where automated access is permitted, or human-supplied public material. Do not bypass platform controls.",
     "publishing_rule": "No automatic posting until the relevant official platform adapter, credential scope, security review and Human Gate policy are verified.",
     "cross_platform_rule": "One approved WPA knowledge object can generate platform-specific draft variants while preserving the same source trace ID and factual core."
@@ -95,23 +54,25 @@
   },
   "runtime": {
     "heartbeat_script": "/scripts/wpa-connected-vessels-heartbeat.mjs",
-    "scheduled_workflow": "/.github/workflows/wpa-connected-vessels-hourly.yml",
-    "heartbeat_frequency": "hourly",
-    "scheduler_status": "DEFINED_IN_GITHUB_ACTIONS",
+    "heartbeat_frequency_target": "hourly",
+    "scheduler_status": "PENDING_ACTIVATION_WRITE_BLOCKED_IN_CURRENT_SESSION",
+    "scheduler_note": "The heartbeat implementation exists, but creation of the active .github/workflows scheduler was blocked by the current platform write-control. Do not claim active hourly execution until a workflow run is independently verified.",
     "public_source_refresh": "SEPARATE_SOURCE_REGISTRY_REQUIRED_BEFORE_REACTIVATION",
+    "legacy_feed_workflow_note": "The legacy update-live-feed workflow references a source registry that is absent from the current main branch and must not be activated unchanged.",
     "social_platform_api_adapters": "NOT_CONNECTED_IN_CURRENT_REPOSITORY",
     "social_publish_queue": "ACTIVE_GOVERNED_QUEUE_MODEL"
   },
   "human_gate": {
-    "HG0": "Informational routing, local validation and reversible candidate preparation may be automated.",
-    "HG1": "Bounded scheduled monitoring and queue maintenance may run under a preapproved mandate.",
-    "HG2": "Consequential external institutional communication, scoring release or reputational publication requires attributable human approval unless a separately approved bounded policy explicitly permits the exact action.",
-    "HG3": "Credentials, private data, payments, formal assessment records and sensitive backends require approved secure infrastructure and human preapproval.",
-    "HG4": "Doctrine, institutional mandate, new authority and official commitments cannot be finally decided by machines."
+    "HG0":"Informational routing, local validation and reversible candidate preparation may be automated.",
+    "HG1":"Bounded scheduled monitoring and queue maintenance may run under a preapproved mandate.",
+    "HG2":"Consequential external institutional communication, scoring release or reputational publication requires attributable human approval unless a separately approved bounded policy explicitly permits the exact action.",
+    "HG3":"Credentials, private data, payments, formal assessment records and sensitive backends require approved secure infrastructure and human preapproval.",
+    "HG4":"Doctrine, institutional mandate, new authority and official commitments cannot be finally decided by machines."
   },
   "non_claims": [
     "24/7-ready does not mean every external API is currently connected.",
     "No claim that 17 plus 80 agents are continuously executing at all times.",
+    "No claim that the hourly scheduler is active until an actual scheduled workflow is created and verified.",
     "No automatic social posting is claimed without verified platform credentials and adapters.",
     "No surveillance, intelligence, private tracking or prohibited scraping function.",
     "No autonomous ranking, accreditation, credential or legal authority."
