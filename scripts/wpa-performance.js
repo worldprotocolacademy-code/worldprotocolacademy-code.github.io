@@ -27,6 +27,13 @@
     return path().toLowerCase() === '/papers.html';
   }
 
+  function isPublicSquare() {
+    var p = page();
+    var q = path().toLowerCase();
+    return p === 'programmes' || p === 'certification' || p === 'wpa-card' || p === 'passive-revenue' ||
+      q === '/programmes.html' || q === '/certification.html' || q === '/wpa-card.html' || q === '/passive-revenue.html';
+  }
+
   function addStylesheet(id, href) {
     if (document.getElementById(id)) return;
     var link = document.createElement('link');
@@ -304,6 +311,7 @@
     addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20260716-1');
   }
   if (isHome()) addStylesheet('wpa-home-five-row-nav-css', '/styles/wpa-home-nav-five-rows.css?v=20260810-2');
+  if (isPublicSquare()) addScript('wpa-public-square-runtime', '/scripts/wpa-public-square-runtime.js?v=20260827-1');
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
   addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20260722');
 
