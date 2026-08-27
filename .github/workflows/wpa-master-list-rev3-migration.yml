@@ -1,0 +1,68 @@
+name: WPA Master List REV3 Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wpa-master-list-rev3-migration.py'
+      - '.github/workflows/wpa-master-list-rev3-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run deterministic REV3 migration and QA assertions
+        run: python scripts/wpa-master-list-rev3-migration.py
+
+      - name: Inspect generated delta
+        run: |
+          git status --short
+          git diff --check
+          test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.json
+          test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.csv
+          test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV3.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev3/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV3.md
+
+      - name: Commit REV3 only after QA passes
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No migration changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            MASTER-LIST-CANONICAL.md \
+            CHANGELOG.md \
+            README.md \
+            institute.html \
+            intelligence-center.html \
+            wpa-live-intelligence-feed.html \
+            wpa-global-institutions-master-list.html \
+            master-list-verification.html \
+            wpa-metrics-status.html \
+            wpa_institutions_master_list_v1.0.html \
+            data/master-list-verification-status.json \
+            data/wpa-canonical-metrics-status.json \
+            data/global-institutions/v1.0-corrected-4f-rev3 \
+            tools/data/institutions-master-rev3.json \
+            tools/data/institutions-master.schema.json \
+            tools/assets/wpa-five-engines.js \
+            tools/qa-institute.sh \
+            forms/wpa-index-public-disclaimer.md
+          git commit -m "Promote Master List REV3 with 160 external records"
+          git push origin HEAD:main
