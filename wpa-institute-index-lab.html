@@ -1,3 +1,124 @@
-<!doctype html><html lang="mk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WPA Institute Index Laboratory · Candidate Methodology</title><meta name="description" content="Public synthetic worked examples and self-assessment calculator for the WPA Institute Index 0.9 candidate methodology. No real institutions are ranked."><link rel="canonical" href="https://worldprotocolacademy.mk/wpa-institute-index-lab.html"><style>:root{--n:#0d1f3c;--g:#c9a84c;--c:#f8f4ee;--w:#fff;--t:#202735;--m:#667085;--l:#ddd2bd}*{box-sizing:border-box}body{margin:0;background:var(--c);color:var(--t);font:16px/1.65 Inter,system-ui,Arial,sans-serif}.wrap{width:min(1040px,calc(100% - 32px));margin:auto}header,footer{background:var(--n);color:#fff;padding:18px 0}.hero{padding:64px 0 38px}.hero h1,h2,h3{font-family:Georgia,serif;color:var(--n)}.hero h1{font-size:clamp(36px,5vw,58px);line-height:1.05}.tag{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:#7f641d}.notice{border-left:5px solid var(--g);background:#fff7df;padding:18px;margin:22px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}.card,.calc{background:#fff;border:1px solid var(--l);padding:21px;border-radius:12px}.card h3{margin-top:0}.bar{height:8px;background:#eee6d8;border-radius:99px;margin:6px 0 12px;overflow:hidden}.bar span{display:block;height:100%;background:var(--g)}.row{display:grid;grid-template-columns:1fr 100px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #eee}.row:first-of-type{border-top:0}input[type=number]{width:100%;padding:9px;border:1px solid var(--l);border-radius:7px}.btn{border:0;background:var(--g);padding:11px 16px;border-radius:999px;font-weight:900;cursor:pointer}.out{margin-top:18px;padding:18px;background:#f5efe3;border-radius:9px}.score{font:700 40px/1 Georgia,serif;color:var(--n)}.muted{color:var(--m)}a{color:inherit}</style></head><body><header><div class="wrap">World Protocol Academy · Institute Index Laboratory</div></header><main class="wrap"><section class="hero"><div class="tag">0.9-candidate · Synthetic examples only</div><h1>Institute Index Laboratory</h1><p class="muted">Методолошка лабораторија за тестирање на четирите provisional dimensions пред Institute Index v1.0.</p><div class="notice"><strong>No real-institution ranking:</strong> примерите подолу се намерно синтетички. Тие не се вистински институции, не создаваат акредитација, endorsement или јавна ранг-листа. Тежините остануваат provisional до исполнување на finalisation gates и независна методолошка review.</div></section><section><h2>Candidate dimensions</h2><div class="grid"><article class="card"><h3>D1 · Research & publications · 30%</h3><p class="muted">Documented scholarly/research outputs and verifiable discovery/citation evidence where applicable.</p></article><article class="card"><h3>D2 · Programmes & certification discipline · 25%</h3><p class="muted">Programme structure, learning outcomes, assessment rules and credential/status transparency.</p></article><article class="card"><h3>D3 · Professional practice · 25%</h3><p class="muted">Documented practitioner activity, applied research and public evidence of professional implementation.</p></article><article class="card"><h3>D4 · Transparency & collaboration · 20%</h3><p class="muted">Publication openness, institutional clarity, governance/contact transparency and evidenced cooperation.</p></article></div></section><section><h2>Three synthetic worked examples</h2><div class="grid" id="examples"></div></section><section style="margin-top:36px"><h2>Self-assessment calculator</h2><div class="calc"><p class="muted">Enter evidence-based dimension estimates from 0–100. This is a methodological sandbox; it does not issue an official WPA score.</p><div id="rows"></div><button class="btn" id="calcBtn">Calculate candidate composite</button><div class="out" id="out"><span class="muted">No calculation yet.</span></div></div></section><section style="margin-top:36px"><h2>Interpretation rules</h2><ul class="muted"><li>Composite = D1×0.30 + D2×0.25 + D3×0.25 + D4×0.20.</li><li>A numeric composite must not conceal weak evidence quality or unresolved provenance.</li><li>Missing evidence should be recorded as missing, not automatically treated as institutional weakness.</li><li>Before v1.0: record-level verification, COI/correction procedure, independent review and worked-example testing remain gates.</li><li>Real institutions should not be publicly ranked from this laboratory.</li></ul><p><a href="/wpa-index-appeals-and-corrections.html">Corrections & Appeals</a> · <a href="/master-list-verification.html">Master List Verification</a> · <a href="/aab-governance.html">AAB Governance</a></p></section></main><footer><div class="wrap">Synthetic methodology laboratory · Measurement is not accreditation</div></footer><script>
-const W=[.30,.25,.25,.20],N=['Research & publications','Programmes & certification discipline','Professional practice','Transparency & collaboration'];const ex=[{name:'Synthetic Institute A',v:[82,74,68,91],note:'Strong research/transparency; professional practice needs deeper evidence.'},{name:'Synthetic Institute B',v:[55,88,84,63],note:'Strong programme and practice profile; research documentation is thinner.'},{name:'Synthetic Institute C',v:[70,66,73,78],note:'Balanced hypothetical profile with no dimension treated as determinative.'}];function comp(v){return Math.round(v.reduce((s,x,i)=>s+x*W[i],0)*10)/10}document.getElementById('examples').innerHTML=ex.map(e=>'<article class="card"><h3>'+e.name+'</h3>'+e.v.map((x,i)=>'<strong>'+N[i]+' · '+x+'</strong><div class="bar"><span style="width:'+x+'%"></span></div>').join('')+'<p><strong>Candidate composite: '+comp(e.v)+'/100</strong></p><p class="muted">'+e.note+'</p></article>').join('');document.getElementById('rows').innerHTML=N.map((n,i)=>'<div class="row"><label for="d'+i+'"><strong>D'+(i+1)+' · '+n+'</strong><br><span class="muted">Weight '+Math.round(W[i]*100)+'%</span></label><input id="d'+i+'" type="number" min="0" max="100" step="1" placeholder="0–100"></div>').join('');document.getElementById('calcBtn').onclick=()=>{const v=N.map((_,i)=>{const n=Number(document.getElementById('d'+i).value);return Math.max(0,Math.min(100,Number.isFinite(n)?n:0))});document.getElementById('out').innerHTML='<div class="score">'+comp(v)+'/100</div><p class="muted">Candidate composite only. No accreditation, recognition, ranking, partnership or official WPA assessment is created by this result.</p>'};
-</script></body></html>
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Institute Index Laboratory · 20-Indicator Candidate</title>
+<meta name="description" content="Public synthetic laboratory for the WPA Institute Index v0.9.1 candidate methodology: 20 indicators, evidence coverage, 0-5/NE scoring and controlled pilot validation. No real institutions are ranked.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/wpa-institute-index-lab.html">
+<style>
+:root{--n:#0d1f3c;--g:#c9a84c;--c:#f8f4ee;--w:#fff;--t:#202735;--m:#667085;--l:#ddd2bd;--ok:#eaf5ec;--warn:#fff7df}*{box-sizing:border-box}body{margin:0;background:var(--c);color:var(--t);font:16px/1.65 Inter,system-ui,Arial,sans-serif}.wrap{width:min(1120px,calc(100% - 32px));margin:auto}header,footer{background:var(--n);color:#fff;padding:18px 0}.hero{padding:64px 0 38px}.hero h1,h2,h3{font-family:Georgia,serif;color:var(--n)}.hero h1{font-size:clamp(36px,5vw,58px);line-height:1.05}.tag{font-size:11px;text-transform:uppercase;letter-spacing:.12em;font-weight:900;color:#7f641d}.notice{border-left:5px solid var(--g);background:var(--warn);padding:18px;margin:22px 0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}.card,.calc,.panel{background:#fff;border:1px solid var(--l);padding:21px;border-radius:12px}.card h3,.panel h3{margin-top:0}.bar{height:8px;background:#eee6d8;border-radius:99px;margin:6px 0 12px;overflow:hidden}.bar span{display:block;height:100%;background:var(--g)}.muted{color:var(--m)}.small{font-size:13px}.pill{display:inline-block;border:1px solid var(--l);border-radius:999px;padding:4px 9px;margin:3px 4px 3px 0;font-size:12px;background:#fff}.tbl{width:100%;border-collapse:collapse;background:#fff}.tbl th,.tbl td{border:1px solid #e5dccd;padding:10px;vertical-align:top}.tbl th{background:#f2eadc;text-align:left}.indicator{margin:9px 0;padding:12px;border:1px solid #ece3d4;border-radius:9px;background:#fff}.indicator strong{color:var(--n)}.score-grid{display:grid;grid-template-columns:1fr 120px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid #eee}.score-grid:first-of-type{border-top:0}select{width:100%;padding:9px;border:1px solid var(--l);border-radius:7px;background:#fff}.btn{border:0;background:var(--g);padding:11px 16px;border-radius:999px;font-weight:900;cursor:pointer}.out{margin-top:18px;padding:18px;background:#f5efe3;border-radius:9px}.score{font:700 40px/1 Georgia,serif;color:var(--n)}a{color:inherit}.ok{background:var(--ok);padding:12px;border-radius:9px}.gate{padding:8px 0;border-bottom:1px solid #eee}.gate:last-child{border-bottom:0}@media(max-width:720px){.score-grid{grid-template-columns:1fr}.tbl{font-size:13px}.wrap{width:min(100% - 20px,1120px)}}
+</style>
+</head>
+<body>
+<header><div class="wrap">World Protocol Academy · Institute Index Laboratory</div></header>
+<main class="wrap">
+<section class="hero">
+<div class="tag">v0.9.1-candidate · 20 indicators · synthetic & controlled testing only</div>
+<h1>Institute Index Laboratory</h1>
+<p class="muted">Методолошка лабораторија за специјализирано мерење на академии и институции за протокол, дипломатија и сродни области.</p>
+<div class="notice"><strong>We do not rank. We measure.</strong> Оваа страница е јавна методолошка лабораторија. Не создава акредитација, официјално признавање, endorsement или конечна светска ранг-листа. Real-institution ordinal ranking е исклучен додека не се исполнат v1.0 finalisation gates и посебна governance одлука.</div>
+</section>
+
+<section>
+<h2>Four dimensions · 20 indicators</h2>
+<div class="grid">
+<article class="card"><h3>D1 · Research & Publications · 30%</h3><p class="muted">5 indicators × 6%. Проверени research outputs, traceability, citation/reference visibility, contribution to protocol/diplomacy knowledge and international research collaboration.</p></article>
+<article class="card"><h3>D2 · Programmes & Learning Assurance · 25%</h3><p class="muted">5 indicators × 5%. Programme architecture, learning outcomes, assessment discipline, faculty/practitioner transparency and credential integrity.</p></article>
+<article class="card"><h3>D3 · Professional Practice · 25%</h3><p class="muted">5 indicators × 5%. Documented practice, applied cases, simulations, practitioner integration and knowledge transfer/impact.</p></article>
+<article class="card"><h3>D4 · Transparency, Governance & Cooperation · 20%</h3><p class="muted">5 indicators × 4%. Identity/governance clarity, provenance/correction, verified cooperation, digital transparency and ethics/COI/data governance.</p></article>
+</div>
+</section>
+
+<section style="margin-top:34px">
+<h2>Indicator register</h2>
+<div id="indicatorRegister"></div>
+</section>
+
+<section style="margin-top:34px">
+<h2>Scoring anchors</h2>
+<table class="tbl">
+<tr><th>Code</th><th>Meaning</th><th>Operational rule</th></tr>
+<tr><td>0</td><td>Verified non-conformance</td><td>Sufficient evidence shows the criterion is absent, contradicted or materially fails the published standard.</td></tr>
+<tr><td>1</td><td>Minimal</td><td>Limited or ad hoc element with weak structure or verification.</td></tr>
+<tr><td>2</td><td>Basic</td><td>Recognisable but incomplete, inconsistent or weakly evidenced practice.</td></tr>
+<tr><td>3</td><td>Established</td><td>Clearly implemented and adequately evidenced.</td></tr>
+<tr><td>4</td><td>Strong</td><td>Mature, consistent and supported by strong primary/authoritative evidence.</td></tr>
+<tr><td>5</td><td>Exemplary</td><td>Unusually strong, reproducible and well-governed practice with high-quality evidence.</td></tr>
+<tr><td><strong>NE</strong></td><td><strong>Not evidenced</strong></td><td><strong>Not zero. Not estimated. Not penalised by imputation.</strong></td></tr>
+</table>
+</section>
+
+<section style="margin-top:34px">
+<h2>Evidence rules</h2>
+<div class="grid">
+<article class="card"><h3>Tier A · Primary / official</h3><p class="muted">Official institutional pages/documents, government or legal registries, official repositories, DOI/ISBN/ISSN or equivalent primary metadata.</p></article>
+<article class="card"><h3>Tier B · Authoritative external</h3><p class="muted">Recognised scholarly/bibliographic indexes, international organisations, established academic databases or independent registries.</p></article>
+<article class="card"><h3>Tier C · Reputable secondary</h3><p class="muted">Reputable universities, research organisations, established professional publications and credible secondary documentation.</p></article>
+<article class="card"><h3>Tier D · Uncorroborated / promotional</h3><p class="muted">Marketing copy, social posts, unverified directories or unsupported partnership claims. Tier D alone cannot support a score above 2.</p></article>
+</div>
+<p class="ok"><strong>Core rule:</strong> follower counts, likes and general popularity are not academic or professional quality indicators. URL presence alone does not equal verification.</p>
+</section>
+
+<section style="margin-top:34px">
+<h2>Synthetic 20-indicator calculator</h2>
+<div class="calc">
+<p class="muted">Choose 0–5 or NE for every indicator. Candidate composite is shown only if weighted evidence coverage reaches 80% overall and at least 60% within every dimension.</p>
+<div id="rows"></div>
+<button class="btn" id="calcBtn">Calculate controlled candidate result</button>
+<div class="out" id="out"><span class="muted">No calculation yet.</span></div>
+</div>
+</section>
+
+<section style="margin-top:34px">
+<h2>Peer comparison logic</h2>
+<div class="panel">
+<p><strong>Absolute criterion score first; peer comparison second.</strong></p>
+<p class="muted">Group A may later carry an analytical <code>peer_type</code>: STATE_FOREIGN_SERVICE, INDEPENDENT_PROTOCOL, UNIVERSITY_LINKED or INTERNATIONAL_TRAINING. Peer percentile is secondary diagnostic information only and requires a minimum peer sample. It does not replace the standard-referenced score.</p>
+</div>
+</section>
+
+<section style="margin-top:34px">
+<h2>Validation before v1.0</h2>
+<div class="panel" id="gates"></div>
+</section>
+
+<section style="margin-top:34px">
+<h2>Controlled outputs</h2>
+<ul class="muted">
+<li>four dimension scores;</li>
+<li>candidate composite only when evidence thresholds are satisfied;</li>
+<li>weighted Evidence Coverage;</li>
+<li>indicator-level evidence status;</li>
+<li>peer type where assigned;</li>
+<li>secondary peer percentile only when minimum-sample rules are satisfied;</li>
+<li>methodology version, dataset snapshot date and correction/dispute status.</li>
+</ul>
+<p><a href="/data/institute-index-methodology-candidate.json">Open machine-readable methodology JSON</a> · <a href="/wpa-index-appeals-and-corrections.html">Corrections & Appeals</a> · <a href="/master-list-verification.html">Master List Verification</a> · <a href="/aab-governance.html">AAB Governance</a></p>
+</section>
+</main>
+<footer><div class="wrap">WPA Institute Index · Candidate methodology · Measurement is not accreditation</div></footer>
+<script>
+const D=[
+{id:'D1',name:'Research & Publications',weight:30,iw:6,items:[['I01','Verified research output'],['I02','Research traceability'],['I03','Citation & reference visibility'],['I04','Protocol & diplomacy knowledge contribution'],['I05','International research collaboration']]},
+{id:'D2',name:'Programmes & Learning Assurance',weight:25,iw:5,items:[['I06','Programme architecture'],['I07','Learning outcomes'],['I08','Assessment discipline'],['I09','Faculty & practitioner transparency'],['I10','Credential & completion integrity']]},
+{id:'D3',name:'Professional Practice',weight:25,iw:5,items:[['I11','Documented institutional practice'],['I12','Applied protocol & diplomacy cases'],['I13','Simulations & practice-based training'],['I14','Practitioner integration'],['I15','Knowledge transfer & documented impact']]},
+{id:'D4',name:'Transparency, Governance & Cooperation',weight:20,iw:4,items:[['I16','Institutional identity & governance clarity'],['I17','Evidence, provenance & correction mechanism'],['I18','Verified international cooperation'],['I19','Digital & multilingual public transparency'],['I20','Ethics, COI, data & credential governance']]}
+];
+const gates=['Record-level evidence and source-verification procedure documented.','Twenty indicator definitions and 0–5/NE scoring anchors tested for consistency.','Pilot 20 dry run completed without public ordinal ranking.','Independent double-scoring completed and material disagreements logged.','Weight-sensitivity and indicator-correlation diagnostics completed.','Evidence-coverage thresholds tested against edge cases.','Conflict-of-interest and correction procedure published and tested.','AAB or equivalent independent methodological review completed and logged after formal constitution.','Public wording distinguishes measurement from accreditation, legal recognition and official ranking.','Exact v1.0 methodology, dataset snapshot, formulas and changelog frozen before any public ordinal ranking decision.'];
+document.getElementById('indicatorRegister').innerHTML=D.map(d=>'<article class="card" style="margin:12px 0"><h3>'+d.id+' · '+d.name+' · '+d.weight+'%</h3>'+d.items.map(x=>'<div class="indicator"><strong>'+x[0]+' · '+x[1]+'</strong><br><span class="muted small">Indicator weight: '+d.iw+'%</span></div>').join('')+'</article>').join('');
+const opts='<option value="NE">NE · Not evidenced</option>'+[0,1,2,3,4,5].map(n=>'<option value="'+n+'">'+n+'</option>').join('');
+document.getElementById('rows').innerHTML=D.map(d=>'<section class="panel" style="margin:14px 0"><h3>'+d.id+' · '+d.name+' · '+d.weight+'%</h3>'+d.items.map(x=>'<div class="score-grid"><label for="'+x[0]+'"><strong>'+x[0]+' · '+x[1]+'</strong><br><span class="muted small">Weight '+d.iw+'%</span></label><select id="'+x[0]+'">'+opts+'</select></div>').join('')+'</section>').join('');
+document.getElementById('gates').innerHTML=gates.map((g,i)=>'<div class="gate"><strong>Gate '+(i+1)+'</strong> · '+g+'</div>').join('');
+document.getElementById('calcBtn').onclick=()=>{
+ let totalContribution=0,evidenceWeight=0,dimensionResults=[],allDimensionsPass=true;
+ D.forEach(d=>{let dc=0,dw=0;d.items.forEach(x=>{const v=document.getElementById(x[0]).value;if(v!=='NE'){const n=Number(v);dc+=(n/5)*d.iw;dw+=d.iw;totalContribution+=(n/5)*d.iw;evidenceWeight+=d.iw;}});const cov=d.weight?100*dw/d.weight:0;const ds=dw?100*dc/dw:null;if(cov<60)allDimensionsPass=false;dimensionResults.push({d,ds,cov});});
+ const overallCoverage=evidenceWeight;
+ const pass=overallCoverage>=80&&allDimensionsPass;
+ const composite=pass?100*totalContribution/evidenceWeight:null;
+ const dims=dimensionResults.map(r=>'<li>'+r.d.id+' '+r.d.name+': '+(r.ds===null?'NE':r.ds.toFixed(1)+'/100')+' · evidence '+r.cov.toFixed(0)+'%</li>').join('');
+ document.getElementById('out').innerHTML=(pass?'<div class="score">'+composite.toFixed(1)+'/100</div><p><strong>Weighted Evidence Coverage: '+overallCoverage.toFixed(0)+'%</strong></p>':'<div class="score" style="font-size:28px">INSUFFICIENT EVIDENCE</div><p><strong>Weighted Evidence Coverage: '+overallCoverage.toFixed(0)+'%</strong></p><p class="muted">Composite withheld: overall coverage must be ≥80% and each dimension ≥60%.</p>')+'<ul class="muted">'+dims+'</ul><p class="muted">Synthetic/candidate result only. No accreditation, recognition, ranking, partnership or official WPA assessment is created.</p>';
+};
+</script>
+</body>
+</html>
