@@ -1,0 +1,132 @@
+name: Audit WPA protocol-ai Retrieval
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-protocol-ai-retrieval.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      AI_SEARCH_INSTANCE: protocol-ai
+    steps:
+      - name: Run read-only retrieval audit
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          cat > /tmp/audit.py <<'PY'
+          import json, os, time, urllib.request
+
+          account=os.environ['CLOUDFLARE_ACCOUNT_ID']
+          token=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']
+          instance=os.environ.get('AI_SEARCH_INSTANCE','protocol-ai')
+          api=f'https://api.cloudflare.com/client/v4/accounts/{account}/ai-search/instances/{instance}/search'
+
+          zenodo_ids=[
+            '21933739','21779849','21772500','21675100','21669195','21651611',
+            '21514266','21469146','21390763','21299485','20800187','20777938',
+            '20727210','20706913','20699718','20599172','20597429','20528224','20434477'
+          ]
+          monograph_needle='99_ai_search_ready/01_smiljanov_books_chunks/protocol-state-symbols-anthems-national-days-2026/'
+          canonical_needle='98_canonical_sources/books/WPA_SYMBOLS_FINAL_PRINT_MASTER.pdf'
+
+          tests=[]
+          for rid in zenodo_ids:
+              tests.append({
+                'id':f'zenodo-{rid}',
+                'kind':'zenodo_presence',
+                'query':f'Zenodo record {rid} Sande Smiljanov',
+                'expected':f'99_ai_search_ready/02_smiljanov_papers_chunks/zenodo/{rid}-'
+              })
+          tests += [
+            {'id':'book-title-en','kind':'monograph','query':'Protocol of State Symbols, Anthems and National Days Sande Smiljanov','expected':monograph_needle},
+            {'id':'book-title-mk','kind':'monograph','query':'Протокол на државни симболи, химни и национални денови Санде Смиљанов','expected':monograph_needle},
+            {'id':'book-isbn','kind':'monograph','query':'ISBN 978-608-66168-5-4','expected':monograph_needle},
+            {'id':'book-scope-en','kind':'monograph','query':'How many calendar entries and how many states and protocol entities are covered in the monograph on state symbols, anthems and national days?','expected':monograph_needle},
+            {'id':'book-scope-mk','kind':'monograph','query':'Колку календарски записи и колку држави и протоколарни ентитети опфаќа монографијата за државни симболи, химни и национални денови?','expected':monograph_needle},
+            {'id':'book-provenance','kind':'monograph','query':'What distinction does the State Symbols monograph make between the source-verified core and the clearly labelled reference layer?','expected':monograph_needle},
+            {'id':'book-supplement','kind':'monograph','query':'AI Bridge Diplomatic Radar Film Lab Premium Supplement state symbols','expected':monograph_needle},
+          ]
+
+          def search(q):
+              body=json.dumps({'messages':[{'role':'user','content':q}]}).encode('utf-8')
+              req=urllib.request.Request(api,data=body,method='POST',headers={
+                  'Authorization':f'Bearer {token}',
+                  'Content-Type':'application/json',
+                  'Accept':'application/json',
+              })
+              with urllib.request.urlopen(req,timeout=60) as r:
+                  p=json.loads(r.read().decode('utf-8-sig'))
+              if p.get('success') is not True:
+                  raise RuntimeError(f'AI Search API failure: {p}')
+              return (p.get('result') or {}).get('chunks') or []
+
+          results=[]
+          for i,t in enumerate(tests,1):
+              chunks=search(t['query'])
+              compact=[]
+              expected_rank=None
+              canonical_ranks=[]
+              for rank,ch in enumerate(chunks[:10],1):
+                  item=ch.get('item') or {}
+                  key=str(item.get('key') or '')
+                  if expected_rank is None and t['expected'] in key:
+                      expected_rank=rank
+                  if canonical_needle in key:
+                      canonical_ranks.append(rank)
+                  compact.append({
+                      'rank':rank,
+                      'score':ch.get('score'),
+                      'key':key,
+                      'text':str(ch.get('text') or '')[:600],
+                  })
+              row={
+                  **t,
+                  'returned_chunks':len(chunks),
+                  'expected_found_top10':expected_rank is not None,
+                  'expected_rank':expected_rank,
+                  'canonical_pdf_ranks':canonical_ranks,
+                  'top10':compact,
+              }
+              results.append(row)
+              status='PASS' if expected_rank is not None else 'MISS'
+              top=compact[0]['key'] if compact else '(no chunks)'
+              print(f"[{i:02d}/{len(tests)}] {status} {t['id']} expected_rank={expected_rank} canonical_ranks={canonical_ranks} top={top}")
+              time.sleep(0.15)
+
+          zen=[r for r in results if r['kind']=='zenodo_presence']
+          mon=[r for r in results if r['kind']=='monograph']
+          summary={
+              'instance':instance,
+              'test_count':len(results),
+              'zenodo_presence_pass':sum(bool(r['expected_found_top10']) for r in zen),
+              'zenodo_presence_total':len(zen),
+              'monograph_semantic_pass':sum(bool(r['expected_found_top10']) for r in mon),
+              'monograph_semantic_total':len(mon),
+              'monograph_queries_with_canonical_pdf_top10':sum(bool(r['canonical_pdf_ranks']) for r in mon),
+              'all_queries_with_canonical_pdf_top10':sum(bool(r['canonical_pdf_ranks']) for r in results),
+          }
+          out={'summary':summary,'results':results}
+          open('protocol-ai-retrieval-audit.json','w',encoding='utf-8').write(json.dumps(out,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          open('protocol-ai-retrieval-audit-summary.json','w',encoding='utf-8').write(json.dumps(summary,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          print('AUDIT SUMMARY:',json.dumps(summary,ensure_ascii=False,sort_keys=True))
+          PY
+          python /tmp/audit.py
+
+      - name: Upload retrieval audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: protocol-ai-retrieval-audit
+          retention-days: 14
+          path: |
+            protocol-ai-retrieval-audit.json
+            protocol-ai-retrieval-audit-summary.json
