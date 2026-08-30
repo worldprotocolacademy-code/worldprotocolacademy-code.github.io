@@ -1,0 +1,167 @@
+name: Sync WPA State Symbols Monograph to R2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-monograph-state-symbols-r2.yml'
+      - 'scripts/sync_monograph_state_symbols_r2.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-wpa-state-symbols-monograph-r2
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      R2_BUCKET: protocol-kb
+      ROOT_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY
+      TARGET_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
+      SOURCE_KEY: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/98_canonical_sources/books/protocol-state-symbols-anthems-national-days-2026.pdf
+      BOOK_RELATIVE: 01_smiljanov_books_chunks/protocol-state-symbols-anthems-national-days-2026
+      MARKER_RELATIVE: _metadata/books/protocol-state-symbols-anthems-national-days-2026.json
+      AI_SEARCH_INSTANCE: protocol-ai
+      EXPECTED_PDF_SHA256: 79192f6e3190c4927efbc052c2004786f6c7a38a5c13e4b78bf6a61cd7ff6d54
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Cloudflare configuration
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          key="$TARGET_PREFIX/README.md"
+          wrangler_bin='npx --yes wrangler@4'
+          $wrangler_bin r2 object get "$R2_BUCKET/$key" --remote --file /tmp/r2-preflight >/tmp/r2-preflight.log 2>&1
+          test -s /tmp/r2-preflight
+          echo 'R2 read credential verified.'
+
+      - name: Download canonical PDF from private R2 source namespace
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$SOURCE_KEY" --remote --file /tmp/state-symbols-monograph.pdf
+          test -s /tmp/state-symbols-monograph.pdf
+          actual="$(sha256sum /tmp/state-symbols-monograph.pdf | awk '{print $1}')"
+          test "$actual" = "$EXPECTED_PDF_SHA256" || { echo "Canonical PDF SHA mismatch: $actual" >&2; exit 42; }
+          echo "Canonical PDF verified: $actual"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Prepare AI-ready book chunks and provenance manifest
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pypdf
+          rm -rf monograph-ai-ready
+          mkdir -p monograph-ai-ready
+          python scripts/sync_monograph_state_symbols_r2.py \
+            --pdf /tmp/state-symbols-monograph.pdf \
+            --out-dir monograph-ai-ready \
+            --manifest monograph-manifest.json
+          python - <<'PY'
+          import json
+          p=json.load(open('monograph-manifest.json', encoding='utf-8'))
+          if p.get('source_file_sha256') != '79192f6e3190c4927efbc052c2004786f6c7a38a5c13e4b78bf6a61cd7ff6d54':
+              raise SystemExit('manifest source hash mismatch')
+          if p.get('chunk_count') != 13:
+              raise SystemExit(f"expected 13 chunks, got {p.get('chunk_count')}")
+          print('Prepared 13 verified AI-ready book chunks.')
+          PY
+
+      - name: Upload book chunks and completion marker to R2
+        run: |
+          set -euo pipefail
+          for file in monograph-ai-ready/chunk-*.md; do
+            base="$(basename "$file")"
+            key="$TARGET_PREFIX/$BOOK_RELATIVE/$base"
+            npx --yes wrangler@4 r2 object put "$R2_BUCKET/$key" --remote --force --file "$file" --content-type 'text/markdown; charset=utf-8'
+          done
+          marker="$TARGET_PREFIX/$MARKER_RELATIVE"
+          npx --yes wrangler@4 r2 object put "$R2_BUCKET/$marker" --remote --force --file monograph-manifest.json --content-type 'application/json; charset=utf-8'
+
+      - name: Round-trip verify every uploaded object
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/monograph-r2-verify
+          mkdir -p /tmp/monograph-r2-verify
+          count=0
+          for file in monograph-ai-ready/chunk-*.md; do
+            base="$(basename "$file")"
+            key="$TARGET_PREFIX/$BOOK_RELATIVE/$base"
+            remote="/tmp/monograph-r2-verify/$base"
+            npx --yes wrangler@4 r2 object get "$R2_BUCKET/$key" --remote --file "$remote" >/dev/null
+            test "$(sha256sum "$file" | awk '{print $1}')" = "$(sha256sum "$remote" | awk '{print $1}')"
+            count=$((count+1))
+          done
+          marker="$TARGET_PREFIX/$MARKER_RELATIVE"
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$marker" --remote --file /tmp/monograph-r2-verify/manifest.json >/dev/null
+          test "$(sha256sum monograph-manifest.json | awk '{print $1}')" = "$(sha256sum /tmp/monograph-r2-verify/manifest.json | awk '{print $1}')"
+          test "$count" -eq 13
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          m=json.load(open('monograph-manifest.json', encoding='utf-8'))
+          evidence={
+            'operation':'WPA canonical monograph to R2 AI-ready sync',
+            'policy':'additive-no-delete',
+            'source_pdf_sha256':m['source_file_sha256'],
+            'source_pdf_binary_in_r2':True,
+            'verified_chunk_count':13,
+            'verified_marker':True,
+            'target_namespace':m['target_namespace'],
+            'verified_at':datetime.now(timezone.utc).isoformat(),
+          }
+          open('monograph-r2-sync-evidence.json','w',encoding='utf-8').write(json.dumps(evidence,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          print('R2 ROUND-TRIP VERIFIED: 13 chunks + completion marker')
+          PY
+
+      - name: Trigger AI Search resync
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_AI_SEARCH_TOKEN:-}" ]; then
+            echo 'AI Search token is not configured; verified R2 upload is complete, resync skipped.'
+            exit 0
+          fi
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          out="$(curl -fsS -X POST "$api/jobs" \
+            -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d '{"description":"WPA State Symbols monograph AI-ready sync"}')"
+          printf '%s\n' "$out" > monograph-ai-search-resync.json
+          python - <<'PY'
+          import json
+          p=json.load(open('monograph-ai-search-resync.json', encoding='utf-8'))
+          if p.get('success') is not True:
+              raise SystemExit(f"AI Search resync failed: {p}")
+          job=(p.get('result') or {}).get('id')
+          if not job:
+              raise SystemExit(f"AI Search resync returned no job id: {p}")
+          open('monograph-ai-search-job-id.txt','w',encoding='utf-8').write(str(job)+'\n')
+          print(f'AI Search resync job: {job}')
+          PY
+
+      - name: Upload sync evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: state-symbols-monograph-r2-sync-evidence
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            monograph-manifest.json
+            monograph-r2-sync-evidence.json
+            monograph-ai-search-resync.json
+            monograph-ai-search-job-id.txt
