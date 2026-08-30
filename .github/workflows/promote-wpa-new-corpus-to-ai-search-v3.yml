@@ -1,0 +1,274 @@
+name: Promote WPA New Corpus to AI Search v3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/promote-wpa-new-corpus-to-ai-search-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: promote-wpa-new-corpus-ai-search-v3
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      R2_BUCKET: protocol-kb
+      AI_SEARCH_INSTANCE: protocol-ai
+      SOURCE_ROOT: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
+      V3_ROOT: __ai_search_ready_v3__/80cd2f51cf9ddb429562
+      EXPECTED_INCLUDE: '**/__ai_search_ready_v3__/80cd2f51cf9ddb429562/**'
+      MONOGRAPH_NS: 01_smiljanov_books_chunks/protocol-state-symbols-anthems-national-days-2026
+      MONOGRAPH_MARKER: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/_metadata/books/protocol-state-symbols-anthems-national-days-2026.json
+      EXPECTED_MONOGRAPH_PDF_SHA256: 79192f6e3190c4927efbc052c2004786f6c7a38a5c13e4b78bf6a61cd7ff6d54
+      ZENODO_IDS: 21933739,21779849,21772500,21675100,21669195,21651611,21514266,21469146,21390763,21299485,20800187,20777938,20727210,20706913,20699718,20599172,20597429,20528224,20434477
+
+    steps:
+      - name: Guard active AI Search source configuration
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_AI_SEARCH_TOKEN"
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/namespaces/default/instances/${AI_SEARCH_INSTANCE}"
+          curl -fsS "$api" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > /tmp/instance.json
+          python - <<'PY'
+          import json, os
+          p=json.load(open('/tmp/instance.json', encoding='utf-8-sig'))
+          if p.get('success') is not True:
+              raise SystemExit('Could not read protocol-ai configuration')
+          r=p.get('result') or {}
+          if r.get('source') != os.environ['R2_BUCKET']:
+              raise SystemExit(f"Unexpected source: {r.get('source')!r}")
+          sp=r.get('source_params') or {}
+          include=list(sp.get('include_items') or [])
+          expected=os.environ['EXPECTED_INCLUDE']
+          if include != [expected]:
+              raise SystemExit(f'Fail-closed: expected include_items={[expected]!r}, got {include!r}')
+          print('CONFIG GUARD PASSED: protocol-ai -> protocol-kb -> exact v3 mirror include')
+          PY
+
+      - name: Fetch completion manifests from R2
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wpa-markers/zenodo
+          IFS=',' read -ra ids <<< "$ZENODO_IDS"
+          for rid in "${ids[@]}"; do
+            key="$SOURCE_ROOT/_metadata/zenodo/$rid.json"
+            npx --yes wrangler@4 r2 object get "$R2_BUCKET/$key" --remote --file "/tmp/wpa-markers/zenodo/$rid.json" >/dev/null
+          done
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$MONOGRAPH_MARKER" --remote --file /tmp/wpa-markers/monograph.json >/dev/null
+          echo 'Fetched 19 Zenodo completion markers + monograph manifest.'
+
+      - name: Build strict 93-object promotion plan
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, re
+          from pathlib import Path
+
+          root=os.environ['SOURCE_ROOT']
+          v3=os.environ['V3_ROOT']
+          ids=os.environ['ZENODO_IDS'].split(',')
+          plan=[]
+          zen_count=0
+
+          for rid in ids:
+              p=json.load(open(f'/tmp/wpa-markers/zenodo/{rid}.json', encoding='utf-8-sig'))
+              if str(p.get('zenodo_record_id')) != rid:
+                  raise SystemExit(f'Zenodo marker ID mismatch: {rid}')
+              objs=p.get('objects') or []
+              if int(p.get('object_count') or -1) != len(objs) or not objs:
+                  raise SystemExit(f'Zenodo object_count mismatch: {rid}')
+              required_prefix=f'{root}/02_smiljanov_papers_chunks/zenodo/{rid}-'
+              for obj in objs:
+                  key=str(obj.get('key') or '')
+                  sha=str(obj.get('sha256') or '').lower()
+                  if not key.startswith(required_prefix) or not key.endswith('.md'):
+                      raise SystemExit(f'Unsafe Zenodo key in {rid}: {key}')
+                  if '/_metadata/' in key or '98_canonical_sources' in key:
+                      raise SystemExit(f'Forbidden technical/canonical key: {key}')
+                  if not re.fullmatch(r'[0-9a-f]{64}', sha):
+                      raise SystemExit(f'Invalid SHA for {key}')
+                  plan.append({'kind':'zenodo','record_id':rid,'source_key':key,'dest_key':f'{v3}/{key}','sha256':sha,'bytes':int(obj.get('bytes') or 0)})
+                  zen_count += 1
+
+          mono=json.load(open('/tmp/wpa-markers/monograph.json', encoding='utf-8-sig'))
+          if mono.get('source_file_sha256') != os.environ['EXPECTED_MONOGRAPH_PDF_SHA256']:
+              raise SystemExit('Monograph source hash guard failed')
+          if int(mono.get('chunk_count') or -1) != 13:
+              raise SystemExit(f"Expected 13 monograph chunks, got {mono.get('chunk_count')}")
+          objs=mono.get('objects') or []
+          if len(objs) != 13:
+              raise SystemExit(f'Expected 13 monograph objects, got {len(objs)}')
+          mono_prefix=f"{root}/{os.environ['MONOGRAPH_NS']}"
+          for obj in objs:
+              fn=str(obj.get('filename') or '')
+              sha=str(obj.get('sha256') or '').lower()
+              if not re.fullmatch(r'chunk-\d{4}\.md', fn):
+                  raise SystemExit(f'Unsafe monograph filename: {fn}')
+              if not re.fullmatch(r'[0-9a-f]{64}', sha):
+                  raise SystemExit(f'Invalid monograph SHA: {fn}')
+              key=f'{mono_prefix}/{fn}'
+              plan.append({'kind':'monograph','source_key':key,'dest_key':f'{v3}/{key}','sha256':sha,'bytes':int(obj.get('bytes') or 0)})
+
+          if len(ids) != 19 or zen_count != 80 or len(plan) != 93:
+              raise SystemExit(f'Fail-closed count guard: ids={len(ids)} zenodo_chunks={zen_count} total={len(plan)}')
+          if len({x['source_key'] for x in plan}) != 93 or len({x['dest_key'] for x in plan}) != 93:
+              raise SystemExit('Duplicate keys in promotion plan')
+          Path('promotion-plan.json').write_text(json.dumps({'policy':'additive-no-delete','zenodo_records':19,'zenodo_chunks':80,'monograph_chunks':13,'total_objects':93,'objects':plan},ensure_ascii=False,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+          print('PLAN VERIFIED: 19 Zenodo records / 80 chunks + 13 monograph chunks = 93 objects')
+          PY
+
+      - name: Promote verified chunks into active v3 mirror
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/wpa-promote/source /tmp/wpa-promote/dest
+          python - <<'PY' > /tmp/plan.tsv
+          import json
+          p=json.load(open('promotion-plan.json', encoding='utf-8'))
+          for i,x in enumerate(p['objects'],1):
+              print(f"{i}\t{x['sha256']}\t{x['source_key']}\t{x['dest_key']}")
+          PY
+          : > promotion-evidence.tsv
+          while IFS=$'\t' read -r idx expected source_key dest_key; do
+            src="/tmp/wpa-promote/source/$idx.md"
+            dst="/tmp/wpa-promote/dest/$idx.md"
+            npx --yes wrangler@4 r2 object get "$R2_BUCKET/$source_key" --remote --file "$src" >/dev/null
+            source_sha="$(sha256sum "$src" | awk '{print $1}')"
+            test "$source_sha" = "$expected" || { echo "SOURCE SHA MISMATCH index=$idx" >&2; exit 42; }
+
+            npx --yes wrangler@4 r2 object put "$R2_BUCKET/$dest_key" --remote --force --file "$src" --content-type 'text/markdown; charset=utf-8' >/dev/null
+            npx --yes wrangler@4 r2 object get "$R2_BUCKET/$dest_key" --remote --file "$dst" >/dev/null
+            dest_sha="$(sha256sum "$dst" | awk '{print $1}')"
+            test "$dest_sha" = "$expected" || { echo "DEST SHA MISMATCH index=$idx" >&2; exit 43; }
+            printf '%s\t%s\t%s\t%s\n' "$idx" "$expected" "$source_key" "$dest_key" >> promotion-evidence.tsv
+            echo "VERIFIED $idx/93"
+          done < /tmp/plan.tsv
+          test "$(wc -l < promotion-evidence.tsv | tr -d ' ')" -eq 93
+          echo 'V3 PROMOTION ROUND-TRIP VERIFIED: 93/93 byte-identical objects'
+
+      - name: Write promotion evidence JSON
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          p=json.load(open('promotion-plan.json', encoding='utf-8'))
+          p['verified_promoted_objects']=93
+          p['verified_at']=datetime.now(timezone.utc).isoformat()
+          p['v3_mirror_round_trip_verified']=True
+          p['canonical_pdf_promoted']=False
+          p['metadata_markers_promoted']=False
+          open('promotion-evidence.json','w',encoding='utf-8').write(json.dumps(p,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          PY
+
+      - name: Trigger protocol-ai resync
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          curl -fsS -X POST "$api/jobs" \
+            -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d '{"description":"WPA verified v3 promotion: 19 Zenodo records + State Symbols monograph"}' > ai-search-resync.json
+          python - <<'PY'
+          import json
+          p=json.load(open('ai-search-resync.json', encoding='utf-8-sig'))
+          if p.get('success') is not True:
+              raise SystemExit(f'Resync creation failed: {p}')
+          job=(p.get('result') or {}).get('id')
+          if not job:
+              raise SystemExit('Resync returned no job id')
+          open('/tmp/job-id','w').write(str(job))
+          open('ai-search-job-id.txt','w').write(str(job)+'\n')
+          print('AI Search job:',job)
+          PY
+
+      - name: Wait for resync completion
+        run: |
+          set -euo pipefail
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          job="$(cat /tmp/job-id)"
+          for attempt in $(seq 1 90); do
+            curl -fsS "$api/jobs/$job" -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" > ai-search-job-final.json
+            state="$(python - <<'PY'
+          import json
+          p=json.load(open('ai-search-job-final.json', encoding='utf-8-sig'))
+          r=p.get('result') or {}
+          print('ENDED' if r.get('ended_at') else 'RUNNING')
+          PY
+          )"
+            if [ "$state" = 'ENDED' ]; then break; fi
+            sleep 5
+          done
+          python - <<'PY'
+          import json
+          p=json.load(open('ai-search-job-final.json', encoding='utf-8-sig'))
+          if p.get('success') is not True:
+              raise SystemExit('Could not read final resync job')
+          r=p.get('result') or {}
+          if not r.get('ended_at'):
+              raise SystemExit('AI Search resync did not finish in time')
+          reason=str(r.get('end_reason') or '').lower()
+          if any(x in reason for x in ('fail','error','cancel')):
+              raise SystemExit(f'AI Search resync ended unsuccessfully: {r}')
+          print('AI SEARCH RESYNC ENDED:',json.dumps({'id':r.get('id'),'ended_at':r.get('ended_at'),'end_reason':r.get('end_reason')},sort_keys=True))
+          PY
+
+      - name: Verify promoted corpus appears in AI Search inventory
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          account=os.environ['CLOUDFLARE_ACCOUNT_ID']; token=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']; inst=os.environ['AI_SEARCH_INSTANCE']
+          base=f'https://api.cloudflare.com/client/v4/accounts/{account}/ai-search/namespaces/default/instances/{inst}/items'
+          headers={'Authorization':f'Bearer {token}','Accept':'application/json'}
+          all_items=[]; page=1; total=None
+          while True:
+              url=base+'?'+urllib.parse.urlencode({'page':page,'per_page':50})
+              with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=60) as r:
+                  p=json.loads(r.read().decode('utf-8-sig'))
+              if p.get('success') is not True: raise SystemExit(f'Inventory API failed: {p}')
+              items=p.get('result') or []; all_items.extend(items)
+              if total is None: total=int((p.get('result_info') or {}).get('total_count') or len(items))
+              if not items or len(all_items)>=total: break
+              page += 1
+          ids=os.environ['ZENODO_IDS'].split(',')
+          v3=os.environ['V3_ROOT']+'/'
+          zen={rid:[x for x in all_items if v3 in str(x.get('key') or '') and rid in str(x.get('key') or '')] for rid in ids}
+          mono_slug='protocol-state-symbols-anthems-national-days-2026'
+          mono=[x for x in all_items if v3 in str(x.get('key') or '') and mono_slug in str(x.get('key') or '')]
+          zcount=sum(len(v) for v in zen.values())
+          zpresent=sum(bool(v) for v in zen.values())
+          summary={'reported_total':total,'retrieved_items':len(all_items),'zenodo_records_present':zpresent,'zenodo_records_expected':19,'zenodo_items_present':zcount,'zenodo_items_expected':80,'monograph_items_present':len(mono),'monograph_items_expected':13}
+          open('post-resync-inventory.json','w',encoding='utf-8').write(json.dumps(summary,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          print('POST-RESYNC INVENTORY:',json.dumps(summary,sort_keys=True))
+          if zpresent != 19 or zcount != 80 or len(mono) != 13:
+              raise SystemExit('Post-resync inventory guard failed')
+          print('AI SEARCH INVENTORY VERIFIED: 19/19 Zenodo, 80/80 chunks, 13/13 monograph chunks')
+          PY
+
+      - name: Upload promotion evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-v3-promotion-evidence
+          retention-days: 30
+          if-no-files-found: warn
+          path: |
+            promotion-plan.json
+            promotion-evidence.tsv
+            promotion-evidence.json
+            ai-search-resync.json
+            ai-search-job-id.txt
+            ai-search-job-final.json
+            post-resync-inventory.json
