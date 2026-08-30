@@ -33,7 +33,7 @@ jobs:
           all_items=[]
           page=1
           while True:
-              url=base+'?'+urllib.parse.urlencode({'page':page,'per_page':100})
+              url=base+'?'+urllib.parse.urlencode({'page':page,'per_page':50})
               req=urllib.request.Request(url,headers=headers)
               with urllib.request.urlopen(req,timeout=60) as r:
                   p=json.loads(r.read().decode('utf-8-sig'))
@@ -68,7 +68,7 @@ jobs:
             'zenodo_ids_total':len(rows),
             'zenodo_item_count':sum(r['count'] for r in rows),
             'monograph_item_count':len(mono_hits),
-            'monograph_indexed_count':sum(1 for h in mono_hits if h.get('status')=='indexed'),
+            'monograph_completed_count':sum(1 for h in mono_hits if h.get('status')=='completed'),
             'canonical_pdf_item_count':len(canon_hits),
           }
           out={'summary':summary,'zenodo':rows,'monograph':mono_hits,'canonical_pdf':canon_hits}
