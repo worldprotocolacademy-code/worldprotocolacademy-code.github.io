@@ -46,10 +46,12 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install extraction dependencies
+      - name: Install sync tooling
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --quiet requests pypdf python-docx
+          npm install --global wrangler@4
+          wrangler --version
 
       - name: Sync 19 controlled Zenodo records to R2 AI-ready corpus
         run: |
