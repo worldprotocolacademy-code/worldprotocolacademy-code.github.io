@@ -1,0 +1,41 @@
+name: Diagnose WPA AI Search v3 Mirror
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-ai-search-v3-mirror.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      R2_BUCKET: protocol-kb
+      ORIGINAL_KEY: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/README.md
+      V3_KEY: __ai_search_ready_v3__/80cd2f51cf9ddb429562/world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/README.md
+    steps:
+      - name: Compare existing original and v3 objects read-only
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$ORIGINAL_KEY" --remote --file /tmp/original.md >/dev/null
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$V3_KEY" --remote --file /tmp/v3.md >/dev/null
+          original_sha="$(sha256sum /tmp/original.md | awk '{print $1}')"
+          v3_sha="$(sha256sum /tmp/v3.md | awk '{print $1}')"
+          original_bytes="$(wc -c < /tmp/original.md | tr -d ' ')"
+          v3_bytes="$(wc -c < /tmp/v3.md | tr -d ' ')"
+          printf 'ORIGINAL sha=%s bytes=%s\n' "$original_sha" "$original_bytes"
+          printf 'V3       sha=%s bytes=%s\n' "$v3_sha" "$v3_bytes"
+          if [ "$original_sha" = "$v3_sha" ]; then
+            echo 'V3 MIRROR PROOF: byte-identical object'
+          else
+            echo 'V3 MIRROR PROOF: objects differ'
+            exit 42
+          fi
