@@ -232,7 +232,7 @@ class R2:
             if p.returncode == 0:
                 return True
             msg = (p.stdout or "").lower()
-            if any(x in msg for x in ("not found", "object does not exist", "no such key", "10007", "404")):
+            if any(x in msg for x in ("not found", "object does not exist", "specified key does not exist", "no such key", "10007", "404")):
                 return False
             raise RuntimeError(f"Wrangler existence check failed for {key}: {p.stdout[-4000:]}")
 
