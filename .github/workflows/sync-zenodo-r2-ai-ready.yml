@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 120
     env:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_API_TOKEN_PRIMARY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
       R2_BUCKET: protocol-kb
       TARGET_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
@@ -35,11 +35,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Validate required Cloudflare credentials
+      - name: Validate Cloudflare account configuration
         run: |
           set -euo pipefail
           test -n "$CLOUDFLARE_ACCOUNT_ID"
-          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "${CLOUDFLARE_API_TOKEN_PRIMARY:-}${CLOUDFLARE_AI_SEARCH_TOKEN:-}"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -52,6 +52,34 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet requests pypdf python-docx
           npm install --global wrangler@4
           wrangler --version
+
+      - name: Select a working R2 credential
+        run: |
+          set -euo pipefail
+          key='world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/README.md'
+          test_token() {
+            local token="$1"
+            local label="$2"
+            [ -n "$token" ] || return 1
+            rm -f /tmp/wpa-r2-preflight
+            if CLOUDFLARE_API_TOKEN="$token" wrangler r2 object get "${R2_BUCKET}/${key}" --remote --file /tmp/wpa-r2-preflight >/tmp/wpa-r2-preflight.log 2>&1; then
+              test -s /tmp/wpa-r2-preflight
+              echo "R2 credential preflight succeeded with ${label}."
+              echo "CLOUDFLARE_API_TOKEN=${token}" >> "$GITHUB_ENV"
+              return 0
+            fi
+            echo "R2 credential preflight failed with ${label}; trying next configured credential."
+            return 1
+          }
+          if test_token "${CLOUDFLARE_API_TOKEN_PRIMARY:-}" 'CLOUDFLARE_API_TOKEN'; then
+            exit 0
+          fi
+          if test_token "${CLOUDFLARE_AI_SEARCH_TOKEN:-}" 'CLOUDFLARE_AI_SEARCH_TOKEN'; then
+            exit 0
+          fi
+          echo 'No configured GitHub secret currently authenticates to Cloudflare R2.' >&2
+          sed -E 's/(Authorization: Bearer )[A-Za-z0-9._-]+/\1***/g' /tmp/wpa-r2-preflight.log >&2 || true
+          exit 41
 
       - name: Sync 19 controlled Zenodo records to R2 AI-ready corpus
         run: |
