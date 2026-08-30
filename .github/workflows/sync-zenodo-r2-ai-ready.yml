@@ -1,0 +1,100 @@
+name: Sync WPA Zenodo Remaining Corpus to R2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-zenodo-r2-ai-ready.yml'
+      - 'scripts/sync_zenodo_r2_ai_ready.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-wpa-zenodo-r2-ai-ready
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      R2_BUCKET: protocol-kb
+      TARGET_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
+      AI_SEARCH_INSTANCE: protocol-ai
+      WPA_ZENODO_RECORD_IDS: >-
+        21933739,21779849,21772500,21675100,21669195,21651611,21514266,
+        21469146,21390763,21299485,20800187,20777938,20727210,20706913,
+        20699718,20599172,20597429,20528224,20434477
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate required Cloudflare credentials
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install extraction dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet requests pypdf python-docx
+
+      - name: Sync 19 controlled Zenodo records to R2 AI-ready corpus
+        run: |
+          set -euo pipefail
+          python scripts/sync_zenodo_r2_ai_ready.py \
+            --record-ids "$(printf '%s' "$WPA_ZENODO_RECORD_IDS" | tr -d '[:space:]')" \
+            --report zenodo-sync-report.json
+
+      - name: Trigger AI Search resync
+        id: ai_search_resync
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_AI_SEARCH_TOKEN:-}" ]; then
+            echo 'AI Search token is not configured; R2 sync is verified, resync skipped.'
+            echo 'resync=skipped-no-token' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          out="$(curl -fsS -X POST "$api/jobs" \
+            -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            -d '{"description":"WPA Zenodo remaining corpus sync"}')"
+          printf '%s\n' "$out" > ai-search-resync.json
+          python - <<'PY'
+          import json
+          p=json.load(open('ai-search-resync.json', encoding='utf-8'))
+          if p.get('success') is not True:
+              raise SystemExit(f"AI Search resync request failed: {p}")
+          job=(p.get('result') or {}).get('id')
+          if not job:
+              raise SystemExit(f"AI Search resync returned no job id: {p}")
+          print(job)
+          with open('ai-search-job-id.txt','w',encoding='utf-8') as f:
+              f.write(str(job)+'\n')
+          PY
+          echo "resync=triggered" >> "$GITHUB_OUTPUT"
+
+      - name: Upload sync evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zenodo-r2-sync-evidence
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            zenodo-sync-report.json
+            ai-search-resync.json
+            ai-search-job-id.txt
