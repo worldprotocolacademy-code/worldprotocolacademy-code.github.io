@@ -1,0 +1,105 @@
+name: Verify WPA v3 Exact Inventory
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-wpa-v3-exact-inventory.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      R2_BUCKET: protocol-kb
+      AI_SEARCH_INSTANCE: protocol-ai
+      SOURCE_ROOT: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
+      V3_ROOT: __ai_search_ready_v3__/80cd2f51cf9ddb429562
+      MONOGRAPH_MARKER: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/_metadata/books/protocol-state-symbols-anthems-national-days-2026.json
+      MONOGRAPH_NS: 01_smiljanov_books_chunks/protocol-state-symbols-anthems-national-days-2026
+      ZENODO_IDS: 21933739,21779849,21772500,21675100,21669195,21651611,21514266,21469146,21390763,21299485,20800187,20777938,20727210,20706913,20699718,20599172,20597429,20528224,20434477
+    steps:
+      - name: Fetch verified marker manifests read-only
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/markers/zenodo
+          IFS=',' read -ra ids <<< "$ZENODO_IDS"
+          for rid in "${ids[@]}"; do
+            npx --yes wrangler@4 r2 object get "$R2_BUCKET/$SOURCE_ROOT/_metadata/zenodo/$rid.json" --remote --file "/tmp/markers/zenodo/$rid.json" >/dev/null
+          done
+          npx --yes wrangler@4 r2 object get "$R2_BUCKET/$MONOGRAPH_MARKER" --remote --file /tmp/markers/monograph.json >/dev/null
+
+      - name: Verify exact 93 destination keys in AI Search inventory
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          ids=os.environ['ZENODO_IDS'].split(',')
+          v3=os.environ['V3_ROOT']
+          root=os.environ['SOURCE_ROOT']
+          expected=[]
+          zen_by_id={}
+          for rid in ids:
+              m=json.load(open(f'/tmp/markers/zenodo/{rid}.json',encoding='utf-8-sig'))
+              keys=[f"{v3}/{o['key']}" for o in (m.get('objects') or [])]
+              zen_by_id[rid]=keys
+              expected.extend(keys)
+          mono=json.load(open('/tmp/markers/monograph.json',encoding='utf-8-sig'))
+          mono_keys=[f"{v3}/{root}/{os.environ['MONOGRAPH_NS']}/{o['filename']}" for o in (mono.get('objects') or [])]
+          expected.extend(mono_keys)
+          if sum(len(v) for v in zen_by_id.values()) != 80 or len(mono_keys) != 13 or len(expected) != 93 or len(set(expected)) != 93:
+              raise SystemExit('Expected-key plan guard failed')
+
+          account=os.environ['CLOUDFLARE_ACCOUNT_ID']; token=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']; inst=os.environ['AI_SEARCH_INSTANCE']
+          base=f'https://api.cloudflare.com/client/v4/accounts/{account}/ai-search/namespaces/default/instances/{inst}/items'
+          headers={'Authorization':f'Bearer {token}','Accept':'application/json'}
+          items=[]; page=1; total=None
+          while True:
+              url=base+'?'+urllib.parse.urlencode({'page':page,'per_page':50})
+              with urllib.request.urlopen(urllib.request.Request(url,headers=headers),timeout=60) as r:
+                  p=json.loads(r.read().decode('utf-8-sig'))
+              if p.get('success') is not True: raise SystemExit('AI Search inventory API failed')
+              batch=p.get('result') or []; items.extend(batch)
+              if total is None: total=int((p.get('result_info') or {}).get('total_count') or len(batch))
+              if not batch or len(items)>=total: break
+              page += 1
+          by_key={str(x.get('key') or ''):x for x in items}
+          missing=[k for k in expected if k not in by_key]
+          found=[by_key[k] for k in expected if k in by_key]
+          status_counts={}
+          for x in found:
+              s=str(x.get('status') or '')
+              status_counts[s]=status_counts.get(s,0)+1
+          result={
+            'reported_total_items':total,
+            'expected_exact_keys':93,
+            'found_exact_keys':len(found),
+            'missing_exact_keys':missing,
+            'status_counts':status_counts,
+            'zenodo_exact_keys':80,
+            'monograph_exact_keys':13,
+          }
+          open('exact-inventory-verification.json','w',encoding='utf-8').write(json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
+          print('EXACT INVENTORY:',json.dumps(result,ensure_ascii=False,sort_keys=True))
+          if missing or len(found)!=93:
+              raise SystemExit('Exact-key inventory verification failed')
+          bad=[x for x in found if str(x.get('status') or '').lower() not in ('completed','indexed')]
+          if bad:
+              raise SystemExit(f'Exact keys present but non-indexed status count={len(bad)}')
+          print('EXACT AI SEARCH INVENTORY VERIFIED: 93/93 expected promoted keys present and indexed/completed')
+          PY
+
+      - name: Upload exact verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-v3-exact-inventory-verification
+          retention-days: 14
+          if-no-files-found: warn
+          path: exact-inventory-verification.json
