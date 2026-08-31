@@ -260,7 +260,7 @@ function ensureGlobalChannelsStyle(){
 #wpaGlobalChannels .wgc-plan small{color:#e8d49a;font-size:8px;letter-spacing:.08em;text-transform:uppercase}\
 #wpaGlobalChannels .wgc-label{margin-top:18px;color:#e8d49a;font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}\
 #wpaGlobalChannels .wgc-regions,#wpaGlobalChannels .wgc-oceans{margin:7px auto 0;color:rgba(248,244,238,.68);font-size:11.5px;line-height:1.7}\
-#wpaGlobalChannels .wgc-note{margin-top:12px;color:rgba(248,244,238,.46);font-size:9.8px;line-height:1.45}\
+#wpaGlobalChannels .wgc-note{margin-top:12px;color:rgba(248,244,238,.48);font-size:9.8px;line-height:1.45}\
 @media(max-width:640px){#wpaGlobalChannels{padding:22px 14px}#wpaGlobalChannels .wgc-link,#wpaGlobalChannels .wgc-plan{padding:8px 10px;font-size:10.8px}#wpaGlobalChannels .wgc-regions,#wpaGlobalChannels .wgc-oceans{font-size:10.8px}}';
   document.head.appendChild(style);
 }
