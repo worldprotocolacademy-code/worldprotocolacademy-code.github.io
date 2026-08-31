@@ -85,7 +85,7 @@
     if (mark) {
       mark.textContent = '';
       var logo = document.createElement('img');
-      logo.src = '/logo.webp';
+      logo.src = '/assets/img/logo.svg';
       logo.alt = 'World Protocol Academy logo';
       logo.width = 72;
       logo.height = 72;
@@ -160,14 +160,14 @@
     panel.id = 'wpaInstVsPanel';
     panel.className = 'wpa-inst-vs-panel';
     panel.setAttribute('aria-label', t.title);
-    panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="Close">×</button></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="Close">×</button></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
     var fab = document.createElement('button');
     fab.id = 'wpaInstVsFab';
     fab.className = 'wpa-inst-vs-fab';
     fab.type = 'button';
     fab.setAttribute('aria-label', t.label);
     fab.setAttribute('aria-expanded', 'false');
-    fab.innerHTML = '<img src="/logo.webp" alt="" width="64" height="64">';
+    fab.innerHTML = '<img src="/assets/img/logo.svg" alt="" width="64" height="64">';
     document.body.appendChild(panel);
     document.body.appendChild(fab);
     addMessage(t.welcome, 'bot');
