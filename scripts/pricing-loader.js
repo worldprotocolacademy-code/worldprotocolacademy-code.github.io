@@ -1,5 +1,5 @@
 /*
-  WPA Access & Future Pricing Guard v2.3
+  WPA Access & Future Pricing Guard v2.4
   Commercial activation is disabled during the development, testing and pilot phase.
   No prices, checkout links, payment actions, contracts or delivery commitments are loaded.
 */
@@ -13,6 +13,34 @@
     contact: 'worldprotocolacademy@gmail.com',
     boundary: 'Prices and payments will be activated only after an appropriate legal, ethical, tax and payment framework is established.'
   };
+
+  function installVirtualSandeFetchResilience() {
+    if (window.__WPA_VIRTUAL_SANDE_FETCH_RESILIENCE__ || typeof window.fetch !== 'function') return;
+    window.__WPA_VIRTUAL_SANDE_FETCH_RESILIENCE__ = true;
+
+    var primaryAsk = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask';
+    var nativeFetch = window.fetch.bind(window);
+
+    window.fetch = function (input, init) {
+      var url = typeof input === 'string' ? input : (input && input.url ? String(input.url) : '');
+      if (url !== primaryAsk) return nativeFetch(input, init);
+
+      var options = Object.assign({}, init || {});
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = null;
+
+      if (controller) {
+        options.signal = controller.signal;
+        timer = window.setTimeout(function () { controller.abort(); }, 15000);
+      } else {
+        delete options.signal;
+      }
+
+      return nativeFetch(input, options).finally(function () {
+        if (timer) window.clearTimeout(timer);
+      });
+    };
+  }
 
   function loadScript(src, marker) {
     if (document.querySelector('script[' + marker + '],script[src="' + src + '"]')) return;
@@ -40,6 +68,8 @@
 
   window.WPAGetPrice = getPrice;
   window.WPA_PRICING_READY = Promise.resolve(window.WPA_PRICING);
+
+  installVirtualSandeFetchResilience();
 
   loadScript('/scripts/wpa-performance.js?v=20260810-3', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260719-2', 'data-wpa-public-safety');
