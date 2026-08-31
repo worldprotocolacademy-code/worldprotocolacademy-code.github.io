@@ -266,7 +266,7 @@
     mark.textContent = 'WPA';
 
     var image = document.createElement('img');
-    image.src = '/logo.webp';
+    image.src = '/assets/img/logo.svg';
     image.alt = 'World Protocol Academy logo';
     image.width = 36;
     image.height = 36;
