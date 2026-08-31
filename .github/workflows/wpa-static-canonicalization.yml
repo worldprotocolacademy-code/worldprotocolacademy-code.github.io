@@ -1,298 +1,40 @@
-name: WPA Static Canonicalization
+name: WPA Static Canonical Truth
 
 on:
-  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'security.html'
+      - 'sitemap.xml'
+      - 'wpaws/**'
+      - 'scripts/**'
+      - 'locales/**'
+      - 'data/**'
+      - '.github/workflows/wpa-static-canonicalization.yml'
   push:
     branches: [main]
     paths:
-      - '.github/workflows/wpa-static-canonicalization.yml'
+      - 'index.html'
+      - 'institute.html'
+      - 'security.html'
+      - 'sitemap.xml'
+      - 'wpaws/**'
+      - 'scripts/**'
+      - 'locales/**'
+      - 'data/**'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  canonicalize:
-    if: github.actor != 'github-actions[bot]'
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
-
-      - name: Canonicalize public source and WPAWS labels
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import json, re
-
-          changed = {}
-          notes = []
-
-          def save(path, original, text):
-              if text != original:
-                  Path(path).write_text(text, encoding='utf-8')
-                  changed[path] = {
-                      'before_chars': len(original),
-                      'after_chars': len(text)
-                  }
-
-          def add_machine_links(text, version=None):
-              if 'wpa-academic-quality-standard' not in text:
-                  marker = '</head>'
-                  extra = (
-                      '<meta name="wpa-academic-quality-standard" content="/data/wpa-academic-quality-standard.json">\n'
-                      '<link rel="alternate" type="application/json" href="/data/wpa-public-evidence-index.json" title="WPA Public Evidence Index">\n'
-                      '<link rel="alternate" type="application/json" href="/data/wpa-canonical-version-manifest.json" title="WPA Canonical Version Manifest">\n'
-                  )
-                  if version:
-                      extra = f'<meta name="wpa-canonical-version" content="{version}">\n' + extra
-                  text = text.replace(marker, extra + marker, 1)
-              return text
-
-          # ------------------------------------------------------------
-          # HOME PAGE: raw HTML facts, canonical domain, research-first metadata
-          # ------------------------------------------------------------
-          p = Path('index.html')
-          if p.exists():
-              original = text = p.read_text(encoding='utf-8')
-              text = text.replace('https://worldprotocolacademy-code.github.io/', 'https://worldprotocolacademy.mk/')
-              text = re.sub(
-                  r'<meta name="description" content="[^"]*" data-i18n-attr="content:meta\.description">',
-                  '<meta name="description" content="World Protocol Academy — independent digital research, authorial, analytical, professional and educational platform for protocol, diplomacy, public communication and security studies, with Protocolometry, WPAWS, Virtual Sande and human-governed AI workflows." data-i18n-attr="content:meta.description">',
-                  text, count=1)
-              text = re.sub(
-                  r'<meta name="keywords" content="[^"]*" data-i18n-attr="content:meta\.keywords">',
-                  '<meta name="keywords" content="World Protocol Academy, WPA Institute, Protocolometry, WPAWS, Virtual Sande, protocol, diplomacy, public communication, security studies, AI governance, provenance, human authority, HARP-6, research, analytics, publications, WPA-PN-009" data-i18n-attr="content:meta.keywords">',
-                  text, count=1)
-              text = re.sub(
-                  r'<meta property="og:description" content="[^"]*" data-i18n-attr="content:meta\.ogdesc">',
-                  '<meta property="og:description" content="Independent digital research, authorial, analytical, professional and educational platform with Protocolometry, WPAWS, Virtual Sande and human-governed AI workflows." data-i18n-attr="content:meta.ogdesc">',
-                  text, count=1)
-              text = text.replace(
-                  '<div><strong>Нова публикација · New publication:</strong> <a href="https://doi.org/10.5281/zenodo.21390763" target="_blank" rel="noopener">WPA-PN-003 · Les Invalides 2026 · DOI</a></div>',
-                  '<div><strong>AI governance evidence · WPA Protocol Note:</strong> <a href="https://doi.org/10.5281/zenodo.21933739" target="_blank" rel="noopener">WPA-PN-009 · AI Transparency and the Protocol of Authorship · DOI</a></div>')
-              text = text.replace(
-                  'Авторски креирана платформа · Поткрепена со публикации · AI-поддржана · WPAWS · WPA Card · Партнерства и членски придобивки',
-                  'Research · Evidence · Protocolometry · WPAWS · Virtual Sande · Human-governed AI')
-              text = text.replace(
-                  'Нова Zenodo публикација · New Zenodo publication · WPA Protocol Note No. 003',
-                  'Избрана Zenodo публикација · Selected Zenodo publication · WPA Protocol Note No. 003')
-              pairs = [
-                  ('25 публикации (5 монографии, 1 дисертација, 19 трудови)', '26 публикации (6 монографии и прирачници, 1 дисертација, 19 трудови и прилози)'),
-                  ('5 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 25 публикации вкупно.', '6 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 26 публикации вкупно.'),
-                  ('Автор на 5 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (25 вкупно публикации).', 'Автор на 6 монографии и прирачници, 1 докторска дисертација и 19 научни трудови и прилози (26 вкупно публикации).'),
-                  ('5 монографии и прирачници', '6 монографии и прирачници'),
-                  ('25 вкупно публикации', '26 вкупно публикации'),
-                  ('25 публикации', '26 публикации'),
-                  ('5 monographs and manuals', '6 monographs and manuals'),
-                  ('5 monographs', '6 monographs'),
-                  ('25 publications', '26 publications')
-              ]
-              for old, new in pairs:
-                  text = text.replace(old, new)
-              text = add_machine_links(text)
-              save(str(p), original, text)
-
-          # ------------------------------------------------------------
-          # INSTITUTE: canonical domain + organization/research-first machine signal
-          # ------------------------------------------------------------
-          p = Path('institute.html')
-          if p.exists():
-              original = text = p.read_text(encoding='utf-8')
-              text = text.replace('https://worldprotocolacademy-code.github.io/', 'https://worldprotocolacademy.mk/')
-              text = re.sub(r'<title[^>]*>.*?</title>', '<title data-i18n="institute.meta.title">WPA Institute | Research, Protocol, Diplomacy & AI Governance</title>', text, count=1, flags=re.S)
-              text = re.sub(
-                  r'<meta content="[^"]*" data-i18n-attr="content:institute\.meta\.description" name="description"/>',
-                  '<meta content="World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies: independent digital research, authorial, analytical, professional and educational platform with Protocolometry, WPAWS, Virtual Sande, publications and human-governed AI workflows." data-i18n-attr="content:institute.meta.description" name="description"/>',
-                  text, count=1)
-              text = re.sub(r'<meta property="og:title" content="[^"]*"/>', '<meta property="og:title" content="WPA Institute | Research, Protocol, Diplomacy & AI Governance"/>', text, count=1)
-              text = re.sub(r'<meta property="og:description" content="[^"]*"/>', '<meta property="og:description" content="Independent digital research, authorial, analytical, professional and educational platform with Protocolometry, WPAWS, Virtual Sande and human-governed AI workflows."/>', text, count=1)
-              text = re.sub(r'<meta name="twitter:title" content="[^"]*"/>', '<meta name="twitter:title" content="WPA Institute | Research, Protocol, Diplomacy & AI Governance"/>', text, count=1)
-              text = re.sub(r'<meta name="twitter:description" content="[^"]*"/>', '<meta name="twitter:description" content="Independent digital research, authorial, analytical, professional and educational platform with Protocolometry, WPAWS, Virtual Sande and human-governed AI workflows."/>', text, count=1)
-              text = text.replace('"@type": "EducationalOrganization"', '"@type": "Organization"', 1)
-              text = text.replace(
-                  '"description": "Independent digital educational, research and authorial platform for protocol, diplomacy, public communication and security studies."',
-                  '"description": "Independent digital research, authorial, analytical, professional and educational platform for protocol, diplomacy, public communication and security studies, with human-governed AI-supported workflows."', 1)
-              text = text.replace('WPA Intelligence Center', 'WPA Analysis & Knowledge Center')
-              text = text.replace('Open Intelligence Center', 'Open Analysis & Knowledge Center')
-              text = text.replace('Intelligence Center', 'Analysis & Knowledge Center')
-              for old, new in [
-                  ('25 публикации (5 монографии, 1 дисертација, 19 трудови)', '26 публикации (6 монографии и прирачници, 1 дисертација, 19 трудови и прилози)'),
-                  ('5 монографии и прирачници', '6 монографии и прирачници'),
-                  ('25 вкупно публикации', '26 вкупно публикации'),
-                  ('25 публикации', '26 публикации'),
-                  ('5 monographs and manuals', '6 monographs and manuals'),
-                  ('5 monographs', '6 monographs'),
-                  ('25 publications', '26 publications')
-              ]:
-                  text = text.replace(old, new)
-              text = add_machine_links(text)
-              save(str(p), original, text)
-
-          # ------------------------------------------------------------
-          # WPAWS: one canonical public version, accurate 17-agent status
-          # ------------------------------------------------------------
-          p = Path('wpaws/index.html')
-          if p.exists():
-              original = text = p.read_text(encoding='utf-8')
-              text = text.replace('https://worldprotocolacademy-code.github.io/', 'https://worldprotocolacademy.mk/')
-              text = re.sub(
-                  r'<meta name="description" content="[^"]*" data-i18n-attr="content:meta\.description">',
-                  '<meta name="description" content="WPAWS 11.1.7 — governed academic and institutional working environment with 17 executive agent roles, source-aware workflows, controlled adapters and human review." data-i18n-attr="content:meta.description">',
-                  text, count=1)
-              text = text.replace('WPAWS 11.1.3', 'WPAWS 11.1.7')
-              text = text.replace('WPAWS 11.1.6', 'WPAWS 11.1.7')
-              text = text.replace('16 агенти активни', '17 агенти активни')
-              text = text.replace('16 agents active', '17 agents active')
-              text = text.replace('AGENT NAV — 16 AGENTS', 'AGENT NAV — 17 AGENTS')
-              text = text.replace('16 / 16 активни', '17 / 17 активни')
-              text = text.replace('16 / 16 active', '17 / 17 active')
-              text = text.replace('>Claude Sonnet</span>', '>AI adapter</span>', 1)
-              text = text.replace(
-                  "title.innerHTML = 'WPAWS 11.1.7 <span style=\"color:var(--gold);font-size:13px\">Mentor + PPP Preview Fixed</span>';",
-                  "title.innerHTML = 'WPAWS 11.1.7 <span style=\"color:var(--gold);font-size:13px\">Canonical · 17 Executive Agents</span>';" )
-              text = text.replace('⚙️ Локален PPP Engine v11.1.3', '⚙️ PPP Local Engine · legacy compatibility v11.1.3')
-              text = add_machine_links(text, '11.1.7')
-              save(str(p), original, text)
-
-          # ------------------------------------------------------------
-          # WPAWS legacy app.js: explicit fail-closed/non-canonical status
-          # ------------------------------------------------------------
-          p = Path('wpaws/app.js')
-          if p.exists():
-              original = text = p.read_text(encoding='utf-8')
-              banner = ('// WPAWS LEGACY NON-CANONICAL MODULE\n'
-                        '// Canonical public WPAWS version: 11.1.7. This file is retained for compatibility/reference.\n'
-                        '// It must not imply that an external AI adapter is live when none is configured.\n')
-              if not text.startswith('// WPAWS LEGACY NON-CANONICAL MODULE'):
-                  text = banner + text
-              text = text.replace('// ТУКА ЌЕ СЕ ПОВИКУВА AI API\n        // За сега – симулиран одговор или приказ на промптот', '// LEGACY ADAPTER STUB — no external AI call is made in this non-canonical module.')
-              text = text.replace(
-                  '⚠️ Ова е местото каде ќе дојде одговорот од ${motor.toUpperCase()} API.\n                            <br><br>\n                            За да работи, треба да се интегрира вистински API повик до:\n                            ${motor === \'claude\' ? \'Anthropic Claude API\' : motor === \'gpt\' ? \'OpenAI GPT API\' : \'Локален шаблон\'}',
-                  '⚠️ External AI adapter is not configured in this legacy module. No external AI call was made. Use the canonical WPAWS 11.1.7 runtime or an explicitly approved/configured adapter.')
-              text = text.replace('16 агенти', '17 агенти')
-              text = text.replace('16 agents', '17 agents')
-              save(str(p), original, text)
-
-          # ------------------------------------------------------------
-          # WPAWS locale strings: prevent i18n from re-introducing stale labels
-          # ------------------------------------------------------------
-          for fp in [Path('locales/wpaws/mk.json'), Path('locales/wpaws/en.json')]:
-              if not fp.exists():
-                  continue
-              original = text = fp.read_text(encoding='utf-8')
-              text = text.replace('WPAWS 11.1.3', 'WPAWS 11.1.7')
-              text = text.replace('WPAWS 11.1.6', 'WPAWS 11.1.7')
-              text = text.replace('16 агенти активни', '17 агенти активни')
-              text = text.replace('16 agents active', '17 agents active')
-              text = text.replace('16 / 16 активни', '17 / 17 активни')
-              text = text.replace('16 / 16 active', '17 / 17 active')
-              text = re.sub(r'("w_aipilltxt\.1"\s*:\s*)"[^"]*"', r'\1"AI адаптер"' if fp.name == 'mk.json' else r'\1"AI adapter"', text, count=1)
-              save(str(fp), original, text)
-
-          # ------------------------------------------------------------
-          # Live translation/static resources: publication count sync
-          # ------------------------------------------------------------
-          count_pairs = [
-              ('25 публикации (5 монографии, 1 дисертација, 19 трудови)', '26 публикации (6 монографии и прирачници, 1 дисертација, 19 трудови и прилози)'),
-              ('5 монографии и прирачници', '6 монографии и прирачници'),
-              ('25 вкупно публикации', '26 вкупно публикации'),
-              ('25 публикации', '26 публикации'),
-              ('5 monographs and manuals', '6 monographs and manuals'),
-              ('5 monographs', '6 monographs'),
-              ('25 publications', '26 publications')
-          ]
-          candidates = [
-              Path('mk.json'), Path('en.json'), Path('index/mk.json'), Path('index/en.json'),
-              Path('locales/index/mk.json'), Path('locales/index/en.json'),
-              Path('languages/wpa-language-menu-10-core.js')
-          ]
-          for fp in candidates:
-              if not fp.exists():
-                  continue
-              original = text = fp.read_text(encoding='utf-8')
-              for old, new in count_pairs:
-                  text = text.replace(old, new)
-              save(str(fp), original, text)
-
-          # ------------------------------------------------------------
-          # Verification and auditable report
-          # ------------------------------------------------------------
-          failures = []
-          def require(path, needle, label):
-              data = Path(path).read_text(encoding='utf-8') if Path(path).exists() else ''
-              if needle not in data:
-                  failures.append(f'{path}: missing {label}')
-
-          require('index.html', '26 публикации', '26-publication static metric')
-          require('index.html', 'WPA-PN-009', 'PN-009 public evidence signal')
-          require('index.html', 'https://worldprotocolacademy.mk/', 'canonical WPA domain')
-          require('institute.html', '"@type": "Organization"', 'research-first Organization schema type')
-          require('institute.html', 'https://worldprotocolacademy.mk/institute.html', 'canonical Institute URL')
-          require('wpaws/index.html', 'WPAWS 11.1.7', 'canonical WPAWS version')
-          require('wpaws/index.html', '17 агенти', '17-agent MK status')
-          require('wpaws/index.html', '17 agents', '17-agent EN status')
-          require('wpaws/app.js', 'WPAWS LEGACY NON-CANONICAL MODULE', 'legacy app boundary')
-
-          # Hard failures only for contradictory user-visible canonical labels.
-          checks = {
-              'wpaws_public_11_1_3': ('wpaws/index.html', 'WPAWS 11.1.3'),
-              'wpaws_public_11_1_6': ('wpaws/index.html', 'WPAWS 11.1.6'),
-              'wpaws_16_agents_active_mk': ('wpaws/index.html', '16 агенти активни'),
-              'wpaws_16_agents_active_en': ('wpaws/index.html', '16 agents active'),
-              'home_old_metric_exact': ('index.html', '25 публикации (5 монографии, 1 дисертација, 19 трудови)')
-          }
-          residual = {}
-          for key, (path, needle) in checks.items():
-              data = Path(path).read_text(encoding='utf-8') if Path(path).exists() else ''
-              if needle in data:
-                  residual[key] = True
-                  failures.append(f'{path}: residual contradiction {needle}')
-
-          report = {
-              'schema': 'wpa-static-canonicalization-report/1.0',
-              'date': '2026-08-22',
-              'status': 'FAIL' if failures else 'PASS',
-              'changed_files': changed,
-              'canonical_targets': {
-                  'public_domain': 'https://worldprotocolacademy.mk/',
-                  'publication_metrics': '26 total = 6 monographs/manuals + 1 doctoral dissertation + 19 scientific papers/contributions',
-                  'wpaws_version': '11.1.7',
-                  'wpaws_executive_agents': 17,
-                  'virtual_sande_public_production': 'v35.1.1',
-                  'institute_schema_type': 'Organization'
-              },
-              'boundaries': [
-                  'Educational activity remains one application area and is not removed from WPA identity.',
-                  'Council-80 is bounded tactical-operational capacity, not 80 continuously running autonomous agents.',
-                  'Council-54 remains a candidate external-AI registry and does not imply provider affiliation or live integration.',
-                  'Legacy component versions may remain only when explicitly marked as compatibility/history, not as the canonical public WPAWS version.'
-              ],
-              'failures': failures
-          }
-          Path('data/wpa-static-canonicalization-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-
-          if failures:
-              print(json.dumps(report, ensure_ascii=False, indent=2))
-              raise SystemExit(1)
-
-          print(json.dumps(report, ensure_ascii=False, indent=2))
-          PY
-
-      - name: Commit canonicalized sources
-        shell: bash
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html institute.html wpaws/index.html wpaws/app.js locales/wpaws/mk.json locales/wpaws/en.json data/wpa-static-canonicalization-report.json
-          for f in mk.json en.json index/mk.json index/en.json locales/index/mk.json locales/index/en.json languages/wpa-language-menu-10-core.js; do
-            if [ -f "$f" ]; then git add "$f"; fi
-          done
-          if git diff --cached --quiet; then
-            echo "No source changes required."
-          else
-            git commit -m "Canonicalize WPA static source and WPAWS version hygiene"
-            git push origin HEAD:main
-          fi
+          python-version: '3.x'
+      - name: Validate canonical public truth
+        run: python scripts/validate_canonical_public_truth.py
