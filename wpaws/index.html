@@ -316,6 +316,11 @@ html.wpa-rtl .dialog-inp-row{flex-direction:row-reverse}
 <meta name="wpa-academic-quality-standard" content="/data/wpa-academic-quality-standard.json">
 <link rel="alternate" type="application/json" href="/data/wpa-public-evidence-index.json" title="WPA Public Evidence Index">
 <link rel="alternate" type="application/json" href="/data/wpa-canonical-version-manifest.json" title="WPA Canonical Version Manifest">
+<script data-wpa-canonical-fail-closed="true">
+try { localStorage.removeItem('wpaws_claude_key'); localStorage.removeItem('wpaws_gpt_key'); } catch (_) {}
+window.WPAWS_BROWSER_KEYS_DISABLED = true;
+</script>
+<!-- WPAWS_CANONICAL_FAIL_CLOSED_20260831 -->
 </head>
 <body>
 
@@ -2975,9 +2980,8 @@ async function callWorkerAsk(system, prompt, maxTokens=2000, engine='auto', agen
   };
 
   // Guard: Worker MAX_MESSAGE_LENGTH = 700
-  if(payload.message && payload.message.length > 690){
-    payload.message = payload.message.slice(0, 690);
-    console.warn('[WPAWS] prompt truncated to 690 chars for Worker limit');
+  if(payload.message && payload.message.length > 680){
+    throw new Error('WPAWS_INPUT_TOO_LONG: public /ask is limited to 680 characters; use the governed long-document workflow instead.');
   }
   const res = await fetch(`${base}/ask`, {
     method: 'POST',
@@ -4436,7 +4440,7 @@ async function callWorkerAsk(system, prompt, maxTokens = 2000, engine = 'claude'
         history: [{ role: 'assistant', content: system }],
         quality: 'academic', engine, max_tokens: maxTokens, web_search: webSearchOn
     };
-    if (payload.message && payload.message.length > 690) payload.message = payload.message.slice(0, 690);
+    if (payload.message && payload.message.length > 680) throw new Error('WPAWS_INPUT_TOO_LONG: public /ask is limited to 680 characters; use the governed long-document workflow instead.');
     const res = await fetch(`${base}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -4654,13 +4658,18 @@ function exportAllMemory() {
 function openMemoryPanel() { $('memoryCard')?.scrollIntoView({ behavior: 'smooth' }); }
 
 // ========== KEY FUNCTIONS ==========
-function openModal() { const m = $('keyModal'); if (m) m.classList.add('open'); }
+function openModal() {
+    try { localStorage.removeItem('wpaws_claude_key'); localStorage.removeItem('wpaws_gpt_key'); } catch (_) {}
+    const m = $('keyModal');
+    if (m) { m.setAttribute('aria-hidden', 'true'); m.classList.remove('open'); }
+    toast('🔒', 'Browser API keys are disabled. WPAWS uses only approved server-side adapters.');
+}
 function closeModal() { const m = $('keyModal'); if (m) m.classList.remove('open'); }
 function saveKeys() {
     const ck = $('claudeIn')?.value.trim();
     const gk = $('gptIn')?.value.trim();
-    if (ck) localStorage.setItem('wpaws_claude_key', ck);
-    if (gk) localStorage.setItem('wpaws_gpt_key', gk);
+    if (ck) { console.warn('[WPAWS] Browser Claude keys are disabled; use approved server-side adapters.'); }
+    if (gk) { console.warn('[WPAWS] Browser GPT keys are disabled; use approved server-side adapters.'); }
     closeModal();
     toast('✅', ui('tKeysSaved2'));
 }

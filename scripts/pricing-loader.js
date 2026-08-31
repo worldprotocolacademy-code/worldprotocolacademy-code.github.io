@@ -14,36 +14,23 @@
     boundary: 'Prices and payments will be activated only after an appropriate legal, ethical, tax and payment framework is established.'
   };
 
-  function installVirtualSandeFetchResilience() {
-    if (window.__WPA_VIRTUAL_SANDE_FETCH_RESILIENCE__ || typeof window.fetch !== 'function') return;
-    window.__WPA_VIRTUAL_SANDE_FETCH_RESILIENCE__ = true;
+  function scriptPath(value) {
+    try { return new URL(value, window.location.href).pathname; }
+    catch (_) { return String(value || '').split('?')[0]; }
+  }
 
-    var primaryAsk = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask';
-    var nativeFetch = window.fetch.bind(window);
-
-    window.fetch = function (input, init) {
-      var url = typeof input === 'string' ? input : (input && input.url ? String(input.url) : '');
-      if (url !== primaryAsk) return nativeFetch(input, init);
-
-      var options = Object.assign({}, init || {});
-      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      var timer = null;
-
-      if (controller) {
-        options.signal = controller.signal;
-        timer = window.setTimeout(function () { controller.abort(); }, 15000);
-      } else {
-        delete options.signal;
-      }
-
-      return nativeFetch(input, options).finally(function () {
-        if (timer) window.clearTimeout(timer);
-      });
-    };
+  function hasScriptPath(src) {
+    var wanted = scriptPath(src);
+    var scripts = document.scripts || [];
+    for (var i = 0; i < scripts.length; i += 1) {
+      var current = scripts[i].getAttribute('src') || scripts[i].src || '';
+      if (current && scriptPath(current) === wanted) return true;
+    }
+    return false;
   }
 
   function loadScript(src, marker) {
-    if (document.querySelector('script[' + marker + '],script[src="' + src + '"]')) return;
+    if (document.querySelector('script[' + marker + ']') || hasScriptPath(src)) return;
     var script = document.createElement('script');
     script.src = src;
     script.defer = true;
@@ -68,8 +55,6 @@
 
   window.WPAGetPrice = getPrice;
   window.WPA_PRICING_READY = Promise.resolve(window.WPA_PRICING);
-
-  installVirtualSandeFetchResilience();
 
   loadScript('/scripts/wpa-performance.js?v=20260810-3', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260719-2', 'data-wpa-public-safety');

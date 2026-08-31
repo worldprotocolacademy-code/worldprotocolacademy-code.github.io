@@ -8,9 +8,10 @@
   var currentPath = String(window.location.pathname || '/').toLowerCase();
   var excludedPrefixes = ['/wpaws/', '/student-desk/', '/diplomatic-analysis-lab/'];
   var excludedExact = ['/virtual-sande-ai.html'];
+  // Canonical production endpoint. The retired legacy Worker is intentionally not
+  // presented as failover because it does not accept the canonical production origin.
   var ENDPOINTS = [
-    'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask',
-    'https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+    'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask'
   ];
   var busy = false;
   var history = [];
@@ -218,7 +219,7 @@
       credentials: 'omit',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
-    }, 6500);
+    }, 15000);
     if (!response.ok) throw new Error('HTTP ' + response.status);
     var data = await response.json();
     var answer = answerFrom(data);
