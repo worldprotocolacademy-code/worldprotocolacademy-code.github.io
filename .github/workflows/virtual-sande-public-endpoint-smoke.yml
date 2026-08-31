@@ -1,0 +1,65 @@
+name: Virtual Sande Public Endpoint Smoke
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/virtual-sande-public-endpoint-smoke.yml'
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'workers/virtual-sande-v35.1-production/**'
+      - 'workers/virtual-sande-v35.1-staging/**'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Test public Virtual Sande endpoints
+        shell: bash
+        run: |
+          set -u
+          primary='https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask'
+          legacy='https://protocol-bot-workerjs.worldprotocolacademy.workers.dev/ask'
+          payload='{"message":"ШТО ПРЕТСТАВУВА итинерар?","question":"ШТО ПРЕТСТАВУВА итинерар?","query":"ШТО ПРЕТСТАВУВА итинерар?","lang":"mk","language":"mk","history":[],"quality":"3layer_academic","context":"World Protocol Academy public page: /"}'
+          ok=0
+          : > /tmp/vs-smoke-summary.txt
+          for spec in "primary|$primary" "legacy|$legacy"; do
+            name="${spec%%|*}"
+            url="${spec#*|}"
+            echo "=== $name ==="
+            headers="/tmp/${name}-headers.txt"
+            body="/tmp/${name}-body.txt"
+            code="$(curl --silent --show-error --location --max-time 20 \
+              --output "$body" --dump-header "$headers" --write-out '%{http_code}' \
+              --request POST "$url" \
+              --header 'Origin: https://worldprotocolacademy.mk' \
+              --header 'Content-Type: application/json' \
+              --header 'Accept: application/json' \
+              --data "$payload" || true)"
+            echo "HTTP $code"
+            sed -n '1,30p' "$headers" || true
+            echo '--- body ---'
+            head -c 4000 "$body" || true
+            echo
+            cors="$(grep -i '^access-control-allow-origin:' "$headers" | tr -d '\r' | tail -n1 || true)"
+            printf '%s\tHTTP %s\t%s\n' "$name" "$code" "${cors:-NO_CORS_HEADER}" >> /tmp/vs-smoke-summary.txt
+            if [[ "$code" =~ ^2[0-9][0-9]$ ]] && grep -Eiq 'answer|response|text|message' "$body"; then
+              ok=$((ok+1))
+            fi
+          done
+          {
+            echo '## Virtual Sande public endpoint smoke'
+            echo
+            echo '```text'
+            cat /tmp/vs-smoke-summary.txt
+            echo '```'
+            echo
+            if [ "$ok" -gt 0 ]; then
+              echo "At least one public /ask endpoint returned a 2xx response with an answer-like JSON body."
+            else
+              echo "Neither public /ask endpoint returned a usable 2xx answer response."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$ok" -gt 0
