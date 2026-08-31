@@ -338,7 +338,7 @@ section{padding:88px 0}
 /* FOOTER */
 .footer{background:#060f1e;color:rgba(255,255,255,.7);padding:64px 0 28px;margin-top:0}
 .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
-.footer-brand h4{font-family:var(--fp);font-size:20px;color:var(--white);margin-bottom:12px}
+.footer-brand .footer-brand-title{font-family:var(--fp);font-size:20px;color:var(--white);margin-bottom:12px}
 .footer-brand p{font-size:13.5px;line-height:1.75;color:rgba(255,255,255,.55)}
 .footer-col h5{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--goldl);margin-bottom:14px;font-family:var(--fb)}
 .footer-col ul{list-style:none;display:grid;gap:8px}
@@ -4279,7 +4279,7 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
   <div class="container">
     <div class="footer-top">
       <div class="footer-brand">
-        <h4 data-i18n="a_footer.1">Светска академија за протокол<br>World Protocol Academy</h4>
+        <div class="footer-brand-title" data-i18n="a_footer.1">Светска академија за протокол<br>World Protocol Academy</div>
         <p data-i18n="ftWpaDesc">Независна дигитална образовна и авторска платформа во развој фокусирана на протокол, дипломатија, сертификација, WPA Card, partnerships and member benefits, безбедност и институционална комуникација.</p>
         <p style="margin-top:10px;font-size:12px;color:rgba(255,255,255,.3)" data-i18n="a_footer.2">
           WPA е програмската куќа и дигиталната рамка. Не се претставува како државна дипломатска академија. WPA сертификатите и записите се независни проверливи сертификатски записи — не се државни универзитетски степени, професионални лиценци, ниту автоматска замена за надворешни системи за индексирање и акредитација (ORCID · Scopus · Web of Science · Google Scholar · Crossref). WPA не продава рангирање и не гарантира академско признавање од трети институции.
@@ -5615,7 +5615,6 @@ if(document.readyState==='loading'){
 
       if (!btn) return null;
 
-      btn.setAttribute("aria-label", "Open navigation menu");
       btn.setAttribute("aria-expanded", "false");
       btn.setAttribute("type", "button");
 
@@ -5655,7 +5654,6 @@ if(document.readyState==='loading'){
 
       document.body.classList.toggle("wpa-mobile-drawer-open", open);
       parts.btn.setAttribute("aria-expanded", open ? "true" : "false");
-      parts.btn.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
       parts.btn.textContent = open ? (wpaUILang()==="en"?"Close":"Затвори") : (wpaUILang()==="en"?"Menu":"Мени");
 
       if (open) {
