@@ -89,7 +89,6 @@
     var brand = document.querySelector('.nav-wrap nav .brand');
     if (!brand) return;
 
-    brand.removeAttribute('href');
     brand.removeAttribute('target');
     brand.classList.add('wpa-institute-brand');
     brand.setAttribute('aria-label', 'WPA Institute');

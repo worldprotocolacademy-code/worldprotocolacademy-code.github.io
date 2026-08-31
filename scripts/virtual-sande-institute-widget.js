@@ -79,7 +79,6 @@
     var brand = document.querySelector('.nav-wrap nav .brand');
     if (!brand) return;
     brand.classList.add('wpa-institute-brand');
-    brand.removeAttribute('href');
     brand.setAttribute('aria-label', 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies');
     var mark = brand.querySelector('.brand-mark');
     if (mark) {
