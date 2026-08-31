@@ -1,0 +1,66 @@
+name: QA Apply Institute Static Logo Fix
+
+on:
+  push:
+    branches:
+      - qa/perf-institute-logo-verify-2026-08-31
+    paths:
+      - .github/workflows/qa-apply-institute-static-logo-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  guarded-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact feature candidate
+        uses: actions/checkout@v4
+        with:
+          ref: perf/institute-virtual-sande-logo-2026-08-31
+          fetch-depth: 1
+
+      - name: Verify expected feature head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='9c3059f41d521f5e6fd627b6cd157e8d09dc2ed1'
+          actual="$(git rev-parse HEAD)"
+          echo "Expected: $expected"
+          echo "Actual:   $actual"
+          test "$actual" = "$expected"
+
+      - name: Replace exactly one static Institute logo source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('institute.html')
+          text = p.read_text(encoding='utf-8')
+          old = 'class="wpa-institute-logo" src="/logo.webp"'
+          new = 'class="wpa-institute-logo" src="/assets/img/logo.svg"'
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one guarded static Institute logo match, found {count}.')
+          text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- institute.html
+          if grep -q 'class="wpa-institute-logo" src="/logo.webp"' institute.html; then
+            echo 'Legacy static Institute logo remains.' >&2
+            exit 1
+          fi
+          grep -q 'class="wpa-institute-logo" src="/assets/img/logo.svg"' institute.html
+
+      - name: Commit to feature branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git add institute.html
+          git commit -m 'Use lightweight WPA SVG in Institute header'
+          git push origin HEAD:perf/institute-virtual-sande-logo-2026-08-31
