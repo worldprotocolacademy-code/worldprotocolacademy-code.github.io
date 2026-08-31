@@ -7,11 +7,11 @@ def text(r): return (ROOT/r).read_text(encoding="utf-8",errors="replace")
 metrics=json.loads(text("data/wpa-canonical-metrics-status.json")); ap=metrics.get("academic_publications",{}); zen=metrics.get("zenodo_doi_corpus",{})
 if (ap.get("total"),ap.get("monographs_and_handbooks"),ap.get("doctoral_dissertations"),ap.get("scientific_papers_and_contributions")) != (26,6,1,19): fail("Academic metrics must remain 26 = 6 + 1 + 19 unless canonically updated.")
 if (zen.get("total_records"),zen.get("working_papers"),zen.get("protocol_notes"),zen.get("global_strategic_plans")) != (23,13,9,1): fail("Zenodo metrics must remain 23 = 13 + 9 + 1 unless canonically updated.")
-active=["index.html","institute.html","mk.json","index/mk.json","locales/index/mk.json","locales/locales/index/mk.json"]
+active=["index.html","institute.html","mk.json","index/mk.json","locales/index/mk.json","locales/locales/index/mk.json","scripts/wpa-about-interactive.js"]
 for rel in active:
     if not (ROOT/rel).exists(): continue
     tx=text(rel)
-    for token in ["25 публикации (5 монографии","5 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 25 публикации","25 publications"]:
+    for token in ["25 публикации (5 монографии","5 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 25 публикации","25 publications","Вкупна академска база од 25 публикации.",">5</span><strong>Монографии</strong>"]:
         if token in tx: fail(f"{rel}: stale publication claim: {token}")
     if "со 25+ години институционално искуство со 25+ години институционално искуство" in tx: fail(f"{rel}: duplicate experience phrase")
 security=text("security.html")
