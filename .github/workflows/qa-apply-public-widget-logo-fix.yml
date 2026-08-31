@@ -1,0 +1,72 @@
+name: QA Apply Public Widget Logo Fix
+
+on:
+  push:
+    branches:
+      - qa/perf-institute-logo-verify3-2026-08-31
+    paths:
+      - .github/workflows/qa-apply-public-widget-logo-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  guarded-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact feature candidate
+        uses: actions/checkout@v4
+        with:
+          ref: perf/institute-virtual-sande-logo-2026-08-31
+          fetch-depth: 1
+
+      - name: Verify expected feature head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='a9f44c06395f8b4c55d7d1791d679c68e0b21582'
+          actual="$(git rev-parse HEAD)"
+          echo "Expected: $expected"
+          echo "Actual:   $actual"
+          test "$actual" = "$expected"
+
+      - name: Replace exactly two public widget brand images
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('scripts/virtual-sande-public-widget.js')
+          text = p.read_text(encoding='utf-8')
+          old_panel = '<img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38">'
+          new_panel = '<img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38">'
+          old_fab = '<img src="/logo.webp" alt="" width="64" height="64">'
+          new_fab = '<img src="/assets/img/logo.svg" alt="" width="64" height="64">'
+          if text.count(old_panel) != 1:
+              raise SystemExit(f'Expected one panel logo match, found {text.count(old_panel)}.')
+          if text.count(old_fab) != 1:
+              raise SystemExit(f'Expected one FAB logo match, found {text.count(old_fab)}.')
+          text = text.replace(old_panel, new_panel, 1).replace(old_fab, new_fab, 1)
+          p.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- scripts/virtual-sande-public-widget.js
+          if grep -q '<img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38">' scripts/virtual-sande-public-widget.js; then
+            echo 'Legacy public widget panel logo remains.' >&2
+            exit 1
+          fi
+          if grep -q '<img src="/logo.webp" alt="" width="64" height="64">' scripts/virtual-sande-public-widget.js; then
+            echo 'Legacy public widget FAB logo remains.' >&2
+            exit 1
+          fi
+
+      - name: Commit to feature branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git add scripts/virtual-sande-public-widget.js
+          git commit -m 'Use lightweight WPA SVG in public Virtual Sande widget'
+          git push origin HEAD:perf/institute-virtual-sande-logo-2026-08-31
