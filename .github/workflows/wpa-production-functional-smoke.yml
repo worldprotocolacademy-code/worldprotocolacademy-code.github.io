@@ -1,0 +1,67 @@
+name: WPA Production Functional Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'professional-english.html'
+      - 'scripts/**'
+      - 'styles/**'
+      - 'wpaws/**'
+      - 'security.html'
+      - 'sitemap.xml'
+      - '.github/workflows/wpa-production-functional-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  functional-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Start branch-local static server
+        run: |
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-http.log 2>&1 &
+          for i in {1..20}; do
+            curl --fail --silent http://127.0.0.1:8000/ >/dev/null && exit 0
+            sleep 0.5
+          done
+          cat /tmp/wpa-http.log
+          exit 1
+
+      - name: Branch-local browser DOM smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          "$chrome" --headless --no-sandbox --disable-dev-shm-usage --virtual-time-budget=6500 --dump-dom http://127.0.0.1:8000/ > /tmp/home-dom.html
+          grep -q 'wpa-home-pe-icon' /tmp/home-dom.html
+          grep -q 'wpaHomeAudioVideoCard' /tmp/home-dom.html
+          grep -q 'wpa-public-vs-fab' /tmp/home-dom.html
+          curl --fail --silent http://127.0.0.1:8000/professional-english.html | grep -q 'module-icon pe-module-icon'
+          curl --fail --silent http://127.0.0.1:8000/student-desk/ | grep -qi 'noindex'
+
+      - name: Canonical truth validation
+        run: |
+          python scripts/site_quality_check.py
+          python scripts/validate_canonical_public_truth.py
+
+      - name: Public edge baseline health
+        shell: bash
+        run: |
+          set -euo pipefail
+          for url in \
+            https://worldprotocolacademy.mk/ \
+            https://worldprotocolacademy.mk/institute.html \
+            https://worldprotocolacademy.mk/virtual-sande-ai.html \
+            https://worldprotocolacademy.mk/security.html; do
+            curl --fail --silent --show-error --location --max-time 30 --output /dev/null "$url"
+          done

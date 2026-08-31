@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.1",
+  "updated": "2026-08-31",
+  "policy": "Only workflows explicitly classified ACTIVE below are part of the normal protected path. Historical, deployment, cutover and remediation workflows do not gain authority merely because their files remain in the repository.",
+  "active_required_ci": [
+    "site-quality.yml",
+    "translator-quality.yml",
+    "wpa-i18n-audit.yml",
+    "wpa-static-canonicalization.yml",
+    "wpa-production-functional-smoke.yml",
+    "virtual-sande-v35-2-connected-vessels-ci.yml",
+    "validate-social-governance.yml"
+  ],
+  "active_path_scoped_ci": [
+    "virtual-sande-public-endpoint-smoke.yml"
+  ],
+  "active_manual_reviewed": [
+    "performance-optimization.yml"
+  ],
+  "manual_protected_review_patterns": [
+    "deploy-*",
+    "*cutover*",
+    "*production*",
+    "*protected-apply*"
+  ],
+  "superseded_historical_patterns": [
+    "*ai-search-v3*",
+    "*perplexity-six*",
+    "*kimi-delta*",
+    "*claude-audit-delta*"
+  ],
+  "default_status_for_unlisted_workflow": "REVIEW_REQUIRED",
+  "rules": [
+    "Normal CI workflows must use read-only repository permissions unless a documented operation requires otherwise.",
+    "Normal source-changing automation must produce a reviewable candidate or pull request and must not push generated source directly to main.",
+    "Deployment and cutover workflows require a current runbook, environment/secret review, Human Gate approval and rollback point before dispatch.",
+    "SUPERSEDED_HISTORICAL workflows are evidence only and must not be dispatched.",
+    "The one-time audit16-remediation-apply workflow has been removed and has no continuing authority."
+  ]
+}
