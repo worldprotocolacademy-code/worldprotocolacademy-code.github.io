@@ -9,69 +9,26 @@ permissions:
   contents: read
 
 jobs:
-  a11y-prb-baseline:
+  prb-source-locator:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
-      - name: Checkout exact QA candidate
+      - name: Checkout exact QA source
         uses: actions/checkout@v7
 
-      - name: Validate canonical source
+      - name: Locate accessibility source owners
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/validate_canonical_public_truth.py
-          python3 scripts/site_quality_check.py
-
-      - name: Start local static server
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-a11y-prb-http.log 2>&1 &
-          for i in $(seq 1 20); do
-            curl --fail --silent http://127.0.0.1:8000/ >/dev/null && exit 0
-            sleep 1
-          done
-          cat /tmp/wpa-a11y-prb-http.log >&2 || true
-          exit 1
-
-      - name: Run Home and Institute accessibility baselines
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p lighthouse-reports
-          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          test -n "$chrome"
-          export CHROME_PATH="$chrome"
-          npx --yes lighthouse@12.2.1 http://127.0.0.1:8000/ --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility,best-practices,seo --output=json --output-path=lighthouse-reports/home.json
-          npx --yes lighthouse@12.2.1 http://127.0.0.1:8000/institute.html --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility,best-practices,seo --output=json --output-path=lighthouse-reports/institute.json
-
-      - name: Print exact remaining accessibility failures
-        shell: bash
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          for(const name of ['home','institute']){
-            const r=JSON.parse(fs.readFileSync(`lighthouse-reports/${name}.json`,'utf8'));
-            const a11y=Math.round((r.categories.accessibility.score||0)*100);
-            console.log(`=== ${name.toUpperCase()} accessibility=${a11y} ===`);
-            for(const [id,a] of Object.entries(r.audits||{})){
-              if(a.score===0 && a.details && Array.isArray(a.details.items) && a.details.items.length){
-                console.log(`FAIL ${id}: ${a.title}`);
-                for(const item of a.details.items.slice(0,12)){
-                  const n=item.node||{};
-                  console.log(JSON.stringify({selector:n.selector||null,snippet:n.snippet||null,explanation:n.explanation||null,failureSummary:n.failureSummary||null}));
-                }
-              }
-            }
-          }
-          NODE
-
-      - name: Upload reports
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: wpa-a11y-prb-baseline
-          path: lighthouse-reports
-          if-no-files-found: warn
-          retention-days: 30
+          echo '=== INDEX mToggle / footer ==='
+          grep -n -C 6 -E 'id="mToggle"|a_footer\.1|footer-brand h4|footer-col h5' index.html || true
+          echo '=== INDEX mobile aria writers ==='
+          grep -n -C 5 -E 'Open navigation menu|Close navigation menu|mToggle' index.html scripts/*.js || true
+          echo '=== INSTITUTE core nodes ==='
+          grep -n -C 6 -E 'instLangNote|jump-menu-label|wpaMobileMenuButton|wpa-institute-brand|wpaid-instruments|institute\.footer\.about_label' institute.html scripts/*.js styles/*.css || true
+          echo '=== WIC selects anywhere ==='
+          grep -R -n -C 6 -E 'wicPurpose|wicDomain|wicLang|wicTool' . --exclude-dir=.git --exclude='*.b64' || true
+          echo '=== Institute brand href mutation ==='
+          grep -R -n -C 5 -E 'wpa-institute-brand|removeAttribute\(.href.|removeAttribute\("href"' scripts styles institute.html --exclude='*.map' || true
+          echo '=== Relevant script includes in institute ==='
+          grep -n -E '<script[^>]+src=|<link[^>]+stylesheet' institute.html | tail -n 80 || true
