@@ -1,0 +1,47 @@
+name: QA Locate Institute logo.webp
+
+on:
+  push:
+    branches:
+      - qa/perf-institute-logo-verify3-2026-08-31
+    paths:
+      - .github/workflows/qa-locate-institute-logo-webp.yml
+
+permissions:
+  contents: read
+
+jobs:
+  locate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact feature candidate
+        uses: actions/checkout@v4
+        with:
+          ref: perf/institute-virtual-sande-logo-2026-08-31
+          fetch-depth: 1
+
+      - name: Verify feature head and source references
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Feature head: $(git rev-parse HEAD)"
+          echo 'Repository logo.webp references relevant to runtime:'
+          grep -R -n --include='*.html' --include='*.js' "logo.webp" institute.html scripts languages 2>/dev/null || true
+
+      - name: Start local server and dump final DOM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 --bind 127.0.0.1 > /tmp/wpa-http.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl --fail --silent http://127.0.0.1:8000/institute.html > /dev/null; then break; fi
+            sleep 1
+          done
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          "$chrome" --headless --no-sandbox --disable-dev-shm-usage --virtual-time-budget=12000 --dump-dom http://127.0.0.1:8000/institute.html > /tmp/institute-dom.html 2>/tmp/chrome.err || true
+          echo 'Final DOM elements still referencing logo.webp:'
+          grep -o -E '<[^>]+logo\.webp[^>]*>' /tmp/institute-dom.html || true
+          echo 'Final DOM count:'
+          grep -o 'logo.webp' /tmp/institute-dom.html | wc -l
