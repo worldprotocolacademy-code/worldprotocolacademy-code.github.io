@@ -1,0 +1,61 @@
+name: QA Apply Runtime Brand Logo Fix
+
+on:
+  push:
+    branches:
+      - qa/perf-institute-logo-verify2-2026-08-31
+    paths:
+      - .github/workflows/qa-apply-runtime-brand-logo-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  guarded-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact feature candidate
+        uses: actions/checkout@v4
+        with:
+          ref: perf/institute-virtual-sande-logo-2026-08-31
+          fetch-depth: 1
+
+      - name: Verify expected feature head
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='402f07a2b33784e17639456556c8ab7de78a3fc0'
+          actual="$(git rev-parse HEAD)"
+          echo "Expected: $expected"
+          echo "Actual:   $actual"
+          test "$actual" = "$expected"
+
+      - name: Replace exact Virtual Sande runtime brand source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('scripts/wpa-performance.js')
+          text = p.read_text(encoding='utf-8')
+          old = "    var image = document.createElement('img');\n    image.src = '/logo.webp';\n    image.alt = 'World Protocol Academy logo';"
+          new = "    var image = document.createElement('img');\n    image.src = '/assets/img/logo.svg';\n    image.alt = 'World Protocol Academy logo';"
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one Virtual Sande runtime brand match, found {count}.')
+          p.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- scripts/wpa-performance.js
+          grep -q "image.src = '/assets/img/logo.svg';" scripts/wpa-performance.js
+
+      - name: Commit to feature branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git add scripts/wpa-performance.js
+          git commit -m 'Use lightweight WPA SVG for runtime brand mark'
+          git push origin HEAD:perf/institute-virtual-sande-logo-2026-08-31
