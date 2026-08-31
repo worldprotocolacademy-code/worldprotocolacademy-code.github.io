@@ -1,108 +1,64 @@
 name: WPA Lighthouse and Mobile QA
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '17 4 * * 1'
+  push:
+    branches:
+      - qa/a11y-prb-a-verify2-2026-08-31
 
 permissions:
   contents: read
 
-concurrency:
-  group: wpa-lighthouse-mobile-qa
-  cancel-in-progress: true
-
 jobs:
-  mobile-audit:
+  prb-a-final-verification:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Verify public endpoints
-        shell: bash
+      - name: Checkout exact candidate
+        uses: actions/checkout@v7
+      - name: Validate source
         run: |
           set -euo pipefail
-          urls=(
-            'https://worldprotocolacademy.mk/'
-            'https://worldprotocolacademy.mk/institute.html'
-            'https://worldprotocolacademy.mk/brand-architecture.html'
-            'https://worldprotocolacademy.mk/bibliography/'
-            'https://worldprotocolacademy.mk/working-papers/'
-            'https://worldprotocolacademy.mk/virtual-sande-ai.html'
-            'https://worldprotocolacademy.mk/audio-media-engine.html'
-          )
-          for url in "${urls[@]}"; do
-            echo "Checking $url"
-            curl --fail --silent --show-error --location --max-time 30 --output /dev/null "$url"
-          done
-
-      - name: Run Lighthouse mobile reports
-        shell: bash
+          python3 scripts/validate_canonical_public_truth.py
+          python3 scripts/site_quality_check.py
+      - name: Start candidate server
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-prb-a2-http.log 2>&1 &
+          for i in $(seq 1 20); do curl --fail --silent http://127.0.0.1:8000/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Run Home and Institute Lighthouse
         run: |
           set -euo pipefail
           mkdir -p lighthouse-reports
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
-          if [ -z "$chrome" ]; then
-            echo 'Chrome/Chromium was not found on the runner.' >&2
-            exit 1
-          fi
-          echo "Using Chrome: $chrome"
+          test -n "$chrome"
           export CHROME_PATH="$chrome"
-          specs=(
-            'home|https://worldprotocolacademy.mk/'
-            'institute|https://worldprotocolacademy.mk/institute.html'
-            'brand-architecture|https://worldprotocolacademy.mk/brand-architecture.html'
-            'bibliography|https://worldprotocolacademy.mk/bibliography/'
-            'research-publications|https://worldprotocolacademy.mk/working-papers/'
-            'virtual-sande|https://worldprotocolacademy.mk/virtual-sande-ai.html'
-            'audio-media-engine|https://worldprotocolacademy.mk/audio-media-engine.html'
-          )
-          for spec in "${specs[@]}"; do
-            name="${spec%%|*}"
-            url="${spec#*|}"
-            echo "Lighthouse mobile: $name -> $url"
-            npx --yes lighthouse@12.2.1 "$url" \
-              --quiet \
-              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
-              --only-categories=performance,accessibility,best-practices,seo \
-              --output=json \
-              --output-path="lighthouse-reports/${name}.json"
-          done
-
-      - name: Summarize Lighthouse scores
-        shell: bash
+          npx --yes lighthouse@12.2.1 http://127.0.0.1:8000/ --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility,best-practices,seo --output=json --output-path=lighthouse-reports/home.json
+          npx --yes lighthouse@12.2.1 http://127.0.0.1:8000/institute.html --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility,best-practices,seo --output=json --output-path=lighthouse-reports/institute.json
+      - name: Assert PR-B-A target closure
         run: |
           node <<'NODE'
-          const fs = require('fs');
-          const path = require('path');
-          const dir = 'lighthouse-reports';
-          const files = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort();
-          const rows = files.map(file => {
-            const r = JSON.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
-            const c = r.categories || {};
-            const pct = key => Math.round(((c[key] && c[key].score) || 0) * 100);
-            return [file.replace(/\.json$/, ''), pct('performance'), pct('accessibility'), pct('best-practices'), pct('seo')];
-          });
-          const lines = [
-            '## WPA Lighthouse Mobile QA',
-            '',
-            '| Surface | Performance | Accessibility | Best Practices | SEO |',
-            '|---|---:|---:|---:|---:|',
-            ...rows.map(r => `| ${r[0]} | ${r[1]} | ${r[2]} | ${r[3]} | ${r[4]} |`),
-            '',
-            'This workflow is a diagnostic QA layer. Scores are monitored as engineering signals and are not institutional or accessibility certification claims.'
-          ];
-          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, lines.join('\n') + '\n');
-          console.log(lines.join('\n'));
+          const fs=require('fs');
+          const home=JSON.parse(fs.readFileSync('lighthouse-reports/home.json','utf8'));
+          const inst=JSON.parse(fs.readFileSync('lighthouse-reports/institute.json','utf8'));
+          const score=(r,id)=>((r.audits||{})[id]||{}).score;
+          const pct=r=>Math.round((((r.categories||{}).accessibility||{}).score||0)*100);
+          const failures=[];
+          if(score(home,'heading-order')!==1) failures.push('home:heading-order');
+          const homeLabel=score(home,'label-content-name-mismatch');
+          if(homeLabel!==1 && homeLabel!==null) failures.push('home:label-content-name-mismatch');
+          for(const id of ['heading-order','label-content-name-mismatch','select-name','crawlable-anchors']) if(score(inst,id)!==1) failures.push(`institute:${id}`);
+          const items=((((inst.audits||{})['color-contrast']||{}).details||{}).items)||[];
+          const targeted=items.filter(x=>/instLangNote|jump-menu-label|jump-link/.test(((x.node||{}).selector||'')));
+          if(targeted.length) failures.push('institute:targeted-color-contrast');
+          console.log(`home heading-order=${score(home,'heading-order')} label-mismatch=${homeLabel} accessibility=${pct(home)}`);
+          console.log(`institute heading-order=${score(inst,'heading-order')} label-mismatch=${score(inst,'label-content-name-mismatch')} select-name=${score(inst,'select-name')} crawlable-anchors=${score(inst,'crawlable-anchors')} targeted-contrast=${targeted.length} accessibility=${pct(inst)}`);
+          if(failures.length){console.error(failures.join(', '));process.exit(1);}
           NODE
-
-      - name: Upload Lighthouse reports
+      - name: Upload reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: wpa-lighthouse-mobile-reports
+          name: wpa-prb-a-final-verification
           path: lighthouse-reports
-          if-no-files-found: warn
           retention-days: 30
