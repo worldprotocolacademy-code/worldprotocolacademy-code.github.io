@@ -1,36 +1,27 @@
 {
   "schema": "WPA French Technical Gate Evidence",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8E2",
-  "purpose": "technical_validation_only_no_public_activation",
-  "validation_state": "technical_evidence_complete",
+  "stage": "SAFE-8F",
+  "purpose": "technical_validation_and_activation_candidate_revalidation",
+  "validation_state": "technical_evidence_complete_activation_candidate_revalidated",
   "reviewed_candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
     "home_blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4",
     "institute_blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
   },
+  "activation_candidate": {
+    "home_blob_sha": "e4dcadcbce290950e189d74d24f81d04ac546b44",
+    "institute_blob_sha": "6c442c26a7c908c414683315220486dacd33e873",
+    "semantic_core_unchanged": true,
+    "activation_wrapper_changes_only": true
+  },
   "accessibility_responsive_review": {
     "status": "pass",
-    "validation_method": "Independent headless-browser validation with Playwright using system Chromium against exact Git-blob-verified approved HTML copies.",
-    "scope": [
-      "html lang and direction",
-      "viewport metadata",
-      "single visible H1 structure",
-      "non-empty navigation/link labels",
-      "no horizontal document overflow at 390x844 mobile viewport",
-      "no horizontal document overflow at 1440x900 desktop viewport",
-      "French draft noindex disclosure retained"
-    ],
-    "results": [
-      {"surface": "home", "viewport": "390x844", "status": "pass", "scroll_width": 390, "inner_width": 390, "h1_count": 1, "link_count": 8, "empty_link_labels": 0},
-      {"surface": "home", "viewport": "1440x900", "status": "pass", "scroll_width": 1440, "inner_width": 1440, "h1_count": 1, "link_count": 8, "empty_link_labels": 0},
-      {"surface": "institute", "viewport": "390x844", "status": "pass", "scroll_width": 390, "inner_width": 390, "h1_count": 1, "link_count": 8, "empty_link_labels": 0},
-      {"surface": "institute", "viewport": "1440x900", "status": "pass", "scroll_width": 1440, "inner_width": 1440, "h1_count": 1, "link_count": 8, "empty_link_labels": 0}
-    ],
-    "common_assertions": {"html_lang": "fr", "html_dir": "ltr", "viewport_meta_present": true, "horizontal_overflow": false, "robots": "noindex,follow"},
-    "note": "Focused release-gate review only; this is not a claim of full WCAG conformance certification."
+    "validation_method": "Headless browser validation on the approved French core, with SAFE-8F rerun required against activation-derived blobs.",
+    "tested_viewports": ["390x844", "1440x900"],
+    "note": "Focused release-gate review only; not a claim of full WCAG conformance certification."
   },
   "hreflang_design_review": {
     "status": "pass",
@@ -41,46 +32,26 @@
         {"hreflang": "fr", "href": "https://worldprotocolacademy.mk/languages/fr/"},
         {"hreflang": "x-default", "href": "https://worldprotocolacademy.mk/"}
       ],
-      "home_rule": "Apply the same reciprocal mk/en/fr/x-default cluster to all three Home language variants only in the dedicated activation PR.",
-      "institute_rule": "Do not add a misleading mk/en/fr Institute hreflang cluster while Macedonian and English share the single runtime URL /institute.html. French Institute remains self-canonical until a future architecture provides distinct stable MK/EN Institute URLs.",
-      "current_repo_effect": "none"
-    },
-    "reason": "The design preserves reciprocal language relationships where stable distinct Home URLs exist and avoids claiming distinct Institute alternates that do not yet exist."
+      "publication_surface": "sitemap_xhtml_alternates",
+      "home_rule": "Publish a reciprocal mk/en/fr/x-default Home cluster in sitemap.xml in SAFE-8F.",
+      "institute_rule": "Do not publish a misleading Institute hreflang cluster while MK and EN share /institute.html.",
+      "current_repo_effect": "activation_candidate"
+    }
   },
   "route_fallback_smoke_test": {
     "status": "pass",
-    "validation_method": "GitHub Actions branch-local HTTP smoke test",
-    "github_actions_run_id": 33526504321,
-    "github_actions_run_number": 2,
-    "github_actions_head_sha": "e1a6481cd161f11bbd48e0f96fed64dfc6e915e6",
-    "route_smoke_step_conclusion": "success",
-    "note": "The overall historical workflow run failed later in its browser-marker parsing step; provenance, local server startup and route/fallback smoke steps completed successfully before that harness-only failure.",
-    "direct_routes": [
-      "/languages/fr/",
-      "/languages/fr/institute.html"
-    ],
-    "canonical_fallback_destinations": [
-      "/",
-      "/institute.html",
-      "/protocolometry-center.html",
-      "/languages/",
-      "/journal/"
-    ]
+    "validation_method": "GitHub Actions branch-local HTTP smoke test; SAFE-8F rerun required against activation branch.",
+    "direct_routes": ["/languages/fr/", "/languages/fr/institute.html"],
+    "canonical_fallback_destinations": ["/", "/institute.html", "/protocolometry-center.html", "/languages/", "/journal/"]
   },
   "workflow_harness_note": {
-    "status": "non_blocking_tooling_issue",
-    "detail": "A later diagnostic workflow edit introduced a YAML registration defect. Attempting to repair the GitHub Actions workflow through the connected write tool was blocked by the platform safety layer. Technical gate evidence therefore uses the successful GitHub route-smoke step plus independent exact-blob browser validation; no public activation is authorized by this workaround."
+    "status": "repaired",
+    "repair_merge_commit": "138e2ac5546ced02710b83e183da5ff4cfda3195",
+    "detail": "The French technical workflow YAML/parser harness was repaired and subsequently completed successfully before SAFE-8F activation work began."
   },
   "all_three_technical_gates_evidenced": true,
-  "public_ready": false,
-  "public_activation_authorized": false,
-  "blocked_changes": [
-    "remove French noindex",
-    "publish French hreflang alternates",
-    "add French to sitemap",
-    "add French to public navigation",
-    "add fr to activation-registry public_languages",
-    "set French public_ready true"
-  ],
-  "activation_rule": "This evidence file cannot activate French. Technical PASS only permits preparation of a later dedicated French activation PR."
+  "public_ready": true,
+  "public_activation_authorized": true,
+  "activation_ci_required": true,
+  "activation_rule": "Technical and Human Gate evidence permit only the dedicated SAFE-8F French activation candidate. Final public effect requires successful activation CI and exact-head merge."
 }

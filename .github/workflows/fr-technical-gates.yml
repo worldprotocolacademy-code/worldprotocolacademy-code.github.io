@@ -4,7 +4,23 @@ on:
   pull_request:
     paths:
       - 'languages/fr/**'
+      - 'languages/index.html'
+      - 'data/language-activation.json'
+      - 'data/language-wave1-readiness.json'
       - 'data/human-gates/fr*.json'
+      - 'sitemap.xml'
+      - 'scripts/translator_quality_check.py'
+      - '.github/workflows/fr-technical-gates.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'languages/fr/**'
+      - 'languages/index.html'
+      - 'data/language-activation.json'
+      - 'data/language-wave1-readiness.json'
+      - 'data/human-gates/fr*.json'
+      - 'sitemap.xml'
+      - 'scripts/translator_quality_check.py'
       - '.github/workflows/fr-technical-gates.yml'
   workflow_dispatch:
 
@@ -21,14 +37,23 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Verify locked French candidate provenance
+      - name: Verify SAFE-8F French activation provenance
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object languages/fr/index.html)" = "e9a22ba15af70cf7936ff2a0a738831f5e922be4"
-          test "$(git hash-object languages/fr/institute.html)" = "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
-          grep -q '<meta name="robots" content="noindex,follow">' languages/fr/index.html
-          grep -q '<meta name="robots" content="noindex,follow">' languages/fr/institute.html
+          test "$(git hash-object languages/fr/index.html)" = "e4dcadcbce290950e189d74d24f81d04ac546b44"
+          test "$(git hash-object languages/fr/institute.html)" = "6c442c26a7c908c414683315220486dacd33e873"
+          grep -q '<meta name="robots" content="index,follow">' languages/fr/index.html
+          grep -q '<meta name="robots" content="index,follow">' languages/fr/institute.html
+          grep -q 'Public pilot' languages/fr/index.html
+          grep -q 'Public pilot' languages/fr/institute.html
+
+      - name: Verify activation registry and fail-closed boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -c "import json; a=json.load(open('data/language-activation.json',encoding='utf-8')); assert a['policy_mode']=='fail_closed'; assert a['public_languages']==['mk','en','fr']; assert a['canonical_master']=='mk'; assert a['canonical_mirror']=='en'; assert a['unlisted_languages_public'] is False"
+          python -c "import json; r=json.load(open('data/language-wave1-readiness.json',encoding='utf-8')); rows={x['code']:x for x in r['languages']}; assert rows['fr']['public_ready'] is True; assert all(rows[c]['public_ready'] is False for c in rows if c!='fr')"
 
       - name: Start branch-local static server
         shell: bash
@@ -36,9 +61,7 @@ jobs:
           set -euo pipefail
           python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-http.log 2>&1 &
           for i in {1..20}; do
-            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then
-              break
-            fi
+            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then break; fi
             sleep 0.5
           done
           curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null
@@ -51,6 +74,7 @@ jobs:
             /languages/fr/ \
             /languages/fr/institute.html \
             / \
+            /en/ \
             /institute.html \
             /protocolometry-center.html \
             /languages/ \
@@ -110,18 +134,25 @@ jobs:
             done
           done
 
-      - name: Confirm hreflang remains design-only
+      - name: Confirm public hreflang and sitemap design
         shell: bash
         run: |
           set -euo pipefail
-          ! grep -qi 'hreflang=' languages/fr/index.html
-          ! grep -qi 'hreflang=' languages/fr/institute.html
-          python - <<'PY'
-          import json
-          p='data/human-gates/fr-technical-gates.json'
-          data=json.load(open(p,encoding='utf-8'))
-          assert data['hreflang_design_review']['status']=='pass'
-          assert data['hreflang_design_review']['design']['current_repo_effect']=='none'
-          assert data['public_ready'] is False
-          assert data['public_activation_authorized'] is False
-          PY
+          grep -q 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' sitemap.xml
+          grep -q 'hreflang="mk"' sitemap.xml
+          grep -q 'hreflang="en"' sitemap.xml
+          grep -q 'hreflang="fr"' sitemap.xml
+          grep -q 'hreflang="x-default"' sitemap.xml
+          grep -q 'https://worldprotocolacademy.mk/languages/fr/' sitemap.xml
+          grep -q 'https://worldprotocolacademy.mk/languages/fr/institute.html' sitemap.xml
+          python -c "import json; d=json.load(open('data/human-gates/fr-technical-gates.json',encoding='utf-8')); assert d['hreflang_design_review']['status']=='pass'; assert d['hreflang_design_review']['design']['publication_surface']=='sitemap_xhtml_alternates'; assert d['public_ready'] is True; assert d['public_activation_authorized'] is True"
+
+      - name: Confirm Languages Hub exposes only French among Wave-1 drafts
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'href="/languages/fr/"' languages/index.html
+          grep -q 'href="/languages/fr/institute.html"' languages/index.html
+          for code in zh ru hi af ar de it sq sr; do
+            ! grep -q "href=\"/languages/${code}/" languages/index.html
+          done

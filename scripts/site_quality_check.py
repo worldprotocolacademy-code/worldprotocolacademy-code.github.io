@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """WPA public-site quality and canonical-drift check."""
 from __future__ import annotations
+import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 ROOT=Path(__file__).resolve().parents[1];BASE_URL="https://worldprotocolacademy.mk"
-ALLOWED_SITEMAP_PATHS={"/","/institute.html","/aab-governance.html","/institute-ethics-integrity.html","/bibliography/","/working-papers/","/journal/","/journal/editorial-governance-status.html","/journal/vol-1-issue-1-2026.html","/papers.html","/scholar/wpa-wp-009.html","/programmes.html","/certification.html","/professional-english.html","/institutional-diplomatic-track.html","/protocol-professional-track.html","/communication-presence-track.html","/wpa-card.html","/forms/","/partnerships/","/institutional-enquiry.html","/strategy/master-strategy-2026-2030.html","/wpa-institutional-maturity-roadmap.html","/languages/","/wpa-research-framework.html","/wpa-global-institutions-master-list.html","/master-list-verification.html","/wpa-index-appeals-and-corrections.html","/wpa-institute-index-lab.html","/wpa-global-institutional-evidence-programme.html","/wpa-institute-measurement-ranking-strategy.html","/wpa-protocolometric-signature.html","/wpa-global-protocol-diplomacy-benchmark.html","/wpa-global-ranking-roadmap.html","/virtual-sande-ai.html","/protocolometry-center.html","/wpa-trust-layer.html","/wpa-scenario-film-lab.html","/wpa-metrics-status.html","/wpa-protocol-stress-test.html","/wpa-protocol-knowledge-check.html","/wpa-state-visit-readiness-checklist.html","/wpa-briefings.html","/wpa-services.html","/wpa-one-page-service-profile.html","/audio-media-engine.html","/diplomatic-analysis-lab/","/opc2026/","/book1-protocol.html","/book2-conference.html","/book3-diplomacy.html","/book4-digital-era.html","/privacy.html","/rights-takedown.html","/public-disclaimer.html","/correction-request.html","/security.html"}
+BASE_ALLOWED_SITEMAP_PATHS={"/","/institute.html","/aab-governance.html","/institute-ethics-integrity.html","/bibliography/","/working-papers/","/journal/","/journal/editorial-governance-status.html","/journal/vol-1-issue-1-2026.html","/papers.html","/scholar/wpa-wp-009.html","/programmes.html","/certification.html","/professional-english.html","/institutional-diplomatic-track.html","/protocol-professional-track.html","/communication-presence-track.html","/wpa-card.html","/forms/","/partnerships/","/institutional-enquiry.html","/strategy/master-strategy-2026-2030.html","/wpa-institutional-maturity-roadmap.html","/languages/","/wpa-research-framework.html","/wpa-global-institutions-master-list.html","/master-list-verification.html","/wpa-index-appeals-and-corrections.html","/wpa-institute-index-lab.html","/wpa-global-institutional-evidence-programme.html","/wpa-institute-measurement-ranking-strategy.html","/wpa-protocolometric-signature.html","/wpa-global-protocol-diplomacy-benchmark.html","/wpa-global-ranking-roadmap.html","/virtual-sande-ai.html","/protocolometry-center.html","/wpa-trust-layer.html","/wpa-scenario-film-lab.html","/wpa-metrics-status.html","/wpa-protocol-stress-test.html","/wpa-protocol-knowledge-check.html","/wpa-state-visit-readiness-checklist.html","/wpa-briefings.html","/wpa-services.html","/wpa-one-page-service-profile.html","/audio-media-engine.html","/diplomatic-analysis-lab/","/opc2026/","/book1-protocol.html","/book2-conference.html","/book3-diplomacy.html","/book4-digital-era.html","/privacy.html","/rights-takedown.html","/public-disclaimer.html","/correction-request.html","/security.html"}
 FORBIDDEN_IN_SITEMAP=("/ai/student-desk.html","/student-desk/","/wpaws/","/test-modals.html","/thanks.html","/analytics-guide.html","/monetization-checklist.html","/promotion-playbook.html","/forms/thanks.html")
 PUBLIC_SEARCH_USER_AGENTS={"*","googlebot","bingbot","duckduckbot","applebot","slurp","yandexbot","baiduspider"}
 def read_text(p):return p.read_text(encoding="utf-8",errors="replace")
@@ -15,7 +16,30 @@ def local_target_exists(path):
     if path=="/":return (ROOT/"index.html").exists()
     c=ROOT/path.lstrip("/")
     return (c/"index.html").exists() if path.endswith("/") else c.exists()
-def check_sitemap(errors):
+def activation_public_paths(errors):
+    p=ROOT/"data"/"language-activation.json"
+    if not p.exists():add_error(errors,"Missing language activation registry");return set()
+    try:data=json.loads(read_text(p))
+    except (json.JSONDecodeError,OSError) as exc:add_error(errors,f"Invalid language activation registry: {exc}");return set()
+    if data.get("policy_mode")!="fail_closed":add_error(errors,"Language activation registry is not fail_closed")
+    if data.get("unlisted_languages_public") is not False:add_error(errors,"Language activation registry must keep unlisted languages non-public")
+    public=[str(x).strip() for x in data.get("public_languages",[]) if str(x).strip()]
+    routes=data.get("public_routes",{})
+    out=set()
+    for code in public:
+        route=routes.get(code)
+        if not isinstance(route,dict):add_error(errors,f"Public language {code} has no public_routes entry");continue
+        for key in ("home","institute"):
+            value=route.get(key)
+            if value:
+                path=url_to_path(str(value))
+                if not path.startswith("/"):add_error(errors,f"Public language {code} has invalid {key} route: {value}")
+                else:out.add(path)
+    unlisted=set(routes)-set(public)
+    if unlisted:add_error(errors,f"Activation registry contains public_routes for unlisted languages: {', '.join(sorted(unlisted))}")
+    return out
+def allowed_sitemap_paths(errors):return BASE_ALLOWED_SITEMAP_PATHS|activation_public_paths(errors)
+def check_sitemap(errors,allowed):
     s=ROOT/"sitemap.xml"
     if not s.exists():add_error(errors,"Missing sitemap.xml");return
     try:t=ET.parse(s)
@@ -28,7 +52,7 @@ def check_sitemap(errors):
         seen.add(loc)
         if not loc.startswith(BASE_URL):add_error(errors,f"Sitemap URL is outside expected domain: {loc}");continue
         path=url_to_path(loc)
-        if path not in ALLOWED_SITEMAP_PATHS:add_error(errors,f"Sitemap contains non-public or non-allowlisted path: {path}")
+        if path not in allowed:add_error(errors,f"Sitemap contains non-public or non-allowlisted path: {path}")
         if any(x in path for x in FORBIDDEN_IN_SITEMAP):add_error(errors,f"Sitemap contains forbidden internal/private path: {path}")
         if not local_target_exists(path):add_error(errors,f"Sitemap URL does not map to an existing local file/index: {loc}")
 def parse_robots_groups(text):
@@ -64,8 +88,8 @@ def check_privacy_hotfixes(errors):
         tx=read_text(w).lower()
         if "noindex" not in tx:add_error(errors,"wpaws/index.html exists but does not contain noindex")
         if "data-nosnippet" not in tx:add_error(errors,"wpaws/index.html does not contain data-nosnippet")
-def check_basic_public_html(errors):
-    for path in sorted(ALLOWED_SITEMAP_PATHS):
+def check_basic_public_html(errors,allowed):
+    for path in sorted(allowed):
         f=ROOT/"index.html" if path=="/" else (ROOT/path.lstrip("/")/"index.html" if path.endswith("/") else ROOT/path.lstrip("/"))
         if not f.exists():add_error(errors,f"Public sitemap page is missing locally: {path}");continue
         text=read_text(f).lower()
@@ -112,7 +136,7 @@ def check_final_reconciliation_layer(errors):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def main():
-    errors=[];check_sitemap(errors);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0

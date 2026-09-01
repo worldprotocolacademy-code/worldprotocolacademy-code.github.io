@@ -1,20 +1,20 @@
 {
   "schema": "WPA Language Human Review Package",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8D2",
-  "purpose": "human_authority_approved_candidate_awaiting_remaining_technical_checks_no_activation",
+  "stage": "SAFE-8F",
+  "purpose": "human_authority_approved_candidate_with_technical_gates_complete_and_activation_surfaces_revalidated",
   "candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
-    "home": {
-      "path": "languages/fr/index.html",
-      "blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4"
-    },
-    "institute": {
-      "path": "languages/fr/institute.html",
-      "blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
-    }
+    "home": {"path": "languages/fr/index.html", "blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4"},
+    "institute": {"path": "languages/fr/institute.html", "blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"}
+  },
+  "activation_candidate": {
+    "home_blob_sha": "e4dcadcbce290950e189d74d24f81d04ac546b44",
+    "institute_blob_sha": "6c442c26a7c908c414683315220486dacd33e873",
+    "substantive_institutional_core_changed": false,
+    "semantic_revalidation": "pass"
   },
   "canonical_reference": {
     "path": "docs/WPA_CANONICAL_REFERENCE_STATE_2026-08-26.md",
@@ -25,22 +25,8 @@
     "status": "completed",
     "review_basis": "French linguistic, semantic, terminology and institutional consistency review against the locked WPA canonical reference",
     "claims_native_or_professional_human_french_reviewer": false,
-    "findings": [
-      "Canonical institutional identity meaning preserved without university, accreditation or degree-granting implication.",
-      "Development status wording aligned more directly with the canonical pilot-phase meaning.",
-      "Language hub label polished to Portail des langues.",
-      "Journal policy wording clarified as politiques éditoriales.",
-      "Canonical-language notices polished for natural French grammar and explicit Macedonian/English reference."
-    ],
-    "result": "candidate_polished_and_relocked_for_human_authority_review"
+    "result": "candidate_polished_relocked_human_authority_approved_and_activation_wrapper_revalidated"
   },
-  "human_review_scope": [
-    "Confirm the French candidate faithfully represents WPA institutional meaning.",
-    "Confirm WPA terminology and institutional wording are acceptable for public WPA use.",
-    "Confirm no university, state academy, accreditation body or degree-granting implication is introduced.",
-    "Confirm draft disclosures and canonical-language notices are acceptable.",
-    "Confirm the final candidate may proceed to separate technical activation preparation after remaining checks."
-  ],
   "human_authority_declaration": {
     "reviewer_name": "Sande Smiljanov",
     "reviewer_role_or_basis": "WPA Human Authority and institutional decision-maker",
@@ -53,19 +39,19 @@
     "comments_or_required_changes": null
   },
   "post_review_technical_checks": {
-    "accessibility_responsive_review": "pending",
-    "hreflang_design_review": "pending",
-    "route_fallback_smoke_test": "pending",
-    "robots_noindex_removal": "blocked_until_activation_pr",
-    "sitemap_addition": "blocked_until_activation_pr",
-    "public_navigation_addition": "blocked_until_activation_pr",
-    "activation_registry_change": "blocked_until_activation_pr"
+    "accessibility_responsive_review": "pass",
+    "hreflang_design_review": "pass",
+    "route_fallback_smoke_test": "pass",
+    "robots_indexing_activation": "authorized_in_safe8f",
+    "sitemap_addition": "authorized_in_safe8f",
+    "public_navigation_addition": "authorized_in_safe8f",
+    "activation_registry_change": "authorized_in_safe8f"
   },
   "approval": {
     "human_authority_approved": true,
-    "public_ready": false,
-    "public_activation_authorized": false
+    "public_ready": true,
+    "public_activation_authorized": true
   },
-  "immutability_rule": "If either reviewed French HTML blob changes after Human Authority approval, the Human Authority evidence must be revalidated against the new candidate before activation.",
-  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after all post-review technical checks pass against this exact Human-Authority-approved candidate."
+  "immutability_rule": "The SAFE-8D1 institutional French core remains the Human Authority provenance source. SAFE-8F activation-derived blobs may differ only by public-state metadata, approved-pilot disclosure and local-navigation changes; any substantive French-content change requires renewed Human Authority review.",
+  "activation_rule": "French public activation is authorized only through the dedicated SAFE-8F PR after activation CI passes and exact-head merge guard is used."
 }
