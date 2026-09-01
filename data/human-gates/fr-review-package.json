@@ -1,10 +1,10 @@
 {
   "schema": "WPA Language Human Review Package",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8D1",
-  "purpose": "ai_assisted_reviewed_candidate_awaiting_human_authority_approval_no_activation",
+  "stage": "SAFE-8D2",
+  "purpose": "human_authority_approved_candidate_awaiting_remaining_technical_checks_no_activation",
   "candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
     "home": {
@@ -42,13 +42,14 @@
     "Confirm the final candidate may proceed to separate technical activation preparation after remaining checks."
   ],
   "human_authority_declaration": {
-    "reviewer_name": null,
-    "reviewer_role_or_basis": null,
-    "review_date": null,
-    "reviewed_candidate_commit_sha": null,
-    "institutional_semantic_review": "pending",
-    "wpa_terminology_review": "pending",
-    "explicit_human_gate_approval": "pending",
+    "reviewer_name": "Sande Smiljanov",
+    "reviewer_role_or_basis": "WPA Human Authority and institutional decision-maker",
+    "review_date": "2026-09-01",
+    "reviewed_candidate_commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
+    "institutional_semantic_review": "pass",
+    "wpa_terminology_review": "pass",
+    "explicit_human_gate_approval": "pass",
+    "declaration": "Го одобрувам SAFE-8D1 French locked candidate како Human Authority.",
     "comments_or_required_changes": null
   },
   "post_review_technical_checks": {
@@ -61,9 +62,10 @@
     "activation_registry_change": "blocked_until_activation_pr"
   },
   "approval": {
+    "human_authority_approved": true,
     "public_ready": false,
     "public_activation_authorized": false
   },
   "immutability_rule": "If either reviewed French HTML blob changes after Human Authority approval, the Human Authority evidence must be revalidated against the new candidate before activation.",
-  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after Human Authority approval is recorded against this exact candidate and all post-review technical checks pass."
+  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after all post-review technical checks pass against this exact Human-Authority-approved candidate."
 }
