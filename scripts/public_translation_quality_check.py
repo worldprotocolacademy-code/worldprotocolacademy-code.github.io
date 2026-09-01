@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CYRILLIC_RE = re.compile(r"[Ѐ-ӿ]")
+PUBLIC_ROUTER = "/languages/wpa-public-language-router-v2.js?v=2.0"
 
 CONFIG = {
     "home": {
@@ -47,6 +48,8 @@ FORBIDDEN_ACTIVE_SCRIPT_NEEDLES = [
     "translator-loader",
     "i18n-v2",
     "wpa-home-full-en",
+    "wpa-language-menu-10.js",
+    "wpa-language-menu-10-core.js",
 ]
 FORBIDDEN_SOURCE_PATTERNS = [
     "fetch('/index.html",
@@ -103,7 +106,6 @@ class AuditParser(HTMLParser):
             self._select_depth -= 1
 
     def handle_data(self, data):
-        # Language names inside a selector may legitimately use their own script.
         if not self._skip_depth and not self._select_depth and data.strip():
             self.visible_chunks.append(data.strip())
 
@@ -143,7 +145,9 @@ def audit(path: Path, cfg: dict) -> list[str]:
             errors.append(f"forbidden active/runtime pattern present: {phrase}")
     for src in parser.active_scripts:
         if any(needle.lower() in src.lower() for needle in FORBIDDEN_ACTIVE_SCRIPT_NEEDLES):
-            errors.append(f"legacy translator script remains active: {src}")
+            errors.append(f"legacy translator/page-sync script remains active: {src}")
+    if parser.active_scripts.count(PUBLIC_ROUTER) != 1:
+        errors.append(f"expected exactly one registry public router, found {parser.active_scripts.count(PUBLIC_ROUTER)}")
 
     if re.search(r"\b(?:Visa|Mastercard)\b", visible, flags=re.I):
         errors.append("payment-card brand remains in public EN visible content")
