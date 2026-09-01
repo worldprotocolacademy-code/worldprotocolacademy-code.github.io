@@ -7,6 +7,7 @@ on:
       - 'data/translator-runtime-registry.json'
       - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
       - 'scripts/translator_architecture_check.py'
+      - 'scripts/build_static_translation.js'
       - 'wpa-translator.js'
       - 'translator-loader-v1.js'
       - 'translator-loader-v2.js'
@@ -30,7 +31,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install deterministic builder dependencies
+        run: npm ci
       - name: Compile architecture validator
         run: python -m py_compile scripts/translator_architecture_check.py
+      - name: Validate static builder syntax
+        run: node --check scripts/build_static_translation.js
+      - name: Validate static builder CLI
+        run: node scripts/build_static_translation.js --help
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
