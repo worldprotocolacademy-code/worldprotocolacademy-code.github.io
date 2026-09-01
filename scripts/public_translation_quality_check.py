@@ -21,6 +21,7 @@ CONFIG = {
             "26 academic publications",
             "Doc. Dr Sande Smiljanov",
         ],
+        "required_href": "/en/institute.html",
     },
     "institute": {
         "canonical": "https://worldprotocolacademy.mk/en/institute.html",
@@ -75,6 +76,8 @@ class AuditParser(HTMLParser):
         self.provenance = 0
         self.visible_chunks: list[str] = []
         self.active_scripts: list[str] = []
+        self.hrefs: list[str] = []
+        self.local_refs: list[tuple[str, str, str]] = []
         self._skip_depth = 0
         self._select_depth = 0
 
@@ -94,6 +97,12 @@ class AuditParser(HTMLParser):
             src = data.get("src", "")
             if src:
                 self.active_scripts.append(src)
+        if tag == "a" and data.get("href"):
+            self.hrefs.append(data["href"])
+        for attr in ("href", "src", "action"):
+            value = data.get(attr)
+            if value:
+                self.local_refs.append((tag, attr, value))
         if tag in {"script", "style", "noscript"}:
             self._skip_depth += 1
         if tag == "select":
@@ -108,6 +117,15 @@ class AuditParser(HTMLParser):
     def handle_data(self, data):
         if not self._skip_depth and not self._select_depth and data.strip():
             self.visible_chunks.append(data.strip())
+
+
+def is_safe_reference(value: str) -> bool:
+    value = value.strip()
+    if not value:
+        return True
+    if value.startswith(("/", "#", "?", "//")):
+        return True
+    return bool(re.match(r"^[a-z][a-z0-9+.-]*:", value, flags=re.I))
 
 
 def audit(path: Path, cfg: dict) -> list[str]:
@@ -130,6 +148,14 @@ def audit(path: Path, cfg: dict) -> list[str]:
         errors.append(f"author mismatch: {parser.authors}")
     if parser.provenance != 1:
         errors.append(f"expected one static provenance marker, found {parser.provenance}")
+
+    required_href = cfg.get("required_href")
+    if required_href and required_href not in parser.hrefs:
+        errors.append(f"required mirror navigation link missing: {required_href}")
+
+    unsafe_refs = sorted({f"{tag}[{attr}]={value}" for tag, attr, value in parser.local_refs if not is_safe_reference(value)})
+    if unsafe_refs:
+        errors.append("relative local references would resolve under /en/:\n    " + "\n    ".join(unsafe_refs))
 
     lowered = text.lower()
     visible = " ".join(parser.visible_chunks)
@@ -178,7 +204,7 @@ def main() -> int:
         for err in all_errors:
             print(f"- {err}", file=sys.stderr)
         return 1
-    print("WPA public translation quality check passed for EN Home and Institute.")
+    print("WPA public translation quality check passed for EN Home and Institute, including route/navigation integrity.")
     return 0
 
 
