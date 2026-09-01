@@ -41,6 +41,7 @@ def main() -> int:
         "data/language-activation.json",
         "data/language-canon-50.json",
         "data/language-wave1-readiness.json",
+        "data/human-gates/fr.json",
         "data/languages.json",
         "locales/manifest.json",
         "languages/NEW_10_LANGUAGE_STATUS_v1.json",
@@ -55,6 +56,7 @@ def main() -> int:
         activation = read_json("data/language-activation.json")
         canon = read_json("data/language-canon-50.json")
         readiness = read_json("data/language-wave1-readiness.json")
+        fr_gate = read_json("data/human-gates/fr.json")
         manifest = read_json("locales/manifest.json")
         metadata = read_json("data/languages.json")
         wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
@@ -87,7 +89,7 @@ def main() -> int:
         if activation.get("unlisted_languages_public") is not False:
             errors.append("unlisted languages must remain non-public by default")
         if activation.get("canonical_master") != "mk" or activation.get("canonical_mirror") != "en":
-            errors.append("activation registry must keep mk as master and en as mirror")
+            errors.append("activation registry must keep mk as master and en mirror")
         if public_languages != {"mk", "en"}:
             errors.append(f"Phase 1 public_languages must be exactly mk,en; found {sorted(public_languages)}")
         if activation.get("world_language_target_count") != 50:
@@ -149,6 +151,45 @@ def main() -> int:
             if code == "zh-Hans" and item.get("legacy_route_code") != "zh":
                 errors.append("zh-Hans readiness must preserve legacy zh route mapping until route normalization")
 
+        # SAFE-8A French pilot: editorial hardening is allowed, public activation is not.
+        if fr_gate.get("language") != "fr" or fr_gate.get("pilot") is not True:
+            errors.append("French Human Gate record must identify fr as the pilot language")
+        if fr_gate.get("public_activation_authorized") is not False or fr_gate.get("public_ready") is not False:
+            errors.append("French pilot must remain non-public until the Human Gate is fully approved")
+        fr_checks = fr_gate.get("checks", {})
+        for check_name in (
+            "route_exists",
+            "html_lang_direction",
+            "self_canonical_present",
+            "draft_noindex",
+            "english_leftovers_removed_from_primary_copy",
+            "canonical_wpa_identity_alignment",
+            "machine_pre_review_editorial_hardening",
+        ):
+            if fr_checks.get(check_name) != "pass":
+                errors.append(f"French pilot technical check must pass: {check_name}")
+        for check_name in (
+            "human_linguistic_review",
+            "human_wpa_terminology_review",
+            "institutional_legal_wording_review",
+            "accessibility_responsive_review",
+            "hreflang_review",
+            "route_fallback_smoke_test",
+            "explicit_human_gate_approval",
+        ):
+            if fr_checks.get(check_name) != "pending":
+                errors.append(f"French pilot human check must remain pending before activation: {check_name}")
+        for fr_path in ("languages/fr/index.html", "languages/fr/institute.html"):
+            fr_text = read_text(fr_path)
+            if '<html lang="fr" dir="ltr">' not in fr_text:
+                errors.append(f"French pilot has invalid lang/direction markup: {fr_path}")
+            if '<meta name="robots" content="noindex,follow">' not in fr_text:
+                errors.append(f"French pilot must remain noindex while Human Gate is incomplete: {fr_path}")
+            if "Translation draft" not in fr_text or "Révision humaine" not in fr_text:
+                errors.append(f"French pilot must visibly retain draft/human-review disclosure: {fr_path}")
+            if "Editorial process, calls, policies, topic candidates and human review." in fr_text:
+                errors.append(f"French pilot still contains known English Journal-card residue: {fr_path}")
+
         hub = read_text("languages/index.html")
         sitemap = read_text("sitemap.xml")
         core = read_text("languages/wpa-language-menu-10-core.js")
@@ -189,7 +230,7 @@ def main() -> int:
         return 1
 
     print("WPA Translator Quality Check passed.")
-    print("Final-50 canon aligned; Wave-1 audited but not public-ready; Phase 1 remains MK + EN only.")
+    print("Final-50 canon aligned; French pilot hardened but not public-ready; Phase 1 remains MK + EN only.")
     return 0
 
 
