@@ -1,0 +1,138 @@
+{
+  "schema": "wpa-translator-runtime-registry/1.0",
+  "version": "1.1.0",
+  "updated": "2026-09-01",
+  "policy_mode": "fail_closed",
+  "canonical_ui_language_key": "wpa.language",
+  "ai_language_keys_separate": true,
+  "public_activation_source": "data/language-activation.json",
+  "canonical_content_source": {
+    "home": "index.html",
+    "institute": "institute.html",
+    "language": "mk"
+  },
+  "public_output_strategy": "static_pretranslated_html",
+  "browser_runtime_role": "routing_and_dynamic_ui_only",
+  "engines": [
+    {
+      "path": "wpa-translator.js",
+      "classification": "active_shared_page_tools",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "notes": "Shared page tools and language-state stubs; not a public translation engine. Preserve until non-language consumers are migrated."
+    },
+    {
+      "path": "languages/wpa-public-language-router-v2.js",
+      "classification": "active_public_language_router",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "activation_source": "data/language-activation.json",
+      "canonical_ui_language_key": "wpa.language",
+      "notes": "Sole active public language routing authority in browser runtime. It derives public options from the fail-closed activation registry and does not translate page content."
+    },
+    {
+      "path": "languages/wpa-language-menu-10-core.js",
+      "classification": "legacy_page_enhancement_router_to_retire",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
+      "registry_migration_required": true,
+      "notes": "Legacy compatibility core still loaded by the MK Institute page-sync layer. Its duplicated language routing must not govern public activation and must be removed from routing responsibility after page enhancements are separated."
+    },
+    {
+      "path": "languages/wpa-language-menu-10.js",
+      "classification": "legacy_page_sync_runtime",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
+      "notes": "MK page-sync/capability enhancement layer. Static translated mirrors strip it at build time."
+    },
+    {
+      "path": "translator-loader-v1.js",
+      "classification": "migration_source",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "translator-loader-v2.js",
+      "classification": "legacy_frozen",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "scripts/i18n-v2.js",
+      "classification": "legacy_frozen",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "locales/core.js",
+      "classification": "legacy_frozen_review",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "locales/locales/core.js",
+      "classification": "legacy_frozen_review",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "scripts/wpa-home-full-en.js",
+      "classification": "migration_source",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
+      "notes": "Historical fetch-and-overlay English renderer. It has no authority in the static public architecture and must gain no new consumers."
+    },
+    {
+      "path": "locales/locales/institute/institute-translator-loader.js",
+      "classification": "page_scoped_legacy",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    }
+  ],
+  "locale_trees": [
+    {
+      "path": "locales/<page>/<lang>.json",
+      "classification": "current_page_scoped_source",
+      "new_public_work_allowed": true,
+      "notes": "Page-scoped source dictionaries; every public locale requires canonical-fact, parity and deterministic static-output validation."
+    },
+    {
+      "path": "locales/<lang>/<page>.json",
+      "classification": "mixed_generation_source",
+      "new_public_work_allowed": false,
+      "notes": "Preserved for compatibility and migration until consumers are proven zero."
+    },
+    {
+      "path": "locales/locales/**",
+      "classification": "legacy_duplicate_tree",
+      "new_public_work_allowed": false,
+      "notes": "No new public translations may be authored here. Preserve pending separate zero-consumer cleanup."
+    }
+  ],
+  "forbidden_public_patterns": {
+    "translated_home_fetch_overlay": [
+      "fetch('/index.html",
+      "fetch(\"/index.html"
+    ],
+    "legacy_ui_language_write_keys": [
+      "WPA_LANG_V6",
+      "wpa_lang",
+      "wpa_language",
+      "wpa-lang"
+    ]
+  },
+  "cleanup_policy": {
+    "mass_delete_allowed": false,
+    "zero_consumer_evidence_required": true,
+    "separate_pull_request_required": true
+  }
+}

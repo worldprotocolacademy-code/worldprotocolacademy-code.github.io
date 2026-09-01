@@ -1,4 +1,4 @@
-/* WPA full English homepage renderer — applies the existing canonical EN dictionary to the complete homepage. */
+/* WPA legacy full English homepage renderer — frozen migration source only. */
 (function(){
   'use strict';
   var LANG='en', DICT=null, busy=false;
@@ -21,9 +21,9 @@
     };
     var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),nodes=[],n;while((n=walker.nextNode()))nodes.push(n);nodes.forEach(function(t){var p=t.parentElement;if(!p||/^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(p.tagName))return;var raw=t.nodeValue||'',x=raw.trim();if(exact[x])t.nodeValue=raw.replace(x,exact[x]);});
     all('a[href]').forEach(function(a){var h=a.getAttribute('href');if(!h||h.charAt(0)==='#'||/^(mailto:|tel:|javascript:|data:)/i.test(h))return;try{var u=new URL(h,location.origin);if(u.origin!==location.origin||u.pathname.indexOf('/languages/')===0||u.pathname==='/en/')return;if(u.pathname==='/'||u.pathname==='/index.html'){a.setAttribute('href','/en/'+u.hash);return;}u.searchParams.set('lang','en');a.setAttribute('href',u.pathname+u.search+u.hash);}catch(e){}});
-    try{localStorage.setItem('wpa.language','en');localStorage.setItem('WPA_LANG_V6','en');}catch(e){}
+    try{localStorage.setItem('wpa.language','en');}catch(e){}
     busy=false;
   }
-  function load(){fetch('/locales/index/en.json?v=20260720-full',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('EN locale '+r.status);return r.json();}).then(function(d){DICT=d;apply();[80,400,1200,3000].forEach(function(ms){setTimeout(apply,ms);});new MutationObserver(function(){clearTimeout(window.__wpaEnApply);window.__wpaEnApply=setTimeout(apply,40);}).observe(document.documentElement,{subtree:true,childList:true});}).catch(function(e){console.error('[WPA EN]',e);});}
+  function load(){fetch('/locales/index/en.json?v=20260720-full',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('EN locale '+r.status);return r.json();}).then(function(d){DICT=d;apply();[80,400,1200,3000].forEach(function(ms){setTimeout(apply,ms);});new MutationObserver(function(){clearTimeout(window.__wpaEnApply);window.__wpaEnApply=setTimeout(apply,40);}).observe(document.documentElement,{subtree:true,childList:true});}).catch(function(e){console.error('[WPA EN legacy renderer]',e);});}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load);else load();
 })();

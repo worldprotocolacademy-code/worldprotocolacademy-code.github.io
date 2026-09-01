@@ -1,0 +1,116 @@
+name: WPA Translator Architecture CI
+
+on:
+  pull_request:
+    paths:
+      - 'data/language-activation.json'
+      - 'data/translator-runtime-registry.json'
+      - 'data/translator-consumer-inventory.json'
+      - 'data/human-gates/en-safe8k.json'
+      - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
+      - 'scripts/translator_architecture_check.py'
+      - 'scripts/translator_consumer_inventory_check.py'
+      - 'scripts/public_translation_quality_check.py'
+      - 'scripts/build_static_translation.js'
+      - 'wpa-translator.js'
+      - 'translator-loader-v1.js'
+      - 'translator-loader-v2.js'
+      - 'scripts/i18n-v2.js'
+      - 'scripts/wpa-home-full-en.js'
+      - 'locales/index/en.json'
+      - 'locales/institute/en.json'
+      - 'locales/rebuild/en/**'
+      - 'languages/wpa-language-menu-10.js'
+      - 'languages/wpa-language-menu-10-core.js'
+      - 'languages/wpa-public-language-router-v2.js'
+      - 'en/**'
+      - 'languages/fr/**'
+      - '.github/workflows/wpa-translator-architecture.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  translator-architecture:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install deterministic builder dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Compile validators
+        run: python -m py_compile scripts/translator_architecture_check.py scripts/translator_consumer_inventory_check.py scripts/public_translation_quality_check.py
+      - name: Validate translator consumer inventory
+        run: python scripts/translator_consumer_inventory_check.py
+      - name: Validate static builder syntax
+        run: node --check scripts/build_static_translation.js
+      - name: Validate public router syntax
+        run: node --check languages/wpa-public-language-router-v2.js
+      - name: Validate static builder CLI
+        run: node scripts/build_static_translation.js --help
+      - name: Compose canonical English Home locale candidate
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const base=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
+          const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
+          const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+          fs.writeFileSync('/tmp/home.json',JSON.stringify(merged,null,2)+'\n');
+          NODE
+      - name: Rebuild English Home candidate
+        run: >-
+          node scripts/build_static_translation.js
+          --source index.html
+          --locale /tmp/home.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/
+          --output /tmp/wpa-en-home.html
+          --root-relative-links true
+          --rewrite-link /institute.html=/en/institute.html
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Compose canonical English Institute locale candidate
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const base=JSON.parse(fs.readFileSync('locales/institute/en.json','utf8'));
+          const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/institute.override.json','utf8'));
+          const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+          fs.writeFileSync('/tmp/institute.json',JSON.stringify(merged,null,2)+'\n');
+          NODE
+      - name: Rebuild English Institute candidate
+        run: >-
+          node scripts/build_static_translation.js
+          --source institute.html
+          --locale /tmp/institute.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/institute.html
+          --output /tmp/wpa-en-institute.html
+          --root-relative-links true
+          --single-h1 true
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Validate rebuilt candidate quality before materialization
+        run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
+      - name: Enforce byte-for-byte deterministic committed outputs
+        run: |
+          cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
+          cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
+      - name: Validate committed public translation quality
+        run: python scripts/public_translation_quality_check.py
+      - name: Validate translator architecture
+        run: python scripts/translator_architecture_check.py

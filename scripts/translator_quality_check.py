@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""WPA Final-50 canon and fail-closed public-language activation validator."""
+"""WPA Final-50 canon and fail-closed registry-driven public-language validator."""
 
 from pathlib import Path
 import hashlib
@@ -25,19 +25,36 @@ def git_blob_sha(path: str) -> str:
     return hashlib.sha1(header + data).hexdigest()
 
 
-def non_public_language_routes(text: str, public_languages: set[str]) -> list[str]:
+def route_to_repo_path(route: str) -> str:
+    path = str(route or "").split("?", 1)[0].split("#", 1)[0].lstrip("/")
+    if not path:
+        return "index.html"
+    if path.endswith("/"):
+        return path + "index.html"
+    return path
+
+
+def non_public_language_routes(text: str, public_languages: set[str], aliases: dict) -> list[str]:
     leaked = []
     for match in LANGUAGE_ROUTE_RE.finditer(text):
-        code = str(match.group(1)).strip().lower()
+        raw = str(match.group(1)).strip()
+        code = aliases.get(raw, raw)
         if code not in public_languages:
             leaked.append(match.group(0))
     return sorted(set(leaked))
 
 
+def fail(errors: list[str]) -> int:
+    print("WPA Translator Quality Check failed.")
+    for item in errors:
+        print(f"- {item}")
+    return 1
+
+
 def main() -> int:
     required_files = [
         "index.html", "institute.html", "languages/index.html",
-        "languages/wpa-language-menu-10-core.js", "sitemap.xml",
+        "languages/wpa-public-language-router-v2.js", "sitemap.xml",
         "translator-loader-v1.js", "translator-loader-v2.js",
         "translator-root-governance-v3.json", "data/language-activation.json",
         "data/language-canon-50.json", "data/language-wave1-readiness.json",
@@ -71,41 +88,72 @@ def main() -> int:
     canonical_set = set(canonical_codes)
     reserve_set = {str(x).strip() for x in canon.get("reserve_metadata_codes", []) if str(x).strip()}
     alias_map = canon.get("aliases", {})
+    simple_aliases = {str(k): str(v.get("canonical_target")) for k, v in alias_map.items() if isinstance(v, dict) and v.get("canonical_target")}
+
     if canon.get("canon_count") != 50 or len(canonical_codes) != 50 or len(canonical_set) != 50:
         errors.append("Final language canon must contain exactly 50 unique codes")
     if canon.get("canonical_master") != "mk" or canon.get("canonical_mirror") != "en":
         errors.append("Final canon must keep mk as master and en as mirror")
 
     rollout = canon.get("rollout", {})
-    rollout_codes = []
+    rollout_codes: list[str] = []
     for key in ("phase1_public", "wave1_existing_drafts", "wave2_planned", "wave3_planned", "wave4_planned"):
         rollout_codes.extend(rollout.get(key, []))
     if len(rollout_codes) != 50 or len(set(rollout_codes)) != 50 or set(rollout_codes) != canonical_set:
         errors.append("Final-50 rollout must cover every canonical code exactly once")
 
-    public_list = [str(x).strip().lower() for x in activation.get("public_languages", []) if str(x).strip()]
+    public_list = [str(x).strip() for x in activation.get("public_languages", []) if str(x).strip()]
     public_set = set(public_list)
+    public_routes = activation.get("public_routes", {})
+    master = str(activation.get("canonical_master", ""))
+    mirror = str(activation.get("canonical_mirror", ""))
+
     if activation.get("policy_mode") != "fail_closed" or activation.get("unlisted_languages_public") is not False:
         errors.append("activation registry must remain fail-closed")
-    if activation.get("canonical_master") != "mk" or activation.get("canonical_mirror") != "en":
-        errors.append("activation registry must keep MK master and EN mirror")
-    if public_list != ["mk", "en", "fr"]:
-        errors.append(f"public_languages must be exactly mk,en,fr after SAFE-8F; found {public_list}")
-    if activation.get("public_routes", {}).get("fr", {}).get("status") != "approved_public_pilot":
-        errors.append("French public route must be explicitly marked approved_public_pilot")
+    if master != canon.get("canonical_master") or mirror != canon.get("canonical_mirror"):
+        errors.append("activation canonical master/mirror must match Final-50 canon")
+    if len(public_list) != len(public_set) or not public_list:
+        errors.append("activation public_languages must be a non-empty unique ordered list")
+    if set(public_routes.keys()) != public_set:
+        errors.append("activation public_routes keys must exactly match public_languages")
+    if master not in public_set or mirror not in public_set:
+        errors.append("canonical master and mirror must both be publicly activated")
+    unknown_public = sorted(public_set - canonical_set)
+    if unknown_public:
+        errors.append(f"public languages outside Final-50 canon: {', '.join(unknown_public)}")
+    public_aliases = sorted(public_set & set(simple_aliases.keys()))
+    if public_aliases:
+        errors.append(f"compatibility aliases must never be directly public: {', '.join(public_aliases)}")
     if activation.get("human_gate_required") is not True or activation.get("world_language_target_count") != 50:
         errors.append("Human Gate and Final-50 activation invariants must remain enabled")
     if activation.get("phase2_wave1_canonical", []) != rollout.get("wave1_existing_drafts", []):
         errors.append("activation Wave-1 must match Final-50 Wave-1")
-    if activation.get("compatibility_aliases", {}).get("zh") != "zh-Hans" or alias_map.get("zh", {}).get("canonical_target") != "zh-Hans":
+    if activation.get("compatibility_aliases", {}).get("zh") != "zh-Hans" or simple_aliases.get("zh") != "zh-Hans":
         errors.append("legacy zh alias must resolve to zh-Hans")
+
+    for code in public_list:
+        route = public_routes.get(code, {})
+        for kind in ("home", "institute"):
+            value = route.get(kind)
+            if not isinstance(value, str) or not value.startswith("/"):
+                errors.append(f"public language {code} has invalid {kind} route")
+                continue
+            repo_path = route_to_repo_path(value)
+            if not (REPO_ROOT / repo_path).exists():
+                errors.append(f"public language {code} {kind} route target missing: {repo_path}")
+
+    # French remains a historically approved public pilot with locked SAFE-8D/8F provenance.
+    if "fr" not in public_set:
+        errors.append("French SAFE-8F approved public pilot may not be silently deactivated")
+    if public_routes.get("fr", {}).get("status") != "approved_public_pilot":
+        errors.append("French public route must remain explicitly marked approved_public_pilot")
 
     manifest_languages = manifest.get("supported_languages") or manifest.get("languages") or []
     manifest_codes = [x.get("code") for x in manifest_languages if isinstance(x, dict) and x.get("code")]
     if manifest_codes != canonical_codes:
         errors.append("locales/manifest.json must exactly match Final-50 canonical order")
-    if manifest.get("canonical_language") != "mk" or manifest.get("mirror_language") != "en":
-        errors.append("manifest must keep MK canonical and EN mirror")
+    if manifest.get("canonical_language") != master or manifest.get("mirror_language") != mirror:
+        errors.append("manifest canonical/mirror must match activation registry")
 
     metadata_codes = {k for k in metadata.keys() if k != "_meta"}
     allowed_metadata = canonical_set | reserve_set | set(alias_map.keys())
@@ -120,13 +168,15 @@ def main() -> int:
     row_codes = [str(x.get("code", "")).strip() for x in rows]
     if row_codes != rollout.get("wave1_existing_drafts", []):
         errors.append("Wave-1 readiness order must match Final-50 Wave-1")
-    if readiness.get("public_boundary") != ["mk", "en", "fr"] or readiness.get("public_activation_authorized") is not True:
-        errors.append("Wave-1 readiness must record MK/EN/FR public boundary after SAFE-8F")
+    if readiness.get("public_boundary") != public_list:
+        errors.append("Wave-1 readiness public_boundary must mirror the activation registry")
+    if readiness.get("public_activation_authorized") is not True:
+        errors.append("Wave-1 readiness must record public activation authorization")
     for row in rows:
         code = str(row.get("code", "")).strip()
-        expected_ready = code == "fr"
+        expected_ready = code in public_set
         if row.get("public_ready") is not expected_ready:
-            errors.append(f"Wave-1 {code} public_ready must be {expected_ready}")
+            errors.append(f"Wave-1 {code} public_ready must match activation registry ({expected_ready})")
         for declared in ("draft_home", "draft_institute"):
             path = str(row.get(declared, "")).lstrip("/")
             if not path or not (REPO_ROOT / path).exists():
@@ -217,59 +267,62 @@ def main() -> int:
 
     hub = read_text("languages/index.html")
     sitemap = read_text("sitemap.xml")
-    core = read_text("languages/wpa-language-menu-10-core.js")
-    if 'href="/languages/fr/"' not in hub or 'href="/languages/fr/institute.html"' not in hub:
-        errors.append("Languages Hub must expose the approved French public pilot")
-    for surface_name, surface_text in (("languages/index.html", hub), ("sitemap.xml", sitemap)):
-        leaked = non_public_language_routes(surface_text, public_set)
-        if leaked:
-            errors.append(f"{surface_name} exposes non-public language routes: {', '.join(leaked)}")
-    for code in ("zh", "ru", "hi", "af", "ar", "de", "it", "sq", "sr"):
-        if f'href="/languages/{code}/' in hub:
-            errors.append(f"Languages Hub leaks non-public Wave-1 route: {code}")
+    leaked_hub = non_public_language_routes(hub, public_set, simple_aliases)
+    leaked_sitemap = non_public_language_routes(sitemap, public_set, simple_aliases)
+    if leaked_hub:
+        errors.append(f"languages/index.html exposes non-public language routes: {', '.join(leaked_hub)}")
+    if leaked_sitemap:
+        errors.append(f"sitemap.xml exposes non-public language routes: {', '.join(leaked_sitemap)}")
 
-    for marker in ("const PUBLIC_LANGS", "function isDraftRoute", "PUBLIC_LANGS.map", "if (isDraftRoute(opt.value)) opt.remove()"):
-        if marker not in core:
-            errors.append(f"language core lost fail-closed runtime guard: {marker}")
-    if 'code:"en", label:"🇬🇧 English", home:"/en/", institute:"/institute.html", canonical:true' not in core:
-        errors.append("English Institute target is not pinned to canonical bilingual Institute")
+    # Every activated non-canonical language must be explicitly discoverable in the Languages Hub.
+    for code in public_list:
+        if code in {master, mirror}:
+            continue
+        route = public_routes.get(code, {})
+        for kind in ("home", "institute"):
+            href = route.get(kind)
+            if href and f'href="{href}"' not in hub:
+                errors.append(f"Languages Hub missing activated {code} {kind} route: {href}")
+
+    router = read_text("languages/wpa-public-language-router-v2.js")
+    for marker in ("/data/language-activation.json", 'CANONICAL_UI_KEY = "wpa.language"', "validateRegistry"):
+        if marker not in router:
+            errors.append(f"registry-driven public router lost required marker: {marker}")
 
     if 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' not in sitemap:
         errors.append("sitemap must enable xhtml hreflang alternates")
-    for lang in ("mk", "en", "fr", "x-default"):
+    for lang in public_list + ["x-default"]:
         if f'hreflang="{lang}"' not in sitemap:
-            errors.append(f"sitemap missing Home hreflang: {lang}")
-    if "https://worldprotocolacademy.mk/languages/fr/institute.html" not in sitemap:
-        errors.append("French Institute public route missing from sitemap")
+            errors.append(f"sitemap missing activated Home hreflang: {lang}")
 
-    if wave1_status.get("canonical_languages") != ["mk", "en"] or wave1_status.get("public_pilot_languages") != ["fr"]:
-        errors.append("Wave-1 status must keep MK/EN canonical and FR as sole public pilot")
+    expected_wave1_public = [code for code in rollout.get("wave1_existing_drafts", []) if code in public_set]
+    if wave1_status.get("canonical_languages") != [master, mirror]:
+        errors.append("Wave-1 status canonical languages must match activation registry")
+    if wave1_status.get("public_pilot_languages") != expected_wave1_public:
+        errors.append("Wave-1 status public pilots must match activated Wave-1 languages")
+
     resolved_codes = []
     for item in wave1_status.get("new_languages", []):
-        code = str(item.get("code", "")).strip()
+        raw_code = str(item.get("code", "")).strip()
+        code = simple_aliases.get(raw_code, raw_code)
         if code:
-            resolved_codes.append("zh-Hans" if code == "zh" else code)
+            resolved_codes.append(code)
         status = str(item.get("status", "")).lower()
-        if code == "fr":
+        if code in public_set:
             if "approved public pilot" not in status:
-                errors.append("French Wave-1 status must be approved public pilot")
+                errors.append(f"activated Wave-1 {code} status must say approved public pilot")
         elif "pending human review" not in status:
-            errors.append(f"Wave-1 {code} must remain pending human review")
+            errors.append(f"non-public Wave-1 {code} must remain pending human review")
     if resolved_codes != rollout.get("wave1_existing_drafts", []):
         errors.append("legacy Wave-1 status must resolve exactly to Final-50 Wave-1")
 
     if errors:
         return fail(errors)
+
     print("WPA Translator Quality Check passed.")
-    print("Final-50 canon preserved; MK/EN remain canonical; French is the sole approved public Wave-1 pilot; all other languages remain fail-closed.")
+    print(f"Final-50 canon preserved; registry-backed public languages: {','.join(public_list)}; all unlisted languages remain fail-closed.")
+    print("French SAFE-8D/SAFE-8F Human Gate and activation provenance remain locked.")
     return 0
-
-
-def fail(errors: list[str]) -> int:
-    print("WPA Translator Quality Check failed.")
-    for item in errors:
-        print(f"- {item}")
-    return 1
 
 
 if __name__ == "__main__":
