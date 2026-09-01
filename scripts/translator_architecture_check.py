@@ -28,7 +28,8 @@ def main() -> int:
     errors = []
     registry_path = "data/translator-runtime-registry.json"
     activation_path = "data/language-activation.json"
-    required = [registry_path, activation_path, "docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md"]
+    human_gate_path = "data/human-gates/en-safe8k.json"
+    required = [registry_path, activation_path, human_gate_path, "docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md"]
     for path in required:
         if not (ROOT / path).exists():
             errors.append(f"missing required architecture file: {path}")
@@ -37,6 +38,7 @@ def main() -> int:
 
     reg = load_json(registry_path)
     activation = load_json(activation_path)
+    en_gate = load_json(human_gate_path)
 
     if reg.get("policy_mode") != "fail_closed":
         errors.append("translator runtime registry must remain fail_closed")
@@ -67,6 +69,8 @@ def main() -> int:
     active_routers = [x for x in engines if x.get("classification") == "active_public_language_router"]
     if len(active_routers) != 1:
         errors.append(f"exactly one active public language router required; found {len(active_routers)}")
+    elif active_routers[0].get("path") != "languages/wpa-public-language-router-v2.js":
+        errors.append("registry public router must be languages/wpa-public-language-router-v2.js")
 
     translation_authorities = [x for x in engines if x.get("translation_authority") is True]
     if translation_authorities:
@@ -76,8 +80,20 @@ def main() -> int:
     public_routes = activation.get("public_routes", {})
     if set(public_languages) != set(public_routes.keys()):
         errors.append("public_languages and public_routes keys must match exactly")
+    if public_routes.get("en", {}).get("institute") != "/en/institute.html":
+        errors.append("English Institute must use the Human-Approved static mirror route /en/institute.html")
 
-    # Public translated Home/Institute surfaces must never be fetch-overlay reconstructions.
+    gate_authority = en_gate.get("authority", {})
+    gate_candidate = en_gate.get("approved_candidate", {})
+    if en_gate.get("status") != "approved" or gate_authority.get("name") != "Sande Smiljanov":
+        errors.append("SAFE-8K English Human Authority gate is missing or invalid")
+    if gate_candidate.get("commit_sha") != "b77fd36fd6cc2786e00e0f4eca6fd29188d3b7d7":
+        errors.append("SAFE-8K approved architecture candidate provenance changed")
+    if gate_candidate.get("english_institute") != "/en/institute.html":
+        errors.append("SAFE-8K Human Gate does not authorize /en/institute.html")
+
+    # Every non-master public Home/Institute route must resolve to a static file
+    # and must never use the old fetch-overlay reconstruction architecture.
     overlay_patterns = reg.get("forbidden_public_patterns", {}).get("translated_home_fetch_overlay", [])
     for code in public_languages:
         if code == activation.get("canonical_master"):
@@ -87,9 +103,6 @@ def main() -> int:
             route = routes.get(route_name)
             if not route:
                 errors.append(f"public language {code} missing registered {route_name} route")
-                continue
-            # Shared canonical Institute route may intentionally remain MK/EN bilingual during migration.
-            if code == "en" and route_name == "institute" and route == "/institute.html":
                 continue
             candidate = route.lstrip("/")
             if candidate.endswith("/"):
@@ -121,12 +134,16 @@ def main() -> int:
             if key in legacy_keys:
                 errors.append(f"legacy UI language key write remains in migration-target file {path}: {key}")
 
-    # wpa-translator.js must not be falsely promoted as the translation authority.
     shared = read("wpa-translator.js")
     if "window.WPA_TRANSLATOR_LOADED=true" not in shared:
         errors.append("wpa-translator.js shared-runtime identity marker missing")
     if "function applyLanguage" in shared or "window.WPATranslator" in shared:
         errors.append("wpa-translator.js unexpectedly contains a second translation engine")
+
+    legacy_core = read("languages/wpa-language-menu-10-core.js")
+    for marker in ("PUBLIC_LANGS", "const LANGS", "function buildMenu", "function augmentSelects", "function placeMenu"):
+        if marker in legacy_core:
+            errors.append(f"legacy language core regained routing authority marker: {marker}")
 
     if errors:
         return fail(errors)
@@ -134,6 +151,7 @@ def main() -> int:
     print("WPA Translator Architecture Check passed.")
     print(f"Public languages: {','.join(public_languages)}")
     print("Public activation authority: data/language-activation.json")
+    print("English Institute route: /en/institute.html (Human Authority approved)")
     print("Public translation strategy: static pretranslated HTML")
     print("Canonical UI language key: wpa.language")
     return 0
