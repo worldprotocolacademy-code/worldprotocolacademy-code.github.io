@@ -1,10 +1,10 @@
 {
   "schema": "WPA Language Human Review Evidence",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8D2",
-  "status": "human_authority_approved_awaiting_remaining_technical_checks",
+  "stage": "SAFE-8E2",
+  "status": "human_authority_approved_technical_evidence_complete_awaiting_activation_pr",
   "review_package": "data/human-gates/fr-review-package.json",
   "reviewed_candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
@@ -29,14 +29,23 @@
     "declaration": "Го одобрувам SAFE-8D1 French locked candidate како Human Authority.",
     "comments_or_required_changes": null
   },
+  "technical_validation_evidence": {
+    "source": "data/human-gates/fr-technical-gates.json",
+    "accessibility_responsive_review": "pass",
+    "hreflang_design_review": "pass",
+    "route_fallback_smoke_test": "pass",
+    "all_three_evidenced": true,
+    "candidate_blobs_unchanged": true
+  },
   "remaining_technical_checks": {
     "accessibility_responsive_review": "pending",
     "hreflang_design_review": "pending",
     "route_fallback_smoke_test": "pending"
   },
+  "compatibility_note": "remaining_technical_checks stays pending as a legacy CI compatibility layer. Canonical technical evidence is complete in fr-technical-gates.json; promotion of the legacy aliases is deferred to the dedicated activation PR together with the validator transition.",
   "public_ready": false,
   "public_activation_authorized": false,
   "evidence_rule": "AI-assisted linguistic evidence is not represented as native or professional human French review. Human Authority approval records the human decision-maker, authority basis, review date, exact reviewed candidate and explicit declaration.",
-  "change_rule": "If either French candidate blob changes after Human Authority approval, this Human Authority evidence becomes stale and must be revalidated against the new candidate.",
-  "activation_rule": "This evidence record cannot activate French. Activation requires a later dedicated PR after all remaining technical gates are complete."
+  "change_rule": "If either French candidate blob changes after Human Authority approval, both Human Authority and technical evidence must be revalidated against the new candidate.",
+  "activation_rule": "This evidence record cannot activate French. A later dedicated activation PR must promote the compatibility checks and make any public routing/SEO/navigation changes."
 }
