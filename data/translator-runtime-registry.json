@@ -1,6 +1,6 @@
 {
   "schema": "wpa-translator-runtime-registry/1.0",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "policy_mode": "fail_closed",
   "canonical_ui_language_key": "wpa.language",
@@ -19,15 +19,33 @@
       "classification": "active_shared_page_tools",
       "translation_authority": false,
       "public_activation_authority": false,
-      "notes": "Current file exposes shared page tools and language-state stubs but is not a complete public translation engine. Preserve until consumers are migrated."
+      "notes": "Shared page tools and language-state stubs; not a public translation engine. Preserve until non-language consumers are migrated."
     },
     {
-      "path": "languages/wpa-language-menu-10-core.js",
+      "path": "languages/wpa-public-language-router-v2.js",
       "classification": "active_public_language_router",
       "translation_authority": false,
       "public_activation_authority": false,
+      "activation_source": "data/language-activation.json",
+      "canonical_ui_language_key": "wpa.language",
+      "notes": "Sole active public language routing authority in browser runtime. It derives public options from the fail-closed activation registry and does not translate page content."
+    },
+    {
+      "path": "languages/wpa-language-menu-10-core.js",
+      "classification": "legacy_page_enhancement_router_to_retire",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
       "registry_migration_required": true,
-      "notes": "Current router still carries duplicated language metadata. Target state: derive public options from activation registry/build output."
+      "notes": "Legacy compatibility core still loaded by the MK Institute page-sync layer. Its duplicated language routing must not govern public activation and must be removed from routing responsibility after page enhancements are separated."
+    },
+    {
+      "path": "languages/wpa-language-menu-10.js",
+      "classification": "legacy_page_sync_runtime",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
+      "notes": "MK page-sync/capability enhancement layer. Static translated mirrors strip it at build time."
     },
     {
       "path": "translator-loader-v1.js",
@@ -70,7 +88,7 @@
       "translation_authority": false,
       "public_activation_authority": false,
       "new_consumers_allowed": false,
-      "notes": "Fetch-and-overlay English renderer. Must not remain the final canonical-mirror architecture."
+      "notes": "Historical fetch-and-overlay English renderer. It has no authority in the static public architecture and must gain no new consumers."
     },
     {
       "path": "locales/locales/institute/institute-translator-loader.js",
@@ -85,19 +103,19 @@
       "path": "locales/<page>/<lang>.json",
       "classification": "current_page_scoped_source",
       "new_public_work_allowed": true,
-      "notes": "Contains current Home/Institute page-scoped dictionaries; each public locale still requires canonical-fact and parity validation."
+      "notes": "Page-scoped source dictionaries; every public locale requires canonical-fact, parity and deterministic static-output validation."
     },
     {
       "path": "locales/<lang>/<page>.json",
       "classification": "mixed_generation_source",
       "new_public_work_allowed": false,
-      "notes": "Preserved for compatibility and migration until consumers are inventoried."
+      "notes": "Preserved for compatibility and migration until consumers are proven zero."
     },
     {
       "path": "locales/locales/**",
       "classification": "legacy_duplicate_tree",
       "new_public_work_allowed": false,
-      "notes": "No new public translations may be authored here. Preserve pending zero-consumer cleanup."
+      "notes": "No new public translations may be authored here. Preserve pending separate zero-consumer cleanup."
     }
   ],
   "forbidden_public_patterns": {
