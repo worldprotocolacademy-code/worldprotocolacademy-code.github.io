@@ -56,13 +56,13 @@ jobs:
           const base=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
           const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/wpa-en-home-locale.json',JSON.stringify(merged,null,2)+'\n');
+          fs.writeFileSync('/tmp/home.json',JSON.stringify(merged,null,2)+'\n');
           NODE
       - name: Rebuild English Home candidate
         run: >-
           node scripts/build_static_translation.js
           --source index.html
-          --locale /tmp/wpa-en-home-locale.json
+          --locale /tmp/home.json
           --lang en
           --canonical https://worldprotocolacademy.mk/en/
           --output /tmp/wpa-en-home.html
@@ -79,13 +79,13 @@ jobs:
           const base=JSON.parse(fs.readFileSync('locales/institute/en.json','utf8'));
           const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/institute.override.json','utf8'));
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/wpa-en-institute-locale.json',JSON.stringify(merged,null,2)+'\n');
+          fs.writeFileSync('/tmp/institute.json',JSON.stringify(merged,null,2)+'\n');
           NODE
       - name: Rebuild English Institute candidate
         run: >-
           node scripts/build_static_translation.js
           --source institute.html
-          --locale /tmp/wpa-en-institute-locale.json
+          --locale /tmp/institute.json
           --lang en
           --canonical https://worldprotocolacademy.mk/en/institute.html
           --output /tmp/wpa-en-institute.html
