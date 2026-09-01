@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: '24'
       - name: Install deterministic builder dependencies
-        run: npm ci
+        run: npm install --ignore-scripts --no-audit --no-fund
       - name: Compile architecture validator
         run: python -m py_compile scripts/translator_architecture_check.py
       - name: Validate static builder syntax
