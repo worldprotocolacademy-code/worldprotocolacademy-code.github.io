@@ -1,12 +1,12 @@
 {
   "schema": "WPA Language Activation Preflight",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8E2",
-  "mode": "dry_run_only",
-  "activation_allowed": false,
-  "blocking_state": "awaiting_remaining_technical_checks",
+  "stage": "SAFE-8F",
+  "mode": "activation_candidate",
+  "activation_allowed": true,
+  "blocking_state": "activation_ci_and_exact_head_merge_required",
   "technical_evidence_complete": true,
   "technical_evidence_source": "data/human-gates/fr-technical-gates.json",
   "technical_evidence_status": {
@@ -15,35 +15,34 @@
     "route_fallback_smoke_test": "pass"
   },
   "satisfied": [
-    "AI-assisted French linguistic and semantic review pass without mislabeling it as native/professional human French review",
-    "Human Authority institutional/semantic review against the exact locked candidate",
-    "Human Authority WPA terminology acceptance against the exact locked candidate",
+    "AI-assisted French linguistic and semantic review completed with explicit reviewer-claim boundary",
+    "Human Authority institutional/semantic review against the locked SAFE-8D1 candidate",
+    "Human Authority WPA terminology acceptance",
     "explicit Human Gate approval",
-    "locked candidate provenance still matches",
-    "canonical technical evidence exists for accessibility/responsive review",
-    "canonical technical evidence exists for hreflang design review",
-    "canonical technical evidence exists for route/fallback smoke test"
+    "canonical technical evidence complete",
+    "SAFE-8F activation-derived blobs provenance locked",
+    "activation-surface semantic revalidation pass"
   ],
   "requires": [
-    "promote legacy technical compatibility aliases in the dedicated activation PR",
-    "run activation-specific CI and production smoke",
-    "exact-head Human Gate merge for public activation"
+    "activation-specific CI pass",
+    "exact-head Human Gate merge",
+    "post-merge public route and indexing verification"
   ],
-  "compatibility_note": "blocking_state retains its historical value for the existing validator. Canonical technical evidence is complete; only activation-stage promotion and public-change validation remain.",
   "blocked_changes": {
-    "remove_noindex": true,
-    "add_hreflang": true,
-    "add_to_sitemap": true,
-    "add_to_public_navigation": true,
-    "add_to_activation_registry_public_languages": true,
-    "set_public_ready_true": true
+    "remove_noindex": false,
+    "add_hreflang": false,
+    "add_to_sitemap": false,
+    "add_to_public_navigation": false,
+    "add_to_activation_registry_public_languages": false,
+    "set_public_ready_true": false
   },
-  "future_activation_scope": {
+  "activation_scope": {
     "language_only": "fr",
     "one_language_per_pr": true,
-    "must_use_exact_reviewed_candidate": true,
+    "canonical_languages_remain": ["mk", "en"],
+    "public_languages_after_merge": ["mk", "en", "fr"],
     "must_rerun_ci": true,
     "must_use_exact_head_merge_guard": true
   },
-  "safety_rule": "This file is dry-run-only and cannot authorize activation. Even with all three technical evidence gates complete, every public activation change remains blocked until the dedicated French activation PR."
+  "safety_rule": "This file authorizes only the dedicated French SAFE-8F activation candidate. It does not authorize any other Wave-1 language and does not make French a canonical reference language."
 }
