@@ -1,7 +1,7 @@
-/* WPA Language Menu 10 Patch v1.3
-   Phase 1 public boundary: only Macedonian and English are exposed as
-   canonical public language routes. Phase 2 translation drafts remain in the
-   repository but are not rendered as public navigation before human review.
+/* WPA Language Menu 10 Patch v1.4
+   Public language boundary: Macedonian and English remain canonical; French is
+   exposed as the approved public pilot. All other translation drafts remain in
+   the repository but are not rendered as public navigation before Human Gate.
    The patch also places WPA Journal Live in the homepage identity row and
    applies a page-scoped responsive Institute identity header.
 */
@@ -16,15 +16,15 @@
     { code:"hi", label:"🇮🇳 हिन्दी · Hindi", home:"/languages/hi/index.html", institute:"/languages/hi/institute.html" },
     { code:"af", label:"🇿🇦 Afrikaans", home:"/languages/af/index.html", institute:"/languages/af/institute.html" },
     { code:"ar", label:"🇸🇦 العربية · Arabic", home:"/languages/ar/index.html", institute:"/languages/ar/institute.html" },
-    { code:"fr", label:"🇫🇷 Français · French", home:"/languages/fr/index.html", institute:"/languages/fr/institute.html" },
+    { code:"fr", label:"🇫🇷 Français · French", home:"/languages/fr/index.html", institute:"/languages/fr/institute.html", publicPilot:true },
     { code:"de", label:"🇩🇪 Deutsch · German", home:"/languages/de/index.html", institute:"/languages/de/institute.html" },
     { code:"it", label:"🇮🇹 Italiano · Italian", home:"/languages/it/index.html", institute:"/languages/it/institute.html" },
     { code:"sq", label:"🇦🇱 Shqip · Albanian", home:"/languages/sq/index.html", institute:"/languages/sq/institute.html" },
     { code:"sr", label:"🇷🇸 Српски · Serbian", home:"/languages/sr/index.html", institute:"/languages/sr/institute.html" }
   ];
 
-  const PUBLIC_LANGS = LANGS.filter(function(lang){ return lang.canonical === true; });
-  const DRAFT_CODES = new Set(LANGS.filter(function(lang){ return !lang.canonical; }).map(function(lang){ return lang.code; }));
+  const PUBLIC_LANGS = LANGS.filter(function(lang){ return lang.canonical === true || lang.publicPilot === true; });
+  const DRAFT_CODES = new Set(LANGS.filter(function(lang){ return lang.canonical !== true && lang.publicPilot !== true; }).map(function(lang){ return lang.code; }));
 
   function pageName(){
     return String(document.documentElement.getAttribute("data-wpa-page") || "").toLowerCase();
@@ -392,19 +392,19 @@
     details.innerHTML = `
       <summary>🌐 Јазик · Languages</summary>
       <div class="wpa-language-menu-10-panel" role="menu">
-        <div class="wpa-language-menu-10-title">WPA canonical languages</div>
+        <div class="wpa-language-menu-10-title">WPA public languages</div>
         ${PUBLIC_LANGS.map(function(lang){ return `
           <a role="menuitem" href="${targetUrl(lang)}">
             <span>${lang.label}</span>
-            <span class="wpa-lang-status">canonical</span>
+            <span class="wpa-lang-status">${lang.canonical === true ? "canonical" : "public pilot"}</span>
           </a>
         `; }).join("")}
         <a role="menuitem" href="/languages/">
           <span>🌐 Languages Hub</span>
-          <span class="wpa-lang-status">Phase 2 status</span>
+          <span class="wpa-lang-status">all languages</span>
         </a>
         <div class="wpa-language-menu-10-note">
-          Македонски и English се canonical. Phase 2 translations remain unavailable for public navigation until human linguistic, academic and legal review.
+          Македонски и English се canonical. Français е одобрен public pilot. Другите јазици остануваат non-public до сопствен Human Gate.
         </div>
       </div>
     `;
@@ -436,7 +436,7 @@
         if (existing.has(url) || existing.has(absoluteUrl)) continue;
         const opt = document.createElement("option");
         opt.value = url;
-        opt.textContent = lang.label + " · canonical";
+        opt.textContent = lang.label + (lang.canonical === true ? " · canonical" : " · public pilot");
         sel.appendChild(opt);
         existing.add(url);
       }
