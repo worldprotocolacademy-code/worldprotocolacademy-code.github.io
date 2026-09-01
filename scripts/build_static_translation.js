@@ -23,6 +23,8 @@ function usage(code = 0) {
     `  --base <url>         optional <base href> value\n` +
     `  --root-relative-links true  prefix local relative href/src/action values with /; fragment-only links are preserved\n` +
     `  --rewrite-link <from=to> exact href rewrite; repeatable\n` +
+    `  --rewrite-text <from=to> exact visible text-node rewrite; repeatable; every rule must match\n` +
+    `  --rewrite-css-text <from=to> exact substring rewrite inside style elements; repeatable; every rule must match\n` +
     `  --strip-script <s>   remove script src containing substring; repeatable\n` +
     `  --append-script <s>  append one target-language runtime script; repeatable\n` +
     `  --remove-selector <css> remove elements before output; repeatable\n` +
@@ -33,7 +35,7 @@ function usage(code = 0) {
 }
 
 function parseArgs(argv) {
-  const out = { stripScript: [], appendScript: [], removeSelector: [], rewriteLink: [] };
+  const out = { stripScript: [], appendScript: [], removeSelector: [], rewriteLink: [], rewriteText: [], rewriteCssText: [] };
   for (let i = 2; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--help') usage(0);
@@ -45,6 +47,8 @@ function parseArgs(argv) {
     else if (key === 'append-script') out.appendScript.push(value);
     else if (key === 'remove-selector') out.removeSelector.push(value);
     else if (key === 'rewrite-link') out.rewriteLink.push(value);
+    else if (key === 'rewrite-text') out.rewriteText.push(value);
+    else if (key === 'rewrite-css-text') out.rewriteCssText.push(value);
     else out[key] = value;
   }
   for (const key of ['source', 'locale', 'lang', 'canonical', 'output']) {
@@ -206,6 +210,49 @@ function applyStaticCssContract(document, locale) {
   if (unused.length) throw new Error(`Unused _static_css contract entries: ${unused.join(' | ')}`);
 }
 
+function parseRewrite(spec, optionName) {
+  const idx = spec.indexOf('=');
+  if (idx < 1) throw new Error(`Invalid --${optionName} ${spec}; expected from=to`);
+  return [spec.slice(0, idx), spec.slice(idx + 1)];
+}
+
+function rewriteExactTextNodes(document, rules) {
+  if (!rules.length) return;
+  const parsed = rules.map(spec => parseRewrite(spec, 'rewrite-text'));
+  const used = new Set();
+  for (const node of bodyTextNodes(document)) {
+    const raw = node.nodeValue || '';
+    const normalised = normaliseContractText(raw);
+    for (const [from, to] of parsed) {
+      if (normalised !== normaliseContractText(from)) continue;
+      const leading = raw.match(/^\s*/)[0];
+      const trailing = raw.match(/\s*$/)[0];
+      node.nodeValue = leading + to + trailing;
+      used.add(from);
+      break;
+    }
+  }
+  const unused = parsed.map(([from]) => from).filter(from => !used.has(from));
+  if (unused.length) throw new Error(`Unused --rewrite-text rules: ${unused.join(' | ')}`);
+}
+
+function rewriteCssText(document, rules) {
+  if (!rules.length) return;
+  const parsed = rules.map(spec => parseRewrite(spec, 'rewrite-css-text'));
+  const used = new Set();
+  document.querySelectorAll('style').forEach(style => {
+    let css = style.textContent || '';
+    for (const [from, to] of parsed) {
+      if (!css.includes(from)) continue;
+      css = css.split(from).join(to);
+      used.add(from);
+    }
+    style.textContent = css;
+  });
+  const unused = parsed.map(([from]) => from).filter(from => !used.has(from));
+  if (unused.length) throw new Error(`Unused --rewrite-css-text rules: ${unused.join(' | ')}`);
+}
+
 function ensureMeta(document, selector, attrs) {
   let node = document.querySelector(selector);
   if (!node) {
@@ -282,10 +329,7 @@ function normaliseLocalReferences(document, enabled) {
 
 function rewriteExactLinks(document, rules) {
   for (const spec of rules) {
-    const idx = spec.indexOf('=');
-    if (idx < 1) throw new Error(`Invalid --rewrite-link ${spec}; expected from=to`);
-    const from = spec.slice(0, idx);
-    const to = spec.slice(idx + 1);
+    const [from, to] = parseRewrite(spec, 'rewrite-link');
     document.querySelectorAll('a[href]').forEach(node => {
       if (node.getAttribute('href') === from) node.setAttribute('href', to);
     });
@@ -348,6 +392,8 @@ function main() {
   applyText(document, locale, missing);
   applyStaticTextContract(document, locale);
   applyStaticCssContract(document, locale);
+  rewriteExactTextNodes(document, args.rewriteText);
+  rewriteCssText(document, args.rewriteCssText);
   applyMeta(document, locale, args.canonical);
   setCanonical(document, args.canonical);
   setBase(document, args.base);
