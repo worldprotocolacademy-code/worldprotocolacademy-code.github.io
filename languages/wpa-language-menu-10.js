@@ -263,6 +263,10 @@
 
   var core = document.createElement("script");
   core.src = "/languages/wpa-language-menu-10-core.js?v=1.4";
+  var publicRouter = document.createElement("script");
+  publicRouter.src = "/languages/wpa-public-language-router-v2.js?v=2.0";
+  publicRouter.defer = true;
+  document.head.appendChild(publicRouter);
   core.defer = true;
   core.onload = runPageSync;
   core.onerror = runPageSync;
