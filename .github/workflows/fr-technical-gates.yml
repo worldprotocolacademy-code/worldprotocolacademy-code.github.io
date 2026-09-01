@@ -104,13 +104,7 @@ jobs:
             for size in 390,844 1440,900; do
               out="/tmp/${page}-${size//,/-}.html"
               "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1500 --dump-dom "http://127.0.0.1:8000/.fr-gate-test/${page}.html" > "$out"
-              marker="$(python - "$out" <<'PY'
-import re,sys
-text=open(sys.argv[1],encoding='utf-8').read()
-m=re.search(r'id="fr-technical-gate-result"[^>]*>([^<]+)<',text)
-print(m.group(1).strip() if m else '')
-PY
-)"
+              marker="$(python -c 'import re,sys; text=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"id=\"fr-technical-gate-result\"[^>]*>([^<]+)<",text); print(m.group(1).strip() if m else "")' "$out")"
               echo "$page $size => ${marker:-NO_MARKER}"
               test "$marker" = "FR_TECHNICAL_GATE_PASS"
             done
