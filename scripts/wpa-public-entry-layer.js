@@ -1,11 +1,19 @@
-/* WPA Public Entry Layer v1.0 · 2026-08-25
+/* WPA Public Entry Layer v1.1 · 2026-09-01
    Progressive disclosure for first-time public visitors.
+   This is a Macedonian-canonical enhancement only; translated static mirrors
+   must never receive source-language DOM injection from this runtime.
    Does not delete or disable deeper WPA systems. */
 (function(){
   'use strict';
 
   if (window.WPA_PUBLIC_ENTRY_LAYER_LOADED) return;
   window.WPA_PUBLIC_ENTRY_LAYER_LOADED = true;
+
+  function isMacedonianCanonical(){
+    var lang=String(document.documentElement.getAttribute('lang')||'').toLowerCase();
+    var p=String(location.pathname||'/').toLowerCase().replace(/\/+$/,'')||'/';
+    return (lang==='mk' || lang.indexOf('mk-')===0) && (p==='/' || p==='/index.html');
+  }
 
   function isHome(){
     var p=String(location.pathname||'/').toLowerCase().replace(/\/+$/,'')||'/';
@@ -111,7 +119,7 @@
   }
 
   function run(){
-    if(!isHome()) return;
+    if(!isMacedonianCanonical() || !isHome()) return;
     ensureCss(); simplifyHero(); ensureQuickStart(); correctVisibleFacts();
   }
 
