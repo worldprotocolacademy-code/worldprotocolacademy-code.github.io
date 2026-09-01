@@ -1,0 +1,91 @@
+name: SAFE-8K Materialize Static EN
+
+on:
+  push:
+    branches:
+      - fix/translator-root-architecture-safe8k-20260901
+    paths:
+      - 'languages/wpa-public-language-router-v2.js'
+      - 'locales/rebuild/en/**'
+      - 'scripts/build_static_translation.js'
+      - '.github/workflows/safe8k-materialize-static-en.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.repository == 'worldprotocolacademy-code/worldprotocolacademy-code.github.io' && github.ref == 'refs/heads/fix/translator-root-architecture-safe8k-20260901'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/translator-root-architecture-safe8k-20260901
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Guard exact branch and clean tree
+        run: |
+          test "$(git branch --show-current)" = "fix/translator-root-architecture-safe8k-20260901"
+          test -z "$(git status --porcelain)"
+      - name: Install deterministic builder dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Compose canonical English locale candidates
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          function compose(basePath, overlayPath, outPath){
+            const base=JSON.parse(fs.readFileSync(basePath,'utf8'));
+            const overlay=JSON.parse(fs.readFileSync(overlayPath,'utf8'));
+            const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+            fs.writeFileSync(outPath,JSON.stringify(merged,null,2)+'\n');
+          }
+          compose('locales/index/en.json','locales/rebuild/en/index.override.json','/tmp/wpa-en-home-locale.json');
+          compose('locales/institute/en.json','locales/rebuild/en/institute.override.json','/tmp/wpa-en-institute-locale.json');
+          NODE
+      - name: Materialize static English Home and Institute
+        run: |
+          mkdir -p en
+          node scripts/build_static_translation.js --source index.html --locale /tmp/wpa-en-home-locale.json --lang en --canonical https://worldprotocolacademy.mk/en/ --output en/index.html --strip-script wpa-translator.js --strip-script wpa-home-full-en.js --strip-script translator-loader --strip-script i18n-v2.js
+          node scripts/build_static_translation.js --source institute.html --locale /tmp/wpa-en-institute-locale.json --lang en --canonical https://worldprotocolacademy.mk/en/institute.html --output en/institute.html --strip-script wpa-translator.js --strip-script wpa-home-full-en.js --strip-script translator-loader --strip-script i18n-v2.js
+      - name: Wire public router v2 without changing shared page tools
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('languages/wpa-language-menu-10.js')
+          s=p.read_text(encoding='utf-8')
+          old='core.src = "/languages/wpa-language-menu-10-core.js?v=1.4";'
+          new='core.src = "/languages/wpa-language-menu-10-core.js?v=1.4";\n  var publicRouter = document.createElement("script");\n  publicRouter.src = "/languages/wpa-public-language-router-v2.js?v=2.0";\n  publicRouter.defer = true;\n  document.head.appendChild(publicRouter);'
+          if new not in s:
+              if old not in s:
+                  raise SystemExit('SAFE-8K guard failed: expected core loader line not found')
+              s=s.replace(old,new,1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Static safety assertions
+        run: |
+          grep -q '<html[^>]*lang="en"' en/index.html
+          grep -q '<html[^>]*lang="en"' en/institute.html
+          grep -q 'https://worldprotocolacademy.mk/en/' en/index.html
+          grep -q 'https://worldprotocolacademy.mk/en/institute.html' en/institute.html
+          ! grep -q "fetch('/index.html" en/index.html
+          ! grep -q 'document.write' en/index.html
+          ! grep -q 'WPA_LANG_V6' en/index.html
+          ! grep -q 'WPA_LANG_V6' en/institute.html
+          grep -q 'wpa-public-language-router-v2.js?v=2.0' languages/wpa-language-menu-10.js
+      - name: Commit only expected materialized files
+        run: |
+          git add en/index.html en/institute.html languages/wpa-language-menu-10.js
+          changed="$(git diff --cached --name-only | sort)"
+          if [ -z "$changed" ]; then
+            echo 'No materialization drift; nothing to commit.'
+            exit 0
+          fi
+          unexpected="$(printf '%s\n' "$changed" | grep -Ev '^(en/index\.html|en/institute\.html|languages/wpa-language-menu-10\.js)$' || true)"
+          test -z "$unexpected"
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git commit -m 'SAFE-8K materialize static EN surfaces and wire registry router'
+          git push origin HEAD:fix/translator-root-architecture-safe8k-20260901
