@@ -1,14 +1,16 @@
-/* WPA Language Menu 10 Patch v1.2
-   Safe add-on: augments the language selector, places WPA Journal Live in the
-   homepage's upper identity row, and applies a page-scoped responsive
-   Institute identity header without rewriting institutional content.
+/* WPA Language Menu 10 Patch v1.3
+   Phase 1 public boundary: only Macedonian and English are exposed as
+   canonical public language routes. Phase 2 translation drafts remain in the
+   repository but are not rendered as public navigation before human review.
+   The patch also places WPA Journal Live in the homepage identity row and
+   applies a page-scoped responsive Institute identity header.
 */
 (function(){
   "use strict";
 
   const LANGS = [
     { code:"mk", label:"🇲🇰 Македонски", home:"/", institute:"/institute.html", canonical:true },
-    { code:"en", label:"🇬🇧 English", home:"/en/", institute:"/en/", canonical:true },
+    { code:"en", label:"🇬🇧 English", home:"/en/", institute:"/institute.html", canonical:true },
     { code:"zh", label:"🇨🇳 中文 · Chinese", home:"/languages/zh/index.html", institute:"/languages/zh/institute.html" },
     { code:"ru", label:"🇷🇺 Русский · Russian", home:"/languages/ru/index.html", institute:"/languages/ru/institute.html" },
     { code:"hi", label:"🇮🇳 हिन्दी · Hindi", home:"/languages/hi/index.html", institute:"/languages/hi/institute.html" },
@@ -20,6 +22,9 @@
     { code:"sq", label:"🇦🇱 Shqip · Albanian", home:"/languages/sq/index.html", institute:"/languages/sq/institute.html" },
     { code:"sr", label:"🇷🇸 Српски · Serbian", home:"/languages/sr/index.html", institute:"/languages/sr/institute.html" }
   ];
+
+  const PUBLIC_LANGS = LANGS.filter(function(lang){ return lang.canonical === true; });
+  const DRAFT_CODES = new Set(LANGS.filter(function(lang){ return !lang.canonical; }).map(function(lang){ return lang.code; }));
 
   function pageName(){
     return String(document.documentElement.getAttribute("data-wpa-page") || "").toLowerCase();
@@ -40,6 +45,17 @@
 
   function targetUrl(lang){
     return isInstitutePage() ? lang.institute : lang.home;
+  }
+
+  function isDraftRoute(value){
+    if (!value) return false;
+    try {
+      const url = new URL(value, location.origin);
+      const match = url.pathname.match(/^\/languages\/([^/]+)\/(?:index|institute)\.html$/i);
+      return !!(match && DRAFT_CODES.has(String(match[1] || "").toLowerCase()));
+    } catch (_) {
+      return false;
+    }
   }
 
   function addStyles(){
@@ -376,15 +392,19 @@
     details.innerHTML = `
       <summary>🌐 Јазик · Languages</summary>
       <div class="wpa-language-menu-10-panel" role="menu">
-        <div class="wpa-language-menu-10-title">WPA language pages</div>
-        ${LANGS.map(lang => `
+        <div class="wpa-language-menu-10-title">WPA canonical languages</div>
+        ${PUBLIC_LANGS.map(function(lang){ return `
           <a role="menuitem" href="${targetUrl(lang)}">
             <span>${lang.label}</span>
-            <span class="wpa-lang-status">${lang.canonical ? "canonical" : "draft"}</span>
+            <span class="wpa-lang-status">canonical</span>
           </a>
-        `).join("")}
+        `; }).join("")}
+        <a role="menuitem" href="/languages/">
+          <span>🌐 Languages Hub</span>
+          <span class="wpa-lang-status">Phase 2 status</span>
+        </a>
         <div class="wpa-language-menu-10-note">
-          Македонски и English се canonical. Другите јазици се translation drafts pending human review.
+          Македонски и English се canonical. Phase 2 translations remain unavailable for public navigation until human linguistic, academic and legal review.
         </div>
       </div>
     `;
@@ -405,14 +425,20 @@
       const looksLanguage = id.includes("lang") || aria.includes("language") || aria.includes("jazik") || aria.includes("јазик");
       if (!looksLanguage) continue;
 
-      const existing = new Set(Array.from(sel.options).map(o => o.value));
-      for (const lang of LANGS) {
+      Array.from(sel.options).forEach(function(opt){
+        if (isDraftRoute(opt.value)) opt.remove();
+      });
+
+      const existing = new Set(Array.from(sel.options).map(function(o){ return o.value; }));
+      for (const lang of PUBLIC_LANGS) {
         const url = targetUrl(lang);
-        if (existing.has(url)) continue;
+        const absoluteUrl = new URL(url, location.origin).href;
+        if (existing.has(url) || existing.has(absoluteUrl)) continue;
         const opt = document.createElement("option");
         opt.value = url;
-        opt.textContent = lang.label + (lang.canonical ? " · canonical" : " · draft");
+        opt.textContent = lang.label + " · canonical";
         sel.appendChild(opt);
+        existing.add(url);
       }
     }
   }
