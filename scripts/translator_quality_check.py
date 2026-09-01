@@ -42,6 +42,9 @@ def main() -> int:
         "data/language-canon-50.json",
         "data/language-wave1-readiness.json",
         "data/human-gates/fr.json",
+        "data/human-gates/fr-review-package.json",
+        "data/human-gates/fr-review-evidence.json",
+        "data/human-gates/fr-activation-preflight.json",
         "data/languages.json",
         "locales/manifest.json",
         "languages/NEW_10_LANGUAGE_STATUS_v1.json",
@@ -57,6 +60,9 @@ def main() -> int:
         canon = read_json("data/language-canon-50.json")
         readiness = read_json("data/language-wave1-readiness.json")
         fr_gate = read_json("data/human-gates/fr.json")
+        fr_package = read_json("data/human-gates/fr-review-package.json")
+        fr_evidence = read_json("data/human-gates/fr-review-evidence.json")
+        fr_preflight = read_json("data/human-gates/fr-activation-preflight.json")
         manifest = read_json("locales/manifest.json")
         metadata = read_json("data/languages.json")
         wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
@@ -151,11 +157,12 @@ def main() -> int:
             if code == "zh-Hans" and item.get("legacy_route_code") != "zh":
                 errors.append("zh-Hans readiness must preserve legacy zh route mapping until route normalization")
 
-        # SAFE-8A French pilot: editorial hardening is allowed, public activation is not.
+        # French pilot: Human Authority approval may be recorded, but public activation remains blocked.
         if fr_gate.get("language") != "fr" or fr_gate.get("pilot") is not True:
             errors.append("French Human Gate record must identify fr as the pilot language")
         if fr_gate.get("public_activation_authorized") is not False or fr_gate.get("public_ready") is not False:
-            errors.append("French pilot must remain non-public until the Human Gate is fully approved")
+            errors.append("French pilot must remain non-public until remaining technical gates and activation PR are complete")
+
         fr_checks = fr_gate.get("checks", {})
         for check_name in (
             "route_exists",
@@ -165,9 +172,18 @@ def main() -> int:
             "english_leftovers_removed_from_primary_copy",
             "canonical_wpa_identity_alignment",
             "machine_pre_review_editorial_hardening",
+            "ai_assisted_french_linguistic_review",
+            "ai_assisted_semantic_fidelity_review",
+            "ai_assisted_wpa_terminology_review",
+            "review_candidate_provenance_locked",
+            "human_evidence_record_created",
+            "human_authority_institutional_semantic_review",
+            "human_authority_wpa_terminology_acceptance",
+            "explicit_human_gate_approval",
         ):
             if fr_checks.get(check_name) != "pass":
-                errors.append(f"French pilot technical check must pass: {check_name}")
+                errors.append(f"French pilot approved-stage check must pass: {check_name}")
+
         for check_name in (
             "human_linguistic_review",
             "human_wpa_terminology_review",
@@ -175,16 +191,65 @@ def main() -> int:
             "accessibility_responsive_review",
             "hreflang_review",
             "route_fallback_smoke_test",
-            "explicit_human_gate_approval",
         ):
             if fr_checks.get(check_name) != "pending":
-                errors.append(f"French pilot human check must remain pending before activation: {check_name}")
+                errors.append(f"French pilot non-activation check must remain pending: {check_name}")
+
+        candidate = fr_package.get("candidate", {})
+        evidence_candidate = fr_evidence.get("reviewed_candidate", {})
+        candidate_commit = str(candidate.get("commit_sha", ""))
+        home_blob = str(candidate.get("home", {}).get("blob_sha", ""))
+        institute_blob = str(candidate.get("institute", {}).get("blob_sha", ""))
+        if not candidate_commit or not home_blob or not institute_blob:
+            errors.append("French review package must lock candidate commit and both HTML blob SHAs")
+        if fr_gate.get("review_candidate_commit_sha") != candidate_commit:
+            errors.append("French gate candidate SHA must match review package")
+        if evidence_candidate.get("commit_sha") != candidate_commit:
+            errors.append("French evidence candidate SHA must match review package")
+        if evidence_candidate.get("home_blob_sha") != home_blob or evidence_candidate.get("institute_blob_sha") != institute_blob:
+            errors.append("French evidence HTML blob SHAs must match review package")
+
+        authority = fr_evidence.get("human_authority", {})
+        package_authority = fr_package.get("human_authority_declaration", {})
+        if authority.get("name") != "Sande Smiljanov":
+            errors.append("French Human Authority evidence must identify Sande Smiljanov")
+        if not str(authority.get("role_or_authority_basis", "")).strip():
+            errors.append("French Human Authority evidence must include authority basis")
+        if authority.get("review_date") != "2026-09-01":
+            errors.append("French Human Authority review date must be 2026-09-01")
+        if authority.get("reviewed_candidate_commit_sha") != candidate_commit:
+            errors.append("French Human Authority approval must target the exact locked candidate")
+        for check_name in ("institutional_semantic_review", "wpa_terminology_acceptance", "explicit_human_gate_approval"):
+            if authority.get(check_name) != "pass":
+                errors.append(f"French Human Authority evidence must pass: {check_name}")
+        if authority.get("declaration") != "Го одобрувам SAFE-8D1 French locked candidate како Human Authority.":
+            errors.append("French Human Authority declaration does not match the recorded user approval")
+        if package_authority.get("reviewer_name") != authority.get("name"):
+            errors.append("French review package and evidence must identify the same Human Authority")
+        if package_authority.get("reviewed_candidate_commit_sha") != candidate_commit:
+            errors.append("French review package Human Authority candidate must match locked candidate")
+        if package_authority.get("institutional_semantic_review") != "pass" or package_authority.get("wpa_terminology_review") != "pass" or package_authority.get("explicit_human_gate_approval") != "pass":
+            errors.append("French review package must record Human Authority semantic, terminology and explicit approval passes")
+
+        remaining = fr_evidence.get("remaining_technical_checks", {})
+        for check_name in ("accessibility_responsive_review", "hreflang_design_review", "route_fallback_smoke_test"):
+            if remaining.get(check_name) != "pending":
+                errors.append(f"French remaining technical check must stay pending before activation: {check_name}")
+        if fr_preflight.get("activation_allowed") is not False or fr_preflight.get("mode") != "dry_run_only":
+            errors.append("French activation preflight must remain dry-run-only and activation_allowed=false")
+        if fr_preflight.get("blocking_state") != "awaiting_remaining_technical_checks":
+            errors.append("French activation preflight must wait on remaining technical checks")
+        blocked = fr_preflight.get("blocked_changes", {})
+        for key in ("remove_noindex", "add_hreflang", "add_to_sitemap", "add_to_public_navigation", "add_to_activation_registry_public_languages", "set_public_ready_true"):
+            if blocked.get(key) is not True:
+                errors.append(f"French activation change must remain blocked: {key}")
+
         for fr_path in ("languages/fr/index.html", "languages/fr/institute.html"):
             fr_text = read_text(fr_path)
             if '<html lang="fr" dir="ltr">' not in fr_text:
                 errors.append(f"French pilot has invalid lang/direction markup: {fr_path}")
             if '<meta name="robots" content="noindex,follow">' not in fr_text:
-                errors.append(f"French pilot must remain noindex while Human Gate is incomplete: {fr_path}")
+                errors.append(f"French pilot must remain noindex until dedicated activation PR: {fr_path}")
             if "Translation draft" not in fr_text or "Révision humaine" not in fr_text:
                 errors.append(f"French pilot must visibly retain draft/human-review disclosure: {fr_path}")
             if "Editorial process, calls, policies, topic candidates and human review." in fr_text:
@@ -230,7 +295,7 @@ def main() -> int:
         return 1
 
     print("WPA Translator Quality Check passed.")
-    print("Final-50 canon aligned; French pilot hardened but not public-ready; Phase 1 remains MK + EN only.")
+    print("Final-50 canon aligned; French Human Authority approved but still non-public pending technical gates; Phase 1 remains MK + EN only.")
     return 0
 
 
