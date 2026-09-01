@@ -40,6 +40,7 @@ def main() -> int:
         "translator-root-governance-v3.json",
         "data/language-activation.json",
         "data/language-canon-50.json",
+        "data/language-wave1-readiness.json",
         "data/languages.json",
         "locales/manifest.json",
         "languages/NEW_10_LANGUAGE_STATUS_v1.json",
@@ -53,6 +54,7 @@ def main() -> int:
     else:
         activation = read_json("data/language-activation.json")
         canon = read_json("data/language-canon-50.json")
+        readiness = read_json("data/language-wave1-readiness.json")
         manifest = read_json("locales/manifest.json")
         metadata = read_json("data/languages.json")
         wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
@@ -121,6 +123,32 @@ def main() -> int:
         if missing_reserve_metadata:
             errors.append(f"reserve metadata codes missing from data/languages.json: {', '.join(missing_reserve_metadata)}")
 
+        readiness_languages = readiness.get("languages", [])
+        readiness_codes = [str(item.get("code", "")).strip() for item in readiness_languages]
+        if readiness.get("audit_scope") != "readiness_only_no_public_activation":
+            errors.append("Wave-1 readiness matrix must remain readiness-only")
+        if readiness.get("public_activation_authorized") is not False:
+            errors.append("Wave-1 readiness matrix must not authorize public activation")
+        if readiness.get("public_boundary") != ["mk", "en"]:
+            errors.append("Wave-1 readiness matrix must keep public boundary mk,en")
+        if readiness_codes != rollout.get("wave1_existing_drafts", []):
+            errors.append("Wave-1 readiness matrix must exactly match canonical Wave-1 order")
+        for item in readiness_languages:
+            code = str(item.get("code", "")).strip()
+            if item.get("public_ready") is not False:
+                errors.append(f"Wave-1 language {code} must remain public_ready=false until a dedicated Human Gate PR")
+            home = str(item.get("draft_home", "")).lstrip("/")
+            institute = str(item.get("draft_institute", "")).lstrip("/")
+            for path in (home, institute):
+                if not path or not (REPO_ROOT / path).exists():
+                    errors.append(f"Wave-1 language {code} is missing declared draft surface: {path or '[empty]'}")
+            if code == "ar" and item.get("direction") != "rtl":
+                errors.append("Arabic Wave-1 readiness must remain RTL")
+            if code != "ar" and item.get("direction") != "ltr":
+                errors.append(f"Wave-1 language {code} direction must remain ltr")
+            if code == "zh-Hans" and item.get("legacy_route_code") != "zh":
+                errors.append("zh-Hans readiness must preserve legacy zh route mapping until route normalization")
+
         hub = read_text("languages/index.html")
         sitemap = read_text("sitemap.xml")
         core = read_text("languages/wpa-language-menu-10-core.js")
@@ -161,7 +189,7 @@ def main() -> int:
         return 1
 
     print("WPA Translator Quality Check passed.")
-    print("Final-50 canon aligned; Phase 1 remains MK + EN only; all later languages fail closed pending Human Gate.")
+    print("Final-50 canon aligned; Wave-1 audited but not public-ready; Phase 1 remains MK + EN only.")
     return 0
 
 
