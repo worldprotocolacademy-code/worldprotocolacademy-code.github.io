@@ -1,0 +1,103 @@
+{
+  "schema": "wpa-translator-consumer-inventory/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-01",
+  "baseline_main_sha": "793d607fa801d1cf86b57b8a47fca995fa8b6820",
+  "safe8k_branch": "fix/translator-root-architecture-safe8k-20260901",
+  "purpose": "Machine-readable runtime-consumer boundary for translator migration and zero-consumer cleanup. Listed consumers are compatibility allowances, not translation or activation authority.",
+  "scan_policy": {
+    "runtime_extensions": [".html", ".htm", ".js", ".mjs", ".cjs"],
+    "html_comments_are_not_runtime_consumers": true,
+    "documentation_mentions_are_not_runtime_consumers": true,
+    "new_legacy_consumers_fail_ci": true,
+    "zero_consumer_status_does_not_authorize_deletion": true
+  },
+  "entries": [
+    {
+      "token": "translator-loader-v1.js",
+      "classification": "migration_source",
+      "allowed_runtime_consumers": [],
+      "known_non_runtime_references": ["index.html (commented/disabled compatibility block)"],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "translator-loader-v2.js",
+      "classification": "legacy_frozen",
+      "allowed_runtime_consumers": ["locales/en/wpa-card.html", "locales/mk/wpa-card.html"],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "scripts/i18n-v2.js",
+      "classification": "legacy_frozen_zero_consumer_candidate",
+      "allowed_runtime_consumers": [],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "locales/core.js",
+      "classification": "legacy_frozen_review",
+      "allowed_runtime_consumers": [],
+      "known_non_runtime_references": ["index.html (commented/disabled)", "programmes.html (superseded comment)"],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "locales/locales/core.js",
+      "classification": "legacy_duplicate_frozen_review",
+      "allowed_runtime_consumers": [],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "scripts/wpa-home-full-en.js",
+      "classification": "migration_source_zero_public_consumer_candidate",
+      "allowed_runtime_consumers": [],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "languages/wpa-language-menu-10-core.js",
+      "classification": "legacy_router_and_page_enhancement",
+      "allowed_runtime_consumers": ["languages/wpa-language-menu-10.js"],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false,
+      "notes": "Legacy core remains a compatibility dependency of the page-sync layer; it is not public activation authority. Static translated mirrors must never load it."
+    },
+    {
+      "token": "languages/wpa-language-menu-10.js",
+      "classification": "legacy_page_sync_runtime",
+      "allowed_runtime_consumers": ["index.html", "institute.html"],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false,
+      "notes": "Page-sync/capability layer. Static translated mirrors strip it at build time."
+    },
+    {
+      "token": "locales/institute/institute-translator-loader.js",
+      "classification": "page_scoped_legacy_zero_consumer_candidate",
+      "allowed_runtime_consumers": [],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    },
+    {
+      "token": "locales/locales/institute/institute-translator-loader.js",
+      "classification": "legacy_duplicate_page_scoped_loader",
+      "allowed_runtime_consumers": [],
+      "new_consumers_allowed": false,
+      "deletion_allowed": false
+    }
+  ],
+  "active_authorities": {
+    "public_activation": "data/language-activation.json",
+    "public_language_router": "languages/wpa-public-language-router-v2.js",
+    "canonical_ui_language_key": "wpa.language",
+    "public_translation_output": "deterministic static HTML"
+  },
+  "cleanup_policy": {
+    "mass_delete_allowed": false,
+    "zero_consumer_evidence_required": true,
+    "separate_reviewed_pull_request_required": true,
+    "human_gate_required_for_public_route_or_language_changes": true
+  }
+}
