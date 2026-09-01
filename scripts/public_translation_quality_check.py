@@ -51,6 +51,7 @@ FORBIDDEN_ACTIVE_SCRIPT_NEEDLES = [
     "wpa-home-full-en",
     "wpa-language-menu-10.js",
     "wpa-language-menu-10-core.js",
+    "wpa-public-entry-layer.js",
 ]
 FORBIDDEN_SOURCE_PATTERNS = [
     "fetch('/index.html",
@@ -75,10 +76,12 @@ class AuditParser(HTMLParser):
         self.authors: list[str] = []
         self.provenance = 0
         self.visible_chunks: list[str] = []
+        self.style_chunks: list[str] = []
         self.active_scripts: list[str] = []
         self.hrefs: list[str] = []
         self.local_refs: list[tuple[str, str, str]] = []
         self._skip_depth = 0
+        self._style_depth = 0
         self._select_depth = 0
 
     def handle_starttag(self, tag, attrs):
@@ -105,16 +108,22 @@ class AuditParser(HTMLParser):
                 self.local_refs.append((tag, attr, value))
         if tag in {"script", "style", "noscript"}:
             self._skip_depth += 1
+        if tag == "style":
+            self._style_depth += 1
         if tag == "select":
             self._select_depth += 1
 
     def handle_endtag(self, tag):
         if tag in {"script", "style", "noscript"} and self._skip_depth:
             self._skip_depth -= 1
+        if tag == "style" and self._style_depth:
+            self._style_depth -= 1
         if tag == "select" and self._select_depth:
             self._select_depth -= 1
 
     def handle_data(self, data):
+        if self._style_depth and data.strip():
+            self.style_chunks.append(data)
         if not self._skip_depth and not self._select_depth and data.strip():
             self.visible_chunks.append(data.strip())
 
@@ -171,18 +180,24 @@ def audit(path: Path, cfg: dict) -> list[str]:
             errors.append(f"forbidden active/runtime pattern present: {phrase}")
     for src in parser.active_scripts:
         if any(needle.lower() in src.lower() for needle in FORBIDDEN_ACTIVE_SCRIPT_NEEDLES):
-            errors.append(f"legacy translator/page-sync script remains active: {src}")
+            errors.append(f"legacy or source-language content injector remains active: {src}")
     if parser.active_scripts.count(PUBLIC_ROUTER) != 1:
         errors.append(f"expected exactly one registry public router, found {parser.active_scripts.count(PUBLIC_ROUTER)}")
 
     if re.search(r"\b(?:Visa|Mastercard)\b", visible, flags=re.I):
         errors.append("payment-card brand remains in public EN visible content")
 
+    # EN purity invariant: no Cyrillic may be visible outside the language selector.
     cyr_chunks = [chunk for chunk in parser.visible_chunks if CYRILLIC_RE.search(chunk)]
-    allowed_exact = {"Светска академија за протокол", "Светска Академија за Протокол", "Македонски", "МК"}
-    unexpected = [chunk for chunk in cyr_chunks if chunk not in allowed_exact]
-    if unexpected:
-        errors.append("unexpected Macedonian/Cyrillic visible residue:\n    " + "\n    ".join(unexpected))
+    if cyr_chunks:
+        errors.append("English-only visible-language purity failed; Cyrillic residue remains outside language selector:\n    " + "\n    ".join(cyr_chunks))
+
+    # CSS-generated text is visible at runtime and must obey the same purity rule.
+    css = "\n".join(parser.style_chunks)
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    css_cyr_content = re.findall(r"content\s*:\s*([\"'][^\"']*[Ѐ-ӿ][^\"']*[\"'])", css, flags=re.I)
+    if css_cyr_content:
+        errors.append("English-only CSS generated-content purity failed:\n    " + "\n    ".join(css_cyr_content))
 
     return errors
 
@@ -204,7 +219,7 @@ def main() -> int:
         for err in all_errors:
             print(f"- {err}", file=sys.stderr)
         return 1
-    print("WPA public translation quality check passed for EN Home and Institute, including route/navigation integrity.")
+    print("WPA public translation quality check passed for EN Home and Institute, including English-only visible-language purity and route/navigation integrity.")
     return 0
 
 
