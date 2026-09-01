@@ -122,6 +122,18 @@ function normaliseContractText(value) {
   return String(value || '').trim().replace(/\s+/g, ' ');
 }
 
+function bodyTextNodes(document) {
+  const nodes = [];
+  const walker = document.createTreeWalker(document.body, 4);
+  let node;
+  while ((node = walker.nextNode())) {
+    const parent = node.parentElement;
+    if (!parent || parent.closest('script,style,noscript')) continue;
+    nodes.push(node);
+  }
+  return nodes;
+}
+
 function applyStaticTextContract(document, locale) {
   const contract = get(locale, '_static_text');
   if (!contract) return;
@@ -137,11 +149,10 @@ function applyStaticTextContract(document, locale) {
   }
 
   const used = new Set();
-  const walker = document.createTreeWalker(document.body, 4);
-  let node;
-  while ((node = walker.nextNode())) {
-    const parent = node.parentElement;
-    if (!parent || parent.closest('script,style,noscript')) continue;
+
+  // Pass 1: exact normalized text-node matches. This is the normal path for
+  // labels, navigation items and ordinary unkeyed copy.
+  for (const node of bodyTextNodes(document)) {
     const raw = node.nodeValue || '';
     const normalised = normaliseContractText(raw);
     if (!normalised || !index.has(normalised)) continue;
@@ -150,6 +161,30 @@ function applyStaticTextContract(document, locale) {
     const trailing = raw.match(/\s*$/)[0];
     node.nodeValue = leading + entry.replacement + trailing;
     used.add(entry.source);
+  }
+
+  // Pass 2: narrowly allow long exact-normalized source phrases to match as a
+  // substring inside one larger text node. This handles formatting-only source
+  // line breaks while keeping short labels fail-closed against accidental hits.
+  const MIN_LONG_SUBSTRING = 40;
+  for (const [source, replacement] of Object.entries(contract)) {
+    if (used.has(source)) continue;
+    const needle = normaliseContractText(source);
+    if (needle.length < MIN_LONG_SUBSTRING) continue;
+
+    let matched = false;
+    for (const node of bodyTextNodes(document)) {
+      const raw = node.nodeValue || '';
+      const haystack = normaliseContractText(raw);
+      if (!haystack.includes(needle)) continue;
+      const leading = raw.match(/^\s*/)[0];
+      const trailing = raw.match(/\s*$/)[0];
+      node.nodeValue = leading + haystack.replace(needle, replacement) + trailing;
+      used.add(source);
+      matched = true;
+      break;
+    }
+    if (matched) continue;
   }
 
   const unused = Object.keys(contract).filter(key => !used.has(key));
