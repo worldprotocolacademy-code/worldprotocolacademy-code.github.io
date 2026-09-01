@@ -36,11 +36,12 @@ jobs:
           set -euo pipefail
           python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-http.log 2>&1 &
           for i in {1..20}; do
-            curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null && exit 0
+            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then
+              break
+            fi
             sleep 0.5
           done
-          cat /tmp/wpa-fr-http.log
-          exit 1
+          curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null
 
       - name: Route and fallback smoke
         shell: bash
@@ -77,7 +78,7 @@ jobs:
               if(document.querySelectorAll('h1').length!==1) issues.push('h1');
               var links=[].slice.call(document.querySelectorAll('a'));
               if(!links.length || links.some(function(a){return !a.textContent.trim();})) issues.push('link-label');
-              if(document.documentElement.scrollWidth>window.innerWidth+2) issues.push('overflow');
+              if(document.documentElement.scrollWidth>window.innerWidth+2) issues.push('overflow-'+document.documentElement.scrollWidth+'-'+window.innerWidth);
               var marker=document.createElement('div');
               marker.id='fr-technical-gate-result';
               marker.textContent=issues.length ? 'FR_TECHNICAL_GATE_FAIL:'+issues.join(',') : 'FR_TECHNICAL_GATE_PASS';
@@ -103,8 +104,9 @@ jobs:
             for size in 390,844 1440,900; do
               out="/tmp/${page}-${size//,/-}.html"
               "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1500 --dump-dom "http://127.0.0.1:8000/.fr-gate-test/${page}.html" > "$out"
-              grep -q 'FR_TECHNICAL_GATE_PASS' "$out"
-              ! grep -q 'FR_TECHNICAL_GATE_FAIL:' "$out"
+              marker="$(grep -o 'FR_TECHNICAL_GATE_[^<]*' "$out" | head -n 1 || true)"
+              echo "$page $size => ${marker:-NO_MARKER}"
+              test "$marker" = "FR_TECHNICAL_GATE_PASS"
             done
           done
 
