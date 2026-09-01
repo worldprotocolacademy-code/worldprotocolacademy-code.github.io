@@ -1,19 +1,19 @@
 name: SAFE-8L English Purity Materializer
 
 on:
-  push:
-    branches:
-      - fix/en-language-purity-safe8l-20260901
+  pull_request:
     paths:
       - '.github/workflows/safe8l-en-materialize.yml'
-  workflow_dispatch:
+      - 'scripts/build_static_translation.js'
+      - 'scripts/public_translation_quality_check.py'
+      - '.github/workflows/wpa-translator-architecture.yml'
 
 permissions:
   contents: write
 
 jobs:
   materialize:
-    if: github.ref == 'refs/heads/fix/en-language-purity-safe8l-20260901'
+    if: github.head_ref == 'fix/en-language-purity-safe8l-20260901' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
