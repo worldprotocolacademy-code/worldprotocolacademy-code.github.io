@@ -22,6 +22,7 @@ function usage(code = 0) {
     `  --dir <ltr|rtl>      document direction (default ltr)\n` +
     `  --base <url>         optional <base href> value\n` +
     `  --strip-script <s>   remove script src containing substring; repeatable\n` +
+    `  --append-script <s>  append one target-language runtime script; repeatable\n` +
     `  --remove-selector <css> remove elements before output; repeatable\n` +
     `  --single-h1 true     downgrade every h1 after the first to h2\n` +
     `  --help               show this help\n`;
@@ -30,7 +31,7 @@ function usage(code = 0) {
 }
 
 function parseArgs(argv) {
-  const out = { stripScript: [], removeSelector: [] };
+  const out = { stripScript: [], appendScript: [], removeSelector: [] };
   for (let i = 2; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--help') usage(0);
@@ -39,6 +40,7 @@ function parseArgs(argv) {
     const value = argv[++i];
     if (value == null) usage(2);
     if (key === 'strip-script') out.stripScript.push(value);
+    else if (key === 'append-script') out.appendScript.push(value);
     else if (key === 'remove-selector') out.removeSelector.push(value);
     else out[key] = value;
   }
@@ -138,7 +140,6 @@ function applyStaticTextContract(document, locale) {
   const contract = get(locale, '_static_text');
   if (!contract) return;
   if (typeof contract !== 'object' || Array.isArray(contract)) throw new Error('_static_text must be an object');
-
   const index = new Map();
   for (const [source, replacement] of Object.entries(contract)) {
     if (typeof replacement !== 'string') throw new Error(`_static_text replacement must be string: ${source}`);
@@ -147,11 +148,7 @@ function applyStaticTextContract(document, locale) {
     if (index.has(normalised)) throw new Error(`Duplicate normalised _static_text source: ${source}`);
     index.set(normalised, { source, replacement });
   }
-
   const used = new Set();
-
-  // Pass 1: exact normalized text-node matches. This is the normal path for
-  // labels, navigation items and ordinary unkeyed copy.
   for (const node of bodyTextNodes(document)) {
     const raw = node.nodeValue || '';
     const normalised = normaliseContractText(raw);
@@ -162,17 +159,11 @@ function applyStaticTextContract(document, locale) {
     node.nodeValue = leading + entry.replacement + trailing;
     used.add(entry.source);
   }
-
-  // Pass 2: narrowly allow long exact-normalized source phrases to match as a
-  // substring inside one larger text node. This handles formatting-only source
-  // line breaks while keeping short labels fail-closed against accidental hits.
   const MIN_LONG_SUBSTRING = 40;
   for (const [source, replacement] of Object.entries(contract)) {
     if (used.has(source)) continue;
     const needle = normaliseContractText(source);
     if (needle.length < MIN_LONG_SUBSTRING) continue;
-
-    let matched = false;
     for (const node of bodyTextNodes(document)) {
       const raw = node.nodeValue || '';
       const haystack = normaliseContractText(raw);
@@ -181,12 +172,9 @@ function applyStaticTextContract(document, locale) {
       const trailing = raw.match(/\s*$/)[0];
       node.nodeValue = leading + haystack.replace(needle, replacement) + trailing;
       used.add(source);
-      matched = true;
       break;
     }
-    if (matched) continue;
   }
-
   const unused = Object.keys(contract).filter(key => !used.has(key));
   if (unused.length) throw new Error(`Unused _static_text contract entries: ${unused.join(' | ')}`);
 }
@@ -259,6 +247,16 @@ function removeRuntime(document, stripScripts, removeSelectors) {
   for (const selector of removeSelectors) document.querySelectorAll(selector).forEach(node => node.remove());
 }
 
+function appendRuntime(document, scripts) {
+  for (const src of scripts) {
+    const node = document.createElement('script');
+    node.setAttribute('src', src);
+    node.setAttribute('defer', '');
+    node.setAttribute('data-wpa-static-runtime', 'language-router');
+    document.body.appendChild(node);
+  }
+}
+
 function enforceSingleH1(document, enabled) {
   if (!enabled) return;
   const headings = Array.from(document.querySelectorAll('h1'));
@@ -298,6 +296,7 @@ function main() {
   setCanonical(document, args.canonical);
   setBase(document, args.base);
   removeRuntime(document, args.stripScript, args.removeSelector);
+  appendRuntime(document, args.appendScript);
   enforceSingleH1(document, args.singleH1);
   if (missing.size) {
     console.error('Static translation build refused: missing locale keys:');
