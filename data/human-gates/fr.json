@@ -1,13 +1,13 @@
 {
   "schema": "WPA Language Human Gate",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-09-01",
   "language": "fr",
   "pilot": true,
-  "stage": "awaiting_human_review_evidence",
+  "stage": "ai_assisted_review_complete_awaiting_human_authority_approval",
   "review_package": "data/human-gates/fr-review-package.json",
   "review_evidence": "data/human-gates/fr-review-evidence.json",
-  "review_candidate_commit_sha": "dd6b059b225f2dc4beb6054211c72066d839330c",
+  "review_candidate_commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
   "public_activation_authorized": false,
   "public_ready": false,
   "surfaces": [
@@ -22,11 +22,13 @@
     "english_leftovers_removed_from_primary_copy": "pass",
     "canonical_wpa_identity_alignment": "pass",
     "machine_pre_review_editorial_hardening": "pass",
+    "ai_assisted_french_linguistic_review": "pass",
+    "ai_assisted_semantic_fidelity_review": "pass",
+    "ai_assisted_wpa_terminology_review": "pass",
     "review_candidate_provenance_locked": "pass",
     "human_evidence_record_created": "pass",
-    "human_linguistic_review": "pending",
-    "human_wpa_terminology_review": "pending",
-    "institutional_legal_wording_review": "pending",
+    "human_authority_institutional_semantic_review": "pending",
+    "human_authority_wpa_terminology_acceptance": "pending",
     "accessibility_responsive_review": "pending",
     "hreflang_review": "pending",
     "route_fallback_smoke_test": "pending",
@@ -34,11 +36,11 @@
   },
   "notes": [
     "This record is readiness evidence, not activation authority.",
+    "AI-assisted French linguistic review is documented but is not represented as native or professional human French review.",
     "French remains excluded from public navigation, sitemap and activation registry.",
     "noindex,follow remains required while the Human Gate is incomplete.",
-    "hreflang must not be added until the final reviewed French surfaces and canonical relationships are approved.",
-    "If either reviewed French HTML blob changes, human review must be revalidated against the new candidate.",
-    "No human review check may be marked pass without a complete matching fr-review-evidence.json record."
+    "hreflang must not be added until Human Authority approval and final canonical relationships are approved.",
+    "If either reviewed French HTML blob changes after Human Authority approval, that approval must be revalidated against the new candidate."
   ],
-  "activation_rule": "French may become public only in a dedicated activation PR after every pending Human Gate check is changed to pass by valid human-reviewed evidence and the reviewed candidate provenance still matches."
+  "activation_rule": "French may become public only in a dedicated activation PR after Human Authority approval is recorded against the exact locked candidate and all remaining technical checks pass."
 }
