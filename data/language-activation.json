@@ -1,19 +1,40 @@
 {
   "schema": "WPA Public Language Activation Registry",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-09-01",
   "policy_mode": "fail_closed",
   "canonical_master": "mk",
   "canonical_mirror": "en",
   "public_languages": [
-    "mk",
+    "mk"
+  ],
+  "suspended_public_languages": [
     "en",
     "fr"
   ],
   "public_routes": {
-    "mk": {"home": "/", "institute": "/institute.html"},
-    "en": {"home": "/en/", "institute": "/institute.html"},
-    "fr": {"home": "/languages/fr/", "institute": "/languages/fr/institute.html", "status": "approved_public_pilot"}
+    "mk": {"home": "/", "institute": "/institute.html"}
+  },
+  "suspended_routes": {
+    "en": {
+      "home": "/en/",
+      "institute": "/institute.html",
+      "status": "content_quality_hold",
+      "reason": "The current EN implementation is not a complete or reliable canonical mirror and exposes stale locale content. Canonical-mirror designation is retained, but public activation is held pending rebuild and Human Gate re-approval."
+    },
+    "fr": {
+      "home": "/languages/fr/",
+      "institute": "/languages/fr/institute.html",
+      "status": "content_quality_hold",
+      "reason": "The current FR pilot is a reduced landing implementation rather than a parity translation of the canonical WPA Home and Institute. Public-pilot activation is held pending rebuild and Human Gate re-approval."
+    }
+  },
+  "quality_hold": {
+    "decision_date": "2026-09-01",
+    "basis": "Human Authority quality rejection of the current English and French public implementations.",
+    "effect": "Fail-closed public exposure: Macedonian remains the only active public language until EN is rebuilt as the canonical mirror and FR is separately re-approved as a public pilot.",
+    "deletion": false,
+    "content_preserved_for_rebuild": true
   },
   "world_language_target_count": 50,
   "target_selection_status": "final_50_canon_selected",
@@ -31,10 +52,11 @@
     "final_canon": "data/language-canon-50.json"
   },
   "alignment": {
-    "required": false,
-    "status": "aligned_to_final_50_canon_with_french_public_pilot",
+    "required": true,
+    "status": "content_quality_hold_mk_only_public_pending_en_rebuild_fr_reapproval",
     "metadata_policy": "data/languages.json is a superset metadata catalog; entries must resolve to canonical, reserve or compatibility-alias codes and do not imply public activation.",
-    "wave1_policy": "French is the only activated Wave-1 public pilot. Every other Wave-1 language remains non-public. The existing zh draft route is retained as a compatibility alias for canonical zh-Hans until a separately reviewed route migration.",
+    "wave1_policy": "French remains a Wave-1 candidate but its public-pilot activation is suspended pending a full parity rebuild and a new Human Gate decision. Every other Wave-1 language remains non-public.",
+    "english_policy": "English retains canonical-mirror designation but its current public route is suspended until it is rebuilt from the Macedonian canonical master without stale commercial, credential or legacy identity content.",
     "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
   }
 }
