@@ -1,0 +1,101 @@
+name: SAFE-8K EN Materializer
+
+on:
+  push:
+    branches:
+      - fix/translator-root-architecture-safe8k-20260901
+    paths:
+      - '.github/workflows/safe8k-en-materialize.yml'
+      - 'scripts/build_static_translation.js'
+      - 'locales/index/en.json'
+      - 'locales/institute/en.json'
+      - 'locales/rebuild/en/**'
+      - 'en/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.ref == 'refs/heads/fix/translator-root-architecture-safe8k-20260901'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/translator-root-architecture-safe8k-20260901
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install deterministic builder dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Compose canonical English locales
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          for (const [name,basePath,overlayPath,out] of [
+            ['home','locales/index/en.json','locales/rebuild/en/index.override.json','/tmp/home.json'],
+            ['institute','locales/institute/en.json','locales/rebuild/en/institute.override.json','/tmp/institute.json']
+          ]) {
+            const base=JSON.parse(fs.readFileSync(basePath,'utf8'));
+            const overlay=JSON.parse(fs.readFileSync(overlayPath,'utf8'));
+            const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+            fs.writeFileSync(out,JSON.stringify(merged,null,2)+'\n');
+            console.log('Composed '+name);
+          }
+          NODE
+      - name: Materialize English Home
+        run: >-
+          node scripts/build_static_translation.js
+          --source index.html
+          --locale /tmp/home.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/
+          --output en/index.html
+          --root-relative-links true
+          --rewrite-link /institute.html=/en/institute.html
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Materialize English Institute
+        run: >-
+          node scripts/build_static_translation.js
+          --source institute.html
+          --locale /tmp/institute.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/institute.html
+          --output en/institute.html
+          --root-relative-links true
+          --single-h1 true
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Validate materialized outputs
+        run: python scripts/public_translation_quality_check.py
+      - name: Guard expected diff only
+        run: |
+          set -euo pipefail
+          unexpected="$(git diff --name-only | grep -v -E '^(en/index.html|en/institute.html)$' || true)"
+          test -z "$unexpected" || { echo "Unexpected materializer diff:"; echo "$unexpected"; exit 1; }
+      - name: Commit deterministic outputs if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- en/index.html en/institute.html; then
+            echo 'No EN output drift.'
+            exit 0
+          fi
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
+          git add en/index.html en/institute.html
+          git commit -m 'SAFE-8K materialize normalized English mirrors'
+          git push origin HEAD:fix/translator-root-architecture-safe8k-20260901
