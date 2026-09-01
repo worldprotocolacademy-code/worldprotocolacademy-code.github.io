@@ -1,24 +1,31 @@
-name: SAFE-8L English Purity Materializer
+name: SAFE-8L EN Purity Materializer
 
 on:
-  pull_request:
+  push:
+    branches:
+      - fix/en-language-purity-safe8l-20260901
     paths:
       - '.github/workflows/safe8l-en-materialize.yml'
       - 'scripts/build_static_translation.js'
       - 'scripts/public_translation_quality_check.py'
-      - '.github/workflows/wpa-translator-architecture.yml'
+      - 'locales/index/en.json'
+      - 'locales/institute/en.json'
+      - 'locales/rebuild/en/**'
+      - 'en/**'
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   materialize:
-    if: github.head_ref == 'fix/en-language-purity-safe8l-20260901' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.ref == 'refs/heads/fix/en-language-purity-safe8l-20260901'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
           ref: fix/en-language-purity-safe8l-20260901
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -27,21 +34,22 @@ jobs:
           node-version: '24'
       - name: Install deterministic builder dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
-      - name: Compose English locales
+      - name: Compose canonical English locales
         run: |
           node - <<'NODE'
           const fs=require('fs');
-          for (const [basePath,overlayPath,out] of [
-            ['locales/index/en.json','locales/rebuild/en/index.override.json','/tmp/home.json'],
-            ['locales/institute/en.json','locales/rebuild/en/institute.override.json','/tmp/institute.json']
+          for (const [name,basePath,overlayPath,out] of [
+            ['home','locales/index/en.json','locales/rebuild/en/index.override.json','/tmp/home.json'],
+            ['institute','locales/institute/en.json','locales/rebuild/en/institute.override.json','/tmp/institute.json']
           ]) {
             const base=JSON.parse(fs.readFileSync(basePath,'utf8'));
             const overlay=JSON.parse(fs.readFileSync(overlayPath,'utf8'));
             const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
             fs.writeFileSync(out,JSON.stringify(merged,null,2)+'\n');
+            console.log('Composed '+name);
           }
           NODE
-      - name: Build language-pure English Home
+      - name: Materialize language-pure English Home
         run: >-
           node scripts/build_static_translation.js
           --source index.html
@@ -68,7 +76,7 @@ jobs:
           --strip-script wpa-language-menu-10.js
           --strip-script wpa-public-entry-layer.js
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
-      - name: Build language-pure English Institute
+      - name: Materialize language-pure English Institute
         run: >-
           node scripts/build_static_translation.js
           --source institute.html
@@ -89,18 +97,22 @@ jobs:
           --strip-script wpa-language-menu-10.js
           --strip-script wpa-public-entry-layer.js
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
-      - name: Validate generated English purity
+      - name: Validate materialized outputs
         run: python scripts/public_translation_quality_check.py
       - name: Guard expected diff only
         run: |
-          changed="$(git status --short | awk '{print $2}' | sort)"
-          expected="en/index.html
-en/institute.html"
-          test "$changed" = "$expected" || { echo "Unexpected materializer diff:"; git status --short; exit 1; }
-      - name: Commit generated mirrors
+          set -euo pipefail
+          unexpected="$(git diff --name-only | grep -v -E '^(en/index.html|en/institute.html)$' || true)"
+          test -z "$unexpected" || { echo "Unexpected materializer diff:"; echo "$unexpected"; exit 1; }
+      - name: Commit deterministic outputs if changed
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          set -euo pipefail
+          if git diff --quiet -- en/index.html en/institute.html; then
+            echo 'No EN output drift.'
+            exit 0
+          fi
+          git config user.name 'worldprotocolacademy-code'
+          git config user.email 'worldprotocolacademy@gmail.com'
           git add en/index.html en/institute.html
-          git commit -m "SAFE-8L materialize language-pure English mirrors"
+          git commit -m 'SAFE-8L materialize language-pure English mirrors'
           git push origin HEAD:fix/en-language-purity-safe8l-20260901
