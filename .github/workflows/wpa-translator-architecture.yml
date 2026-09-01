@@ -15,6 +15,7 @@ on:
       - 'scripts/wpa-home-full-en.js'
       - 'locales/index/en.json'
       - 'locales/institute/en.json'
+      - 'locales/rebuild/en/**'
       - 'languages/wpa-language-menu-10.js'
       - 'languages/wpa-language-menu-10-core.js'
       - 'en/**'
@@ -44,11 +45,20 @@ jobs:
         run: node --check scripts/build_static_translation.js
       - name: Validate static builder CLI
         run: node scripts/build_static_translation.js --help
+      - name: Compose canonical English Home locale candidate
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const base=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
+          const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
+          const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+          fs.writeFileSync('/tmp/wpa-en-home-locale.json',JSON.stringify(merged,null,2));
+          NODE
       - name: Dry-build English Home candidate
         run: >-
           node scripts/build_static_translation.js
           --source index.html
-          --locale locales/index/en.json
+          --locale /tmp/wpa-en-home-locale.json
           --lang en
           --canonical https://worldprotocolacademy.mk/en/
           --output /tmp/wpa-en-home.html
