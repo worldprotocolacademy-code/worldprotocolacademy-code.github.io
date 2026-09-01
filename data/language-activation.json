@@ -1,0 +1,48 @@
+{
+  "schema": "WPA Public Language Activation Registry",
+  "version": "1.0.0",
+  "updated": "2026-09-01",
+  "policy_mode": "fail_closed",
+  "canonical_master": "mk",
+  "canonical_mirror": "en",
+  "public_languages": [
+    "mk",
+    "en"
+  ],
+  "public_routes": {
+    "mk": {
+      "home": "/",
+      "institute": "/institute.html"
+    },
+    "en": {
+      "home": "/en/",
+      "institute": "/institute.html"
+    }
+  },
+  "world_language_target_count": 50,
+  "target_selection_status": "reconciliation_required_before_phase2_activation",
+  "human_gate_required": true,
+  "unlisted_languages_public": false,
+  "phase2_wave1_drafts": [
+    "zh",
+    "ru",
+    "hi",
+    "af",
+    "ar",
+    "fr",
+    "de",
+    "it",
+    "sq",
+    "sr"
+  ],
+  "source_inventories": {
+    "metadata_registry": "data/languages.json",
+    "translator_manifest": "locales/manifest.json",
+    "draft_status": "languages/NEW_10_LANGUAGE_STATUS_v1.json"
+  },
+  "reconciliation": {
+    "required": true,
+    "reason": "Existing language inventories differ in count and membership. Preserve them until the final 50-language target set is reconciled through the Human Gate.",
+    "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
+  }
+}
