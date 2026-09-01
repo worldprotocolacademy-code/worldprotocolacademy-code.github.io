@@ -1,9 +1,12 @@
 {
   "schema": "WPA Language Human Gate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "language": "fr",
   "pilot": true,
+  "stage": "human_review_candidate_locked",
+  "review_package": "data/human-gates/fr-review-package.json",
+  "review_candidate_commit_sha": "dd6b059b225f2dc4beb6054211c72066d839330c",
   "public_activation_authorized": false,
   "public_ready": false,
   "surfaces": [
@@ -18,6 +21,7 @@
     "english_leftovers_removed_from_primary_copy": "pass",
     "canonical_wpa_identity_alignment": "pass",
     "machine_pre_review_editorial_hardening": "pass",
+    "review_candidate_provenance_locked": "pass",
     "human_linguistic_review": "pending",
     "human_wpa_terminology_review": "pending",
     "institutional_legal_wording_review": "pending",
@@ -30,7 +34,8 @@
     "This record is readiness evidence, not activation authority.",
     "French remains excluded from public navigation, sitemap and activation registry.",
     "noindex,follow remains required while the Human Gate is incomplete.",
-    "hreflang must not be added until the final reviewed French surfaces and canonical relationships are approved."
+    "hreflang must not be added until the final reviewed French surfaces and canonical relationships are approved.",
+    "If either reviewed French HTML blob changes, human review must be revalidated against the new candidate."
   ],
-  "activation_rule": "French may become public only in a dedicated activation PR after every pending Human Gate check is changed to pass by human-reviewed evidence."
+  "activation_rule": "French may become public only in a dedicated activation PR after every pending Human Gate check is changed to pass by human-reviewed evidence and the reviewed candidate provenance still matches."
 }
