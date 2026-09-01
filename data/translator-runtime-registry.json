@@ -1,0 +1,120 @@
+{
+  "schema": "wpa-translator-runtime-registry/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-01",
+  "policy_mode": "fail_closed",
+  "canonical_ui_language_key": "wpa.language",
+  "ai_language_keys_separate": true,
+  "public_activation_source": "data/language-activation.json",
+  "canonical_content_source": {
+    "home": "index.html",
+    "institute": "institute.html",
+    "language": "mk"
+  },
+  "public_output_strategy": "static_pretranslated_html",
+  "browser_runtime_role": "routing_and_dynamic_ui_only",
+  "engines": [
+    {
+      "path": "wpa-translator.js",
+      "classification": "active_shared_page_tools",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "notes": "Current file exposes shared page tools and language-state stubs but is not a complete public translation engine. Preserve until consumers are migrated."
+    },
+    {
+      "path": "languages/wpa-language-menu-10-core.js",
+      "classification": "active_public_language_router",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "registry_migration_required": true,
+      "notes": "Current router still carries duplicated language metadata. Target state: derive public options from activation registry/build output."
+    },
+    {
+      "path": "translator-loader-v1.js",
+      "classification": "migration_source",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "translator-loader-v2.js",
+      "classification": "legacy_frozen",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "scripts/i18n-v2.js",
+      "classification": "legacy_frozen",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "locales/core.js",
+      "classification": "legacy_frozen_review",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "locales/locales/core.js",
+      "classification": "legacy_frozen_review",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    },
+    {
+      "path": "scripts/wpa-home-full-en.js",
+      "classification": "migration_source",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false,
+      "notes": "Fetch-and-overlay English renderer. Must not remain the final canonical-mirror architecture."
+    },
+    {
+      "path": "locales/locales/institute/institute-translator-loader.js",
+      "classification": "page_scoped_legacy",
+      "translation_authority": false,
+      "public_activation_authority": false,
+      "new_consumers_allowed": false
+    }
+  ],
+  "locale_trees": [
+    {
+      "path": "locales/<page>/<lang>.json",
+      "classification": "current_page_scoped_source",
+      "new_public_work_allowed": true,
+      "notes": "Contains current Home/Institute page-scoped dictionaries; each public locale still requires canonical-fact and parity validation."
+    },
+    {
+      "path": "locales/<lang>/<page>.json",
+      "classification": "mixed_generation_source",
+      "new_public_work_allowed": false,
+      "notes": "Preserved for compatibility and migration until consumers are inventoried."
+    },
+    {
+      "path": "locales/locales/**",
+      "classification": "legacy_duplicate_tree",
+      "new_public_work_allowed": false,
+      "notes": "No new public translations may be authored here. Preserve pending zero-consumer cleanup."
+    }
+  ],
+  "forbidden_public_patterns": {
+    "translated_home_fetch_overlay": [
+      "fetch('/index.html",
+      "fetch(\"/index.html"
+    ],
+    "legacy_ui_language_write_keys": [
+      "WPA_LANG_V6",
+      "wpa_lang",
+      "wpa_language",
+      "wpa-lang"
+    ]
+  },
+  "cleanup_policy": {
+    "mass_delete_allowed": false,
+    "zero_consumer_evidence_required": true,
+    "separate_pull_request_required": true
+  }
+}
