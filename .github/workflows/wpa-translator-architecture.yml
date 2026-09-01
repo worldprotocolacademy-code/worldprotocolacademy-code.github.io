@@ -87,15 +87,18 @@ jobs:
           --lang en
           --canonical https://worldprotocolacademy.mk/en/institute.html
           --output /tmp/wpa-en-institute.html
+          --single-h1 true
           --strip-script wpa-translator.js
           --strip-script wpa-home-full-en.js
           --strip-script translator-loader
           --strip-script i18n-v2.js
+      - name: Validate rebuilt candidate quality before materialization
+        run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
       - name: Enforce byte-for-byte deterministic committed outputs
         run: |
           cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
           cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
-      - name: Validate public translation quality
+      - name: Validate committed public translation quality
         run: python scripts/public_translation_quality_check.py
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
