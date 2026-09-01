@@ -118,10 +118,24 @@ function applyText(document, locale, missing) {
   }
 }
 
+function normaliseContractText(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ');
+}
+
 function applyStaticTextContract(document, locale) {
   const contract = get(locale, '_static_text');
   if (!contract) return;
   if (typeof contract !== 'object' || Array.isArray(contract)) throw new Error('_static_text must be an object');
+
+  const index = new Map();
+  for (const [source, replacement] of Object.entries(contract)) {
+    if (typeof replacement !== 'string') throw new Error(`_static_text replacement must be string: ${source}`);
+    const normalised = normaliseContractText(source);
+    if (!normalised) throw new Error('_static_text source must not be empty');
+    if (index.has(normalised)) throw new Error(`Duplicate normalised _static_text source: ${source}`);
+    index.set(normalised, { source, replacement });
+  }
+
   const used = new Set();
   const walker = document.createTreeWalker(document.body, 4);
   let node;
@@ -129,15 +143,15 @@ function applyStaticTextContract(document, locale) {
     const parent = node.parentElement;
     if (!parent || parent.closest('script,style,noscript')) continue;
     const raw = node.nodeValue || '';
-    const trimmed = raw.trim();
-    if (!trimmed || !Object.prototype.hasOwnProperty.call(contract, trimmed)) continue;
-    const replacement = contract[trimmed];
-    if (typeof replacement !== 'string') throw new Error(`_static_text replacement must be string: ${trimmed}`);
+    const normalised = normaliseContractText(raw);
+    if (!normalised || !index.has(normalised)) continue;
+    const entry = index.get(normalised);
     const leading = raw.match(/^\s*/)[0];
     const trailing = raw.match(/\s*$/)[0];
-    node.nodeValue = leading + replacement + trailing;
-    used.add(trimmed);
+    node.nodeValue = leading + entry.replacement + trailing;
+    used.add(entry.source);
   }
+
   const unused = Object.keys(contract).filter(key => !used.has(key));
   if (unused.length) throw new Error(`Unused _static_text contract entries: ${unused.join(' | ')}`);
 }
