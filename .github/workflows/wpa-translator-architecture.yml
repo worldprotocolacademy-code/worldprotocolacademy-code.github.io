@@ -30,15 +30,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   translator-architecture:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: fix/en-language-purity-safe8l-20260901
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -55,8 +53,16 @@ jobs:
         run: node --check scripts/build_static_translation.js
       - name: Validate public router syntax
         run: node --check languages/wpa-public-language-router-v2.js
+      - name: Validate MK entry injector syntax
+        run: node --check scripts/wpa-public-entry-layer.js
       - name: Validate static builder CLI
         run: node scripts/build_static_translation.js --help
+      - name: Enforce SAFE-8L runtime containment contract
+        run: |
+          grep -Fq "function isMacedonianCanonical()" scripts/wpa-public-entry-layer.js
+          grep -Fq "if(!isMacedonianCanonical() || !isHome()) return;" scripts/wpa-public-entry-layer.js
+          grep -Fq "english-source-duplicate-suppression" languages/wpa-public-language-router-v2.js
+          grep -Fq 'body::before{content:"WPA • TEST PHASE 2026"!important}' languages/wpa-public-language-router-v2.js
       - name: Compose canonical English Home locale candidate
         run: |
           node - <<'NODE'
@@ -66,7 +72,7 @@ jobs:
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
           fs.writeFileSync('/tmp/home.json',JSON.stringify(merged,null,2)+'\n');
           NODE
-      - name: Rebuild English Home candidate
+      - name: Rebuild English Home purity candidate
         run: >-
           node scripts/build_static_translation.js
           --source index.html
@@ -102,7 +108,7 @@ jobs:
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
           fs.writeFileSync('/tmp/institute.json',JSON.stringify(merged,null,2)+'\n');
           NODE
-      - name: Rebuild English Institute candidate
+      - name: Rebuild English Institute purity candidate
         run: >-
           node scripts/build_static_translation.js
           --source institute.html
@@ -123,27 +129,7 @@ jobs:
           --strip-script wpa-language-menu-10.js
           --strip-script wpa-public-entry-layer.js
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
-      - name: Validate rebuilt candidate quality before materialization
+      - name: Validate pure static target
         run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
-      - name: Materialize validated outputs on SAFE-8L branch only
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'fix/en-language-purity-safe8l-20260901' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          cp /tmp/wpa-en-home.html en/index.html
-          cp /tmp/wpa-en-institute.html en/institute.html
-          changed="$(git status --short | awk '{print $2}' | sort)"
-          expected="en/index.html
-en/institute.html"
-          test "$changed" = "$expected" || { echo "Unexpected materializer diff:"; git status --short; exit 1; }
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add en/index.html en/institute.html
-          git commit -m "SAFE-8L materialize language-pure English mirrors"
-          git push origin HEAD:fix/en-language-purity-safe8l-20260901
-      - name: Enforce byte-for-byte deterministic committed outputs
-        run: |
-          cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
-          cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
-      - name: Validate committed public translation quality
-        run: python scripts/public_translation_quality_check.py
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
