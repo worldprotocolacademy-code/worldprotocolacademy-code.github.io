@@ -183,6 +183,29 @@ function applyStaticTextContract(document, locale) {
   if (unused.length) throw new Error(`Unused _static_text contract entries: ${unused.join(' | ')}`);
 }
 
+function applyStaticCssContract(document, locale) {
+  const contract = get(locale, '_static_css');
+  if (!contract) return;
+  if (typeof contract !== 'object' || Array.isArray(contract)) throw new Error('_static_css must be an object');
+  const entries = Object.entries(contract);
+  for (const [source, replacement] of entries) {
+    if (!source) throw new Error('_static_css source must not be empty');
+    if (typeof replacement !== 'string') throw new Error(`_static_css replacement must be string: ${source}`);
+  }
+  const used = new Set();
+  document.querySelectorAll('style').forEach(style => {
+    let css = style.textContent || '';
+    for (const [source, replacement] of entries) {
+      if (!css.includes(source)) continue;
+      css = css.split(source).join(replacement);
+      used.add(source);
+    }
+    style.textContent = css;
+  });
+  const unused = entries.map(([source]) => source).filter(source => !used.has(source));
+  if (unused.length) throw new Error(`Unused _static_css contract entries: ${unused.join(' | ')}`);
+}
+
 function ensureMeta(document, selector, attrs) {
   let node = document.querySelector(selector);
   if (!node) {
@@ -324,6 +347,7 @@ function main() {
   document.documentElement.setAttribute('dir', args.dir);
   applyText(document, locale, missing);
   applyStaticTextContract(document, locale);
+  applyStaticCssContract(document, locale);
   applyMeta(document, locale, args.canonical);
   setCanonical(document, args.canonical);
   setBase(document, args.base);
