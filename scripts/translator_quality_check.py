@@ -1,302 +1,275 @@
 #!/usr/bin/env python3
-"""WPA translator, Final-50 canon and public-language activation validator."""
+"""WPA Final-50 canon and fail-closed public-language activation validator."""
 
 from pathlib import Path
+import hashlib
 import json
 import re
 import sys
-
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 LANGUAGE_ROUTE_RE = re.compile(r"/languages/([^/]+)/(?:index|institute)\.html", re.IGNORECASE)
 
 
-def read_text(relative_path: str) -> str:
-    return (REPO_ROOT / relative_path).read_text(encoding="utf-8")
+def read_text(path: str) -> str:
+    return (REPO_ROOT / path).read_text(encoding="utf-8")
 
 
-def read_json(relative_path: str):
-    return json.loads(read_text(relative_path))
+def read_json(path: str):
+    return json.loads(read_text(path))
+
+
+def git_blob_sha(path: str) -> str:
+    data = (REPO_ROOT / path).read_bytes()
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
 
 
 def non_public_language_routes(text: str, public_languages: set[str]) -> list[str]:
-    routes: list[str] = []
+    leaked = []
     for match in LANGUAGE_ROUTE_RE.finditer(text):
         code = str(match.group(1)).strip().lower()
         if code not in public_languages:
-            routes.append(match.group(0))
-    return sorted(set(routes))
+            leaked.append(match.group(0))
+    return sorted(set(leaked))
 
 
 def main() -> int:
     required_files = [
-        "index.html",
-        "institute.html",
-        "languages/index.html",
-        "languages/wpa-language-menu-10-core.js",
-        "sitemap.xml",
-        "translator-loader-v1.js",
-        "translator-loader-v2.js",
-        "translator-root-governance-v3.json",
-        "data/language-activation.json",
-        "data/language-canon-50.json",
-        "data/language-wave1-readiness.json",
-        "data/human-gates/fr.json",
-        "data/human-gates/fr-review-package.json",
+        "index.html", "institute.html", "languages/index.html",
+        "languages/wpa-language-menu-10-core.js", "sitemap.xml",
+        "translator-loader-v1.js", "translator-loader-v2.js",
+        "translator-root-governance-v3.json", "data/language-activation.json",
+        "data/language-canon-50.json", "data/language-wave1-readiness.json",
+        "data/human-gates/fr.json", "data/human-gates/fr-review-package.json",
         "data/human-gates/fr-review-evidence.json",
         "data/human-gates/fr-activation-preflight.json",
-        "data/languages.json",
-        "locales/manifest.json",
-        "languages/NEW_10_LANGUAGE_STATUS_v1.json",
+        "data/human-gates/fr-technical-gates.json", "data/languages.json",
+        "locales/manifest.json", "languages/NEW_10_LANGUAGE_STATUS_v1.json",
+        "languages/fr/index.html", "languages/fr/institute.html",
     ]
-
-    missing = [item for item in required_files if not (REPO_ROOT / item).exists()]
     errors: list[str] = []
+    for path in required_files:
+        if not (REPO_ROOT / path).exists():
+            errors.append(f"missing required file: {path}")
+    if errors:
+        return fail(errors)
 
-    if missing:
-        errors.extend(f"missing required file: {item}" for item in missing)
-    else:
-        activation = read_json("data/language-activation.json")
-        canon = read_json("data/language-canon-50.json")
-        readiness = read_json("data/language-wave1-readiness.json")
-        fr_gate = read_json("data/human-gates/fr.json")
-        fr_package = read_json("data/human-gates/fr-review-package.json")
-        fr_evidence = read_json("data/human-gates/fr-review-evidence.json")
-        fr_preflight = read_json("data/human-gates/fr-activation-preflight.json")
-        manifest = read_json("locales/manifest.json")
-        metadata = read_json("data/languages.json")
-        wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
+    activation = read_json("data/language-activation.json")
+    canon = read_json("data/language-canon-50.json")
+    readiness = read_json("data/language-wave1-readiness.json")
+    fr_gate = read_json("data/human-gates/fr.json")
+    fr_package = read_json("data/human-gates/fr-review-package.json")
+    fr_evidence = read_json("data/human-gates/fr-review-evidence.json")
+    fr_preflight = read_json("data/human-gates/fr-activation-preflight.json")
+    fr_technical = read_json("data/human-gates/fr-technical-gates.json")
+    manifest = read_json("locales/manifest.json")
+    metadata = read_json("data/languages.json")
+    wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
 
-        canonical_codes = [str(code).strip() for code in canon.get("canonical_codes", []) if str(code).strip()]
-        canonical_set = set(canonical_codes)
-        reserve_set = {str(code).strip() for code in canon.get("reserve_metadata_codes", []) if str(code).strip()}
-        alias_map = canon.get("aliases", {})
-        alias_set = set(alias_map.keys())
+    canonical_codes = [str(x).strip() for x in canon.get("canonical_codes", []) if str(x).strip()]
+    canonical_set = set(canonical_codes)
+    reserve_set = {str(x).strip() for x in canon.get("reserve_metadata_codes", []) if str(x).strip()}
+    alias_map = canon.get("aliases", {})
+    if canon.get("canon_count") != 50 or len(canonical_codes) != 50 or len(canonical_set) != 50:
+        errors.append("Final language canon must contain exactly 50 unique codes")
+    if canon.get("canonical_master") != "mk" or canon.get("canonical_mirror") != "en":
+        errors.append("Final canon must keep mk as master and en as mirror")
 
-        if canon.get("canon_count") != 50 or len(canonical_codes) != 50 or len(canonical_set) != 50:
-            errors.append("Final language canon must contain exactly 50 unique codes")
-        if canon.get("canonical_master") != "mk" or canon.get("canonical_mirror") != "en":
-            errors.append("Final canon must keep mk as master and en as mirror")
+    rollout = canon.get("rollout", {})
+    rollout_codes = []
+    for key in ("phase1_public", "wave1_existing_drafts", "wave2_planned", "wave3_planned", "wave4_planned"):
+        rollout_codes.extend(rollout.get(key, []))
+    if len(rollout_codes) != 50 or len(set(rollout_codes)) != 50 or set(rollout_codes) != canonical_set:
+        errors.append("Final-50 rollout must cover every canonical code exactly once")
 
-        rollout = canon.get("rollout", {})
-        rollout_codes = []
-        for key in ("phase1_public", "wave1_existing_drafts", "wave2_planned", "wave3_planned", "wave4_planned"):
-            rollout_codes.extend(rollout.get(key, []))
-        if len(rollout_codes) != 50 or len(set(rollout_codes)) != 50 or set(rollout_codes) != canonical_set:
-            errors.append("Final-50 rollout must cover every canonical code exactly once")
+    public_list = [str(x).strip().lower() for x in activation.get("public_languages", []) if str(x).strip()]
+    public_set = set(public_list)
+    if activation.get("policy_mode") != "fail_closed" or activation.get("unlisted_languages_public") is not False:
+        errors.append("activation registry must remain fail-closed")
+    if activation.get("canonical_master") != "mk" or activation.get("canonical_mirror") != "en":
+        errors.append("activation registry must keep MK master and EN mirror")
+    if public_list != ["mk", "en", "fr"]:
+        errors.append(f"public_languages must be exactly mk,en,fr after SAFE-8F; found {public_list}")
+    if activation.get("public_routes", {}).get("fr", {}).get("status") != "approved_public_pilot":
+        errors.append("French public route must be explicitly marked approved_public_pilot")
+    if activation.get("human_gate_required") is not True or activation.get("world_language_target_count") != 50:
+        errors.append("Human Gate and Final-50 activation invariants must remain enabled")
+    if activation.get("phase2_wave1_canonical", []) != rollout.get("wave1_existing_drafts", []):
+        errors.append("activation Wave-1 must match Final-50 Wave-1")
+    if activation.get("compatibility_aliases", {}).get("zh") != "zh-Hans" or alias_map.get("zh", {}).get("canonical_target") != "zh-Hans":
+        errors.append("legacy zh alias must resolve to zh-Hans")
 
-        public_languages = {
-            str(code).strip().lower()
-            for code in activation.get("public_languages", [])
-            if str(code).strip()
-        }
-        if activation.get("policy_mode") != "fail_closed":
-            errors.append("language activation registry must use fail_closed policy_mode")
-        if activation.get("unlisted_languages_public") is not False:
-            errors.append("unlisted languages must remain non-public by default")
-        if activation.get("canonical_master") != "mk" or activation.get("canonical_mirror") != "en":
-            errors.append("activation registry must keep mk as master and en mirror")
-        if public_languages != {"mk", "en"}:
-            errors.append(f"Phase 1 public_languages must be exactly mk,en; found {sorted(public_languages)}")
-        if activation.get("world_language_target_count") != 50:
-            errors.append("world_language_target_count must remain 50")
-        if activation.get("target_selection_status") != "final_50_canon_selected":
-            errors.append("activation registry must acknowledge the selected Final-50 canon")
-        if activation.get("final_canon_source") != "data/language-canon-50.json":
-            errors.append("activation registry must point to data/language-canon-50.json")
-        if activation.get("human_gate_required") is not True:
-            errors.append("human_gate_required must be true")
+    manifest_languages = manifest.get("supported_languages") or manifest.get("languages") or []
+    manifest_codes = [x.get("code") for x in manifest_languages if isinstance(x, dict) and x.get("code")]
+    if manifest_codes != canonical_codes:
+        errors.append("locales/manifest.json must exactly match Final-50 canonical order")
+    if manifest.get("canonical_language") != "mk" or manifest.get("mirror_language") != "en":
+        errors.append("manifest must keep MK canonical and EN mirror")
 
-        activation_wave1 = activation.get("phase2_wave1_canonical", [])
-        if activation_wave1 != rollout.get("wave1_existing_drafts", []):
-            errors.append("activation Wave-1 must exactly match Final-50 canon Wave-1")
-        if activation.get("compatibility_aliases", {}).get("zh") != "zh-Hans":
-            errors.append("legacy zh alias must resolve to canonical zh-Hans")
-        if alias_map.get("zh", {}).get("canonical_target") != "zh-Hans":
-            errors.append("Final canon zh alias must resolve to zh-Hans")
+    metadata_codes = {k for k in metadata.keys() if k != "_meta"}
+    allowed_metadata = canonical_set | reserve_set | set(alias_map.keys())
+    unknown = sorted(metadata_codes - allowed_metadata)
+    if unknown:
+        errors.append(f"metadata codes outside canon/reserve/aliases: {', '.join(unknown)}")
+    missing_reserve = sorted(reserve_set - metadata_codes)
+    if missing_reserve:
+        errors.append(f"reserve metadata missing: {', '.join(missing_reserve)}")
 
-        manifest_languages = manifest.get("supported_languages") or manifest.get("languages") or []
-        manifest_codes = [item.get("code") for item in manifest_languages if isinstance(item, dict) and item.get("code")]
-        if manifest_codes != canonical_codes:
-            errors.append("locales/manifest.json supported_languages must exactly match Final-50 canonical_codes in order")
-        if manifest.get("canonical_language") != "mk" or manifest.get("mirror_language") != "en":
-            errors.append("locales/manifest.json must keep mk canonical and en mirror")
+    rows = readiness.get("languages", [])
+    row_codes = [str(x.get("code", "")).strip() for x in rows]
+    if row_codes != rollout.get("wave1_existing_drafts", []):
+        errors.append("Wave-1 readiness order must match Final-50 Wave-1")
+    if readiness.get("public_boundary") != ["mk", "en", "fr"] or readiness.get("public_activation_authorized") is not True:
+        errors.append("Wave-1 readiness must record MK/EN/FR public boundary after SAFE-8F")
+    for row in rows:
+        code = str(row.get("code", "")).strip()
+        expected_ready = code == "fr"
+        if row.get("public_ready") is not expected_ready:
+            errors.append(f"Wave-1 {code} public_ready must be {expected_ready}")
+        for declared in ("draft_home", "draft_institute"):
+            path = str(row.get(declared, "")).lstrip("/")
+            if not path or not (REPO_ROOT / path).exists():
+                errors.append(f"Wave-1 {code} missing declared surface: {path or '[empty]'}")
+        if code == "ar" and row.get("direction") != "rtl":
+            errors.append("Arabic readiness must remain RTL")
+        if code != "ar" and row.get("direction") != "ltr":
+            errors.append(f"Wave-1 {code} must remain LTR")
+        if code == "zh-Hans" and row.get("legacy_route_code") != "zh":
+            errors.append("zh-Hans must preserve legacy zh route mapping")
 
-        metadata_codes = {key for key in metadata.keys() if key != "_meta"}
-        allowed_metadata_codes = canonical_set | reserve_set | alias_set
-        unknown_metadata = sorted(metadata_codes - allowed_metadata_codes)
-        if unknown_metadata:
-            errors.append(f"data/languages.json contains codes outside canon/reserve/aliases: {', '.join(unknown_metadata)}")
-        missing_reserve_metadata = sorted(reserve_set - metadata_codes)
-        if missing_reserve_metadata:
-            errors.append(f"reserve metadata codes missing from data/languages.json: {', '.join(missing_reserve_metadata)}")
+    if fr_gate.get("language") != "fr" or fr_gate.get("pilot") is not True:
+        errors.append("French Human Gate must identify FR pilot")
+    if fr_gate.get("public_activation_authorized") is not True or fr_gate.get("public_ready") is not True:
+        errors.append("French SAFE-8F gate must authorize public readiness")
+    if fr_gate.get("claim_boundary", {}).get("fr_canonical_language") is not False:
+        errors.append("French must not be labeled a canonical reference language")
 
-        readiness_languages = readiness.get("languages", [])
-        readiness_codes = [str(item.get("code", "")).strip() for item in readiness_languages]
-        if readiness.get("audit_scope") != "readiness_only_no_public_activation":
-            errors.append("Wave-1 readiness matrix must remain readiness-only")
-        if readiness.get("public_activation_authorized") is not False:
-            errors.append("Wave-1 readiness matrix must not authorize public activation")
-        if readiness.get("public_boundary") != ["mk", "en"]:
-            errors.append("Wave-1 readiness matrix must keep public boundary mk,en")
-        if readiness_codes != rollout.get("wave1_existing_drafts", []):
-            errors.append("Wave-1 readiness matrix must exactly match canonical Wave-1 order")
-        for item in readiness_languages:
-            code = str(item.get("code", "")).strip()
-            if item.get("public_ready") is not False:
-                errors.append(f"Wave-1 language {code} must remain public_ready=false until a dedicated Human Gate PR")
-            home = str(item.get("draft_home", "")).lstrip("/")
-            institute = str(item.get("draft_institute", "")).lstrip("/")
-            for path in (home, institute):
-                if not path or not (REPO_ROOT / path).exists():
-                    errors.append(f"Wave-1 language {code} is missing declared draft surface: {path or '[empty]'}")
-            if code == "ar" and item.get("direction") != "rtl":
-                errors.append("Arabic Wave-1 readiness must remain RTL")
-            if code != "ar" and item.get("direction") != "ltr":
-                errors.append(f"Wave-1 language {code} direction must remain ltr")
-            if code == "zh-Hans" and item.get("legacy_route_code") != "zh":
-                errors.append("zh-Hans readiness must preserve legacy zh route mapping until route normalization")
+    required_passes = (
+        "route_exists", "html_lang_direction", "self_canonical_present", "public_indexing_state",
+        "english_leftovers_removed_from_primary_copy", "canonical_wpa_identity_alignment",
+        "ai_assisted_french_linguistic_review", "ai_assisted_semantic_fidelity_review",
+        "ai_assisted_wpa_terminology_review", "review_candidate_provenance_locked",
+        "human_evidence_record_created", "human_authority_institutional_semantic_review",
+        "human_authority_wpa_terminology_acceptance", "technical_accessibility_responsive_review",
+        "technical_hreflang_design_review", "technical_route_fallback_smoke_test",
+        "activation_surface_semantic_revalidation", "activation_registry_authorization",
+        "public_navigation_authorization", "sitemap_authorization", "explicit_human_gate_approval",
+    )
+    for name in required_passes:
+        if fr_gate.get("checks", {}).get(name) != "pass":
+            errors.append(f"French SAFE-8F check must pass: {name}")
 
-        # French pilot: Human Authority approval may be recorded, but public activation remains blocked.
-        if fr_gate.get("language") != "fr" or fr_gate.get("pilot") is not True:
-            errors.append("French Human Gate record must identify fr as the pilot language")
-        if fr_gate.get("public_activation_authorized") is not False or fr_gate.get("public_ready") is not False:
-            errors.append("French pilot must remain non-public until remaining technical gates and activation PR are complete")
+    candidate = fr_package.get("candidate", {})
+    evidence_candidate = fr_evidence.get("reviewed_candidate", {})
+    old_commit = str(candidate.get("commit_sha", ""))
+    old_home = str(candidate.get("home", {}).get("blob_sha", ""))
+    old_inst = str(candidate.get("institute", {}).get("blob_sha", ""))
+    if old_commit != "20c04d97c515bcd2e33912649075b5f7690dca8b":
+        errors.append("SAFE-8D1 French review commit provenance changed")
+    if evidence_candidate.get("commit_sha") != old_commit or evidence_candidate.get("home_blob_sha") != old_home or evidence_candidate.get("institute_blob_sha") != old_inst:
+        errors.append("French review package/evidence provenance mismatch")
 
-        fr_checks = fr_gate.get("checks", {})
-        for check_name in (
-            "route_exists",
-            "html_lang_direction",
-            "self_canonical_present",
-            "draft_noindex",
-            "english_leftovers_removed_from_primary_copy",
-            "canonical_wpa_identity_alignment",
-            "machine_pre_review_editorial_hardening",
-            "ai_assisted_french_linguistic_review",
-            "ai_assisted_semantic_fidelity_review",
-            "ai_assisted_wpa_terminology_review",
-            "review_candidate_provenance_locked",
-            "human_evidence_record_created",
-            "human_authority_institutional_semantic_review",
-            "human_authority_wpa_terminology_acceptance",
-            "explicit_human_gate_approval",
-        ):
-            if fr_checks.get(check_name) != "pass":
-                errors.append(f"French pilot approved-stage check must pass: {check_name}")
+    current_home = git_blob_sha("languages/fr/index.html")
+    current_inst = git_blob_sha("languages/fr/institute.html")
+    expected_home = "e4dcadcbce290950e189d74d24f81d04ac546b44"
+    expected_inst = "6c442c26a7c908c414683315220486dacd33e873"
+    if current_home != expected_home or current_inst != expected_inst:
+        errors.append(f"SAFE-8F French activation blobs changed: {current_home}, {current_inst}")
+    for source in (fr_gate.get("activation_surfaces", {}), fr_package.get("activation_candidate", {}), fr_evidence.get("activation_candidate", {}), fr_technical.get("activation_candidate", {})):
+        if source.get("home_blob_sha") != expected_home or source.get("institute_blob_sha") != expected_inst:
+            errors.append("SAFE-8F activation provenance is inconsistent across governance records")
 
-        for check_name in (
-            "human_linguistic_review",
-            "human_wpa_terminology_review",
-            "institutional_legal_wording_review",
-            "accessibility_responsive_review",
-            "hreflang_review",
-            "route_fallback_smoke_test",
-        ):
-            if fr_checks.get(check_name) != "pending":
-                errors.append(f"French pilot non-activation check must remain pending: {check_name}")
+    authority = fr_evidence.get("human_authority", {})
+    package_authority = fr_package.get("human_authority_declaration", {})
+    if authority.get("name") != "Sande Smiljanov" or authority.get("review_date") != "2026-09-01":
+        errors.append("French Human Authority identity/date evidence changed")
+    if authority.get("declaration") != "Го одобрувам SAFE-8D1 French locked candidate како Human Authority.":
+        errors.append("French Human Authority declaration changed")
+    for name in ("institutional_semantic_review", "wpa_terminology_acceptance", "explicit_human_gate_approval"):
+        if authority.get(name) != "pass":
+            errors.append(f"French Human Authority evidence must pass: {name}")
+    if package_authority.get("reviewer_name") != authority.get("name") or package_authority.get("reviewed_candidate_commit_sha") != old_commit:
+        errors.append("French package Human Authority provenance mismatch")
 
-        candidate = fr_package.get("candidate", {})
-        evidence_candidate = fr_evidence.get("reviewed_candidate", {})
-        candidate_commit = str(candidate.get("commit_sha", ""))
-        home_blob = str(candidate.get("home", {}).get("blob_sha", ""))
-        institute_blob = str(candidate.get("institute", {}).get("blob_sha", ""))
-        if not candidate_commit or not home_blob or not institute_blob:
-            errors.append("French review package must lock candidate commit and both HTML blob SHAs")
-        if fr_gate.get("review_candidate_commit_sha") != candidate_commit:
-            errors.append("French gate candidate SHA must match review package")
-        if evidence_candidate.get("commit_sha") != candidate_commit:
-            errors.append("French evidence candidate SHA must match review package")
-        if evidence_candidate.get("home_blob_sha") != home_blob or evidence_candidate.get("institute_blob_sha") != institute_blob:
-            errors.append("French evidence HTML blob SHAs must match review package")
+    for name in ("accessibility_responsive_review", "hreflang_design_review", "route_fallback_smoke_test"):
+        if fr_evidence.get("remaining_technical_checks", {}).get(name) != "pass":
+            errors.append(f"French activation technical alias must pass: {name}")
+    if fr_technical.get("all_three_technical_gates_evidenced") is not True or fr_technical.get("public_ready") is not True:
+        errors.append("French technical evidence must be complete and public-ready")
+    if fr_preflight.get("activation_allowed") is not True or fr_preflight.get("mode") != "activation_candidate":
+        errors.append("French preflight must explicitly allow SAFE-8F activation candidate")
+    if any(value is not False for value in fr_preflight.get("blocked_changes", {}).values()):
+        errors.append("SAFE-8F public changes must be unblocked only for French activation candidate")
 
-        authority = fr_evidence.get("human_authority", {})
-        package_authority = fr_package.get("human_authority_declaration", {})
-        if authority.get("name") != "Sande Smiljanov":
-            errors.append("French Human Authority evidence must identify Sande Smiljanov")
-        if not str(authority.get("role_or_authority_basis", "")).strip():
-            errors.append("French Human Authority evidence must include authority basis")
-        if authority.get("review_date") != "2026-09-01":
-            errors.append("French Human Authority review date must be 2026-09-01")
-        if authority.get("reviewed_candidate_commit_sha") != candidate_commit:
-            errors.append("French Human Authority approval must target the exact locked candidate")
-        for check_name in ("institutional_semantic_review", "wpa_terminology_acceptance", "explicit_human_gate_approval"):
-            if authority.get(check_name) != "pass":
-                errors.append(f"French Human Authority evidence must pass: {check_name}")
-        if authority.get("declaration") != "Го одобрувам SAFE-8D1 French locked candidate како Human Authority.":
-            errors.append("French Human Authority declaration does not match the recorded user approval")
-        if package_authority.get("reviewer_name") != authority.get("name"):
-            errors.append("French review package and evidence must identify the same Human Authority")
-        if package_authority.get("reviewed_candidate_commit_sha") != candidate_commit:
-            errors.append("French review package Human Authority candidate must match locked candidate")
-        if package_authority.get("institutional_semantic_review") != "pass" or package_authority.get("wpa_terminology_review") != "pass" or package_authority.get("explicit_human_gate_approval") != "pass":
-            errors.append("French review package must record Human Authority semantic, terminology and explicit approval passes")
+    for path in ("languages/fr/index.html", "languages/fr/institute.html"):
+        text = read_text(path)
+        if '<html lang="fr" dir="ltr">' not in text:
+            errors.append(f"French public surface lang/dir invalid: {path}")
+        if '<meta name="robots" content="index,follow">' not in text:
+            errors.append(f"French public surface must be index,follow: {path}")
+        if "Public pilot" not in text or "pilote public approuvé" not in text:
+            errors.append(f"French public-pilot disclosure missing: {path}")
+        if "Translation draft" in text or "Révision humaine requise" in text:
+            errors.append(f"obsolete French draft disclosure remains: {path}")
+        if "Editorial process, calls, policies, topic candidates and human review." in text:
+            errors.append(f"known English residue remains: {path}")
 
-        remaining = fr_evidence.get("remaining_technical_checks", {})
-        for check_name in ("accessibility_responsive_review", "hreflang_design_review", "route_fallback_smoke_test"):
-            if remaining.get(check_name) != "pending":
-                errors.append(f"French remaining technical check must stay pending before activation: {check_name}")
-        if fr_preflight.get("activation_allowed") is not False or fr_preflight.get("mode") != "dry_run_only":
-            errors.append("French activation preflight must remain dry-run-only and activation_allowed=false")
-        if fr_preflight.get("blocking_state") != "awaiting_remaining_technical_checks":
-            errors.append("French activation preflight must wait on remaining technical checks")
-        blocked = fr_preflight.get("blocked_changes", {})
-        for key in ("remove_noindex", "add_hreflang", "add_to_sitemap", "add_to_public_navigation", "add_to_activation_registry_public_languages", "set_public_ready_true"):
-            if blocked.get(key) is not True:
-                errors.append(f"French activation change must remain blocked: {key}")
+    hub = read_text("languages/index.html")
+    sitemap = read_text("sitemap.xml")
+    core = read_text("languages/wpa-language-menu-10-core.js")
+    if 'href="/languages/fr/"' not in hub or 'href="/languages/fr/institute.html"' not in hub:
+        errors.append("Languages Hub must expose the approved French public pilot")
+    for surface_name, surface_text in (("languages/index.html", hub), ("sitemap.xml", sitemap)):
+        leaked = non_public_language_routes(surface_text, public_set)
+        if leaked:
+            errors.append(f"{surface_name} exposes non-public language routes: {', '.join(leaked)}")
+    for code in ("zh", "ru", "hi", "af", "ar", "de", "it", "sq", "sr"):
+        if f'href="/languages/{code}/' in hub:
+            errors.append(f"Languages Hub leaks non-public Wave-1 route: {code}")
 
-        for fr_path in ("languages/fr/index.html", "languages/fr/institute.html"):
-            fr_text = read_text(fr_path)
-            if '<html lang="fr" dir="ltr">' not in fr_text:
-                errors.append(f"French pilot has invalid lang/direction markup: {fr_path}")
-            if '<meta name="robots" content="noindex,follow">' not in fr_text:
-                errors.append(f"French pilot must remain noindex until dedicated activation PR: {fr_path}")
-            if "Translation draft" not in fr_text or "Révision humaine" not in fr_text:
-                errors.append(f"French pilot must visibly retain draft/human-review disclosure: {fr_path}")
-            if "Editorial process, calls, policies, topic candidates and human review." in fr_text:
-                errors.append(f"French pilot still contains known English Journal-card residue: {fr_path}")
+    for marker in ("const PUBLIC_LANGS", "function isDraftRoute", "PUBLIC_LANGS.map", "if (isDraftRoute(opt.value)) opt.remove()"):
+        if marker not in core:
+            errors.append(f"language core lost fail-closed runtime guard: {marker}")
+    if 'code:"en", label:"🇬🇧 English", home:"/en/", institute:"/institute.html", canonical:true' not in core:
+        errors.append("English Institute target is not pinned to canonical bilingual Institute")
 
-        hub = read_text("languages/index.html")
-        sitemap = read_text("sitemap.xml")
-        core = read_text("languages/wpa-language-menu-10-core.js")
-        for surface_name, surface_text in (("languages/index.html", hub), ("sitemap.xml", sitemap)):
-            leaked = non_public_language_routes(surface_text, public_languages)
-            if leaked:
-                errors.append(f"{surface_name} exposes non-public language routes: {', '.join(leaked)}")
+    if 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' not in sitemap:
+        errors.append("sitemap must enable xhtml hreflang alternates")
+    for lang in ("mk", "en", "fr", "x-default"):
+        if f'hreflang="{lang}"' not in sitemap:
+            errors.append(f"sitemap missing Home hreflang: {lang}")
+    if "https://worldprotocolacademy.mk/languages/fr/institute.html" not in sitemap:
+        errors.append("French Institute public route missing from sitemap")
 
-        runtime_contract = (
-            "const PUBLIC_LANGS",
-            "function isDraftRoute",
-            "PUBLIC_LANGS.map",
-            "if (isDraftRoute(opt.value)) opt.remove()",
-        )
-        for marker in runtime_contract:
-            if marker not in core:
-                errors.append(f"language core is missing Phase 1 guard: {marker}")
-        if 'code:"en", label:"🇬🇧 English", home:"/en/", institute:"/institute.html", canonical:true' not in core:
-            errors.append("English Institute target is not pinned to the canonical bilingual Institute surface")
-
-        if wave1_status.get("canonical_languages") != ["mk", "en"]:
-            errors.append("Phase 2 wave-1 status must keep mk,en as canonical_languages")
-        wave1_draft_codes = []
-        for item in wave1_status.get("new_languages", []):
-            code = str(item.get("code", "")).strip()
-            if code:
-                wave1_draft_codes.append("zh-Hans" if code == "zh" else code)
-            status = str(item.get("status", "")).lower()
-            if "pending human review" not in status:
-                errors.append(f"wave-1 language {item.get('code')} is missing pending-human-review status")
-        if wave1_draft_codes != rollout.get("wave1_existing_drafts", []):
-            errors.append("legacy Wave-1 draft package must resolve exactly to canonical Wave-1")
+    if wave1_status.get("canonical_languages") != ["mk", "en"] or wave1_status.get("public_pilot_languages") != ["fr"]:
+        errors.append("Wave-1 status must keep MK/EN canonical and FR as sole public pilot")
+    resolved_codes = []
+    for item in wave1_status.get("new_languages", []):
+        code = str(item.get("code", "")).strip()
+        if code:
+            resolved_codes.append("zh-Hans" if code == "zh" else code)
+        status = str(item.get("status", "")).lower()
+        if code == "fr":
+            if "approved public pilot" not in status:
+                errors.append("French Wave-1 status must be approved public pilot")
+        elif "pending human review" not in status:
+            errors.append(f"Wave-1 {code} must remain pending human review")
+    if resolved_codes != rollout.get("wave1_existing_drafts", []):
+        errors.append("legacy Wave-1 status must resolve exactly to Final-50 Wave-1")
 
     if errors:
-        print("WPA Translator Quality Check failed.")
-        for item in errors:
-            print(f"- {item}")
-        return 1
-
+        return fail(errors)
     print("WPA Translator Quality Check passed.")
-    print("Final-50 canon aligned; French Human Authority approved but still non-public pending technical gates; Phase 1 remains MK + EN only.")
+    print("Final-50 canon preserved; MK/EN remain canonical; French is the sole approved public Wave-1 pilot; all other languages remain fail-closed.")
     return 0
+
+
+def fail(errors: list[str]) -> int:
+    print("WPA Translator Quality Check failed.")
+    for item in errors:
+        print(f"- {item}")
+    return 1
 
 
 if __name__ == "__main__":
