@@ -1,7 +1,9 @@
-/* WPA Public Language Router v2.0
+/* WPA Public Language Router v2.1
    Activation authority: /data/language-activation.json only.
    Metadata catalogue: /data/languages.json (labels/direction only; never activation).
    Public pages are prebuilt static HTML. This router never translates page content.
+   SAFE-8L: bounded visibility rules may suppress source-language duplicate identity
+   elements on static mirrors; they do not create or translate canonical content.
 */
 (function(){
   "use strict";
@@ -12,6 +14,7 @@
   var LEGACY_READ_KEYS = ["WPA_LANG_V6", "wpa_lang", "wpa_language", "wpa-lang"];
   var MENU_CLASS = "wpa-public-language-router-v2";
   var STYLE_ID = "wpa-public-language-router-v2-style";
+  var VISIBILITY_STYLE_ID = "wpa-public-language-visibility-v21";
 
   function normalisePath(){
     return String(window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -22,6 +25,27 @@
     var path = normalisePath().toLowerCase();
     if (page === "institute" || /(?:^|\/)institute(?:\.html)?$/.test(path)) return "institute";
     return "home";
+  }
+
+  function installStaticLanguageVisibility(){
+    var lang = String(document.documentElement.getAttribute("lang") || "").toLowerCase();
+    if (lang !== "en" && lang.indexOf("en-") !== 0) return;
+    if (document.getElementById(VISIBILITY_STYLE_ID)) return;
+    var style = document.createElement("style");
+    style.id = VISIBILITY_STYLE_ID;
+    style.setAttribute("data-wpa-bounded-ui", "english-source-duplicate-suppression");
+    style.textContent = [
+      'html[lang="en"] .wpa-test-phase-header .wpa-name-mk{display:none!important}',
+      'html[lang="en"] .wpa-test-phase-header .wpa-inst-mk{display:none!important}',
+      'html[lang="en"] .wpa-test-phase-header .wpa-platform-mk{display:none!important}',
+      'html[lang="en"] .wpa-test-phase-header .wpa-status-mk{display:none!important}',
+      'html[lang="en"] .announce .wpa-brand-mk{display:none!important}',
+      'html[lang="en"] header .brand-text .wpa-brand-mk{display:none!important}',
+      'html[lang="en"] .hero h2 em{display:none!important}',
+      'html[lang="en"] .wpa-institute-name-mk{display:none!important}',
+      'html[lang="en"] body::before{content:"WPA • TEST PHASE 2026"!important}'
+    ].join("\n");
+    document.head.appendChild(style);
   }
 
   function currentLanguage(registry){
@@ -247,7 +271,7 @@
       buildPublicMenu(registry, catalog);
       reconcileSelects(registry, catalog);
       window.WPAPublicLanguageRouter = Object.freeze({
-        version:"2.0",
+        version:"2.1",
         activationAuthority:REGISTRY_URL,
         canonicalUiKey:CANONICAL_UI_KEY,
         storedLanguageBeforeInit:stored,
@@ -258,11 +282,12 @@
       document.dispatchEvent(new CustomEvent("wpa:public-language-router-ready", {detail:window.WPAPublicLanguageRouter}));
     } catch (error) {
       buildFailClosedMenu(error && error.message ? error.message : String(error));
-      window.WPAPublicLanguageRouter = Object.freeze({version:"2.0", activationAuthority:REGISTRY_URL, canonicalUiKey:CANONICAL_UI_KEY, state:"fail_closed"});
+      window.WPAPublicLanguageRouter = Object.freeze({version:"2.1", activationAuthority:REGISTRY_URL, canonicalUiKey:CANONICAL_UI_KEY, state:"fail_closed"});
       document.dispatchEvent(new CustomEvent("wpa:public-language-router-failed", {detail:{message:String(error)}}));
     }
   }
 
+  installStaticLanguageVisibility();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
   else init();
 })();
