@@ -21,6 +21,8 @@ function usage(code = 0) {
     `Optional:\n` +
     `  --dir <ltr|rtl>      document direction (default ltr)\n` +
     `  --base <url>         optional <base href> value\n` +
+    `  --root-relative-links true  prefix local relative href/src/action values with /; fragment-only links are preserved\n` +
+    `  --rewrite-link <from=to> exact href rewrite; repeatable\n` +
     `  --strip-script <s>   remove script src containing substring; repeatable\n` +
     `  --append-script <s>  append one target-language runtime script; repeatable\n` +
     `  --remove-selector <css> remove elements before output; repeatable\n` +
@@ -31,7 +33,7 @@ function usage(code = 0) {
 }
 
 function parseArgs(argv) {
-  const out = { stripScript: [], appendScript: [], removeSelector: [] };
+  const out = { stripScript: [], appendScript: [], removeSelector: [], rewriteLink: [] };
   for (let i = 2; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--help') usage(0);
@@ -42,6 +44,7 @@ function parseArgs(argv) {
     if (key === 'strip-script') out.stripScript.push(value);
     else if (key === 'append-script') out.appendScript.push(value);
     else if (key === 'remove-selector') out.removeSelector.push(value);
+    else if (key === 'rewrite-link') out.rewriteLink.push(value);
     else out[key] = value;
   }
   for (const key of ['source', 'locale', 'lang', 'canonical', 'output']) {
@@ -53,6 +56,7 @@ function parseArgs(argv) {
   out.dir = out.dir || 'ltr';
   if (!['ltr', 'rtl'].includes(out.dir)) throw new Error(`Invalid --dir ${out.dir}`);
   out.singleH1 = String(out['single-h1'] || '').toLowerCase() === 'true';
+  out.rootRelativeLinks = String(out['root-relative-links'] || '').toLowerCase() === 'true';
   return out;
 }
 
@@ -237,6 +241,34 @@ function setBase(document, href) {
   document.head.prepend(node);
 }
 
+function isExternalOrSpecial(value) {
+  return /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(value);
+}
+
+function normaliseLocalReferences(document, enabled) {
+  if (!enabled) return;
+  const specs = [['a','href'], ['link','href'], ['script','src'], ['img','src'], ['source','src'], ['form','action']];
+  for (const [tag, attr] of specs) {
+    document.querySelectorAll(`${tag}[${attr}]`).forEach(node => {
+      const value = String(node.getAttribute(attr) || '').trim();
+      if (!value || value.startsWith('/') || value.startsWith('#') || value.startsWith('?') || isExternalOrSpecial(value)) return;
+      node.setAttribute(attr, '/' + value.replace(/^\.\//, ''));
+    });
+  }
+}
+
+function rewriteExactLinks(document, rules) {
+  for (const spec of rules) {
+    const idx = spec.indexOf('=');
+    if (idx < 1) throw new Error(`Invalid --rewrite-link ${spec}; expected from=to`);
+    const from = spec.slice(0, idx);
+    const to = spec.slice(idx + 1);
+    document.querySelectorAll('a[href]').forEach(node => {
+      if (node.getAttribute('href') === from) node.setAttribute('href', to);
+    });
+  }
+}
+
 function removeRuntime(document, stripScripts, removeSelectors) {
   for (const needle of stripScripts) {
     document.querySelectorAll('script[src]').forEach(node => {
@@ -295,6 +327,8 @@ function main() {
   applyMeta(document, locale, args.canonical);
   setCanonical(document, args.canonical);
   setBase(document, args.base);
+  normaliseLocalReferences(document, args.rootRelativeLinks);
+  rewriteExactLinks(document, args.rewriteLink);
   removeRuntime(document, args.stripScript, args.removeSelector);
   appendRuntime(document, args.appendScript);
   enforceSingleH1(document, args.singleH1);
