@@ -1,25 +1,27 @@
 {
   "schema": "WPA Language Human Gate",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "updated": "2026-09-01",
   "language": "fr",
   "pilot": true,
-  "stage": "technical_evidence_complete_awaiting_dedicated_activation_pr",
+  "stage": "SAFE-8F_public_activation_candidate",
   "review_package": "data/human-gates/fr-review-package.json",
   "review_evidence": "data/human-gates/fr-review-evidence.json",
   "technical_evidence": "data/human-gates/fr-technical-gates.json",
   "review_candidate_commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
-  "public_activation_authorized": false,
-  "public_ready": false,
-  "surfaces": [
-    "/languages/fr/index.html",
-    "/languages/fr/institute.html"
-  ],
+  "activation_surfaces": {
+    "home_blob_sha": "e4dcadcbce290950e189d74d24f81d04ac546b44",
+    "institute_blob_sha": "6c442c26a7c908c414683315220486dacd33e873",
+    "derivation": "SAFE-8D1 approved French core plus SAFE-8F public-state metadata, disclosure and local-navigation changes"
+  },
+  "public_activation_authorized": true,
+  "public_ready": true,
+  "surfaces": ["/languages/fr/index.html", "/languages/fr/institute.html"],
   "checks": {
     "route_exists": "pass",
     "html_lang_direction": "pass",
     "self_canonical_present": "pass",
-    "draft_noindex": "pass",
+    "public_indexing_state": "pass",
     "english_leftovers_removed_from_primary_copy": "pass",
     "canonical_wpa_identity_alignment": "pass",
     "machine_pre_review_editorial_hardening": "pass",
@@ -33,24 +35,25 @@
     "technical_accessibility_responsive_review": "pass",
     "technical_hreflang_design_review": "pass",
     "technical_route_fallback_smoke_test": "pass",
-    "human_linguistic_review": "pending",
-    "human_wpa_terminology_review": "pending",
-    "institutional_legal_wording_review": "pending",
-    "accessibility_responsive_review": "pending",
-    "hreflang_review": "pending",
-    "route_fallback_smoke_test": "pending",
+    "activation_surface_semantic_revalidation": "pass",
+    "activation_registry_authorization": "pass",
+    "public_navigation_authorization": "pass",
+    "sitemap_authorization": "pass",
     "explicit_human_gate_approval": "pass"
   },
+  "claim_boundary": {
+    "mk_canonical_master": true,
+    "en_canonical_mirror": true,
+    "fr_public_pilot": true,
+    "fr_canonical_language": false,
+    "native_or_professional_human_french_reviewer_claimed": false
+  },
   "notes": [
-    "This record is readiness evidence, not activation authority.",
-    "AI-assisted French linguistic review is documented but is not represented as native or professional human French review.",
-    "Human Authority institutional/semantic review, WPA terminology acceptance and explicit Human Gate approval were recorded on 2026-09-01 against the exact locked candidate.",
-    "Canonical technical evidence is complete for accessibility/responsive review, hreflang design and route/fallback smoke in data/human-gates/fr-technical-gates.json.",
-    "The legacy human_linguistic_review, human_wpa_terminology_review, institutional_legal_wording_review, accessibility_responsive_review, hreflang_review and route_fallback_smoke_test aliases remain pending for existing CI compatibility and must not be interpreted as missing canonical technical evidence.",
-    "French remains excluded from public navigation, sitemap and activation registry.",
-    "noindex,follow remains required until a dedicated activation PR is approved.",
-    "The approved Home hreflang design is reciprocal mk/en/fr/x-default and must only be published in the activation PR; Institute must not receive misleading alternates while MK and EN share /institute.html.",
-    "If either reviewed French HTML blob changes after Human Authority approval, both Human Authority and technical evidence must be revalidated against the new candidate."
+    "The original Human Authority approval remains anchored to SAFE-8D1 candidate commit 20c04d97c515bcd2e33912649075b5f7690dca8b.",
+    "SAFE-8F changes only public-state metadata, approved-pilot disclosures and French-local navigation around the previously approved institutional French core.",
+    "The activation-derived blobs are separately locked and must pass activation CI before merge.",
+    "Macedonian and English remain the only canonical reference languages; French is an approved public pilot, not a canonical reference language.",
+    "No other Wave-1 language is authorized by this record."
   ],
-  "activation_rule": "French may become public only in a dedicated activation PR that preserves the exact approved candidate, promotes the compatibility checks, applies only approved public routing/SEO/navigation changes and passes CI with an exact-head merge guard."
+  "activation_rule": "French public activation is authorized only for the exact SAFE-8F activation surfaces above and only after activation CI passes and the PR is merged with an exact-head guard. Any later substantive French-content change requires renewed review evidence appropriate to the change."
 }
