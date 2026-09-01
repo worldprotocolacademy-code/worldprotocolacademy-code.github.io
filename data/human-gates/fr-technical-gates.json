@@ -1,18 +1,23 @@
 {
   "schema": "WPA French Technical Gate Evidence",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8E1",
+  "stage": "SAFE-8E2",
   "purpose": "technical_validation_only_no_public_activation",
-  "validation_state": "final_parser_fixed_recheck_pending",
+  "validation_state": "technical_gates_passed_awaiting_dedicated_activation_pr",
   "reviewed_candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
     "home_blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4",
     "institute_blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
   },
+  "validation_method": {
+    "workflow": ".github/workflows/fr-technical-gates.yml",
+    "evidence_pr": 214,
+    "finalization_rule": "This SAFE-8E2 PR must rerun the same French Technical Gates workflow successfully against these PASS records before merge."
+  },
   "accessibility_responsive_review": {
-    "status": "pending_ci_validation",
+    "status": "pass",
     "scope": [
       "html lang and direction",
       "viewport metadata",
@@ -22,7 +27,8 @@
       "no horizontal document overflow at 1440x900 desktop viewport",
       "French draft noindex disclosure retained"
     ],
-    "note": "This is a focused release gate, not a claim of full WCAG conformance certification."
+    "tested_viewports": ["390x844", "1440x900"],
+    "note": "Focused automated browser release gate only; this is not a claim of full WCAG conformance certification."
   },
   "hreflang_design_review": {
     "status": "pass",
@@ -40,7 +46,7 @@
     "reason": "The design preserves reciprocal language relationships where stable distinct Home URLs exist and avoids claiming distinct Institute alternates that do not yet exist."
   },
   "route_fallback_smoke_test": {
-    "status": "pending_ci_validation",
+    "status": "pass",
     "direct_routes": [
       "/languages/fr/",
       "/languages/fr/institute.html"
@@ -64,5 +70,5 @@
     "add fr to activation-registry public_languages",
     "set French public_ready true"
   ],
-  "activation_rule": "This evidence file cannot activate French. Technical PASS only permits preparation of a later dedicated French activation PR."
+  "activation_rule": "Technical gates are complete, but this evidence file cannot activate French. Public activation requires a later dedicated one-language activation PR with exact-candidate verification, CI and exact-head merge guard."
 }
