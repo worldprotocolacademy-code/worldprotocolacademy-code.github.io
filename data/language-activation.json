@@ -1,6 +1,6 @@
 {
   "schema": "WPA Public Language Activation Registry",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "policy_mode": "fail_closed",
   "canonical_master": "mk",
@@ -20,11 +20,14 @@
     }
   },
   "world_language_target_count": 50,
-  "target_selection_status": "reconciliation_required_before_phase2_activation",
+  "target_selection_status": "final_50_canon_selected",
+  "final_canon_source": "data/language-canon-50.json",
+  "translator_manifest_source": "locales/manifest.json",
+  "metadata_catalog_source": "data/languages.json",
   "human_gate_required": true,
   "unlisted_languages_public": false,
-  "phase2_wave1_drafts": [
-    "zh",
+  "phase2_wave1_canonical": [
+    "zh-Hans",
     "ru",
     "hi",
     "af",
@@ -35,14 +38,20 @@
     "sq",
     "sr"
   ],
+  "compatibility_aliases": {
+    "zh": "zh-Hans"
+  },
   "source_inventories": {
     "metadata_registry": "data/languages.json",
     "translator_manifest": "locales/manifest.json",
-    "draft_status": "languages/NEW_10_LANGUAGE_STATUS_v1.json"
+    "draft_status": "languages/NEW_10_LANGUAGE_STATUS_v1.json",
+    "final_canon": "data/language-canon-50.json"
   },
-  "reconciliation": {
-    "required": true,
-    "reason": "Existing language inventories differ in count and membership. Preserve them until the final 50-language target set is reconciled through the Human Gate.",
+  "alignment": {
+    "required": false,
+    "status": "aligned_to_final_50_canon",
+    "metadata_policy": "data/languages.json is a superset metadata catalog; entries must resolve to canonical, reserve or compatibility-alias codes and do not imply public activation.",
+    "wave1_policy": "The existing zh draft route is retained as a compatibility alias for canonical zh-Hans until a separately reviewed route migration.",
     "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
   }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""WPA translator and public-language activation boundary validator."""
+"""WPA translator, Final-50 canon and public-language activation validator."""
 
 from pathlib import Path
 import json
@@ -22,14 +22,10 @@ def read_json(relative_path: str):
 def non_public_language_routes(text: str, public_languages: set[str]) -> list[str]:
     routes: list[str] = []
     for match in LANGUAGE_ROUTE_RE.finditer(text):
-        code = StringLike(match.group(1)).lower()
+        code = str(match.group(1)).strip().lower()
         if code not in public_languages:
             routes.append(match.group(0))
     return sorted(set(routes))
-
-
-class StringLike(str):
-    """Tiny normalization helper kept local to avoid broad dependencies."""
 
 
 def main() -> int:
@@ -43,6 +39,7 @@ def main() -> int:
         "translator-loader-v2.js",
         "translator-root-governance-v3.json",
         "data/language-activation.json",
+        "data/language-canon-50.json",
         "data/languages.json",
         "locales/manifest.json",
         "languages/NEW_10_LANGUAGE_STATUS_v1.json",
@@ -55,40 +52,83 @@ def main() -> int:
         errors.extend(f"missing required file: {item}" for item in missing)
     else:
         activation = read_json("data/language-activation.json")
+        canon = read_json("data/language-canon-50.json")
+        manifest = read_json("locales/manifest.json")
+        metadata = read_json("data/languages.json")
+        wave1_status = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
+
+        canonical_codes = [str(code).strip() for code in canon.get("canonical_codes", []) if str(code).strip()]
+        canonical_set = set(canonical_codes)
+        reserve_set = {str(code).strip() for code in canon.get("reserve_metadata_codes", []) if str(code).strip()}
+        alias_map = canon.get("aliases", {})
+        alias_set = set(alias_map.keys())
+
+        if canon.get("canon_count") != 50 or len(canonical_codes) != 50 or len(canonical_set) != 50:
+            errors.append("Final language canon must contain exactly 50 unique codes")
+        if canon.get("canonical_master") != "mk" or canon.get("canonical_mirror") != "en":
+            errors.append("Final canon must keep mk as master and en as mirror")
+
+        rollout = canon.get("rollout", {})
+        rollout_codes = []
+        for key in ("phase1_public", "wave1_existing_drafts", "wave2_planned", "wave3_planned", "wave4_planned"):
+            rollout_codes.extend(rollout.get(key, []))
+        if len(rollout_codes) != 50 or len(set(rollout_codes)) != 50 or set(rollout_codes) != canonical_set:
+            errors.append("Final-50 rollout must cover every canonical code exactly once")
+
         public_languages = {
             str(code).strip().lower()
             for code in activation.get("public_languages", [])
             if str(code).strip()
         }
-
         if activation.get("policy_mode") != "fail_closed":
             errors.append("language activation registry must use fail_closed policy_mode")
         if activation.get("unlisted_languages_public") is not False:
             errors.append("unlisted languages must remain non-public by default")
-        if activation.get("canonical_master") != "mk":
-            errors.append("canonical_master must be mk")
-        if activation.get("canonical_mirror") != "en":
-            errors.append("canonical_mirror must be en")
+        if activation.get("canonical_master") != "mk" or activation.get("canonical_mirror") != "en":
+            errors.append("activation registry must keep mk as master and en as mirror")
         if public_languages != {"mk", "en"}:
             errors.append(f"Phase 1 public_languages must be exactly mk,en; found {sorted(public_languages)}")
         if activation.get("world_language_target_count") != 50:
             errors.append("world_language_target_count must remain 50")
+        if activation.get("target_selection_status") != "final_50_canon_selected":
+            errors.append("activation registry must acknowledge the selected Final-50 canon")
+        if activation.get("final_canon_source") != "data/language-canon-50.json":
+            errors.append("activation registry must point to data/language-canon-50.json")
         if activation.get("human_gate_required") is not True:
             errors.append("human_gate_required must be true")
+
+        activation_wave1 = activation.get("phase2_wave1_canonical", [])
+        if activation_wave1 != rollout.get("wave1_existing_drafts", []):
+            errors.append("activation Wave-1 must exactly match Final-50 canon Wave-1")
+        if activation.get("compatibility_aliases", {}).get("zh") != "zh-Hans":
+            errors.append("legacy zh alias must resolve to canonical zh-Hans")
+        if alias_map.get("zh", {}).get("canonical_target") != "zh-Hans":
+            errors.append("Final canon zh alias must resolve to zh-Hans")
+
+        manifest_languages = manifest.get("supported_languages") or manifest.get("languages") or []
+        manifest_codes = [item.get("code") for item in manifest_languages if isinstance(item, dict) and item.get("code")]
+        if manifest_codes != canonical_codes:
+            errors.append("locales/manifest.json supported_languages must exactly match Final-50 canonical_codes in order")
+        if manifest.get("canonical_language") != "mk" or manifest.get("mirror_language") != "en":
+            errors.append("locales/manifest.json must keep mk canonical and en mirror")
+
+        metadata_codes = {key for key in metadata.keys() if key != "_meta"}
+        allowed_metadata_codes = canonical_set | reserve_set | alias_set
+        unknown_metadata = sorted(metadata_codes - allowed_metadata_codes)
+        if unknown_metadata:
+            errors.append(f"data/languages.json contains codes outside canon/reserve/aliases: {', '.join(unknown_metadata)}")
+        missing_reserve_metadata = sorted(reserve_set - metadata_codes)
+        if missing_reserve_metadata:
+            errors.append(f"reserve metadata codes missing from data/languages.json: {', '.join(missing_reserve_metadata)}")
 
         hub = read_text("languages/index.html")
         sitemap = read_text("sitemap.xml")
         core = read_text("languages/wpa-language-menu-10-core.js")
-
-        # Fail closed: any direct /languages/<code>/ page is non-public unless
-        # the code is explicitly approved in the activation registry.
         for surface_name, surface_text in (("languages/index.html", hub), ("sitemap.xml", sitemap)):
             leaked = non_public_language_routes(surface_text, public_languages)
             if leaked:
                 errors.append(f"{surface_name} exposes non-public language routes: {', '.join(leaked)}")
 
-        # Shared runtime must still render only canonical languages and actively
-        # strip the currently retained draft routes from legacy selectors.
         runtime_contract = (
             "const PUBLIC_LANGS",
             "function isDraftRoute",
@@ -98,30 +138,21 @@ def main() -> int:
         for marker in runtime_contract:
             if marker not in core:
                 errors.append(f"language core is missing Phase 1 guard: {marker}")
-
         if 'code:"en", label:"🇬🇧 English", home:"/en/", institute:"/institute.html", canonical:true' not in core:
             errors.append("English Institute target is not pinned to the canonical bilingual Institute surface")
 
-        # Preserve the staged world-language programme. Inventories may differ
-        # while reconciliation is pending, but neither may collapse below 50.
-        manifest = read_json("locales/manifest.json")
-        manifest_languages = manifest.get("supported_languages") or manifest.get("languages") or []
-        manifest_codes = [item.get("code") for item in manifest_languages if isinstance(item, dict) and item.get("code")]
-        if len(set(manifest_codes)) < 50:
-            errors.append(f"locales/manifest.json must retain at least 50 language codes; found {len(set(manifest_codes))}")
-
-        metadata = read_json("data/languages.json")
-        metadata_codes = [key for key in metadata.keys() if key != "_meta"]
-        if len(set(metadata_codes)) < 50:
-            errors.append(f"data/languages.json must retain at least 50 language records; found {len(set(metadata_codes))}")
-
-        wave1 = read_json("languages/NEW_10_LANGUAGE_STATUS_v1.json")
-        if wave1.get("canonical_languages") != ["mk", "en"]:
+        if wave1_status.get("canonical_languages") != ["mk", "en"]:
             errors.append("Phase 2 wave-1 status must keep mk,en as canonical_languages")
-        for item in wave1.get("new_languages", []):
+        wave1_draft_codes = []
+        for item in wave1_status.get("new_languages", []):
+            code = str(item.get("code", "")).strip()
+            if code:
+                wave1_draft_codes.append("zh-Hans" if code == "zh" else code)
             status = str(item.get("status", "")).lower()
             if "pending human review" not in status:
                 errors.append(f"wave-1 language {item.get('code')} is missing pending-human-review status")
+        if wave1_draft_codes != rollout.get("wave1_existing_drafts", []):
+            errors.append("legacy Wave-1 draft package must resolve exactly to canonical Wave-1")
 
     if errors:
         print("WPA Translator Quality Check failed.")
@@ -130,7 +161,7 @@ def main() -> int:
         return 1
 
     print("WPA Translator Quality Check passed.")
-    print("Phase 1 public boundary: MK + EN only; world-language target retained at 50; all others fail closed pending Human Gate.")
+    print("Final-50 canon aligned; Phase 1 remains MK + EN only; all later languages fail closed pending Human Gate.")
     return 0
 
 
