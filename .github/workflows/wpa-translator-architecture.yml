@@ -6,6 +6,7 @@ on:
       - 'data/language-activation.json'
       - 'data/translator-runtime-registry.json'
       - 'data/translator-consumer-inventory.json'
+      - 'data/human-gates/en-safe8k.json'
       - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
       - 'scripts/translator_architecture_check.py'
       - 'scripts/translator_consumer_inventory_check.py'
@@ -70,6 +71,8 @@ jobs:
           --lang en
           --canonical https://worldprotocolacademy.mk/en/
           --output /tmp/wpa-en-home.html
+          --root-relative-links true
+          --rewrite-link /institute.html=/en/institute.html
           --strip-script wpa-translator.js
           --strip-script wpa-home-full-en.js
           --strip-script translator-loader
@@ -93,6 +96,7 @@ jobs:
           --lang en
           --canonical https://worldprotocolacademy.mk/en/institute.html
           --output /tmp/wpa-en-institute.html
+          --root-relative-links true
           --single-h1 true
           --strip-script wpa-translator.js
           --strip-script wpa-home-full-en.js
