@@ -130,24 +130,48 @@ function applyText(document, locale, missing) {
   }
 }
 
-function applyMeta(document, locale) {
-  const candidates = [
-    ['meta.title', value => { if (value) document.title = value; }],
-    ['meta.description', value => {
-      if (!value) return;
-      let node = document.querySelector('meta[name="description"]');
-      if (!node) {
-        node = document.createElement('meta');
-        node.setAttribute('name', 'description');
-        document.head.appendChild(node);
-      }
-      node.setAttribute('content', value);
-    }],
-  ];
-  for (const [key, fn] of candidates) {
-    const value = get(locale, key);
-    if (typeof value === 'string') fn(value);
+function ensureMeta(document, selector, attrs) {
+  let node = document.querySelector(selector);
+  if (!node) {
+    node = document.createElement('meta');
+    for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value);
+    document.head.appendChild(node);
   }
+  return node;
+}
+
+function setMetaContent(document, selector, attrs, value) {
+  if (typeof value !== 'string' || !value) return;
+  ensureMeta(document, selector, attrs).setAttribute('content', value);
+}
+
+function applyMeta(document, locale, canonicalUrl) {
+  const title = get(locale, 'meta.title');
+  const description = get(locale, 'meta.description');
+  const author = get(locale, 'meta.author');
+  const ogTitle = get(locale, 'meta.ogtitle') || title;
+  const ogDescription = get(locale, 'meta.ogdesc') || description;
+  const twitterTitle = get(locale, 'meta.twittertitle') || ogTitle;
+  const twitterDescription = get(locale, 'meta.twitterdesc') || ogDescription;
+  const schemaDescription = get(locale, 'meta.schemaDescription') || description;
+
+  if (typeof title === 'string' && title) document.title = title;
+  setMetaContent(document, 'meta[name="description"]', {name:'description'}, description);
+  setMetaContent(document, 'meta[name="author"]', {name:'author'}, author);
+  setMetaContent(document, 'meta[property="og:title"]', {property:'og:title'}, ogTitle);
+  setMetaContent(document, 'meta[property="og:description"]', {property:'og:description'}, ogDescription);
+  setMetaContent(document, 'meta[property="og:url"]', {property:'og:url'}, canonicalUrl);
+  setMetaContent(document, 'meta[name="twitter:title"]', {name:'twitter:title'}, twitterTitle);
+  setMetaContent(document, 'meta[name="twitter:description"]', {name:'twitter:description'}, twitterDescription);
+
+  document.querySelectorAll('script[type="application/ld+json"]').forEach(node => {
+    let value;
+    try { value = JSON.parse(node.textContent || ''); } catch (_) { return; }
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return;
+    if (typeof value.url === 'string') value.url = canonicalUrl;
+    if (typeof schemaDescription === 'string' && schemaDescription && typeof value.description === 'string') value.description = schemaDescription;
+    node.textContent = JSON.stringify(value, null, 2);
+  });
 }
 
 function setCanonical(document, url) {
@@ -179,6 +203,7 @@ function removeRuntime(document, stripScripts, removeSelectors) {
 }
 
 function addProvenance(document, args, localeJson) {
+  document.querySelectorAll('meta[name="wpa-static-translation"]').forEach(node => node.remove());
   const meta = document.createElement('meta');
   meta.setAttribute('name', 'wpa-static-translation');
   meta.setAttribute('content', JSON.stringify({
@@ -208,7 +233,7 @@ function main() {
   document.documentElement.setAttribute('lang', args.lang);
   document.documentElement.setAttribute('dir', args.dir);
   applyText(document, locale, missing);
-  applyMeta(document, locale);
+  applyMeta(document, locale, args.canonical);
   setCanonical(document, args.canonical);
   setBase(document, args.base);
   removeRuntime(document, args.stripScript, args.removeSelector);
