@@ -1,12 +1,13 @@
 {
   "schema": "WPA Language Human Gate",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "updated": "2026-09-01",
   "language": "fr",
   "pilot": true,
-  "stage": "human_authority_approved_awaiting_remaining_technical_checks",
+  "stage": "technical_evidence_complete_awaiting_dedicated_activation_pr",
   "review_package": "data/human-gates/fr-review-package.json",
   "review_evidence": "data/human-gates/fr-review-evidence.json",
+  "technical_evidence": "data/human-gates/fr-technical-gates.json",
   "review_candidate_commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
   "public_activation_authorized": false,
   "public_ready": false,
@@ -29,6 +30,9 @@
     "human_evidence_record_created": "pass",
     "human_authority_institutional_semantic_review": "pass",
     "human_authority_wpa_terminology_acceptance": "pass",
+    "technical_accessibility_responsive_review": "pass",
+    "technical_hreflang_design_review": "pass",
+    "technical_route_fallback_smoke_test": "pass",
     "human_linguistic_review": "pending",
     "human_wpa_terminology_review": "pending",
     "institutional_legal_wording_review": "pending",
@@ -41,11 +45,12 @@
     "This record is readiness evidence, not activation authority.",
     "AI-assisted French linguistic review is documented but is not represented as native or professional human French review.",
     "Human Authority institutional/semantic review, WPA terminology acceptance and explicit Human Gate approval were recorded on 2026-09-01 against the exact locked candidate.",
-    "Legacy human_linguistic_review, human_wpa_terminology_review and institutional_legal_wording_review checks remain pending for CI compatibility and must not be interpreted as completed native/professional human French review.",
+    "Canonical technical evidence is complete for accessibility/responsive review, hreflang design and route/fallback smoke in data/human-gates/fr-technical-gates.json.",
+    "The legacy human_linguistic_review, human_wpa_terminology_review, institutional_legal_wording_review, accessibility_responsive_review, hreflang_review and route_fallback_smoke_test aliases remain pending for existing CI compatibility and must not be interpreted as missing canonical technical evidence.",
     "French remains excluded from public navigation, sitemap and activation registry.",
-    "noindex,follow remains required until all remaining technical gates pass and a dedicated activation PR is approved.",
-    "hreflang must not be added until the final canonical relationships are technically reviewed.",
-    "If either reviewed French HTML blob changes after Human Authority approval, that approval must be revalidated against the new candidate."
+    "noindex,follow remains required until a dedicated activation PR is approved.",
+    "The approved Home hreflang design is reciprocal mk/en/fr/x-default and must only be published in the activation PR; Institute must not receive misleading alternates while MK and EN share /institute.html.",
+    "If either reviewed French HTML blob changes after Human Authority approval, both Human Authority and technical evidence must be revalidated against the new candidate."
   ],
-  "activation_rule": "French may become public only in a dedicated activation PR after accessibility/responsive, hreflang and route/fallback checks pass against the exact Human-Authority-approved candidate."
+  "activation_rule": "French may become public only in a dedicated activation PR that preserves the exact approved candidate, promotes the compatibility checks, applies only approved public routing/SEO/navigation changes and passes CI with an exact-head merge guard."
 }
