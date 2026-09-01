@@ -1,21 +1,21 @@
 {
   "schema": "WPA Language Activation Preflight",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8C",
+  "stage": "SAFE-8D1",
   "mode": "dry_run_only",
   "activation_allowed": false,
-  "blocking_state": "awaiting_valid_human_review_evidence",
+  "blocking_state": "awaiting_human_authority_approval_and_remaining_technical_checks",
   "requires": [
-    "human linguistic review pass with reviewer evidence",
-    "WPA terminology review pass with reviewer evidence",
-    "institutional/legal wording review pass with reviewer evidence",
-    "accessibility/responsive review pass with reviewer evidence",
+    "AI-assisted French linguistic and semantic review pass without mislabeling it as native/professional human French review",
+    "Human Authority institutional/semantic review against the exact locked candidate",
+    "Human Authority WPA terminology acceptance against the exact locked candidate",
+    "explicit Human Gate approval",
+    "accessibility/responsive review pass",
     "locked candidate provenance still matches",
     "hreflang design review pass",
-    "route/fallback smoke test pass",
-    "explicit Human Gate approval"
+    "route/fallback smoke test pass"
   ],
   "blocked_changes": {
     "remove_noindex": true,
@@ -32,5 +32,5 @@
     "must_rerun_ci": true,
     "must_use_exact_head_merge_guard": true
   },
-  "safety_rule": "This file is a dry-run preflight and cannot authorize activation. All blocked changes remain prohibited until valid human evidence and post-review gates are complete."
+  "safety_rule": "This file is a dry-run preflight and cannot authorize activation. All blocked changes remain prohibited until Human Authority approval and all remaining technical gates are complete."
 }

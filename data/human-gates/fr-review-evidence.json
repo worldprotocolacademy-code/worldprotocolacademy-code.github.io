@@ -1,34 +1,42 @@
 {
   "schema": "WPA Language Human Review Evidence",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8C",
-  "status": "awaiting_human_evidence",
+  "stage": "SAFE-8D1",
+  "status": "ai_assisted_review_complete_awaiting_human_authority_approval",
   "review_package": "data/human-gates/fr-review-package.json",
   "reviewed_candidate": {
-    "commit_sha": "dd6b059b225f2dc4beb6054211c72066d839330c",
-    "home_blob_sha": "35c7168f99fa90932771de66e37117f625e37e92",
-    "institute_blob_sha": "8db2013320d944ecfc1ecb811e7377d9495f4aed"
+    "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
+    "home_blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4",
+    "institute_blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
   },
-  "reviewer": {
+  "ai_assisted_checks": {
+    "french_linguistic_naturalness_review": "pass",
+    "semantic_fidelity_to_canonical_reference": "pass",
+    "wpa_terminology_consistency_review": "pass",
+    "institutional_implication_risk_review": "pass",
+    "native_or_professional_human_french_reviewer_claimed": false
+  },
+  "human_authority": {
     "name": null,
-    "role_or_qualification_basis": null,
+    "role_or_authority_basis": null,
     "review_date": null,
-    "declaration": null
+    "reviewed_candidate_commit_sha": null,
+    "institutional_semantic_review": "pending",
+    "wpa_terminology_acceptance": "pending",
+    "explicit_human_gate_approval": "pending",
+    "declaration": null,
+    "comments_or_required_changes": null
   },
-  "human_checks": {
-    "linguistic_review": "pending",
-    "wpa_terminology_review": "pending",
-    "institutional_legal_wording_review": "pending",
-    "accessibility_responsive_review": "pending"
+  "remaining_technical_checks": {
+    "accessibility_responsive_review": "pending",
+    "hreflang_design_review": "pending",
+    "route_fallback_smoke_test": "pending"
   },
-  "review_notes": null,
-  "required_changes": null,
-  "explicit_human_gate_approval": "pending",
   "public_ready": false,
   "public_activation_authorized": false,
-  "evidence_rule": "No human check may be marked pass unless reviewer name, review basis, review date, declaration and reviewed-candidate provenance are all present and match the locked review package.",
-  "change_rule": "If either French reviewed blob changes, this evidence record becomes stale and all human review checks must return to pending until revalidated.",
-  "activation_rule": "This evidence record cannot activate French. Activation requires a later dedicated PR after valid human evidence and post-review technical gates are complete."
+  "evidence_rule": "AI-assisted linguistic evidence must never be represented as native or professional human French review. Human Authority approval must identify the human decision-maker, authority basis, review date, exact reviewed candidate and explicit declaration.",
+  "change_rule": "If either French candidate blob changes after Human Authority approval, the Human Authority evidence becomes stale and must be revalidated against the new candidate.",
+  "activation_rule": "This evidence record cannot activate French. Activation requires a later dedicated PR after Human Authority approval and all remaining technical gates are complete."
 }

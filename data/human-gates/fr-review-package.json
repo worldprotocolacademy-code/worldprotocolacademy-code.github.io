@@ -1,19 +1,19 @@
 {
   "schema": "WPA Language Human Review Package",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8B",
-  "purpose": "human_review_candidate_only_no_activation",
+  "stage": "SAFE-8D1",
+  "purpose": "ai_assisted_reviewed_candidate_awaiting_human_authority_approval_no_activation",
   "candidate": {
-    "commit_sha": "dd6b059b225f2dc4beb6054211c72066d839330c",
+    "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
     "home": {
       "path": "languages/fr/index.html",
-      "blob_sha": "35c7168f99fa90932771de66e37117f625e37e92"
+      "blob_sha": "e9a22ba15af70cf7936ff2a0a738831f5e922be4"
     },
     "institute": {
       "path": "languages/fr/institute.html",
-      "blob_sha": "8db2013320d944ecfc1ecb811e7377d9495f4aed"
+      "blob_sha": "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
     }
   },
   "canonical_reference": {
@@ -21,27 +21,38 @@
     "required_identity_meaning": "independent digital educational, research and authorial platform",
     "development_status": "development, testing and pilot phase — 2026"
   },
-  "review_scope": [
-    "French linguistic correctness and naturalness",
-    "faithful meaning against Macedonian and English canonical references",
-    "WPA terminology consistency: protocole, diplomatie, communication publique, études de sécurité, Protocolometry, communicologie",
-    "institutional wording must not imply university, state academy, accreditation body or degree-granting status",
-    "draft disclosures and canonical-language notices must remain clear",
-    "titles, descriptions, navigation labels, cards and footer must be reviewed",
-    "accessibility and responsive presentation must be reviewed on the final candidate"
+  "ai_assisted_review": {
+    "status": "completed",
+    "review_basis": "French linguistic, semantic, terminology and institutional consistency review against the locked WPA canonical reference",
+    "claims_native_or_professional_human_french_reviewer": false,
+    "findings": [
+      "Canonical institutional identity meaning preserved without university, accreditation or degree-granting implication.",
+      "Development status wording aligned more directly with the canonical pilot-phase meaning.",
+      "Language hub label polished to Portail des langues.",
+      "Journal policy wording clarified as politiques éditoriales.",
+      "Canonical-language notices polished for natural French grammar and explicit Macedonian/English reference."
+    ],
+    "result": "candidate_polished_and_relocked_for_human_authority_review"
+  },
+  "human_review_scope": [
+    "Confirm the French candidate faithfully represents WPA institutional meaning.",
+    "Confirm WPA terminology and institutional wording are acceptable for public WPA use.",
+    "Confirm no university, state academy, accreditation body or degree-granting implication is introduced.",
+    "Confirm draft disclosures and canonical-language notices are acceptable.",
+    "Confirm the final candidate may proceed to separate technical activation preparation after remaining checks."
   ],
-  "reviewer_declaration": {
+  "human_authority_declaration": {
     "reviewer_name": null,
     "reviewer_role_or_basis": null,
     "review_date": null,
     "reviewed_candidate_commit_sha": null,
-    "linguistic_review": "pending",
+    "institutional_semantic_review": "pending",
     "wpa_terminology_review": "pending",
-    "institutional_legal_wording_review": "pending",
-    "accessibility_responsive_review": "pending",
+    "explicit_human_gate_approval": "pending",
     "comments_or_required_changes": null
   },
   "post_review_technical_checks": {
+    "accessibility_responsive_review": "pending",
     "hreflang_design_review": "pending",
     "route_fallback_smoke_test": "pending",
     "robots_noindex_removal": "blocked_until_activation_pr",
@@ -50,10 +61,9 @@
     "activation_registry_change": "blocked_until_activation_pr"
   },
   "approval": {
-    "explicit_human_gate_approval": "pending",
     "public_ready": false,
     "public_activation_authorized": false
   },
-  "immutability_rule": "If either reviewed French HTML blob changes after human review, the human linguistic, terminology, institutional/legal and accessibility review evidence must be revalidated against the new candidate before activation.",
-  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after human review evidence is complete, candidate provenance is validated, post-review technical checks pass and explicit Human Gate approval is recorded."
+  "immutability_rule": "If either reviewed French HTML blob changes after Human Authority approval, the Human Authority evidence must be revalidated against the new candidate before activation.",
+  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after Human Authority approval is recorded against this exact candidate and all post-review technical checks pass."
 }
