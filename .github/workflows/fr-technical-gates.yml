@@ -1,0 +1,133 @@
+name: WPA French Technical Gates
+
+on:
+  pull_request:
+    paths:
+      - 'languages/fr/**'
+      - 'data/human-gates/fr*.json'
+      - '.github/workflows/fr-technical-gates.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fr-technical-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Verify locked French candidate provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object languages/fr/index.html)" = "e9a22ba15af70cf7936ff2a0a738831f5e922be4"
+          test "$(git hash-object languages/fr/institute.html)" = "9e1491e6798dc80c86b7677f85c9d3e0a2a38d9e"
+          grep -q '<meta name="robots" content="noindex,follow">' languages/fr/index.html
+          grep -q '<meta name="robots" content="noindex,follow">' languages/fr/institute.html
+
+      - name: Start branch-local static server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then
+              break
+            fi
+            sleep 0.5
+          done
+          curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null
+
+      - name: Route and fallback smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            /languages/fr/ \
+            /languages/fr/institute.html \
+            / \
+            /institute.html \
+            /protocolometry-center.html \
+            /languages/ \
+            /journal/; do
+            curl --fail --silent --show-error --location --max-time 15 --output /dev/null "http://127.0.0.1:8000${path}"
+          done
+
+      - name: Prepare browser instrumentation copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          test_dir = Path('.fr-gate-test')
+          test_dir.mkdir(exist_ok=True)
+          probe = r'''
+          <script>
+          (function(){
+            function run(){
+              var issues=[];
+              var html=document.documentElement;
+              if(html.lang!=='fr') issues.push('lang');
+              if((html.getAttribute('dir')||'').toLowerCase()!=='ltr') issues.push('dir');
+              if(!document.querySelector('meta[name="viewport"]')) issues.push('viewport');
+              if(document.querySelectorAll('h1').length!==1) issues.push('h1');
+              var links=[].slice.call(document.querySelectorAll('a'));
+              if(!links.length || links.some(function(a){return !a.textContent.trim();})) issues.push('link-label');
+              if(document.documentElement.scrollWidth>window.innerWidth+2) issues.push('overflow-'+document.documentElement.scrollWidth+'-'+window.innerWidth);
+              var marker=document.createElement('div');
+              marker.id='fr-technical-gate-result';
+              marker.textContent=issues.length ? 'FR_TECHNICAL_GATE_FAIL:'+issues.join(',') : 'FR_TECHNICAL_GATE_PASS';
+              document.body.appendChild(marker);
+            }
+            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
+          })();
+          </script>
+          '''
+          for src_name, out_name in [('languages/fr/index.html','home.html'),('languages/fr/institute.html','institute.html')]:
+              text=Path(src_name).read_text(encoding='utf-8')
+              text=text.replace('</body>', probe+'</body>')
+              Path(test_dir/out_name).write_text(text,encoding='utf-8')
+          PY
+
+      - name: Browser accessibility and responsive gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          for page in home institute; do
+            for size in 390,844 1440,900; do
+              out="/tmp/${page}-${size//,/-}.html"
+              "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1500 --dump-dom "http://127.0.0.1:8000/.fr-gate-test/${page}.html" > "$out"
+              marker="$(python - "$out" <<'PY'
+import re,sys
+text=open(sys.argv[1],encoding='utf-8').read()
+m=re.search(r'id="fr-technical-gate-result"[^>]*>([^<]+)<',text)
+print(m.group(1).strip() if m else '')
+PY
+)"
+              echo "$page $size => ${marker:-NO_MARKER}"
+              test "$marker" = "FR_TECHNICAL_GATE_PASS"
+            done
+          done
+
+      - name: Confirm hreflang remains design-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -qi 'hreflang=' languages/fr/index.html
+          ! grep -qi 'hreflang=' languages/fr/institute.html
+          python - <<'PY'
+          import json
+          p='data/human-gates/fr-technical-gates.json'
+          data=json.load(open(p,encoding='utf-8'))
+          assert data['hreflang_design_review']['status']=='pass'
+          assert data['hreflang_design_review']['design']['current_repo_effect']=='none'
+          assert data['public_ready'] is False
+          assert data['public_activation_authorized'] is False
+          PY
