@@ -1,23 +1,19 @@
 {
   "schema": "WPA Public Language Activation Registry",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "updated": "2026-09-01",
   "policy_mode": "fail_closed",
   "canonical_master": "mk",
   "canonical_mirror": "en",
   "public_languages": [
     "mk",
-    "en"
+    "en",
+    "fr"
   ],
   "public_routes": {
-    "mk": {
-      "home": "/",
-      "institute": "/institute.html"
-    },
-    "en": {
-      "home": "/en/",
-      "institute": "/institute.html"
-    }
+    "mk": {"home": "/", "institute": "/institute.html"},
+    "en": {"home": "/en/", "institute": "/institute.html"},
+    "fr": {"home": "/languages/fr/", "institute": "/languages/fr/institute.html", "status": "approved_public_pilot"}
   },
   "world_language_target_count": 50,
   "target_selection_status": "final_50_canon_selected",
@@ -26,21 +22,8 @@
   "metadata_catalog_source": "data/languages.json",
   "human_gate_required": true,
   "unlisted_languages_public": false,
-  "phase2_wave1_canonical": [
-    "zh-Hans",
-    "ru",
-    "hi",
-    "af",
-    "ar",
-    "fr",
-    "de",
-    "it",
-    "sq",
-    "sr"
-  ],
-  "compatibility_aliases": {
-    "zh": "zh-Hans"
-  },
+  "phase2_wave1_canonical": ["zh-Hans","ru","hi","af","ar","fr","de","it","sq","sr"],
+  "compatibility_aliases": {"zh": "zh-Hans"},
   "source_inventories": {
     "metadata_registry": "data/languages.json",
     "translator_manifest": "locales/manifest.json",
@@ -49,9 +32,9 @@
   },
   "alignment": {
     "required": false,
-    "status": "aligned_to_final_50_canon",
+    "status": "aligned_to_final_50_canon_with_french_public_pilot",
     "metadata_policy": "data/languages.json is a superset metadata catalog; entries must resolve to canonical, reserve or compatibility-alias codes and do not imply public activation.",
-    "wave1_policy": "The existing zh draft route is retained as a compatibility alias for canonical zh-Hans until a separately reviewed route migration.",
+    "wave1_policy": "French is the only activated Wave-1 public pilot. Every other Wave-1 language remains non-public. The existing zh draft route is retained as a compatibility alias for canonical zh-Hans until a separately reviewed route migration.",
     "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
   }
 }
