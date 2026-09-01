@@ -1,0 +1,101 @@
+name: SAFE-8L English Purity Materializer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.ref == 'refs/heads/fix/en-language-purity-safe8l-20260901'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: fix/en-language-purity-safe8l-20260901
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install deterministic builder dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Compose English locales
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          for (const [basePath,overlayPath,out] of [
+            ['locales/index/en.json','locales/rebuild/en/index.override.json','/tmp/home.json'],
+            ['locales/institute/en.json','locales/rebuild/en/institute.override.json','/tmp/institute.json']
+          ]) {
+            const base=JSON.parse(fs.readFileSync(basePath,'utf8'));
+            const overlay=JSON.parse(fs.readFileSync(overlayPath,'utf8'));
+            const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
+            fs.writeFileSync(out,JSON.stringify(merged,null,2)+'\n');
+          }
+          NODE
+      - name: Build language-pure English Home
+        run: >-
+          node scripts/build_static_translation.js
+          --source index.html
+          --locale /tmp/home.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/
+          --output en/index.html
+          --root-relative-links true
+          --rewrite-link /institute.html=/en/institute.html
+          --rewrite-text 'Светска академија за протокол=World Protocol Academy'
+          --rewrite-css-text 'WPA · СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · TEST PHASE 2026=WPA · WORLD PROTOCOL ACADEMY · TEST PHASE 2026'
+          --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026'
+          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-inst-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-platform-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
+          --remove-selector '.announce .wpa-brand-mk'
+          --remove-selector 'header .brand-text .wpa-brand-mk'
+          --remove-selector '.hero h2 em'
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --strip-script wpa-public-entry-layer.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Build language-pure English Institute
+        run: >-
+          node scripts/build_static_translation.js
+          --source institute.html
+          --locale /tmp/institute.json
+          --lang en
+          --canonical https://worldprotocolacademy.mk/en/institute.html
+          --output en/institute.html
+          --root-relative-links true
+          --single-h1 true
+          --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026'
+          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
+          --remove-selector '.wpa-institute-name-mk'
+          --strip-script wpa-translator.js
+          --strip-script wpa-home-full-en.js
+          --strip-script translator-loader
+          --strip-script i18n-v2.js
+          --strip-script wpa-language-menu-10.js
+          --strip-script wpa-public-entry-layer.js
+          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+      - name: Validate generated English purity
+        run: python scripts/public_translation_quality_check.py
+      - name: Guard expected diff only
+        run: |
+          changed="$(git status --short | awk '{print $2}' | sort)"
+          expected="en/index.html
+en/institute.html"
+          test "$changed" = "$expected" || { echo "Unexpected materializer diff:"; git status --short; exit 1; }
+      - name: Commit generated mirrors
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add en/index.html en/institute.html
+          git commit -m "SAFE-8L materialize language-pure English mirrors"
+          git push origin HEAD:fix/en-language-purity-safe8l-20260901
