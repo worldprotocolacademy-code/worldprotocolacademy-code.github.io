@@ -5,8 +5,10 @@ on:
     paths:
       - 'data/language-activation.json'
       - 'data/translator-runtime-registry.json'
+      - 'data/translator-consumer-inventory.json'
       - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
       - 'scripts/translator_architecture_check.py'
+      - 'scripts/translator_consumer_inventory_check.py'
       - 'scripts/public_translation_quality_check.py'
       - 'scripts/build_static_translation.js'
       - 'wpa-translator.js'
@@ -42,7 +44,9 @@ jobs:
       - name: Install deterministic builder dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: Compile validators
-        run: python -m py_compile scripts/translator_architecture_check.py scripts/public_translation_quality_check.py
+        run: python -m py_compile scripts/translator_architecture_check.py scripts/translator_consumer_inventory_check.py scripts/public_translation_quality_check.py
+      - name: Validate translator consumer inventory
+        run: python scripts/translator_consumer_inventory_check.py
       - name: Validate static builder syntax
         run: node --check scripts/build_static_translation.js
       - name: Validate public router syntax
