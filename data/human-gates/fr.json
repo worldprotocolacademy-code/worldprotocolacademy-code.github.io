@@ -1,13 +1,12 @@
 {
   "schema": "WPA Language Human Gate",
-  "version": "1.5.0",
+  "version": "1.4.0",
   "updated": "2026-09-01",
   "language": "fr",
   "pilot": true,
-  "stage": "human_and_technical_gates_complete_awaiting_dedicated_activation_pr",
+  "stage": "human_authority_approved_awaiting_remaining_technical_checks",
   "review_package": "data/human-gates/fr-review-package.json",
   "review_evidence": "data/human-gates/fr-review-evidence.json",
-  "technical_evidence": "data/human-gates/fr-technical-gates.json",
   "review_candidate_commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
   "public_activation_authorized": false,
   "public_ready": false,
@@ -33,21 +32,20 @@
     "human_linguistic_review": "pending",
     "human_wpa_terminology_review": "pending",
     "institutional_legal_wording_review": "pending",
-    "accessibility_responsive_review": "pass",
-    "hreflang_review": "pass",
-    "route_fallback_smoke_test": "pass",
+    "accessibility_responsive_review": "pending",
+    "hreflang_review": "pending",
+    "route_fallback_smoke_test": "pending",
     "explicit_human_gate_approval": "pass"
   },
   "notes": [
     "This record is readiness evidence, not activation authority.",
     "AI-assisted French linguistic review is documented but is not represented as native or professional human French review.",
     "Human Authority institutional/semantic review, WPA terminology acceptance and explicit Human Gate approval were recorded on 2026-09-01 against the exact locked candidate.",
-    "Focused accessibility/responsive browser validation, hreflang design review and route/fallback smoke testing are complete for the exact locked candidate.",
     "Legacy human_linguistic_review, human_wpa_terminology_review and institutional_legal_wording_review checks remain pending for CI compatibility and must not be interpreted as completed native/professional human French review.",
     "French remains excluded from public navigation, sitemap and activation registry.",
-    "noindex,follow remains required until a separate dedicated French activation PR is approved and merged.",
-    "Approved hreflang design has no current public repository effect and must only be applied in the dedicated activation PR.",
-    "If either reviewed French HTML blob changes, Human Authority and technical evidence must be revalidated against the new candidate."
+    "noindex,follow remains required until all remaining technical gates pass and a dedicated activation PR is approved.",
+    "hreflang must not be added until the final canonical relationships are technically reviewed.",
+    "If either reviewed French HTML blob changes after Human Authority approval, that approval must be revalidated against the new candidate."
   ],
-  "activation_rule": "French has completed the current Human Authority and technical readiness gates but remains non-public. Public activation may occur only in a separate dedicated one-language activation PR with exact-candidate verification, CI and exact-head merge guard."
+  "activation_rule": "French may become public only in a dedicated activation PR after accessibility/responsive, hreflang and route/fallback checks pass against the exact Human-Authority-approved candidate."
 }
