@@ -12,6 +12,7 @@ on:
       - 'scripts/translator_consumer_inventory_check.py'
       - 'scripts/public_translation_quality_check.py'
       - 'scripts/build_static_translation.js'
+      - 'scripts/wpa-public-entry-layer.js'
       - 'wpa-translator.js'
       - 'translator-loader-v1.js'
       - 'translator-loader-v2.js'
@@ -73,11 +74,21 @@ jobs:
           --output /tmp/wpa-en-home.html
           --root-relative-links true
           --rewrite-link /institute.html=/en/institute.html
+          --rewrite-text 'Светска академија за протокол=World Protocol Academy'
+          --rewrite-css-text 'WPA · СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · TEST PHASE 2026=WPA · WORLD PROTOCOL ACADEMY · TEST PHASE 2026'
+          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-inst-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-platform-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
+          --remove-selector '.announce .wpa-brand-mk'
+          --remove-selector 'header .brand-text .wpa-brand-mk'
+          --remove-selector '.hero h2 em'
           --strip-script wpa-translator.js
           --strip-script wpa-home-full-en.js
           --strip-script translator-loader
           --strip-script i18n-v2.js
           --strip-script wpa-language-menu-10.js
+          --strip-script wpa-public-entry-layer.js
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
       - name: Compose canonical English Institute locale candidate
         run: |
@@ -98,11 +109,15 @@ jobs:
           --output /tmp/wpa-en-institute.html
           --root-relative-links true
           --single-h1 true
+          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
+          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
+          --remove-selector '.wpa-institute-name-mk'
           --strip-script wpa-translator.js
           --strip-script wpa-home-full-en.js
           --strip-script translator-loader
           --strip-script i18n-v2.js
           --strip-script wpa-language-menu-10.js
+          --strip-script wpa-public-entry-layer.js
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
       - name: Validate rebuilt candidate quality before materialization
         run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
