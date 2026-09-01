@@ -1,25 +1,22 @@
 {
   "schema": "WPA Wave-1 Language Readiness Matrix",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-01",
-  "audit_scope": "readiness_only_no_public_activation",
+  "audit_scope": "readiness_and_single_language_activation_state",
   "canon_source": "data/language-canon-50.json",
   "activation_source": "data/language-activation.json",
   "legacy_draft_source": "languages/NEW_10_LANGUAGE_STATUS_v1.json",
-  "public_boundary": ["mk", "en"],
-  "overall_status": "human_gate_required",
-  "public_activation_authorized": false,
+  "public_boundary": ["mk", "en", "fr"],
+  "overall_status": "french_public_pilot_only_other_wave1_languages_human_gate_required",
+  "public_activation_authorized": true,
   "shared_findings": {
     "home_and_institute_draft_surfaces_declared": true,
-    "translation_status": "draft_pending_human_review",
+    "translation_status": "mixed_fr_approved_public_pilot_others_draft_pending_human_review",
     "machine_translation_alone_sufficient": false,
-    "hreflang_ready": false,
-    "sitemap_ready": false,
-    "public_navigation_ready": false,
-    "required_before_any_activation": [
-      "human linguistic review",
+    "required_before_any_future_activation": [
+      "human linguistic or AI-assisted language review with explicit claim boundaries",
       "WPA terminology review",
-      "institutional and legal wording review",
+      "institutional and legal wording review as applicable",
       "canonical and hreflang verification",
       "accessibility and responsive review",
       "route and fallback smoke test",
@@ -27,109 +24,16 @@
     ]
   },
   "languages": [
-    {
-      "code": "zh-Hans",
-      "legacy_route_code": "zh",
-      "direction": "ltr",
-      "draft_home": "/languages/zh/index.html",
-      "draft_institute": "/languages/zh/institute.html",
-      "human_review": "pending",
-      "route_normalization": "required_before_public_activation",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "legacy zh route must be reconciled to canonical zh-Hans", "hreflang pending"]
-    },
-    {
-      "code": "ru",
-      "direction": "ltr",
-      "draft_home": "/languages/ru/index.html",
-      "draft_institute": "/languages/ru/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "hi",
-      "direction": "ltr",
-      "draft_home": "/languages/hi/index.html",
-      "draft_institute": "/languages/hi/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "af",
-      "direction": "ltr",
-      "draft_home": "/languages/af/index.html",
-      "draft_institute": "/languages/af/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "ar",
-      "direction": "rtl",
-      "draft_home": "/languages/ar/index.html",
-      "draft_institute": "/languages/ar/institute.html",
-      "rtl_structure": "present_on_audited_surfaces",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "RTL accessibility and visual review required", "hreflang pending"]
-    },
-    {
-      "code": "fr",
-      "direction": "ltr",
-      "draft_home": "/languages/fr/index.html",
-      "draft_institute": "/languages/fr/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "de",
-      "direction": "ltr",
-      "draft_home": "/languages/de/index.html",
-      "draft_institute": "/languages/de/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "it",
-      "direction": "ltr",
-      "draft_home": "/languages/it/index.html",
-      "draft_institute": "/languages/it/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "sq",
-      "direction": "ltr",
-      "draft_home": "/languages/sq/index.html",
-      "draft_institute": "/languages/sq/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    },
-    {
-      "code": "sr",
-      "direction": "ltr",
-      "draft_home": "/languages/sr/index.html",
-      "draft_institute": "/languages/sr/institute.html",
-      "human_review": "pending",
-      "hreflang": "pending",
-      "public_ready": false,
-      "blockers": ["human review pending", "hreflang pending"]
-    }
+    {"code":"zh-Hans","legacy_route_code":"zh","direction":"ltr","draft_home":"/languages/zh/index.html","draft_institute":"/languages/zh/institute.html","human_review":"pending","route_normalization":"required_before_public_activation","hreflang":"pending","public_ready":false,"blockers":["human review pending","legacy zh route must be reconciled to canonical zh-Hans","hreflang pending"]},
+    {"code":"ru","direction":"ltr","draft_home":"/languages/ru/index.html","draft_institute":"/languages/ru/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"hi","direction":"ltr","draft_home":"/languages/hi/index.html","draft_institute":"/languages/hi/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"af","direction":"ltr","draft_home":"/languages/af/index.html","draft_institute":"/languages/af/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"ar","direction":"rtl","draft_home":"/languages/ar/index.html","draft_institute":"/languages/ar/institute.html","rtl_structure":"present_on_audited_surfaces","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","RTL accessibility and visual review required","hreflang pending"]},
+    {"code":"fr","direction":"ltr","draft_home":"/languages/fr/index.html","draft_institute":"/languages/fr/institute.html","human_review":"human_authority_approved","hreflang":"approved_home_cluster","public_ready":true,"activation_status":"approved_public_pilot","blockers":[]},
+    {"code":"de","direction":"ltr","draft_home":"/languages/de/index.html","draft_institute":"/languages/de/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"it","direction":"ltr","draft_home":"/languages/it/index.html","draft_institute":"/languages/it/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"sq","direction":"ltr","draft_home":"/languages/sq/index.html","draft_institute":"/languages/sq/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]},
+    {"code":"sr","direction":"ltr","draft_home":"/languages/sr/index.html","draft_institute":"/languages/sr/institute.html","human_review":"pending","hreflang":"pending","public_ready":false,"blockers":["human review pending","hreflang pending"]}
   ],
-  "activation_rule": "No Wave-1 language may be added to public_languages, public navigation or sitemap until its public_ready flag is changed through a dedicated reviewed Human Gate PR."
+  "activation_rule": "French is the only activated Wave-1 public pilot. No other Wave-1 language may be added to public_languages, public navigation or sitemap until its public_ready flag changes through a dedicated reviewed Human Gate PR."
 }
