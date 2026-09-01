@@ -262,7 +262,7 @@
   }
 
   var core = document.createElement("script");
-  core.src = "/languages/wpa-language-menu-10-core.js?v=1.2";
+  core.src = "/languages/wpa-language-menu-10-core.js?v=1.4";
   core.defer = true;
   core.onload = runPageSync;
   core.onerror = runPageSync;
