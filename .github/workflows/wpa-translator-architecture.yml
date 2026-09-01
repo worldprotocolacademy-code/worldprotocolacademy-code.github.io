@@ -7,6 +7,7 @@ on:
       - 'data/translator-runtime-registry.json'
       - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
       - 'scripts/translator_architecture_check.py'
+      - 'scripts/public_translation_quality_check.py'
       - 'scripts/build_static_translation.js'
       - 'wpa-translator.js'
       - 'translator-loader-v1.js'
@@ -18,6 +19,7 @@ on:
       - 'locales/rebuild/en/**'
       - 'languages/wpa-language-menu-10.js'
       - 'languages/wpa-language-menu-10-core.js'
+      - 'languages/wpa-public-language-router-v2.js'
       - 'en/**'
       - 'languages/fr/**'
       - '.github/workflows/wpa-translator-architecture.yml'
@@ -39,10 +41,12 @@ jobs:
           node-version: '24'
       - name: Install deterministic builder dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
-      - name: Compile architecture validator
-        run: python -m py_compile scripts/translator_architecture_check.py
+      - name: Compile validators
+        run: python -m py_compile scripts/translator_architecture_check.py scripts/public_translation_quality_check.py
       - name: Validate static builder syntax
         run: node --check scripts/build_static_translation.js
+      - name: Validate public router syntax
+        run: node --check languages/wpa-public-language-router-v2.js
       - name: Validate static builder CLI
         run: node scripts/build_static_translation.js --help
       - name: Compose canonical English Home locale candidate
@@ -52,9 +56,9 @@ jobs:
           const base=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
           const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/wpa-en-home-locale.json',JSON.stringify(merged,null,2));
+          fs.writeFileSync('/tmp/wpa-en-home-locale.json',JSON.stringify(merged,null,2)+'\n');
           NODE
-      - name: Dry-build English Home candidate
+      - name: Rebuild English Home candidate
         run: >-
           node scripts/build_static_translation.js
           --source index.html
@@ -73,9 +77,9 @@ jobs:
           const base=JSON.parse(fs.readFileSync('locales/institute/en.json','utf8'));
           const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/institute.override.json','utf8'));
           const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/wpa-en-institute-locale.json',JSON.stringify(merged,null,2));
+          fs.writeFileSync('/tmp/wpa-en-institute-locale.json',JSON.stringify(merged,null,2)+'\n');
           NODE
-      - name: Dry-build English Institute candidate
+      - name: Rebuild English Institute candidate
         run: >-
           node scripts/build_static_translation.js
           --source institute.html
@@ -87,5 +91,11 @@ jobs:
           --strip-script wpa-home-full-en.js
           --strip-script translator-loader
           --strip-script i18n-v2.js
+      - name: Enforce byte-for-byte deterministic committed outputs
+        run: |
+          cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
+          cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
+      - name: Validate public translation quality
+        run: python scripts/public_translation_quality_check.py
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
