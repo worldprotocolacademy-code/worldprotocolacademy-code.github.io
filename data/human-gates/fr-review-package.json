@@ -1,10 +1,10 @@
 {
   "schema": "WPA Language Human Review Package",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "updated": "2026-09-01",
   "language": "fr",
-  "stage": "SAFE-8D2",
-  "purpose": "human_authority_approved_candidate_awaiting_remaining_technical_checks_no_activation",
+  "stage": "SAFE-8E2",
+  "purpose": "human_authority_and_technical_gates_complete_awaiting_dedicated_activation_pr",
   "candidate": {
     "commit_sha": "20c04d97c515bcd2e33912649075b5f7690dca8b",
     "home": {
@@ -53,9 +53,10 @@
     "comments_or_required_changes": null
   },
   "post_review_technical_checks": {
-    "accessibility_responsive_review": "pending",
-    "hreflang_design_review": "pending",
-    "route_fallback_smoke_test": "pending",
+    "accessibility_responsive_review": "pass",
+    "hreflang_design_review": "pass",
+    "route_fallback_smoke_test": "pass",
+    "technical_evidence": "data/human-gates/fr-technical-gates.json",
     "robots_noindex_removal": "blocked_until_activation_pr",
     "sitemap_addition": "blocked_until_activation_pr",
     "public_navigation_addition": "blocked_until_activation_pr",
@@ -63,9 +64,10 @@
   },
   "approval": {
     "human_authority_approved": true,
+    "technical_readiness_gates_complete": true,
     "public_ready": false,
     "public_activation_authorized": false
   },
-  "immutability_rule": "If either reviewed French HTML blob changes after Human Authority approval, the Human Authority evidence must be revalidated against the new candidate before activation.",
-  "activation_rule": "This package cannot activate French. A later dedicated activation PR may proceed only after all post-review technical checks pass against this exact Human-Authority-approved candidate."
+  "immutability_rule": "If either reviewed French HTML blob changes, Human Authority and technical evidence must be revalidated against the new candidate before activation.",
+  "activation_rule": "This package cannot activate French. A later dedicated one-language activation PR may proceed only with exact-candidate verification, approved hreflang implementation, CI and exact-head merge guard."
 }
