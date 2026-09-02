@@ -13,6 +13,7 @@ on:
       - 'scripts/public_translation_quality_check.py'
       - 'scripts/build_static_translation.js'
       - 'scripts/wpa-public-entry-layer.js'
+      - 'scripts/wpa-performance.js'
       - 'wpa-translator.js'
       - 'translator-loader-v1.js'
       - 'translator-loader-v2.js'
@@ -55,6 +56,8 @@ jobs:
         run: node --check languages/wpa-public-language-router-v2.js
       - name: Validate MK entry injector syntax
         run: node --check scripts/wpa-public-entry-layer.js
+      - name: Validate shared performance runtime syntax
+        run: node --check scripts/wpa-performance.js
       - name: Validate static builder CLI
         run: node scripts/build_static_translation.js --help
       - name: Enforce SAFE-8M runtime containment contract
@@ -90,6 +93,54 @@ jobs:
           verify('https://worldprotocolacademy.mk/en/', 'en', 'mk', 'en');
           verify('https://worldprotocolacademy.mk/', 'mk', 'en', 'mk');
           console.log('SAFE-8M synchronous bootstrap invariant passed for fresh and stale UI state.');
+          NODE
+      - name: Verify SAFE-8O Institute runtime language purity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const {JSDOM} = require('jsdom');
+          const runtime = fs.readFileSync('scripts/wpa-performance.js', 'utf8');
+
+          const expected = {
+            mk: {
+              name: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+              sublimate: 'Отвори WPA Sublimate',
+              journal: 'Отвори WPA Journal Live'
+            },
+            en: {
+              name: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+              sublimate: 'Open WPA Sublimate',
+              journal: 'Open WPA Journal Live'
+            },
+            fr: {
+              name: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
+              sublimate: 'Ouvrir WPA Sublimate',
+              journal: 'Ouvrir WPA Journal Live'
+            }
+          };
+
+          function verify(lang, url) {
+            const dom = new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="institute"><head></head><body>
+              <div class="nav-wrap"><nav><a class="brand"><div class="brand-text"></div></a><div class="nav-links"><a href="#wpa-public-tools-hub">Resources</a></div></nav></div>
+              <header class="hero"><div class="hero-cta"></div></header>
+            </body></html>`, {url, runScripts: 'outside-only'});
+            dom.window.eval(runtime);
+            const doc = dom.window.document;
+            const name = doc.querySelector('.wpa-institute-name-current');
+            if (!name) throw new Error(`${lang}: current-language Institute name missing`);
+            if (name.textContent !== expected[lang].name) throw new Error(`${lang}: Institute name mismatch: ${name.textContent}`);
+            if (name.getAttribute('lang') !== lang) throw new Error(`${lang}: Institute name lang attribute mismatch`);
+            if (doc.querySelector('.wpa-institute-name-mk,.wpa-institute-name-en')) throw new Error(`${lang}: legacy bilingual Institute brand residue remains`);
+            const sublimate = doc.getElementById('wpaSublimateInstituteHero');
+            const journal = doc.getElementById('wpaLiveInstituteHeroLink');
+            if (!sublimate || sublimate.textContent !== expected[lang].sublimate) throw new Error(`${lang}: Sublimate CTA mismatch`);
+            if (!journal || journal.textContent !== expected[lang].journal) throw new Error(`${lang}: Journal CTA mismatch`);
+          }
+
+          verify('mk', 'https://worldprotocolacademy.mk/institute.html');
+          verify('en', 'https://worldprotocolacademy.mk/en/institute.html');
+          verify('fr', 'https://worldprotocolacademy.mk/languages/fr/institute.html');
+          console.log('SAFE-8O Institute runtime language purity passed for MK, EN and FR.');
           NODE
       - name: Compose canonical English Home locale candidate
         run: |
