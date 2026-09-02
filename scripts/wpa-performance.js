@@ -15,8 +15,39 @@
     return String(document.documentElement.getAttribute('data-wpa-page') || '').toLowerCase();
   }
 
+  function documentLanguage() {
+    var value = String(document.documentElement.getAttribute('lang') || 'mk').trim().toLowerCase();
+    return value.split('-')[0] || 'mk';
+  }
+
+  function instituteRuntimeCopy() {
+    var lang = documentLanguage();
+    if (lang === 'fr') {
+      return {
+        lang: 'fr',
+        instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
+        openSublimate: 'Ouvrir WPA Sublimate',
+        openJournal: 'Ouvrir WPA Journal Live'
+      };
+    }
+    if (lang === 'en') {
+      return {
+        lang: 'en',
+        instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+        openSublimate: 'Open WPA Sublimate',
+        openJournal: 'Open WPA Journal Live'
+      };
+    }
+    return {
+      lang: 'mk',
+      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+      openSublimate: 'Отвори WPA Sublimate',
+      openJournal: 'Отвори WPA Journal Live'
+    };
+  }
+
   function isInstitute() {
-    return page() === 'institute' || path().toLowerCase() === '/institute.html';
+    return page() === 'institute' || /(?:^|\/)institute(?:\.html)?$/i.test(path());
   }
 
   function isHome() {
@@ -76,11 +107,10 @@
       'html[data-wpa-page="institute"] .wpa-institute-brand .brand-mark{display:none!important;}',
       'html[data-wpa-page="institute"] .wpa-institute-brand .brand-text{display:flex!important;flex-direction:column!important;gap:2px!important;line-height:1.15!important;}',
       'html[data-wpa-page="institute"] .wpa-institute-label{display:block!important;color:#e3c878!important;font:800 16px/1.1 Inter,system-ui,sans-serif!important;letter-spacing:.03em!important;white-space:nowrap!important;}',
-      'html[data-wpa-page="institute"] .wpa-institute-name-mk{display:block!important;color:#fbf8ee!important;font:700 11px/1.35 Inter,system-ui,sans-serif!important;letter-spacing:.01em!important;}',
-      'html[data-wpa-page="institute"] .wpa-institute-name-en{display:block!important;color:rgba(227,200,120,.82)!important;font:600 10px/1.35 Inter,system-ui,sans-serif!important;letter-spacing:.01em!important;}',
+      'html[data-wpa-page="institute"] .wpa-institute-name-current{display:block!important;color:#fbf8ee!important;font:700 11px/1.35 Inter,system-ui,sans-serif!important;letter-spacing:.01em!important;}',
       'html[data-wpa-page="institute"] .wpa-pilot20-institute-nav-link,html[data-wpa-page="institute"] .wpa-journal-live-entry,html[data-wpa-page="institute"] .wpa-sublimate-institute-nav-link{font-weight:600!important;border-color:transparent!important;background:transparent!important;}',
       'html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{margin-left:0!important;}',
-      '@media(max-width:760px){html[data-wpa-page="institute"] .wpa-institute-brand{min-width:0!important;width:100%!important;}html[data-wpa-page="institute"] .wpa-institute-label{font-size:14px!important;}html[data-wpa-page="institute"] .wpa-institute-name-mk,html[data-wpa-page="institute"] .wpa-institute-name-en{font-size:9.5px!important;}html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{width:100%!important;}}'
+      '@media(max-width:760px){html[data-wpa-page="institute"] .wpa-institute-brand{min-width:0!important;width:100%!important;}html[data-wpa-page="institute"] .wpa-institute-label{font-size:14px!important;}html[data-wpa-page="institute"] .wpa-institute-name-current{font-size:9.5px!important;}html[data-wpa-page="institute"] .wpa-sublimate-hero-button,html[data-wpa-page="institute"] #wpaLiveInstituteHeroLink{width:100%!important;}}'
     ].join('');
     document.head.appendChild(style);
   }
@@ -89,6 +119,7 @@
     var brand = document.querySelector('.nav-wrap nav .brand');
     if (!brand) return;
 
+    var copy = instituteRuntimeCopy();
     brand.removeAttribute('target');
     brand.classList.add('wpa-institute-brand');
     brand.setAttribute('aria-label', 'WPA Institute');
@@ -113,11 +144,12 @@
 
     var text = brand.querySelector('.brand-text');
     if (text) {
-      text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>';
+      text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-current" lang="' + copy.lang + '">' + copy.instituteName + '</span>';
     }
   }
 
   function placeInstituteTools() {
+    var copy = instituteRuntimeCopy();
     var nav = document.querySelector('.nav-wrap nav .nav-links');
     if (nav) {
       var tools = nav.querySelector('a[href="#wpa-public-tools-hub"]');
@@ -140,8 +172,8 @@
       if (protocolometry) protocolometry.insertAdjacentElement('afterend', pilotHero); else hero.appendChild(pilotHero);
 
       var briefings = hero.querySelector('a[href="wpa-briefings.html"]');
-      var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, 'Отвори WPA Sublimate', 'WPA Sublimate Engine Preview');
-      var journalHero = makeLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', JOURNAL_LIVE_URL, 'Отвори WPA Journal Live', 'WPA Journal Live');
+      var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, copy.openSublimate, 'WPA Sublimate Engine Preview');
+      var journalHero = makeLink('wpaLiveInstituteHeroLink', 'btn btn-primary wpa-journal-live-entry', JOURNAL_LIVE_URL, copy.openJournal, 'WPA Journal Live');
 
       if (briefings) {
         briefings.insertAdjacentElement('afterend', subHero);
