@@ -202,6 +202,35 @@ def audit(path: Path, cfg: dict) -> list[str]:
     return errors
 
 
+def audit_router_bootstrap() -> list[str]:
+    """Protect the first-paint language invariant for static EN mirrors.
+
+    The public router is deferred at the end of the static page, so its top-level
+    bootstrap executes after parsing and before DOMContentLoaded. Legacy UI helpers
+    register DOMContentLoaded listeners and may still contain an MK storage fallback.
+    The router therefore MUST synchronously seed the language already declared by the
+    static document before it registers/starts the asynchronous registry init.
+    """
+    errors: list[str] = []
+    path = ROOT / "languages/wpa-public-language-router-v2.js"
+    text = path.read_text(encoding="utf-8")
+    required = [
+        'function documentLanguage()',
+        'function seedCurrentDocumentLanguage()',
+        'var seededDocumentLanguage = seedCurrentDocumentLanguage();',
+        'document.documentElement.getAttribute("lang")',
+        'writeCanonicalLanguage(code)',
+    ]
+    for phrase in required:
+        if phrase not in text:
+            errors.append(f"router bootstrap invariant missing: {phrase}")
+    seed = text.find("var seededDocumentLanguage = seedCurrentDocumentLanguage();")
+    init_listener = text.find('document.addEventListener("DOMContentLoaded", init')
+    if seed < 0 or init_listener < 0 or seed > init_listener:
+        errors.append("router document-language seed must execute before DOMContentLoaded init registration")
+    return errors
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--home", default=str(ROOT / "en/index.html"))
@@ -214,12 +243,13 @@ def main() -> int:
             all_errors.append(f"{name}: file missing: {path}")
             continue
         all_errors.extend(f"{name}: {err}" for err in audit(path, cfg))
+    all_errors.extend(f"router: {err}" for err in audit_router_bootstrap())
     if all_errors:
         print("WPA public translation quality check failed:", file=sys.stderr)
         for err in all_errors:
             print(f"- {err}", file=sys.stderr)
         return 1
-    print("WPA public translation quality check passed for EN Home and Institute, including English-only visible-language purity and route/navigation integrity.")
+    print("WPA public translation quality check passed for EN Home and Institute, including English-only visible-language purity, synchronous static-language bootstrap and route/navigation integrity.")
     return 0
 
 

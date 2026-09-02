@@ -57,12 +57,40 @@ jobs:
         run: node --check scripts/wpa-public-entry-layer.js
       - name: Validate static builder CLI
         run: node scripts/build_static_translation.js --help
-      - name: Enforce SAFE-8L runtime containment contract
+      - name: Enforce SAFE-8M runtime containment contract
         run: |
           grep -Fq "function isMacedonianCanonical()" scripts/wpa-public-entry-layer.js
           grep -Fq "if(!isMacedonianCanonical() || !isHome()) return;" scripts/wpa-public-entry-layer.js
           grep -Fq "english-source-duplicate-suppression" languages/wpa-public-language-router-v2.js
           grep -Fq 'body::before{content:"WPA • TEST PHASE 2026"!important}' languages/wpa-public-language-router-v2.js
+          grep -Fq 'function seedCurrentDocumentLanguage()' languages/wpa-public-language-router-v2.js
+          grep -Fq 'var seededDocumentLanguage = seedCurrentDocumentLanguage();' languages/wpa-public-language-router-v2.js
+      - name: Verify synchronous language bootstrap before registry I/O
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const {JSDOM} = require('jsdom');
+          const router = fs.readFileSync('languages/wpa-public-language-router-v2.js', 'utf8');
+
+          function verify(url, lang, prior, expected) {
+            const dom = new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="index"><head></head><body></body></html>`, {
+              url,
+              runScripts: 'outside-only'
+            });
+            if (prior !== null) dom.window.localStorage.setItem('wpa.language', prior);
+            dom.window.fetch = () => new Promise(() => {});
+            dom.window.eval(router);
+            const stored = dom.window.localStorage.getItem('wpa.language');
+            const stamped = dom.window.document.documentElement.getAttribute('data-wpa-ui-language');
+            if (stored !== expected) throw new Error(`bootstrap storage mismatch for ${url}: expected ${expected}, got ${stored}`);
+            if (stamped !== expected) throw new Error(`bootstrap document stamp mismatch for ${url}: expected ${expected}, got ${stamped}`);
+          }
+
+          verify('https://worldprotocolacademy.mk/en/', 'en', null, 'en');
+          verify('https://worldprotocolacademy.mk/en/', 'en', 'mk', 'en');
+          verify('https://worldprotocolacademy.mk/', 'mk', 'en', 'mk');
+          console.log('SAFE-8M synchronous bootstrap invariant passed for fresh and stale UI state.');
+          NODE
       - name: Compose canonical English Home locale candidate
         run: |
           node - <<'NODE'
@@ -131,5 +159,11 @@ jobs:
           --append-script /languages/wpa-public-language-router-v2.js?v=2.0
       - name: Validate pure static target
         run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
+      - name: Enforce byte-for-byte deterministic committed outputs
+        run: |
+          cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
+          cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
+      - name: Validate committed public translation quality
+        run: python scripts/public_translation_quality_check.py
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
