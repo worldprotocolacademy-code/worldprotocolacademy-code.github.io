@@ -1,9 +1,14 @@
-/* WPA Public Language Router v2.1
+/* WPA Public Language Router v2.2
    Activation authority: /data/language-activation.json only.
    Metadata catalogue: /data/languages.json (labels/direction only; never activation).
    Public pages are prebuilt static HTML. This router never translates page content.
    SAFE-8L: bounded visibility rules may suppress source-language duplicate identity
    elements on static mirrors; they do not create or translate canonical content.
+   SAFE-8M: the already-loaded document language is synchronously seeded into the
+   canonical UI state before DOMContentLoaded so legacy UI consumers cannot default
+   an English static mirror back to Macedonian while the registry fetch is pending.
+   This bootstrap records the language of the document already being served; it does
+   not activate, publish or authorise any language route.
 */
 (function(){
   "use strict";
@@ -14,7 +19,7 @@
   var LEGACY_READ_KEYS = ["WPA_LANG_V6", "wpa_lang", "wpa_language", "wpa-lang"];
   var MENU_CLASS = "wpa-public-language-router-v2";
   var STYLE_ID = "wpa-public-language-router-v2-style";
-  var VISIBILITY_STYLE_ID = "wpa-public-language-visibility-v21";
+  var VISIBILITY_STYLE_ID = "wpa-public-language-visibility-v22";
 
   function normalisePath(){
     return String(window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -79,6 +84,18 @@
 
   function writeCanonicalLanguage(code){
     try { localStorage.setItem(CANONICAL_UI_KEY, code); } catch (_) {}
+  }
+
+  function documentLanguage(){
+    return String(document.documentElement.getAttribute("lang") || "").trim();
+  }
+
+  function seedCurrentDocumentLanguage(){
+    var code = documentLanguage();
+    if (!code) return "";
+    writeCanonicalLanguage(code);
+    try { document.documentElement.setAttribute("data-wpa-ui-language", code); } catch (_) {}
+    return code;
   }
 
   function validateRegistry(registry){
@@ -262,8 +279,11 @@
     return response.json();
   }
 
+  var storedLanguageAtBootstrap = safeReadStoredLanguage();
+  var seededDocumentLanguage = seedCurrentDocumentLanguage();
+
   async function init(){
-    var stored = safeReadStoredLanguage();
+    var stored = storedLanguageAtBootstrap;
     try {
       var result = await Promise.all([fetchJson(REGISTRY_URL), fetchJson(CATALOG_URL)]);
       var registry = validateRegistry(result[0]);
@@ -271,10 +291,11 @@
       buildPublicMenu(registry, catalog);
       reconcileSelects(registry, catalog);
       window.WPAPublicLanguageRouter = Object.freeze({
-        version:"2.1",
+        version:"2.2",
         activationAuthority:REGISTRY_URL,
         canonicalUiKey:CANONICAL_UI_KEY,
-        storedLanguageBeforeInit:stored,
+        storedLanguageBeforeBootstrap:stored,
+        seededDocumentLanguage:seededDocumentLanguage,
         publicLanguages:registry.public_languages.slice(),
         currentLanguage:currentLanguage(registry),
         pageKind:pageKind()
@@ -282,7 +303,7 @@
       document.dispatchEvent(new CustomEvent("wpa:public-language-router-ready", {detail:window.WPAPublicLanguageRouter}));
     } catch (error) {
       buildFailClosedMenu(error && error.message ? error.message : String(error));
-      window.WPAPublicLanguageRouter = Object.freeze({version:"2.1", activationAuthority:REGISTRY_URL, canonicalUiKey:CANONICAL_UI_KEY, state:"fail_closed"});
+      window.WPAPublicLanguageRouter = Object.freeze({version:"2.2", activationAuthority:REGISTRY_URL, canonicalUiKey:CANONICAL_UI_KEY, state:"fail_closed", storedLanguageBeforeBootstrap:stored, seededDocumentLanguage:seededDocumentLanguage});
       document.dispatchEvent(new CustomEvent("wpa:public-language-router-failed", {detail:{message:String(error)}}));
     }
   }
