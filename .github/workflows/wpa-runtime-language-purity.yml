@@ -1,0 +1,104 @@
+name: WPA Runtime Language Purity CI
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/wpa-performance.js'
+      - 'scripts/virtual-sande-institute-widget.js'
+      - '.github/workflows/wpa-runtime-language-purity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-language-purity:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Install deterministic DOM dependency
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Validate runtime syntax
+        run: |
+          node --check scripts/wpa-performance.js
+          node --check scripts/virtual-sande-institute-widget.js
+      - name: Verify MK EN FR Institute runtime purity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const {JSDOM} = require('jsdom');
+          const performanceRuntime = fs.readFileSync('scripts/wpa-performance.js', 'utf8');
+          const instituteWidget = fs.readFileSync('scripts/virtual-sande-institute-widget.js', 'utf8');
+
+          const expected = {
+            mk: {
+              name: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+              sublimate: 'Отвори WPA Sublimate',
+              journal: 'Отвори WPA Journal Live',
+              subtitle: 'WPA Institute академски асистент',
+              send: 'Испрати',
+              clear: 'Исчисти'
+            },
+            en: {
+              name: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+              sublimate: 'Open WPA Sublimate',
+              journal: 'Open WPA Journal Live',
+              subtitle: 'WPA Institute academic assistant',
+              send: 'Send',
+              clear: 'Clear'
+            },
+            fr: {
+              name: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
+              sublimate: 'Ouvrir WPA Sublimate',
+              journal: 'Ouvrir WPA Journal Live',
+              subtitle: 'Assistant académique du WPA Institute',
+              send: 'Envoyer',
+              clear: 'Effacer'
+            }
+          };
+
+          function baseDom(lang, url) {
+            return new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="institute"><head></head><body>
+              <div class="nav-wrap"><nav><a class="brand"><span class="brand-mark">WPA</span><div class="brand-text"></div></a><div class="nav-links"><a href="#wpa-public-tools-hub">Resources</a></div></nav></div>
+              <header class="hero"><div class="hero-cta"></div></header>
+            </body></html>`, {url, runScripts: 'outside-only'});
+          }
+
+          function verifyPerformance(lang, url) {
+            const dom = baseDom(lang, url);
+            dom.window.eval(performanceRuntime);
+            const doc = dom.window.document;
+            const name = doc.querySelector('.wpa-institute-name-current');
+            if (!name || name.textContent !== expected[lang].name || name.lang !== lang) throw new Error(`${lang}: performance Institute name mismatch`);
+            if (doc.querySelector('.wpa-institute-name-mk,.wpa-institute-name-en')) throw new Error(`${lang}: performance legacy bilingual brand residue`);
+            if (doc.getElementById('wpaSublimateInstituteHero')?.textContent !== expected[lang].sublimate) throw new Error(`${lang}: performance Sublimate CTA mismatch`);
+            if (doc.getElementById('wpaLiveInstituteHeroLink')?.textContent !== expected[lang].journal) throw new Error(`${lang}: performance Journal CTA mismatch`);
+          }
+
+          function verifyWidget(lang, url) {
+            const dom = baseDom(lang, url);
+            dom.window.eval(instituteWidget);
+            dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
+            const doc = dom.window.document;
+            const name = doc.querySelector('.wpa-institute-name-current');
+            if (!name || name.textContent !== expected[lang].name || name.lang !== lang) throw new Error(`${lang}: widget Institute name mismatch`);
+            if (doc.querySelector('.wpa-institute-name-mk,.wpa-institute-name-en')) throw new Error(`${lang}: widget legacy bilingual brand residue`);
+            if (doc.querySelector('.wpa-inst-vs-sub')?.textContent !== expected[lang].subtitle) throw new Error(`${lang}: widget subtitle mismatch`);
+            if (doc.getElementById('wpaInstVsSend')?.textContent !== expected[lang].send) throw new Error(`${lang}: widget send mismatch`);
+            if (doc.getElementById('wpaInstVsClear')?.textContent !== expected[lang].clear) throw new Error(`${lang}: widget clear mismatch`);
+          }
+
+          const urls = {
+            mk: 'https://worldprotocolacademy.mk/institute.html',
+            en: 'https://worldprotocolacademy.mk/en/institute.html',
+            fr: 'https://worldprotocolacademy.mk/languages/fr/institute.html'
+          };
+          for (const lang of ['mk','en','fr']) {
+            verifyPerformance(lang, urls[lang]);
+            verifyWidget(lang, urls[lang]);
+          }
+          console.log('WPA runtime language purity passed for MK, EN and FR across shared Institute runtime and Virtual Sande widget.');
+          NODE
