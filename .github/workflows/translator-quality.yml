@@ -34,8 +34,17 @@ jobs:
         run: |
           python -m py_compile scripts/translator_quality_check.py
           python -m py_compile scripts/fr_full_mirror_check.py
-      - name: Validate current SAFE-8Q French mirror
-        run: python scripts/fr_full_mirror_check.py
+          python -m py_compile scripts/fr_complete_parity_check.py
+      - name: Validate current SAFE-8R French parity
+        run: python scripts/fr_complete_parity_check.py
+      - name: Validate historical SAFE-8Q snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          git worktree add --detach "$tmp" c81ab09642d9fa3b51df013006fe7835614c240e
+          (cd "$tmp" && python scripts/fr_full_mirror_check.py)
+          git worktree remove "$tmp" --force
       - name: Reconstruct historical SAFE-8F activation view for legacy governance validator
         shell: bash
         run: |
