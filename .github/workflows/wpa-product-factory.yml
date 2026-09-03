@@ -1,6 +1,6 @@
 name: WPA 24x7 Institute Operations
 
-# v6: automatic work 24/7; production application requires explicit WPA Human Authority approval.
+# v7: automatic work 24/7 through product and channel adaptation; production and external publishing require explicit WPA Human Authority approval.
 on:
   workflow_dispatch:
   schedule:
@@ -15,6 +15,8 @@ on:
       - 'tools/wpa-watch/**'
       - 'generate-journal-watch.mjs'
       - 'journal/watch/**'
+      - 'data/social/**'
+      - 'social-studio/**'
 
 permissions:
   contents: write
@@ -78,22 +80,28 @@ jobs:
           SUBLIMATE_WORKER_URL: https://wpa-sublimate-engine.worldprotocolacademy.workers.dev
         run: node tools/wpa-institute-ops/build-ops.mjs
 
+      - name: 04 ADAPT finished products for social and messenger channels
+        run: node tools/wpa-institute-ops/build-product-distribution.mjs
+
       - name: Build simplified owner-approval control surface
         run: node tools/wpa-institute-ops/build-simple-approval.mjs
 
-      - name: Validate generated Institute outputs and approval gate
+      - name: Validate generated Institute outputs and approval gates
         run: |
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<6)process.exit(1);if(!m.products.some(p=>p.id==='protocolometry-digest'))process.exit(1);console.log('Validated',m.products.length,'product families including Protocolometry');"
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('products/protocolometryDigest.json'));if(!Array.isArray(p.measurement_profile)||p.measurement_profile.length<5)process.exit(1);if(!String(p.status||'').includes('NO ORDINAL RANKING'))process.exit(1);console.log('Protocolometry measurement guardrail validated');"
           node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('operations/institute-24x7-status.json'));if(!s.systems||!s.systems.global_institutions||!s.systems.sublimate||!s.systems.product_factory||!s.systems.protocolometry)process.exit(1);console.log('Institute operations status validated');"
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/global-institutions/operations/verification-candidates.json'));if(q.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);console.log('Institutional queue guardrail validated');"
-          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED')process.exit(1);if(a.owner_gate?.automatic_production_merge!=='DISABLED')process.exit(1);if(!Array.isArray(a.simple_flow)||a.simple_flow.length!==4)process.exit(1);console.log('Owner approval gate validated');"
+          node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('data/social/product-distribution-queue.json'));if(d.mode!=='AUTO_DRAFT_24X7_HUMAN_APPROVAL_BEFORE_DISTRIBUTION')process.exit(1);if(d.controls?.automatic_external_publishing!=='DISABLED')process.exit(1);if(!Array.isArray(d.items)||d.items.length<6)process.exit(1);if(!Array.isArray(d.channel_states)||d.channel_states.length<10)process.exit(1);console.log('Social/messenger distribution gate validated');"
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED')process.exit(1);if(a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);if(!Array.isArray(a.simple_flow)||a.simple_flow.length!==6)process.exit(1);console.log('Owner approval gate validated');"
           test -s products/index.html
           test -s products/dailyBrief.html
           test -s products/academicRadar.html
           test -s products/editorialDossiers.html
           test -s products/protocolometryDigest.html
           test -s products/sourceAudit.html
+          test -s social-studio/distribution/index.html
+          test -s data/social/product-distribution-queue.json
           test -s operations/index.html
           test -s operations/simple/index.html
           test -s operations/approval-queue.json
@@ -103,7 +111,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
           if git diff --cached --quiet; then
             echo 'No bootstrap output changes.'
             exit 0
@@ -124,7 +132,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -B automation/wpa-institute-24x7
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
           if git diff --cached --quiet; then
             echo 'No Institute operational changes.'
             echo 'WPA_PRODUCT_CHANGES=0' >> "$GITHUB_ENV"
@@ -134,7 +142,7 @@ jobs:
             echo 'WPA_PRODUCT_CHANGES=1' >> "$GITHUB_ENV"
           fi
 
-      - name: 04 APPROVE prepare protected production PR
+      - name: 05 APPROVE prepare protected production and distribution PR
         if: github.event_name != 'push' && env.WPA_PRODUCT_CHANGES == '1'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -143,8 +151,8 @@ jobs:
           if [ -z "$PR" ]; then
             gh pr create --base main --head automation/wpa-institute-24x7 \
               --title 'WPA Institute 24x7 update — OWNER APPROVAL REQUIRED' \
-              --body 'AUTO WORK completed: COLLECT → CHECK → PRODUCE. Human Gate remains closed. This PR must NOT auto-merge. Sande Smiljanov / WPA Human Authority must explicitly approve before production application. The cycle includes public-source monitoring, scholarly metadata, Journal Watch, Protocolometry, finished WPA work products, Sublimate source validation, Pilot 20 validation and bounded institutional evidence observations. No automatic canonical verification, scientific publication, peer-review decision or official institutional judgment.'
+              --body 'AUTO WORK completed: COLLECT → CHECK → PRODUCE → ADAPT. Social and messenger variants are prepared but NOT externally published. Human Gate remains closed. This PR must NOT auto-merge. Sande Smiljanov / WPA Human Authority must explicitly approve production application and any later external distribution. Telegram, WhatsApp, Viber and WeChat drafts are for official/opted-in channels only; unsolicited mass messaging and private-group auto-entry remain prohibited.'
             PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           fi
-          echo "Owner approval required for production PR: #$PR"
-          echo 'AUTO-MERGE IS INTENTIONALLY DISABLED.'
+          echo "Owner approval required for production/distribution PR: #$PR"
+          echo 'AUTO-MERGE AND AUTO-PUBLISH ARE INTENTIONALLY DISABLED.'
