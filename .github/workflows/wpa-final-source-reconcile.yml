@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/wpa-final-source-reconcile-20260826.py'
+      - '.github/workflows/wpa-final-source-reconcile.yml'
       - 'scripts/wpa-institute-header-canonical-20260903.py'
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
       - name: Apply Institute header canonical repair
         run: python scripts/wpa-institute-header-canonical-20260903.py
-      - name: Commit reconciled source
+      - name: Publish repaired source to PR branch
         shell: bash
         run: |
           if git diff --quiet; then
@@ -31,4 +31,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add institute.html
           git commit -m 'Apply Institute header canonical repair'
-          git push origin HEAD:main
+          git branch -f bot/institute-header-canonical-20260903 HEAD
+          git push --force origin bot/institute-header-canonical-20260903
