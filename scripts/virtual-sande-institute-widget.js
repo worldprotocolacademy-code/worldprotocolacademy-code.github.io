@@ -8,6 +8,11 @@
   var busy = false;
   var history = [];
 
+  function documentLanguage() {
+    var value = String(document.documentElement.lang || 'mk').trim().toLowerCase();
+    return value.split('-')[0] || 'mk';
+  }
+
   function mkText() {
     return {
       title: 'Virtual Sande AI',
@@ -17,7 +22,9 @@
       send: 'Испрати',
       clear: 'Исчисти',
       error: 'Во моментот не можам да одговорам. Обидете се повторно.',
-      label: 'Отвори Virtual Sande AI'
+      label: 'Отвори Virtual Sande AI',
+      close: 'Затвори',
+      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии'
     };
   }
 
@@ -30,12 +37,32 @@
       send: 'Send',
       clear: 'Clear',
       error: 'I cannot respond at the moment. Please try again.',
-      label: 'Open Virtual Sande AI'
+      label: 'Open Virtual Sande AI',
+      close: 'Close',
+      instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies'
+    };
+  }
+
+  function frText() {
+    return {
+      title: 'Virtual Sande AI',
+      subtitle: 'Assistant académique du WPA Institute',
+      welcome: 'Bienvenue. Je suis Virtual Sande AI, l’assistant académique de l’Institut de la World Protocol Academy.',
+      placeholder: 'Posez une question sur le protocole, la diplomatie, la communication ou la sécurité...',
+      send: 'Envoyer',
+      clear: 'Effacer',
+      error: 'Je ne peux pas répondre pour le moment. Veuillez réessayer.',
+      label: 'Ouvrir Virtual Sande AI',
+      close: 'Fermer',
+      instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité'
     };
   }
 
   function copy() {
-    return String(document.documentElement.lang || 'mk').toLowerCase().indexOf('en') === 0 ? enText() : mkText();
+    var lang = documentLanguage();
+    if (lang === 'fr') return frText();
+    if (lang === 'en') return enText();
+    return mkText();
   }
 
   function style() {
@@ -63,8 +90,7 @@
       '.wpa-inst-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
       '.wpa-institute-brand .brand-mark{font-size:0!important;line-height:0!important}',
       '.wpa-institute-brand .brand-text{writing-mode:horizontal-tb!important;text-orientation:mixed!important}',
-      '.wpa-institute-brand .wpa-institute-title-row{display:flex!important;flex-direction:row!important;align-items:baseline!important;flex-wrap:wrap!important;writing-mode:horizontal-tb!important}',
-      '.wpa-institute-brand .wpa-institute-name-mk,.wpa-institute-brand .wpa-institute-name-en,.wpa-institute-brand .wpa-institute-parent{writing-mode:horizontal-tb!important;text-orientation:mixed!important}',
+      '.wpa-institute-brand .wpa-institute-name-current{display:block!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important}',
       '@media(max-width:520px){.wpa-inst-vs-fab{right:14px;bottom:14px;width:58px;height:58px}.wpa-inst-vs-panel{right:14px;bottom:82px;height:calc(100vh - 104px)}}'
     ].join('');
     document.head.appendChild(s);
@@ -78,8 +104,10 @@
   function normalizeInstituteHeader() {
     var brand = document.querySelector('.nav-wrap nav .brand');
     if (!brand) return;
+    var lang = documentLanguage();
+    var t = copy();
     brand.classList.add('wpa-institute-brand');
-    brand.setAttribute('aria-label', 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies');
+    brand.setAttribute('aria-label', t.instituteName);
     var mark = brand.querySelector('.brand-mark');
     if (mark) {
       mark.textContent = '';
@@ -94,7 +122,7 @@
     }
     var text = brand.querySelector('.brand-text');
     if (text) {
-      text.innerHTML = '<span class="wpa-institute-title-row"><span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span><span class="wpa-institute-name-separator" aria-hidden="true">•</span><span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span></span><span class="wpa-institute-parent">Светска академија за протокол · World Protocol Academy</span>';
+      text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-current" lang="' + lang + '">' + t.instituteName + '</span>';
     }
   }
 
@@ -159,7 +187,7 @@
     panel.id = 'wpaInstVsPanel';
     panel.className = 'wpa-inst-vs-panel';
     panel.setAttribute('aria-label', t.title);
-    panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="Close">×</button></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="' + t.close + '">×</button></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
     var fab = document.createElement('button');
     fab.id = 'wpaInstVsFab';
     fab.className = 'wpa-inst-vs-fab';

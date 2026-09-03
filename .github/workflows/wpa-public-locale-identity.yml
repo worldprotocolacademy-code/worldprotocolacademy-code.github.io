@@ -1,0 +1,27 @@
+name: WPA Public Locale Identity CI
+
+on:
+  pull_request:
+    paths:
+      - 'locales/mk.json'
+      - 'locales/en.json'
+      - 'locales/fr.json'
+      - 'scripts/public_locale_identity_check.py'
+      - '.github/workflows/wpa-public-locale-identity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  locale-identity:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile locale identity validator
+        run: python -m py_compile scripts/public_locale_identity_check.py
+      - name: Enforce MK EN FR compatibility-locale identity
+        run: python scripts/public_locale_identity_check.py
