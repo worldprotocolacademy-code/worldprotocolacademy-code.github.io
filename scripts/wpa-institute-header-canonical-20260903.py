@@ -17,7 +17,8 @@ def main():
     )
 
     # Keep the actual WPA Journal visible in the primary Institute navigation.
-    nav = re.search(r'(<div class="nav-links">)(.*?)(</div>\s*</nav>)', text, re.S)
+    # The canonical nav carries data-wpa-nav, so allow attributes after class="nav-links".
+    nav = re.search(r'(<div class="nav-links"[^>]*>)(.*?)(</div>\s*</nav>)', text, re.S)
     if not nav:
         raise SystemExit("Institute primary nav not found")
     body = nav.group(2)
