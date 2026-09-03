@@ -1,19 +1,36 @@
 {
   "schema": "WPA Public Language Activation Registry",
-  "version": "1.3.0",
-  "updated": "2026-09-01",
+  "version": "1.4.0",
+  "updated": "2026-09-03",
   "policy_mode": "fail_closed",
   "canonical_master": "mk",
   "canonical_mirror": "en",
-  "public_languages": [
-    "mk",
-    "en",
-    "fr"
-  ],
+  "public_languages": ["mk", "en", "fr"],
   "public_routes": {
     "mk": {"home": "/", "institute": "/institute.html"},
     "en": {"home": "/en/", "institute": "/en/institute.html", "status": "canonical_mirror_public"},
     "fr": {"home": "/languages/fr/", "institute": "/languages/fr/institute.html", "status": "approved_public_pilot"}
+  },
+  "public_surface_routes": {
+    "home": {"mk":"/","en":"/en/","fr":"/languages/fr/"},
+    "institute": {"mk":"/institute.html","en":"/en/institute.html","fr":"/languages/fr/institute.html"},
+    "protocolometry": {"mk":"/protocolometry-center.html","fr":"/languages/fr/protocolometry-center.html"},
+    "journal": {"mk":"/journal/","fr":"/languages/fr/journal/"},
+    "programmes": {"mk":"/programmes.html","fr":"/languages/fr/programmes.html"},
+    "certification": {"mk":"/certification.html","fr":"/languages/fr/certification.html"},
+    "papers": {"mk":"/papers.html","fr":"/languages/fr/papers.html"},
+    "working_papers": {"mk":"/working-papers/","fr":"/languages/fr/working-papers/"},
+    "bibliography": {"mk":"/bibliography/","fr":"/languages/fr/bibliography/"},
+    "partnerships": {"mk":"/partnerships/","fr":"/languages/fr/partnerships/"},
+    "services": {"mk":"/wpa-services.html","fr":"/languages/fr/wpa-services.html"},
+    "virtual_sande": {"mk":"/virtual-sande-ai.html","fr":"/languages/fr/virtual-sande-ai.html"},
+    "forms": {"mk":"/forms/","fr":"/languages/fr/forms/"},
+    "institutional_enquiry": {"mk":"/institutional-enquiry.html","fr":"/languages/fr/institutional-enquiry.html"},
+    "research_framework": {"mk":"/wpa-research-framework.html","fr":"/languages/fr/wpa-research-framework.html"},
+    "ethics_integrity": {"mk":"/institute-ethics-integrity.html","fr":"/languages/fr/institute-ethics-integrity.html"},
+    "privacy": {"mk":"/privacy.html","fr":"/languages/fr/privacy.html"},
+    "public_disclaimer": {"mk":"/public-disclaimer.html","fr":"/languages/fr/public-disclaimer.html"},
+    "security": {"mk":"/security.html","fr":"/languages/fr/security.html"}
   },
   "world_language_target_count": 50,
   "target_selection_status": "final_50_canon_selected",
@@ -23,7 +40,7 @@
   "human_gate_required": true,
   "unlisted_languages_public": false,
   "phase2_wave1_canonical": ["zh-Hans","ru","hi","af","ar","fr","de","it","sq","sr"],
-  "compatibility_aliases": {"zh": "zh-Hans"},
+  "compatibility_aliases": {"zh":"zh-Hans"},
   "source_inventories": {
     "metadata_registry": "data/languages.json",
     "translator_manifest": "locales/manifest.json",
@@ -32,9 +49,9 @@
   },
   "alignment": {
     "required": false,
-    "status": "aligned_to_final_50_canon_with_english_static_mirror_and_french_public_pilot",
+    "status": "aligned_to_final_50_canon_with_english_static_mirror_and_french_route_preserving_public_pilot",
     "metadata_policy": "data/languages.json is a superset metadata catalog; entries must resolve to canonical, reserve or compatibility-alias codes and do not imply public activation.",
-    "wave1_policy": "French is the only activated Wave-1 public pilot. Every other Wave-1 language remains non-public. The existing zh draft route is retained as a compatibility alias for canonical zh-Hans until a separately reviewed route migration.",
+    "wave1_policy": "French is the only activated Wave-1 public pilot. SAFE-8Q extends its static public surface set without activating any additional language.",
     "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
   }
 }

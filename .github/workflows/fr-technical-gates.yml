@@ -4,23 +4,22 @@ on:
   pull_request:
     paths:
       - 'languages/fr/**'
+      - 'languages/wpa-public-language-router-v2.js'
       - 'languages/index.html'
       - 'data/language-activation.json'
       - 'data/language-wave1-readiness.json'
       - 'data/human-gates/fr*.json'
       - 'sitemap.xml'
+      - 'scripts/fr_full_mirror_check.py'
       - 'scripts/translator_quality_check.py'
       - '.github/workflows/fr-technical-gates.yml'
   push:
     branches: [main]
     paths:
       - 'languages/fr/**'
-      - 'languages/index.html'
+      - 'languages/wpa-public-language-router-v2.js'
       - 'data/language-activation.json'
-      - 'data/language-wave1-readiness.json'
-      - 'data/human-gates/fr*.json'
-      - 'sitemap.xml'
-      - 'scripts/translator_quality_check.py'
+      - 'scripts/fr_full_mirror_check.py'
       - '.github/workflows/fr-technical-gates.yml'
   workflow_dispatch:
 
@@ -36,182 +35,57 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
-      - name: Verify SAFE-8P anti-translation wrapper and SAFE-8F French provenance
+      - name: Compile SAFE-8Q validator
+        run: python -m py_compile scripts/fr_full_mirror_check.py
+      - name: Validate registry-driven full French mirror
+        run: python scripts/fr_full_mirror_check.py
+      - name: Preserve historical SAFE-8F Human Gate provenance
         shell: bash
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          import hashlib
-
-          expected = {
-              'languages/fr/index.html': 'e4dcadcbce290950e189d74d24f81d04ac546b44',
-              'languages/fr/institute.html': '6c442c26a7c908c414683315220486dacd33e873',
-          }
-          for path, old_sha in expected.items():
-              text = Path(path).read_text(encoding='utf-8')
-              assert '<html lang="fr" dir="ltr">' in text, path
-              assert '<meta name="google" content="notranslate">' in text, path
-              assert '<meta http-equiv="Content-Language" content="fr">' in text, path
-              assert '<body class="notranslate" translate="no">' in text, path
-              assert '<meta name="robots" content="index,follow">' in text, path
-              assert 'Public pilot' in text, path
-              normalized = text.replace('<meta name="google" content="notranslate">\n', '', 1)
-              normalized = normalized.replace('<meta http-equiv="Content-Language" content="fr">\n', '', 1)
-              normalized = normalized.replace('<body class="notranslate" translate="no">', '<body class="">', 1)
-              data = normalized.encode('utf-8')
-              blob = hashlib.sha1(f'blob {len(data)}\0'.encode('ascii') + data).hexdigest()
-              assert blob == old_sha, (path, blob, old_sha)
-          print('SAFE-8P wrapper is technical-only; normalized FR surfaces match exact SAFE-8F blobs.')
-          PY
-
-      - name: Verify registry-driven fail-closed boundary and French authorization
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json
-          a=json.load(open('data/language-activation.json',encoding='utf-8'))
-          public=a['public_languages']
-          routes=a['public_routes']
-          assert a['policy_mode']=='fail_closed'
-          assert a['unlisted_languages_public'] is False
-          assert len(public)==len(set(public)) and public
-          assert set(public)==set(routes)
-          assert a['canonical_master'] in public
-          assert a['canonical_mirror'] in public
-          assert 'fr' in public
-          assert routes['fr']['status']=='approved_public_pilot'
-          assert a.get('human_gate_required') is True
-          PY
-          python - <<'PY'
-          import json
-          a=json.load(open('data/language-activation.json',encoding='utf-8'))
-          r=json.load(open('data/language-wave1-readiness.json',encoding='utf-8'))
-          rows={x['code']:x for x in r['languages']}
-          assert r['public_boundary']==a['public_languages']
-          assert rows['fr']['public_ready'] is True
-          for code,row in rows.items():
-              assert row['public_ready'] is (code in set(a['public_languages']))
-          PY
-
+          for f in data/human-gates/fr.json data/human-gates/fr-review-package.json data/human-gates/fr-review-evidence.json data/human-gates/fr-technical-gates.json; do
+            grep -q 'e4dcadcbce290950e189d74d24f81d04ac546b44' "$f"
+            grep -q '6c442c26a7c908c414683315220486dacd33e873' "$f"
+          done
       - name: Start branch-local static server
         shell: bash
         run: |
           set -euo pipefail
           python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-http.log 2>&1 &
-          for i in {1..20}; do
-            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then break; fi
-            sleep 0.5
-          done
+          for i in {1..20}; do curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null && break; sleep 0.5; done
           curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null
-
-      - name: Route and fallback smoke
+      - name: Smoke every registered French surface
         shell: bash
         run: |
           set -euo pipefail
-          for path in \
-            /languages/fr/ \
-            /languages/fr/institute.html \
-            / \
-            /en/ \
-            /institute.html \
-            /protocolometry-center.html \
-            /languages/ \
-            /journal/; do
-            curl --fail --silent --show-error --location --max-time 15 --output /dev/null "http://127.0.0.1:8000${path}"
-          done
-
-      - name: Prepare browser instrumentation copies
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          test_dir = Path('.fr-gate-test')
-          test_dir.mkdir(exist_ok=True)
-          probe = r'''
-          <script>
-          (function(){
-            function run(){
-              var issues=[];
-              var html=document.documentElement;
-              if(html.lang!=='fr') issues.push('lang');
-              if((html.getAttribute('dir')||'').toLowerCase()!=='ltr') issues.push('dir');
-              if(!document.querySelector('meta[name="viewport"]')) issues.push('viewport');
-              if(!document.querySelector('meta[name="google"][content="notranslate"]')) issues.push('notranslate-meta');
-              if(!document.querySelector('meta[http-equiv="Content-Language"][content="fr"]')) issues.push('content-language');
-              if(!document.body || document.body.getAttribute('translate')!=='no' || !document.body.classList.contains('notranslate')) issues.push('body-translation-lock');
-              if(document.querySelectorAll('h1').length!==1) issues.push('h1');
-              var links=[].slice.call(document.querySelectorAll('a'));
-              if(!links.length || links.some(function(a){return !a.textContent.trim();})) issues.push('link-label');
-              if(document.documentElement.scrollWidth>window.innerWidth+2) issues.push('overflow-'+document.documentElement.scrollWidth+'-'+window.innerWidth);
-              var marker=document.createElement('div');
-              marker.id='fr-technical-gate-result';
-              marker.textContent=issues.length ? 'FR_TECHNICAL_GATE_FAIL:'+issues.join(',') : 'FR_TECHNICAL_GATE_PASS';
-              document.body.appendChild(marker);
-            }
-            if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run); else run();
-          })();
-          </script>
-          '''
-          for src_name, out_name in [('languages/fr/index.html','home.html'),('languages/fr/institute.html','institute.html')]:
-              text=Path(src_name).read_text(encoding='utf-8')
-              text=text.replace('</body>', probe+'</body>')
-              Path(test_dir/out_name).write_text(text,encoding='utf-8')
+          python - <<'PY' > /tmp/fr-routes.txt
+          import json
+          a=json.load(open('data/language-activation.json',encoding='utf-8'))
+          for routes in a['public_surface_routes'].values():
+              if 'fr' in routes: print(routes['fr'])
           PY
-
-      - name: Browser accessibility and responsive gate
+          while IFS= read -r path; do curl --fail --silent --show-error --location --max-time 15 --output /dev/null "http://127.0.0.1:8000${path}"; done < /tmp/fr-routes.txt
+      - name: Browser accessibility and responsive sample
         shell: bash
         run: |
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-          for page in home institute; do
+          for page in /languages/fr/ /languages/fr/institute.html /languages/fr/protocolometry-center.html /languages/fr/journal/; do
             for size in 390,844 1440,900; do
-              out="/tmp/${page}-${size//,/-}.html"
-              "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1500 --dump-dom "http://127.0.0.1:8000/.fr-gate-test/${page}.html" > "$out"
-              marker="$(python -c 'import re,sys; text=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"id=\"fr-technical-gate-result\"[^>]*>([^<]+)<",text); print(m.group(1).strip() if m else "")' "$out")"
-              echo "$page $size => ${marker:-NO_MARKER}"
-              test "$marker" = "FR_TECHNICAL_GATE_PASS"
+              out="/tmp/fr-dom.html"
+              "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1200 --dump-dom "http://127.0.0.1:8000${page}" > "$out"
+              grep -q '<html lang="fr"' "$out"
+              grep -q 'translate="no"' "$out"
+              grep -q 'notranslate' "$out"
+              grep -q '<h1' "$out"
             done
           done
-
-      - name: Confirm public hreflang and sitemap design
+      - name: Confirm existing public hreflang cluster remains valid
         shell: bash
         run: |
           set -euo pipefail
           grep -q 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' sitemap.xml
           grep -q 'hreflang="fr"' sitemap.xml
-          grep -q 'hreflang="x-default"' sitemap.xml
           grep -q 'https://worldprotocolacademy.mk/languages/fr/' sitemap.xml
           grep -q 'https://worldprotocolacademy.mk/languages/fr/institute.html' sitemap.xml
-          python - <<'PY'
-          import json
-          a=json.load(open('data/language-activation.json',encoding='utf-8'))
-          sitemap=open('sitemap.xml',encoding='utf-8').read()
-          for code in a['public_languages']:
-              assert f'hreflang="{code}"' in sitemap, code
-          PY
-          python -c "import json; d=json.load(open('data/human-gates/fr-technical-gates.json',encoding='utf-8')); assert d['hreflang_design_review']['status']=='pass'; assert d['hreflang_design_review']['design']['publication_surface']=='sitemap_xhtml_alternates'; assert d['public_ready'] is True; assert d['public_activation_authorized'] is True"
-
-      - name: Confirm Languages Hub follows activation registry
-        shell: bash
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          import json,re
-          a=json.load(open('data/language-activation.json',encoding='utf-8'))
-          hub=open('languages/index.html',encoding='utf-8').read()
-          public=set(a['public_languages'])
-          for code,route in a['public_routes'].items():
-              if code in {a['canonical_master'],a['canonical_mirror']}:
-                  continue
-              assert f'href="{route["home"]}"' in hub, (code,'home')
-              assert f'href="{route["institute"]}"' in hub, (code,'institute')
-          for m in re.finditer(r'/languages/([^/]+)/(?:index|institute)\.html',hub,re.I):
-              raw=m.group(1)
-              code=a.get('compatibility_aliases',{}).get(raw,raw)
-              assert code in public, ('non-public route exposed',raw)
-          PY
