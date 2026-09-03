@@ -19,7 +19,7 @@ if gate.get('native_human_lector_verified') is not False or gate.get('publicatio
 if gate.get('after_approval')!='no_commits_before_merge': err('post-approval freeze missing')
 surfaces=reg.get('public_surface_routes',{})
 if len(surfaces)!=57: err(f'expected 57 surfaces, got {len(surfaces)}')
-stale=['safe-8w kandidat','safe-8w-kandidat','nicht öffentlich aktiviert','bleiben bis zu einem eigenen human gate nicht öffentlich aktiviert','deutsch bleibt safe-8w','deutsche kandidatenoberfläche','kandidatenfassung','kandidatenübersetzung','keine deutsche aktivierung ohne eigenen human gate']
+stale=['safe-8w kandidat','safe-8w-kandidat','safe-8x','nicht öffentlich aktiviert','bleiben bis zu einem eigenen human gate nicht öffentlich aktiviert','deutsch bleibt safe-8w','deutsche kandidatenoberfläche','kandidatenfassung','kandidatenübersetzung','keine deutsche aktivierung ohne eigenen human gate']
 for sid,row in surfaces.items():
     if set(row)!=set(reg['public_languages']): err(f'{sid}: route language set mismatch')
     de=row.get('de','')
@@ -33,8 +33,8 @@ for sid,row in surfaces.items():
     if re.search(r'[\u0400-\u04FF]',t): err(f'{sid}: Cyrillic residue')
     low=t.lower()
     for phrase in stale:
-        if phrase in low: err(f'{sid}: stale nonpublic governance residue: {phrase}')
-    if 'human-gated öffentlicher pilot' not in low: err(f'{sid}: missing static Human-Gated public-pilot state label')
+        if phrase in low: err(f'{sid}: stale nonpublic/governance residue: {phrase}')
+    if 'human-gated öffentlicher pilot' not in low and 'human-gated öffentliche pilotfassung' not in low: err(f'{sid}: missing static Human-Gated public-pilot state label')
     robots='name="robots" content="noindex,nofollow"' in t
     if sid in ('home','institute'):
         if robots: err(f'{sid}: discovery surface remains noindex')
@@ -66,4 +66,4 @@ if errors:
     print('SAFE-8Y German activation check FAILED')
     for e in errors: print('-',e)
     sys.exit(1)
-print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/candidate/nonpublic text forbidden; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
+print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
