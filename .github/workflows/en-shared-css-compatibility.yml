@@ -1,0 +1,46 @@
+name: WPA English Shared CSS Compatibility CI
+on:
+  pull_request:
+    paths:
+      - 'en/**'
+      - 'data/human-gates/en-safe8u-candidate.json'
+      - 'scripts/en_shared_css_compatibility_check.py'
+      - 'scripts/en_full_fidelity_check.py'
+      - 'scripts/en_complete_parity_check.py'
+      - '.github/workflows/en-shared-css-compatibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'en/**'
+      - 'scripts/en_shared_css_compatibility_check.py'
+      - 'scripts/en_full_fidelity_check.py'
+      - 'scripts/en_complete_parity_check.py'
+      - '.github/workflows/en-shared-css-compatibility.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile English compatibility validators
+        run: python -m py_compile scripts/en_shared_css_compatibility_check.py scripts/en_full_fidelity_check.py scripts/en_complete_parity_check.py
+      - name: Enforce shared CSS compatibility and English purity
+        run: python scripts/en_shared_css_compatibility_check.py
+      - name: Static HTTP smoke representative English routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-en-safe8u-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/en/programmes.html >/dev/null; then break; fi
+            sleep 0.5
+          done
+          curl --fail --silent http://127.0.0.1:8000/en/programmes.html >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/en/security.html >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/en/certification.html >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/en/privacy.html >/dev/null
