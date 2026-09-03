@@ -1,6 +1,6 @@
-name: WPA 24x7 Product Factory
+name: WPA 24x7 Institute Operations
 
-# bootstrap-v3: branch-safe bootstrap plus protected scheduled production.
+# v4: continuous product generation + deterministic package validation + bounded institutional evidence lane.
 on:
   workflow_dispatch:
   schedule:
@@ -10,19 +10,20 @@ on:
       - feat/wpa-24x7-product-factory-20260904
     paths:
       - '.github/workflows/wpa-product-factory.yml'
+      - 'tools/wpa-institute-ops/**'
 
 permissions:
   contents: write
   pull-requests: write
 
 concurrency:
-  group: wpa-24x7-product-factory
+  group: wpa-24x7-institute-operations
   cancel-in-progress: false
 
 jobs:
   produce:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -53,62 +54,85 @@ jobs:
       - name: Build finished WPA product families
         run: node tools/wpa-product-factory/build-products.mjs
 
-      - name: Validate generated products
+      - name: Validate WPA Sublimate source package
+        run: |
+          node workers/wpa-sublimate-engine-v0.3.0/extract-bundle.mjs
+          cd workers/wpa-sublimate-engine-v0.3.0/extracted/wpa-sublimate-engine
+          npm install --no-audit --no-fund
+          npm test
+          npm run check
+          echo 'WPA_SUBLIMATE_SOURCE_VALIDATED=1' >> "$GITHUB_ENV"
+
+      - name: Validate Pilot 20 secured evidence package
+        run: |
+          python data/global-institutions/pilot-20/v1.3.2/secure_extract_bundle.py --verify
+          echo 'WPA_PILOT20_VALIDATED=1' >> "$GITHUB_ENV"
+
+      - name: Build WPA Institute continuous operations status
+        env:
+          WPA_INSTITUTION_BATCH: '16'
+          SUBLIMATE_WORKER_URL: https://wpa-sublimate-engine.worldprotocolacademy.workers.dev
+        run: node tools/wpa-institute-ops/build-ops.mjs
+
+      - name: Validate generated Institute outputs
         run: |
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<5)process.exit(1);console.log('Validated',m.products.length,'product families');"
+          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('operations/institute-24x7-status.json'));if(!s.systems||!s.systems.global_institutions||!s.systems.sublimate||!s.systems.product_factory)process.exit(1);console.log('Institute operations status validated');"
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/global-institutions/operations/verification-candidates.json'));if(q.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);console.log('Institutional queue guardrail validated');"
           test -s products/index.html
           test -s products/dailyBrief.html
           test -s products/academicRadar.html
           test -s products/editorialDossiers.html
           test -s products/sourceAudit.html
+          test -s operations/index.html
 
-      - name: Commit bootstrap products to feature branch
+      - name: Commit bootstrap outputs to feature branch
         if: github.event_name == 'push' && github.ref_name == 'feat/wpa-24x7-product-factory-20260904'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/
           if git diff --cached --quiet; then
-            echo 'No bootstrap product changes.'
+            echo 'No bootstrap output changes.'
             exit 0
           fi
-          git diff --cached --binary > /tmp/wpa-products.patch
+          git diff --cached --binary > /tmp/wpa-operations.patch
           git reset --hard
           git fetch origin "${GITHUB_REF_NAME}"
           git checkout -B "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
-          git apply --index /tmp/wpa-products.patch
-          git commit -m 'Bootstrap WPA 24x7 finished research products'
+          git apply --index /tmp/wpa-operations.patch
+          git commit -m 'Bootstrap WPA Institute 24x7 operational outputs'
           git push origin HEAD:${GITHUB_REF_NAME}
 
-      - name: Prepare scheduled product update branch
+      - name: Prepare scheduled Institute update branch
         if: github.event_name != 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git checkout -B automation/wpa-product-factory
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/
+          git checkout -B automation/wpa-institute-24x7
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/ operations/ data/global-institutions/operations/
           if git diff --cached --quiet; then
-            echo 'No product changes.'
+            echo 'No Institute operational changes.'
             echo 'WPA_PRODUCT_CHANGES=0' >> "$GITHUB_ENV"
           else
-            git commit -m "WPA Product Factory update $(date -u +%FT%TZ)"
-            git push --force origin automation/wpa-product-factory
+            git commit -m "WPA Institute 24x7 update $(date -u +%FT%TZ)"
+            git push --force origin automation/wpa-institute-24x7
             echo 'WPA_PRODUCT_CHANGES=1' >> "$GITHUB_ENV"
           fi
 
-      - name: Open or refresh protected production PR
+      - name: Open or refresh protected Institute production PR
         if: github.event_name != 'push' && env.WPA_PRODUCT_CHANGES == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          PR=$(gh pr list --head automation/wpa-product-factory --base main --state open --json number --jq '.[0].number // empty')
+          PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           if [ -z "$PR" ]; then
-            gh pr create --base main --head automation/wpa-product-factory \
-              --title 'WPA 24x7 Product Factory automated update' \
-              --body 'Automated WPA production run. Updates public-source monitoring, scholarly metadata discovery, Journal Watch intelligence and five finished WPA research/editorial product families. Scientific publication and official institutional judgments remain human-gated.'
-            PR=$(gh pr list --head automation/wpa-product-factory --base main --state open --json number --jq '.[0].number // empty')
+            gh pr create --base main --head automation/wpa-institute-24x7 \
+              --title 'WPA Institute 24x7 automated operational update' \
+              --body 'Continuous governed WPA Institute cycle: public-source monitoring, open scholarly metadata, Journal Watch intelligence, finished research/editorial product families, Sublimate source validation, Pilot 20 evidence validation, and bounded institutional reachability observations. Canonical institutional verification, scientific publication, peer-review decisions and official judgments remain human-gated.'
+            PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           fi
           echo "Production PR: #$PR"
-          gh pr merge "$PR" --auto --squash || echo 'Auto-merge could not be enabled; PR remains available for protected merge after checks.'
+          gh pr merge "$PR" --auto --squash || echo 'Auto-merge could not be enabled; PR remains protected until repository checks allow merge.'
