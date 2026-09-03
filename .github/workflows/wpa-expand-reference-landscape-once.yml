@@ -1,0 +1,50 @@
+name: WPA expand reference landscape once
+
+on:
+  push:
+    branches:
+      - feat/journal-reference-landscape-v2
+    paths:
+      - '.github/workflows/wpa-expand-reference-landscape-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Expand related and reference publications
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('journal/index.html')
+          text = p.read_text(encoding='utf-8')
+          start = text.find('<section id="related-publications"')
+          end = text.find('<section id="indexing"', start)
+          if start < 0 or end < 0:
+              raise SystemExit('Related-publications section not found')
+
+          section = '''<section id="related-publications" class="section"><span class="en">Academic &amp; Professional Publishing Landscape</span><h2>Сродни и референтни публикации</h2><p>WPA Journal ја препознава пошироката национална и меѓународна академска и професионална издавачка сцена во областите на протоколот, дипломатијата, меѓународните односи, јавната комуникација, безбедноста и одбраната. Ова е внимателно избрана, несеопфатна референтна листа за академска ориентација, библиографско откривање и професионална споредба — не каталог и не листа на партнери.</p><span class="en" style="margin-top:18px">North Macedonia · Selected references</span><div class="grid"><div class="card"><h3>Безбедност</h3><p><strong>Peer-reviewed / scientific journal.</strong> Меѓународно научно списание на Министерството за внатрешни работи на Република Северна Македонија, со содржини од областа на безбедноста, полициското работење, криминалистиката, криминологијата и сродни теми.</p><p><a href="https://mvr.gov.mk/mk-MK/odnosi-so-javnost/spisanie" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Безбедносни дијалози / Security Dialogues</h3><p><strong>Peer-reviewed / scientific journal.</strong> Академска публикација достапна преку UKIM Journals, насочена кон безбедносни студии и сродни истражувачки теми.</p><p><a href="https://journals.ukim.mk/index.php/sd/en" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Современа македонска одбрана</h3><p><strong>Peer-reviewed / scientific journal.</strong> Научна публикација од областа на безбедносните, одбранбените и воените науки и студиите по мир.</p><p><a href="https://mod.gov.mk/mk-MK/medija-centar/sovremena-makedonska-odbrana/sovremena-makedonska-odbrana" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Штит</h3><p><strong>Professional &amp; defence publication.</strong> Илустриран магазин на Министерството за одбрана со теми поврзани со Армијата, одбраната, безбедноста и воено-професионалната анализа.</p><p><a href="https://mod.gov.mk/mk-MK/medija-centar/magazin-stit/magazin-stit" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Journal of Liberty and International Affairs</h3><p><strong>Peer-reviewed / international affairs.</strong> Списание на Institute for Research and European Studies, Bitola, со фокус на политички науки, меѓународни односи, право и интердисциплинарни глобални прашања.</p><p><a href="https://e-jlia.com/" target="_blank" rel="noopener noreferrer">Journal website →</a></p></div></div><span class="en" style="margin-top:22px">International · Selected references</span><div class="grid"><div class="card"><h3>The Hague Journal of Diplomacy</h3><p><strong>Diplomatic studies.</strong> Меѓународен истражувачки журнал посветен на теоријата, практиката и техниките на дипломатијата, вклучително билатерална, мултилатерална, јавна и други современи форми на дипломатија.</p><p><a href="https://brill.com/view/journals/hjd/hjd-overview.xml" target="_blank" rel="noopener noreferrer">Publisher page →</a></p></div><div class="card"><h3>Diplomacy &amp; Statecraft</h3><p><strong>Diplomacy / international affairs.</strong> Меѓународен журнал за дипломатска и меѓународна историја, современо водење на меѓународните односи и практичарски согледувања.</p><p><a href="https://www.tandfonline.com/journals/fdps20" target="_blank" rel="noopener noreferrer">Publisher page →</a></p></div><div class="card"><h3>Place Branding and Public Diplomacy</h3><p><strong>Public diplomacy / reputation.</strong> Журнал на пресекот на public diplomacy, nation/place branding, репутација, јавна политика и сродни комуникациски и безбедносни прашања.</p><p><a href="https://link.springer.com/journal/41254" target="_blank" rel="noopener noreferrer">Publisher page →</a></p></div><div class="card"><h3>Defence Studies</h3><p><strong>Defence / strategy / security.</strong> Академски журнал за современа одбрана, одбранбена политика, стратегија, вооружени сили, војување и критички безбедносни студии.</p><p><a href="https://www.tandfonline.com/journals/fdef20" target="_blank" rel="noopener noreferrer">Publisher page →</a></p></div><div class="card"><h3>International Communication Gazette</h3><p><strong>International communication.</strong> Академски журнал за структури и процеси на меѓународна комуникација, регулаторни режими, прекугранични комуникациски текови и интеркултурна комуникација.</p><p><a href="https://journals.sagepub.com/home/GAZ" target="_blank" rel="noopener noreferrer">Publisher page →</a></p></div></div><div class="disclaimer" style="margin-top:16px"><strong>Независност и неповрзаност · Independence &amp; no affiliation.</strong><br>Надворешните врски се наведени исклучиво за академска ориентација, библиографско откривање и професионална референца. Нивното наведување не означува партнерство, афилијација, институционална поврзаност, одобрување или заемна поддршка меѓу WPA Journal и наведените издавачи или публикации. Изборот не претставува рангирање, оценка на еквивалентност или тврдење за идентичен уреднички опсег.<br><br><span lang="en">External links are provided solely for academic orientation, bibliographic discovery and professional reference. Their inclusion does not imply partnership, affiliation, institutional association, endorsement or reciprocal support between WPA Journal and the listed publishers or publications. Selection does not constitute a ranking, an equivalence assessment, or a claim of identical editorial scope.</span></div></section>\n'''
+
+          p.write_text(text[:start] + section + text[end:], encoding='utf-8')
+
+          d = Path('docs/WPA_JOURNAL_RELATED_PUBLICATIONS_REFERENCE_NOTE.md')
+          d.write_text('''# WPA Journal — Related Publications Reference Note\n\nPurpose: maintain a small, curated discovery layer of relevant national and international publications.\n\nThis section is not a partner directory, endorsement list, ranking, equivalence assessment, reciprocal-link arrangement, or statement of institutional association.\n\nCurrent curated set: 10 references — five North Macedonia-based / national-context references and five international references.\n\nMaintenance rule: keep the list deliberately small and thematically relevant. Do not use third-party logos without a separate rights basis. Do not relabel the section as Partners, Affiliates, Collaborators, Network, or Endorsers unless a documented relationship exists.\n''', encoding='utf-8')
+
+          out = p.read_text(encoding='utf-8')
+          for token in ['Journal of Liberty and International Affairs','The Hague Journal of Diplomacy','Diplomacy &amp; Statecraft','Place Branding and Public Diplomacy','Defence Studies','International Communication Gazette','не листа на партнери','does not imply partnership']:
+              if token not in out:
+                  raise SystemExit('Missing token: ' + token)
+
+      - name: Commit reference landscape
+        run: |
+          git config user.name "WPA Journal Reference Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add journal/index.html docs/WPA_JOURNAL_RELATED_PUBLICATIONS_REFERENCE_NOTE.md
+          git commit -m "Expand curated WPA Journal reference landscape"
+          git push
