@@ -1,0 +1,43 @@
+name: WPA German Complete Candidate CI
+
+on:
+  pull_request:
+    paths:
+      - 'languages/de/**'
+      - 'data/language-activation.json'
+      - 'data/human-gates/de-safe8w-candidate.json'
+      - 'scripts/de_complete_candidate_check.py'
+      - '.github/workflows/de-complete-candidate.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'languages/de/**'
+      - 'data/language-activation.json'
+      - 'data/human-gates/de-safe8w-candidate.json'
+      - 'scripts/de_complete_candidate_check.py'
+      - '.github/workflows/de-complete-candidate.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  german-candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate German complete nonpublic candidate
+        run: python scripts/de_complete_candidate_check.py
+      - name: Validate global language governance
+        run: python scripts/global_language_governance_check.py
+      - name: Confirm activation registry still fail-closed
+        run: |
+          python - <<'PY'
+          import json
+          d=json.load(open('data/language-activation.json',encoding='utf-8'))
+          assert d['public_languages']==['mk','en','fr']
+          assert 'de' not in d['public_routes']
+          print('German activation remains closed.')
+          PY
