@@ -53,8 +53,12 @@ if de_ready.get('native_human_lector_verified') is not False or de_ready.get('pu
 if readiness.get('counts')!={'canon':50,'public':4,'nonpublic':46,'existing_nonpublic_drafts':8,'planned_nonpublic':38}: err('readiness counts mismatch')
 wave_de=next((x for x in wave.get('languages',[]) if x.get('code')=='de'),{})
 if wave_de.get('public_ready') is not True or wave_de.get('activation_status')!='human_gated_public_pilot': err('Wave-1 DE readiness mismatch')
+sitemap_path=ROOT/'sitemap.xml'
+sitemap_text=sitemap_path.read_text(encoding='utf-8')
+if 'SAFE-8X' in sitemap_text: err('sitemap retains stale SAFE-8X German provenance')
+if 'DE SAFE-8Y Human-Gated discovery pilot' not in sitemap_text: err('sitemap missing SAFE-8Y German discovery provenance')
 ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
-tree=ET.parse(ROOT/'sitemap.xml')
+tree=ET.parse(sitemap_path)
 locs=[(n.text or '').strip() for n in tree.findall('.//s:url/s:loc',ns)]
 base='https://worldprotocolacademy.mk'
 for route in ('/languages/de/','/languages/de/institute.html'):
@@ -66,4 +70,4 @@ if errors:
     print('SAFE-8Y German activation check FAILED')
     for e in errors: print('-',e)
     sys.exit(1)
-print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
+print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; sitemap SAFE-8Y provenance enforced; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
