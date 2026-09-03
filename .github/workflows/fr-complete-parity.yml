@@ -1,0 +1,47 @@
+name: WPA French Complete Public Parity CI
+on:
+  pull_request:
+    paths:
+      - 'languages/fr/**'
+      - 'languages/wpa-public-language-router-v2.js'
+      - 'data/language-activation.json'
+      - 'data/human-gates/fr-safe8r-candidate.json'
+      - 'scripts/fr_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/fr-complete-parity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'languages/fr/**'
+      - 'languages/wpa-public-language-router-v2.js'
+      - 'data/language-activation.json'
+      - 'scripts/fr_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/fr-complete-parity.yml'
+  workflow_dispatch:
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile parity validator
+        run: python -m py_compile scripts/fr_complete_parity_check.py
+      - name: Enforce 57-surface French public parity
+        run: python scripts/fr_complete_parity_check.py
+      - name: Static HTTP smoke for every French route
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-safe8r-http.log 2>&1 &
+          python - <<'PY'
+          import json,urllib.request
+          r=json.load(open('data/language-activation.json',encoding='utf-8'))
+          for row in r['public_surface_routes'].values():
+              u='http://127.0.0.1:8000'+row['fr']
+              with urllib.request.urlopen(u,timeout=10) as x:
+                  assert x.status==200,(u,x.status)
+          print('All registered French public routes return HTTP 200.')
+          PY
