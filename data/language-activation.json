@@ -1,6 +1,6 @@
 {
   "schema": "WPA Public Language Activation Registry",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "updated": "2026-09-03",
   "policy_mode": "fail_closed",
   "canonical_master": "mk",
@@ -10,7 +10,7 @@
     "mk": {"home": "/", "institute": "/institute.html"},
     "en": {"home": "/en/", "institute": "/en/institute.html", "status": "canonical_mirror_public"},
     "fr": {"home": "/languages/fr/", "institute": "/languages/fr/institute.html", "status": "approved_public_pilot"},
-    "de": {"home": "/languages/de/", "institute": "/languages/de/institute.html", "status": "human_gated_public_pilot_candidate"}
+    "de": {"home": "/languages/de/", "institute": "/languages/de/institute.html", "status": "human_gated_public_pilot"}
   },
   "public_surface_routes": {
     "home":{"mk":"/","en":"/en/","fr":"/languages/fr/","de":"/languages/de/"},
@@ -82,12 +82,13 @@
   "compatibility_aliases": {"zh":"zh-Hans"},
   "alignment": {
     "required": true,
-    "status": "safe8x_german_public_pilot_activation_candidate",
+    "status": "safe8y_german_public_state_finalization_candidate",
     "route_parity_policy": "Every registered public surface must have static route-equivalent siblings for every public language before activation.",
     "translation_policy": "Public language pages are prebuilt static HTML; no runtime machine translation and no silent Macedonian or English fallback.",
-    "de_indexing_policy": "German Home and Institute are indexable on activation; the remaining 55 German public pilot surfaces stay noindex,nofollow until a separate indexing wave.",
+    "de_indexing_policy": "German Home and Institute are indexable; the remaining 55 German public pilot surfaces stay noindex,nofollow until a separate indexing wave.",
     "de_claim_boundary": "German is AI-assisted and Human-Gated; no native-human-lector or publication-grade line-by-line claim is made.",
-    "de_activation_status": "candidate_pending_exact_head_human_authority",
+    "de_activation_status": "human_gated_public_pilot",
+    "de_safe8x_hold": "Approved SAFE-8X head was not merged after post-approval read-only audit found stale nonpublic production text; SAFE-8Y is the corrective successor.",
     "deletion_policy": "No translator engine, loader, locale, language metadata entry or draft route may be deleted without zero-consumer evidence, dedicated CI and a separate reviewed pull request."
   }
 }

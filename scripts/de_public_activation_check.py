@@ -8,12 +8,13 @@ def err(x): errors.append(x)
 reg=json.loads((ROOT/'data/language-activation.json').read_text(encoding='utf-8'))
 readiness=json.loads((ROOT/'data/language-readiness-50.json').read_text(encoding='utf-8'))
 wave=json.loads((ROOT/'data/language-wave1-readiness.json').read_text(encoding='utf-8'))
-gate=json.loads((ROOT/'data/human-gates/de-safe8x-candidate.json').read_text(encoding='utf-8'))
+gate=json.loads((ROOT/'data/human-gates/de-safe8y-candidate.json').read_text(encoding='utf-8'))
 if reg.get('policy_mode')!='fail_closed': err('registry must remain fail_closed')
 if reg.get('public_languages')!=['mk','en','fr','de']: err('public language set/order must be MK/EN/FR/DE')
-if reg.get('public_routes',{}).get('de',{}).get('status')!='human_gated_public_pilot_candidate': err('DE top-level status mismatch')
-if gate.get('stage')!='SAFE-8X' or gate.get('baseline_main_exact')!='5ef02ba0d63b3f05d9fa539b5c7a614bd6103644': err('SAFE-8X provenance mismatch')
-if gate.get('status')!='candidate_pending_exact_head_human_authority': err('SAFE-8X gate must remain pending before approval/merge')
+if reg.get('public_routes',{}).get('de',{}).get('status')!='human_gated_public_pilot': err('DE operational status mismatch')
+if gate.get('stage')!='SAFE-8Y' or gate.get('predecessor_safe8x_approved_exact')!='1b82709755917d9a175b049fc6cca3e801096d91': err('SAFE-8Y provenance mismatch')
+if gate.get('status')!='candidate_pending_exact_head_human_authority': err('SAFE-8Y gate must remain pending before approval/merge')
+if gate.get('predecessor_safe8x_merge') is not False: err('SAFE-8X hold provenance must state not merged')
 if gate.get('native_human_lector_verified') is not False or gate.get('publication_grade_line_by_line_verified') is not False: err('German claim boundary overclaimed')
 if gate.get('after_approval')!='no_commits_before_merge': err('post-approval freeze missing')
 surfaces=reg.get('public_surface_routes',{})
@@ -29,6 +30,10 @@ for sid,row in surfaces.items():
     for needle in ('<html lang="de" dir="ltr">','name="google" content="notranslate"','http-equiv="Content-Language" content="de"','translate="no"'):
         if needle not in t: err(f'{sid}: missing {needle}')
     if re.search(r'[\u0400-\u04FF]',t): err(f'{sid}: Cyrillic residue')
+    low=t.lower()
+    stale=['safe-8w kandidat','safe-8w-kandidat','nicht öffentlich aktiviert','bleiben bis zu einem eigenen human gate nicht öffentlich aktiviert','deutsch bleibt safe-8w']
+    for phrase in stale:
+        if phrase in low: err(f'{sid}: stale nonpublic governance residue: {phrase}')
     robots='name="robots" content="noindex,nofollow"' in t
     if sid in ('home','institute'):
         if robots: err(f'{sid}: discovery surface remains noindex')
@@ -42,11 +47,11 @@ if '/languages/' in set(re.findall(r"\['[^']+','([^']+)'\]",js)): err('German na
 public_now=readiness.get('public_now',{})
 if list(public_now)!=reg['public_languages']: err('readiness public_now mismatch')
 de_ready=public_now.get('de',{})
+if de_ready.get('role')!='human_gated_public_pilot': err('readiness DE role mismatch')
 if de_ready.get('native_human_lector_verified') is not False or de_ready.get('publication_grade_line_by_line_verified') is not False: err('readiness claim boundary overclaimed')
 if readiness.get('counts')!={'canon':50,'public':4,'nonpublic':46,'existing_nonpublic_drafts':8,'planned_nonpublic':38}: err('readiness counts mismatch')
 wave_de=next((x for x in wave.get('languages',[]) if x.get('code')=='de'),{})
-if wave_de.get('public_ready') is not True or wave_de.get('activation_status')!='human_gated_public_pilot_candidate': err('Wave-1 DE readiness mismatch')
-# Sitemap discovery scope: DE Home and Institute only.
+if wave_de.get('public_ready') is not True or wave_de.get('activation_status')!='human_gated_public_pilot': err('Wave-1 DE readiness mismatch')
 ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
 tree=ET.parse(ROOT/'sitemap.xml')
 locs=[(n.text or '').strip() for n in tree.findall('.//s:url/s:loc',ns)]
@@ -57,7 +62,7 @@ for sid,row in surfaces.items():
     route=row['de']
     if sid not in ('home','institute') and base+route in locs: err(f'sitemap prematurely indexes DE surface {sid}')
 if errors:
-    print('SAFE-8X German activation check FAILED')
+    print('SAFE-8Y German activation check FAILED')
     for e in errors: print('-',e)
     sys.exit(1)
-print('SAFE-8X German activation candidate OK: 57/57 public routes; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority still pending.')
+print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/nonpublic text forbidden; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
