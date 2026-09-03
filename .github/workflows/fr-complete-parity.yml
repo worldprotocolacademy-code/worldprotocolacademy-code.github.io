@@ -36,6 +36,11 @@ jobs:
         run: |
           set -euo pipefail
           python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-fr-safe8r-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null; then break; fi
+            sleep 0.5
+          done
+          curl --fail --silent http://127.0.0.1:8000/languages/fr/ >/dev/null
           python - <<'PY'
           import json,urllib.request
           r=json.load(open('data/language-activation.json',encoding='utf-8'))
