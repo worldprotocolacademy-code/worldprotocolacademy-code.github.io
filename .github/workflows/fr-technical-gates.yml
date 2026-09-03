@@ -37,16 +37,34 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Verify SAFE-8F French activation provenance
+      - name: Verify SAFE-8P anti-translation wrapper and SAFE-8F French provenance
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git hash-object languages/fr/index.html)" = "e4dcadcbce290950e189d74d24f81d04ac546b44"
-          test "$(git hash-object languages/fr/institute.html)" = "6c442c26a7c908c414683315220486dacd33e873"
-          grep -q '<meta name="robots" content="index,follow">' languages/fr/index.html
-          grep -q '<meta name="robots" content="index,follow">' languages/fr/institute.html
-          grep -q 'Public pilot' languages/fr/index.html
-          grep -q 'Public pilot' languages/fr/institute.html
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          expected = {
+              'languages/fr/index.html': 'e4dcadcbce290950e189d74d24f81d04ac546b44',
+              'languages/fr/institute.html': '6c442c26a7c908c414683315220486dacd33e873',
+          }
+          for path, old_sha in expected.items():
+              text = Path(path).read_text(encoding='utf-8')
+              assert '<html lang="fr" dir="ltr">' in text, path
+              assert '<meta name="google" content="notranslate">' in text, path
+              assert '<meta http-equiv="Content-Language" content="fr">' in text, path
+              assert '<body class="notranslate" translate="no">' in text, path
+              assert '<meta name="robots" content="index,follow">' in text, path
+              assert 'Public pilot' in text, path
+              normalized = text.replace('<meta name="google" content="notranslate">\n', '', 1)
+              normalized = normalized.replace('<meta http-equiv="Content-Language" content="fr">\n', '', 1)
+              normalized = normalized.replace('<body class="notranslate" translate="no">', '<body class="">', 1)
+              data = normalized.encode('utf-8')
+              blob = hashlib.sha1(f'blob {len(data)}\0'.encode('ascii') + data).hexdigest()
+              assert blob == old_sha, (path, blob, old_sha)
+          print('SAFE-8P wrapper is technical-only; normalized FR surfaces match exact SAFE-8F blobs.')
+          PY
 
       - name: Verify registry-driven fail-closed boundary and French authorization
         shell: bash
@@ -122,6 +140,9 @@ jobs:
               if(html.lang!=='fr') issues.push('lang');
               if((html.getAttribute('dir')||'').toLowerCase()!=='ltr') issues.push('dir');
               if(!document.querySelector('meta[name="viewport"]')) issues.push('viewport');
+              if(!document.querySelector('meta[name="google"][content="notranslate"]')) issues.push('notranslate-meta');
+              if(!document.querySelector('meta[http-equiv="Content-Language"][content="fr"]')) issues.push('content-language');
+              if(!document.body || document.body.getAttribute('translate')!=='no' || !document.body.classList.contains('notranslate')) issues.push('body-translation-lock');
               if(document.querySelectorAll('h1').length!==1) issues.push('h1');
               var links=[].slice.call(document.querySelectorAll('a'));
               if(!links.length || links.some(function(a){return !a.textContent.trim();})) issues.push('link-label');
