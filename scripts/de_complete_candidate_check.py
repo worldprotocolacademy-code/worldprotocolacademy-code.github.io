@@ -8,10 +8,18 @@ surfaces=activation['public_surface_routes']
 assert len(surfaces)==57
 is_public='de' in activation['public_languages']
 if is_public:
-    manifest=json.loads((ROOT/'data/human-gates/de-safe8x-candidate.json').read_text(encoding='utf-8'))
+    status=activation['public_routes']['de']['status']
+    assert status in ('human_gated_public_pilot_candidate','human_gated_public_pilot')
+    if status=='human_gated_public_pilot':
+        manifest=json.loads((ROOT/'data/human-gates/de-safe8y-candidate.json').read_text(encoding='utf-8'))
+        assert manifest['stage']=='SAFE-8Y' and manifest['public_activation_scope'] is True
+        assert manifest['status']=='candidate_pending_exact_head_human_authority'
+        assert manifest['predecessor_safe8x_approved_exact']=='1b82709755917d9a175b049fc6cca3e801096d91'
+        assert manifest['predecessor_safe8x_merge'] is False
+    else:
+        manifest=json.loads((ROOT/'data/human-gates/de-safe8x-candidate.json').read_text(encoding='utf-8'))
+        assert manifest['stage']=='SAFE-8X' and manifest['public_activation_scope'] is True
     assert activation['public_languages']==['mk','en','fr','de']
-    assert activation['public_routes']['de']['status']=='human_gated_public_pilot_candidate'
-    assert manifest['stage']=='SAFE-8X' and manifest['public_activation_scope'] is True
     expected=[(key,row['de']) for key,row in surfaces.items()]
 else:
     manifest=json.loads((ROOT/'data/human-gates/de-safe8w-candidate.json').read_text(encoding='utf-8'))
@@ -38,6 +46,10 @@ for key,route in expected:
     assert f'<link rel="canonical" href="{canonical}">' in t, f'self canonical missing: {route}'
     assert '/languages/de/wpa-de-mirror.css' in t and '/languages/de/wpa-de-mirror.js' in t
     assert not re.search(r'[\u0400-\u04FF]',t), f'Cyrillic residue: {route}'
+    if is_public and activation['public_routes']['de']['status']=='human_gated_public_pilot':
+        low=t.lower()
+        for phrase in ('safe-8w kandidat','safe-8w-kandidat','nicht öffentlich aktiviert','deutsch bleibt safe-8w'):
+            assert phrase not in low, f'stale German nonpublic governance residue: {route}: {phrase}'
     robots='<meta name="robots" content="noindex,nofollow">' in t
     if not is_public:
         assert robots, f'candidate robots lock missing: {route}'
