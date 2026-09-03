@@ -46,5 +46,6 @@ jobs:
         run: python scripts/fr_complete_parity_check.py
       - name: Translator architecture
         run: python scripts/translator_architecture_check.py
-      - name: Translator quality
-        run: python scripts/translator_quality_check.py
+      # Historical FR/translator provenance is intentionally validated by
+      # .github/workflows/translator-quality.yml, which reconstructs the
+      # locked SAFE-8F activation blobs before running legacy validators.
