@@ -1,0 +1,108 @@
+name: WPA 24x7 Product Factory
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * *'
+  push:
+    branches:
+      - feat/wpa-24x7-product-factory-20260904
+    paths:
+      - '.github/workflows/wpa-product-factory.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: wpa-24x7-product-factory
+  cancel-in-progress: false
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install WPA Watch dependencies
+        working-directory: tools/wpa-watch
+        run: npm install --no-audit --no-fund
+
+      - name: Harvest public-source signals
+        working-directory: tools/wpa-watch
+        run: |
+          npm run watch
+          npm run report
+
+      - name: Harvest open scholarly metadata
+        run: node tools/wpa-product-factory/academic-harvest.mjs
+
+      - name: Build Journal Watch editorial intelligence
+        run: node generate-journal-watch.mjs
+
+      - name: Build finished WPA product families
+        run: node tools/wpa-product-factory/build-products.mjs
+
+      - name: Validate generated products
+        run: |
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<5)process.exit(1);console.log('Validated',m.products.length,'product families');"
+          test -s products/index.html
+          test -s products/dailyBrief.html
+          test -s products/academicRadar.html
+          test -s products/editorialDossiers.html
+          test -s products/sourceAudit.html
+
+      - name: Commit bootstrap products to feature branch
+        if: github.event_name == 'push' && github.ref_name == 'feat/wpa-24x7-product-factory-20260904'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/
+          if git diff --cached --quiet; then
+            echo 'No bootstrap product changes.'
+          else
+            git commit -m 'Bootstrap WPA 24x7 finished research products'
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
+
+      - name: Prepare scheduled product update branch
+        if: github.event_name != 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -B automation/wpa-product-factory
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/
+          if git diff --cached --quiet; then
+            echo 'No product changes.'
+            echo 'WPA_PRODUCT_CHANGES=0' >> "$GITHUB_ENV"
+          else
+            git commit -m "WPA Product Factory update $(date -u +%FT%TZ)"
+            git push --force origin automation/wpa-product-factory
+            echo 'WPA_PRODUCT_CHANGES=1' >> "$GITHUB_ENV"
+          fi
+
+      - name: Open or refresh protected production PR
+        if: github.event_name != 'push' && env.WPA_PRODUCT_CHANGES == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR=$(gh pr list --head automation/wpa-product-factory --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$PR" ]; then
+            gh pr create --base main --head automation/wpa-product-factory \
+              --title 'WPA 24x7 Product Factory automated update' \
+              --body 'Automated WPA production run. Updates public-source monitoring, scholarly metadata discovery, Journal Watch intelligence and five finished WPA research/editorial product families. Scientific publication and official institutional judgments remain human-gated.'
+            PR=$(gh pr list --head automation/wpa-product-factory --base main --state open --json number --jq '.[0].number // empty')
+          fi
+          echo "Production PR: #$PR"
+          gh pr merge "$PR" --auto --squash || echo 'Auto-merge could not be enabled; PR remains available for protected merge after checks.'
