@@ -1,0 +1,40 @@
+name: WPA English Full Fidelity CI
+on:
+  pull_request:
+    paths:
+      - 'en/**'
+      - 'data/human-gates/en-safe8t-candidate.json'
+      - 'scripts/en_full_fidelity_check.py'
+      - 'scripts/en_complete_parity_check.py'
+      - '.github/workflows/en-full-fidelity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'en/**'
+      - 'scripts/en_full_fidelity_check.py'
+      - 'scripts/en_complete_parity_check.py'
+      - '.github/workflows/en-full-fidelity.yml'
+  workflow_dispatch:
+jobs:
+  fidelity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile English full-fidelity validator
+        run: python -m py_compile scripts/en_full_fidelity_check.py scripts/en_complete_parity_check.py
+      - name: Enforce rich English Home and Institute plus 57-route purity
+        run: python scripts/en_full_fidelity_check.py
+      - name: Static HTTP smoke for English Home and Institute
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-en-safe8t-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/en/ >/dev/null; then break; fi
+            sleep 0.5
+          done
+          curl --fail --silent http://127.0.0.1:8000/en/ >/dev/null
+          curl --fail --silent http://127.0.0.1:8000/en/institute.html >/dev/null
