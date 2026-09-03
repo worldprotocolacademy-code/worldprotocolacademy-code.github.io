@@ -20,7 +20,7 @@ def patch_index():
     t=t.replace('Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Вонреден професор','Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата')
     t=t.replace('Вонреден професор на International University Europa Prima.','Академска афилијација: International University Europa Prima.')
     t=t.replace('Associate Professor at International University Europa Prima.','Academic affiliation: International University Europa Prima.')
-    t=t.replace('Assoc. Prof. Dr. Sande Smiljanov','Doc. Dr Sande Smiljanov').replace('Assoc. Prof. Dr Sande Smiljanov','Doc. Dr Sande Smiljanov')
+    t=t.replace('Sande Smiljanov, Ph.D.','Sande Smiljanov, Ph.D.').replace('Sande Smiljanov, Ph.D.','Sande Smiljanov, Ph.D.')
     t=t.replace('Посебна порта за универзитети, библиотеки, дипломатски академии и стратешки институционални партнери на WPA.','Посебна порта за универзитети, библиотеки, дипломатски академии и потенцијални стратешки институционални соработници на WPA.')
     t=re.sub(r'(<div[^>]*>)(25)(</div>\s*<div[^>]+data-i18n="a_bibliography\.6")',r'\g<1>26\g<3>',t,count=1)
     t=re.sub(r'(<div[^>]*>)(5)(</div>\s*<div[^>]+data-i18n="a_bibliography\.7")',r'\g<1>6\g<3>',t,count=1)
@@ -54,12 +54,12 @@ def patch_index_locales():
         if not isinstance(data,dict): continue
         changed=False
         if 'a_bibliography.2' in data:
-            data['a_bibliography.2']='Doc. Dr Sande Smiljanov · Author · Researcher · Platform Creator';changed=True
+            data['a_bibliography.2']='Sande Smiljanov, Ph.D. · Author · Researcher · Platform Creator';changed=True
         if 'a_platform.16' in data:
             data['a_platform.16']='A dedicated gateway for universities, libraries, diplomatic academies and prospective institutional collaborators of WPA.';changed=True
         for k,v in list(data.items()):
             if isinstance(v,str):
-                nv=v.replace('Assoc. Prof. Dr. Sande Smiljanov','Doc. Dr Sande Smiljanov').replace('Assoc. Prof. Dr Sande Smiljanov','Doc. Dr Sande Smiljanov')
+                nv=v.replace('Sande Smiljanov, Ph.D.','Sande Smiljanov, Ph.D.').replace('Sande Smiljanov, Ph.D.','Sande Smiljanov, Ph.D.')
                 if nv!=v:data[k]=nv;changed=True
         if changed:p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 
@@ -89,7 +89,7 @@ def patch_institute_locales():
 
 def patch_bibliography():
     rel='bibliography/index.html';t=read(rel)
-    t=t.replace('Assoc. Prof. Dr. Sande Smiljanov','Doc. Dr Sande Smiljanov').replace('assoc. prof. dr. sande smiljanov','doc. dr sande smiljanov')
+    t=t.replace('Sande Smiljanov, Ph.D.','Sande Smiljanov, Ph.D.').replace('assoc. prof. dr. sande smiljanov','doc. dr sande smiljanov')
     # WP-009: v1.1 is deposited; concept DOI is safe for latest-facing resolution.
     t=t.replace('english with macedonian abstract · v1.0 | author-reviewed final release doi 10.5281/zenodo.20641841','english with macedonian abstract · v1.1 | author-reviewed release concept doi 10.5281/zenodo.20641840 prior v1.0 version doi 10.5281/zenodo.20641841')
     t=t.replace('data-doi="10.5281/zenodo.20641841" data-index="doi zenodo" data-search="wp-009','data-doi="10.5281/zenodo.20641840" data-index="doi zenodo" data-search="wp-009',1)
@@ -123,12 +123,12 @@ def patch_working_papers():
 def verify():
     idx=read('index.html');inst=read('institute.html');bib=read('bibliography/index.html');wp=read('working-papers/index.html')
     assert 'Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата · Вонреден професор' not in idx
-    assert 'Assoc. Prof. Dr. Sande Smiljanov' not in idx
+    assert 'Sande Smiljanov, Ph.D.' not in idx
     assert re.search(r'>26</div>\s*<div[^>]+data-i18n="a_bibliography\.6"',idx)
     assert re.search(r'>6</div>\s*<div[^>]+data-i18n="a_bibliography\.7"',idx)
     for token in ('Gemini Omni / Video Workflow','Claude / Opus Research Workflow','Сите дванаесет WPA Working Papers','Hotel Inex Olgica'):assert token not in inst,token
     assert 'WP-001–WP-013' in inst
-    assert 'Doc. Dr Sande Smiljanov' in bib
+    assert 'Sande Smiljanov, Ph.D.' in bib
     assert 'data-wpa-wp013-category="1"' in bib
     assert 'v1.1' in bib and 'data-doi="10.5281/zenodo.20641840"' in bib
     assert 'href="https://doi.org/10.5281/zenodo.20641840" rel="noopener" target="_blank">Latest Zenodo version →</a>' in bib

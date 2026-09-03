@@ -10,9 +10,9 @@ Current public descriptor: **independent digital educational, research and autho
 Author identity for WPA public surfaces:
 
 - Macedonian: **Доц. д-р Санде Смиљанов**
-- English: **Doc. Dr Sande Smiljanov**
+- English: **Sande Smiljanov, Ph.D.**
 
-Legacy public strings such as **„Вонреден професор“**, **“Assoc. Prof.”** or **“Assoc. Prof. Dr.”** are not part of the current locked public identity and must not be reintroduced by HTML, locale files, chatbot fallback text, mail display names or generated templates.
+Legacy public strings such as **„Вонреден професор“**, **“Assoc. Prof.”** or **“Sande Smiljanov, Ph.D.”** are not part of the current locked public identity and must not be reintroduced by HTML, locale files, chatbot fallback text, mail display names or generated templates.
 
 ## 2. Publication metrics
 
@@ -54,7 +54,7 @@ Until separately evidenced and approved, public-facing date and venue are **to b
 
 Known public/operational role-address family includes `info@`, `contact@`, `office@`, `institute@`, `journal@`, `editor@` and Sande addresses on the WPA domains.
 
-**External account-setting reminder:** the three personal Gmail “Send mail as” display names for `editor@worldprotocolacademy.mk`, `sande@worldprotocolacademy.mk`, and `sande@wpa.mk` should display **Doc. Dr Sande Smiljanov**. This repository cannot enforce Gmail account-level display-name settings.
+**External account-setting reminder:** the three personal Gmail “Send mail as” display names for `editor@worldprotocolacademy.mk`, `sande@worldprotocolacademy.mk`, and `sande@wpa.mk` should display **Sande Smiljanov, Ph.D.**. This repository cannot enforce Gmail account-level display-name settings.
 
 ## 8. Governance boundary
 

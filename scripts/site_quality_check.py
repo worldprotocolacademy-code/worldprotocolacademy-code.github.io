@@ -132,7 +132,7 @@ def check_final_reconciliation_layer(errors):
     if not core.exists() or "/scripts/wpa-final-reconciliation-20260826.js" not in read_text(core):add_error(errors,"Performance core does not load final reconciliation layer")
     if not layer.exists():add_error(errors,"Missing final public reconciliation layer");return
     tx=read_text(layer)
-    for token in ("Doc. Dr Sande Smiljanov","WP-001–WP-013","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
+    for token in ("Sande Smiljanov, Ph.D.","WP-001–WP-013","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def main():

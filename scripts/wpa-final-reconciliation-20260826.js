@@ -1,7 +1,7 @@
 /* WPA final public reconciliation layer · 26 August 2026
    Purpose: close verified legacy drift without rewriting large public HTML files in-browser.
    Canonical boundaries: 26 academic publications; 23 Zenodo records = 13 WP + 9 PN + 1 plan;
-   Doc. Dr / Доц. д-р author identity; vendor-neutral public AI wording; OPC date/venue unconfirmed;
+   Sande Smiljanov, Ph.D. / Доц. д-р · Насловен доцент author identity; vendor-neutral public AI wording; OPC date/venue unconfirmed;
    WP-009 latest-facing reference uses the concept DOI until its v1.1 version-specific DOI is captured.
 */
 (function(){
@@ -12,12 +12,12 @@
   var path=String(window.location.pathname||'/').toLowerCase().replace(/\/+$/,'')||'/';
   var busy=false;
   var replacements=[
-    ['Assoc. Prof. Dr. Sande Smiljanov','Doc. Dr Sande Smiljanov'],
-    ['Assoc. Prof. Dr Sande Smiljanov','Doc. Dr Sande Smiljanov'],
-    ['Assoc. Prof. Sande Smiljanov','Doc. Dr Sande Smiljanov'],
+    ['Assoc. Prof. Dr. Sande Smiljanov','Sande Smiljanov, Ph.D.'],
+    ['Assoc. Prof. Dr Sande Smiljanov','Sande Smiljanov, Ph.D.'],
+    ['Assoc. Prof. Sande Smiljanov','Sande Smiljanov, Ph.D.'],
     [' · Вонреден професор',''],
     ['Вонреден професор на International University Europa Prima.','Академска афилијација: International University Europa Prima.'],
-    ['Associate Professor at International University Europa Prima.','Academic affiliation: International University Europa Prima.'],
+    ['Associate Professor at International University Europa Prima.','Docent (Titular), International University Europa Prima – Skopje.'],
     ['Gemini, Claude/Opus,','AI models,'],
     ['Gemini Omni / Video Workflow','Video AI Workflow'],
     ['Claude / Opus Research Workflow','Research AI Workflow'],
@@ -46,7 +46,7 @@
     var monoLabel=document.querySelector('[data-i18n="a_bibliography.7"]');
     if(totalLabel&&totalLabel.previousElementSibling&&totalLabel.previousElementSibling.textContent!=='26') totalLabel.previousElementSibling.textContent='26';
     if(monoLabel&&monoLabel.previousElementSibling&&monoLabel.previousElementSibling.textContent!=='6') monoLabel.previousElementSibling.textContent='6';
-    setText('[data-i18n="a_bibliography.2"]','Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата','Doc. Dr Sande Smiljanov · Author · Researcher · Platform Creator');
+    setText('[data-i18n="a_bibliography.2"]','Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата','Sande Smiljanov, Ph.D. · Docent (Titular) · Author · Researcher · Platform Creator');
     var partner=document.querySelector('[data-i18n="a_platform.16"]');
     if(partner){
       var pv=langIsMk()?'Посебна порта за универзитети, библиотеки, дипломатски академии и потенцијални стратешки институционални соработници на WPA.':'A dedicated gateway for universities, libraries, diplomatic academies and prospective institutional collaborators of WPA.';
@@ -70,7 +70,7 @@
     if(path!=='/bibliography'&&path!=='/bibliography/index.html') return;
     var profile=document.querySelector('#academic-profiles + .bib-entry, #academic-profiles ~ .bib-entry');
     if(profile){
-      var en=profile.querySelector('.bib-en');if(en&&en.textContent!=='Doc. Dr Sande Smiljanov')en.textContent='Doc. Dr Sande Smiljanov';
+      var en=profile.querySelector('.bib-en');if(en&&en.textContent!=='Sande Smiljanov, Ph.D.')en.textContent='Sande Smiljanov, Ph.D.';
       if(profile.dataset.search)profile.dataset.search=textFix(profile.dataset.search);
     }
     var wp9=document.getElementById('wp-009');
