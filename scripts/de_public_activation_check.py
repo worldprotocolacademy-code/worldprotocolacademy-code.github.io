@@ -45,6 +45,11 @@ js=(ROOT/'languages/de/wpa-de-mirror.js').read_text(encoding='utf-8')
 if "localStorage.setItem('wpa.language','de')" not in js: err('DE runtime must persist selected public language')
 if re.search(r'[\u0400-\u04FF]',js): err('Cyrillic residue in German shared runtime')
 if '/languages/' in set(re.findall(r"\['[^']+','([^']+)'\]",js)): err('German nav escapes to generic languages route')
+router=(ROOT/'languages/wpa-public-language-router-v2.js').read_text(encoding='utf-8')
+if 'route.status === "human_gated_public_pilot"' not in router or 'return "Human-Gated public pilot"' not in router:
+    err('shared public-language router drops German Human-Gated pilot qualifier')
+if 'route.status === "approved_public_pilot"' not in router or 'return "public pilot"' not in router:
+    err('shared public-language router no longer preserves approved public-pilot qualifier')
 public_now=readiness.get('public_now',{})
 if list(public_now)!=reg['public_languages']: err('readiness public_now mismatch')
 de_ready=public_now.get('de',{})
@@ -70,4 +75,4 @@ if errors:
     print('SAFE-8Y German activation check FAILED')
     for e in errors: print('-',e)
     sys.exit(1)
-print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; sitemap SAFE-8Y provenance enforced; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
+print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; shared router preserves Human-Gated pilot qualifier; sitemap SAFE-8Y provenance enforced; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
