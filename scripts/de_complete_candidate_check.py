@@ -37,11 +37,14 @@ for key,route in expected:
     assert not re.search(r'[\u0400-\u04FF]',t), f'Cyrillic residue: {route}'
 js=(ROOT/'languages/de/wpa-de-mirror.js').read_text(encoding='utf-8')
 assert "localStorage.setItem('wpa.language','de')" not in js
-js_hrefs=set(re.findall(r'href=\\?"([^"\\]+)',js))
-js_hrefs.update(re.findall(r"\['[^']+','([^']+)'\]",js))
-for href in js_hrefs:
+nav_hrefs=set(re.findall(r"\['[^']+','([^']+)'\]",js))
+footer_hrefs=set(re.findall(r'<a href="([^"]+)"',js))
+shared_hrefs=nav_hrefs|footer_hrefs
+assert shared_hrefs, 'German shared navigation/footer produced no auditable links'
+for href in shared_hrefs:
     assert href.startswith('/languages/de/'), f'German shared navigation/footer escapes namespace: {href}'
-assert '/languages/' not in js_hrefs, 'German shared navigation must not escape to generic language hub'
+assert '/languages/' not in shared_hrefs, 'German shared navigation must not escape to generic language hub'
+assert '/languages/de/languages-hub.html' in nav_hrefs, 'German navigation must expose the complete German surface index'
 hub=(ROOT/'languages/de/languages-hub.html').read_text(encoding='utf-8')
 hub_hrefs=set(re.findall(r'href="([^"]+)"',hub))
 hub_surface_hrefs={h for h in hub_hrefs if h.startswith('/languages/de/') and not h.endswith(('wpa-de-mirror.css','wpa-de-mirror.js'))}
