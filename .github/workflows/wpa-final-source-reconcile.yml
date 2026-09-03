@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/wpa-final-source-reconcile-20260826.py'
+      - 'scripts/wpa-institute-header-canonical-20260903.py'
 
 permissions:
   contents: write
@@ -18,7 +19,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Apply preserve-first reconciliation
-        run: python scripts/wpa-final-source-reconcile-20260826.py
+        run: |
+          python scripts/wpa-final-source-reconcile-20260826.py
+          python scripts/wpa-institute-header-canonical-20260903.py
       - name: Commit reconciled source
         shell: bash
         run: |
