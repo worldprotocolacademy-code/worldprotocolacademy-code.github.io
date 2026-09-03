@@ -1,0 +1,57 @@
+name: Add WPA Journal related publications once
+
+on:
+  push:
+    branches:
+      - feat/journal-related-publications-20260903
+    paths:
+      - '.github/workflows/add-related-publications-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add related publications section
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('journal/index.html')
+          text = p.read_text(encoding='utf-8')
+
+          old_nav = '<a href="#indexing">Indexing</a><a href="#console">Console</a>'
+          new_nav = '<a href="#indexing">Indexing</a><a href="#related-publications">Сродни публикации</a><a href="#console">Console</a>'
+          if old_nav in text:
+              text = text.replace(old_nav, new_nav, 1)
+
+          marker = '<section id="indexing" class="section">'
+          if marker not in text:
+              raise SystemExit('Indexing section marker not found')
+
+          section = '''<section id="related-publications" class="section"><span class="en">Academic &amp; Professional Publishing Landscape</span><h2>Сродни и референтни публикации</h2><p>WPA Journal ја препознава пошироката национална академска и професионална издавачка сцена во областите на безбедноста, одбраната, дипломатијата и сродните институционални студии. Следните надворешни извори се наведени за академска ориентација, библиографско откривање и професионална референца.</p><div class="grid"><div class="card"><h3>Безбедност</h3><p><strong>Peer-reviewed / scientific journal.</strong> Меѓународно научно списание на Министерството за внатрешни работи на Република Северна Македонија, со содржини од областа на безбедноста, полициското работење, криминалистиката, криминологијата и сродни теми.</p><p><a href="https://mvr.gov.mk/mk-MK/odnosi-so-javnost/spisanie" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Безбедносни дијалози / Security Dialogues</h3><p><strong>Peer-reviewed / scientific journal.</strong> Академска публикација достапна преку UKIM Journals, насочена кон безбедносни студии и сродни истражувачки теми.</p><p><a href="https://journals.ukim.mk/index.php/sd/en" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Современа македонска одбрана</h3><p><strong>Peer-reviewed / scientific journal.</strong> Научна публикација од областа на безбедносните, одбранбените и воените науки и студиите по мир.</p><p><a href="https://mod.gov.mk/mk-MK/medija-centar/sovremena-makedonska-odbrana/sovremena-makedonska-odbrana" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div><div class="card"><h3>Штит</h3><p><strong>Professional &amp; defence publication.</strong> Илустриран магазин на Министерството за одбрана со теми поврзани со Армијата, одбраната, безбедноста и воено-професионалната анализа.</p><p><a href="https://mod.gov.mk/mk-MK/medija-centar/magazin-stit/magazin-stit" target="_blank" rel="noopener noreferrer">Официјална страница →</a></p></div></div><div class="disclaimer" style="margin-top:16px"><strong>Независност и неповрзаност · Independence &amp; no affiliation.</strong><br>Надворешните врски се наведени исклучиво за академска ориентација, библиографско откривање и професионална референца. Нивното наведување не означува партнерство, афилијација, институционална поврзаност, одобрување или заемна поддршка меѓу WPA Journal и наведените издавачи или публикации.<br><br><span lang="en">External links are provided solely for academic orientation, bibliographic discovery and professional reference. Their inclusion does not imply partnership, affiliation, institutional association, endorsement or reciprocal support between WPA Journal and the listed publishers or publications.</span></div></section>'''
+
+          if 'id="related-publications"' not in text:
+              text = text.replace(marker, section + '\n' + marker, 1)
+
+          p.write_text(text, encoding='utf-8')
+
+      - name: Sanity checks
+        run: |
+          grep -q 'id="related-publications"' journal/index.html
+          grep -q 'Безбедносни дијалози / Security Dialogues' journal/index.html
+          grep -q 'does not imply partnership' journal/index.html
+
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "WPA Journal Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/add-related-publications-once.yml
+          git add journal/index.html
+          git commit -m "Add related publications reference section"
+          git push
