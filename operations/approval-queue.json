@@ -1,0 +1,89 @@
+{
+  "generated": "2026-09-03T23:38:01.430Z",
+  "mode": "OWNER_APPROVAL_REQUIRED",
+  "owner_gate": {
+    "authority": "Sande Smiljanov / WPA Human Authority",
+    "automatic_work": "ENABLED_24X7",
+    "automatic_production_merge": "DISABLED",
+    "approval_method": "Explicit owner approval followed by protected GitHub PR merge",
+    "rule": "The systems may collect, measure, validate, draft and package continuously. Production application, canonical changes, scientific publication and official institutional judgments require explicit human approval."
+  },
+  "simple_flow": [
+    {
+      "step": 1,
+      "name": "COLLECT",
+      "mk": "Собери",
+      "automation": "automatic",
+      "systems": [
+        "WPA Watch",
+        "Academic Search/Harvest"
+      ]
+    },
+    {
+      "step": 2,
+      "name": "CHECK",
+      "mk": "Провери",
+      "automation": "automatic",
+      "systems": [
+        "Protocolometry",
+        "Sublimate validation",
+        "Pilot 20 validation",
+        "Global Institutions evidence lane"
+      ]
+    },
+    {
+      "step": 3,
+      "name": "PRODUCE",
+      "mk": "Произведи",
+      "automation": "automatic",
+      "systems": [
+        "Journal Watch dossiers",
+        "WPA Product Factory"
+      ]
+    },
+    {
+      "step": 4,
+      "name": "APPROVE",
+      "mk": "Одобри",
+      "automation": "human_only",
+      "systems": [
+        "Production PR merge",
+        "Canonical revision",
+        "Scientific publication",
+        "Official institutional judgment"
+      ]
+    }
+  ],
+  "current_cycle": {
+    "watch_sources_live": 5,
+    "watch_sources_total": 9,
+    "journal_candidates": 40,
+    "journal_ready_for_editorial_review": 32,
+    "journal_classification_holds": 8,
+    "journal_detected": 32,
+    "finished_product_families": 6,
+    "institutional_human_review_candidates": 11,
+    "protocolometry_status": "OPERATIONAL_MEASUREMENT_LAYER",
+    "sublimate_status": "PASS_THIS_CYCLE",
+    "pilot20_status": "PASS_THIS_CYCLE"
+  },
+  "queues": {
+    "journal": {
+      "state": "HUMAN_REVIEW_PRESENT",
+      "total": 40,
+      "ready": 32,
+      "holds": 8,
+      "source": "/journal/watch/"
+    },
+    "products": {
+      "state": "BUILT_AWAITING_PRODUCTION_APPROVAL",
+      "total": 6,
+      "source": "/products/"
+    },
+    "institutions": {
+      "state": "HUMAN_VERIFICATION_QUEUE",
+      "total": 11,
+      "source": "/data/global-institutions/operations/verification-candidates.json"
+    }
+  }
+}
