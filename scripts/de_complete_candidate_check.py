@@ -18,6 +18,8 @@ for key,row in surfaces.items():
     assert fr.startswith('/languages/fr/')
     de=fr.replace('/languages/fr/','/languages/de/',1)
     expected.append((key,de))
+expected_routes={route for _,route in expected}
+assert len(expected_routes)==57
 for key,route in expected:
     rel=route.lstrip('/')
     if route.endswith('/'):
@@ -35,8 +37,18 @@ for key,route in expected:
     assert not re.search(r'[\u0400-\u04FF]',t), f'Cyrillic residue: {route}'
 js=(ROOT/'languages/de/wpa-de-mirror.js').read_text(encoding='utf-8')
 assert "localStorage.setItem('wpa.language','de')" not in js
-for href in re.findall(r"\['[^']+','([^']+)'\]",js):
-    assert href.startswith('/languages/de/'), f'German nav escapes namespace: {href}'
-assert "href=\"/languages/\"" not in js or True
+js_hrefs=set(re.findall(r'href=\\?"([^"\\]+)',js))
+js_hrefs.update(re.findall(r"\['[^']+','([^']+)'\]",js))
+for href in js_hrefs:
+    assert href.startswith('/languages/de/'), f'German shared navigation/footer escapes namespace: {href}'
+assert '/languages/' not in js_hrefs, 'German shared navigation must not escape to generic language hub'
+hub=(ROOT/'languages/de/languages-hub.html').read_text(encoding='utf-8')
+hub_hrefs=set(re.findall(r'href="([^"]+)"',hub))
+hub_surface_hrefs={h for h in hub_hrefs if h.startswith('/languages/de/') and not h.endswith(('wpa-de-mirror.css','wpa-de-mirror.js'))}
+missing=expected_routes-hub_surface_hrefs
+extra=hub_surface_hrefs-expected_routes
+assert not missing, f'German surface index missing routes: {sorted(missing)}'
+assert not extra, f'German surface index contains unregistered German routes: {sorted(extra)}'
+assert len(hub_surface_hrefs)==57
 assert len(expected)==manifest['registered_surface_count']==57
-print('SAFE-8W German candidate OK: 57/57 static surfaces; de remains nonpublic and fail-closed.')
+print('SAFE-8W German candidate OK: 57/57 static surfaces; complete German index; namespace-contained; de remains nonpublic and fail-closed.')
