@@ -131,7 +131,7 @@ def patch_journal_flipbook():
         "The WPA Journal commits to accessibility without compromise of integrity."
     )
     t = t.replace('"honorificPrefix": "Assoc. Prof. Dr."', '"honorificPrefix": "Doc. Dr"')
-    t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
+    t = t.replace("Sande Smiljanov, Ph.D.", "Sande Smiljanov, Ph.D.")
     t = patch_money_tokens(t)
     write(rel, t)
 
@@ -210,7 +210,7 @@ def patch_digital_licence_archive():
         '<div class="box"><p style="margin:0;"><strong>INACTIVE / FROZEN.</strong> These archived terms are retained for reference and are not an active checkout, purchase invitation or current commercial offer.</p><p class="en" lang="en" style="margin:4px 0 0;">No transaction is enabled from this page.</p></div>',
         t, count=1, flags=re.S,
     )
-    t = t.replace("Assoc. Prof. Dr. Sande Smiljanov", "Doc. Dr Sande Smiljanov")
+    t = t.replace("Sande Smiljanov, Ph.D.", "Sande Smiljanov, Ph.D.")
     t = patch_money_tokens(t)
     write(rel, t)
 

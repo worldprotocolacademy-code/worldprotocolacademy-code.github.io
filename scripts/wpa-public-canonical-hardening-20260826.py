@@ -84,7 +84,7 @@ def patch_services():
 def patch_certification():
     rel = 'certification.html'
     t = read(rel)
-    t = t.replace('<meta name="author" content="Assoc. Prof. Dr. Sande Smiljanov">', '<meta name="author" content="Doc. Dr Sande Smiljanov">')
+    t = t.replace('<meta name="author" content="Sande Smiljanov, Ph.D.">', '<meta name="author" content="Sande Smiljanov, Ph.D.">')
     t = t.replace('Четири јасни WPA сертификати. Еден проверлив систем на професионална подготвеност.', 'Четири WPA certificate pathways во развој. Една demo рамка за проверлива професионална подготвеност.')
     t = t.replace('World Protocol Academy ја гради сертификацијата како structured non-degree professional education system:', 'World Protocol Academy развива demo certification architecture како structured non-degree professional education concept:')
     t = t.replace('Сертификатот не е само\n          потврда за присуство, туку запис за завршена професионална патека и проверлива изведба.', 'Официјално издавање сè уште не е активно. Сите прикажани certificate IDs, verification flows и holder wording се fictitious/test records за демонстрација на архитектурата.')
