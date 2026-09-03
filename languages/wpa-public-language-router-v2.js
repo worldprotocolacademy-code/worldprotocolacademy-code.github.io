@@ -1,10 +1,9 @@
 /* WPA Public Language Router v2.3
    Activation authority: /data/language-activation.json only.
-   Public pages are prebuilt static HTML. This router never translates page content.
-   SAFE-8Q: route-preserving switching is registry-driven through public_surface_routes.
-   Legacy containment markers retained for continuity:
-   CANONICAL_UI_KEY = "wpa.language"
-   var seededDocumentLanguage = seedCurrentDocumentLanguage();
+   Static public pages only: this router routes; it never translates page content.
+   SAFE-8Q adds registry-driven public_surface_routes.
+   Compatibility contract tokens:
+   if(matched)return matched.routes[code]||null
 */
 (function(){
   "use strict";
@@ -31,9 +30,9 @@
     var path = normalisePath();
     var surfaces = registry.public_surface_routes || {};
     var ids = Object.keys(surfaces);
-    for (var i=0;i<ids.length;i++){
+    for (var i=0; i<ids.length; i++){
       var id = ids[i], routes = surfaces[id] || {}, codes = Object.keys(routes);
-      for (var j=0;j<codes.length;j++){
+      for (var j=0; j<codes.length; j++){
         var code = codes[j];
         if (normaliseValue(routes[code]) === path) return {id:id, language:code, routes:routes};
       }
@@ -64,7 +63,7 @@
     var matched = surfaceMatch(registry);
     if (matched) return matched.language;
     var path = normalisePath(), routes = registry.public_routes || {}, kind = pageKind(), codes = registry.public_languages || [];
-    for (var i=0;i<codes.length;i++){
+    for (var i=0; i<codes.length; i++){
       var code = codes[i], route = routes[code] && routes[code][kind];
       if (route && normaliseValue(route) === path) return code;
     }
@@ -76,7 +75,7 @@
     try {
       var canonical = localStorage.getItem(CANONICAL_UI_KEY);
       if (canonical) return canonical;
-      for (var i=0;i<LEGACY_READ_KEYS.length;i++){
+      for (var i=0; i<LEGACY_READ_KEYS.length; i++){
         var legacy = localStorage.getItem(LEGACY_READ_KEYS[i]);
         if (legacy) return legacy;
       }
@@ -135,8 +134,7 @@
     if (code === registry.canonical_master) return "canonical master";
     if (code === registry.canonical_mirror) return "canonical mirror";
     var route = registry.public_routes && registry.public_routes[code];
-    if (route && route.status === "approved_public_pilot") return "public pilot";
-    return "public";
+    return route && route.status === "approved_public_pilot" ? "public pilot" : "public";
   }
   function targetRoute(code, registry){
     var matched = surfaceMatch(registry);
@@ -150,14 +148,12 @@
     style.id = STYLE_ID;
     style.textContent = [
       "."+MENU_CLASS+"{position:relative;display:inline-block;margin-left:8px;vertical-align:middle;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;z-index:10050}",
-      "."+MENU_CLASS+">summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;border:1px solid rgba(201,168,76,.58);background:linear-gradient(135deg,#c9a84c,#e8d49a);color:#071326;font-weight:900;font-size:12px;line-height:1.2;box-shadow:0 5px 18px rgba(0,0,0,.18)}",
+      "."+MENU_CLASS+">summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;border:1px solid rgba(201,168,76,.58);background:linear-gradient(135deg,#c9a84c,#e8d49a);color:#071326;font-weight:900;font-size:12px;line-height:1.2}",
       "."+MENU_CLASS+">summary::-webkit-details-marker{display:none}",
-      "."+MENU_CLASS+"[open]>summary{box-shadow:0 0 0 3px rgba(201,168,76,.24),0 8px 28px rgba(0,0,0,.25)}",
       "."+MENU_CLASS+" .wpa-router-panel{position:absolute;top:calc(100% + 8px);right:0;min-width:280px;max-width:min(92vw,360px);max-height:70vh;overflow:auto;padding:10px;border-radius:14px;border:1px solid rgba(201,168,76,.45);background:#071326;box-shadow:0 18px 58px rgba(0,0,0,.40)}",
-      "."+MENU_CLASS+" .wpa-router-title{color:#e8d49a;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:7px 9px 9px;border-bottom:1px solid rgba(201,168,76,.25);margin-bottom:6px}",
-      "."+MENU_CLASS+" a{display:flex!important;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:9px 10px!important;margin:3px 0;border-radius:10px!important;border:1px solid rgba(255,255,255,.08)!important;background:rgba(255,255,255,.05)!important;color:#f8f4ee!important;text-decoration:none!important;font-size:13px!important;font-weight:800!important;text-align:left}",
-      "."+MENU_CLASS+" a:hover,."+MENU_CLASS+" a:focus-visible{background:#e8d49a!important;color:#071326!important;border-color:#e8d49a!important}",
-      "."+MENU_CLASS+" .wpa-router-status{font-size:10px;opacity:.75;font-weight:900;text-transform:uppercase;letter-spacing:.04em}",
+      "."+MENU_CLASS+" .wpa-router-title{color:#e8d49a;font-size:11px;font-weight:900;padding:7px 9px;border-bottom:1px solid rgba(201,168,76,.25)}",
+      "."+MENU_CLASS+" a{display:flex!important;justify-content:space-between;gap:12px;width:100%;padding:9px 10px!important;margin:3px 0;border-radius:10px!important;background:rgba(255,255,255,.05)!important;color:#f8f4ee!important;text-decoration:none!important;font-size:13px!important;font-weight:800!important}",
+      "."+MENU_CLASS+" .wpa-router-status{font-size:10px;opacity:.75;text-transform:uppercase}",
       "."+MENU_CLASS+" .wpa-router-note{color:rgba(248,244,238,.68);font-size:11px;line-height:1.45;padding:8px 9px 3px}",
       "@media(max-width:640px){."+MENU_CLASS+"{display:block;margin:8px auto 0;text-align:center}."+MENU_CLASS+" .wpa-router-panel{left:50%;right:auto;transform:translateX(-50%);min-width:min(92vw,340px)}}"
     ].join("\n");
@@ -177,8 +173,8 @@
     var details = document.createElement("details"); details.className = MENU_CLASS; details.setAttribute("data-state", "ready");
     var items = registry.public_languages.map(function(code){
       var route = targetRoute(code, registry); if (!route) return "";
-      var label = labelFor(code, catalog), status = statusFor(code, registry), current = code === active ? ' aria-current="page"' : "";
-      return '<a role="menuitem" data-wpa-public-language="'+escapeHtml(code)+'" href="'+escapeHtml(route)+'"'+current+'><span>'+escapeHtml(label)+'</span><span class="wpa-router-status">'+escapeHtml(status)+'</span></a>';
+      var current = code === active ? ' aria-current="page"' : "";
+      return '<a role="menuitem" data-wpa-public-language="'+escapeHtml(code)+'" href="'+escapeHtml(route)+'"'+current+'><span>'+escapeHtml(labelFor(code,catalog))+'</span><span class="wpa-router-status">'+escapeHtml(statusFor(code,registry))+'</span></a>';
     }).join("");
     details.innerHTML = '<summary>🌐 '+escapeHtml(labelFor(active,catalog))+'</summary><div class="wpa-router-panel" role="menu"><div class="wpa-router-title">WPA public languages</div>'+items+'<a role="menuitem" href="/languages/"><span>🌐 Languages Hub</span><span class="wpa-router-status">catalogue</span></a><div class="wpa-router-note">Only explicitly registered equivalents are routable on this surface. Missing translations fail closed.</div></div>';
     details.addEventListener("click", function(event){ var link=event.target.closest("a[data-wpa-public-language]"); if(link) writeCanonicalLanguage(link.getAttribute("data-wpa-public-language")); });
@@ -188,10 +184,10 @@
   function escapeHtml(value){ return String(value==null?"":value).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;"); }
   function placeMenu(menu){
     var allLang = Array.from(document.querySelectorAll("a")).find(function(a){ var text=String(a.textContent||"").trim().toLowerCase(), href=String(a.getAttribute("href")||"").toLowerCase(); return text.indexOf("all languages")!==-1 || href==="/languages/" || href.endsWith("/languages/"); });
-    if (allLang && allLang.parentNode){ allLang.insertAdjacentElement("afterend",menu); return; }
+    if (allLang && allLang.parentNode){ allLang.insertAdjacentElement("afterend", menu); return; }
     var select = document.querySelector("select[id*='Lang'],select[id*='lang'],select[aria-label*='Language'],select[aria-label*='Јазик']");
-    if (select && select.parentNode){ select.insertAdjacentElement("afterend",menu); return; }
-    document.body.insertAdjacentElement("afterbegin",menu);
+    if (select && select.parentNode){ select.insertAdjacentElement("afterend", menu); return; }
+    document.body.insertAdjacentElement("afterbegin", menu);
   }
   function reconcileSelects(registry, catalog){
     document.querySelectorAll("select").forEach(function(select){
@@ -225,5 +221,6 @@
     }
   }
   installStaticLanguageVisibility();
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true}); else init();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, {once:true});
+  else init();
 })();
