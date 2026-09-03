@@ -1,12 +1,13 @@
 {
-  "generated": "2026-09-03T23:38:01.430Z",
+  "generated": "2026-09-03T23:44:14.608Z",
   "mode": "OWNER_APPROVAL_REQUIRED",
   "owner_gate": {
     "authority": "Sande Smiljanov / WPA Human Authority",
     "automatic_work": "ENABLED_24X7",
     "automatic_production_merge": "DISABLED",
-    "approval_method": "Explicit owner approval followed by protected GitHub PR merge",
-    "rule": "The systems may collect, measure, validate, draft and package continuously. Production application, canonical changes, scientific publication and official institutional judgments require explicit human approval."
+    "automatic_external_publishing": "DISABLED",
+    "approval_method": "Explicit owner approval followed by protected production application and, where separately authorised, external distribution.",
+    "rule": "The systems may collect, measure, validate, draft, adapt and package continuously. Production application, external social/messenger publication, canonical changes, scientific publication and official institutional judgments require explicit human approval."
   },
   "simple_flow": [
     {
@@ -43,25 +44,51 @@
     },
     {
       "step": 4,
+      "name": "ADAPT",
+      "mk": "Прилагоди",
+      "automation": "automatic",
+      "systems": [
+        "Social Command Centre",
+        "LinkedIn/Facebook/Instagram/X drafts",
+        "TikTok/YouTube scripts",
+        "Telegram/WhatsApp/Viber/WeChat community drafts"
+      ]
+    },
+    {
+      "step": 5,
       "name": "APPROVE",
       "mk": "Одобри",
       "automation": "human_only",
       "systems": [
         "Production PR merge",
+        "External distribution release",
         "Canonical revision",
         "Scientific publication",
         "Official institutional judgment"
       ]
+    },
+    {
+      "step": 6,
+      "name": "DISTRIBUTE",
+      "mk": "Дистрибуирај",
+      "automation": "authorised_only_after_approval",
+      "systems": [
+        "Authorised human accounts",
+        "Separately verified official API adapters",
+        "Publication log and correction loop"
+      ]
     }
   ],
   "current_cycle": {
-    "watch_sources_live": 5,
+    "watch_sources_live": 4,
     "watch_sources_total": 9,
-    "journal_candidates": 40,
-    "journal_ready_for_editorial_review": 32,
+    "journal_candidates": 32,
+    "journal_ready_for_editorial_review": 24,
     "journal_classification_holds": 8,
-    "journal_detected": 32,
+    "journal_detected": 24,
     "finished_product_families": 6,
+    "distribution_product_packs": 6,
+    "distribution_target_channels": 10,
     "institutional_human_review_candidates": 11,
     "protocolometry_status": "OPERATIONAL_MEASUREMENT_LAYER",
     "sublimate_status": "PASS_THIS_CYCLE",
@@ -70,8 +97,8 @@
   "queues": {
     "journal": {
       "state": "HUMAN_REVIEW_PRESENT",
-      "total": 40,
-      "ready": 32,
+      "total": 32,
+      "ready": 24,
       "holds": 8,
       "source": "/journal/watch/"
     },
@@ -79,6 +106,13 @@
       "state": "BUILT_AWAITING_PRODUCTION_APPROVAL",
       "total": 6,
       "source": "/products/"
+    },
+    "distribution": {
+      "state": "PLATFORM_DRAFTS_READY_FOR_SANDE_GATE",
+      "product_packs": 6,
+      "target_channels": 10,
+      "automatic_external_publishing": "DISABLED",
+      "source": "/social-studio/distribution/"
     },
     "institutions": {
       "state": "HUMAN_VERIFICATION_QUEUE",
