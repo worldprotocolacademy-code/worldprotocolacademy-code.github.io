@@ -1,0 +1,52 @@
+name: WPA Global Language Governance CI
+
+on:
+  pull_request:
+    paths:
+      - 'data/language-activation.json'
+      - 'data/language-canon-50.json'
+      - 'data/language-readiness-50.json'
+      - 'locales/manifest.json'
+      - 'languages/**'
+      - 'en/**'
+      - 'scripts/global_language_governance_check.py'
+      - '.github/workflows/global-language-governance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/language-activation.json'
+      - 'data/language-canon-50.json'
+      - 'data/language-readiness-50.json'
+      - 'locales/manifest.json'
+      - 'languages/**'
+      - 'en/**'
+      - 'scripts/global_language_governance_check.py'
+      - '.github/workflows/global-language-governance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Global language governance
+        run: python scripts/global_language_governance_check.py
+      - name: English complete public parity
+        run: python scripts/en_complete_parity_check.py
+      - name: English full fidelity
+        run: python scripts/en_full_fidelity_check.py
+      - name: English shared CSS compatibility
+        run: python scripts/en_shared_css_compatibility_check.py
+      - name: French complete public parity
+        run: python scripts/fr_complete_parity_check.py
+      - name: French full mirror
+        run: python scripts/fr_full_mirror_check.py
+      - name: Translator architecture
+        run: python scripts/translator_architecture_check.py
+      - name: Translator quality
+        run: python scripts/translator_quality_check.py
