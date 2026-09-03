@@ -1,6 +1,6 @@
 name: WPA 24x7 Institute Operations
 
-# v5: continuous product generation + Protocolometry measurement + deterministic package validation + bounded institutional evidence lane.
+# v6: automatic work 24/7; production application requires explicit WPA Human Authority approval.
 on:
   workflow_dispatch:
   schedule:
@@ -43,22 +43,22 @@ jobs:
         working-directory: tools/wpa-watch
         run: npm install --no-audit --no-fund
 
-      - name: Harvest public-source signals
+      - name: 01 COLLECT public-source signals
         working-directory: tools/wpa-watch
         run: |
           npm run watch
           npm run report
 
-      - name: Harvest open scholarly metadata
+      - name: 01 COLLECT open scholarly metadata
         run: node tools/wpa-product-factory/academic-harvest.mjs
 
-      - name: Build Journal Watch editorial intelligence
+      - name: 02 CHECK and structure Journal Watch intelligence
         run: node generate-journal-watch.mjs
 
-      - name: Build finished WPA product families and Protocolometry digest
+      - name: 03 PRODUCE finished WPA products and Protocolometry digest
         run: node tools/wpa-product-factory/build-products.mjs
 
-      - name: Validate WPA Sublimate source package
+      - name: 02 CHECK WPA Sublimate source package
         run: |
           node workers/wpa-sublimate-engine-v0.3.0/extract-bundle.mjs
           cd workers/wpa-sublimate-engine-v0.3.0/extracted/wpa-sublimate-engine
@@ -67,7 +67,7 @@ jobs:
           npm run check
           echo 'WPA_SUBLIMATE_SOURCE_VALIDATED=1' >> "$GITHUB_ENV"
 
-      - name: Validate Pilot 20 secured evidence package
+      - name: 02 CHECK Pilot 20 secured evidence package
         run: |
           python data/global-institutions/pilot-20/v1.3.2/secure_extract_bundle.py --verify
           echo 'WPA_PILOT20_VALIDATED=1' >> "$GITHUB_ENV"
@@ -78,12 +78,16 @@ jobs:
           SUBLIMATE_WORKER_URL: https://wpa-sublimate-engine.worldprotocolacademy.workers.dev
         run: node tools/wpa-institute-ops/build-ops.mjs
 
-      - name: Validate generated Institute outputs
+      - name: Build simplified owner-approval control surface
+        run: node tools/wpa-institute-ops/build-simple-approval.mjs
+
+      - name: Validate generated Institute outputs and approval gate
         run: |
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<6)process.exit(1);if(!m.products.some(p=>p.id==='protocolometry-digest'))process.exit(1);console.log('Validated',m.products.length,'product families including Protocolometry');"
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('products/protocolometryDigest.json'));if(!Array.isArray(p.measurement_profile)||p.measurement_profile.length<5)process.exit(1);if(!String(p.status||'').includes('NO ORDINAL RANKING'))process.exit(1);console.log('Protocolometry measurement guardrail validated');"
           node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('operations/institute-24x7-status.json'));if(!s.systems||!s.systems.global_institutions||!s.systems.sublimate||!s.systems.product_factory||!s.systems.protocolometry)process.exit(1);console.log('Institute operations status validated');"
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/global-institutions/operations/verification-candidates.json'));if(q.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);console.log('Institutional queue guardrail validated');"
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED')process.exit(1);if(a.owner_gate?.automatic_production_merge!=='DISABLED')process.exit(1);if(!Array.isArray(a.simple_flow)||a.simple_flow.length!==4)process.exit(1);console.log('Owner approval gate validated');"
           test -s products/index.html
           test -s products/dailyBrief.html
           test -s products/academicRadar.html
@@ -91,6 +95,8 @@ jobs:
           test -s products/protocolometryDigest.html
           test -s products/sourceAudit.html
           test -s operations/index.html
+          test -s operations/simple/index.html
+          test -s operations/approval-queue.json
 
       - name: Commit bootstrap outputs to feature branch
         if: github.event_name == 'push' && github.ref_name == 'feat/wpa-24x7-product-factory-20260904'
@@ -128,7 +134,7 @@ jobs:
             echo 'WPA_PRODUCT_CHANGES=1' >> "$GITHUB_ENV"
           fi
 
-      - name: Open or refresh protected Institute production PR
+      - name: 04 APPROVE prepare protected production PR
         if: github.event_name != 'push' && env.WPA_PRODUCT_CHANGES == '1'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -136,9 +142,9 @@ jobs:
           PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           if [ -z "$PR" ]; then
             gh pr create --base main --head automation/wpa-institute-24x7 \
-              --title 'WPA Institute 24x7 automated operational update' \
-              --body 'Continuous governed WPA Institute cycle: public-source monitoring, open scholarly metadata, Journal Watch intelligence, Protocolometry measurement, finished research/editorial product families, Sublimate source validation, Pilot 20 evidence validation, and bounded institutional reachability observations. Canonical institutional verification, ordinal rankings, scientific publication, peer-review decisions and official judgments remain human-gated.'
+              --title 'WPA Institute 24x7 update — OWNER APPROVAL REQUIRED' \
+              --body 'AUTO WORK completed: COLLECT → CHECK → PRODUCE. Human Gate remains closed. This PR must NOT auto-merge. Sande Smiljanov / WPA Human Authority must explicitly approve before production application. The cycle includes public-source monitoring, scholarly metadata, Journal Watch, Protocolometry, finished WPA work products, Sublimate source validation, Pilot 20 validation and bounded institutional evidence observations. No automatic canonical verification, scientific publication, peer-review decision or official institutional judgment.'
             PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           fi
-          echo "Production PR: #$PR"
-          gh pr merge "$PR" --auto --squash || echo 'Auto-merge could not be enabled; PR remains protected until repository checks allow merge.'
+          echo "Owner approval required for production PR: #$PR"
+          echo 'AUTO-MERGE IS INTENTIONALLY DISABLED.'
