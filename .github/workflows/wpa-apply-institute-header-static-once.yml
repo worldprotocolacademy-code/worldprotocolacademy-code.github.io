@@ -1,0 +1,33 @@
+name: WPA apply Institute header static repair once
+
+on:
+  push:
+    branches:
+      - fix/apply-institute-header-static-20260903
+    paths:
+      - '.github/workflows/wpa-apply-institute-header-static-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply canonical Institute header repair
+        run: python scripts/wpa-institute-header-canonical-20260903.py
+      - name: Commit repaired Institute source to branch
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add institute.html
+          if git diff --cached --quiet; then
+            echo 'Institute header already canonical.'
+            exit 0
+          fi
+          git commit -m 'Apply Institute header canonical repair'
+          git push origin HEAD:fix/apply-institute-header-static-20260903
