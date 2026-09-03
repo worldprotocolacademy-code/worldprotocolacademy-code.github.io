@@ -1,6 +1,6 @@
 name: WPA 24x7 Product Factory
 
-# bootstrap-v2: validates the final branch head with parallel feed harvesting.
+# bootstrap-v3: branch-safe bootstrap plus protected scheduled production.
 on:
   workflow_dispatch:
   schedule:
@@ -70,10 +70,15 @@ jobs:
           git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json products/
           if git diff --cached --quiet; then
             echo 'No bootstrap product changes.'
-          else
-            git commit -m 'Bootstrap WPA 24x7 finished research products'
-            git push origin HEAD:${GITHUB_REF_NAME}
+            exit 0
           fi
+          git diff --cached --binary > /tmp/wpa-products.patch
+          git reset --hard
+          git fetch origin "${GITHUB_REF_NAME}"
+          git checkout -B "${GITHUB_REF_NAME}" "origin/${GITHUB_REF_NAME}"
+          git apply --index /tmp/wpa-products.patch
+          git commit -m 'Bootstrap WPA 24x7 finished research products'
+          git push origin HEAD:${GITHUB_REF_NAME}
 
       - name: Prepare scheduled product update branch
         if: github.event_name != 'push'
