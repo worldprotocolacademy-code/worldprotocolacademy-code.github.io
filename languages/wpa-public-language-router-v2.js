@@ -134,7 +134,9 @@
     if (code === registry.canonical_master) return "canonical master";
     if (code === registry.canonical_mirror) return "canonical mirror";
     var route = registry.public_routes && registry.public_routes[code];
-    return route && route.status === "approved_public_pilot" ? "public pilot" : "public";
+    if (route && route.status === "human_gated_public_pilot") return "Human-Gated public pilot";
+    if (route && route.status === "approved_public_pilot") return "public pilot";
+    return "public";
   }
   function targetRoute(code, registry){
     var matched = surfaceMatch(registry);

@@ -1,60 +1,60 @@
-name: WPA German Current-State CI
+name: WPA SAFE-8Y German Public-State CI
 
 on:
   pull_request:
     paths:
       - 'languages/de/**'
+      - 'languages/index.html'
       - 'languages/wpa-public-language-router-v2.js'
       - 'languages/NEW_10_LANGUAGE_STATUS_v1.json'
       - 'data/language-activation.json'
       - 'data/language-readiness-50.json'
       - 'data/language-wave1-readiness.json'
-      - 'data/human-gates/de-safe8w-candidate.json'
       - 'data/human-gates/de-safe8x-candidate.json'
       - 'data/human-gates/de-safe8y-candidate.json'
-      - 'scripts/de_complete_candidate_check.py'
       - 'scripts/de_public_activation_check.py'
+      - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/global_language_governance_check.py'
+      - 'scripts/fr_complete_parity_check.py'
       - 'sitemap.xml'
-      - '.github/workflows/de-complete-candidate.yml'
+      - '.github/workflows/de-public-activation.yml'
   push:
     branches: [main]
     paths:
       - 'languages/de/**'
+      - 'languages/index.html'
       - 'languages/wpa-public-language-router-v2.js'
       - 'languages/NEW_10_LANGUAGE_STATUS_v1.json'
       - 'data/language-activation.json'
       - 'data/language-readiness-50.json'
       - 'data/language-wave1-readiness.json'
-      - 'data/human-gates/de-safe8w-candidate.json'
       - 'data/human-gates/de-safe8x-candidate.json'
       - 'data/human-gates/de-safe8y-candidate.json'
-      - 'scripts/de_complete_candidate_check.py'
       - 'scripts/de_public_activation_check.py'
+      - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/global_language_governance_check.py'
+      - 'scripts/fr_complete_parity_check.py'
       - 'sitemap.xml'
-      - '.github/workflows/de-complete-candidate.yml'
+      - '.github/workflows/de-public-activation.yml'
 
 permissions:
   contents: read
 
 jobs:
-  german-current-state:
+  safe8y-german-public-state:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Validate German current state
+      - name: Compile German public-state validators
+        run: python -m py_compile scripts/de_public_activation_check.py scripts/de_complete_candidate_check.py scripts/global_language_governance_check.py scripts/fr_complete_parity_check.py
+      - name: German current-state gate
         run: python scripts/de_complete_candidate_check.py
-      - name: Validate German public activation when registered
-        run: |
-          python - <<'PY'
-          import json,subprocess,sys
-          d=json.load(open('data/language-activation.json',encoding='utf-8'))
-          if 'de' in d.get('public_languages',[]):
-              subprocess.check_call([sys.executable,'scripts/de_public_activation_check.py'])
-          else:
-              print('German remains nonpublic; SAFE-8W invariant applies.')
-          PY
-      - name: Validate global language governance
+      - name: German SAFE-8Y public-state gate
+        run: python scripts/de_public_activation_check.py
+      - name: Global language governance
         run: python scripts/global_language_governance_check.py
+      - name: Preserve French parity under four-language registry
+        run: python scripts/fr_complete_parity_check.py
