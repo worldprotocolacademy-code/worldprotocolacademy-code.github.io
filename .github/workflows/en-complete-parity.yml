@@ -1,0 +1,50 @@
+name: WPA English Complete Public Parity CI
+on:
+  pull_request:
+    paths:
+      - 'en/**'
+      - 'data/language-activation.json'
+      - 'data/human-gates/en-safe8s-candidate.json'
+      - 'scripts/en_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/en-complete-parity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'en/**'
+      - 'data/language-activation.json'
+      - 'scripts/en_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/en-complete-parity.yml'
+  workflow_dispatch:
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile English parity validator
+        run: python -m py_compile scripts/en_complete_parity_check.py
+      - name: Enforce 57-surface English public parity and purity
+        run: python scripts/en_complete_parity_check.py
+      - name: Static HTTP smoke for every English route
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m http.server 8000 --bind 127.0.0.1 >/tmp/wpa-en-safe8s-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8000/en/ >/dev/null; then break; fi
+            sleep 0.5
+          done
+          curl --fail --silent http://127.0.0.1:8000/en/ >/dev/null
+          python - <<'PY'
+          import json,urllib.request
+          r=json.load(open('data/language-activation.json',encoding='utf-8'))
+          for row in r['public_surface_routes'].values():
+              u='http://127.0.0.1:8000'+row['en']
+              with urllib.request.urlopen(u,timeout=10) as x:
+                  assert x.status==200,(u,x.status)
+          print('All registered English public routes return HTTP 200.')
+          PY
