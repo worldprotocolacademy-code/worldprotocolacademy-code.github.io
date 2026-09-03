@@ -11,6 +11,7 @@ on:
       - 'data/human-gates/fr*.json'
       - 'sitemap.xml'
       - 'scripts/fr_full_mirror_check.py'
+      - 'scripts/fr_complete_parity_check.py'
       - 'scripts/translator_quality_check.py'
       - '.github/workflows/fr-technical-gates.yml'
   push:
@@ -20,6 +21,7 @@ on:
       - 'languages/wpa-public-language-router-v2.js'
       - 'data/language-activation.json'
       - 'scripts/fr_full_mirror_check.py'
+      - 'scripts/fr_complete_parity_check.py'
       - '.github/workflows/fr-technical-gates.yml'
   workflow_dispatch:
 
@@ -32,13 +34,25 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile SAFE-8Q validator
-        run: python -m py_compile scripts/fr_full_mirror_check.py
-      - name: Validate registry-driven full French mirror
-        run: python scripts/fr_full_mirror_check.py
+      - name: Compile current and historical validators
+        run: |
+          python -m py_compile scripts/fr_complete_parity_check.py
+          python -m py_compile scripts/fr_full_mirror_check.py
+      - name: Validate current SAFE-8R French parity
+        run: python scripts/fr_complete_parity_check.py
+      - name: Validate historical SAFE-8Q snapshot without mutating current candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          git worktree add --detach "$tmp" c81ab09642d9fa3b51df013006fe7835614c240e
+          (cd "$tmp" && python scripts/fr_full_mirror_check.py)
+          git worktree remove "$tmp" --force
       - name: Preserve historical SAFE-8F Human Gate provenance
         shell: bash
         run: |
@@ -71,7 +85,7 @@ jobs:
           set -euo pipefail
           chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           test -n "$chrome"
-          for page in /languages/fr/ /languages/fr/institute.html /languages/fr/protocolometry-center.html /languages/fr/journal/; do
+          for page in /languages/fr/ /languages/fr/institute.html /languages/fr/protocolometry-center.html /languages/fr/journal/ /languages/fr/wpa-trust-layer.html; do
             for size in 390,844 1440,900; do
               out="/tmp/fr-dom.html"
               "$chrome" --headless --no-sandbox --disable-dev-shm-usage --window-size="$size" --virtual-time-budget=1200 --dump-dom "http://127.0.0.1:8000${page}" > "$out"
