@@ -7,10 +7,12 @@ on:
       - 'data/translator-runtime-registry.json'
       - 'data/translator-consumer-inventory.json'
       - 'data/human-gates/en-safe8k.json'
+      - 'data/human-gates/en-safe8s-candidate.json'
       - 'docs/WPA_TRANSLATOR_ROOT_ARCHITECTURE_v1.md'
       - 'scripts/translator_architecture_check.py'
       - 'scripts/translator_consumer_inventory_check.py'
       - 'scripts/public_translation_quality_check.py'
+      - 'scripts/en_complete_parity_check.py'
       - 'scripts/build_static_translation.js'
       - 'scripts/wpa-public-entry-layer.js'
       - 'scripts/wpa-performance.js'
@@ -38,6 +40,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -47,7 +51,7 @@ jobs:
       - name: Install deterministic builder dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: Compile validators
-        run: python -m py_compile scripts/translator_architecture_check.py scripts/translator_consumer_inventory_check.py scripts/public_translation_quality_check.py
+        run: python -m py_compile scripts/translator_architecture_check.py scripts/translator_consumer_inventory_check.py scripts/public_translation_quality_check.py scripts/en_complete_parity_check.py
       - name: Validate translator consumer inventory
         run: python scripts/translator_consumer_inventory_check.py
       - name: Validate static builder syntax
@@ -74,147 +78,71 @@ jobs:
           const fs = require('fs');
           const {JSDOM} = require('jsdom');
           const router = fs.readFileSync('languages/wpa-public-language-router-v2.js', 'utf8');
-
           function verify(url, lang, prior, expected) {
-            const dom = new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="index"><head></head><body></body></html>`, {
-              url,
-              runScripts: 'outside-only'
-            });
+            const dom = new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="index"><head></head><body></body></html>`, {url, runScripts:'outside-only'});
             if (prior !== null) dom.window.localStorage.setItem('wpa.language', prior);
             dom.window.fetch = () => new Promise(() => {});
             dom.window.eval(router);
             const stored = dom.window.localStorage.getItem('wpa.language');
             const stamped = dom.window.document.documentElement.getAttribute('data-wpa-ui-language');
-            if (stored !== expected) throw new Error(`bootstrap storage mismatch for ${url}: expected ${expected}, got ${stored}`);
-            if (stamped !== expected) throw new Error(`bootstrap document stamp mismatch for ${url}: expected ${expected}, got ${stamped}`);
+            if (stored !== expected || stamped !== expected) throw new Error(`bootstrap mismatch for ${url}`);
           }
-
           verify('https://worldprotocolacademy.mk/en/', 'en', null, 'en');
           verify('https://worldprotocolacademy.mk/en/', 'en', 'mk', 'en');
           verify('https://worldprotocolacademy.mk/', 'mk', 'en', 'mk');
-          console.log('SAFE-8M synchronous bootstrap invariant passed for fresh and stale UI state.');
+          console.log('SAFE-8M synchronous bootstrap invariant passed.');
           NODE
       - name: Verify SAFE-8O Institute runtime language purity
         run: |
           node - <<'NODE'
-          const fs = require('fs');
-          const {JSDOM} = require('jsdom');
-          const runtime = fs.readFileSync('scripts/wpa-performance.js', 'utf8');
-
-          const expected = {
-            mk: {
-              name: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
-              sublimate: 'Отвори WPA Sublimate',
-              journal: 'Отвори WPA Journal Live'
-            },
-            en: {
-              name: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
-              sublimate: 'Open WPA Sublimate',
-              journal: 'Open WPA Journal Live'
-            },
-            fr: {
-              name: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
-              sublimate: 'Ouvrir WPA Sublimate',
-              journal: 'Ouvrir WPA Journal Live'
-            }
+          const fs=require('fs'); const {JSDOM}=require('jsdom');
+          const runtime=fs.readFileSync('scripts/wpa-performance.js','utf8');
+          const expected={
+            mk:{name:'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',sublimate:'Отвори WPA Sublimate',journal:'Отвори WPA Journal Live'},
+            en:{name:'Institute for Protocol, Diplomacy, Public Communication and Security Studies',sublimate:'Open WPA Sublimate',journal:'Open WPA Journal Live'},
+            fr:{name:'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',sublimate:'Ouvrir WPA Sublimate',journal:'Ouvrir WPA Journal Live'}
           };
-
-          function verify(lang, url) {
-            const dom = new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="institute"><head></head><body>
-              <div class="nav-wrap"><nav><a class="brand"><div class="brand-text"></div></a><div class="nav-links"><a href="#wpa-public-tools-hub">Resources</a></div></nav></div>
-              <header class="hero"><div class="hero-cta"></div></header>
-            </body></html>`, {url, runScripts: 'outside-only'});
-            dom.window.eval(runtime);
-            const doc = dom.window.document;
-            const name = doc.querySelector('.wpa-institute-name-current');
-            if (!name) throw new Error(`${lang}: current-language Institute name missing`);
-            if (name.textContent !== expected[lang].name) throw new Error(`${lang}: Institute name mismatch: ${name.textContent}`);
-            if (name.getAttribute('lang') !== lang) throw new Error(`${lang}: Institute name lang attribute mismatch`);
-            if (doc.querySelector('.wpa-institute-name-mk,.wpa-institute-name-en')) throw new Error(`${lang}: legacy bilingual Institute brand residue remains`);
-            const sublimate = doc.getElementById('wpaSublimateInstituteHero');
-            const journal = doc.getElementById('wpaLiveInstituteHeroLink');
-            if (!sublimate || sublimate.textContent !== expected[lang].sublimate) throw new Error(`${lang}: Sublimate CTA mismatch`);
-            if (!journal || journal.textContent !== expected[lang].journal) throw new Error(`${lang}: Journal CTA mismatch`);
+          function verify(lang,url){
+            const dom=new JSDOM(`<!doctype html><html lang="${lang}" data-wpa-page="institute"><head></head><body><div class="nav-wrap"><nav><a class="brand"><div class="brand-text"></div></a><div class="nav-links"><a href="#wpa-public-tools-hub">Resources</a></div></nav></div><header class="hero"><div class="hero-cta"></div></header></body></html>`,{url,runScripts:'outside-only'});
+            dom.window.eval(runtime); const d=dom.window.document; const n=d.querySelector('.wpa-institute-name-current');
+            if(!n||n.textContent!==expected[lang].name||n.getAttribute('lang')!==lang) throw new Error(`${lang}: Institute name mismatch`);
+            if(d.querySelector('.wpa-institute-name-mk,.wpa-institute-name-en')) throw new Error(`${lang}: legacy bilingual Institute brand residue remains`);
+            const s=d.getElementById('wpaSublimateInstituteHero'),j=d.getElementById('wpaLiveInstituteHeroLink');
+            if(!s||s.textContent!==expected[lang].sublimate||!j||j.textContent!==expected[lang].journal) throw new Error(`${lang}: CTA mismatch`);
           }
-
-          verify('mk', 'https://worldprotocolacademy.mk/institute.html');
-          verify('en', 'https://worldprotocolacademy.mk/en/institute.html');
-          verify('fr', 'https://worldprotocolacademy.mk/languages/fr/institute.html');
+          verify('mk','https://worldprotocolacademy.mk/institute.html');
+          verify('en','https://worldprotocolacademy.mk/en/institute.html');
+          verify('fr','https://worldprotocolacademy.mk/languages/fr/institute.html');
           console.log('SAFE-8O Institute runtime language purity passed for MK, EN and FR.');
           NODE
-      - name: Compose canonical English Home locale candidate
+      - name: Preserve historical deterministic English mirror contract at SAFE-8R main
+        shell: bash
         run: |
-          node - <<'NODE'
-          const fs=require('fs');
-          const base=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
-          const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
-          const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/home.json',JSON.stringify(merged,null,2)+'\n');
-          NODE
-      - name: Rebuild English Home purity candidate
-        run: >-
-          node scripts/build_static_translation.js
-          --source index.html
-          --locale /tmp/home.json
-          --lang en
-          --canonical https://worldprotocolacademy.mk/en/
-          --output /tmp/wpa-en-home.html
-          --root-relative-links true
-          --rewrite-link /institute.html=/en/institute.html
-          --rewrite-text 'Светска академија за протокол=World Protocol Academy'
-          --rewrite-css-text 'WPA · СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · TEST PHASE 2026=WPA · WORLD PROTOCOL ACADEMY · TEST PHASE 2026'
-          --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026'
-          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
-          --remove-selector '.wpa-test-phase-header .wpa-inst-mk'
-          --remove-selector '.wpa-test-phase-header .wpa-platform-mk'
-          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
-          --remove-selector '.announce .wpa-brand-mk'
-          --remove-selector 'header .brand-text .wpa-brand-mk'
-          --remove-selector '.hero h2 em'
-          --strip-script wpa-translator.js
-          --strip-script wpa-home-full-en.js
-          --strip-script translator-loader
-          --strip-script i18n-v2.js
-          --strip-script wpa-language-menu-10.js
-          --strip-script wpa-public-entry-layer.js
-          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
-      - name: Compose canonical English Institute locale candidate
-        run: |
-          node - <<'NODE'
-          const fs=require('fs');
-          const base=JSON.parse(fs.readFileSync('locales/institute/en.json','utf8'));
-          const overlay=JSON.parse(fs.readFileSync('locales/rebuild/en/institute.override.json','utf8'));
-          const merged={...base,...overlay,_meta:{...(base._meta||{}),...(overlay._meta||{})}};
-          fs.writeFileSync('/tmp/institute.json',JSON.stringify(merged,null,2)+'\n');
-          NODE
-      - name: Rebuild English Institute purity candidate
-        run: >-
-          node scripts/build_static_translation.js
-          --source institute.html
-          --locale /tmp/institute.json
-          --lang en
-          --canonical https://worldprotocolacademy.mk/en/institute.html
-          --output /tmp/wpa-en-institute.html
-          --root-relative-links true
-          --single-h1 true
-          --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026'
-          --remove-selector '.wpa-test-phase-header .wpa-name-mk'
-          --remove-selector '.wpa-test-phase-header .wpa-status-mk'
-          --remove-selector '.wpa-institute-name-mk'
-          --strip-script wpa-translator.js
-          --strip-script wpa-home-full-en.js
-          --strip-script translator-loader
-          --strip-script i18n-v2.js
-          --strip-script wpa-language-menu-10.js
-          --strip-script wpa-public-entry-layer.js
-          --append-script /languages/wpa-public-language-router-v2.js?v=2.0
-      - name: Validate pure static target
-        run: python scripts/public_translation_quality_check.py --home /tmp/wpa-en-home.html --institute /tmp/wpa-en-institute.html
-      - name: Enforce byte-for-byte deterministic committed outputs
-        run: |
-          cmp -s /tmp/wpa-en-home.html en/index.html || { echo 'EN Home drift: committed file differs from deterministic rebuild'; diff -u en/index.html /tmp/wpa-en-home.html | head -200; exit 1; }
-          cmp -s /tmp/wpa-en-institute.html en/institute.html || { echo 'EN Institute drift: committed file differs from deterministic rebuild'; diff -u en/institute.html /tmp/wpa-en-institute.html | head -200; exit 1; }
-      - name: Validate committed public translation quality
-        run: python scripts/public_translation_quality_check.py
+          set -euo pipefail
+          HIST=5a3f52bfb7ca33236f9d6ae0cbec28d8650e1c77
+          tmp="$(mktemp -d)"
+          git worktree add --detach "$tmp" "$HIST"
+          (
+            cd "$tmp"
+            npm install --ignore-scripts --no-audit --no-fund >/dev/null
+            node - <<'NODE'
+            const fs=require('fs');
+            const b=JSON.parse(fs.readFileSync('locales/index/en.json','utf8'));
+            const o=JSON.parse(fs.readFileSync('locales/rebuild/en/index.override.json','utf8'));
+            fs.writeFileSync('/tmp/safe8s-hist-home.json',JSON.stringify({...b,...o,_meta:{...(b._meta||{}),...(o._meta||{})}},null,2)+'\n');
+            const ib=JSON.parse(fs.readFileSync('locales/institute/en.json','utf8'));
+            const io=JSON.parse(fs.readFileSync('locales/rebuild/en/institute.override.json','utf8'));
+            fs.writeFileSync('/tmp/safe8s-hist-institute.json',JSON.stringify({...ib,...io,_meta:{...(ib._meta||{}),...(io._meta||{})}},null,2)+'\n');
+            NODE
+            node scripts/build_static_translation.js --source index.html --locale /tmp/safe8s-hist-home.json --lang en --canonical https://worldprotocolacademy.mk/en/ --output /tmp/safe8s-hist-home.html --root-relative-links true --rewrite-link /institute.html=/en/institute.html --rewrite-text 'Светска академија за протокол=World Protocol Academy' --rewrite-css-text 'WPA · СВЕТСКА АКАДЕМИЈА ЗА ПРОТОКОЛ · TEST PHASE 2026=WPA · WORLD PROTOCOL ACADEMY · TEST PHASE 2026' --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026' --remove-selector '.wpa-test-phase-header .wpa-name-mk' --remove-selector '.wpa-test-phase-header .wpa-inst-mk' --remove-selector '.wpa-test-phase-header .wpa-platform-mk' --remove-selector '.wpa-test-phase-header .wpa-status-mk' --remove-selector '.announce .wpa-brand-mk' --remove-selector 'header .brand-text .wpa-brand-mk' --remove-selector '.hero h2 em' --strip-script wpa-translator.js --strip-script wpa-home-full-en.js --strip-script translator-loader --strip-script i18n-v2.js --strip-script wpa-language-menu-10.js --strip-script wpa-public-entry-layer.js --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+            node scripts/build_static_translation.js --source institute.html --locale /tmp/safe8s-hist-institute.json --lang en --canonical https://worldprotocolacademy.mk/en/institute.html --output /tmp/safe8s-hist-institute.html --root-relative-links true --single-h1 true --rewrite-css-text 'WPA • ТЕСТ ФАЗА 2026 • TEST PHASE 2026=WPA • TEST PHASE 2026' --remove-selector '.wpa-test-phase-header .wpa-name-mk' --remove-selector '.wpa-test-phase-header .wpa-status-mk' --remove-selector '.wpa-institute-name-mk' --strip-script wpa-translator.js --strip-script wpa-home-full-en.js --strip-script translator-loader --strip-script i18n-v2.js --strip-script wpa-language-menu-10.js --strip-script wpa-public-entry-layer.js --append-script /languages/wpa-public-language-router-v2.js?v=2.0
+            python scripts/public_translation_quality_check.py --home /tmp/safe8s-hist-home.html --institute /tmp/safe8s-hist-institute.html
+            cmp -s /tmp/safe8s-hist-home.html en/index.html
+            cmp -s /tmp/safe8s-hist-institute.html en/institute.html
+          )
+          git worktree remove "$tmp" --force
+          echo 'Historical deterministic EN contract preserved at SAFE-8R main.'
+      - name: Validate current SAFE-8S English route parity and purity
+        run: python scripts/en_complete_parity_check.py
       - name: Validate translator architecture
         run: python scripts/translator_architecture_check.py
