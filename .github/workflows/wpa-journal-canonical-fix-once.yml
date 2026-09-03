@@ -1,0 +1,162 @@
+name: WPA Journal canonical fix once
+
+on:
+  push:
+    branches:
+      - fix/wpa-journal-canonical-20260903
+    paths:
+      - '.github/workflows/wpa-journal-canonical-fix-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply canonical identity, status and fee corrections
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+
+          changed = []
+
+          def replace_many(path, replacements, required=()):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              for token in required:
+                  if token not in text:
+                      raise SystemExit(f'Required token missing in {path}: {token}')
+              original = text
+              for old, new in replacements:
+                  text = text.replace(old, new)
+              if text != original:
+                  p.write_text(text, encoding='utf-8')
+                  changed.append(path)
+
+          main = 'journal/vol-1-issue-1-2026.html'
+          replace_many(main, [
+              ('<title>WPA Journal · Vol. 1 · No. 1 · Inaugural Issue — World Protocol Academy</title>', '<title>WPA Journal · Vol. 1 · No. 1 · Planned Inaugural Issue — World Protocol Academy</title>'),
+              ('content="WPA Journal of Protocol, Diplomacy, Public Communication, Security and Communicology — Inaugural Issue, planned / forthcoming. Published by World Protocol Academy, Skopje, Republic of North Macedonia."', 'content="WPA Journal of Protocol, Diplomacy, Public Communication, Security and Communicology — planned inaugural issue, in preparation. Published within World Protocol Academy (WPA), an independent digital educational, research and authorial platform in development, testing and pilot phase."'),
+              ('content="WPA Journal · Vol. 1 · No. 1 · Inaugural Issue"', 'content="WPA Journal · Vol. 1 · No. 1 · Planned Inaugural Issue"'),
+              ('content="WPA Journal · Vol. 1 · No. 1 · Inaugural Issue — World Protocol Academy, Skopje"', 'content="WPA Journal · Vol. 1 · No. 1 · Planned Inaugural Issue — World Protocol Academy, Skopje"'),
+              ('content="Specialised international interdisciplinary journal in protocol, diplomacy, public communication, security and communicology. Open Access; financial framework inactive."', 'content="Specialised international interdisciplinary journal in protocol, diplomacy, public communication, security and communicology. Planned inaugural issue; in preparation. Open Access; financial framework inactive."'),
+              ('    "name": "Sande Smiljanov",\n    "honorificPrefix": "Doc. Dr",\n    "jobTitle": "Editor-in-Chief",', '    "name": "Sande Smiljanov",\n    "honorificSuffix": "Ph.D.",\n    "jobTitle": "Editor-in-Chief",\n    "description": "Docent (Titular), Faculty of Film Arts, International University Europa Prima – Skopje; Creator, World Protocol Academy (WPA)",'),
+              ('<span data-mk="WPA Journal · Inaugural Issue · September 2026" data-en="WPA Journal · Inaugural Issue · September 2026">WPA Journal · Inaugural Issue · September 2026</span>', '<span data-mk="WPA Journal · Планиран инаугурален број · Септември 2026" data-en="WPA Journal · Planned Inaugural Issue · September 2026">WPA Journal · Планиран инаугурален број · Септември 2026</span>'),
+              ('data-mk="Vol. 1 · No. 1 · Inaugural Issue · September 2026"\n       data-en="Vol. 1 · No. 1 · Inaugural Issue · September 2026">Vol. 1 · No. 1 · Inaugural Issue · September 2026', 'data-mk="Vol. 1 · No. 1 · Планиран инаугурален број · Септември 2026"\n       data-en="Vol. 1 · No. 1 · Planned Inaugural Issue · September 2026">Vol. 1 · No. 1 · Планиран инаугурален број · Септември 2026'),
+              ('data-mk="Прелистајте го инаугуралниот број — клик на десната страница, копчињата подолу, или стрелките ← → за да го отворите журналот."\n     data-en="Browse the inaugural issue — click the right page, use the buttons below, or arrow keys ← → to open the journal.">\n    Прелистајте го инаугуралниот број — клик на десната страница, копчињата подолу, или стрелките ← → за да го отворите журналот.', 'data-mk="Прелистајте го прегледот на планираниот инаугурален број — клик на десната страница, копчињата подолу, или стрелките ← → за да го отворите журналот."\n     data-en="Browse the preview of the planned inaugural issue — click the right page, use the buttons below, or arrow keys ← → to open the journal.">\n    Прелистајте го прегледот на планираниот инаугурален број — клик на десната страница, копчињата подолу, или стрелките ← → за да го отворите журналот.'),
+              ('data-mk="Inaugural Issue · September MMXXVI" data-en="Inaugural Issue · September MMXXVI">Inaugural Issue · September MMXXVI', 'data-mk="Планиран инаугурален број · Септември MMXXVI" data-en="Planned Inaugural Issue · September MMXXVI">Планиран инаугурален број · Септември MMXXVI'),
+              ('Submission бесплатно · desk review бесплатно · peer review бесплатно · уредничка одлука бесплатно · симболична такса само по прифаќање · waivers по барање.', 'Submission бесплатно · desk review бесплатно · peer review бесплатно · уредничка одлука бесплатно · во моментов нема активна такса за објавување или продукција.'),
+              ('Submission free · desk review free · peer review free · editorial decision free · publication fee inactive / frozen.', 'Submission free · desk review free · peer review free · editorial decision free · no publication or production fee is currently active.'),
+              ('Submission бесплатно · симболична такса по прифаќање · waivers', 'Submission бесплатно · во моментов нема активна такса за објавување или продукција'),
+              ('<div class="name">Doc. Dr Sande Smiljanov</div>\n                <div class="role-mini" data-mk="Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM"\n                     data-en="Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM">Founder · WPA Skopje · Head of Department for Protocol Events and Activities, MoI RNM</div>', '<div class="name">Sande Smiljanov, Ph.D.</div>\n                <div class="role-mini" data-mk="Creator · World Protocol Academy (WPA) · Docent (Titular), International University Europa Prima – Skopje"\n                     data-en="Creator · World Protocol Academy (WPA) · Docent (Titular), International University Europa Prima – Skopje">Creator · World Protocol Academy (WPA) · Docent (Titular), International University Europa Prima – Skopje</div>'),
+              ('<small data-mk="Founder · World Protocol Academy&lt;br&gt;Head of Department for Protocol Events and Activities · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X"\n                       data-en="Founder · World Protocol Academy&lt;br&gt;Head of Department for Protocol Events and Activities · MoI RNM&lt;br&gt;ORCID 0009-0008-3219-394X">Founder · World Protocol Academy<br>Head of Department for Protocol Events and Activities · MoI RNM<br>ORCID 0009-0008-3219-394X</small>', '<small data-mk="Creator · World Protocol Academy (WPA)&lt;br&gt;Docent (Titular) · International University Europa Prima – Skopje&lt;br&gt;ORCID 0009-0008-3219-394X"\n                       data-en="Creator · World Protocol Academy (WPA)&lt;br&gt;Docent (Titular) · International University Europa Prima – Skopje&lt;br&gt;ORCID 0009-0008-3219-394X">Creator · World Protocol Academy (WPA)<br>Docent (Titular) · International University Europa Prima – Skopje<br>ORCID 0009-0008-3219-394X</small>'),
+              ('Doc. Dr Sande Smiljanov', 'Sande Smiljanov, Ph.D.'),
+              ('Head of Department for Protocol Events and Activities', 'Head of Section for Protocol Events and Activities'),
+              ('Founder · World Protocol Academy', 'Creator · World Protocol Academy (WPA)'),
+              ('Founder · WPA Skopje', 'Creator · World Protocol Academy (WPA)'),
+              ('<div class="role">Editor-in-Chief · World Protocol Academy · Skopje</div>', '<div class="role">Editor-in-Chief · WPA Journal · Creator, World Protocol Academy (WPA)</div>'),
+              ('data-mk="WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology е специјализирано меѓународно интердисциплинарно списание издадено од World Protocol Academy — независен институт со седиште во Скопје."\n             data-en="The WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology is a specialised international interdisciplinary journal published by the World Protocol Academy — an independent institute headquartered in Skopje.">\n            WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology е специјализирано меѓународно интердисциплинарно списание издадено од World Protocol Academy — независен институт со седиште во Скопје.', 'data-mk="WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology е специјализирано меѓународно интердисциплинарно списание издадено во рамките на World Protocol Academy (WPA) — независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза."\n             data-en="The WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology is a specialised international interdisciplinary journal published within the World Protocol Academy (WPA) — an independent digital educational, research and authorial platform in development, testing and pilot phase.">\n            WPA Journal of Protocol, Diplomacy, Public Communication, Security &amp; Communicology е специјализирано меѓународно интердисциплинарно списание издадено во рамките на World Protocol Academy (WPA) — независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза.'),
+              ('Во инаугуралниот број (септември 2026)', 'Во планираниот инаугурален број (септември 2026)'),
+              ('In this inaugural issue (September 2026)', 'In the planned inaugural issue (September 2026)'),
+          ], required=('Doc. Dr Sande Smiljanov','Head of Department for Protocol Events and Activities','независен институт со седиште во Скопје','симболична такса само по прифаќање'))
+
+          def update_locale(path, lang):
+              p = Path(path)
+              data = json.loads(p.read_text(encoding='utf-8'))
+              common_en = {
+                  'metaTitle': 'WPA Journal · Vol. 1 · No. 1 · Planned Inaugural Issue — World Protocol Academy',
+                  'i002': 'WPA Journal · Planned Inaugural Issue · September 2026',
+                  'i003': 'Vol. 1 · No. 1 · Planned Inaugural Issue · September 2026',
+                  'i005': 'Browse the preview of the planned inaugural issue — click the right page, use the buttons below, or arrow keys ← → to open the journal.',
+                  'i008': 'WPA · Planned Inaugural Issue · September MMXXVI',
+                  'i015': 'Planned Inaugural Issue',
+                  'i028': 'Submission free · desk review free · peer review free · editorial decision free · no publication or production fee is currently active.',
+                  'i032': 'Planned Inaugural Issue · September MMXXVI',
+                  'i037': 'Creator · World Protocol Academy (WPA) · Docent (Titular), International University Europa Prima – Skopje',
+                  'i063': 'Creator · World Protocol Academy (WPA)<br>Docent (Titular) · International University Europa Prima – Skopje<br>ORCID 0009-0008-3219-394X',
+                  'i082': 'The WPA Journal of Protocol, Diplomacy, Public Communication, Security & Communicology is a specialised international interdisciplinary journal published within the World Protocol Academy (WPA) — an independent digital educational, research and authorial platform in development, testing and pilot phase.',
+                  'i108': 'Publication / production fee — inactive / frozen',
+              }
+              common_mk = {
+                  'metaTitle': 'WPA Journal · Том 1 · Број 1 · Планиран инаугурален број — World Protocol Academy',
+                  'i002': 'WPA Journal · Планиран инаугурален број · Септември 2026',
+                  'i003': 'Vol. 1 · No. 1 · Планиран инаугурален број · Септември 2026',
+                  'i005': 'Прелистајте го прегледот на планираниот инаугурален број — клик на десната страница, копчињата подолу, или стрелките ← → за да го отворите журналот.',
+                  'i008': 'WPA · Планиран инаугурален број · Септември MMXXVI',
+                  'i015': 'Планиран инаугурален број',
+                  'i028': 'Submission бесплатно · desk review бесплатно · peer review бесплатно · уредничка одлука бесплатно · во моментов нема активна такса за објавување или продукција.',
+                  'i032': 'Планиран инаугурален број · Септември MMXXVI',
+                  'i037': 'Creator · World Protocol Academy (WPA) · Docent (Titular), International University Europa Prima – Skopje',
+                  'i063': 'Creator · World Protocol Academy (WPA)<br>Docent (Titular) · International University Europa Prima – Skopje<br>ORCID 0009-0008-3219-394X',
+                  'i082': 'WPA Journal of Protocol, Diplomacy, Public Communication, Security & Communicology е специјализирано меѓународно интердисциплинарно списание издадено во рамките на World Protocol Academy (WPA) — независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза.',
+                  'i108': 'Такса за објавување / продукција — неактивна / замрзната',
+              }
+              data.update(common_en if lang == 'en' else common_mk)
+              new = json.dumps(data, ensure_ascii=False, indent=1) + '\n'
+              old = p.read_text(encoding='utf-8')
+              if new != old:
+                  p.write_text(new, encoding='utf-8')
+                  changed.append(path)
+
+          update_locale('journal/locales/journal-issue-1/en.json','en')
+          update_locale('journal/locales/journal-issue-1/mk.json','mk')
+
+          replace_many('journal/current-issue.html', [
+              ('Open Access · planned (Fair Access model; symbolic post-acceptance production fee may apply, with waivers available)', 'Open Access · planned (Fair Access model; no publication or production fee is currently active)'),
+              ('September 2026 — Inaugural publication.', 'September 2026 — Planned inaugural publication, subject to the final editorial calendar.'),
+          ])
+
+          fee_files = [
+              'forms/index.html','institute.html','locales/en/core.json','locales/mk/core.json',
+              'locales/institute/en.json','locales/institute/mk.json',
+              'locales/locales/institute/en.json','locales/locales/institute/mk.json',
+              'locales/institute/locales/institute/en.json','locales/institute/locales/institute/mk.json',
+              'journal/locales/journal/en.json','journal/locales/journal/mk.json'
+          ]
+          fee_replacements = [
+              ('Симболична такса само по прифаќање.', 'Во моментов нема активна такса за објавување или продукција.'),
+              ('Симболична такса се применува\n        само по прифаќање, со достапни waivers.', 'Во моментов нема активна такса за објавување или продукција.'),
+              ('Симболична такса се применува само по прифаќањето, со достапни ослободувања.', 'Во моментов нема активна такса за објавување или продукција.'),
+              ('Symbolic publication fee (only on acceptance)', 'Publication / production fee — inactive / frozen'),
+              ('Symbolic publication fee — only after acceptance', 'Publication / production fee — inactive / frozen'),
+              ('symbolic post-acceptance production fee may apply, with waivers available', 'no publication or production fee is currently active'),
+          ]
+          for path in fee_files:
+              if Path(path).exists():
+                  replace_many(path, fee_replacements)
+
+          text = Path(main).read_text(encoding='utf-8')
+          for token in ['Sande Smiljanov, Ph.D.','Docent (Titular)','Creator · World Protocol Academy (WPA)','Planned Inaugural Issue','независна дигитална образовна, истражувачка и авторска платформа во развојна, тест и пробна фаза','no publication or production fee is currently active']:
+              if token not in text:
+                  raise SystemExit(f'Missing post-fix token: {token}')
+          for token in ['Doc. Dr Sande Smiljanov','Head of Department for Protocol Events and Activities','Founder · WPA Skopje','Founder · World Protocol Academy','независен институт со седиште во Скопје','симболична такса само по прифаќање']:
+              if token in text:
+                  raise SystemExit(f'Stale token remains: {token}')
+
+          print('Changed files:')
+          for item in changed:
+              print(' -', item)
+
+      - name: Validate JSON locale files
+        run: |
+          python -m json.tool journal/locales/journal-issue-1/en.json >/dev/null
+          python -m json.tool journal/locales/journal-issue-1/mk.json >/dev/null
+
+      - name: Commit corrections
+        run: |
+          git config user.name "WPA Canonical Fix Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Fix WPA Journal canonical identity and planned status"
+          git push
