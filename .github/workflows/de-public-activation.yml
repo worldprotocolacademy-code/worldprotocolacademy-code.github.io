@@ -1,0 +1,54 @@
+name: WPA SAFE-8X German Public Activation CI
+
+on:
+  pull_request:
+    paths:
+      - 'languages/de/**'
+      - 'languages/index.html'
+      - 'data/language-activation.json'
+      - 'data/language-readiness-50.json'
+      - 'data/language-wave1-readiness.json'
+      - 'data/human-gates/de-safe8x-candidate.json'
+      - 'scripts/de_public_activation_check.py'
+      - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/global_language_governance_check.py'
+      - 'scripts/fr_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/de-public-activation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'languages/de/**'
+      - 'languages/index.html'
+      - 'data/language-activation.json'
+      - 'data/language-readiness-50.json'
+      - 'data/language-wave1-readiness.json'
+      - 'data/human-gates/de-safe8x-candidate.json'
+      - 'scripts/de_public_activation_check.py'
+      - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/global_language_governance_check.py'
+      - 'scripts/fr_complete_parity_check.py'
+      - 'sitemap.xml'
+      - '.github/workflows/de-public-activation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  safe8x-german-activation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile activation validators
+        run: python -m py_compile scripts/de_public_activation_check.py scripts/de_complete_candidate_check.py scripts/global_language_governance_check.py scripts/fr_complete_parity_check.py
+      - name: German current-state gate
+        run: python scripts/de_complete_candidate_check.py
+      - name: German SAFE-8X activation gate
+        run: python scripts/de_public_activation_check.py
+      - name: Global language governance
+        run: python scripts/global_language_governance_check.py
+      - name: Preserve French parity under four-language registry
+        run: python scripts/fr_complete_parity_check.py

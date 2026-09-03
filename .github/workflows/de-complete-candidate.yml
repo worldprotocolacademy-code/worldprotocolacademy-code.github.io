@@ -1,43 +1,54 @@
-name: WPA German Complete Candidate CI
+name: WPA German Current-State CI
 
 on:
   pull_request:
     paths:
       - 'languages/de/**'
       - 'data/language-activation.json'
+      - 'data/language-readiness-50.json'
+      - 'data/language-wave1-readiness.json'
       - 'data/human-gates/de-safe8w-candidate.json'
+      - 'data/human-gates/de-safe8x-candidate.json'
       - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/de_public_activation_check.py'
+      - 'sitemap.xml'
       - '.github/workflows/de-complete-candidate.yml'
   push:
     branches: [main]
     paths:
       - 'languages/de/**'
       - 'data/language-activation.json'
+      - 'data/language-readiness-50.json'
+      - 'data/language-wave1-readiness.json'
       - 'data/human-gates/de-safe8w-candidate.json'
+      - 'data/human-gates/de-safe8x-candidate.json'
       - 'scripts/de_complete_candidate_check.py'
+      - 'scripts/de_public_activation_check.py'
+      - 'sitemap.xml'
       - '.github/workflows/de-complete-candidate.yml'
 
 permissions:
   contents: read
 
 jobs:
-  german-candidate:
+  german-current-state:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Validate German complete nonpublic candidate
+      - name: Validate German current state
         run: python scripts/de_complete_candidate_check.py
-      - name: Validate global language governance
-        run: python scripts/global_language_governance_check.py
-      - name: Confirm activation registry still fail-closed
+      - name: Validate German public activation when registered
         run: |
           python - <<'PY'
-          import json
+          import json,subprocess,sys
           d=json.load(open('data/language-activation.json',encoding='utf-8'))
-          assert d['public_languages']==['mk','en','fr']
-          assert 'de' not in d['public_routes']
-          print('German activation remains closed.')
+          if 'de' in d.get('public_languages',[]):
+              subprocess.check_call([sys.executable,'scripts/de_public_activation_check.py'])
+          else:
+              print('German remains nonpublic; SAFE-8W invariant applies.')
           PY
+      - name: Validate global language governance
+        run: python scripts/global_language_governance_check.py
