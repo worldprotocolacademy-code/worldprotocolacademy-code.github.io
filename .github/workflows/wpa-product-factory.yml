@@ -1,6 +1,6 @@
 name: WPA 24x7 Institute Operations
 
-# v4: continuous product generation + deterministic package validation + bounded institutional evidence lane.
+# v5: continuous product generation + Protocolometry measurement + deterministic package validation + bounded institutional evidence lane.
 on:
   workflow_dispatch:
   schedule:
@@ -11,6 +11,10 @@ on:
     paths:
       - '.github/workflows/wpa-product-factory.yml'
       - 'tools/wpa-institute-ops/**'
+      - 'tools/wpa-product-factory/**'
+      - 'tools/wpa-watch/**'
+      - 'generate-journal-watch.mjs'
+      - 'journal/watch/**'
 
 permissions:
   contents: write
@@ -51,7 +55,7 @@ jobs:
       - name: Build Journal Watch editorial intelligence
         run: node generate-journal-watch.mjs
 
-      - name: Build finished WPA product families
+      - name: Build finished WPA product families and Protocolometry digest
         run: node tools/wpa-product-factory/build-products.mjs
 
       - name: Validate WPA Sublimate source package
@@ -76,13 +80,15 @@ jobs:
 
       - name: Validate generated Institute outputs
         run: |
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<5)process.exit(1);console.log('Validated',m.products.length,'product families');"
-          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('operations/institute-24x7-status.json'));if(!s.systems||!s.systems.global_institutions||!s.systems.sublimate||!s.systems.product_factory)process.exit(1);console.log('Institute operations status validated');"
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<6)process.exit(1);if(!m.products.some(p=>p.id==='protocolometry-digest'))process.exit(1);console.log('Validated',m.products.length,'product families including Protocolometry');"
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('products/protocolometryDigest.json'));if(!Array.isArray(p.measurement_profile)||p.measurement_profile.length<5)process.exit(1);if(!String(p.status||'').includes('NO ORDINAL RANKING'))process.exit(1);console.log('Protocolometry measurement guardrail validated');"
+          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('operations/institute-24x7-status.json'));if(!s.systems||!s.systems.global_institutions||!s.systems.sublimate||!s.systems.product_factory||!s.systems.protocolometry)process.exit(1);console.log('Institute operations status validated');"
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/global-institutions/operations/verification-candidates.json'));if(q.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);console.log('Institutional queue guardrail validated');"
           test -s products/index.html
           test -s products/dailyBrief.html
           test -s products/academicRadar.html
           test -s products/editorialDossiers.html
+          test -s products/protocolometryDigest.html
           test -s products/sourceAudit.html
           test -s operations/index.html
 
@@ -131,7 +137,7 @@ jobs:
           if [ -z "$PR" ]; then
             gh pr create --base main --head automation/wpa-institute-24x7 \
               --title 'WPA Institute 24x7 automated operational update' \
-              --body 'Continuous governed WPA Institute cycle: public-source monitoring, open scholarly metadata, Journal Watch intelligence, finished research/editorial product families, Sublimate source validation, Pilot 20 evidence validation, and bounded institutional reachability observations. Canonical institutional verification, scientific publication, peer-review decisions and official judgments remain human-gated.'
+              --body 'Continuous governed WPA Institute cycle: public-source monitoring, open scholarly metadata, Journal Watch intelligence, Protocolometry measurement, finished research/editorial product families, Sublimate source validation, Pilot 20 evidence validation, and bounded institutional reachability observations. Canonical institutional verification, ordinal rankings, scientific publication, peer-review decisions and official judgments remain human-gated.'
             PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           fi
           echo "Production PR: #$PR"
