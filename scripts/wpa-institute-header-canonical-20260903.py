@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Canonical Institute-header repair: WPA logo, WPA Journal nav, Journal CTA contrast."""
+# Triggered independently from the legacy August reconciliation so unrelated stale checks cannot block this header repair.
 from pathlib import Path
 import re
 
