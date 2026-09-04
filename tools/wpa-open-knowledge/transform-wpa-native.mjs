@@ -146,7 +146,7 @@ function scholarlyCandidate(atom) {
     human_gate: { state: 'REQUIRED', doctrine_change: 'HG4', consequential_methodology_change: 'HG2_OR_HIGHER', scientific_publication: 'EDITORIAL_HUMAN_REVIEW' },
     provenance_preserved: true,
     source_body_embedded: false,
-    generated: generated
+    generated
   };
   const generatedText = JSON.stringify({reading:candidate.wpa_native_reading,research:candidate.research_agenda_candidate,viral:candidate.viral_sande_angle});
   const overlap = overlap8(atom.knowledge_summary || '', generatedText);
@@ -199,7 +199,7 @@ function institutionalCandidate(atom) {
     human_gate: { state: 'REQUIRED', programme_or_policy_adoption: 'HG2_OR_HIGHER', doctrine_change: 'HG4', external_claims: 'HUMAN_VERIFICATION_REQUIRED' },
     provenance_preserved: true,
     source_body_embedded: false,
-    generated: generated
+    generated
   };
   const generatedText = JSON.stringify({reading:candidate.wpa_native_reading,dna:candidate.institutional_dna_abstraction,strategy:candidate.strategy_option,viral:candidate.viral_sande_angle});
   const overlap = overlap8(atom.practice_summary || '', generatedText);
@@ -217,42 +217,60 @@ const [scholarly, institutional, model] = await Promise.all([
 
 const scholarlyCandidates = (scholarly.atoms || []).map(scholarlyCandidate);
 const institutionalCandidates = (institutional.atoms || []).map(institutionalCandidate);
-const candidates = [...scholarlyCandidates, ...institutionalCandidates];
-const failedOverlap = candidates.filter((x) => !x.originality_audit?.pass);
-if (failedOverlap.length) {
-  throw new Error(`WPA-native originality gate failed for ${failedOverlap.map((x) => x.wpa_native_id).join(', ')}`);
-}
+const allCandidates = [...scholarlyCandidates, ...institutionalCandidates];
+const candidates = allCandidates.filter((x) => x.originality_audit?.pass);
+const quarantined = allCandidates.filter((x) => !x.originality_audit?.pass).map((x) => ({
+  ...x,
+  eligible_routes: [],
+  release_state: 'WITHHELD_ORIGINALITY_OVERLAP',
+  human_gate: { ...x.human_gate, state: 'BLOCKED_PENDING_REWRITE_AND_REVIEW' },
+  quarantine_reason: 'Shared eight-word sequence detected between source summary and generated WPA-native analysis. This candidate is withheld from Virtual/Viral Sande and all downstream reuse until rewritten and re-audited.'
+}));
 
 const payload = {
-  schema: 'wpa-native-knowledge-candidates/1.0',
+  schema: 'wpa-native-knowledge-candidates/1.1',
   generated,
-  status: 'WPA_NATIVE_CANDIDATES_PENDING_HUMAN_REVIEW',
+  status: quarantined.length ? 'WPA_NATIVE_CANDIDATES_WITH_QUARANTINE_PENDING_HUMAN_REVIEW' : 'WPA_NATIVE_CANDIDATES_PENDING_HUMAN_REVIEW',
   transformation_model: '/data/wpa-native-knowledge-transformation-model.json',
   transformation_model_version: model.version || null,
-  source_counts: { scholarly: scholarlyCandidates.length, institutional: institutionalCandidates.length, total: candidates.length },
+  source_counts: {
+    scholarly: scholarlyCandidates.length,
+    institutional: institutionalCandidates.length,
+    total_observed: allCandidates.length,
+    eligible_after_originality_gate: candidates.length,
+    quarantined: quarantined.length
+  },
   doctrine: {
     formula: model.core_formula || null,
     principle: 'External knowledge remains external evidence; WPA-native output is a new governed analytical layer, not copied expression and not a transfer of authorship.',
     human_authority: 'Machines may discover, compare, structure and recommend. Consequential institutional adoption, doctrine, methodology freeze, publication and official judgment remain human-controlled.'
   },
-  originality_gate: { shared_sequence_length_words: 8, failed: failedOverlap.length, protected_source_body_embedded: false },
-  candidates
+  originality_gate: {
+    shared_sequence_length_words: 8,
+    failed: quarantined.length,
+    protected_source_body_embedded: false,
+    fail_closed_scope: 'CANDIDATE_LEVEL',
+    rule: 'Any candidate that fails the overlap test is quarantined and excluded from downstream intake; the 24/7 Institute cycle continues with compliant candidates.'
+  },
+  candidates,
+  quarantine: quarantined
 };
 await writeJson(OUT, payload);
 
 const intake = {
-  schema: 'wpa-virtual-viral-sande-native-intake/1.0',
+  schema: 'wpa-virtual-viral-sande-native-intake/1.1',
   generated,
-  status: 'WPA_NATIVE_CONTEXT_PENDING_HUMAN_REVIEW',
+  status: quarantined.length ? 'WPA_NATIVE_CONTEXT_WITH_QUARANTINE_PENDING_HUMAN_REVIEW' : 'WPA_NATIVE_CONTEXT_PENDING_HUMAN_REVIEW',
   purpose: 'WPA-native, provenance-preserving context layer for Virtual Sande, Viral Sande, WPAWS and eligible Institute systems.',
   source_layer: '/data/virtual-sande/open-knowledge-intake.json',
   transformation_layer: '/data/open-knowledge/wpa-native-candidates.json',
   doctrine_layer: '/data/wpa-native-knowledge-transformation-model.json',
-  rule: 'Use this transformed layer for WPA analysis and communication. Follow source references when factual verification is required; never convert a candidate into official doctrine, ranking, publication or institutional commitment without the applicable Human Gate.',
+  rule: 'Use only candidates that passed the originality gate. Follow source references when factual verification is required; never convert a candidate into official doctrine, ranking, publication or institutional commitment without the applicable Human Gate.',
   routing: ROUTES,
   human_gate: { state: 'REQUIRED', automatic_external_publication: 'DISABLED', automatic_doctrine_change: 'DISABLED', automatic_methodology_freeze: 'DISABLED' },
+  quarantined_candidate_ids: quarantined.map((x) => x.wpa_native_id),
   candidates
 };
 await writeJson(INTAKE, intake);
 
-console.log(`WPA-native transformation complete: ${candidates.length} candidates; originality gate PASS.`);
+console.log(`WPA-native transformation complete: ${candidates.length}/${allCandidates.length} candidates passed; ${quarantined.length} quarantined for originality review.`);
