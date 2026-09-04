@@ -58,7 +58,7 @@
 +    const items = dedupePublicItems(await queryLiveItems(env, tickerUrl));
      return jsonResponse(request, env, { generated_at: (/* @__PURE__ */ new Date()).toISOString(), total: items.length, items });
    }
-@@ -6424,7 +6438,7 @@
+@@ -6424,6 +6438,6 @@
    }
    if (request.method === "GET" && url.pathname === "/api/v1/lab-cache") {
      const limit = intParam(url.searchParams.get("limit"), intParam(env.LAB_CACHE_LIMIT, 150, 1, 200), 1, 200);
