@@ -1,0 +1,77 @@
+name: WPA Journal Live Patch Syntax CI
+
+on:
+  pull_request:
+    paths:
+      - tools/journal-live-production-bridge/*.patch
+      - .github/workflows/journal-live-patch-syntax-ci.yml
+  push:
+    branches: [main]
+    paths:
+      - tools/journal-live-production-bridge/*.patch
+      - .github/workflows/journal-live-patch-syntax-ci.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-unified-diffs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+      - name: Validate unified diff hunk counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          files=sorted(Path('tools/journal-live-production-bridge').glob('*.patch'))
+          if not files:
+              raise SystemExit('No patch files found')
+
+          header=re.compile(r'^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@')
+          failures=[]
+          checked=0
+          for path in files:
+              lines=path.read_text(encoding='utf-8').splitlines()
+              i=0
+              while i < len(lines):
+                  m=header.match(lines[i])
+                  if not m:
+                      i += 1
+                      continue
+                  checked += 1
+                  old_expected=int(m.group(2) or 1)
+                  new_expected=int(m.group(4) or 1)
+                  old_count=new_count=0
+                  hunk_line=i+1
+                  i += 1
+                  while i < len(lines) and not lines[i].startswith('@@ '):
+                      line=lines[i]
+                      if line.startswith(('--- ','+++ ')):
+                          break
+                      if line.startswith('-'):
+                          old_count += 1
+                      elif line.startswith('+'):
+                          new_count += 1
+                      elif line.startswith(' '):
+                          old_count += 1
+                          new_count += 1
+                      elif line.startswith('\\'):
+                          pass
+                      else:
+                          break
+                      i += 1
+                  if (old_count,new_count)!=(old_expected,new_expected):
+                      failures.append(
+                          f'{path}:{hunk_line}: expected old/new {old_expected}/{new_expected}, got {old_count}/{new_count}'
+                      )
+          print(f'validated_hunks={checked}')
+          if failures:
+              print('\n'.join(failures))
+              raise SystemExit(1)
+          PY
