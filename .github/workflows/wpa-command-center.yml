@@ -1,0 +1,76 @@
+name: WPA PROTOCOLometry Command Center CI
+
+on:
+  pull_request:
+    paths:
+      - 'tools/wpa-institute-ops/rights-source-check.mjs'
+      - 'tools/wpa-institute-ops/build-command-center.mjs'
+      - 'data/wpa-protocolometry-command-center-model.json'
+      - 'data/open-knowledge/**'
+      - 'products/**'
+      - 'data/social/**'
+      - 'data/wpa-free-card-growth-model.json'
+      - 'data/wpa-public-square-operating-model.json'
+      - 'operations/**'
+  push:
+    branches:
+      - feat/wpa-protocolometry-command-center-v1-20260904
+    paths:
+      - 'tools/wpa-institute-ops/rights-source-check.mjs'
+      - 'tools/wpa-institute-ops/build-command-center.mjs'
+      - 'data/wpa-protocolometry-command-center-model.json'
+      - '.github/workflows/wpa-command-center.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-command-center:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: 01 RIGHTS/SOURCE CHECK fail closed
+        run: node tools/wpa-institute-ops/rights-source-check.mjs
+
+      - name: 02 WPA-native transformation after rights gate
+        run: node tools/wpa-open-knowledge/transform-wpa-native.mjs
+
+      - name: 03 Build Protocolometry supervisory command center
+        run: node tools/wpa-institute-ops/build-command-center.mjs
+
+      - name: 04 Validate rights, Protocolometry and Human Authority boundaries
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('data/open-knowledge/rights-source-gate.json'));
+          if(r.mode!=='FAIL_CLOSED') process.exit(1);
+          if(r.controls?.open_access_visibility_is_not_reuse_permission!==true) process.exit(1);
+          if(r.controls?.cc_nc_and_cc_nd_are_not_routed_for_broad_adaptation!==true) process.exit(1);
+          if(r.controls?.robots_rules_cached_by_origin_but_evaluated_per_exact_path!==true) process.exit(1);
+          const s=JSON.parse(fs.readFileSync('data/open-knowledge/scholarly-atoms.json'));
+          if((s.atoms||[]).some(a=>/\b(?:nc|nd)\b/i.test(String(a.license||'')) && a.reuse_status!=='HOLD')) process.exit(1);
+          const c=JSON.parse(fs.readFileSync('operations/command-center/status.json'));
+          if(c.protocolometry_role!=='SUPERVISORY_MEASUREMENT_NERVOUS_SYSTEM') process.exit(1);
+          if(c.audit?.measurement_is_not_judgment!==true || c.audit?.open_visibility_is_not_reuse_permission!==true) process.exit(1);
+          if(c.lanes?.human_gate?.automatic_production_merge!=='DISABLED') process.exit(1);
+          if(c.lanes?.human_gate?.automatic_external_publishing!=='DISABLED') process.exit(1);
+          if(c.lanes?.membership?.authoritative_registry_backend_detected===false && c.lanes.membership.state!=='DESIGN_READY_ACTIVATION_INACTIVE') process.exit(1);
+          if(c.lanes?.monetization?.payment_backend_detected===false && c.lanes.monetization.state!=='DESIGN_READY_ACTIVATION_INACTIVE') process.exit(1);
+          console.log('WPA PROTOCOLometry Command Center safety contract: PASS');
+          NODE
+
+      - name: 05 Assert no secrets or member PII are introduced by command-center outputs
+        run: |
+          test -s operations/command-center/index.html
+          test -s operations/command-center/status.json
+          ! grep -R -E -i '(password|secret|api[_ -]?key|access[_ -]?token)[[:space:]]*[:=][[:space:]]*["'\'' ]?[A-Za-z0-9_-]{16,}' operations/command-center data/wpa-protocolometry-command-center-model.json
+          echo 'Public command-center outputs contain no obvious secret material.'
