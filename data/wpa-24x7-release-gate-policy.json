@@ -1,16 +1,29 @@
 {
-  "schema": "wpa-24x7-release-gate-policy/1.0",
-  "version": "1.0.0",
+  "schema": "wpa-24x7-release-gate-policy/1.1",
+  "version": "1.1.0",
   "updated": "2026-09-04",
   "name": "WPA 24x7 Green-Cycle Owner Release Gate",
   "status": "HUMAN_GATE_ENFORCED",
-  "principle": "No production victory is declared and no protected production merge is authorised until the hardened WPA 24x7 Institute Operations cycle completes successfully from COLLECT through ADAPT and the owner explicitly approves release.",
+  "canonical_cognitive_flow": [
+    "COLLECT",
+    "RIGHTS_SOURCE_CHECK",
+    "WPA_NATIVE_TRANSFORM",
+    "CHECK",
+    "PRODUCE",
+    "ADAPT",
+    "HUMAN_APPROVAL"
+  ],
+  "post_approval_rule": "DISTRIBUTE_OR_APPLY_ONLY_WITHIN_THE_EXPLICITLY_APPROVED_SCOPE",
+  "principle": "No production victory is declared and no protected production merge is authorised until the hardened WPA 24x7 Institute Operations cycle has successfully exercised the governed chain from COLLECT through RIGHTS/SOURCE CHECK, WPA-NATIVE TRANSFORM, CHECK, PRODUCE and ADAPT on the current PR head, and the owner explicitly approves release.",
+  "cognitive_principle": "/data/wpa-institute-cognitive-operating-principle.json",
+  "core_rule_mk": "WPA НЕ ГО ПРЕЗЕМА ТУЃОТО ЗНАЕЊЕ. WPA ГО ПРОВЕРУВА, ГО РАЗЛОЖУВА, ГО СООЧУВА СО СОПСТВЕНАТА ДОКТРИНА, ГО МЕРИ, ГО ПРЕИСПИТУВА И ОД НЕГО СОЗДАВА НОВА WPA ИНСТИТУЦИОНАЛНА ВРЕДНОСТ.",
   "required_preconditions": [
     "The relevant WPA 24x7 Institute Operations workflow run is completed with conclusion=success.",
     "The successful run is anchored to the current PR #261 head SHA, not an obsolete feature commit.",
     "PR #261 remains open, mergeable and not already merged.",
+    "Open-knowledge rights/source controls remain fail-closed: no paywall/login/CAPTCHA bypass, no protected full-text copying, metadata-only sources remain discovery-only until a lawful substantive basis is verified, and public institutional portal bodies are not retained as WPA content.",
+    "WPA-native transformation remains source-attributed, protected-source-body-free and passes the anti-copy overlap gate.",
     "Journal Watch remains EDITORIAL_INTELLIGENCE_HUMAN_GOVERNED with automatic scientific article generation/publication and automatic peer-review decisions disabled.",
-    "WPA-native transformation and anti-copy gates pass.",
     "Protocolometry measurement guardrails pass and no autonomous ordinal ranking is introduced.",
     "Owner approval queue continues to report automatic_production_merge=DISABLED and automatic_external_publishing=DISABLED.",
     "No unresolved failed required check is treated as green."
@@ -24,7 +37,8 @@
       "automatic social or messenger publication",
       "automatic doctrine mutation",
       "automatic canonical institutional revision",
-      "unverified external API distribution"
+      "unverified external API distribution",
+      "reuse outside the explicitly approved scope"
     ]
   },
   "merge_rule": "The approval phrase is necessary but not sufficient by itself: immediately before merge, current PR head, required checks and green full-cycle evidence must be re-read. If the head moved or a required check failed/pended, the gate remains closed and the owner is told why.",
