@@ -1,4 +1,4 @@
-window.WPA_LIVE_DEMO_ENABLED = true;
+window.WPA_LIVE_DEMO_ENABLED = Boolean(window.WPA_LIVE_DEMO_ENABLED && location.protocol === "file:");
 window.WPA_LIVE_DEMO_DATA = {
   "mode": "demo",
   "synthetic": true,
