@@ -1,11 +1,40 @@
 {
-  "version": "0.1.0",
-  "mode": "draft_only",
+  "version": "0.2.0",
+  "mode": "draft_and_authorised_distribution",
   "primary_professional_channel": "linkedin",
+  "owned_destinations": {
+    "linkedin": {
+      "profile_url": "https://www.linkedin.com/in/sande-smiljanov-phd/",
+      "owner": "Sande Smiljanov",
+      "role": "PRIMARY_PROFESSIONAL_DISTRIBUTION",
+      "external_adapter": "REQUIRES_CONNECTED_AUTHORISED_PUBLISHER"
+    },
+    "academia": {
+      "profile_url": "https://independent.academia.edu/SandeSmiljanov",
+      "owner": "Sande Smiljanov",
+      "role": "ACADEMIC_PROFILE_DISTRIBUTION",
+      "external_adapter": "MANUAL_UNTIL_VERIFIED_OFFICIAL_ADAPTER"
+    },
+    "researchgate": {
+      "profile_url": "https://www.researchgate.net/profile/Sande-Smiljanov-2",
+      "owner": "Sande Smiljanov",
+      "role": "ACADEMIC_NETWORK_DISTRIBUTION",
+      "external_adapter": "MANUAL_UNTIL_VERIFIED_OFFICIAL_ADAPTER"
+    },
+    "zenodo": {
+      "dashboard_url_private": "https://zenodo.org/me/uploads",
+      "public_profile_url": null,
+      "owner": "Sande Smiljanov",
+      "role": "OPEN_RESEARCH_REPOSITORY_DEPOSIT",
+      "external_adapter": "REQUIRES_ZENODO_AUTHORISED_DEPOSIT_PATH",
+      "privacy_rule": "Do not expose authenticated dashboard URLs as a public profile. Resolve a public record/community/ORCID-linked destination only after verification."
+    }
+  },
   "platforms": [
-    {"id":"linkedin","class":"professional","priority":1,"modes":["founder-post","institute-post","document-carousel","newsletter","article"],"publish":"human-approved-api-or-manual"},
-    {"id":"academia","class":"academic","priority":2,"modes":["paper","abstract","research-profile"],"publish":"manual"},
-    {"id":"researchgate","class":"academic","priority":3,"modes":["paper","project-update"],"publish":"manual"},
+    {"id":"linkedin","class":"professional","priority":1,"modes":["founder-post","institute-post","document-carousel","newsletter","article"],"publish":"human-approved-connected-api-or-manual","profile_url":"https://www.linkedin.com/in/sande-smiljanov-phd/"},
+    {"id":"academia","class":"academic","priority":2,"modes":["paper","abstract","research-profile","project-update"],"publish":"manual-until-verified-adapter","profile_url":"https://independent.academia.edu/SandeSmiljanov"},
+    {"id":"researchgate","class":"academic","priority":3,"modes":["paper","project-update","research-spotlight","profile-update"],"publish":"manual-until-verified-adapter","profile_url":"https://www.researchgate.net/profile/Sande-Smiljanov-2"},
+    {"id":"zenodo","class":"open-research-repository","priority":4,"modes":["deposit-candidate","metadata-package","dataset","software","publication-record"],"publish":"authorised-deposit-only","profile_url":null},
     {"id":"facebook","class":"social","modes":["post","video","event","group-brief"]},
     {"id":"instagram","class":"social","modes":["carousel","reel","story","caption"]},
     {"id":"youtube","class":"video","modes":["short","analysis","lecture","podcast"]},
@@ -39,5 +68,14 @@
     {"id":"substack","class":"newsletter","modes":["newsletter","podcast"]},
     {"id":"podcast","class":"audio","modes":["episode","brief","clip"]}
   ],
-  "prohibited": ["purchased-followers","fake-engagement","mass-unsolicited-messaging","credential-exposure","unreviewed-auto-publishing","ethnic-or-religious-microtargeting"]
+  "prohibited": [
+    "purchased-followers",
+    "fake-engagement",
+    "mass-unsolicited-messaging",
+    "credential-exposure",
+    "unreviewed-auto-publishing",
+    "ethnic-or-religious-microtargeting",
+    "unauthorised-repository-deposit",
+    "misrepresentation-of-preprint-or-peer-review-status"
+  ]
 }
