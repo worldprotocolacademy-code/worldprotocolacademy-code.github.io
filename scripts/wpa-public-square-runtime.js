@@ -1,5 +1,6 @@
-/* WPA Public Square Runtime v1.3.0
+/* WPA Public Square Runtime v1.4.0
  * Programmes -> Certification -> WPA Card -> Partnerships & Member Benefits.
+ * Open Knowledge + Free Card acquisition are integrated without claiming active membership.
  * Development/pilot only. Pre-commercial partner operations may be active;
  * enrolment, issuance, paid membership, payments and benefit redemption remain inactive.
  */
@@ -8,7 +9,7 @@
   if(window.WPA_PUBLIC_SQUARE_RUNTIME_LOADED)return;
   window.WPA_PUBLIC_SQUARE_RUNTIME_LOADED=true;
 
-  var MODEL='/data/wpa-public-square-operating-model.json?v=20260827-2';
+  var MODEL='/data/wpa-public-square-operating-model.json?v=20260904-1';
   var PAGE=(document.documentElement.getAttribute('data-wpa-page')||document.body&&document.body.getAttribute('data-page')||'').toLowerCase();
   var PATH=(location.pathname||'').toLowerCase();
   var MAP={
@@ -27,6 +28,12 @@
   }
   var KEY=pageKey();
   if(!KEY)return;
+
+  function addScript(id,src){
+    if(document.getElementById(id))return;
+    var s=document.createElement('script');s.id=id;s.src=src;s.defer=true;document.head.appendChild(s);
+  }
+  addScript('wpa-free-card-growth-runtime','/scripts/wpa-free-card-growth-runtime.js?v=20260904-1');
 
   function loadCredentialOperations(){
     if(KEY==='passive-revenue'||window.WPA_CREDENTIAL_JOURNEY_LOADED||document.getElementById('wpa-credential-journey-v2'))return;
@@ -57,24 +64,31 @@
     var flow=document.createElement('div');flow.className='wps-flow';wrap.appendChild(flow);
     ['programmes','certification','wpa-card','passive-revenue'].forEach(function(k,i){var a=document.createElement('a');a.className='wps-step'+(k===KEY?' active':'');a.href=MAP[k].href;var st=document.createElement('strong');st.textContent=(i+1)+'. '+MAP[k].label;var sub=document.createElement('span');sub.textContent=k===KEY?L('Тековна фаза','Current stage'):L('Отвори фаза','Open stage');a.append(st,sub);flow.appendChild(a)});
     var next=document.createElement('div');next.className='wps-next';next.appendChild(document.createTextNode(L('Следен валиден чекор: ','Next valid action: ')+String(r.next||'' )+' '));var link=document.createElement('a');link.href=String(r.href||MAP[KEY].href);link.textContent=L('Отвори →','Open →');next.appendChild(link);wrap.appendChild(next);
-    var b=text(document.createElement('div'),L('Human Gate: визуелна картичка, сертификат, serial или QR не создава статус сам по себе. Валиден е само овластен registry record. Комерцијални и credential функции остануваат неактивни во оваа фаза.','Human Gate: a visual card, certificate, serial or QR does not create status by itself. Only an authorised registry record is valid. Commercial and credential functions remain inactive at this stage.'));b.className='wps-boundary';wrap.appendChild(b);
+    var b=text(document.createElement('div'),L('Human Gate: визуелна картичка, сертификат, serial или QR не создава статус сам по себе. Валиден е само овластен registry record. Комерцијални и credential функции остануваат неактивни во оваа фаза. Јавното WPA знаење останува отворено без membership gate.','Human Gate: a visual card, certificate, serial or QR does not create status by itself. Only an authorised registry record is valid. Commercial and credential functions remain inactive at this stage. Public WPA knowledge remains open without a membership gate.'));b.className='wps-boundary';wrap.appendChild(b);
+    if(KEY==='wpa-card'){
+      var opsCard=document.createElement('div');opsCard.className='wps-ops';
+      var free=document.createElement('a');free.href='/wpa-free-card-interest.html';free.textContent=L('WPA Free Card · interest','WPA Free Card · interest');
+      var lib=document.createElement('a');lib.href='/wpa-open-library.html';lib.textContent=L('WPA Open Knowledge Library','WPA Open Knowledge Library');
+      opsCard.append(free,lib);wrap.appendChild(opsCard);
+    }
     if(KEY==='passive-revenue'){
       var truth=document.createElement('div');truth.className='wps-truth';
       var tt=document.createElement('div');tt.className='wps-truth-title';tt.textContent=L('Activation Truth · што е реално активно денес','Activation Truth · what is actually active now');truth.appendChild(tt);
       var tg=document.createElement('div');tg.className='wps-truth-grid';
       [
-        [L('АКТИВНО СЕГА','ACTIVE NOW'),L('Partner discovery, due diligence, expressions of interest и non-binding dialogue.','Partner discovery, due diligence, expressions of interest and non-binding dialogue.')],
-        [L('DESIGN-READY','DESIGN-READY'),L('Revenue ladder, membership tiers, benefit rules, credential/card architecture и payment-provider discovery.','Revenue ladder, membership tiers, benefit rules, credential/card architecture and payment-provider discovery.')],
-        [L('ЗАКЛУЧЕНО ДО АКТИВАЦИЈА','LOCKED UNTIL ACTIVATION'),L('Плаќања, paid memberships, enrolment, contracts, benefit redemption и official credential issuance.','Payments, paid memberships, enrolment, contracts, benefit redemption and official credential issuance.')]
+        [L('АКТИВНО СЕГА','ACTIVE NOW'),L('Partner discovery, due diligence, expressions of interest и non-binding dialogue. WPA Free Card pre-registry interest route е user-initiated и не создава membership.','Partner discovery, due diligence, expressions of interest and non-binding dialogue. The WPA Free Card pre-registry interest route is user-initiated and does not create membership.')],
+        [L('DESIGN-READY','DESIGN-READY'),L('Free Card growth model, Open Knowledge Library, revenue ladder, membership tiers, merit/partnership separation, benefit rules и credential/card architecture.','Free Card growth model, Open Knowledge Library, revenue ladder, membership tiers, merit/partnership separation, benefit rules and credential/card architecture.')],
+        [L('ЗАКЛУЧЕНО ДО АКТИВАЦИЈА','LOCKED UNTIL ACTIVATION'),L('ACTIVE membership, Public ID/QR, плаќања, paid memberships, enrolment, contracts, benefit redemption и official credential issuance.','ACTIVE membership, Public ID/QR, payments, paid memberships, enrolment, contracts, benefit redemption and official credential issuance.')]
       ].forEach(function(x){var c=document.createElement('div');c.className='wps-truth-card';var h=document.createElement('strong');var e=document.createElement('em');e.textContent=x[0];h.appendChild(e);var p=document.createElement('div');p.textContent=x[1];c.append(h,p);tg.appendChild(c);});
       truth.appendChild(tg);wrap.appendChild(truth);
       var ops=document.createElement('div');ops.className='wps-ops';
       var op=document.createElement('a');op.href='/partner-operations.html';op.textContent=L('Отвори Partner Operations','Open Partner Operations');
       var eq=document.createElement('a');eq.href='/partner-enquiry.html';eq.textContent=L('Партнерски интерес / enquiry','Partner interest / enquiry');
-      ops.append(op,eq);wrap.appendChild(ops);
+      var growth=document.createElement('a');growth.href='/wpa-free-card-interest.html';growth.textContent=L('WPA Free Card · interest','WPA Free Card · interest');
+      ops.append(op,eq,growth);wrap.appendChild(ops);
     }
     var anchor=document.querySelector('main');if(anchor&&anchor.firstElementChild)anchor.insertBefore(section,anchor.firstElementChild);else document.body.insertBefore(section,document.body.firstChild);
-    window.WPA_PUBLIC_SQUARE=Object.freeze({version:'1.3.0',page:KEY,model:model||null,humanGate:true,credentialOperationsLoaded:KEY!=='passive-revenue',precommercialPartnerOperations:KEY==='passive-revenue',commercialActivation:false,credentialIssuance:false});
+    window.WPA_PUBLIC_SQUARE=Object.freeze({version:'1.4.0',page:KEY,model:model||null,humanGate:true,openKnowledge:true,freeCardInterestRoute:true,activeMembership:false,credentialOperationsLoaded:KEY!=='passive-revenue',precommercialPartnerOperations:KEY==='passive-revenue',commercialActivation:false,credentialIssuance:false});
     document.dispatchEvent(new CustomEvent('wpa:public-square-ready',{detail:{page:KEY,status:r.status||'DEVELOPMENT'}}));
   }
   fetch(MODEL,{cache:'no-store',headers:{accept:'application/json'}}).then(function(r){if(!r.ok)throw new Error('model');return r.json()}).then(render).catch(function(){render(null)});
