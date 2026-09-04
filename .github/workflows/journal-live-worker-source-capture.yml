@@ -1,0 +1,81 @@
+name: WPA Journal Live Worker Source Capture
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: journal-live-worker-source-capture
+  cancel-in-progress: false
+
+env:
+  WORKER_NAME: wpa-live-production-bridge
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - name: Read exact production Worker content
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}/content/v2"
+          status=$(curl --silent --show-error --location \
+            --output /tmp/worker-content.bin \
+            --dump-header /tmp/worker-content.headers \
+            --write-out '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Accept: */*' \
+            "$url")
+          echo "Worker content HTTP status: ${status}"
+          test "$status" = '200'
+          test -s /tmp/worker-content.bin
+
+      - name: Record provenance without printing source
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum /tmp/worker-content.bin | tee /tmp/worker-content.sha256
+          bytes=$(wc -c < /tmp/worker-content.bin)
+          content_type=$(awk -F': ' 'tolower($1)=="content-type" {gsub("\r", "", $2); print $2}' /tmp/worker-content.headers | tail -n 1)
+          {
+            echo "worker=${WORKER_NAME}"
+            echo "captured_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "bytes=${bytes}"
+            echo "content_type=${content_type:-unknown}"
+            echo "sha256=$(cut -d' ' -f1 /tmp/worker-content.sha256)"
+            echo "operation=GET-only"
+          } | tee /tmp/worker-content-provenance.txt
+          {
+            echo '## WPA Journal Live · Worker Source Capture'
+            echo
+            echo '- Cloudflare operation: **GET only**'
+            echo '- Worker changed: **No**'
+            echo '- Deployment created: **No**'
+            echo '- Source printed to logs: **No**'
+            echo '- Exact response retained only as workflow artifact for controlled review.'
+            echo
+            echo '```text'
+            cat /tmp/worker-content-provenance.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload controlled source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-live-production-bridge-source-capture
+          path: |
+            /tmp/worker-content.bin
+            /tmp/worker-content.sha256
+            /tmp/worker-content-provenance.txt
+          retention-days: 7
+          if-no-files-found: error
