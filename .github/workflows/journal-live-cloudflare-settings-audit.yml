@@ -1,0 +1,165 @@
+name: WPA Journal Live Cloudflare Settings Audit
+
+on:
+  push:
+    branches:
+      - journal-live-cloudflare-settings-audit
+
+permissions:
+  contents: read
+
+concurrency:
+  group: journal-live-cloudflare-settings-audit
+  cancel-in-progress: false
+
+env:
+  WORKER_NAME: wpa-live-production-bridge
+  EXPECTED_ORIGIN: https://worldprotocolacademy.mk
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Read active Worker settings only
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
+
+          status=$(curl --silent --show-error \
+            --output /tmp/settings.json \
+            --write-out '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${API_BASE}/settings")
+
+          echo "Settings HTTP status: ${status}"
+          test "$status" = '200'
+
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = json.loads(Path('/tmp/settings.json').read_text())
+          if payload.get('success') is not True:
+              errors = payload.get('errors') or []
+              safe = [{'code': e.get('code'), 'message': e.get('message')} for e in errors]
+              raise SystemExit(f'Cloudflare settings API failed: {safe}')
+
+          result = payload.get('result') or {}
+          bindings = result.get('bindings') or []
+
+          print(f"Worker: {os.environ['WORKER_NAME']}")
+          print(f"Compatibility date: {result.get('compatibility_date')}")
+          print(f"Binding count: {len(bindings)}")
+
+          by_name = {}
+          for binding in bindings:
+              name = binding.get('name')
+              btype = binding.get('type')
+              if name:
+                  by_name[name] = binding
+              if btype in {'secret_text', 'secret_key'}:
+                  print(f"Binding: {name} | type={btype} | value=<redacted>")
+              elif name == 'PUBLIC_SITE_ORIGINS':
+                  print(f"Binding: {name} | type={btype} | value={binding.get('text', '<missing>')}")
+              elif name in {'DB', 'RSS_QUEUE'}:
+                  print(f"Binding: {name} | type={btype} | configured=yes")
+              else:
+                  print(f"Binding: {name} | type={btype}")
+
+          required = {
+              'PUBLIC_SITE_ORIGINS': 'plain_text',
+              'DB': 'd1',
+              'RSS_QUEUE': 'queue',
+          }
+          for name, expected_type in required.items():
+              binding = by_name.get(name)
+              if not binding:
+                  raise SystemExit(f'MISSING REQUIRED BINDING: {name}')
+              actual = binding.get('type')
+              if actual != expected_type:
+                  raise SystemExit(f'BINDING TYPE MISMATCH: {name}: expected {expected_type}, got {actual}')
+
+          origins = str(by_name['PUBLIC_SITE_ORIGINS'].get('text') or '')
+          expected_origin = os.environ['EXPECTED_ORIGIN']
+          contains_expected = expected_origin in [x.strip() for x in origins.split(',') if x.strip()]
+          print(f"PUBLIC_SITE_ORIGINS contains {expected_origin}: {str(contains_expected).lower()}")
+
+          Path('/tmp/audit-summary.txt').write_text(
+              '\n'.join([
+                  f"worker={os.environ['WORKER_NAME']}",
+                  f"compatibility_date={result.get('compatibility_date')}",
+                  f"binding_count={len(bindings)}",
+                  f"has_PUBLIC_SITE_ORIGINS={str('PUBLIC_SITE_ORIGINS' in by_name).lower()}",
+                  f"has_DB={str('DB' in by_name).lower()}",
+                  f"has_RSS_QUEUE={str('RSS_QUEUE' in by_name).lower()}",
+                  f"expected_origin_present={str(contains_expected).lower()}",
+              ]) + '\n'
+          )
+          PY
+
+      - name: Read deployment metadata only
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
+          status=$(curl --silent --show-error \
+            --output /tmp/deployments.json \
+            --write-out '%{http_code}' \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Accept: application/json' \
+            "${API_BASE}/deployments")
+          echo "Deployments HTTP status: ${status}"
+          test "$status" = '200'
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('/tmp/deployments.json').read_text())
+          if payload.get('success') is not True:
+              errors = payload.get('errors') or []
+              safe = [{'code': e.get('code'), 'message': e.get('message')} for e in errors]
+              raise SystemExit(f'Cloudflare deployments API failed: {safe}')
+          result = payload.get('result') or []
+          print(f"Deployment records: {len(result)}")
+          for item in result[:3]:
+              versions = item.get('versions') or []
+              safe_versions = [
+                  {
+                      'version_id': v.get('version_id'),
+                      'percentage': v.get('percentage'),
+                  }
+                  for v in versions
+              ]
+              print(f"Deployment id={item.get('id')} versions={safe_versions}")
+          PY
+
+      - name: Publish safe audit summary
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## WPA Journal Live · Read-only Cloudflare Settings Audit'
+            echo
+            echo '- Operation mode: **GET only**'
+            echo '- Worker code changed: **No**'
+            echo '- Worker settings changed: **No**'
+            echo '- Deployment created: **No**'
+            echo
+            echo '```text'
+            cat /tmp/audit-summary.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
