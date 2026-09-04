@@ -1,0 +1,81 @@
+name: WPA Journal Live Real Sources
+
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/wpa-live-real-sources.yml'
+      - 'tools/wpa-watch/**'
+      - 'journal/live/demo-data.js'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wpa-journal-live-real-sources
+  cancel-in-progress: true
+
+jobs:
+  collect-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install collector dependencies
+        working-directory: tools/wpa-watch
+        run: npm install --no-audit --no-fund
+
+      - name: Collect real public sources
+        working-directory: tools/wpa-watch
+        env:
+          WPA_WATCH_FEED_TIMEOUT_MS: '12000'
+        run: |
+          npm run watch
+          node filter-relevance.mjs
+          npm run report
+
+      - name: Verify real-source publication boundary
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const status=JSON.parse(fs.readFileSync('tools/wpa-watch/status.json','utf8'));
+          const items=JSON.parse(fs.readFileSync('tools/wpa-watch/items.json','utf8'));
+          if(status.synthetic_fallback!=='DISABLED') process.exit(1);
+          if(Number(status.sources_live||0)<2) process.exit(1);
+          if(!Array.isArray(items)||items.length<1) process.exit(1);
+          if(items.some(x=>!/^(https?:\/\/)/i.test(String(x.link||'')))) process.exit(1);
+          if(items.some(x=>/example\.invalid|WPA Demo/i.test(`${x.link||''} ${x.source||''} ${x.title||''}`))) process.exit(1);
+          console.log(`Real-source lane PASS: ${status.sources_live}/${status.sources_enabled} live sources; ${items.length} relevant items.`);
+          NODE
+
+      - name: Publish data-only 24x7 branch
+        if: github.event_name != 'pull_request' && github.ref_name == 'main'
+        run: |
+          git config user.name 'wpa-real-source-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git checkout -B wpa-live-data
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json
+          if git diff --cached --quiet; then
+            echo 'No real-source data changes.'
+            exit 0
+          fi
+          git commit -m "WPA Journal Live real-source snapshot $(date -u +%FT%TZ)"
+          git push --force origin HEAD:wpa-live-data
+
+      - name: Human Authority boundary
+        run: |
+          echo 'PUBLIC-SOURCE DATA REFRESH ONLY.'
+          echo 'NO SCIENTIFIC PUBLICATION, NO DOCTRINE CHANGE, NO SOCIAL/MESSENGER POSTING, NO MEMBER/COMMERCIAL ACTION.'
