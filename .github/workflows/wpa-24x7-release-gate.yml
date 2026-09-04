@@ -1,9 +1,8 @@
 name: WPA 24x7 Green-Cycle Release Gate
 
-# Pre-merge gate for PR #261. A workflow_run-only trigger cannot validate a newly
-# introduced workflow before it exists on the default branch, so the Human Gate
-# is driven by PR synchronization and independently verifies the latest exact-head
-# Institute cycle through the Actions API. No merge or external publication occurs.
+# Pre-merge gate for PR #261. The gate waits for the full exact-head Institute
+# cycle, which generates and validates runtime evidence, then independently checks
+# committed policy/implementation guardrails. No merge or external publication occurs.
 on:
   pull_request:
     branches:
@@ -53,21 +52,6 @@ jobs:
           echo "WPA_FEATURE_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
           echo "PR #${WPA_RELEASE_PR} exact current head captured: $HEAD_SHA"
 
-      - name: Verify Journal Watch editorial-intelligence boundary
-        run: |
-          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-journal-watch-editorial-intelligence-policy.json'));if(p.mode!=='EDITORIAL_INTELLIGENCE_HUMAN_GOVERNED')process.exit(1);const c=p.controls||{};for(const k of ['automatic_scientific_article_generation','automatic_scientific_publication','automatic_editorial_acceptance','automatic_peer_review_decisions'])if(c[k]!=='DISABLED')process.exit(1);if(c.human_editorial_review!=='REQUIRED')process.exit(1);console.log('Journal Watch editorial-intelligence boundary: PASS');"
-          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json'));if(!String(q.policy||'').includes('No automatic journal publication'))process.exit(1);if((q.queue||[]).some(x=>x.editorial_action!=='manual_review_required'||x.peer_review!=='not_started'))process.exit(1);console.log('Journal Watch queue human-review contract: PASS');"
-
-      - name: Verify fail-closed RIGHTS/SOURCE evidence
-        run: |
-          test -s data/open-knowledge/rights-source-gate.json
-          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/open-knowledge/rights-source-gate.json'));if(r.mode!=='FAIL_CLOSED')process.exit(1);const c=r.controls||{};for(const k of ['open_access_visibility_is_not_reuse_permission','cc_nc_nd_sa_are_not_routed_for_broad_adaptation','robots_rules_cached_by_origin_but_evaluated_per_exact_path','robots_unavailable_or_error_is_fail_closed_hold','source_failure_never_relaxes_rights_rules'])if(c[k]!==true)process.exit(1);if(c.protected_source_body_retention!=='DISABLED'||c.human_review_before_consequential_reuse!=='REQUIRED')process.exit(1);console.log('RIGHTS/SOURCE fail-closed evidence: PASS');"
-
-      - name: Verify Human Gate release policy
-        run: |
-          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-24x7-release-gate-policy.json'));if(p.status!=='HUMAN_GATE_ENFORCED'||p.owner_command?.canonical_phrase_mk!=='ОДОБРУВАМ')process.exit(1);console.log('Owner release policy: PASS');"
-          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED'||a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);console.log('Automatic merge/publish remain disabled: PASS');"
-
       - name: Verify successful hardened cycle on exact current head
         env:
           GH_TOKEN: ${{ github.token }}
@@ -91,6 +75,22 @@ jobs:
           done
           echo "No successful completed exact-head Institute cycle was proven for $WPA_FEATURE_SHA" >&2
           exit 1
+
+      - name: Verify Journal Watch editorial-intelligence boundary
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-journal-watch-editorial-intelligence-policy.json'));if(p.mode!=='EDITORIAL_INTELLIGENCE_HUMAN_GOVERNED')process.exit(1);const c=p.controls||{};for(const k of ['automatic_scientific_article_generation','automatic_scientific_publication','automatic_editorial_acceptance','automatic_peer_review_decisions'])if(c[k]!=='DISABLED')process.exit(1);if(c.human_editorial_review!=='REQUIRED')process.exit(1);console.log('Journal Watch editorial-intelligence boundary: PASS');"
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json'));if(!String(q.policy||'').includes('No automatic journal publication'))process.exit(1);if((q.queue||[]).some(x=>x.editorial_action!=='manual_review_required'||x.peer_review!=='not_started'))process.exit(1);console.log('Journal Watch queue human-review contract: PASS');"
+
+      - name: Verify committed fail-closed RIGHTS/SOURCE implementation
+        run: |
+          test -s tools/wpa-institute-ops/rights-source-check.mjs
+          node -e "const fs=require('fs');const s=fs.readFileSync('tools/wpa-institute-ops/rights-source-check.mjs','utf8');for(const x of [\"mode: 'FAIL_CLOSED'\",\"cc_nc_nd_sa_are_not_routed_for_broad_adaptation: true\",\"robots_unavailable_or_error_is_fail_closed_hold: true\",\"protected_source_body_retention: 'DISABLED'\",\"human_review_before_consequential_reuse: 'REQUIRED'\",\"source_failure_never_relaxes_rights_rules: true\"])if(!s.includes(x))process.exit(1);console.log('Committed RIGHTS/SOURCE fail-closed implementation: PASS');"
+          echo 'Runtime rights-source-gate.json is generated and validated inside the successful exact-head Institute cycle above.'
+
+      - name: Verify Human Gate release policy
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-24x7-release-gate-policy.json'));if(p.status!=='HUMAN_GATE_ENFORCED'||p.owner_command?.canonical_phrase_mk!=='ОДОБРУВАМ')process.exit(1);console.log('Owner release policy: PASS');"
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED'||a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);console.log('Automatic merge/publish remain disabled: PASS');"
 
       - name: Re-verify PR head after green cycle
         env:
