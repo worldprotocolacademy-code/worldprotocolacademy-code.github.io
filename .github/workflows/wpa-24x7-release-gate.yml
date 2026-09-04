@@ -1,26 +1,57 @@
 name: WPA 24x7 Green-Cycle Release Gate
 
+# Pre-merge gate for PR #261. A workflow_run-only trigger cannot validate a newly
+# introduced workflow before it exists on the default branch, so the Human Gate
+# is driven by PR synchronization and independently verifies the latest exact-head
+# Institute cycle through the Actions API. No merge or external publication occurs.
 on:
-  workflow_run:
-    workflows: ["WPA 24x7 Institute Operations"]
-    types: [completed]
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   pull-requests: read
 
 env:
   WPA_RELEASE_PR: '261'
+  WPA_FEATURE_BRANCH: feat/wpa-24x7-product-factory-20260904
+
+concurrency:
+  group: wpa-24x7-release-gate-pr-261
+  cancel-in-progress: true
 
 jobs:
   verify-green-cycle:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.number == 261
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - name: Checkout current feature architecture
         uses: actions/checkout@v4
         with:
           ref: feat/wpa-24x7-product-factory-20260904
           fetch-depth: 1
+
+      - name: Capture and verify exact current PR head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR=$(gh api repos/${{ github.repository }}/pulls/${WPA_RELEASE_PR})
+          STATE=$(printf '%s' "$PR" | jq -r '.state')
+          MERGED=$(printf '%s' "$PR" | jq -r '.merged')
+          HEAD_SHA=$(printf '%s' "$PR" | jq -r '.head.sha')
+          HEAD_BRANCH=$(printf '%s' "$PR" | jq -r '.head.ref')
+          FEATURE_SHA=$(git rev-parse HEAD)
+          test "$STATE" = "open"
+          test "$MERGED" = "false"
+          test "$HEAD_BRANCH" = "$WPA_FEATURE_BRANCH"
+          test "$HEAD_SHA" = "$FEATURE_SHA"
+          echo "WPA_FEATURE_SHA=$HEAD_SHA" >> "$GITHUB_ENV"
+          echo "PR #${WPA_RELEASE_PR} exact current head captured: $HEAD_SHA"
 
       - name: Verify Journal Watch editorial-intelligence boundary
         run: |
@@ -37,19 +68,31 @@ jobs:
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-24x7-release-gate-policy.json'));if(p.status!=='HUMAN_GATE_ENFORCED'||p.owner_command?.canonical_phrase_mk!=='ОДОБРУВАМ')process.exit(1);console.log('Owner release policy: PASS');"
           node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED'||a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);console.log('Automatic merge/publish remain disabled: PASS');"
 
-      - name: Verify completed hardened cycle result on exact current head
+      - name: Verify successful hardened cycle on exact current head
         env:
-          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          test "$RUN_CONCLUSION" = "success"
-          test "$RUN_HEAD_BRANCH" = "feat/wpa-24x7-product-factory-20260904"
-          FEATURE_SHA=$(git rev-parse HEAD)
-          test "$RUN_HEAD_SHA" = "$FEATURE_SHA"
-          echo "Full hardened cycle succeeded on exact current feature head: $FEATURE_SHA"
+          for ATTEMPT in $(seq 1 60); do
+            RUN=$(gh api "repos/${{ github.repository }}/actions/runs?branch=${WPA_FEATURE_BRANCH}&per_page=100" | jq -c --arg sha "$WPA_FEATURE_SHA" '[.workflow_runs[] | select(.name=="WPA 24x7 Institute Operations" and .head_sha==$sha and .event=="push")] | sort_by(.created_at) | last // empty')
+            if [ -n "$RUN" ]; then
+              STATUS=$(printf '%s' "$RUN" | jq -r '.status')
+              CONCLUSION=$(printf '%s' "$RUN" | jq -r '.conclusion // ""')
+              RUN_ID=$(printf '%s' "$RUN" | jq -r '.id')
+              echo "Exact-head Institute cycle run ${RUN_ID}: status=${STATUS} conclusion=${CONCLUSION:-pending}"
+              if [ "$STATUS" = "completed" ]; then
+                test "$CONCLUSION" = "success"
+                echo "Full hardened cycle succeeded on exact current feature head: $WPA_FEATURE_SHA"
+                exit 0
+              fi
+            else
+              echo "Exact-head Institute cycle not registered yet for $WPA_FEATURE_SHA"
+            fi
+            sleep 10
+          done
+          echo "No successful completed exact-head Institute cycle was proven for $WPA_FEATURE_SHA" >&2
+          exit 1
 
-      - name: Verify PR #261 is still a protected Human Gate
+      - name: Re-verify PR head after green cycle
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -57,11 +100,11 @@ jobs:
           STATE=$(printf '%s' "$PR" | jq -r '.state')
           MERGED=$(printf '%s' "$PR" | jq -r '.merged')
           HEAD_SHA=$(printf '%s' "$PR" | jq -r '.head.sha')
-          FEATURE_SHA=$(git rev-parse HEAD)
           test "$STATE" = "open"
           test "$MERGED" = "false"
-          test "$HEAD_SHA" = "$FEATURE_SHA"
-          echo "PR #${WPA_RELEASE_PR} remains open and matches the green-cycle feature head."
+          test "$HEAD_SHA" = "$WPA_FEATURE_SHA"
+          test "$(git rev-parse HEAD)" = "$WPA_FEATURE_SHA"
+          echo "PR #${WPA_RELEASE_PR} remains open and unchanged after exact-head cycle verification."
 
       - name: Declare READY FOR OWNER APPROVAL, not merged
         run: |
