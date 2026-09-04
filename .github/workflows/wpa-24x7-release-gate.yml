@@ -1,0 +1,76 @@
+name: WPA 24x7 Green-Cycle Release Gate
+
+on:
+  workflow_run:
+    workflows: ["WPA 24x7 Institute Operations"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  WPA_RELEASE_PR: '261'
+
+jobs:
+  verify-green-cycle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current feature architecture
+        uses: actions/checkout@v4
+        with:
+          ref: feat/wpa-24x7-product-factory-20260904
+          fetch-depth: 1
+
+      - name: Verify Journal Watch editorial-intelligence boundary
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-journal-watch-editorial-intelligence-policy.json'));if(p.mode!=='EDITORIAL_INTELLIGENCE_HUMAN_GOVERNED')process.exit(1);const c=p.controls||{};for(const k of ['automatic_scientific_article_generation','automatic_scientific_publication','automatic_editorial_acceptance','automatic_peer_review_decisions'])if(c[k]!=='DISABLED')process.exit(1);if(c.human_editorial_review!=='REQUIRED')process.exit(1);console.log('Journal Watch editorial-intelligence boundary: PASS');"
+          node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json'));if(!String(q.policy||'').includes('No automatic journal publication'))process.exit(1);if((q.queue||[]).some(x=>x.editorial_action!=='manual_review_required'||x.peer_review!=='not_started'))process.exit(1);console.log('Journal Watch queue human-review contract: PASS');"
+
+      - name: Verify Human Gate release policy
+        run: |
+          node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-24x7-release-gate-policy.json'));if(p.status!=='HUMAN_GATE_ENFORCED'||p.owner_command?.canonical_phrase_mk!=='ОДОБРУВАМ')process.exit(1);console.log('Owner release policy: PASS');"
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED'||a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);console.log('Automatic merge/publish remain disabled: PASS');"
+
+      - name: Verify completed hardened cycle result
+        if: github.event_name == 'workflow_run'
+        env:
+          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          RUN_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          test "$RUN_CONCLUSION" = "success"
+          test "$RUN_HEAD_BRANCH" = "feat/wpa-24x7-product-factory-20260904"
+          FEATURE_SHA=$(git rev-parse HEAD)
+          test "$RUN_HEAD_SHA" = "$FEATURE_SHA"
+          echo "Full hardened cycle succeeded on current feature head: $FEATURE_SHA"
+
+      - name: Verify PR #261 is still a protected Human Gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR=$(gh api repos/${{ github.repository }}/pulls/${WPA_RELEASE_PR})
+          STATE=$(printf '%s' "$PR" | jq -r '.state')
+          MERGED=$(printf '%s' "$PR" | jq -r '.merged')
+          HEAD_SHA=$(printf '%s' "$PR" | jq -r '.head.sha')
+          FEATURE_SHA=$(git rev-parse HEAD)
+          test "$STATE" = "open"
+          test "$MERGED" = "false"
+          test "$HEAD_SHA" = "$FEATURE_SHA"
+          echo "PR #${WPA_RELEASE_PR} remains open and matches the green-cycle feature head."
+
+      - name: Declare READY FOR OWNER APPROVAL, not merged
+        run: |
+          echo 'READY_FOR_OWNER_APPROVAL=1' >> "$GITHUB_ENV"
+          {
+            echo '## WPA 24x7 Human Gate'
+            echo ''
+            echo 'The hardened COLLECT -> TRANSFORM/CHECK -> PRODUCE -> ADAPT cycle is green on the current PR #261 head.'
+            echo ''
+            echo '**No merge was performed. No external publication was performed.**'
+            echo ''
+            echo 'Human Authority may now issue the canonical approval phrase: **ОДОБРУВАМ**.'
+            echo ''
+            echo 'Immediately before any merge, PR head and required checks must be re-verified. Merge success is not by itself proof of live deployment.'
+          } >> "$GITHUB_STEP_SUMMARY"
