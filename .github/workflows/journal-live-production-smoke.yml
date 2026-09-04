@@ -1,0 +1,88 @@
+name: WPA Journal Live Production Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-journal-live-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      API_ROOT: https://wpa-live-production-bridge.worldprotocolacademy.workers.dev
+      PUBLIC_ORIGIN: https://worldprotocolacademy.mk
+    steps:
+      - name: Check stats endpoint and CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --connect-timeout 10 --max-time 25 \
+            -H "Origin: ${PUBLIC_ORIGIN}" \
+            -H 'Accept: application/json' \
+            -D /tmp/stats.headers \
+            "${API_ROOT}/api/v1/stats" \
+            -o /tmp/stats.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          json.loads(Path('/tmp/stats.json').read_text())
+          headers = Path('/tmp/stats.headers').read_text().lower()
+          origin = 'https://worldprotocolacademy.mk'
+          if f'access-control-allow-origin: {origin}' not in headers and 'access-control-allow-origin: *' not in headers:
+              raise SystemExit('CORS check failed for worldprotocolacademy.mk')
+          print('stats JSON + CORS: PASS')
+          PY
+
+      - name: Check live endpoint contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --connect-timeout 10 --max-time 25 \
+            -H "Origin: ${PUBLIC_ORIGIN}" \
+            -H 'Accept: application/json' \
+            "${API_ROOT}/api/v1/live?limit=5" \
+            -o /tmp/live.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('/tmp/live.json').read_text())
+          if not isinstance(data, dict):
+              raise SystemExit('live endpoint must return a JSON object')
+          if not isinstance(data.get('items'), list):
+              raise SystemExit('live endpoint missing items[] contract')
+          print(f"live contract: PASS ({len(data['items'])} sample items)")
+          PY
+
+      - name: Check ticker endpoint contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            --connect-timeout 10 --max-time 25 \
+            -H "Origin: ${PUBLIC_ORIGIN}" \
+            -H 'Accept: application/json' \
+            "${API_ROOT}/api/v1/ticker?limit=5&since_hours=168" \
+            -o /tmp/ticker.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('/tmp/ticker.json').read_text())
+          if not isinstance(data, dict):
+              raise SystemExit('ticker endpoint must return a JSON object')
+          if not isinstance(data.get('items'), list):
+              raise SystemExit('ticker endpoint missing items[] contract')
+          print(f"ticker contract: PASS ({len(data['items'])} sample items)")
+          PY
+
+      - name: Report production smoke success
+        run: echo 'WPA Journal Live production bridge endpoints and CORS passed.'
