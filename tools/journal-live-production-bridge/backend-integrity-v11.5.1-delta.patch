@@ -1,0 +1,145 @@
+--- candidate_115.js	2026-09-04 18:40:45.265677851 +0000
++++ candidate_1151.js	2026-09-04 18:42:30.560078606 +0000
+@@ -6085,6 +6085,25 @@
+   };
+ }
+ __name(itemFromRow, "itemFromRow");
++function publicItemAllowed(item, env, nowMs = Date.now()) {
++  if (!item || item.status !== "published") return false;
++  const publishedAt = String(item.published_at || "");
++  const fetchedAt = String(item.fetched_at || "");
++  if (!publishedAt || publishedAt === fetchedAt) return false;
++  const publishedMs = Date.parse(publishedAt);
++  if (!Number.isFinite(publishedMs)) return false;
++  const maxAgeDays = intParam(env.PUBLIC_ITEM_RETENTION_DAYS, 30, 1, 365);
++  if (publishedMs < nowMs - maxAgeDays * 24 * 60 * 60 * 1e3) return false;
++  if (publishedMs > nowMs + 6 * 60 * 60 * 1e3) return false;
++  return !thematicNoiseReason({
++    title: item.title,
++    summary: item.summary,
++    source: item.source,
++    primaryCategory: item.primary_category,
++    signals: item.signals
++  });
++}
++__name(publicItemAllowed, "publicItemAllowed");
+ async function queryLiveItems(env, url, forcedLimit) {
+   const limit = forcedLimit || intParam(url.searchParams.get("limit"), 60, 1, 200);
+   const offset = intParam(url.searchParams.get("offset"), 0, 0, 1e4);
+@@ -6126,31 +6145,36 @@
+     params.push(like, like, like, like);
+   }
+   if (sinceHours) {
+-    where.push("julianday(fetched_at)>=julianday('now',?)");
++    where.push("julianday(published_at)>=julianday('now',?)");
+     params.push(`-${sinceHours} hours`);
+   }
+-  const qualifiedWhere = where.map((clause) => clause.replace(/\bstatus\b/g, "f.status").replace(/\bprimary_category\b/g, "f.primary_category").replace(/\bregion\b/g, "f.region").replace(/\bsource_type\b/g, "f.source_type").replace(/\bsignals_json\b/g, "f.signals_json").replace(/\btitle\b/g, "f.title").replace(/\bsummary\b/g, "f.summary").replace(/\bsource_name\b/g, "f.source_name").replace(/\bcountry\b/g, "f.country").replace(/\bfetched_at\b/g, "f.fetched_at"));
+-  const sql = `SELECT f.*,sr.review_status AS sande_review_status,sr.review_mode AS sande_review_mode,
++  const qualifiedWhere = where.map((clause) => clause.replace(/\bstatus\b/g, "f.status").replace(/\bprimary_category\b/g, "f.primary_category").replace(/\bregion\b/g, "f.region").replace(/\bsource_type\b/g, "f.source_type").replace(/\bsignals_json\b/g, "f.signals_json").replace(/\btitle\b/g, "f.title").replace(/\bsummary\b/g, "f.summary").replace(/\bsource_name\b/g, "f.source_name").replace(/\bcountry\b/g, "f.country").replace(/\bpublished_at\b/g, "f.published_at").replace(/\bfetched_at\b/g, "f.fetched_at"));
++  const sql = `WITH ranked AS (
++                 SELECT f.*,
++                        (SELECT sr.review_status FROM sande_reviews sr WHERE sr.item_id=f.id ORDER BY sr.generated_at DESC LIMIT 1) AS sande_review_status,
++                        (SELECT sr.review_mode FROM sande_reviews sr WHERE sr.item_id=f.id ORDER BY sr.generated_at DESC LIMIT 1) AS sande_review_mode,
+                         s.health_status AS source_health_status,s.last_success_at AS source_last_success_at,
+-                        s.failure_count AS source_failure_count
+-                 FROM feed_items f
+-                 LEFT JOIN sande_reviews sr ON sr.item_id=f.id
+-                 LEFT JOIN sources s ON s.id=f.source_id
+-                WHERE ${qualifiedWhere.join(" AND ")}
+-               ORDER BY f.relevance_score DESC,f.published_at DESC,f.fetched_at DESC LIMIT ? OFFSET ?`;
++                        s.failure_count AS source_failure_count,
++                        ROW_NUMBER() OVER (
++                          PARTITION BY lower(trim(COALESCE(f.source_name,''))),
++                                       lower(trim(COALESCE(f.title,''))),
++                                       substr(f.published_at,1,10)
++                          ORDER BY f.relevance_score DESC,f.published_at DESC,f.fetched_at DESC,f.id ASC
++                        ) AS wpa_dup_rank
++                   FROM feed_items f
++                   LEFT JOIN sources s ON s.id=f.source_id
++                  WHERE ${qualifiedWhere.join(" AND ")}
++               )
++               SELECT * FROM ranked
++                WHERE wpa_dup_rank=1
++               ORDER BY relevance_score DESC,published_at DESC,fetched_at DESC,id ASC LIMIT ? OFFSET ?`;
+   params.push(limit, offset);
+   const result = await env.DB.prepare(sql).bind(...params).all();
+   const output = [];
+   const seen = /* @__PURE__ */ new Set();
+   for (const row of result.results || []) {
+     const item = itemFromRow(row);
+-    if (thematicNoiseReason({
+-      title: item.title,
+-      summary: item.summary,
+-      source: item.source,
+-      primaryCategory: item.primary_category,
+-      signals: item.signals
+-    })) continue;
++    if (!publicItemAllowed(item, env)) continue;
+     const sameSourceContentKey = `${normalizeThemeText(item.source)}|${normalizeThemeText(item.title)}|${String(item.published_at || "").slice(0, 10)}`;
+     if (seen.has(sameSourceContentKey)) continue;
+     seen.add(sameSourceContentKey);
+@@ -6176,13 +6200,15 @@
+     ),
+     env.DB.prepare(
+       `SELECT COUNT(*) total,
+-       SUM(CASE WHEN status='published' AND published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at THEN 1 ELSE 0 END) published,
++       SUM(CASE WHEN status='published' AND published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at
++                     AND julianday(published_at)>=julianday('now',?)
++                     AND julianday(published_at)<=julianday('now','+6 hours') THEN 1 ELSE 0 END) published,
+        SUM(CASE WHEN status='filtered' THEN 1 ELSE 0 END) filtered,
+        SUM(CASE WHEN status='published' AND published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at
+                      AND julianday(published_at)>=julianday('now','-24 hours')
+                      AND julianday(published_at)<=julianday('now','+6 hours') THEN 1 ELSE 0 END) published_24h
+        FROM feed_items`
+-    ),
++    ).bind(`-${intParam(env.PUBLIC_ITEM_RETENTION_DAYS, 30, 1, 365)} days`),
+     env.DB.prepare("SELECT key,value,updated_at FROM system_state"),
+     env.DB.prepare("SELECT MAX(fetched_at) latest_fetch,MAX(CASE WHEN published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at THEN published_at END) latest_publication FROM feed_items WHERE status='published'")
+   ]);
+@@ -6317,7 +6343,7 @@
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/health") {
+     const state = await env.DB.prepare("SELECT key,value,updated_at FROM system_state WHERE key IN ('last_scheduler_run','last_queue_success','last_live_item_at')").all();
+-    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.5.0", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
++    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.5.1", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/stats") {
+     return jsonResponse(request, env, await statsPayload(env));
+@@ -6336,7 +6362,11 @@
+          LEFT JOIN sources s ON s.id=f.source_id
+         WHERE f.id=? LIMIT 1`
+     ).bind(id).first();
+-    return row ? jsonResponse(request, env, { item: itemFromRow(row) }) : jsonResponse(request, env, { error: "not_found" }, 404);
++    if (!row) return jsonResponse(request, env, { error: "not_found" }, 404);
++    const item = itemFromRow(row);
++    return publicItemAllowed(item, env)
++      ? jsonResponse(request, env, { item })
++      : jsonResponse(request, env, { error: "not_found" }, 404);
+   }
+   if (request.method === "GET" && url.pathname.startsWith("/api/v1/sande/review/")) {
+     const id = cleanText(decodeURIComponent(url.pathname.slice("/api/v1/sande/review/".length)), 80);
+@@ -6344,8 +6374,12 @@
+       `SELECT sr.*,f.title,f.source_name,f.original_url,f.primary_category,f.signals_json,
+               f.relevance_score,f.source_confidence,f.verification_status,f.published_at,f.fetched_at
+          FROM sande_reviews sr JOIN feed_items f ON f.id=sr.item_id
+-        WHERE sr.item_id=? LIMIT 1`
+-    ).bind(id).first();
++        WHERE sr.item_id=? AND f.status='published'
++          AND f.published_at IS NOT NULL AND f.published_at<>'' AND f.published_at<>f.fetched_at
++          AND julianday(f.published_at)>=julianday('now',?)
++          AND julianday(f.published_at)<=julianday('now','+6 hours')
++        ORDER BY sr.generated_at DESC LIMIT 1`
++    ).bind(id, `-${intParam(env.PUBLIC_ITEM_RETENTION_DAYS, 30, 1, 365)} days`).first();
+     if (!row) return jsonResponse(request, env, { error: "review_not_found" }, 404);
+     let review = {};
+     try {
+@@ -6398,7 +6432,7 @@
+       type: { mfa: "\u041C\u041D\u0420", embassy: "\u0410\u043C\u0431\u0430\u0441\u0430\u0434\u0438", international_organization: "NATO/EU/\u041E\u041D", justice: "\u041F\u0440\u0430\u0432\u0434\u0430", think_tank: "Think Tank", economic_diplomacy: "Economic Diplomacy", news_agency: "\u041C\u0435\u0434\u0438\u0443\u043C\u0438", media: "\u041C\u0435\u0434\u0438\u0443\u043C\u0438" }[item.source_type] || toLabType({ name: item.source, source_type_desc: item.source_type, category: item.source_category }),
+       region: item.region || "\u0413\u043B\u043E\u0431\u0430\u043B",
+       signal: toLabSignal(item.signals, item.primary_category),
+-      date: (item.published_at || item.fetched_at || "").slice(0, 10),
++      date: (item.published_at || "").slice(0, 10),
+       url: item.original_url,
+       desc: item.summary,
+       relevance_score: item.relevance_score,
