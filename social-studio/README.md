@@ -50,11 +50,54 @@ Each asset is assigned:
 
 The first asset intentionally does not sell a product. Its job is to test whether a visual protocol puzzle earns attention, comments, shares, profile visits and follows. If it wins, the visual-puzzle mechanic expands into 5–10 controlled adjacent tests under the Winner Loop.
 
+### WPA-TT-002 — The Wrong Flag That Became the Story
+
+**Primary job:** Authority + Discovery  
+**Source:** *Diplomacy, Protocol and Safety* (2021), Chapter 3, Section 4.1  
+**Status:** Source-locked; rights review required for any historical imagery.
+
+- Canonical launch brief: `social-studio/launch/WPA-TT-002-AUSTRIAN-FLAG.md`
+
+### WPA-TT-003 — Swiss Guest, Norwegian Flag
+
+**Primary job:** Discovery  
+**Source:** *Diplomacy, Protocol and Safety* (2021), Chapter 3, Section 4.1  
+**Status:** Source-locked; platform-native script prepared.
+
+- Canonical launch brief: `social-studio/launch/WPA-TT-003-SWISS-GUEST-NORWEGIAN-FLAG.md`
+
+## Viral Sande Content Vault — integrated legacy inventory
+
+The previous **“Viral Sande — 30-Day TikTok Plan”** is now preserved inside the Social Command Centre as a governed content reserve rather than a separate strategy.
+
+- Vault UI: `/social-studio/content-vault/`
+- Governance / inventory: `social-studio/content-vault/VIRAL_SANDE_LEGACY_VAULT.md`
+
+### Import rule
+
+Every legacy idea is treated as **UNVERIFIED / BLOCKED by default** until it passes:
+
+**Source Gate -> Rights Gate -> Brand/Governance -> Sande Gate**.
+
+The old hooks and story selection are preserved where useful, but the following legacy assumptions are superseded by the current WPA OS:
+
+- fixed 45–60 second length for every video;
+- automatic link-in-bio CTA on every post;
+- unsupported claims about leaders' intent, motive, revenge or humiliation;
+- universal protocol absolutes without context;
+- unlicensed YouTube / Getty reuse;
+- AI avatar as default presenter;
+- follower-count-based revenue forecasts;
+- subjective “viral stars” as a substitute for analytics.
+
+The vault is therefore an **idea mine**, while the Social Command Centre remains the publication authority.
+
 ## Governing documents
 
 - `marketing/WPA_MARKETING_OPERATING_SYSTEM_v1.0.md`
 - `marketing/WPA_SOCIAL_CONTENT_DIRECTIVES_v1.0.md`
 - `marketing/WPA_LINKEDIN_CAROUSEL_PLAYBOOK_v1.0.md`
+- `social-studio/content-vault/VIRAL_SANDE_LEGACY_VAULT.md`
 
 ## Winner Loop
 
