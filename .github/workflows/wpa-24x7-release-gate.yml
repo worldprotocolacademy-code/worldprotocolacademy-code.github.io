@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows: ["WPA 24x7 Institute Operations"]
     types: [completed]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -28,13 +27,17 @@ jobs:
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-journal-watch-editorial-intelligence-policy.json'));if(p.mode!=='EDITORIAL_INTELLIGENCE_HUMAN_GOVERNED')process.exit(1);const c=p.controls||{};for(const k of ['automatic_scientific_article_generation','automatic_scientific_publication','automatic_editorial_acceptance','automatic_peer_review_decisions'])if(c[k]!=='DISABLED')process.exit(1);if(c.human_editorial_review!=='REQUIRED')process.exit(1);console.log('Journal Watch editorial-intelligence boundary: PASS');"
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json'));if(!String(q.policy||'').includes('No automatic journal publication'))process.exit(1);if((q.queue||[]).some(x=>x.editorial_action!=='manual_review_required'||x.peer_review!=='not_started'))process.exit(1);console.log('Journal Watch queue human-review contract: PASS');"
 
+      - name: Verify fail-closed RIGHTS/SOURCE evidence
+        run: |
+          test -s data/open-knowledge/rights-source-gate.json
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('data/open-knowledge/rights-source-gate.json'));if(r.mode!=='FAIL_CLOSED')process.exit(1);const c=r.controls||{};for(const k of ['open_access_visibility_is_not_reuse_permission','cc_nc_nd_sa_are_not_routed_for_broad_adaptation','robots_rules_cached_by_origin_but_evaluated_per_exact_path','robots_unavailable_or_error_is_fail_closed_hold','source_failure_never_relaxes_rights_rules'])if(c[k]!==true)process.exit(1);if(c.protected_source_body_retention!=='DISABLED'||c.human_review_before_consequential_reuse!=='REQUIRED')process.exit(1);console.log('RIGHTS/SOURCE fail-closed evidence: PASS');"
+
       - name: Verify Human Gate release policy
         run: |
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('data/wpa-24x7-release-gate-policy.json'));if(p.status!=='HUMAN_GATE_ENFORCED'||p.owner_command?.canonical_phrase_mk!=='ОДОБРУВАМ')process.exit(1);console.log('Owner release policy: PASS');"
           node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED'||a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);console.log('Automatic merge/publish remain disabled: PASS');"
 
-      - name: Verify completed hardened cycle result
-        if: github.event_name == 'workflow_run'
+      - name: Verify completed hardened cycle result on exact current head
         env:
           RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
@@ -44,7 +47,7 @@ jobs:
           test "$RUN_HEAD_BRANCH" = "feat/wpa-24x7-product-factory-20260904"
           FEATURE_SHA=$(git rev-parse HEAD)
           test "$RUN_HEAD_SHA" = "$FEATURE_SHA"
-          echo "Full hardened cycle succeeded on current feature head: $FEATURE_SHA"
+          echo "Full hardened cycle succeeded on exact current feature head: $FEATURE_SHA"
 
       - name: Verify PR #261 is still a protected Human Gate
         env:
@@ -66,7 +69,7 @@ jobs:
           {
             echo '## WPA 24x7 Human Gate'
             echo ''
-            echo 'The hardened COLLECT -> TRANSFORM/CHECK -> PRODUCE -> ADAPT cycle is green on the current PR #261 head.'
+            echo 'The hardened COLLECT -> RIGHTS/SOURCE CHECK -> WPA-NATIVE TRANSFORM -> CHECK -> PRODUCE -> ADAPT cycle is green on the exact current PR #261 head.'
             echo ''
             echo '**No merge was performed. No external publication was performed.**'
             echo ''
