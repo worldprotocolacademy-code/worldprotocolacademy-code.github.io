@@ -21,6 +21,9 @@ window.WPA_LIVE_DEMO_DATA = {
   ]
 };
 
+/* Production compatibility adapter must load before live-app.js. */
+document.write('<script src="api-contract-compat.js?v=20260904-1"><\/script>');
+
 /* Journal-only enhancement chain. X11.8.1 Signal Architecture remains isolated. */
 document.write('<script src="noise-hardening.js?v=20260713-r2.1"><\/script>');
 document.write('<script src="fusion-lenses.js?v=20260713-x1191"><\/script>');
