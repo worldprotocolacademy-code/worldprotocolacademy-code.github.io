@@ -1,0 +1,164 @@
+--- index.js
++++ index.js
+@@ -5705,11 +5705,38 @@
+   return Math.max(min, Math.min(max, n));
+ }
+ __name(intParam, "intParam");
+-function normalizeDate(value, fallback = (/* @__PURE__ */ new Date()).toISOString()) {
++function normalizeDate(value, fallback = "") {
+   const parsed = Date.parse(String(value || ""));
+   return Number.isFinite(parsed) ? new Date(parsed).toISOString() : fallback;
+ }
+ __name(normalizeDate, "normalizeDate");
++function publicationIntegrity(value, fetchedAt, env) {
++  const iso = normalizeDate(value, "");
++  if (!iso) return { ok: false, reason: "undated" };
++  const publishedMs = Date.parse(iso);
++  const fetchedMs = Date.parse(String(fetchedAt || ""));
++  const referenceMs = Number.isFinite(fetchedMs) ? fetchedMs : Date.now();
++  const maxAgeDays = intParam(env.PUBLIC_ITEM_RETENTION_DAYS, 30, 1, 365);
++  if (publishedMs > referenceMs + 6 * 60 * 60 * 1e3) return { ok: false, reason: "future" };
++  if (publishedMs < referenceMs - maxAgeDays * 24 * 60 * 60 * 1e3) return { ok: false, reason: "stale" };
++  return { ok: true, iso };
++}
++__name(publicationIntegrity, "publicationIntegrity");
++function normalizeThemeText(value) {
++  return String(value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("en").replace(/[^a-z0-9\u00c0-\u024f\u0400-\u04ff]+/gi, " ").trim().replace(/\s+/g, " ");
++}
++__name(normalizeThemeText, "normalizeThemeText");
++function thematicNoiseReason(item) {
++  const text = normalizeThemeText([item?.title, item?.summary, item?.source, item?.primaryCategory, ...(Array.isArray(item?.signals) ? item.signals : [])].filter(Boolean).join(" "));
++  if (/\b(lottery|lotto|loto|piyango|sans topu|sayisal loto|super loto|cekilis|cekilis sonuclari|winning numbers|jackpot)\b/i.test(text)) return "lottery";
++  const sportsDomain = /\b(athletics|track and field|football|soccer|basketball|baseball|tennis|rugby|cricket|hockey|boxing|mma|ufc|wrestling|formula 1|grand prix|olympic|world cup|championship|tournament|league|playoff|semifinal|quarterfinal|match|fixture|атлетика|фудбал|кошарка|тенис|рагби|бокс|олимписки|светско првенство|шампионат|турнир|лига|натпревар)\b/i.test(text);
++  const resultLanguage = /\b(medal|medals|wins gold|wins silver|wins bronze|champion|champions|score|results|standings|qualification|u20|u21|u23|медал|медали|злато|сребро|бронза|шампион|резултат|табела|квалификаци)\b/i.test(text);
++  if (!sportsDomain || !resultLanguage) return "";
++  const institutionalActor = /\b(government|ministry|minister|president|prime minister|parliament|embassy|foreign ministry|state department|united nations|european union|nato|влада|министерство|министер|претседател|премиер|парламент|амбасада|обединети нации|европска унија|нато)\b/i.test(text);
++  const diplomaticAction = /\b(boycott|sanction|visa policy|diplomatic protest|official protest|bilateral agreement|state policy|government statement|ministerial statement|peace initiative|ceasefire|human rights|refugee policy|бојкот|санкци|визна политика|дипломатски протест|официјален протест|билатерален договор|државна политика|владина изјава|министерска изјава|мировна иницијатива|примирје|човекови права|бегалска политика)\b/i.test(text);
++  return institutionalActor && diplomaticAction ? "" : "sports";
++}
++__name(thematicNoiseReason, "thematicNoiseReason");
+ function errorText(error) {
+   return cleanText(error?.message || error || "Unknown error", 700);
+ }
+@@ -5838,11 +5865,20 @@
+     const sourceScore = sourceConfidence(source);
+     const sourceClass = inferSourceClass(source);
+     const statements = [];
++    const seenContentHashes = /* @__PURE__ */ new Set();
+     let published = 0;
+     let filtered = 0;
+     for (const entry of fetched.feed.items) {
+       const canonicalUrl = canonicalizeUrl(entry.url, fetched.finalUrl);
+-      if (!canonicalUrl) continue;
++      if (!canonicalUrl) {
++        filtered += 1;
++        continue;
++      }
++      const publication = publicationIntegrity(entry.published, finishedAt, env);
++      if (!publication.ok) {
++        filtered += 1;
++        continue;
++      }
+       const classification = classifyContent({
+         title: entry.title,
+         summary: entry.summary,
+@@ -5852,14 +5888,30 @@
+       const priorityBoost = Number(source.priority_tier) === 1 ? 20 : Number(source.priority_tier) === 2 ? 10 : 0;
+       const confidenceBoost = sourceScore >= 90 ? 10 : sourceScore >= 80 ? 5 : 0;
+       const relevance = Math.min(100, classification.relevanceScore + priorityBoost + confidenceBoost);
+-      const status = relevance >= threshold ? "published" : "filtered";
+-      if (status === "published") published += 1;
+-      else filtered += 1;
+       const fetchedAt = finishedAt;
+-      const publishedAt = normalizeDate(entry.published, fetchedAt);
++      const publishedAt = publication.iso;
+       const summary = makeSummary(entry.title, entry.summary, 420);
++      const noiseReason = thematicNoiseReason({
++        title: entry.title,
++        summary,
++        source: source.name,
++        primaryCategory: classification.primaryCategory,
++        signals: classification.signals
++      });
++      if (noiseReason) {
++        filtered += 1;
++        continue;
++      }
+       const itemId = (await sha256Hex(canonicalUrl)).slice(0, 32);
+       const contentHash = await sha256Hex(`${cleanText(entry.title).toLowerCase()}|${publishedAt.slice(0, 10)}|${source.id}`);
++      if (seenContentHashes.has(contentHash)) {
++        filtered += 1;
++        continue;
++      }
++      seenContentHashes.add(contentHash);
++      const status = relevance >= threshold ? "published" : "filtered";
++      if (status === "published") published += 1;
++      else filtered += 1;
+       const verification = verificationStatus(source);
+       statements.push(
+         env.DB.prepare(
+@@ -6036,8 +6088,16 @@
+ async function queryLiveItems(env, url, forcedLimit) {
+   const limit = forcedLimit || intParam(url.searchParams.get("limit"), 60, 1, 200);
+   const offset = intParam(url.searchParams.get("offset"), 0, 0, 1e4);
+-  const where = ["status='published'"];
+-  const params = [];
++  const maxAgeDays = intParam(env.PUBLIC_ITEM_RETENTION_DAYS, 30, 1, 365);
++  const where = [
++    "status='published'",
++    "published_at IS NOT NULL",
++    "published_at<>''",
++    "published_at<>fetched_at",
++    "julianday(published_at)>=julianday('now',?)",
++    "julianday(published_at)<=julianday('now','+6 hours')"
++  ];
++  const params = [`-${maxAgeDays} days`];
+   const category = cleanText(url.searchParams.get("category"), 40);
+   const region = cleanText(url.searchParams.get("region"), 80);
+   const sourceType = cleanText(url.searchParams.get("source_type"), 80);
+@@ -6100,13 +6160,15 @@
+     ),
+     env.DB.prepare(
+       `SELECT COUNT(*) total,
+-       SUM(CASE WHEN status='published' THEN 1 ELSE 0 END) published,
++       SUM(CASE WHEN status='published' AND published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at THEN 1 ELSE 0 END) published,
+        SUM(CASE WHEN status='filtered' THEN 1 ELSE 0 END) filtered,
+-       SUM(CASE WHEN status='published' AND julianday(fetched_at)>=julianday('now','-24 hours') THEN 1 ELSE 0 END) published_24h
++       SUM(CASE WHEN status='published' AND published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at
++                     AND julianday(published_at)>=julianday('now','-24 hours')
++                     AND julianday(published_at)<=julianday('now','+6 hours') THEN 1 ELSE 0 END) published_24h
+        FROM feed_items`
+     ),
+     env.DB.prepare("SELECT key,value,updated_at FROM system_state"),
+-    env.DB.prepare("SELECT MAX(fetched_at) latest_fetch,MAX(published_at) latest_publication FROM feed_items WHERE status='published'")
++    env.DB.prepare("SELECT MAX(fetched_at) latest_fetch,MAX(CASE WHEN published_at IS NOT NULL AND published_at<>'' AND published_at<>fetched_at THEN published_at END) latest_publication FROM feed_items WHERE status='published'")
+   ]);
+   const state = {};
+   for (const row of states.results || []) state[row.key] = { value: row.value, updated_at: row.updated_at };
+@@ -6231,12 +6293,15 @@
+       "Access-Control-Allow-Headers": "Authorization,Content-Type",
+       "Access-Control-Max-Age": "86400"
+     });
+-    if (origin) headers.set("Access-Control-Allow-Origin", origin);
++    if (origin) {
++      headers.set("Access-Control-Allow-Origin", origin);
++      headers.set("Vary", "Origin");
++    }
+     return new Response(null, { status: 204, headers });
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/health") {
+     const state = await env.DB.prepare("SELECT key,value,updated_at FROM system_state WHERE key IN ('last_scheduler_run','last_queue_success','last_live_item_at')").all();
+-    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.4.0", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
++    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.5.0", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/stats") {
+     return jsonResponse(request, env, await statsPayload(env));
+@@ -6386,7 +6451,7 @@
+       return await routeRequest(request, env);
+     } catch (error) {
+       console.error("WPA API error", error);
+-      return jsonResponse(request, env, { error: "internal_error", message: errorText(error) }, 500, { "Cache-Control": "no-store" });
++      return jsonResponse(request, env, { error: "internal_error" }, 500, { "Cache-Control": "no-store" });
+     }
+   },
+   async scheduled(controller, env, ctx) {
