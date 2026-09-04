@@ -1,6 +1,57 @@
 {
-  "generated": "2026-09-04T00:02:35.716Z",
-  "flow": [
+  "generated": "2026-09-04T00:41:42.625Z",
+  "cognitive_flow": [
+    {
+      "step": 1,
+      "name": "COLLECT",
+      "mk": "Собери",
+      "automation": "automatic_24x7",
+      "rule": "Collect only source-traceable public/open evidence and metadata."
+    },
+    {
+      "step": 2,
+      "name": "RIGHTS_SOURCE_CHECK",
+      "mk": "Права / Извор",
+      "automation": "automatic_fail_closed",
+      "rule": "Verify source identity, access/reuse basis, provenance and access boundaries before substantive use."
+    },
+    {
+      "step": 3,
+      "name": "WPA_NATIVE_TRANSFORM",
+      "mk": "WPA-native трансформација",
+      "automation": "automatic_after_rights_gate",
+      "rule": "Apply HGAIM, Doctrine Kernel, Institutional DNA, Protocolometry, strategy and capability-resilience lenses; no copy-paste substitution."
+    },
+    {
+      "step": 4,
+      "name": "CHECK",
+      "mk": "Провери",
+      "automation": "automatic_with_review_queues",
+      "rule": "Validate relevance, traceability, contradictions, methodology candidates and editorial/institutional classifications."
+    },
+    {
+      "step": 5,
+      "name": "PRODUCE",
+      "mk": "Произведи",
+      "automation": "automatic_bounded_outputs",
+      "rule": "Build WPA work products and editorial intelligence, not autonomous scientific publications or official judgments."
+    },
+    {
+      "step": 6,
+      "name": "ADAPT",
+      "mk": "Прилагоди",
+      "automation": "automatic_drafting",
+      "rule": "Create use-case and platform-native variants while preserving one factual core, provenance and declared status."
+    },
+    {
+      "step": 7,
+      "name": "HUMAN_APPROVAL",
+      "mk": "Човечко одобрување",
+      "automation": "human_only",
+      "rule": "Sande Gate controls production application, external publication, scientific/editorial decisions, canonical change and official institutional judgment."
+    }
+  ],
+  "operating_flow": [
     {
       "step": 1,
       "name": "COLLECT",
@@ -8,7 +59,8 @@
       "automation": "automatic",
       "systems": [
         "WPA Watch",
-        "Academic Search/Harvest"
+        "Academic Search/Harvest",
+        "Open Knowledge Agents"
       ]
     },
     {
@@ -17,6 +69,8 @@
       "mk": "Провери",
       "automation": "automatic",
       "systems": [
+        "Rights/Source Gate",
+        "WPA-native transformation validation",
         "Protocolometry",
         "Sublimate validation",
         "Pilot 20 validation",
@@ -29,7 +83,7 @@
       "mk": "Произведи",
       "automation": "automatic",
       "systems": [
-        "Journal Watch dossiers",
+        "Journal Watch editorial intelligence",
         "WPA Product Factory"
       ]
     },
@@ -39,10 +93,10 @@
       "mk": "Прилагоди",
       "automation": "automatic",
       "systems": [
+        "Virtual Sande",
+        "Viral Sande",
         "Social Command Centre",
-        "LinkedIn/Facebook/Instagram/X drafts",
-        "TikTok/YouTube scripts",
-        "Telegram/WhatsApp/Viber/WeChat community drafts"
+        "Messenger/community drafts"
       ]
     },
     {
@@ -69,5 +123,6 @@
         "Publication log and correction loop"
       ]
     }
-  ]
+  ],
+  "release_gate_policy": "/data/wpa-24x7-release-gate-policy.json"
 }
