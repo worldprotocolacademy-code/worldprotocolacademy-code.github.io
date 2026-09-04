@@ -1,0 +1,415 @@
+name: WPA Journal Live Production CORS Recovery v5
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/journal-live-production-cors-recovery-v5.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: journal-live-production-cors-recovery-v5
+  cancel-in-progress: false
+
+env:
+  WORKER_NAME: wpa-live-production-bridge
+  API_ROOT: https://wpa-live-production-bridge.worldprotocolacademy.workers.dev
+  OLD_VERSION_ID: 425610e3-0ddd-4784-b030-c58552f26f98
+  CANDIDATE_VERSION_ID: 1aa812ea-6d6a-4855-9e4b-e22cbe79c3f3
+  OLD_ORIGINS: https://worldprotocolacademy-code.github.io,http://localhost:8000,http://127.0.0.1:8000
+  DESIRED_ORIGINS: https://worldprotocolacademy-code.github.io,http://localhost:8000,http://127.0.0.1:8000,https://worldprotocolacademy.mk,https://www.worldprotocolacademy.mk
+
+jobs:
+  cors-recovery-v5:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+
+    steps:
+      - name: Preflight exact v4 recovery state
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
+
+          get_json() {
+            local url="$1"
+            local out="$2"
+            local status
+            status=$(curl --silent --show-error \
+              --output "$out" \
+              --write-out '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Accept: application/json' \
+              "$url")
+            echo "GET HTTP ${status}: ${url##*/}"
+            test "$status" = '200'
+          }
+
+          get_json "${API_BASE}/settings" /tmp/settings.json
+          get_json "${API_BASE}/deployments" /tmp/deployments.json
+          get_json "${API_BASE}/versions?per_page=100" /tmp/versions.json
+          get_json "${API_BASE}/versions/${OLD_VERSION_ID}" /tmp/old-version.json
+          get_json "${API_BASE}/versions/${CANDIDATE_VERSION_ID}" /tmp/candidate-version.json
+
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          def envelope(path):
+              payload = json.loads(Path(path).read_text())
+              if payload.get('success') is not True:
+                  safe = [
+                      {'code': e.get('code'), 'message': e.get('message')}
+                      for e in (payload.get('errors') or []) if isinstance(e, dict)
+                  ]
+                  raise SystemExit(f'PRECONDITION FAIL: Cloudflare API failure in {path}: {safe}')
+              return payload.get('result')
+
+          expected_names = {
+              'ADMIN_TOKEN', 'API_CACHE_SECONDS', 'DB', 'DEGRADED_FAILURE_THRESHOLD',
+              'LAB_CACHE_LIMIT', 'MAX_FEED_BYTES', 'MAX_ITEMS_PER_FEED',
+              'MAX_SOURCES_PER_TICK', 'MIN_RELEVANCE_SCORE',
+              'PUBLIC_ITEM_RETENTION_DAYS', 'PUBLIC_SITE_ORIGINS',
+              'QUARANTINE_FAILURE_THRESHOLD', 'RSS_QUEUE',
+          }
+
+          settings = envelope('/tmp/settings.json') or {}
+          deployments_result = envelope('/tmp/deployments.json')
+          versions_result = envelope('/tmp/versions.json')
+          old_version = envelope('/tmp/old-version.json') or {}
+          candidate_version = envelope('/tmp/candidate-version.json') or {}
+
+          versions = versions_result.get('items') if isinstance(versions_result, dict) else versions_result
+          if not isinstance(versions, list):
+              versions = []
+          version_ids = {v.get('id') for v in versions if isinstance(v, dict) and v.get('id')}
+          expected_ids = {os.environ['OLD_VERSION_ID'], os.environ['CANDIDATE_VERSION_ID']}
+          if version_ids != expected_ids:
+              raise SystemExit(f'PRECONDITION FAIL: version history is not the exact v4 two-version state: {sorted(version_ids)}')
+
+          settings_bindings = settings.get('bindings') or []
+          settings_names = {b.get('name') for b in settings_bindings if isinstance(b, dict) and b.get('name')}
+          if settings_names != expected_names:
+              raise SystemExit(f'PRECONDITION FAIL: settings binding names changed: {sorted(settings_names)}')
+          settings_by_name = {b.get('name'): b for b in settings_bindings if isinstance(b, dict) and b.get('name')}
+          settings_target = settings_by_name.get('PUBLIC_SITE_ORIGINS') or {}
+          if settings_target.get('type') != 'plain_text' or str(settings_target.get('text') or '') != os.environ['DESIRED_ORIGINS']:
+              raise SystemExit('PRECONDITION FAIL: latest settings do not contain the verified v4 desired origins')
+
+          def version_state(version, label):
+              resources = version.get('resources') or {}
+              bindings = resources.get('bindings') or []
+              names = {b.get('name') for b in bindings if isinstance(b, dict) and b.get('name')}
+              if names != expected_names:
+                  raise SystemExit(f'PRECONDITION FAIL: {label} binding names changed: {sorted(names)}')
+              by_name = {b.get('name'): b for b in bindings if isinstance(b, dict) and b.get('name')}
+              target = by_name.get('PUBLIC_SITE_ORIGINS') or {}
+              script = resources.get('script') or {}
+              runtime = resources.get('script_runtime') or {}
+              baseline = {
+                  'etag': script.get('etag'),
+                  'handlers': script.get('handlers'),
+                  'named_handlers': script.get('named_handlers'),
+                  'compatibility_date': runtime.get('compatibility_date'),
+                  'compatibility_flags': runtime.get('compatibility_flags'),
+                  'exports': runtime.get('exports'),
+              }
+              if not baseline['etag']:
+                  raise SystemExit(f'PRECONDITION FAIL: {label} script etag missing')
+              return target, baseline
+
+          old_target, old_baseline = version_state(old_version, 'old version')
+          candidate_target, candidate_baseline = version_state(candidate_version, 'candidate version')
+          if old_target.get('type') != 'plain_text' or str(old_target.get('text') or '') != os.environ['OLD_ORIGINS']:
+              raise SystemExit('PRECONDITION FAIL: old version origins changed')
+          if candidate_target.get('type') != 'plain_text' or str(candidate_target.get('text') or '') != os.environ['DESIRED_ORIGINS']:
+              raise SystemExit('PRECONDITION FAIL: candidate version origins are not the desired value')
+          if candidate_baseline != old_baseline:
+              raise SystemExit('PRECONDITION FAIL: candidate code/runtime differs from old active baseline')
+
+          if isinstance(deployments_result, dict):
+              deployments = deployments_result.get('deployments') or []
+          elif isinstance(deployments_result, list):
+              deployments = deployments_result
+          else:
+              deployments = []
+          if not deployments or not isinstance(deployments[0], dict):
+              raise SystemExit('PRECONDITION FAIL: no deployment returned')
+          active_versions = deployments[0].get('versions') or []
+          if len(active_versions) != 1 or float(active_versions[0].get('percentage') or 0) != 100:
+              raise SystemExit('PRECONDITION FAIL: latest deployment is not a single version at 100 percent')
+          active_id = active_versions[0].get('version_id')
+          if active_id == os.environ['CANDIDATE_VERSION_ID']:
+              mode = 'candidate-active'
+          elif active_id == os.environ['OLD_VERSION_ID']:
+              mode = 'old-active'
+          else:
+              raise SystemExit(f'PRECONDITION FAIL: unexpected active version: {active_id}')
+
+          Path('/tmp/preflight.env').write_text(
+              f'ACTIVE_VERSION_ID={active_id}\nRECOVERY_MODE={mode}\n'
+          )
+          print(f'Exact v4 recovery state verified. Active version: {active_id}; mode: {mode}')
+          print('No settings PATCH and no new Worker version will be created by v5.')
+          PY
+
+          cat /tmp/preflight.env >> "$GITHUB_ENV"
+
+      - name: Verify already-active v4 candidate
+        if: env.RECOVERY_MODE == 'candidate-active'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test_origin() {
+            local origin="$1"
+            local attempt status acao stamp
+            for attempt in 1 2 3 4 5 6; do
+              stamp=$(date +%s)-${attempt}
+              status=$(curl --silent --show-error \
+                --dump-header /tmp/cors-headers.txt \
+                --output /tmp/cors-body.json \
+                --write-out '%{http_code}' \
+                -H "Origin: ${origin}" \
+                -H 'Accept: application/json' \
+                "${API_ROOT}/api/v1/live?limit=1&cors_recovery_v5=${stamp}" || true)
+              acao=$(awk -F': ' 'tolower($1)=="access-control-allow-origin" {gsub("\r", "", $2); print $2}' /tmp/cors-headers.txt | tail -n 1)
+              if [ "$status" = '200' ] && [ "$acao" = "$origin" ]; then
+                python3 - <<'PY'
+          import json
+          from pathlib import Path
+          json.loads(Path('/tmp/cors-body.json').read_text())
+          PY
+                echo "CORS PASS for ${origin} on attempt ${attempt}"
+                return 0
+              fi
+              echo "CORS retry ${attempt} for ${origin}: HTTP=${status} ACAO=${acao:-missing}"
+              sleep 5
+            done
+            return 1
+          }
+
+          test_origin 'https://worldprotocolacademy.mk'
+          test_origin 'https://www.worldprotocolacademy.mk'
+          echo 'v4 candidate was already active; v5 performed verification only.'
+
+      - name: Deploy verified v4 candidate with armed rollback
+        if: env.RECOVERY_MODE == 'old-active'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
+          DEPLOYED_BY_V5=false
+
+          make_body() {
+            local version_id="$1"
+            local message="$2"
+            python3 - "$version_id" "$message" <<'PY'
+          import json, sys
+          print(json.dumps({
+              'strategy': 'percentage',
+              'versions': [{'percentage': 100, 'version_id': sys.argv[1]}],
+              'annotations': {'workers/message': sys.argv[2]},
+          }, separators=(',', ':')))
+          PY
+          }
+
+          active_is() {
+            local expected="$1"
+            local status
+            status=$(curl --silent --show-error \
+              --output /tmp/deployments-check.json \
+              --write-out '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Accept: application/json' \
+              "${API_BASE}/deployments")
+            [ "$status" = '200' ] || return 1
+            python3 - "$expected" <<'PY'
+          import json, sys
+          from pathlib import Path
+          expected = sys.argv[1]
+          payload = json.loads(Path('/tmp/deployments-check.json').read_text())
+          if payload.get('success') is not True:
+              raise SystemExit(1)
+          result = payload.get('result') or {}
+          deployments = result.get('deployments') if isinstance(result, dict) else result
+          if not isinstance(deployments, list) or not deployments:
+              raise SystemExit(1)
+          versions = (deployments[0] or {}).get('versions') or []
+          ok = len(versions) == 1 and versions[0].get('version_id') == expected and float(versions[0].get('percentage') or 0) == 100
+          raise SystemExit(0 if ok else 1)
+          PY
+          }
+
+          rollback() {
+            echo 'Rolling back to the exact pre-v4 active Worker version.'
+            make_body "$OLD_VERSION_ID" 'Automatic rollback after failed WPA CORS recovery v5 verification' > /tmp/rollback.json
+            local status
+            status=$(curl --silent --show-error \
+              --output /tmp/rollback-response.json \
+              --write-out '%{http_code}' \
+              -X POST \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Accept: application/json' \
+              -H 'Content-Type: application/json' \
+              --data-binary @/tmp/rollback.json \
+              "${API_BASE}/deployments")
+            echo "Rollback deployment HTTP ${status}"
+            [ "$status" = '200' ] || return 1
+            for attempt in 1 2 3 4 5 6 7 8 9 10; do
+              if active_is "$OLD_VERSION_ID"; then
+                echo "Rollback verified on attempt ${attempt}."
+                return 0
+              fi
+              sleep 2
+            done
+            return 1
+          }
+
+          cleanup_on_error() {
+            local rc=$?
+            if [ "$rc" -ne 0 ] && [ "$DEPLOYED_BY_V5" = 'true' ]; then
+              rollback || echo 'CRITICAL: automatic rollback verification failed.' >&2
+            fi
+            exit "$rc"
+          }
+          trap cleanup_on_error EXIT
+
+          make_body "$CANDIDATE_VERSION_ID" 'Recover verified WPA Journal Live production CORS candidate' > /tmp/deploy.json
+          deploy_status=$(curl --silent --show-error \
+            --output /tmp/deploy-response.json \
+            --write-out '%{http_code}' \
+            -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Accept: application/json' \
+            -H 'Content-Type: application/json' \
+            --data-binary @/tmp/deploy.json \
+            "${API_BASE}/deployments")
+          echo "Production deployment HTTP ${deploy_status}"
+
+          if [ "$deploy_status" = '200' ]; then
+            DEPLOYED_BY_V5=true
+          fi
+          test "$deploy_status" = '200'
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          payload = json.loads(Path('/tmp/deploy-response.json').read_text())
+          if payload.get('success') is not True:
+              safe = [
+                  {'code': e.get('code'), 'message': e.get('message')}
+                  for e in (payload.get('errors') or []) if isinstance(e, dict)
+              ]
+              raise SystemExit(f'DEPLOY FAIL: Cloudflare returned success=false: {safe}')
+          result = payload.get('result') or {}
+          deployment_id = result.get('id')
+          if not deployment_id:
+              raise SystemExit('DEPLOY FAIL: accepted response did not include deployment id')
+          Path('/tmp/deployment.env').write_text(f'DEPLOYMENT_ID={deployment_id}\n')
+          print(f'Deployment response accepted; id={deployment_id}. Verifying asynchronously via GET.')
+          PY
+          source /tmp/deployment.env
+
+          verified_specific=false
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            status=$(curl --silent --show-error \
+              --output /tmp/deployment-specific.json \
+              --write-out '%{http_code}' \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Accept: application/json' \
+              "${API_BASE}/deployments/${DEPLOYMENT_ID}")
+            if [ "$status" = '200' ] && python3 - "$CANDIDATE_VERSION_ID" <<'PY'
+          import json, sys
+          from pathlib import Path
+          expected = sys.argv[1]
+          payload = json.loads(Path('/tmp/deployment-specific.json').read_text())
+          result = payload.get('result') or {}
+          versions = result.get('versions') or []
+          ok = payload.get('success') is True and len(versions) == 1 and versions[0].get('version_id') == expected and float(versions[0].get('percentage') or 0) == 100
+          raise SystemExit(0 if ok else 1)
+          PY
+            then
+              echo "Specific deployment verified on attempt ${attempt}."
+              verified_specific=true
+              break
+            fi
+            sleep 2
+          done
+          test "$verified_specific" = 'true'
+
+          verified_active=false
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if active_is "$CANDIDATE_VERSION_ID"; then
+              echo "Candidate is active at 100 percent on attempt ${attempt}."
+              verified_active=true
+              break
+            fi
+            sleep 2
+          done
+          test "$verified_active" = 'true'
+
+          test_origin() {
+            local origin="$1"
+            local attempt status acao stamp
+            for attempt in 1 2 3 4 5 6; do
+              stamp=$(date +%s)-${attempt}
+              status=$(curl --silent --show-error \
+                --dump-header /tmp/cors-headers.txt \
+                --output /tmp/cors-body.json \
+                --write-out '%{http_code}' \
+                -H "Origin: ${origin}" \
+                -H 'Accept: application/json' \
+                "${API_ROOT}/api/v1/live?limit=1&cors_recovery_v5=${stamp}" || true)
+              acao=$(awk -F': ' 'tolower($1)=="access-control-allow-origin" {gsub("\r", "", $2); print $2}' /tmp/cors-headers.txt | tail -n 1)
+              if [ "$status" = '200' ] && [ "$acao" = "$origin" ]; then
+                python3 - <<'PY'
+          import json
+          from pathlib import Path
+          json.loads(Path('/tmp/cors-body.json').read_text())
+          PY
+                echo "CORS PASS for ${origin} on attempt ${attempt}"
+                return 0
+              fi
+              echo "CORS retry ${attempt} for ${origin}: HTTP=${status} ACAO=${acao:-missing}"
+              sleep 5
+            done
+            return 1
+          }
+
+          test_origin 'https://worldprotocolacademy.mk'
+          test_origin 'https://www.worldprotocolacademy.mk'
+
+          DEPLOYED_BY_V5=false
+          trap - EXIT
+          echo 'Verified v4 CORS-only candidate is active at 100 percent and both production origins pass.'
+
+      - name: Publish safe summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo '## WPA Journal Live · Production CORS Recovery v5'
+            echo
+            echo '- v4 failure run: `33879713640`'
+            echo '- Exact old version: `425610e3-0ddd-4784-b030-c58552f26f98`'
+            echo '- Exact verified v4 candidate: `1aa812ea-6d6a-4855-9e4b-e22cbe79c3f3`'
+            echo '- New Worker version created by v5: **no**'
+            echo '- Settings PATCH performed by v5: **no**'
+            echo "- Recovery mode: \`${RECOVERY_MODE}\`"
+            echo '- Production origins tested: apex + www'
+            echo '- CORS smoke: **PASS**'
+          } >> "$GITHUB_STEP_SUMMARY"
