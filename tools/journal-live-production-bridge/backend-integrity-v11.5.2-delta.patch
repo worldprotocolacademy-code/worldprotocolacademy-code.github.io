@@ -1,0 +1,60 @@
+--- candidate_1151.js
++++ candidate_1152.js
+@@ -355,6 +355,7 @@
+   const headers = new Headers({
+     "Content-Type": "application/json; charset=utf-8",
+     "Cache-Control": `public, max-age=${Math.max(0, Number(env.API_CACHE_SECONDS) || 30)}`,
++    "X-WPA-Bridge-Version": "11.5.2",
+     "X-Content-Type-Options": "nosniff",
+     "Referrer-Policy": "no-referrer",
+     ...extraHeaders
+@@ -6104,6 +6105,20 @@
+ }
+ __name(publicItemAllowed, "publicItemAllowed");
++function dedupePublicItems(items) {
++  const output = [];
++  const seen = /* @__PURE__ */ new Set();
++  for (const item of Array.isArray(items) ? items : []) {
++    const key = `${normalizeThemeText(item?.source)}|${normalizeThemeText(item?.title)}|${String(item?.published_at || "").slice(0, 10)}`;
++    if (seen.has(key)) continue;
++    seen.add(key);
++    output.push(item);
++  }
++  return output;
++}
++__name(dedupePublicItems, "dedupePublicItems");
+ async function queryLiveItems(env, url, forcedLimit) {
+   const limit = forcedLimit || intParam(url.searchParams.get("limit"), 60, 1, 200);
+   const offset = intParam(url.searchParams.get("offset"), 0, 0, 1e4);
+@@ -6343,11 +6358,11 @@
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/health") {
+     const state = await env.DB.prepare("SELECT key,value,updated_at FROM system_state WHERE key IN ('last_scheduler_run','last_queue_success','last_live_item_at')").all();
+-    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.5.1", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
++    return jsonResponse(request, env, { ok: true, service: "WPA Live Production Bridge", version: "11.5.2", now: (/* @__PURE__ */ new Date()).toISOString(), state: state.results || [] }, 200, { "Cache-Control": "no-store" });
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/stats") {
+     return jsonResponse(request, env, await statsPayload(env));
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/live") {
+-    const items = await queryLiveItems(env, url);
++    const items = dedupePublicItems(await queryLiveItems(env, url));
+     return jsonResponse(request, env, { generated_at: (/* @__PURE__ */ new Date()).toISOString(), total: items.length, items });
+   }
+@@ -6409,7 +6424,7 @@
+   if (request.method === "GET" && url.pathname === "/api/v1/ticker") {
+     const tickerUrl = new URL(request.url);
+     tickerUrl.searchParams.set("limit", String(intParam(url.searchParams.get("limit"), 30, 1, 60)));
+     tickerUrl.searchParams.set("since_hours", String(intParam(url.searchParams.get("since_hours"), 72, 1, 720)));
+-    const items = await queryLiveItems(env, tickerUrl);
++    const items = dedupePublicItems(await queryLiveItems(env, tickerUrl));
+     return jsonResponse(request, env, { generated_at: (/* @__PURE__ */ new Date()).toISOString(), total: items.length, items });
+   }
+@@ -6424,7 +6439,7 @@
+   }
+   if (request.method === "GET" && url.pathname === "/api/v1/lab-cache") {
+     const limit = intParam(url.searchParams.get("limit"), intParam(env.LAB_CACHE_LIMIT, 150, 1, 200), 1, 200);
+-    const items = await queryLiveItems(env, url, limit);
++    const items = dedupePublicItems(await queryLiveItems(env, url, limit));
+     const stats = await statsPayload(env);
+     const mapped = items.map((item) => ({
