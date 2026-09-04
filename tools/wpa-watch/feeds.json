@@ -1,51 +1,63 @@
 {
-  "version": "1.2",
-  "policy": "RSS/Atom only. No scraping.",
+  "version": "1.3",
+  "policy": "Public RSS/Atom and documented public APIs only. No scraping, no private platforms, no synthetic fallback.",
   "feeds": [
     {
       "name": "UN News",
       "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
-      "domain": "diplomacy"
-    },
-    {
-      "name": "NATO News",
-      "url": "https://www.nato.int/cps/en/natohq/news.rss",
-      "domain": "security"
-    },
-    {
-      "name": "OSCE News",
-      "url": "https://www.osce.org/rss/news.xml",
-      "domain": "diplomacy"
+      "transport": "rss",
+      "domain": "diplomacy",
+      "source_tier": "PRIMARY_OFFICIAL",
+      "verification_status": "official_public_feed"
     },
     {
       "name": "ReliefWeb",
-      "url": "https://reliefweb.int/updates/rss.xml",
-      "domain": "security"
+      "url": "https://api.reliefweb.int/v2/reports?appname=worldprotocolacademy.mk&limit=25&preset=latest&profile=list",
+      "transport": "reliefweb_api",
+      "domain": "security",
+      "source_tier": "PRIMARY_OFFICIAL",
+      "verification_status": "documented_public_api"
     },
     {
       "name": "Crossref Blog",
       "url": "https://www.crossref.org/blog/index.xml",
-      "domain": "academic"
+      "transport": "rss",
+      "domain": "academic",
+      "source_tier": "PRIMARY_INFRASTRUCTURE",
+      "verification_status": "official_public_feed"
     },
     {
       "name": "OpenAlex Blog",
       "url": "https://blog.openalex.org/feed/",
-      "domain": "academic"
+      "transport": "rss",
+      "domain": "academic",
+      "source_tier": "PRIMARY_INFRASTRUCTURE",
+      "verification_status": "official_public_feed"
     },
     {
       "name": "DOAJ News",
       "url": "https://blog.doaj.org/feed/",
-      "domain": "academic"
+      "transport": "rss",
+      "domain": "academic",
+      "source_tier": "PRIMARY_INFRASTRUCTURE",
+      "verification_status": "official_public_feed"
     },
     {
       "name": "DiploFoundation",
       "url": "https://www.diplomacy.edu/feed/",
-      "domain": "diplomacy"
+      "transport": "rss",
+      "domain": "diplomacy",
+      "source_tier": "SPECIALIST_PUBLIC",
+      "verification_status": "official_public_feed"
     },
     {
       "name": "E-International Relations",
       "url": "https://www.e-ir.info/feed/",
-      "domain": "diplomacy"
+      "transport": "rss",
+      "domain": "diplomacy",
+      "source_tier": "SPECIALIST_PUBLIC",
+      "verification_status": "official_public_feed",
+      "optional": true
     }
   ]
 }
