@@ -1,31 +1,163 @@
-window.WPA_LIVE_DEMO_ENABLED = true;
-window.WPA_LIVE_DEMO_DATA = {
-  "mode": "demo",
-  "synthetic": true,
-  "generated_at": "2026-07-12T10:05:00Z",
-  "notice": "Synthetic local demonstration data. Not live news.",
-  "total": 12,
-  "items": [
-    {"id":"demo-protocol-001","title":"DEMO: Official visit programme confirms ceremonial sequence and delegation order","source":"WPA Demo Official Institution","source_type":"official","source_category":"protocol","original_url":"https://example.invalid/wpa-demo/protocol-001","published_at":"2026-07-12T10:00:00Z","fetched_at":"2026-07-12T10:01:00Z","country":"North Macedonia","region":"Balkans","language":"en","primary_category":"protocol","signals":["protocol","institutional"],"summary":"Synthetic demonstration item showing how a protocol-related public-source update would appear. It is not a real news report.","relevance_score":92,"source_confidence":95,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-diplomacy-001","title":"DEMO: Foreign ministries announce a new round of bilateral consultations","source":"WPA Demo Foreign Ministry","source_type":"mfa","source_category":"diplomacy","original_url":"https://example.invalid/wpa-demo/diplomacy-001","published_at":"2026-07-12T09:50:00Z","fetched_at":"2026-07-12T09:51:00Z","country":"France","region":"Europe","language":"en","primary_category":"diplomacy","signals":["institutional"],"summary":"Synthetic demonstration of a diplomatic consultation notice, designed only for local interface testing.","relevance_score":89,"source_confidence":94,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-security-001","title":"DEMO: Multilateral statement links resilience, humanitarian access and public communication","source":"WPA Demo International Organization","source_type":"international_organization","source_category":"security","original_url":"https://example.invalid/wpa-demo/security-001","published_at":"2026-07-12T09:35:00Z","fetched_at":"2026-07-12T09:36:00Z","country":"","region":"Global","language":"en","primary_category":"security","signals":["security","institutional"],"summary":"Synthetic security-aware example. It contains no classified information and is not an intelligence assessment.","relevance_score":87,"source_confidence":93,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-communication-001","title":"DEMO: Institution revises crisis-message sequence after public response review","source":"WPA Demo Communication Office","source_type":"official","source_category":"communication","original_url":"https://example.invalid/wpa-demo/communication-001","published_at":"2026-07-12T09:20:00Z","fetched_at":"2026-07-12T09:21:00Z","country":"Germany","region":"Europe","language":"en","primary_category":"communication","signals":["pr"],"summary":"Synthetic public communication example used to demonstrate message-discipline and crisis-communication filters.","relevance_score":85,"source_confidence":91,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-economic-001","title":"DEMO: Development institution outlines resilience-financing priorities","source":"WPA Demo Development Bank","source_type":"economic_diplomacy","source_category":"diplomacy","original_url":"https://example.invalid/wpa-demo/economic-001","published_at":"2026-07-12T09:05:00Z","fetched_at":"2026-07-12T09:06:00Z","country":"","region":"Global","language":"en","primary_category":"diplomacy","signals":["economic","institutional"],"summary":"Synthetic economic-diplomacy example for testing the Journal Live cards and Analysis Lab workflow.","relevance_score":83,"source_confidence":92,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-interview-001","title":"DEMO: Ambassador interview focuses on trust, tone and institutional clarity","source":"WPA Demo Media Network","source_type":"media","source_category":"communication","original_url":"https://example.invalid/wpa-demo/interview-001","published_at":"2026-07-12T08:50:00Z","fetched_at":"2026-07-12T08:51:00Z","country":"United States","region":"North America","language":"en","primary_category":"communication","signals":["interview","pr"],"summary":"Synthetic interview-watch item demonstrating public presence, message discipline and source attribution.","relevance_score":81,"source_confidence":82,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-social-mastodon","title":"DEMO: Diplomatic institution publishes a public update on a federated social platform","source":"WPA Demo Mastodon Monitor","source_type":"social_platform","source_category":"communication","original_url":"https://example.invalid/wpa-demo/mastodon","published_at":"2026-07-12T08:35:00Z","fetched_at":"2026-07-12T08:36:00Z","country":"","region":"Global","language":"en","primary_category":"communication","signals":["pr","institutional"],"summary":"Synthetic social-platform example. The production registry treats only verified feed or API adapters as active.","relevance_score":78,"source_confidence":70,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-social-bluesky","title":"DEMO: Public diplomacy discussion trends across an open social protocol","source":"WPA Demo Bluesky Monitor","source_type":"social_platform","source_category":"diplomacy","original_url":"https://example.invalid/wpa-demo/bluesky","published_at":"2026-07-12T08:20:00Z","fetched_at":"2026-07-12T08:21:00Z","country":"","region":"Global","language":"en","primary_category":"diplomacy","signals":["institutional","pr"],"summary":"Synthetic adapter demonstration only. It does not claim that a universal RSS feed exists for the platform.","relevance_score":76,"source_confidence":65,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-social-truth","title":"DEMO: Political communication post requires source and context verification","source":"WPA Demo Truth Social Watch","source_type":"social_platform","source_category":"communication","original_url":"https://example.invalid/wpa-demo/truth-social","published_at":"2026-07-12T08:05:00Z","fetched_at":"2026-07-12T08:06:00Z","country":"United States","region":"North America","language":"en","primary_category":"communication","signals":["pr"],"summary":"Synthetic Truth Social example. Production ingestion remains disabled until a lawful, stable and verified adapter is configured.","relevance_score":72,"source_confidence":55,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-social-rumble","title":"DEMO: Video commentary is flagged for attribution and editorial-context review","source":"WPA Demo Rumble Watch","source_type":"social_platform","source_category":"communication","original_url":"https://example.invalid/wpa-demo/rumble","published_at":"2026-07-12T07:50:00Z","fetched_at":"2026-07-12T07:51:00Z","country":"United States","region":"North America","language":"en","primary_category":"communication","signals":["pr"],"summary":"Synthetic Rumble example. It demonstrates the disabled experimental-adapter policy and mandatory human verification.","relevance_score":70,"source_confidence":50,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-justice-001","title":"DEMO: Court communication creates a legal-diplomatic protocol case","source":"WPA Demo International Court","source_type":"justice","source_category":"diplomacy","original_url":"https://example.invalid/wpa-demo/justice-001","published_at":"2026-07-12T07:35:00Z","fetched_at":"2026-07-12T07:36:00Z","country":"","region":"Global","language":"en","primary_category":"diplomacy","signals":["protocol","institutional"],"summary":"Synthetic legal-diplomatic case for testing formal language, restraint and institutional hierarchy analysis.","relevance_score":82,"source_confidence":94,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"},
-    {"id":"demo-thinktank-001","title":"DEMO: Think-tank brief assesses narrative risk around a regional summit","source":"WPA Demo Think Tank","source_type":"think_tank","source_category":"communication","original_url":"https://example.invalid/wpa-demo/thinktank-001","published_at":"2026-07-12T07:20:00Z","fetched_at":"2026-07-12T07:21:00Z","country":"United Kingdom","region":"Europe","language":"en","primary_category":"communication","signals":["pr","security"],"summary":"Synthetic analysis item demonstrating the distinction between primary official sources and secondary commentary.","relevance_score":79,"source_confidence":75,"verification_status":"demo_synthetic","human_review":false,"summary_mode":"demo","status":"published","sande_review_status":"rules_ready"}
-  ]
-};
+/* WPA Journal Live real-source resilience layer.
+ * Production never substitutes synthetic news when the Live Worker is unavailable.
+ * Fallback order: hourly wpa-live-data branch -> same-origin last committed real snapshot.
+ */
+(() => {
+  'use strict';
 
-/* Journal-only enhancement chain. X11.8.1 Signal Architecture remains isolated. */
-document.write('<script src="noise-hardening.js?v=20260713-r2.1"><\/script>');
-document.write('<script src="fusion-lenses.js?v=20260713-x1191"><\/script>');
-document.write('<script src="analyst-workflow.js?v=20260713-x1191"><\/script>');
-document.write('<script src="x119-editorial-intelligence.js?v=20260713-x1191"><\/script>');
-document.write('<script src="analyst-core.js?v=20260713-x1191"><\/script>');
-document.write('<script src="analyst-export.js?v=20260713-x1191"><\/script>');
-document.write('<script src="/scripts/wpa-social-bridge.js?v=20260713-1"><\/script>');
+  window.WPA_LIVE_DEMO_ENABLED = false;
+  delete window.WPA_LIVE_DEMO_DATA;
+
+  const nativeFetch = window.fetch.bind(window);
+  const RAW_ROOT = 'https://raw.githubusercontent.com/worldprotocolacademy-code/worldprotocolacademy-code.github.io/wpa-live-data/tools/wpa-watch';
+  const LOCAL_ROOT = '/tools/wpa-watch';
+  const CACHE_MS = 60000;
+  let cache = null;
+  let cacheAt = 0;
+
+  const clean = (value = '') => String(value).replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const safeDate = (value) => {
+    const time = new Date(value || '').getTime();
+    return Number.isFinite(time) ? new Date(time).toISOString() : null;
+  };
+  const category = (domain) => {
+    const value = String(domain || '').toLowerCase();
+    if (['protocol','diplomacy','security','communication'].includes(value)) return value;
+    if (value === 'pr' || value === 'communicology' || value === 'academic') return 'communication';
+    return 'communication';
+  };
+  const confidenceFor = (item) => {
+    if (Number.isFinite(Number(item.source_confidence))) return Number(item.source_confidence);
+    const tier = String(item.source_tier || '').toUpperCase();
+    if (tier === 'PRIMARY_OFFICIAL') return 95;
+    if (tier === 'PRIMARY_INFRASTRUCTURE') return 92;
+    if (tier === 'SPECIALIST_PUBLIC') return 82;
+    return 75;
+  };
+
+  function adaptItem(item, status) {
+    const published = safeDate(item.published_at || item.isoDate || item.published);
+    const fetched = safeDate(item.fetched_at || status?.generated) || new Date().toISOString();
+    const domain = category(item.domain);
+    return {
+      id: item.id || item.link || `${item.source || 'source'}:${item.title || ''}`,
+      title: clean(item.title || 'Без наслов'),
+      source: clean(item.source || item.source_name || 'Public source'),
+      source_type: item.source_type || item.transport || 'public_feed',
+      original_url: item.link || item.original_url || '',
+      published_at: published,
+      fetched_at: fetched,
+      country: item.country || '',
+      region: item.region || 'Global',
+      language: item.language || 'en',
+      primary_category: domain,
+      signals: Array.from(new Set([domain, ...(item.wpa_relevance_reasons || []), ...(item.signals || [])].filter(Boolean))),
+      summary: clean(item.summary || item.summary_raw || '').slice(0, 800),
+      relevance_score: Number(item.wpa_relevance_score || item.relevance_score || 0),
+      source_confidence: confidenceFor(item),
+      verification_status: item.verification_status || 'public_source_traceable',
+      source_health_status: 'ok',
+      source_last_success_at: fetched,
+      human_review: false,
+      sande_review_status: 'rules_ready',
+      fallback_snapshot: true
+    };
+  }
+
+  async function fetchJson(url, signal) {
+    const response = await nativeFetch(url, { cache: 'no-store', signal, headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error(`HTTP ${response.status} for ${url}`);
+    return response.json();
+  }
+
+  async function loadSnapshot(signal) {
+    if (cache && Date.now() - cacheAt < CACHE_MS) return cache;
+    let status;
+    let items;
+    let source = 'wpa-live-data';
+    try {
+      [status, items] = await Promise.all([
+        fetchJson(`${RAW_ROOT}/status.json`, signal),
+        fetchJson(`${RAW_ROOT}/items.json`, signal)
+      ]);
+    } catch {
+      source = 'same-origin-last-real-snapshot';
+      [status, items] = await Promise.all([
+        fetchJson(`${LOCAL_ROOT}/status.json`, signal),
+        fetchJson(`${LOCAL_ROOT}/items.json`, signal)
+      ]);
+    }
+
+    if (!Array.isArray(items)) throw new Error('Real-source snapshot items are invalid');
+    const adapted = items
+      .filter((item) => /^https?:\/\//i.test(String(item.link || item.original_url || '')))
+      .filter((item) => !/example\.invalid|WPA Demo/i.test(`${item.link || ''} ${item.source || ''} ${item.title || ''}`))
+      .map((item) => adaptItem(item, status));
+    if (!adapted.length) throw new Error('No real public-source items available in fallback snapshot');
+
+    const now = Date.now();
+    const published24h = adapted.filter((item) => {
+      const time = new Date(item.published_at || '').getTime();
+      return Number.isFinite(time) && time <= now + 3600000 && now - time <= 86400000;
+    }).length;
+
+    cache = { status, items: adapted, source, published24h };
+    cacheAt = Date.now();
+    return cache;
+  }
+
+  function jsonResponse(payload) {
+    return new Response(JSON.stringify(payload), {
+      status: 200,
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'no-store',
+        'x-wpa-source-mode': 'real-source-fallback'
+      }
+    });
+  }
+
+  async function fallbackResponse(url, signal) {
+    const snapshot = await loadSnapshot(signal);
+    const path = new URL(url, location.href).pathname;
+    const generated = snapshot.status?.generated || new Date().toISOString();
+    if (path.endsWith('/api/v1/stats')) {
+      return jsonResponse({
+        mode: 'REAL_SOURCE_FALLBACK',
+        sources: { active: Number(snapshot.status?.sources_live || 0), enabled: Number(snapshot.status?.sources_enabled || snapshot.status?.sources_total || 0) },
+        items: { published_24h: snapshot.published24h, total: snapshot.items.length },
+        latest: { latest_fetch: generated },
+        fallback_source: snapshot.source
+      });
+    }
+    if (path.endsWith('/api/v1/ticker')) {
+      return jsonResponse({ mode: 'REAL_SOURCE_FALLBACK', generated_at: generated, items: snapshot.items.slice(0, 40), fallback_source: snapshot.source });
+    }
+    if (path.endsWith('/api/v1/live')) {
+      return jsonResponse({ mode: 'REAL_SOURCE_FALLBACK', generated_at: generated, items: snapshot.items.slice(0, 120), fallback_source: snapshot.source });
+    }
+    return null;
+  }
+
+  window.fetch = async function wpaRealSourceResilientFetch(input, init = {}) {
+    const url = typeof input === 'string' ? input : input?.url || '';
+    const isLiveRead = /\/api\/v1\/(?:stats|live|ticker)(?:\?|$)/.test(url);
+    if (!isLiveRead) return nativeFetch(input, init);
+    try {
+      const response = await nativeFetch(input, init);
+      if (response.ok) return response;
+    } catch {}
+    const fallback = await fallbackResponse(url, init?.signal);
+    if (fallback) return fallback;
+    return nativeFetch(input, init);
+  };
+
+  /* Existing Journal-only enhancement chain remains isolated from collection. */
+  document.write('<script src="noise-hardening.js?v=20260713-r2.1"><\/script>');
+  document.write('<script src="fusion-lenses.js?v=20260713-x1191"><\/script>');
+  document.write('<script src="analyst-workflow.js?v=20260713-x1191"><\/script>');
+  document.write('<script src="x119-editorial-intelligence.js?v=20260713-x1191"><\/script>');
+  document.write('<script src="analyst-core.js?v=20260713-x1191"><\/script>');
+  document.write('<script src="analyst-export.js?v=20260713-x1191"><\/script>');
+  document.write('<script src="/scripts/wpa-social-bridge.js?v=20260713-1"><\/script>');
+})();
