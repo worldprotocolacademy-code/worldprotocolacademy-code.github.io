@@ -1,0 +1,27 @@
+--- index.js
++++ index.js
+@@ -6140,7 +6140,23 @@
+                ORDER BY f.relevance_score DESC,f.published_at DESC,f.fetched_at DESC LIMIT ? OFFSET ?`;
+   params.push(limit, offset);
+   const result = await env.DB.prepare(sql).bind(...params).all();
+-  return (result.results || []).map(itemFromRow);
++  const output = [];
++  const seen = /* @__PURE__ */ new Set();
++  for (const row of result.results || []) {
++    const item = itemFromRow(row);
++    if (thematicNoiseReason({
++      title: item.title,
++      summary: item.summary,
++      source: item.source,
++      primaryCategory: item.primary_category,
++      signals: item.signals
++    })) continue;
++    const sameSourceContentKey = `${normalizeThemeText(item.source)}|${normalizeThemeText(item.title)}|${String(item.published_at || "").slice(0, 10)}`;
++    if (seen.has(sameSourceContentKey)) continue;
++    seen.add(sameSourceContentKey);
++    output.push(item);
++  }
++  return output;
+ }
+ __name(queryLiveItems, "queryLiveItems");
+ async function statsPayload(env) {
