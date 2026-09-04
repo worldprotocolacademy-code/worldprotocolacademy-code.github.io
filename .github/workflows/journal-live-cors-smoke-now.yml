@@ -1,0 +1,61 @@
+name: WPA Journal Live CORS Smoke Now
+
+on:
+  push:
+    branches:
+      - journal-live-cors-smoke-now
+
+permissions:
+  contents: read
+
+jobs:
+  cors-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      API_ROOT: https://wpa-live-production-bridge.worldprotocolacademy.workers.dev
+      PUBLIC_ORIGIN: https://worldprotocolacademy.mk
+    steps:
+      - name: Test live endpoint and CORS
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --silent --show-error --location \
+            --connect-timeout 10 --max-time 25 \
+            -H "Origin: ${PUBLIC_ORIGIN}" \
+            -H 'Accept: application/json' \
+            -D /tmp/live.headers \
+            -o /tmp/live.json \
+            -w '%{http_code}' \
+            "${API_ROOT}/api/v1/live?limit=1" > /tmp/status.txt
+
+          echo "HTTP status: $(cat /tmp/status.txt)"
+          echo '--- response headers ---'
+          cat /tmp/live.headers
+          echo '--- response body ---'
+          cat /tmp/live.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          status = Path('/tmp/status.txt').read_text().strip()
+          headers = Path('/tmp/live.headers').read_text().lower()
+          body = Path('/tmp/live.json').read_text()
+          data = json.loads(body)
+
+          if status != '200':
+              raise SystemExit(f'Live endpoint HTTP {status}')
+          if not isinstance(data, dict) or not isinstance(data.get('items'), list):
+              raise SystemExit('Live endpoint missing items[] contract')
+
+          origin = 'https://worldprotocolacademy.mk'
+          cors_ok = (
+              f'access-control-allow-origin: {origin}' in headers
+              or 'access-control-allow-origin: *' in headers
+          )
+          if not cors_ok:
+              raise SystemExit('CORS FAIL: Access-Control-Allow-Origin missing for worldprotocolacademy.mk')
+
+          print(f"PASS: HTTP 200 + items[] + CORS for {origin}")
+          PY
