@@ -1,6 +1,6 @@
 name: WPA 24x7 Institute Operations
 
-# v9: uninterrupted governed 24/7 operation with proactive open-knowledge agents, relevance gates, product/channel adaptation and explicit Human Authority approval.
+# v10: uninterrupted governed 24/7 operation with proactive open-knowledge agents, WPA-native transformation, relevance gates, product/channel adaptation and explicit Human Authority approval.
 on:
   workflow_dispatch:
   schedule:
@@ -14,6 +14,7 @@ on:
       - 'tools/wpa-product-factory/**'
       - 'tools/wpa-watch/**'
       - 'tools/wpa-open-knowledge/**'
+      - 'data/wpa-native-knowledge-transformation-model.json'
       - 'open-knowledge-command/**'
       - 'viral-sande-ai/**'
       - 'tools/academic-search-hub/**'
@@ -66,6 +67,9 @@ jobs:
           WPA_OPEN_KNOWLEDGE_INSTITUTION_BATCH: '12'
         run: node tools/wpa-open-knowledge/harvest.mjs
 
+      - name: 02 TRANSFORM external evidence into WPA-native knowledge candidates
+        run: node tools/wpa-open-knowledge/transform-wpa-native.mjs
+
       - name: 02 CHECK and structure Journal Watch intelligence
         run: node generate-journal-watch.mjs
 
@@ -108,7 +112,9 @@ jobs:
           node -e "const fs=require('fs');const o=JSON.parse(fs.readFileSync('data/open-knowledge/status.json'));if(o.mode!=='PROACTIVE_OPEN_KNOWLEDGE_24X7')process.exit(1);if(o.controls?.paywall_or_login_bypass!=='DISABLED'||o.controls?.protected_full_text_copying!=='DISABLED'||o.controls?.human_review_before_consequential_reuse!=='REQUIRED')process.exit(1);if(!Array.isArray(o.routing)||!o.routing.includes('VIRAL_SANDE')||!o.routing.includes('VIRTUAL_SANDE')||!o.routing.includes('PROTOCOLometry'))process.exit(1);console.log('Open Knowledge rights + routing gates validated');"
           node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync('data/open-knowledge/scholarly-atoms.json'));if(s.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);if((s.atoms||[]).some(a=>a.access_basis==='OPEN_ACCESS'&&a.reuse_status!=='HOLD'))process.exit(1);console.log('Open-book rights gate validated:',(s.atoms||[]).length,'atoms');"
           node -e "const fs=require('fs');const i=JSON.parse(fs.readFileSync('data/open-knowledge/institutional-practice-atoms.json'));if(i.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);if((i.atoms||[]).some(a=>a.portal_signals?.source_body_retained!==false))process.exit(1);console.log('Institutional public-portal body-retention guardrail validated:',(i.atoms||[]).length,'atoms');"
-          node -e "const fs=require('fs');const v=JSON.parse(fs.readFileSync('data/virtual-sande/open-knowledge-intake.json'));if(v.status!=='SOURCE_TRACEABLE_CANDIDATES_PENDING_HUMAN_REVIEW')process.exit(1);if(!v.human_gate||v.human_gate.state!=='REQUIRED')process.exit(1);console.log('Virtual/Viral Sande shared intake gate validated');"
+          node -e "const fs=require('fs');const n=JSON.parse(fs.readFileSync('data/open-knowledge/wpa-native-candidates.json'));if(n.status!=='WPA_NATIVE_CANDIDATES_PENDING_HUMAN_REVIEW')process.exit(1);if(n.originality_gate?.failed!==0||n.originality_gate?.protected_source_body_embedded!==false)process.exit(1);if((n.candidates||[]).some(c=>c.release_state!=='WPA_NATIVE_CANDIDATE_PENDING_HUMAN_REVIEW'||c.source_body_embedded!==false||c.originality_audit?.pass!==true||c.human_gate?.state!=='REQUIRED'))process.exit(1);console.log('WPA-native transformation + anti-copy gate validated:',(n.candidates||[]).length,'candidates');"
+          node -e "const fs=require('fs');const v=JSON.parse(fs.readFileSync('data/virtual-sande/open-knowledge-intake.json'));if(v.status!=='SOURCE_TRACEABLE_CANDIDATES_PENDING_HUMAN_REVIEW')process.exit(1);if(!v.human_gate||v.human_gate.state!=='REQUIRED')process.exit(1);console.log('Virtual/Viral Sande source intake gate validated');"
+          node -e "const fs=require('fs');const v=JSON.parse(fs.readFileSync('data/virtual-sande/wpa-native-intake.json'));if(v.status!=='WPA_NATIVE_CONTEXT_PENDING_HUMAN_REVIEW')process.exit(1);if(v.human_gate?.state!=='REQUIRED'||v.human_gate?.automatic_external_publication!=='DISABLED'||v.human_gate?.automatic_doctrine_change!=='DISABLED')process.exit(1);if(!(v.routing||[]).includes('VIRTUAL_SANDE')||!(v.routing||[]).includes('VIRAL_SANDE')||!(v.routing||[]).includes('PROTOCOLometry'))process.exit(1);console.log('Virtual/Viral Sande WPA-native intake gate validated');"
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('products/manifest.json'));if(!m.products||m.products.length<6)process.exit(1);if(!m.products.some(p=>p.id==='protocolometry-digest'))process.exit(1);console.log('Validated',m.products.length,'product families including Protocolometry');"
           node -e "const fs=require('fs');const ar=JSON.parse(fs.readFileSync('products/academicRadar.json'));if((ar.items||[]).some(r=>Number(r.wpa_relevance_score||45)<45||Number(r.traceability_score||0)<50))process.exit(1);console.log('Academic Radar relevance gate validated');"
           node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('products/protocolometryDigest.json'));if(!Array.isArray(p.measurement_profile)||p.measurement_profile.length<5)process.exit(1);if(!String(p.status||'').includes('NO ORDINAL RANKING'))process.exit(1);console.log('Protocolometry measurement guardrail validated');"
@@ -116,10 +122,13 @@ jobs:
           node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('data/global-institutions/operations/verification-candidates.json'));if(q.status!=='HUMAN_REVIEW_QUEUE_ONLY')process.exit(1);console.log('Institutional queue guardrail validated');"
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('data/social/product-distribution-queue.json'));if(d.mode!=='AUTO_DRAFT_24X7_HUMAN_APPROVAL_BEFORE_DISTRIBUTION')process.exit(1);if(d.controls?.automatic_external_publishing!=='DISABLED')process.exit(1);if(!Array.isArray(d.items)||d.items.length<6)process.exit(1);if(!Array.isArray(d.channel_states)||d.channel_states.length<10)process.exit(1);console.log('Social/messenger distribution gate validated');"
           node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('operations/approval-queue.json'));if(a.mode!=='OWNER_APPROVAL_REQUIRED')process.exit(1);if(a.owner_gate?.automatic_production_merge!=='DISABLED'||a.owner_gate?.automatic_external_publishing!=='DISABLED')process.exit(1);if(!Array.isArray(a.simple_flow)||a.simple_flow.length!==6)process.exit(1);console.log('Owner approval gate validated');"
+          test -s data/wpa-native-knowledge-transformation-model.json
           test -s data/open-knowledge/status.json
           test -s data/open-knowledge/scholarly-atoms.json
           test -s data/open-knowledge/institutional-practice-atoms.json
+          test -s data/open-knowledge/wpa-native-candidates.json
           test -s data/virtual-sande/open-knowledge-intake.json
+          test -s data/virtual-sande/wpa-native-intake.json
           test -s open-knowledge-command/index.html
           grep -q 'WPA_OPEN_KNOWLEDGE_LANE_START' tools/academic-search-hub/index.html
           grep -q 'WPA_VIRAL_OPEN_KNOWLEDGE_START' viral-sande-ai/index.html
@@ -140,7 +149,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json data/open-knowledge/ data/virtual-sande/open-knowledge-intake.json tools/academic-search-hub/index.html viral-sande-ai/index.html products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json data/open-knowledge/ data/virtual-sande/open-knowledge-intake.json data/virtual-sande/wpa-native-intake.json tools/academic-search-hub/index.html viral-sande-ai/index.html products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
           if git diff --cached --quiet; then
             echo 'No bootstrap output changes.'
             exit 0
@@ -161,7 +170,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -B automation/wpa-institute-24x7
-          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json data/open-knowledge/ data/virtual-sande/open-knowledge-intake.json tools/academic-search-hub/index.html viral-sande-ai/index.html products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
+          git add tools/wpa-watch/items.json tools/wpa-watch/status.json journal/watch/topics.json journal/watch/editorial-queue.json tools/wpa-product-factory/data/academic-records.json data/open-knowledge/ data/virtual-sande/open-knowledge-intake.json data/virtual-sande/wpa-native-intake.json tools/academic-search-hub/index.html viral-sande-ai/index.html products/ operations/ data/global-institutions/operations/ data/social/product-distribution-queue.json social-studio/distribution/
           if git diff --cached --quiet; then
             echo 'No Institute operational changes.'
             echo 'WPA_PRODUCT_CHANGES=0' >> "$GITHUB_ENV"
@@ -180,7 +189,7 @@ jobs:
           if [ -z "$PR" ]; then
             gh pr create --base main --head automation/wpa-institute-24x7 \
               --title 'WPA Institute 24x7 update — OWNER APPROVAL REQUIRED' \
-              --body 'AUTO WORK completed: COLLECT → CHECK → PRODUCE → ADAPT. Public-source, scholarly relevance and proactive Open Knowledge rights gates passed. Public-domain/open-licensed book candidates and public institutional portal practice atoms were routed to Virtual/Viral Sande and eligible WPA systems without paywall/login bypass or protected full-text copying. Social and messenger variants are prepared but NOT externally published. Human Gate remains closed. This PR must NOT auto-merge. Sande Smiljanov / WPA Human Authority must explicitly approve production application and any later external distribution.'
+              --body 'AUTO WORK completed: COLLECT → RIGHTS/SOURCE CHECK → WPA-NATIVE TRANSFORM → PRODUCE → ADAPT. External evidence is converted into provenance-preserving WPA-native candidates through HGAIM, Institutional DNA, Protocolometry, strategic leverage and capability-resilience lenses. Anti-copy overlap checks passed; protected source bodies are not routed into WPA-native outputs. Public-domain/open-licensed book candidates and public institutional portal practice atoms remain attributable to their sources. Virtual Sande and Viral Sande receive the transformed WPA-native context layer, but external publication, doctrine mutation, methodology freeze and consequential institutional use remain Human Gate controlled. This PR must NOT auto-merge. Sande Smiljanov / WPA Human Authority must explicitly approve production application and any later external distribution.'
             PR=$(gh pr list --head automation/wpa-institute-24x7 --base main --state open --json number --jq '.[0].number // empty')
           fi
           echo "Owner approval required for production/distribution PR: #$PR"
