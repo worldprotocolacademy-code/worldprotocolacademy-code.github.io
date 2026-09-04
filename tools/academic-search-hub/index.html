@@ -239,9 +239,9 @@
     <h1>WPA Academic Search Hub v3.1</h1>
     <p class="subtitle">
       Истражувачка инфраструктура на World Protocol Academy за библиографско пребарување,
-      проверливост на извори, authority audit и идна RAG поддршка за Virtual Sande.
+      проверливост на извори, authority audit и 24/7 governed Open Knowledge intake за Virtual Sande, Viral Sande и WPA Institute.
     </p>
-    <div class="badge">STAGING READY — Legal-safe external discovery</div>
+    <div class="badge">ACADEMIC SEARCH + 24/7 OPEN KNOWLEDGE · HUMAN-GOVERNED</div>
   </header>
 
   <main>
@@ -295,9 +295,46 @@
       <div id="wpaSearchResults" class="grid"></div>
     </section>
 
+<!-- WPA_OPEN_KNOWLEDGE_LANE_START -->
+    <section id="proactive-open-knowledge" class="note">
+      <h2>Proactive Open Knowledge Agents · 24/7</h2>
+      <p>
+        Manual academic search is only one entrance. The Institute also runs a governed proactive lane that
+        continuously discovers <strong>public-domain and explicitly open-licensed books</strong>, open scholarly book metadata,
+        and <strong>public institutional portal signals</strong> from protocol, diplomacy, public relations/public communication,
+        security studies, communicology and Protocolometry-related sources.
+      </p>
+      <div class="grid">
+        <div class="card"><h3 id="wpaOpenBookCount">Open Books</h3><p>Project Gutenberg public-domain text may be boundedly extracted; OpenAlex book records enter metadata/rights review. Full-text reuse requires a public-domain or explicit open-licence basis.</p></div>
+        <div class="card"><h3 id="wpaOpenInstitutionCount">Institutional Portals</h3><p>The global institutions master list supplies rotating public-portal targets. Agents derive short practice signals and provenance without retaining protected page bodies.</p></div>
+        <div class="card"><h3>Core Extraction</h3><p>Agents create source-traceable Scholarly Knowledge Atoms and Institutional Practice Atoms, preserve authorship/source identity, and keep uncertainty and limitations visible.</p></div>
+        <div class="card"><h3>Institute-wide Routing</h3><p>Eligible candidates are routed to Virtual Sande, Viral Sande, WPAWS, Protocolometry, research, Journal, programmes, curriculum, briefings, strategy, social communication and other governed WPA uses.</p></div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/open-knowledge-command/">Open Knowledge Command</a>
+        <a class="btn secondary" href="/data/open-knowledge/status.json">Machine Status JSON</a>
+        <a class="btn secondary" href="/data/virtual-sande/open-knowledge-intake.json">Virtual/Viral Sande Intake</a>
+        <a class="btn secondary" href="/wpa-global-institutions-master-list.html">Global Institutions Master</a>
+      </div>
+      <p id="wpaOpenKnowledgeState" class="small">Status: waiting for the first governed 24/7 cycle on this deployment.</p>
+    </section>
+
+    <script>
+    (function(){
+      fetch('/data/open-knowledge/status.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('status');return r.json();}).then(function(s){
+        var b=document.getElementById('wpaOpenBookCount');
+        var i=document.getElementById('wpaOpenInstitutionCount');
+        var st=document.getElementById('wpaOpenKnowledgeState');
+        if(b)b.textContent=String((s.book_lane&&s.book_lane.retained_total)||0)+' governed book atoms';
+        if(i)i.textContent=String((s.institutional_lane&&s.institutional_lane.retained_total)||0)+' institutional practice atoms';
+        if(st)st.textContent='Status: '+String(s.operational_state||s.mode||'available')+' · generated '+String(s.generated||'');
+      }).catch(function(){/* public page stays truthful with fallback text */});
+    })();
+    </script>
+<!-- WPA_OPEN_KNOWLEDGE_LANE_END -->
+
     <section class="safe-note">
-      <strong>Legal-safe rule:</strong> this hub opens external search pages only. It does not scrape,
-      bypass login systems, harvest paywalled content, or replace human academic verification.
+      <strong>Legal-safe rule:</strong> the manual search surface opens external search pages only. The proactive lane is separate and may process only official/open APIs, public-domain or explicitly open-licensed book material, and publicly reachable institutional web pages under bounded source/robots checks. It never bypasses login, CAPTCHA, paywall or access controls and never treats mere discoverability as permission to copy protected full text.
     </section>
 
     <section>

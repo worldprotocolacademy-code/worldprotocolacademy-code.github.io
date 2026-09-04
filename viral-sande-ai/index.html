@@ -106,7 +106,7 @@
 <div class="container">
 
 <header>
-  <div class="badge">Beta Preview · AI Communication Concept</div>
+  <div class="badge">Beta Preview · Governed 24/7 Knowledge-to-Communication</div>
   <h1>Viral Sande AI</h1>
   <h2>AI-помогнат концепт за јавна комуникација и образование</h2>
 </header>
@@ -137,6 +137,41 @@
     <li>Сите AI излези бараат човечки преглед</li>
   </ul>
 </div>
+
+<!-- WPA_VIRAL_OPEN_KNOWLEDGE_START -->
+<div class="card" id="viral-open-knowledge">
+  <h3>🌍 Proactive Open Knowledge Intake · 24/7</h3>
+  <p>
+    Viral Sande is connected to the Institute's governed Open Knowledge lane. Proactive agents continuously look for
+    legally reusable knowledge in <strong>protocol, diplomacy, public relations/public communication, security studies,
+    communicology and Protocolometry</strong>, and for public practice signals from relevant academies, diplomatic schools,
+    universities, institutes and security/communication institutions worldwide.
+  </p>
+  <p>
+    Books are substantively extracted only when a <strong>public-domain or explicit open-licence</strong> basis exists.
+    Public institutional portals are converted into short source-traceable practice signals; protected body text is not retained.
+    Every new atom enters the Human Gate before consequential WPA reuse or external publication.
+  </p>
+  <p id="viralOpenKnowledgeState"><strong>Open Knowledge status:</strong> waiting for the current governed cycle.</p>
+  <div class="nav-links">
+    <a href="/open-knowledge-command/">📡 Open Knowledge Command</a>
+    <a href="/tools/academic-search-hub/">🔎 Academic Search Hub</a>
+    <a href="/wpa-global-institutions-master-list.html">🏛️ Global Institutions</a>
+    <a href="/data/virtual-sande/open-knowledge-intake.json">🧠 Intake JSON</a>
+  </div>
+</div>
+<script>
+(function(){
+  fetch('/data/open-knowledge/status.json',{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('status');return r.json();}).then(function(s){
+    var el=document.getElementById('viralOpenKnowledgeState');
+    if(!el)return;
+    var books=(s.book_lane&&s.book_lane.retained_total)||0;
+    var inst=(s.institutional_lane&&s.institutional_lane.retained_total)||0;
+    el.innerHTML='<strong>Open Knowledge status:</strong> '+String(s.operational_state||s.mode||'available')+' · '+books+' book atoms · '+inst+' institutional practice atoms · Human Gate required.';
+  }).catch(function(){/* keep fallback */});
+})();
+</script>
+<!-- WPA_VIRAL_OPEN_KNOWLEDGE_END -->
 
 <div class="card">
   <h3>Поврзани WPA алатки</h3>

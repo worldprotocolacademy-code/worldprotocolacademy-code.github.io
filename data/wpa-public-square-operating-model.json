@@ -1,7 +1,7 @@
 {
-  "schema": "wpa-public-square-operating-model/1.0",
-  "version": "1.0.1",
-  "updated": "2026-08-27",
+  "schema": "wpa-public-square-operating-model/1.1",
+  "version": "1.1.0",
+  "updated": "2026-09-04",
   "status": "DEVELOPMENT_OPERATIONAL_MODEL",
   "public_boundary": {
     "platform_status": "development_test_pilot",
@@ -12,17 +12,31 @@
     "partner_benefits_active": false,
     "qr_registry_active": false,
     "human_gate_required": true,
-    "note": "Programmes, certification, WPA Card and partner/member-benefit surfaces may be operationally modelled and previewed, but commercial, credential-issuing and benefit-redemption actions remain inactive until the appropriate legal, ethical, tax, payment, privacy and technical controls are established."
+    "note": "Programmes, certification, WPA Card and partner/member-benefit surfaces may be operationally modelled and previewed, but commercial, credential-issuing and benefit-redemption actions remain inactive until the appropriate legal, ethical, tax, payment, privacy and technical controls are established. Open WPA knowledge remains public and must not be falsely gated behind membership."
   },
   "public_square": {
     "sequence": [
+      "open_knowledge",
+      "wpa_free_card",
       "programmes",
       "certification",
-      "wpa_card",
+      "premium_membership",
       "partnerships_member_benefits",
       "renewal_and_continuing_learning"
     ],
-    "principle": "No credential, status, membership tier, partner benefit or QR verification claim exists solely because a visual card or certificate has been rendered. The governed record is authoritative; the visual artifact is a representation of that record."
+    "principle": "No credential, status, membership tier, partner benefit or QR verification claim exists solely because a visual card or certificate has been rendered. The governed record is authoritative; the visual artifact is a representation of that record.",
+    "growth_formula": "OPEN_AUTHORITY -> WPA_FREE_CARD -> GUIDED_LEARNING -> PREMIUM_VALUE -> CONTRIBUTION -> PARTNERSHIP -> INSTITUTIONAL_MONETIZATION"
+  },
+  "open_knowledge": {
+    "status": "PUBLIC_OPEN_ACTIVE",
+    "public_surface": "/wpa-open-library.html",
+    "rule": "Public/open WPA publications and Zenodo records remain readable without membership. WPA Free Card adds curation, guided reading, identity and future progress features; it does not privatise public source records.",
+    "authoritative_sources": [
+      "/papers.html",
+      "https://zenodo.org/communities/world-protocol-academy/",
+      "/protocol-notes/",
+      "/bibliography/"
+    ]
   },
   "programme_levels": [
     {
@@ -104,6 +118,9 @@
       "Academic Pro",
       "Institutional"
     ],
+    "free_card_role": "primary acquisition and belonging layer after registry activation",
+    "free_card_price": 0,
+    "free_card_growth_model": "/data/wpa-free-card-growth-model.json",
     "identity_states": [
       "PUBLIC_VISITOR",
       "INTEREST_RECORDED",
@@ -116,13 +133,33 @@
     ],
     "activation_active": false,
     "qr_active": false,
-    "rule": "A card visual does not establish membership. Membership status must come from an authorised registry record."
+    "rule": "A card visual does not establish membership. Membership status must come from an authorised registry record.",
+    "separation_rule": "Paid membership cannot buy academic merit, reviewer/faculty status or partnership authority. Merit and partnership tracks are separately governed."
+  },
+  "merit_and_contribution": {
+    "status": "DESIGN_READY_HUMAN_APPOINTMENT_ONLY",
+    "levels": [
+      "Member",
+      "Contributor",
+      "Professional Observer",
+      "Expert Contributor / Reviewer",
+      "Fellow / Faculty"
+    ],
+    "rule": "Contribution and merit status is earned through documented contribution and Human Gate criteria; it is not purchasable prestige."
   },
   "partnerships_member_benefits": {
     "architecture": "17+3",
     "status": "development_partner_model",
     "commercial_activation": false,
     "benefit_redemption_active": false,
+    "partner_hierarchy": [
+      "Member Benefit Partner",
+      "Knowledge Partner",
+      "Education Partner",
+      "Institutional Partner",
+      "Regional / Strategic Partner",
+      "Global Strategic Partner"
+    ],
     "partner_states": [
       "DISCOVERY",
       "DUE_DILIGENCE",
@@ -142,7 +179,7 @@
       "PAUSED",
       "WITHDRAWN"
     ],
-    "rule": "No partner logo, discount, benefit, access right or recurring value may be represented as active before partner confirmation and WPA Human Gate approval."
+    "rule": "No partner logo, discount, benefit, access right or recurring value may be represented as active before partner confirmation and WPA Human Gate approval. Partnership status must not be inferred from networking, membership or a public conversation."
   },
   "verification_contract": {
     "future_public_endpoint": "/verify/",
@@ -159,6 +196,11 @@
     "privacy_rule": "Public verification should disclose the minimum information necessary to establish authenticity and status. Sensitive personal data must not be encoded directly in a public QR payload."
   },
   "next_valid_actions": {
+    "open_knowledge": {
+      "status": "PUBLIC_OPEN_ACTIVE",
+      "next": "Use the WPA Open Knowledge Library as the free discovery and reading surface. Do not require membership for already-public Zenodo or WPA records.",
+      "href": "/wpa-open-library.html"
+    },
     "programmes": {
       "status": "INFORMATION_AND_ARCHITECTURE_ACTIVE",
       "next": "Review programme level, family, format and assessment pathway; expression-of-interest route only until enrolment controls are activated.",
@@ -170,13 +212,13 @@
       "href": "/wpa-card.html"
     },
     "wpa_card": {
-      "status": "MEMBERSHIP_AND_IDENTITY_MODEL_ACTIVE_ACTIVATION_INACTIVE",
-      "next": "Review proposed access tiers and future identity/verification relationship. No active membership or QR status is implied.",
-      "href": "/passive-revenue.html"
+      "status": "FREE_CARD_ACQUISITION_MODEL_READY_REGISTRY_ACTIVATION_INACTIVE",
+      "next": "Prepare the registry-backed WPA Free Card activation path. Until registry activation, show the free-card value proposition and open knowledge route without claiming ACTIVE membership, public ID or QR status.",
+      "href": "/wpa-open-library.html"
     },
     "partnerships_member_benefits": {
       "status": "PARTNER_AND_BENEFIT_MODEL_ACTIVE_COMMERCIAL_ACTIVATION_INACTIVE",
-      "next": "Use the 17+3 architecture for partner discovery and due diligence; the current operational next step is Partner Operations. Benefits and revenue still require separate approval and activation.",
+      "next": "Use the 17+3 architecture and the separate partnership hierarchy for discovery and due diligence. Benefits and revenue still require separate approval and activation.",
       "href": "/partner-operations.html"
     }
   },

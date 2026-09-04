@@ -1,25 +1,127 @@
 {
-  "generated": "2026-08-15T13:00:45.320Z",
+  "generated": "2026-09-04T01:08:20.670Z",
+  "mode": "24x7-production-feed",
+  "operational_state": "OPERATIONAL",
+  "hard_feed_timeout_ms": 20000,
+  "fallback_previous_items": false,
   "sources_total": 9,
-  "sources_live": 5,
-  "sources_dead": 4,
-  "items_total": 40,
+  "sources_live": 4,
+  "sources_dead": 5,
+  "items_total": 22,
+  "live": [
+    "Crossref Blog",
+    "OpenAlex Blog",
+    "DOAJ News",
+    "DiploFoundation"
+  ],
   "dead": [
     {
+      "name": "UN News",
+      "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+      "error": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: \u001f",
+      "duration_ms": 207
+    },
+    {
       "name": "NATO News",
-      "error": "Status code 404"
+      "url": "https://www.nato.int/cps/en/natohq/news.rss",
+      "error": "Status code 404",
+      "duration_ms": 363
     },
     {
       "name": "OSCE News",
-      "error": "Status code 404"
+      "url": "https://www.osce.org/rss/news.xml",
+      "error": "Status code 404",
+      "duration_ms": 1512
     },
     {
       "name": "ReliefWeb",
-      "error": "Unable to parse XML."
+      "url": "https://reliefweb.int/updates/rss.xml",
+      "error": "Unable to parse XML.",
+      "duration_ms": 363
     },
     {
       "name": "E-International Relations",
-      "error": "getaddrinfo ENOTFOUND www.e-ir.info"
+      "url": "https://www.e-ir.info/feed/",
+      "error": "Client network socket disconnected before secure TLS connection was established",
+      "duration_ms": 602
     }
-  ]
+  ],
+  "source_results": [
+    {
+      "ok": false,
+      "name": "UN News",
+      "url": "https://news.un.org/feed/subscribe/en/news/all/rss.xml",
+      "duration_ms": 207,
+      "error": "Non-whitespace before first tag.\nLine: 0\nColumn: 1\nChar: \u001f",
+      "items_count": 0
+    },
+    {
+      "ok": false,
+      "name": "NATO News",
+      "url": "https://www.nato.int/cps/en/natohq/news.rss",
+      "duration_ms": 363,
+      "error": "Status code 404",
+      "items_count": 0
+    },
+    {
+      "ok": false,
+      "name": "OSCE News",
+      "url": "https://www.osce.org/rss/news.xml",
+      "duration_ms": 1512,
+      "error": "Status code 404",
+      "items_count": 0
+    },
+    {
+      "ok": false,
+      "name": "ReliefWeb",
+      "url": "https://reliefweb.int/updates/rss.xml",
+      "duration_ms": 363,
+      "error": "Unable to parse XML.",
+      "items_count": 0
+    },
+    {
+      "ok": true,
+      "name": "Crossref Blog",
+      "url": "https://www.crossref.org/blog/index.xml",
+      "duration_ms": 868,
+      "items_count": 8
+    },
+    {
+      "ok": true,
+      "name": "OpenAlex Blog",
+      "url": "https://blog.openalex.org/feed/",
+      "duration_ms": 1260,
+      "items_count": 8
+    },
+    {
+      "ok": true,
+      "name": "DOAJ News",
+      "url": "https://blog.doaj.org/feed/",
+      "duration_ms": 1290,
+      "items_count": 8
+    },
+    {
+      "ok": true,
+      "name": "DiploFoundation",
+      "url": "https://www.diplomacy.edu/feed/",
+      "duration_ms": 1087,
+      "items_count": 8
+    },
+    {
+      "ok": false,
+      "name": "E-International Relations",
+      "url": "https://www.e-ir.info/feed/",
+      "duration_ms": 602,
+      "error": "Client network socket disconnected before secure TLS connection was established",
+      "items_count": 0
+    }
+  ],
+  "relevance_gate": {
+    "applied": true,
+    "minimum_score": 35,
+    "input_items": 32,
+    "passed_items": 22,
+    "excluded_items": 10,
+    "rule": "Only signals with an observable connection to WPA protocol, diplomacy, public communication, security, communicology or scholarly-infrastructure fields pass into downstream products."
+  }
 }

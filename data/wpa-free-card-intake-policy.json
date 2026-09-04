@@ -1,0 +1,51 @@
+{
+  "schema": "wpa-free-card-intake-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-04",
+  "name": "WPA Free Card Pre-Registry Intake Policy",
+  "status": "PRE_REGISTRY_INTEREST_ROUTE_ACTIVE_MEMBERSHIP_INACTIVE",
+  "purpose": "Provide a privacy-minimised expression-of-interest route for people who want to be considered for the future WPA Free Card while the authoritative membership registry is not yet active.",
+  "current_transport": {
+    "mode": "USER_INITIATED_EMAIL_FALLBACK",
+    "server_side_form_backend": "NOT_CONNECTED",
+    "automatic_membership_creation": "DISABLED",
+    "automatic_public_id_generation": "DISABLED",
+    "automatic_qr_generation": "DISABLED",
+    "automatic_marketing_enrolment": "DISABLED"
+  },
+  "minimum_requested_fields": [
+    "name",
+    "email",
+    "country_or_region_optional",
+    "professional_or_academic_context_optional",
+    "areas_of_interest_optional"
+  ],
+  "consent_contract": {
+    "membership_status_acknowledgement": "REQUIRED",
+    "future_updates_consent": "OPTIONAL_SEPARATE_CHOICE",
+    "no_bundled_marketing_consent": true,
+    "withdrawal_route": "Reply by email requesting removal from the pre-registry interest list."
+  },
+  "privacy_rules": [
+    "Do not request government identifiers, payment data, passwords, sensitive-category data or unnecessary personal data.",
+    "An expression of interest is not membership and creates no entitlement, credential, benefit or partnership status.",
+    "When a real membership registry/backend is activated, publish the applicable privacy notice, retention rules, access controls and deletion process before migrating or collecting registry data.",
+    "Do not publish applicant names or email addresses in public repositories or public verification surfaces."
+  ],
+  "human_gate": {
+    "recording_interest": "USER_INITIATED",
+    "membership_activation": "REQUIRED",
+    "public_id_or_qr": "REQUIRES_AUTHORISED_REGISTRY_RECORD",
+    "premium_upgrade": "SEPARATE_FUTURE_COMMERCIAL_ACTIVATION",
+    "merit_or_faculty_status": "SEPARATE_HUMAN_APPOINTMENT",
+    "partnership_status": "SEPARATE_DUE_DILIGENCE_AND_APPROVAL"
+  },
+  "public_route": "/wpa-free-card-interest.html",
+  "related": [
+    "/data/wpa-free-card-growth-model.json",
+    "/data/wpa-public-square-operating-model.json",
+    "/wpa-open-library.html",
+    "/wpa-card.html",
+    "/privacy.html"
+  ]
+}
