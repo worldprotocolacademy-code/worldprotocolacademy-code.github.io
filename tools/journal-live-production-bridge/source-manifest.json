@@ -1,5 +1,5 @@
 {
-  "schema": "wpa-journal-live-worker-source-manifest/1.1",
+  "schema": "wpa-journal-live-worker-source-manifest/1.2",
   "worker": "wpa-live-production-bridge",
   "capture_run_id": 33900898694,
   "capture_artifact_id": 9947947694,
@@ -11,12 +11,25 @@
   "deployed_index_js_sha256": "e096506ff99091d2508d1e6bef872d3efe24bdfdb2688bb7f00221be1c67d51f",
   "current_runtime_version_label": "11.4.0",
   "current_active_version_id": "1aa812ea-6d6a-4855-9e4b-e22cbe79c3f3",
-  "failed_canary_run_id": 33903741037,
-  "failed_canary_version_id": "b8b4883c-8348-4159-ab7f-2b6a61f4556b",
-  "failed_canary_version_label": "11.5.0",
-  "failed_canary_index_js_sha256": "703431f29299a9be955036782435036e42c7dc18a761168d4e04cd882205dc1b",
-  "failed_canary_reason": "same-source title/day duplicate leaked after LIMIT; automatic rollback to previous active version succeeded",
-  "recovery_target_version_label": "11.5.1",
-  "recovery_expected_index_js_sha256": "2c9d2d25a92e6ea2da7fbf6670eb2e74f8b21219b440088df791d263ece7050a",
-  "source_publication_policy": "Exact production source remains in a controlled workflow artifact. Recovery is hash-gated against the verified failed canary bundle; no private runtime source is published in this public repository."
+  "failed_canaries": [
+    {
+      "run_id": 33903741037,
+      "version_id": "b8b4883c-8348-4159-ab7f-2b6a61f4556b",
+      "version_label": "11.5.0",
+      "index_js_sha256": "703431f29299a9be955036782435036e42c7dc18a761168d4e04cd882205dc1b",
+      "reason": "same-source title/day duplicate observed during zero-percent canary; automatic rollback succeeded"
+    },
+    {
+      "run_id": 33907937349,
+      "version_id": "da9bf14a-34f3-44d7-9051-70c4b5209b6f",
+      "version_label": "11.5.1",
+      "index_js_sha256": "2c9d2d25a92e6ea2da7fbf6670eb2e74f8b21219b440088df791d263ece7050a",
+      "reason": "same duplicate observed before endpoint-level version provenance was available; automatic rollback succeeded"
+    }
+  ],
+  "recovery_target_version_label": "11.5.2",
+  "recovery_base_version_id": "da9bf14a-34f3-44d7-9051-70c4b5209b6f",
+  "recovery_base_index_js_sha256": "2c9d2d25a92e6ea2da7fbf6670eb2e74f8b21219b440088df791d263ece7050a",
+  "recovery_policy": "Build deterministically from the exact verified v11.5.1 candidate plus the tracked v11.5.2 delta; verify the uploaded source against the locally built SHA-256; require X-WPA-Bridge-Version 11.5.2 on every canary endpoint before evaluating data; promote only after full zero-percent canary pass; rollback automatically on failure.",
+  "source_publication_policy": "Exact production source remains in a controlled workflow artifact and is not published in this public repository."
 }
