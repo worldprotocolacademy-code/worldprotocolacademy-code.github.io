@@ -46,8 +46,10 @@ jobs:
           grep -q 'wpa-home-pe-icon' /tmp/home-dom.html
           grep -q 'wpaHomeAudioVideoCard' /tmp/home-dom.html
           grep -q 'wpa-public-vs-fab' /tmp/home-dom.html
-          curl --fail --silent http://127.0.0.1:8000/professional-english.html | grep -q 'module-icon pe-module-icon'
-          curl --fail --silent http://127.0.0.1:8000/student-desk/ | grep -qi 'noindex'
+          curl --fail --silent --show-error http://127.0.0.1:8000/professional-english.html --output /tmp/professional-english.html
+          grep -q 'module-icon pe-module-icon' /tmp/professional-english.html
+          curl --fail --silent --show-error http://127.0.0.1:8000/student-desk/ --output /tmp/student-desk.html
+          grep -qi 'noindex' /tmp/student-desk.html
 
       - name: Canonical truth validation
         run: |
