@@ -131,21 +131,36 @@ jobs:
           python3 - <<'PY'
           import json
           from pathlib import Path
+
           payload = json.loads(Path('/tmp/deployments.json').read_text())
           if payload.get('success') is not True:
               errors = payload.get('errors') or []
               safe = [{'code': e.get('code'), 'message': e.get('message')} for e in errors]
               raise SystemExit(f'Cloudflare deployments API failed: {safe}')
-          result = payload.get('result') or []
-          print(f"Deployment records: {len(result)}")
-          for item in result[:3]:
+
+          result = payload.get('result')
+          if isinstance(result, list):
+              deployments = result
+          elif isinstance(result, dict):
+              wrapped = result.get('deployments')
+              deployments = wrapped if isinstance(wrapped, list) else [result]
+          else:
+              deployments = []
+
+          print(f"Deployment records: {len(deployments)}")
+          for item in deployments[:3]:
+              if not isinstance(item, dict):
+                  continue
               versions = item.get('versions') or []
+              if isinstance(versions, dict):
+                  versions = [versions]
               safe_versions = [
                   {
                       'version_id': v.get('version_id'),
                       'percentage': v.get('percentage'),
                   }
                   for v in versions
+                  if isinstance(v, dict)
               ]
               print(f"Deployment id={item.get('id')} versions={safe_versions}")
           PY
