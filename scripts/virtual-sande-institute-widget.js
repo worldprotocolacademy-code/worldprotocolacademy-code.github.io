@@ -176,10 +176,20 @@
     }
   }
 
+  function loadCampaignRuntime() {
+    if (document.getElementById('wpa-institute-campaign-runtime')) return;
+    var script = document.createElement('script');
+    script.id = 'wpa-institute-campaign-runtime';
+    script.src = '/scripts/wpa-institute-campaign.js?v=20260905-1';
+    script.defer = true;
+    document.head.appendChild(script);
+  }
+
   function mount() {
     style();
     removePn003TopbarPromo();
     normalizeInstituteHeader();
+    loadCampaignRuntime();
     window.setTimeout(normalizeInstituteHeader, 250);
     if (document.getElementById('wpaInstVsFab')) return;
     var t = copy();
