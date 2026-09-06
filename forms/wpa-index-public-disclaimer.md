@@ -8,7 +8,7 @@
 
 ## Current object and status
 
-The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV3**.
+The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV4**.
 
 Current dataset facts are governed by the canonical status source and presently include:
 

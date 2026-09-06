@@ -1,5 +1,13 @@
 # WPA Institute Ecosystem — CHANGELOG
 
+## 2026-09-06 — Master List REV4 / OICP integration
+
+- Added `A026` — International Organization of Ceremonial and Protocol (OICP) to Group A.
+- OICP verification status: primary source + independent institutional corroboration.
+- Canonical arithmetic updated to 162 total / 161 external / 156 distinct external institutions.
+- Group A updated to 26 records; relevance Level A updated to 31 records.
+- REV3 preserved as the immediate archive predecessor.
+
 ## Master List REV3 · 27 August 2026
 
 - Promoted `v1.0-CORRECTED-4F-REV3` as the current Master List candidate while preserving REV2 as archive.
