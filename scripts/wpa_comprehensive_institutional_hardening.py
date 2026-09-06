@@ -130,7 +130,7 @@ updates = {
  'hl4':'<strong>WPAWS</strong>17 executive agent roles за академска и институционална продукција',
  'hl5':'<strong>Institute</strong>шест домени, специјализирани labs и професионална практика',
  'hl6':'<strong>Agentic Operations</strong>до 80 bounded tactical seats + Council-54 candidate registry',
- 'hl7':'<strong>Learning & Certification</strong>контролирана application area со човечко одобрување',
+ 'hl7':'<strong>Learning & Certification — во развој</strong>контролирана област за учење и оценување; официјално издавање сертификати не е активно',
  'platformP':'WPA е институционалната рамка; WPAWS е работниот мотор; Virtual Sande е оркестратор и AI интерфејс; Protocolometry, Academic Search, WPA Watch и специјализираните labs ја градат research/evidence инфраструктурата.',
  'aboutH3':'Истражување, доказ и практика во еден управуван дигитален институт.',
  'aboutP':'World Protocol Academy е повеќеслојна истражувачка, авторска, аналитичка, професионална и образовна платформа што ги поврзува Protocolometry, WPAWS, Virtual Sande, публикации, специјализирани labs и човечки управувани AI workflow-и.',
