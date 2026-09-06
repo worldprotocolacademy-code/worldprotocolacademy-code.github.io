@@ -1,0 +1,105 @@
+name: WPA Public Certification Clarity
+
+on:
+  push:
+    branches:
+      - 'fix/public-certification-clarity-20260906'
+    paths:
+      - '.github/workflows/wpa-public-certification-clarity.yml'
+      - 'index.html'
+      - 'en/index.html'
+      - 'mk.json'
+      - 'en.json'
+      - 'index/mk.json'
+      - 'index/en.json'
+      - 'locales/index/mk.json'
+      - 'locales/index/en.json'
+      - 'locales/locales/index/mk.json'
+      - 'locales/locales/index/en.json'
+      - 'scripts/wpa_comprehensive_institutional_hardening.py'
+
+permissions:
+  contents: write
+
+jobs:
+  enforce-public-boundary:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clarify certification status
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          MK = '<strong>Learning & Certification — во развој</strong>контролирана област за учење и оценување; официјално издавање сертификати не е активно'
+          EN = '<strong>Learning & Certification — development only</strong>controlled learning and assessment area; official certificate issuance is not active'
+
+          locale_files = {
+              'mk.json': MK,
+              'index/mk.json': MK,
+              'locales/index/mk.json': MK,
+              'locales/locales/index/mk.json': MK,
+              'en.json': EN,
+              'index/en.json': EN,
+              'locales/index/en.json': EN,
+              'locales/locales/index/en.json': EN,
+          }
+
+          for rel, value in locale_files.items():
+              p = Path(rel)
+              if not p.exists():
+                  continue
+              data = json.loads(p.read_text(encoding='utf-8'))
+              if 'hl7' in data:
+                  data['hl7'] = value
+                  p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          old = '<li data-i18n="hl2"><strong>Сертификација</strong>оценување, прогресија и структурирани сертификатски патеки</li>'
+          new = '<li data-i18n="hl2"><strong>Сертификациски патеки — во развој</strong>оценување, прогресија и структурирани патеки; официјално издавање сертификати не е активно</li>'
+          text = text.replace(old, new)
+          p.write_text(text, encoding='utf-8')
+
+          p = Path('en/index.html')
+          if p.exists():
+              text = p.read_text(encoding='utf-8')
+              old = '<div class="hero-item"><strong>Learning &amp; Certification</strong>A controlled professional application area with human authorisation.</div>'
+              new = '<div class="hero-item"><strong>Learning &amp; Certification — development only</strong>Controlled learning and assessment area; official certificate issuance is not active.</div>'
+              text = text.replace(old, new)
+              p.write_text(text, encoding='utf-8')
+
+          p = Path('scripts/wpa_comprehensive_institutional_hardening.py')
+          if p.exists():
+              text = p.read_text(encoding='utf-8')
+              text = text.replace("'hl7':'<strong>Learning & Certification</strong>контролирана application area со човечко одобрување'", "'hl7':'<strong>Learning & Certification — во развој</strong>контролирана област за учење и оценување; официјално издавање сертификати не е активно'")
+              text = text.replace("'hl7':'<strong>Learning & Certification</strong>controlled application area with human authorisation'", "'hl7':'<strong>Learning & Certification — development only</strong>controlled learning and assessment area; official certificate issuance is not active'")
+              p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate
+        run: |
+          for f in mk.json en.json index/mk.json index/en.json locales/index/mk.json locales/index/en.json locales/locales/index/mk.json locales/locales/index/en.json; do
+            if [ -f "$f" ]; then python3 -m json.tool "$f" >/dev/null; fi
+          done
+          grep -F 'Сертификациски патеки — во развој' index.html >/dev/null
+          grep -F 'Learning &amp; Certification — development only' en/index.html >/dev/null
+          git diff --check
+
+      - name: Commit clarification
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html en/index.html mk.json en.json index/mk.json index/en.json locales/index/mk.json locales/index/en.json locales/locales/index/mk.json locales/locales/index/en.json scripts/wpa_comprehensive_institutional_hardening.py
+          if git diff --cached --quiet; then
+            echo "No changes required."
+          else
+            git commit -m "Clarify certification pathways as development-only"
+            git push origin HEAD:fix/public-certification-clarity-20260906
+          fi
