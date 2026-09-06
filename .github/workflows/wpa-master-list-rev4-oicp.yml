@@ -1,0 +1,70 @@
+name: WPA Master List REV4 OICP Integration
+
+on:
+  push:
+    branches: [feat/master-list-rev4-oicp-20260906]
+    paths:
+      - 'scripts/wpa-master-list-rev4-oicp.py'
+      - '.github/workflows/wpa-master-list-rev4-oicp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build REV4 and run QA
+        run: python scripts/wpa-master-list-rev4-oicp.py
+
+      - name: Validate generated outputs
+        run: |
+          git diff --check
+          test -f data/global-institutions/v1.0-corrected-4f-rev4/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV4.json
+          test -f data/global-institutions/v1.0-corrected-4f-rev4/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV4.csv
+          test -f data/global-institutions/v1.0-corrected-4f-rev4/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV4.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev4/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV4.md
+          grep -q 'International Organization of Ceremonial and Protocol (OICP)' data/global-institutions/v1.0-corrected-4f-rev4/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV4.json
+          grep -q 'statTotal">162' wpa-global-institutions-master-list.html
+          grep -q 'statExternal">161' wpa-global-institutions-master-list.html
+          grep -q 'statUnique">156' wpa-global-institutions-master-list.html
+
+      - name: Commit generated REV4 outputs
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            MASTER-LIST-CANONICAL.md \
+            CHANGELOG.md \
+            README.md \
+            institute.html \
+            intelligence-center.html \
+            wpa-live-intelligence-feed.html \
+            wpa-global-institutions-master-list.html \
+            master-list-verification.html \
+            wpa-metrics-status.html \
+            wpa_institutions_master_list_v1.0.html \
+            data/master-list-verification-status.json \
+            data/wpa-canonical-metrics-status.json \
+            data/global-institutions/v1.0-corrected-4f-rev4 \
+            tools/data/institutions-master-rev4.json \
+            tools/assets/wpa-five-engines.js \
+            tools/qa-institute.sh \
+            forms/wpa-index-public-disclaimer.md
+          git commit -m "Integrate OICP into Master List REV4"
+          git push origin HEAD:feat/master-list-rev4-oicp-20260906
