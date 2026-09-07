@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-import json,re
+import hashlib,json,re
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+EXPECTED_SAFE8Y_MANIFEST_BLOB='ca44adf37bb607b945e01dc0e0c931912437ffd2'
+def git_blob_sha(data):
+    return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
 activation=json.loads((ROOT/'data/language-activation.json').read_text(encoding='utf-8'))
 assert activation['policy_mode']=='fail_closed'
 surfaces=activation['public_surface_routes']
@@ -11,11 +14,26 @@ if is_public:
     status=activation['public_routes']['de']['status']
     assert status in ('human_gated_public_pilot_candidate','human_gated_public_pilot')
     if status=='human_gated_public_pilot':
-        manifest=json.loads((ROOT/'data/human-gates/de-safe8y-candidate.json').read_text(encoding='utf-8'))
+        manifest_path=ROOT/'data/human-gates/de-safe8y-candidate.json'
+        manifest_bytes=manifest_path.read_bytes()
+        assert git_blob_sha(manifest_bytes)==EXPECTED_SAFE8Y_MANIFEST_BLOB, 'historical SAFE-8Y candidate manifest byte drift'
+        manifest=json.loads(manifest_bytes.decode('utf-8'))
+        receipt=json.loads((ROOT/'data/human-gates/de-safe8y-production-receipt.json').read_text(encoding='utf-8'))
         assert manifest['stage']=='SAFE-8Y' and manifest['public_activation_scope'] is True
         assert manifest['status']=='candidate_pending_exact_head_human_authority'
         assert manifest['predecessor_safe8x_approved_exact']=='1b82709755917d9a175b049fc6cca3e801096d91'
         assert manifest['predecessor_safe8x_merge'] is False
+        assert receipt['stage']=='SAFE-8Y' and receipt['human_authority_granted'] is True
+        assert receipt['approved_exact_head']=='5062214a378326edb1e24503bab4707cd5c8ec11'
+        assert receipt['merge_sha']=='558901855384047853571006100d0cf378369a35'
+        assert receipt['merge_verified'] is True
+        assert receipt['pages_deployment']['head_sha']==receipt['merge_sha']
+        assert receipt['pages_deployment']['conclusion']=='success'
+        assert receipt['candidate_manifest_immutable'] is True
+        assert receipt['candidate_manifest_git_blob_sha']==EXPECTED_SAFE8Y_MANIFEST_BLOB
+        assert receipt['independent_custom_domain_http_verification']=='pending_environment_dns_constraint'
+        assert receipt['live_claim']=='not_independently_verified_from_current_runtime'
+        assert receipt['live_transition_requires_separate_human_gate'] is True
     else:
         manifest=json.loads((ROOT/'data/human-gates/de-safe8x-candidate.json').read_text(encoding='utf-8'))
         assert manifest['stage']=='SAFE-8X' and manifest['public_activation_scope'] is True
@@ -75,4 +93,4 @@ hub_surface_hrefs={h for h in hub_hrefs if h.startswith('/languages/de/') and no
 assert not (expected_routes-hub_surface_hrefs), f'German surface index missing routes: {sorted(expected_routes-hub_surface_hrefs)}'
 assert not (hub_surface_hrefs-expected_routes), f'German surface index contains unregistered routes: {sorted(hub_surface_hrefs-expected_routes)}'
 assert len(hub_surface_hrefs)==57
-print(f'German current-state gate OK: 57/57 surfaces; namespace-contained; public={is_public}; indexing policy enforced.')
+print(f'German current-state gate OK: 57/57 surfaces; namespace-contained; public={is_public}; immutable SAFE-8Y blob and fail-closed LIVE boundary enforced.')
