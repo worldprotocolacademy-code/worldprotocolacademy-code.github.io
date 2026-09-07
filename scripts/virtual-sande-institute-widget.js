@@ -15,46 +15,43 @@
 
   function mkText() {
     return {
-      title: 'Virtual Sande AI',
-      subtitle: 'WPA Institute академски асистент',
+      title: 'Virtual Sande AI', subtitle: 'WPA Institute академски асистент',
       welcome: 'Добредојдовте. Јас сум Virtual Sande AI, академски асистент на Институтот при Светската академија за протокол.',
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
-      send: 'Испрати',
-      clear: 'Исчисти',
-      error: 'Во моментот не можам да одговорам. Обидете се повторно.',
-      label: 'Отвори Virtual Sande AI',
-      close: 'Затвори',
-      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии'
+      send: 'Испрати', clear: 'Исчисти', error: 'Во моментот не можам да одговорам. Обидете се повторно.',
+      label: 'Отвори Virtual Sande AI', close: 'Затвори',
+      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+      relatedTitle: 'Поврзани WPA модули',
+      relatedIntro: 'Брзи врски кон клучни јавни ресурси што ја дополнуваат Институтската страница.',
+      stress: 'Protocol Stress-Test', certification: 'Certification FAQ', english: 'Professional English', card: 'WPA Card'
     };
   }
 
   function enText() {
     return {
-      title: 'Virtual Sande AI',
-      subtitle: 'WPA Institute academic assistant',
+      title: 'Virtual Sande AI', subtitle: 'WPA Institute academic assistant',
       welcome: 'Welcome. I am Virtual Sande AI, the academic assistant of the World Protocol Academy Institute.',
       placeholder: 'Ask about protocol, diplomacy, communication or security...',
-      send: 'Send',
-      clear: 'Clear',
-      error: 'I cannot respond at the moment. Please try again.',
-      label: 'Open Virtual Sande AI',
-      close: 'Close',
-      instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies'
+      send: 'Send', clear: 'Clear', error: 'I cannot respond at the moment. Please try again.',
+      label: 'Open Virtual Sande AI', close: 'Close',
+      instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+      relatedTitle: 'Related WPA Modules',
+      relatedIntro: 'Quick links to key public resources that complement the Institute page.',
+      stress: 'Protocol Stress-Test', certification: 'Certification FAQ', english: 'Professional English', card: 'WPA Card'
     };
   }
 
   function frText() {
     return {
-      title: 'Virtual Sande AI',
-      subtitle: 'Assistant académique du WPA Institute',
+      title: 'Virtual Sande AI', subtitle: 'Assistant académique du WPA Institute',
       welcome: 'Bienvenue. Je suis Virtual Sande AI, l’assistant académique de l’Institut de la World Protocol Academy.',
       placeholder: 'Posez une question sur le protocole, la diplomatie, la communication ou la sécurité...',
-      send: 'Envoyer',
-      clear: 'Effacer',
-      error: 'Je ne peux pas répondre pour le moment. Veuillez réessayer.',
-      label: 'Ouvrir Virtual Sande AI',
-      close: 'Fermer',
-      instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité'
+      send: 'Envoyer', clear: 'Effacer', error: 'Je ne peux pas répondre pour le moment. Veuillez réessayer.',
+      label: 'Ouvrir Virtual Sande AI', close: 'Fermer',
+      instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
+      relatedTitle: 'Modules WPA associés',
+      relatedIntro: 'Liens rapides vers les principales ressources publiques qui complètent la page de l’Institut.',
+      stress: 'Protocol Stress-Test', certification: 'Certification FAQ', english: 'Professional English', card: 'WPA Card'
     };
   }
 
@@ -91,7 +88,14 @@
       '.wpa-institute-brand .brand-mark{font-size:0!important;line-height:0!important}',
       '.wpa-institute-brand .brand-text{writing-mode:horizontal-tb!important;text-orientation:mixed!important}',
       '.wpa-institute-brand .wpa-institute-name-current{display:block!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important}',
-      '@media(max-width:520px){.wpa-inst-vs-fab{right:14px;bottom:14px;width:58px;height:58px}.wpa-inst-vs-panel{right:14px;bottom:82px;height:calc(100vh - 104px)}}'
+      '.wpa-related-modules-runtime{padding:48px 32px;background:#f5f0e0;border-top:1px solid #d8d2bc;border-bottom:1px solid #d8d2bc}',
+      '.wpa-related-modules-inner{max-width:1180px;margin:0 auto}',
+      '.wpa-related-modules-runtime h2{font-family:Georgia,serif;color:#0d1f3c;font-size:30px;margin:0 0 8px}',
+      '.wpa-related-modules-runtime p{color:#334b5e;margin:0 0 18px;line-height:1.65}',
+      '.wpa-related-modules-links{display:flex;flex-wrap:wrap;gap:10px}',
+      '.wpa-related-modules-links a{display:inline-flex;align-items:center;justify-content:center;padding:10px 15px;border:1px solid #c9a84c;background:#fff;color:#0d1f3c;text-decoration:none;font:700 12px/1.2 Inter,system-ui,sans-serif;border-radius:4px}',
+      '.wpa-related-modules-links a:hover{background:#0d1f3c;color:#f5e6b8}',
+      '@media(max-width:520px){.wpa-inst-vs-fab{right:14px;bottom:14px;width:58px;height:58px}.wpa-inst-vs-panel{right:14px;bottom:82px;height:calc(100vh - 104px)}.wpa-related-modules-runtime{padding:34px 20px}.wpa-related-modules-links a{width:100%}}'
     ].join('');
     document.head.appendChild(s);
   }
@@ -121,9 +125,56 @@
       mark.appendChild(logo);
     }
     var text = brand.querySelector('.brand-text');
-    if (text) {
-      text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-current" lang="' + lang + '">' + t.instituteName + '</span>';
+    if (text) text.innerHTML = '<span class="wpa-institute-label">WPA Institute</span><span class="wpa-institute-name-current" lang="' + lang + '">' + t.instituteName + '</span>';
+  }
+
+  function normalizePublicCouncilTerminology() {
+    if (!document.body || !document.createTreeWalker) return;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      var parent = node.parentElement;
+      if (!parent || /^(SCRIPT|STYLE|CODE|PRE)$/i.test(parent.tagName)) continue;
+      var value = node.nodeValue || '';
+      var next = value
+        .replace(/up to 80 bounded Tactical-Operational Seats/g, 'up to 80 bounded workflow seats')
+        .replace(/up to 80 bounded tactical-operational seats/g, 'up to 80 bounded workflow seats')
+        .replace(/Up to 80 tactical-operational seats\./g, 'Up to 80 bounded workflow seats.');
+      if (next !== value) node.nodeValue = next;
     }
+  }
+
+  function placeRelatedModules() {
+    if (document.getElementById('wpa-related-modules-runtime')) return;
+    var t = copy();
+    var section = document.createElement('section');
+    section.id = 'wpa-related-modules-runtime';
+    section.className = 'wpa-related-modules-runtime';
+    section.setAttribute('aria-labelledby', 'wpa-related-modules-title');
+    var inner = document.createElement('div');
+    inner.className = 'wpa-related-modules-inner';
+    var title = document.createElement('h2');
+    title.id = 'wpa-related-modules-title';
+    title.textContent = t.relatedTitle;
+    var intro = document.createElement('p');
+    intro.textContent = t.relatedIntro;
+    var links = document.createElement('div');
+    links.className = 'wpa-related-modules-links';
+    [
+      ['/wpa-protocol-stress-test.html', t.stress],
+      ['/certification.html#faq', t.certification],
+      ['/professional-english.html', t.english],
+      ['/wpa-card.html', t.card]
+    ].forEach(function (item) {
+      var a = document.createElement('a');
+      a.href = item[0];
+      a.textContent = item[1];
+      links.appendChild(a);
+    });
+    inner.appendChild(title); inner.appendChild(intro); inner.appendChild(links); section.appendChild(inner);
+    var footer = document.querySelector('footer');
+    if (footer && footer.parentNode) footer.parentNode.insertBefore(section, footer);
+    else document.body.appendChild(section);
   }
 
   function addMessage(text, who) {
@@ -134,9 +185,7 @@
     var bubble = document.createElement('div');
     bubble.className = 'wpa-inst-vs-bubble';
     bubble.textContent = String(text || '');
-    row.appendChild(bubble);
-    msgs.appendChild(row);
-    msgs.scrollTop = msgs.scrollHeight;
+    row.appendChild(bubble); msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight;
   }
 
   function answerFrom(data) {
@@ -149,89 +198,36 @@
     var input = document.getElementById('wpaInstVsInput');
     var q = input ? input.value.trim() : '';
     if (!q) return;
-    busy = true;
-    input.value = '';
-    addMessage(q, 'user');
-    history.push({ role: 'user', content: q });
-    var btn = document.getElementById('wpaInstVsSend');
-    if (btn) btn.disabled = true;
+    busy = true; input.value = ''; addMessage(q, 'user'); history.push({ role: 'user', content: q });
+    var btn = document.getElementById('wpaInstVsSend'); if (btn) btn.disabled = true;
     try {
-      var response = await fetch(API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: q, question: q, query: q, history: history.slice(-6), language: String(document.documentElement.lang || 'mk') })
-      });
+      var response = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, question: q, query: q, history: history.slice(-6), language: String(document.documentElement.lang || 'mk') }) });
       if (!response.ok) throw new Error('HTTP ' + response.status);
-      var data = await response.json();
-      var answer = answerFrom(data);
-      if (!answer) throw new Error('Empty answer');
-      addMessage(answer, 'bot');
-      history.push({ role: 'assistant', content: answer });
-    } catch (error) {
-      addMessage(copy().error, 'bot');
-    } finally {
-      busy = false;
-      if (btn) btn.disabled = false;
-      if (input) input.focus();
-    }
+      var data = await response.json(); var answer = answerFrom(data); if (!answer) throw new Error('Empty answer');
+      addMessage(answer, 'bot'); history.push({ role: 'assistant', content: answer });
+    } catch (error) { addMessage(copy().error, 'bot'); }
+    finally { busy = false; if (btn) btn.disabled = false; if (input) input.focus(); }
   }
 
   function loadCampaignRuntime() {
     if (document.getElementById('wpa-institute-campaign-runtime')) return;
-    var script = document.createElement('script');
-    script.id = 'wpa-institute-campaign-runtime';
-    script.src = '/scripts/wpa-institute-campaign.js?v=20260905-1';
-    script.defer = true;
-    document.head.appendChild(script);
+    var script = document.createElement('script'); script.id = 'wpa-institute-campaign-runtime'; script.src = '/scripts/wpa-institute-campaign.js?v=20260905-1'; script.defer = true; document.head.appendChild(script);
   }
 
   function mount() {
-    style();
-    removePn003TopbarPromo();
-    normalizeInstituteHeader();
-    loadCampaignRuntime();
-    window.setTimeout(normalizeInstituteHeader, 250);
+    style(); removePn003TopbarPromo(); normalizeInstituteHeader(); normalizePublicCouncilTerminology(); placeRelatedModules(); loadCampaignRuntime();
+    window.setTimeout(function(){ normalizeInstituteHeader(); normalizePublicCouncilTerminology(); placeRelatedModules(); }, 250);
     if (document.getElementById('wpaInstVsFab')) return;
     var t = copy();
-    var panel = document.createElement('section');
-    panel.id = 'wpaInstVsPanel';
-    panel.className = 'wpa-inst-vs-panel';
-    panel.setAttribute('aria-label', t.title);
+    var panel = document.createElement('section'); panel.id = 'wpaInstVsPanel'; panel.className = 'wpa-inst-vs-panel'; panel.setAttribute('aria-label', t.title);
     panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="' + t.close + '">×</button></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
-    var fab = document.createElement('button');
-    fab.id = 'wpaInstVsFab';
-    fab.className = 'wpa-inst-vs-fab';
-    fab.type = 'button';
-    fab.setAttribute('aria-label', t.label);
-    fab.setAttribute('aria-expanded', 'false');
-    fab.innerHTML = '<img src="/assets/img/logo.svg" alt="" width="64" height="64">';
-    document.body.appendChild(panel);
-    document.body.appendChild(fab);
-    addMessage(t.welcome, 'bot');
-    fab.addEventListener('click', function () {
-      var open = panel.classList.toggle('open');
-      fab.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) document.getElementById('wpaInstVsInput').focus();
-    });
-    panel.querySelector('.wpa-inst-vs-close').addEventListener('click', function () {
-      panel.classList.remove('open');
-      fab.setAttribute('aria-expanded', 'false');
-    });
-    document.getElementById('wpaInstVsForm').addEventListener('submit', function (event) {
-      event.preventDefault();
-      send();
-    });
-    document.getElementById('wpaInstVsInput').addEventListener('keydown', function (event) {
-      if (event.key === 'Enter' && !event.shiftKey) {
-        event.preventDefault();
-        send();
-      }
-    });
-    document.getElementById('wpaInstVsClear').addEventListener('click', function () {
-      history = [];
-      document.getElementById('wpaInstVsMsgs').innerHTML = '';
-      addMessage(copy().welcome, 'bot');
-    });
+    var fab = document.createElement('button'); fab.id = 'wpaInstVsFab'; fab.className = 'wpa-inst-vs-fab'; fab.type = 'button'; fab.setAttribute('aria-label', t.label); fab.setAttribute('aria-expanded', 'false'); fab.innerHTML = '<img src="/assets/img/logo.svg" alt="" width="64" height="64">';
+    document.body.appendChild(panel); document.body.appendChild(fab); addMessage(t.welcome, 'bot');
+    fab.addEventListener('click', function () { var open = panel.classList.toggle('open'); fab.setAttribute('aria-expanded', open ? 'true' : 'false'); if (open) document.getElementById('wpaInstVsInput').focus(); });
+    panel.querySelector('.wpa-inst-vs-close').addEventListener('click', function () { panel.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); });
+    document.getElementById('wpaInstVsForm').addEventListener('submit', function (event) { event.preventDefault(); send(); });
+    document.getElementById('wpaInstVsInput').addEventListener('keydown', function (event) { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); send(); } });
+    document.getElementById('wpaInstVsClear').addEventListener('click', function () { history = []; document.getElementById('wpaInstVsMsgs').innerHTML = ''; addMessage(copy().welcome, 'bot'); });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
