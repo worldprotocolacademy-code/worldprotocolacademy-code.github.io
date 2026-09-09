@@ -29,7 +29,8 @@ except ImportError as exc:
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE_HOST = "worldprotocolacademy.mk"
-PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-2"></script>'
+PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-3"></script>'
+ANALYTICS_SCRIPT = '<script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>'
 RASTER_SUFFIXES = {".png", ".jpg", ".jpeg"}
 SKIP_DIRS = {".git", "node_modules", "vendor"}
 IMG_RE = re.compile(r"<img\b[^>]*>", re.I | re.S)
@@ -196,12 +197,34 @@ def optimize_img(page: Path, tag: str, index: int, quality: int, force: bool, st
 
 
 def inject_performance_script(text: str) -> tuple[str, bool]:
+    original = text
+    text = re.sub(
+        r'(/scripts/wpa-performance\.js)(?:\?[^"\']*)?',
+        r'\1?v=20260909-3',
+        text,
+        flags=re.I,
+    )
     if "wpa-performance.js" in text:
-        return text, False
+        return text, text != original
     match = re.search(r"</head\s*>", text, flags=re.I)
     if not match:
         return text, False
     return text[:match.start()] + PERFORMANCE_SCRIPT + "\n" + text[match.start():], True
+
+
+def inject_analytics_script(text: str) -> tuple[str, bool]:
+    original = text
+    text = re.sub(
+        r'<script\b[^>]*\bsrc=["\']/scripts/wpa-analytics\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*',
+        '',
+        text,
+        flags=re.I,
+    )
+    head = re.search(r"<head\b[^>]*>", text, flags=re.I)
+    if not head:
+        return original, False
+    text = text[:head.end()] + "\n" + ANALYTICS_SCRIPT + text[head.end():]
+    return text, text != original
 
 
 def optimize_page(page: Path, quality: int, force: bool, stats: dict[str, int]) -> bool:
@@ -219,7 +242,10 @@ def optimize_page(page: Path, quality: int, force: bool, stats: dict[str, int]) 
         return value
 
     updated = IMG_RE.sub(replace, original)
+    updated, analytics_injected = inject_analytics_script(updated)
     updated, injected = inject_performance_script(updated)
+    if analytics_injected:
+        stats["scripts_injected"] += 1
     if injected:
         stats["scripts_injected"] += 1
     if updated != original:

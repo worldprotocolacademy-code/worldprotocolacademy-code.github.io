@@ -46,7 +46,7 @@ def main():
 
     text = text.replace('<script id="wpa-responsive-mobile-script">',
                         '<script id="wpa-responsive-mobile-script" type="application/x-wpa-disabled">', 1)
-    text = text.replace('/scripts/wpa-performance.js?v=1.0', '/scripts/wpa-performance.js?v=20260909-2', 1)
+    text = text.replace('/scripts/wpa-performance.js?v=1.0', '/scripts/wpa-performance.js?v=20260909-3', 1)
 
     # Post-conditions: fail instead of committing a partially corrected homepage.
     if "this.parentElement.innerHTML='<spa" in text:
@@ -56,7 +56,7 @@ def main():
         raise SystemExit("Homepage language selector is not MK/EN Phase 1")
     if text.count('id="wpa-mobile-drawer-script-v14"') != 1:
         raise SystemExit("Expected exactly one active final mobile drawer")
-    if '/scripts/wpa-performance.js?v=20260909-2' not in text:
+    if '/scripts/wpa-performance.js?v=20260909-3' not in text:
         raise SystemExit("Current performance module version is missing")
 
     if text != original:

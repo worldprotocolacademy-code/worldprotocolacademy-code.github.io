@@ -10,7 +10,7 @@ import normalize_media_markup
 import optimize_site_media as optimizer
 
 SAFE_IMG_RE = re.compile(r'<img\b(?:[^>\'\"]+|\'[^\']*\'|\"[^\"]*\")*>', re.I | re.S)
-optimizer.PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-2"></script>'
+optimizer.PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-3"></script>'
 
 
 def safe_optimize_page(page, quality, force, stats):
