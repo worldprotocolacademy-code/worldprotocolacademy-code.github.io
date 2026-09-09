@@ -18,58 +18,41 @@ jobs:
           ref: fix/ga4-global-tag-rollout-2026-09-09
           fetch-depth: 0
 
-      - name: Install consent-aware analytics bootstrap on every HTML page
+      - name: Install consent-aware GA4 bootstrap site-wide
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
 
-          ROOT = Path('.')
-          ANALYTICS_SCRIPT = '<script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>'
-          PERFORMANCE_VERSION = '20260909-3'
-          SKIP_DIRS = {'.git', 'node_modules', 'vendor'}
-
-          analytics_re = re.compile(
-              r'<script\b[^>]*\bsrc=["\']/scripts/wpa-analytics\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>',
-              re.I,
-          )
-          performance_re = re.compile(
-              r'(<script\b[^>]*\bsrc=["\']/scripts/wpa-performance\.js)(?:\?[^"\']*)?(["\'][^>]*>\s*</script>)',
-              re.I,
-          )
+          analytics_script = '<script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>'
+          analytics_re = re.compile(r'<script\b[^>]*\bsrc=["\']/scripts/wpa-analytics\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>\s*', re.I)
+          performance_re = re.compile(r'(<script\b[^>]*\bsrc=["\']/scripts/wpa-performance\.js)(?:\?[^"\']*)?(["\'][^>]*>\s*</script>)', re.I)
           head_re = re.compile(r'<head\b[^>]*>', re.I)
+          skip = {'.git', 'node_modules', 'vendor'}
 
-          changed = []
-          tagged = 0
-          for path in sorted(ROOT.rglob('*.html')):
-              if any(part in SKIP_DIRS for part in path.parts):
+          pages = changed = 0
+          for path in sorted(Path('.').rglob('*.html')):
+              if any(part in skip for part in path.parts):
                   continue
               text = path.read_text(encoding='utf-8', errors='replace')
               head = head_re.search(text)
               if not head:
                   continue
-
+              pages += 1
               updated = analytics_re.sub('', text)
               head = head_re.search(updated)
-              updated = updated[:head.end()] + '\n' + ANALYTICS_SCRIPT + updated[head.end():]
-              updated = performance_re.sub(
-                  lambda m: m.group(1) + '?v=' + PERFORMANCE_VERSION + m.group(2),
-                  updated,
-              )
-
+              updated = updated[:head.end()] + '\n' + analytics_script + '\n' + updated[head.end():]
+              updated = performance_re.sub(lambda m: m.group(1) + '?v=20260909-3' + m.group(2), updated)
               if updated != text:
                   path.write_text(updated, encoding='utf-8', newline='\n')
-                  changed.append(str(path))
-              tagged += 1
+                  changed += 1
 
-          print(f'HTML pages with <head>: {tagged}')
-          print(f'HTML pages changed: {len(changed)}')
-          for item in changed:
-              print(item)
+          print(f'HTML pages with <head>: {pages}')
+          print(f'HTML pages changed: {changed}')
           PY
 
-      - name: Keep future optimizer output on the canonical analytics bootstrap
+      - name: Harden future optimizer output and runtime cache keys
         shell: bash
         run: |
           python - <<'PY'
@@ -79,22 +62,22 @@ jobs:
           text = path.read_text(encoding='utf-8')
           original = text
 
-          text = text.replace(
-              'PERFORMANCE_SCRIPT = \'<script defer src="/scripts/wpa-performance.js?v=20260909-2"></script>\'\n',
-              'PERFORMANCE_SCRIPT = \'<script defer src="/scripts/wpa-performance.js?v=20260909-3"></script>\'\n'
-              'ANALYTICS_SCRIPT = \'<script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>\'\n',
-              1,
-          )
+          old_constant = 'PERFORMANCE_SCRIPT = \'<script defer src="/scripts/wpa-performance.js?v=20260909-2"></script>\'\n'
+          new_constants = old_constant.replace('20260909-2', '20260909-3') + 'ANALYTICS_SCRIPT = \'<script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>\'\n'
+          if old_constant not in text:
+              raise SystemExit('optimizer performance constant anchor not found')
+          text = text.replace(old_constant, new_constants, 1)
 
-          old = '''def inject_performance_script(text: str) -> tuple[str, bool]:
+          old_func = '''def inject_performance_script(text: str) -> tuple[str, bool]:
               if "wpa-performance.js" in text:
                   return text, False
               match = re.search(r"</head\\s*>", text, flags=re.I)
               if not match:
                   return text, False
               return text[:match.start()] + PERFORMANCE_SCRIPT + "\\n" + text[match.start():], True
-          '''.replace('          ', '')
-          new = '''def inject_performance_script(text: str) -> tuple[str, bool]:
+          '''
+          old_func = '\n'.join(line[10:] if line.startswith('          ') else line for line in old_func.splitlines()) + '\n'
+          new_func = '''def inject_performance_script(text: str) -> tuple[str, bool]:
               original = text
               text = re.sub(
                   r'(/scripts/wpa-performance\\.js)(?:\\?[^"\\']*)?',
@@ -121,33 +104,33 @@ jobs:
               head = re.search(r"<head\\b[^>]*>", text, flags=re.I)
               if not head:
                   return original, False
-              text = text[:head.end()] + "\\n" + ANALYTICS_SCRIPT + text[head.end():]
+              text = text[:head.end()] + "\\n" + ANALYTICS_SCRIPT + "\\n" + text[head.end():]
               return text, text != original
-          '''.replace('          ', '')
-
-          if old not in text:
+          '''
+          new_func = '\n'.join(line[10:] if line.startswith('          ') else line for line in new_func.splitlines()) + '\n'
+          if old_func not in text:
               raise SystemExit('optimizer inject_performance_script anchor not found')
-          text = text.replace(old, new, 1)
+          text = text.replace(old_func, new_func, 1)
 
-          old_call = '''    updated = IMG_RE.sub(replace, original)
+          old_calls = '''    updated = IMG_RE.sub(replace, original)
               updated, injected = inject_performance_script(updated)
               if injected:
                   stats["scripts_injected"] += 1
-          '''.replace('          ', '')
-          new_call = '''    updated = IMG_RE.sub(replace, original)
+          '''
+          old_calls = '\n'.join(line[10:] if line.startswith('          ') else line for line in old_calls.splitlines()) + '\n'
+          new_calls = '''    updated = IMG_RE.sub(replace, original)
               updated, analytics_injected = inject_analytics_script(updated)
               updated, injected = inject_performance_script(updated)
               if analytics_injected:
                   stats["scripts_injected"] += 1
               if injected:
                   stats["scripts_injected"] += 1
-          '''.replace('          ', '')
-          if old_call not in text:
-              raise SystemExit('optimizer optimize_page anchor not found')
-          text = text.replace(old_call, new_call, 1)
+          '''
+          new_calls = '\n'.join(line[10:] if line.startswith('          ') else line for line in new_calls.splitlines()) + '\n'
+          if old_calls not in text:
+              raise SystemExit('optimizer optimize_page call anchor not found')
+          text = text.replace(old_calls, new_calls, 1)
 
-          if text == original:
-              raise SystemExit('optimizer was not updated')
           path.write_text(text, encoding='utf-8', newline='\n')
 
           for filename in ('scripts/run_media_optimizer.py', 'scripts/finalize_homepage.py'):
@@ -164,6 +147,9 @@ jobs:
           if s2 == s:
               raise SystemExit('performance core analytics cache anchor not found')
           core.write_text(s2, encoding='utf-8', newline='\n')
+
+          if text == original:
+              raise SystemExit('optimizer was not updated')
           PY
 
       - name: Validate GA4 rollout and consent boundary
@@ -174,14 +160,15 @@ jobs:
           import json
           import re
 
-          ANALYTICS_SRC = '/scripts/wpa-analytics.js?v=20260909-2'
+          analytics_src = '/scripts/wpa-analytics.js?v=20260909-2'
           analytics_re = re.compile(r'<script\b[^>]*\bsrc=["\']/scripts/wpa-analytics\.js(?:\?[^"\']*)?["\'][^>]*>\s*</script>', re.I)
           stale_perf_re = re.compile(r'/scripts/wpa-performance\.js\?v=(?!20260909-3)[^"\']+', re.I)
           head_re = re.compile(r'<head\b[^>]*>', re.I)
+          skip = {'.git', 'node_modules', 'vendor'}
 
           pages = 0
           for path in sorted(Path('.').rglob('*.html')):
-              if any(part in {'.git', 'node_modules', 'vendor'} for part in path.parts):
+              if any(part in skip for part in path.parts):
                   continue
               text = path.read_text(encoding='utf-8', errors='replace')
               head = head_re.search(text)
@@ -190,8 +177,8 @@ jobs:
               pages += 1
               tags = analytics_re.findall(text)
               assert len(tags) == 1, f'{path}: expected exactly one analytics bootstrap, got {len(tags)}'
-              assert ANALYTICS_SRC in tags[0], f'{path}: wrong analytics cache key'
-              assert text.find(ANALYTICS_SRC) > head.end() - 1, f'{path}: analytics bootstrap is not after <head>'
+              assert analytics_src in tags[0], f'{path}: wrong analytics cache key'
+              assert text.find(analytics_src) >= head.end(), f'{path}: analytics bootstrap is not immediately after <head>'
               assert not stale_perf_re.search(text), f'{path}: stale performance cache key remains'
 
           config = json.loads(Path('config/analytics.json').read_text(encoding='utf-8'))
@@ -199,20 +186,24 @@ jobs:
           assert config.get('consentRequired') is True
 
           analytics = Path('scripts/wpa-analytics.js').read_text(encoding='utf-8')
-          assert "analytics_storage: 'granted'" in analytics
-          assert "ad_storage: 'denied'" in analytics
-          assert "ad_user_data: 'denied'" in analytics
-          assert "ad_personalization: 'denied'" in analytics
-          assert "if (consent === 'granted')" in analytics
-          assert "showBanner(config)" in analytics
-          assert "send_page_view: true" in analytics
+          for needle in (
+              "analytics_storage: 'granted'",
+              "ad_storage: 'denied'",
+              "ad_user_data: 'denied'",
+              "ad_personalization: 'denied'",
+              "if (consent === 'granted')",
+              "showBanner(config)",
+              "send_page_view: true",
+          ):
+              assert needle in analytics, needle
 
           optimizer = Path('scripts/optimize_site_media.py').read_text(encoding='utf-8')
           assert 'ANALYTICS_SCRIPT' in optimizer
           assert '/scripts/wpa-analytics.js?v=20260909-2' in optimizer
           assert '/scripts/wpa-performance.js?v=20260909-3' in optimizer
+          assert 'inject_analytics_script' in optimizer
 
-          print(f'Validated {pages} HTML pages with one consent-aware GA4 bootstrap each.')
+          print(f'Validated {pages} HTML pages with exactly one consent-aware GA4 bootstrap each.')
           PY
 
       - name: Commit rollout
@@ -227,5 +218,3 @@ jobs:
           git add -- '*.html' scripts/optimize_site_media.py scripts/run_media_optimizer.py scripts/finalize_homepage.py scripts/wpa-performance-core.js
           git commit -m "Install consent-aware GA4 bootstrap site-wide"
           git push origin HEAD:fix/ga4-global-tag-rollout-2026-09-09
-
-# trigger: 2026-09-09
