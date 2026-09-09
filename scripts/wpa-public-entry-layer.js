@@ -1,4 +1,4 @@
-/* WPA Public Entry Layer v1.1 · 2026-09-01
+/* WPA Public Entry Layer v1.2 · 2026-09-09
    Progressive disclosure for first-time public visitors.
    This is a Macedonian-canonical enhancement only; translated static mirrors
    must never receive source-language DOM injection from this runtime.
@@ -110,6 +110,12 @@
     if(stats.length && String(stats[0].textContent||'').trim()==='25') stats[0].textContent='26';
     var labels=document.querySelectorAll('.hero-stats .stat-label');
     if(labels.length && /Публикации/i.test(String(labels[0].textContent||''))) labels[0].textContent='Публикации';
+
+    var symbols=document.querySelector('[data-i18n="a_symbols_lab.12"]');
+    if(symbols){
+      symbols.textContent='197 entity records · 95 national-day records · 9 international-organization records · separate metrics';
+      symbols.setAttribute('data-wpa-symbols-metrics','20260909');
+    }
 
     document.querySelectorAll('p,li').forEach(function(el){
       var t=String(el.textContent||'');
