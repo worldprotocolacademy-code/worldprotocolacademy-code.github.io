@@ -41,7 +41,9 @@ jobs:
 
       - name: Deploy isolated signaling Worker
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Dedicated least-privilege token: Cloudflare Account -> Workers Scripts -> Edit.
+          # Do not reuse Virtual Sande or other WPA deployment credentials here.
+          CLOUDFLARE_API_TOKEN: ${{ secrets.WPA_LIVE_ROOM_CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
