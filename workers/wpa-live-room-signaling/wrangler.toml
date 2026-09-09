@@ -1,0 +1,17 @@
+name = "wpa-live-room-signaling"
+main = "src/index.mjs"
+compatibility_date = "2026-09-09"
+workers_dev = true
+preview_urls = false
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "WpaLiveRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["WpaLiveRoom"]
+
+[vars]
+ALLOWED_ORIGINS = "https://worldprotocolacademy.mk,https://www.worldprotocolacademy.mk"
+MAX_PEERS = "6"

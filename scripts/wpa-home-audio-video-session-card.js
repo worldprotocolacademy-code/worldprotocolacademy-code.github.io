@@ -1,4 +1,4 @@
-/* WPA Homepage · Audio/Video Session Card v1.0 */
+/* WPA Homepage · Audio/Video Session Card v1.1 */
 (function () {
   'use strict';
 
@@ -6,6 +6,7 @@
   window.WPA_HOME_AUDIO_VIDEO_SESSION_CARD_LOADED = true;
 
   var CREATOR_URL = '/ai/wpa-audio-video-creator-engine-v9-final-functional.html';
+  var LIVE_ROOM_URL = '/live-room/';
   var COMMAND_DECK_URL = '/audio-media-engine.html';
 
   function ensureStyles() {
@@ -27,6 +28,7 @@
       '.wpa-home-av-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1;}',
       '.wpa-home-av-actions a{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border-radius:6px;text-decoration:none;font:700 11.5px/1.2 var(--fb);}',
       '.wpa-home-av-primary{background:var(--navy);color:#fff!important;border:1px solid var(--navy);}',
+      '.wpa-home-av-live{background:#163d2f;color:#fff!important;border:1px solid #163d2f;}',
       '.wpa-home-av-secondary{background:transparent;color:#7a5d18!important;border:1px solid var(--line);}',
       '@media(max-width:1100px){#wpaHomeOnlineMeetingsGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}',
       '@media(max-width:700px){#wpaHomeOnlineMeetingsGrid{grid-template-columns:1fr!important;}}'
@@ -58,14 +60,15 @@
     wrap.setAttribute('data-no-i18n', 'true');
     wrap.innerHTML = [
       '<div class="card wpa-home-av-card">',
-        '<div class="wpa-home-av-badge">WPA · Development Tool</div>',
+        '<div class="wpa-home-av-badge">WPA · Live + Creator</div>',
         '<div class="wpa-home-av-head">',
           '<div class="wpa-home-av-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="14" rx="2"></rect><path d="M15 10l5-3v10l-5-3"></path><path d="M7 9v6M10 8v8"></path></svg></div>',
           '<h4 class="wpa-home-av-title">WPA Audio Video Creator Engine v9</h4>',
         '</div>',
-        '<p class="wpa-home-av-copy">Наша WPA алатка за audio/video workflows, 200 scenario bank, scripts, production packages и live-room governance.<span class="wpa-home-av-boundary">Real-time WPA WebRTC room remains Phase 2 · not an active conferencing service.</span></p>',
+        '<p class="wpa-home-av-copy">Наша WPA платформа за audio/video workflows, 200 scenario bank, scripts, production packages и live-room governance.<span class="wpa-home-av-boundary">WPA Live Room Phase 2A: real WebRTC for small consultations, classes and institutional rooms. Large webinars/broadcast remain Phase 2B.</span></p>',
         '<div class="wpa-home-av-actions">',
-          '<a class="wpa-home-av-primary" href="' + CREATOR_URL + '">Отвори WPA Audio / Video →</a>',
+          '<a class="wpa-home-av-live" href="' + LIVE_ROOM_URL + '">WPA Live Room →</a>',
+          '<a class="wpa-home-av-primary" href="' + CREATOR_URL + '">Creator Engine →</a>',
           '<a class="wpa-home-av-secondary" href="' + COMMAND_DECK_URL + '">Command Deck →</a>',
         '</div>',
       '</div>'
