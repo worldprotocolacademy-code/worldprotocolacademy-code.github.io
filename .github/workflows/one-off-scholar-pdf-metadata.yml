@@ -53,11 +53,11 @@ jobs:
               assert n == 1, (rid, 'citation_pdf_url')
               assert Path('papers', pdf).exists(), (rid, pdf)
               target.write_text(new, encoding='utf-8')
-          # final invariant
+          # final invariant: count only actual metadata tags, not prose mentioning the field name
           for rid, pdf in mapping.items():
               text=(Path('scholar')/f'{rid}.html').read_text(encoding='utf-8')
               expected=f'https://worldprotocolacademy.mk/papers/{pdf}'
-              assert text.count('citation_pdf_url') == 1, rid
+              assert text.count('<meta name="citation_pdf_url"') == 1, rid
               assert expected in text, rid
           assert Path('papers/p16-leadership-protocol-case-mk.pdf').exists()
           print('Scholar PDF metadata QA OK: 19/19 confirmed /papers/ targets; legacy P16 retained.')
