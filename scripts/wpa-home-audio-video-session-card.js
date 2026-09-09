@@ -60,12 +60,12 @@
     wrap.setAttribute('data-no-i18n', 'true');
     wrap.innerHTML = [
       '<div class="card wpa-home-av-card">',
-        '<div class="wpa-home-av-badge">WPA · Live + Creator</div>',
+        '<div class="wpa-home-av-badge">WPA · Live Room + Creator</div>',
         '<div class="wpa-home-av-head">',
           '<div class="wpa-home-av-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="14" rx="2"></rect><path d="M15 10l5-3v10l-5-3"></path><path d="M7 9v6M10 8v8"></path></svg></div>',
           '<h4 class="wpa-home-av-title">WPA Audio Video Creator Engine v9</h4>',
         '</div>',
-        '<p class="wpa-home-av-copy">Наша WPA платформа за audio/video workflows, 200 scenario bank, scripts, production packages и live-room governance.<span class="wpa-home-av-boundary">WPA Live Room Phase 2A: real WebRTC for small consultations, classes and institutional rooms. Large webinars/broadcast remain Phase 2B.</span></p>',
+        '<p class="wpa-home-av-copy">Наша WPA платформа за audio/video workflows, 200 scenario bank, scripts, production packages и live-room governance.<span class="wpa-home-av-boundary">WPA Live Room Phase 2A: WebRTC client is deployed; room access is health-gated on the WPA signaling service. Large webinars/broadcast remain Phase 2B.</span></p>',
         '<div class="wpa-home-av-actions">',
           '<a class="wpa-home-av-live" href="' + LIVE_ROOM_URL + '">WPA Live Room →</a>',
           '<a class="wpa-home-av-primary" href="' + CREATOR_URL + '">Creator Engine →</a>',
