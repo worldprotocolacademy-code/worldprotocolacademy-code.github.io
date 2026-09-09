@@ -3,10 +3,13 @@ name: Deploy WPA Live Room Phase 2A
 on:
   push:
     branches:
-      - feat/wpa-live-room-phase2a-2026-09-09
+      - main
     paths:
       - workers/wpa-live-room-signaling/**
+      - live-room/**
+      - scripts/wpa-home-audio-video-session-card.js
       - .github/workflows/deploy-wpa-live-room-phase2a.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,10 +30,14 @@ jobs:
           set -euo pipefail
           test -f workers/wpa-live-room-signaling/wrangler.toml
           test -f workers/wpa-live-room-signaling/src/index.mjs
+          test -f live-room/index.html
           node --check workers/wpa-live-room-signaling/src/index.mjs
           grep -F 'wpa-live-room-signaling' workers/wpa-live-room-signaling/wrangler.toml
           grep -F 'WpaLiveRoom' workers/wpa-live-room-signaling/wrangler.toml
           grep -F 'https://worldprotocolacademy.mk' workers/wpa-live-room-signaling/wrangler.toml
+          grep -F 'RTCPeerConnection' live-room/index.html
+          grep -F 'stun:stun.cloudflare.com:3478' live-room/index.html
+          grep -F 'WPA Live Room' scripts/wpa-home-audio-video-session-card.js
 
       - name: Deploy isolated signaling Worker
         env:
