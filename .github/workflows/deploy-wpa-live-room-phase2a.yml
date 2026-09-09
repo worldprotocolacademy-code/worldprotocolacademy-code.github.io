@@ -1,0 +1,72 @@
+name: Deploy WPA Live Room Phase 2A
+
+on:
+  push:
+    branches:
+      - feat/wpa-live-room-phase2a-2026-09-09
+    paths:
+      - workers/wpa-live-room-signaling/**
+      - .github/workflows/deploy-wpa-live-room-phase2a.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-live-room-phase2a-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate signaling package
+        run: |
+          set -euo pipefail
+          test -f workers/wpa-live-room-signaling/wrangler.toml
+          test -f workers/wpa-live-room-signaling/src/index.mjs
+          node --check workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'wpa-live-room-signaling' workers/wpa-live-room-signaling/wrangler.toml
+          grep -F 'WpaLiveRoom' workers/wpa-live-room-signaling/wrangler.toml
+          grep -F 'https://worldprotocolacademy.mk' workers/wpa-live-room-signaling/wrangler.toml
+
+      - name: Deploy isolated signaling Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          npx --yes wrangler@4 deploy --config workers/wpa-live-room-signaling/wrangler.toml 2>&1 | tee /tmp/wpa-live-room-deploy.log
+
+      - name: Verify deployed service
+        run: |
+          set -euo pipefail
+          URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/wpa-live-room-deploy.log | tail -n 1 | sed 's:/$::')"
+          test -n "$URL"
+          case "$URL" in
+            https://wpa-live-room-signaling.*.workers.dev) ;;
+            *) echo "Unexpected worker URL: $URL" >&2; exit 1 ;;
+          esac
+          curl --fail --silent --show-error --retry 5 --retry-delay 2 "$URL/health" | tee /tmp/health.json
+          grep -F '"ok":true' /tmp/health.json
+          grep -F '"version":"2A.1"' /tmp/health.json
+          grep -F '"media":"webrtc-peer-to-peer"' /tmp/health.json
+          printf '%s\n' "$URL" > /tmp/wpa-live-room-url.txt
+
+      - name: Upload deployment evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-live-room-phase2a-deployment
+          path: |
+            /tmp/wpa-live-room-url.txt
+            /tmp/health.json
+          retention-days: 30
+
+      - name: Boundary
+        run: |
+          echo 'This deploys only the isolated WPA Live Room signaling Worker on workers.dev.'
+          echo 'No production custom route, KV, D1, R2, AI binding, or existing WPA Worker is modified.'
