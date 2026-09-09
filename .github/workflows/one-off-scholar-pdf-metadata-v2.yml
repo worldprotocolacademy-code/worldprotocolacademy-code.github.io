@@ -1,0 +1,75 @@
+name: One-off Scholar PDF metadata hotfix v2
+
+on:
+  push:
+    branches:
+      - fix/scholar-pdf-metadata-2026-09-09
+    paths:
+      - .github/workflows/one-off-scholar-pdf-metadata-v2.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-pdf-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/scholar-pdf-metadata-2026-09-09
+          fetch-depth: 0
+      - name: Fix academic citation PDF URLs and validate
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          mapping = {
+            'p01':'p01-unintentional-mistakes-protocol.pdf',
+            'p02':'p02-protocol-mvr.pdf',
+            'p03':'p03-ubk-history.pdf',
+            'p04':'p04-leadership-protocol.pdf',
+            'p05':'p05-planning-conference.pdf',
+            'p06':'p06-protocol-security.pdf',
+            'p07':'p07-protocol-policy.pdf',
+            'p08':'p08-protocol-defense-diplomacy.pdf',
+            'p09':'p09-protocol-traditions.pdf',
+            'p10':'p10-protocol-russo-ukraine.pdf',
+            'p11':'p11-pope-francis-rdc-2021.pdf',
+            'p12':'p12-west-balkans-migration.pdf',
+            'p13':'p13-drzaven-protokol-mk.pdf',
+            'p14':'p14-corona-namaste-full.pdf',
+            'p15':'p15-edinstven-drzaven-protokol.pdf',
+            'p16':'p17-protokol-liderski-karakteristiki.pdf',
+            'p17':'p18-protocol-public-relations.pdf',
+            'p18':'p19-digital-protocol-ai-public-sector.pdf',
+            'p19':'p20-military-protocol-defence-diplomacy-military-diplomacy.pdf',
+          }
+          for rid, pdf in mapping.items():
+              target = Path('scholar') / f'{rid}.html'
+              text = target.read_text(encoding='utf-8')
+              url = f'https://worldprotocolacademy.mk/papers/{pdf}'
+              new, n = re.subn(r'<meta name="citation_pdf_url" content="[^"]+"\s*/?>', f'<meta name="citation_pdf_url" content="{url}" />', text, count=1)
+              assert n == 1, (rid, 'citation_pdf_url')
+              assert Path('papers', pdf).exists(), (rid, pdf)
+              target.write_text(new, encoding='utf-8')
+          for rid, pdf in mapping.items():
+              text=(Path('scholar')/f'{rid}.html').read_text(encoding='utf-8')
+              expected=f'https://worldprotocolacademy.mk/papers/{pdf}'
+              assert text.count('<meta name="citation_pdf_url"') == 1, rid
+              assert expected in text, rid
+          assert Path('papers/p16-leadership-protocol-case-mk.pdf').exists()
+          print('Scholar PDF metadata QA OK: 19/19 confirmed /papers/ targets; legacy P16 retained.')
+          PY
+      - name: Commit Scholar PDF metadata hotfix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scholar/p*.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Point Scholar metadata to confirmed paper PDFs"
+            git push origin HEAD:fix/scholar-pdf-metadata-2026-09-09
+          fi
