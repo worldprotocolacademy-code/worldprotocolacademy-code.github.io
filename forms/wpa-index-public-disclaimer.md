@@ -1,8 +1,8 @@
 # WPA Institute Index / Master List — Public Disclaimer
 
 **Document ID:** WPA-INDEX-DISC-2026-001  
-**Version:** 1.1 — REV2 GOVERNANCE ALIGNMENT  
-**Date:** 26 August 2026  
+**Version:** 1.2 — REV4 GOVERNANCE ALIGNMENT  
+**Date:** 9 September 2026  
 **Institution:** World Protocol Academy  
 **Place:** Skopje, Republic of North Macedonia
 
@@ -10,20 +10,28 @@
 
 The current canonical institutional dataset is **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV4**.
 
-Current dataset facts are governed by the canonical status source and presently include:
+Current dataset facts are governed by `/MASTER-LIST-CANONICAL.md` and `/data/wpa-canonical-metrics-status.json` and presently include:
 
-- 160 total records;
-- 160 external records;
-- 155 distinct external institutions;
-- 1 internal WPA reference record;
-- 8 external comparison groups: **A–D, G–I, R**;
+- **162 total records**;
+- **161 external records**;
+- **156 distinct external institutions**;
+- **1 internal WPA reference record**;
+- **8 dataset groups:** **A–D, G–I, R**;
 - source verification still in progress.
 
-Earlier references to an A–I external taxonomy, seven groups, 125 institutions or a fully verified ranking are legacy wording and are not current REV2 claims.
+The REV4 group counts are **A26 + B25 + C25 + D26 + G25 + H29 + I5 + R1 = 162**.
+
+The difference between 161 external records and 156 distinct external institutions is not a counting error. The canonical count file documents five methodological/entity adjustments: A005, B008, A010 under D001, C022/H027 (ICC duplicate context), and G002/G022 (IAEA duplicate context).
+
+The group labels are **descriptive institutional-mapping categories**. They are not grades, accreditation classes, endorsements or a final ranking.
+
+Earlier references to REV2 counts, an A–I external taxonomy, seven groups, 125 institutions or a fully verified ranking are legacy wording and are not current REV4 claims.
 
 ## What this programme is
 
 A public-source institutional mapping and methodological research programme intended to study documented institutional capacity, transparency, research, programmes and professional practice.
+
+The **Master List** and the **WPA Institute Index Laboratory** are distinct objects. The Master List is a pre-publication mapping dataset. The Institute Index Laboratory remains a candidate methodology environment using synthetic examples; no real-institution ranking is claimed active while the methodology remains non-final.
 
 ## What it is not
 
@@ -61,7 +69,9 @@ A materially identified institution or individual may request, free of charge:
 5. provenance/source review;
 6. review of a material methodology application.
 
-Submit through the procedure described at `/wpa-index-appeals-and-corrections.html` or by email to **worldprotocolacademy@gmail.com**.
+Submit through the procedure described at `/wpa-index-appeals-and-corrections.html` or by email to **institute@worldprotocolacademy.mk**.
+
+Accepted material corrections should receive a dated provenance trail. WPA does not fabricate retrospective correction records where no documented correction event exists.
 
 ## AAB appeal status
 
@@ -69,14 +79,17 @@ The WPA Academic Advisory Board is currently in **FORMATION_PHASE**. WPA therefo
 
 A second-stage AAB appeal activates only after the AAB is formally constituted under the published governance process. Until then, unresolved material disputes remain pending/disputed and receive human re-review; no final independent AAB determination is claimed.
 
+No formation date, response deadline or external-review deadline is asserted here unless separately adopted and published through the appropriate Human Gate.
+
 ## Non-defamation and dignity rule
 
 The programme must not be used for unsupported attacks, political retaliation, competitive weakening or defamatory inference from missing data. Analytical language should distinguish verified fact, interpretation, uncertainty and unresolved dispute.
 
 ## Short public footer
 
-> **WPA institutional mapping is an independent public-source research programme. It is not accreditation, official recognition, legal judgment or paid ranking. REV2 source verification remains in progress. Corrections are free. AAB second-stage appeals are not claimed operational while the AAB remains in formation.**
+> **WPA institutional mapping is an independent public-source research programme. It is not accreditation, official recognition, legal judgment or paid ranking. REV4 source verification remains in progress. Corrections are free. AAB second-stage appeals are not claimed operational while the AAB remains in formation.**
 
-**Correction contact:** worldprotocolacademy@gmail.com  
+**Correction contact:** institute@worldprotocolacademy.mk  
 **Public procedure:** `/wpa-index-appeals-and-corrections.html`  
+**Canonical counts:** `/MASTER-LIST-CANONICAL.md`  
 **AAB status:** `/aab-governance.html`
