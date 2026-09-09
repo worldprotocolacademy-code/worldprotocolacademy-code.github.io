@@ -352,5 +352,5 @@
   window.setTimeout(boot, 1000);
   window.addEventListener('resize', boot);
 
-  addScript('wpa-performance-core-runtime', '/scripts/wpa-performance-core.js?v=20260714-3');
+  addScript('wpa-performance-core-runtime', '/scripts/wpa-performance-core.js?v=20260909-2');
 })();

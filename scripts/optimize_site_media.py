@@ -28,8 +28,8 @@ except ImportError as exc:
     raise SystemExit("Pillow is required: pip install Pillow") from exc
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE_HOST = "worldprotocolacademy-code.github.io"
-PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=1.0"></script>'
+BASE_HOST = "worldprotocolacademy.mk"
+PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-2"></script>'
 RASTER_SUFFIXES = {".png", ".jpg", ".jpeg"}
 SKIP_DIRS = {".git", "node_modules", "vendor"}
 IMG_RE = re.compile(r"<img\b[^>]*>", re.I | re.S)
