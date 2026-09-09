@@ -1,22 +1,21 @@
 name: One-off Search Console verification patch
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - fix/search-console-verification-2026-09-09
 
 permissions:
   contents: write
 
 jobs:
   patch-verification-tag:
-    if: github.head_ref == 'fix/search-console-verification-2026-09-09'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out PR branch
+      - name: Check out verification branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: fix/search-console-verification-2026-09-09
           fetch-depth: 0
 
       - name: Add canonical Search Console verification tag
@@ -37,7 +36,7 @@ jobs:
               path.write_text(text, encoding='utf-8')
           PY
 
-      - name: Commit patch back to PR branch
+      - name: Commit patch back to verification branch
         shell: bash
         run: |
           if git diff --quiet -- index.html; then
@@ -48,4 +47,4 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add index.html
           git commit -m "Add canonical Search Console verification tag"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:fix/search-console-verification-2026-09-09
