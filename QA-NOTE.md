@@ -1,11 +1,13 @@
 # QA-NOTE — WPA Scholar Indexing Infrastructure
 
-- Generated: 11 June 2026
-- Scholar records created: 28 total
-- Academic papers: 19
-- WPA Working Papers: 9
-- P16 duplicate removed from the paper archive logic; current paper records run P01–P19.
-- WPA Working Papers run 001–009, including WP-009 DOI 10.5281/zenodo.20641841.
-- Every scholar HTML record includes citation_title, citation_author, citation_publication_date and citation_pdf_url meta tags.
-- sitemap-scholar.xml includes /scholar/, /papers.html, /bibliography/, /working-papers/ and all individual scholar records.
-- No formal peer-reviewed claim is added for WPA Working Papers.
+- Rebuilt: 9 September 2026
+- Canonical academic paper records: 19 distinct publications (`/scholar/p01.html`–`/scholar/p19.html`).
+- Legacy P16 duplicate PDF is intentionally retained for backward compatibility but is excluded from canonical counting and Scholar record logic.
+- WPA Working Papers: 13 canonical Scholar records (`wpa-wp-001`–`wpa-wp-013`).
+- WPA Protocol Notes: 9 canonical Scholar records (`wpa-pn-001`–`wpa-pn-009`).
+- `/scholar/` is a dedicated index page and is not a publication record.
+- Academic `citation_pdf_url` values point to existing full-text PDFs under `/papers/`.
+- WPA series records expose DOI metadata without inventing unconfirmed local PDF URLs.
+- Scholar sitemap, BibTeX and RIS exports use the canonical `https://worldprotocolacademy.mk` domain.
+- WPA Working Papers and Protocol Notes are separate research-series records and are not counted among the 26 academic publications.
+- No formal peer-review claim is added to WPA Working Papers or Protocol Notes.
