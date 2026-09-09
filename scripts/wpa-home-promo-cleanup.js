@@ -1,7 +1,9 @@
-/* WPA homepage promotional cleanup v1.6 */
+/* WPA homepage promotional cleanup v1.7 */
 (function(){'use strict';
 var navObserver=null;
 var navRepairTimer=null;
+var GLOBAL_CHANNELS_REGISTRY='/data/wpa-social-network.json?v=20260909-1';
+var GLOBAL_CHANNEL_ORDER=['facebook','instagram','x','tiktok','youtube','wechat','telegram','whatsapp','vk'];
 
 function removeHomePn003(){
   var announce=document.querySelector('.announce .announce-inner');
@@ -265,6 +267,61 @@ function ensureGlobalChannelsStyle(){
   document.head.appendChild(style);
 }
 
+function safeGlobalChannelUrl(value){
+  try{
+    var url=new URL(String(value||''));
+    if(url.protocol!=='https:'&&url.protocol!=='http:')return null;
+    return url.href;
+  }catch(e){return null;}
+}
+
+function renderGlobalChannelsFromRegistry(section,channels){
+  if(!section||!channels)return;
+  var links=section.querySelector('.wgc-links');
+  var planned=section.querySelector('.wgc-planned');
+  if(!links||!planned)return;
+  links.innerHTML='';
+  planned.innerHTML='';
+
+  var keys=GLOBAL_CHANNEL_ORDER.concat(Object.keys(channels).filter(function(key){return GLOBAL_CHANNEL_ORDER.indexOf(key)===-1;}));
+  keys.forEach(function(key){
+    var channel=channels[key];
+    if(!channel)return;
+    var label=String(channel.label||key);
+    var url=safeGlobalChannelUrl(channel.url);
+    if(channel.status==='ACTIVE_OFFICIAL_CHANNEL'&&url){
+      var a=document.createElement('a');
+      a.className='wgc-link';
+      a.href=url;
+      a.target='_blank';
+      a.rel='noopener noreferrer';
+      a.textContent=label;
+      a.setAttribute('data-wpa-channel',key);
+      links.appendChild(a);
+      return;
+    }
+    var span=document.createElement('span');
+    span.className='wgc-plan';
+    span.title='Planned regional channel — not yet activated';
+    span.setAttribute('data-wpa-channel',key);
+    span.appendChild(document.createTextNode(label+' '));
+    var small=document.createElement('small');
+    small.textContent='planned';
+    span.appendChild(small);
+    planned.appendChild(span);
+  });
+
+  var note=section.querySelector('.wgc-note');
+  if(note)note.textContent='Channel status is sourced from the canonical WPA Social Bridge registry. Roadmap channels are not presented as active official accounts until a verified public URL is registered.';
+}
+
+function hydrateGlobalChannels(section){
+  fetch(GLOBAL_CHANNELS_REGISTRY,{headers:{Accept:'application/json'},cache:'no-store'})
+    .then(function(response){if(!response.ok)throw new Error('HTTP '+response.status);return response.json();})
+    .then(function(data){if(data&&data.channels)renderGlobalChannelsFromRegistry(section,data.channels);})
+    .catch(function(){/* Keep truthful hard-coded fallback if registry fetch fails. */});
+}
+
 function addGlobalChannels(){
   if(document.getElementById('wpaGlobalChannels'))return;
   var footer=document.querySelector('footer');
@@ -301,6 +358,7 @@ function addGlobalChannels(){
       <div class="wgc-note">Planned channels are shown as roadmap items and are not presented as active official WPA accounts until activated.</div>\
     </div>';
   footer.parentNode.insertBefore(section,footer);
+  hydrateGlobalChannels(section);
 }
 
 function run(){
