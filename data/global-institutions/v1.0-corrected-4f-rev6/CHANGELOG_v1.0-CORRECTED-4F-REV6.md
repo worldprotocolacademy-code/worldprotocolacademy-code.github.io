@@ -66,3 +66,7 @@ REV6 integrates 51 additional records from the 10 September discovery sweep afte
 - A043 combines ICD / Academy for Cultural Diplomacy as one institutional family.
 - A046 and A047 are distinct Netherlands/U.S. namesake entities.
 - W001-W013 remain outside canonical counts.
+
+## Final reconciliation QA trigger
+
+The generated REV6 outputs were rechecked after integration and this final non-generated commit intentionally triggers the repository's pull-request validation suite against the complete reconciled branch state before merge.
