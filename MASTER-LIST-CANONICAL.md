@@ -1,51 +1,36 @@
 # WPA Global Institutions Master List — Canonical Count File
 
-**Canonical source:** v1.0-CORRECTED-4F-REV5
-**Status:** Pre-publication candidate / internal review
+**Canonical source:** v1.0-CORRECTED-4F-REV6
+**Status:** Reconciled integral revision / internal pre-publication benchmark
 **Effective revision date:** 2026-09-10
-
-REV5 integrates **10 additional canonical protocol/diplomacy institutions** and preserves REV4 as the immediate archive predecessor.
 
 ## Canonical counts
 
 | Measure | Count |
 |---|---:|
-| Total records | 172 |
-| External records | 171 |
-| Distinct external institutions | 166 |
+| Total records | 223 |
+| External records | 222 |
+| Distinct external institutions | 214 |
 | WPA internal reference records | 1 |
-| Records with website URL | 167 |
-| Records without website URL | 5 |
+| Records with website URL | 216 |
+| Records without website URL | 7 |
 
 ## Group counts
 
-A=35, B=25, C=25, D=26, G=25, H=30, I=5, R=1.
-
-## REV5 additions
-
-- **A027 — The British Protocol Academy** (United Kingdom)
-- **A028 — World Protocol School (WPS)** (Hungary / Malta)
-- **A029 — Organisation of International Protocol Professionals (OIPP)** (Hungary)
-- **A030 — International Centre for Protocol and Diplomacy (ICPD)** (United Kingdom)
-- **A031 — Association of Certified Protocol Practitioners of Nigeria (ACPPN)** (Nigeria)
-- **A032 — Protocol & Diplomacy International – Protocol Officers Association (PDI-POA)** (United States)
-- **A033 — International Etiquette and Protocol Academy of London (IEPAL)** (United Kingdom)
-- **A034 — Étiquette & Protocole Academy** (Morocco)
-- **A035 — EIPS — École Internationale du Protocole et du Savoir-Vivre** (France)
-- **H030 — American Foreign Service Association (AFSA)** (United States)
+A=70, B=33, C=25, D=27, G=25, H=37, I=5, R=1.
 
 ## Count method
 
-171 external records − 5 preserved methodological/entity adjustments = **166 distinct external institutions**.
+222 external records − 8 preserved methodological/entity adjustments = **214 distinct external institutions**. REV6 adds three non-distinct specialist-subunit adjustments (A038/D025, A065/A011, A066/H032) to the five adjustments carried forward from REV5.
 
 ## Records without website URL
 
-A005, A010, A035, B008, C011.
+A005, A010, A035, B008, C011, D027, H036.
 
-## Professional-community watchlist
+## Watchlist
 
-W001 — The Global Protocol Circle is audit-visible but excluded from canonical counts.
+W001–W013 are excluded from canonical counts pending or by design (communities, programmes, unresolved candidates).
 
 ## Verification disclaimer
 
-Not a final public benchmark. Wider record-level source verification remains in progress. URL presence does not equal source verification.
+REV6 is final for the 10 September 2026 discovery/reconciliation sweep. Wider legacy-record source verification remains in progress; URL presence alone does not equal source verification.
