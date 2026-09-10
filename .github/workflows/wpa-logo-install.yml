@@ -18,26 +18,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Reconstruct verified latest logo
+      - name: Reconstruct and cryptographically verify latest logo
         shell: bash
         run: |
           set -euo pipefail
           cat .logo-staging/webp.part* | base64 -d > logo.webp
+          echo "3bdedd74a9dee3af9ce203365206f810dc8f09b80edc7c08aff70395092f2ac8  logo.webp" | sha256sum -c -
           test "$(head -c 4 logo.webp)" = "RIFF"
           test "$(dd if=logo.webp bs=1 skip=8 count=4 status=none)" = "WEBP"
-          test "$(stat -c%s logo.webp)" -gt 50000
+          test "$(stat -c%s logo.webp)" -eq 74258
 
-          if command -v magick >/dev/null 2>&1; then
-            magick logo.webp -strip logo.png
-          elif command -v convert >/dev/null 2>&1; then
-            convert logo.webp -strip logo.png
-          else
-            echo "ImageMagick is unavailable on runner" >&2
-            exit 1
-          fi
+      - name: Install image converter
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick
 
+      - name: Generate and validate PNG fallback
+        shell: bash
+        run: |
+          set -euo pipefail
+          convert logo.webp -strip logo.png
           test "$(head -c 8 logo.png | xxd -p)" = "89504e470d0a1a0a"
-          test "$(stat -c%s logo.png)" -gt 100000
           identify logo.webp
           identify logo.png
 
