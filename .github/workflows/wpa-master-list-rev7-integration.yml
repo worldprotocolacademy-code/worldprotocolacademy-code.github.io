@@ -5,6 +5,7 @@ on:
     branches: [rev7-global-institutions-control-list-2026-09-10]
     paths:
       - 'scripts/wpa-master-list-rev7-integration.py'
+      - 'scripts/wpa-master-list-rev7-runner.py'
       - 'data/global-institutions/patches/4f-rev7/**'
       - '.github/workflows/wpa-master-list-rev7-integration.yml'
   workflow_dispatch:
@@ -27,7 +28,7 @@ jobs:
           python-version: '3.12'
 
       - name: Build REV7 and run QA
-        run: python scripts/wpa-master-list-rev7-integration.py
+        run: python scripts/wpa-master-list-rev7-runner.py
 
       - name: Validate generated outputs
         run: |
