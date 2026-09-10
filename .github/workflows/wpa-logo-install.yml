@@ -17,19 +17,30 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Reconstruct verified logo assets
+
+      - name: Reconstruct verified latest logo
         shell: bash
         run: |
           set -euo pipefail
-          cat .logo-staging/png.part* | base64 -d > logo.png
           cat .logo-staging/webp.part* | base64 -d > logo.webp
-          test "$(head -c 8 logo.png | xxd -p)" = "89504e470d0a1a0a"
           test "$(head -c 4 logo.webp)" = "RIFF"
           test "$(dd if=logo.webp bs=1 skip=8 count=4 status=none)" = "WEBP"
-          test "$(stat -c%s logo.png)" -gt 100000
           test "$(stat -c%s logo.webp)" -gt 50000
-          echo "PNG:  $(file logo.png)"
-          echo "WebP: $(file logo.webp)"
+
+          if command -v magick >/dev/null 2>&1; then
+            magick logo.webp -strip logo.png
+          elif command -v convert >/dev/null 2>&1; then
+            convert logo.webp -strip logo.png
+          else
+            echo "ImageMagick is unavailable on runner" >&2
+            exit 1
+          fi
+
+          test "$(head -c 8 logo.png | xxd -p)" = "89504e470d0a1a0a"
+          test "$(stat -c%s logo.png)" -gt 100000
+          identify logo.webp
+          identify logo.png
+
       - name: Commit only final logo assets
         shell: bash
         run: |
