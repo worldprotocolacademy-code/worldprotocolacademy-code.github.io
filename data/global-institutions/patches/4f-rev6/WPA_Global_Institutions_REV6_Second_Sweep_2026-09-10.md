@@ -1,47 +1,59 @@
-# WPA Global Institutions Master List — REV6 Second-Sweep Patch
+# WPA Global Institutions Master List — REV6 Integral Reconciliation Patch
 
 **Date:** 10 September 2026  
 **Base:** v1.0-CORRECTED-4F-REV5  
-**Scope:** New protocol/diplomacy institutions surfaced in the 10 September 2026 LinkedIn evidence sweep and independently checked where primary sources were available.
+**Status:** Reconciled source package for the 10 September 2026 discovery sweep  
+**Machine-readable source:** `WPA_REV6_Additions.json`
 
-## Canonical / audit-visible additions
+## Scope
 
-| ID | Institution | Country | Group | Type | Relevance | Established | Verification | Website | Entity note |
-|---|---|---|---|---|---|---:|---|---|---|
-| A036 | The Protocol Academy of Georgia | United States | A | Private protocol and etiquette training institution | A | 2003 | LinkedIn institutional page + business-directory/registration corroboration; official domain reported but direct retrieval unresolved | https://theprotocolacademyofgeorgia.com/ | Columbus, Georgia (U.S. state), not the country Georgia. LLC registration evidence reports 2011 while business profiles report opening/founding in 2003. |
-| A037 | The International Protocol Academy of Japan (ICPA) | Japan | A | Private members-only international protocol academy | A | 2016 | Primary source + LinkedIn corroboration | https://icpa-in.com/ | Official site states academy established Nov 2016 and company incorporated Jan 2018. Accreditation claims are recorded as self-reported and are not independently endorsed by WPA. |
-| A038 | Diplomatic Academy of the Caribbean (DAOC) | Trinidad and Tobago | A | University-affiliated diplomatic studies training centre | A | 2014 | UWI primary source + LinkedIn corroboration | https://sta.uwi.edu/daoc/ | Integral part of D025 — UWI Institute of International Relations. Added as audit-visible academy record but not counted as a separate distinct external institution. |
-| A039 | Diplomatic Institute to the Minister of Foreign Affairs of the Republic of Bulgaria | Bulgaria | A | Government diplomatic training institute | A | 2003 | Primary government/institute sources | https://bdi.bg/en/ | Legal entity / secondary budget administrator under the Minister of Foreign Affairs; professional training for diplomats and civil servants. |
-| A040 | DiploFoundation | Malta / Switzerland | A | Non-profit diplomacy and digital-policy capacity-development foundation | A | 2002 | Primary/official-domain evidence + independent institutional corroboration | https://www.diplomacy.edu/ | Established by Malta and Switzerland; diplomacy, digital diplomacy, internet governance and emerging-technology capacity development. |
-| A041 | Anwar Gargash Diplomatic Academy (AGDA) | United Arab Emirates | A | Diplomatic academy / higher-education and executive-training institute | A | 2015 | Primary source | https://www.agda.ac.ae/ | Licensed in 2015; graduate programmes, executive training and foreign-policy research. |
-| A042 | European Academy of Diplomacy (EAD) | Poland | A | Non-governmental non-profit diplomatic academy | A | 2004 | Primary source + EU/EPALE corroboration | https://diplomats.pl/en/ | Warsaw-based diplomatic education and executive-training academy. |
-| A043 | Institute for Cultural Diplomacy (ICD) / Academy for Cultural Diplomacy | Germany / United States | A | Non-profit cultural-diplomacy education and research institution | A | 1999 | Primary source + LinkedIn corroboration | https://www.culturaldiplomacy.org/ | One institutional family; Academy for Cultural Diplomacy is not counted as a second separate entity. |
-| A044 | Diplomatic Academy Nepal (DAN) | Nepal | A | Independent diplomatic training and academic institution | A | — | Primary source + Bulgarian Diplomatic Institute corroboration | https://diplomaticacademynepal.com/ | Neutral, independent and non-partisan academy; training includes diplomacy, protocol, negotiation and Diplo-Tech. |
-| A045 | Foreign Service Academy (Kenya) | Kenya | A | Government foreign-service academy | A | 2017 | Primary FSA + Kenya MFA sources | https://www.fsa.go.ke/ | Predecessor Foreign Service Institute established 2006; transformed into Academy in 2017; statutory framework strengthened by Foreign Service Act 2021. |
-| H031 | The American Academy of Diplomacy (AAD) | United States | H | Independent non-profit professional association of senior diplomatic practitioners | A | 1983 | Primary source | https://www.academyofdiplomacy.org/ | Washington, DC association of former senior ambassadors and foreign-policy officials; Group H retained because it is an association rather than a training academy. |
+REV6 reconciles the two 10 September 2026 LinkedIn discovery exports against the REV5 canonical master and other WPA benchmark layers. Discovery mentions were **not** automatically promoted. Each candidate was classified as a canonical institution, audit-visible specialist subunit, historical record, alias/successor context, programme/community, or unresolved watchlist candidate.
 
-## Entity-resolution controls
+The reconciliation identified **51 additional records** suitable for the REV6 dataset. Three of those — **A038, A065 and A066** — are specialist child/subunit records and therefore do **not** increase the distinct-institution count.
 
-- **A038 / D025:** DAOC is an integral part of the University of the West Indies Institute of International Relations already represented as D025. A038 is audit-visible and operationally relevant, but `counted_as_distinct_external_institution=false`.
-- **A043:** Institute for Cultural Diplomacy and Academy for Cultural Diplomacy are treated as one institutional family, not two records.
-- **A036:** “Georgia” refers to Columbus, Georgia, United States; no relation to the country of Georgia.
-- **A037:** WPA records ICPA’s accreditation assertions only as institutional self-description; WPA does not independently validate or endorse the accreditor in this patch.
+## Reconciled REV6 arithmetic
 
-## REV6 candidate arithmetic
+| Measure | REV5 | REV6 |
+|---|---:|---:|
+| Total records | 172 | **223** |
+| External records | 171 | **222** |
+| Distinct external institutions | 166 | **214** |
+| Records with website URL | 167 | **216** |
+| Records without website URL | 5 | **7** |
+| Group A | 35 | **70** |
+| Group B | 25 | **33** |
+| Group D | 26 | **27** |
+| Group H | 30 | **37** |
+| Relevance Level A | 41 | **77** |
+| Relevance Level B | 109 | **124** |
+| Relevance Level C | 22 | **22** |
 
-- Total records: **183**
-- External records: **182**
-- Distinct external institutions: **176**
-- Records with website URL: **178**
-- Records without website URL: **5**
-- Group A: **45**
-- Group H: **31**
-- Relevance Level A: **52**
-- Relevance Level B: **109**
-- Relevance Level C: **22**
+The distinct count is **222 external records − 8 methodological/entity adjustments = 214 distinct external institutions**. Five adjustments are carried forward from REV5; REV6 adds A038/D025, A065/A011 and A066/H032 as non-distinct specialist-subunit relationships.
 
-The distinct count uses **six** methodological/entity adjustments: the five preserved from REV5 plus A038 under D025.
+## Key entity-resolution decisions
 
-## Source note
+- **A038 — Diplomatic Academy of the Caribbean (DAOC)** is an integral part of **D025 — University of the West Indies, Institute of International Relations**. It remains audit-visible but is not counted as a second distinct external institution.
+- **A039 — Bulgarian Diplomatic Institute** already appeared in other WPA benchmark/institute content. REV6 normalizes it into the canonical Master List; it is not described as a first-time WPA discovery.
+- **A043 — Institute for Cultural Diplomacy / Academy for Cultural Diplomacy** is one institutional family, not two records.
+- **A046 — Protocol International (Netherlands)** and **A047 — Protocol International (United States)** are distinct namesake entities and remain separate.
+- **A065 — Georgetown Institute for the Study of Diplomacy** is a specialist subunit under existing **A011 — Georgetown School of Foreign Service** and is non-distinct for canonical counting.
+- **A066 — Indian Academy of International Law and Diplomacy** is the teaching wing of **H032 — Indian Society of International Law** and is non-distinct for canonical counting.
+- **A067 — Institute for Diplomacy and International Affairs, Loughborough University London** carries current-successor/context treatment for the historical Academy of Diplomacy and International Governance; the historical academy is not duplicated.
+- **A069 — Faculty of Diplomacy and Security, Belgrade** carries current-successor/context treatment for historical Academy for Diplomacy and Security references.
 
-LinkedIn search exports were used as discovery/corroboration inputs. Primary or official institutional sources were preferred for canonical verification. The wider dataset remains a pre-publication internal-review object and URL presence does not equal full source verification.
+## Included record ranges
+
+- **A036–A070** — protocol schools, diplomatic academies, foreign-service academies, diplomacy-focused university schools/institutes and directly relevant training entities.
+- **B026–B033** — diplomacy/international-affairs research institutes and think tanks.
+- **D027** — historical London Academy of Diplomacy, retained explicitly as historical/inactive/unresolved-current-status rather than represented as a current academy.
+- **H031–H037** — professional associations, networks and civil-society diplomacy organizations.
+
+Full names, countries, institutional types, verification status, websites, parent relationships and notes are maintained in `WPA_REV6_Additions.json` and generated into the REV6 JSON/CSV/Markdown master outputs.
+
+## Watchlist exclusions
+
+**W001–W013** are deliberately excluded from canonical distinct-institution counts. They include professional communities, LinkedIn groups, programmes, unresolved academy references and organizations whose legal/primary institutional identity did not reach the REV6 insertion threshold. This includes the Global Protocol Circle, European Union Diplomatic Academy programme layer, Youth Diplomacy Academy of Africa, Girls In Diplomacy Inc., Ankara Diplomacy Academy, unresolved Konrad Adenauer/Academy for Economic Diplomacy references, Kyiv-Mohyla School of Diplomacy, American Diplomacy House Academy, Climate Diplomacy Academy, Sport Diplomacy Academy, Ambassador’s Youth Diplomacy Academy and the LinkedIn group Public Diplomacy & Diplomatic Academy.
+
+## Methodological note
+
+REV6 is the **integral reconciled revision for this discovery sweep**, not a claim that every protocol/diplomacy institution globally has been exhaustively identified. Wider legacy-record source verification remains in progress. URL presence alone does not equal source verification, and accreditation/marketing claims are not independently endorsed by WPA unless explicitly documented.
