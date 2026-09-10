@@ -1,0 +1,74 @@
+name: WPA Master List REV7 Integration
+
+on:
+  push:
+    branches: [rev7-global-institutions-control-list-2026-09-10]
+    paths:
+      - 'scripts/wpa-master-list-rev7-integration.py'
+      - 'data/global-institutions/patches/4f-rev7/**'
+      - '.github/workflows/wpa-master-list-rev7-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build REV7 and run QA
+        run: python scripts/wpa-master-list-rev7-integration.py
+
+      - name: Validate generated outputs
+        run: |
+          git diff --check
+          test -f data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          test -f data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.csv
+          test -f data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev7/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV7.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev7/WPA_Professional_Communities_Watchlist_REV7.md
+          test -f tools/data/institutions-master-rev7.json
+          grep -q '"total_records": 250' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q '"external_records": 249' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q '"unique_external_institutions": 241' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q 'Sushma Swaraj Institute of Foreign Service' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q 'Hellenic Diplomatic Academy' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q 'ADA University' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+          grep -q 'Mohamed bin Mubarak Al Khalifa Academy for Diplomatic Studies' data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json
+
+      - name: Commit generated REV7 outputs
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            MASTER-LIST-CANONICAL.md \
+            README.md \
+            institute.html \
+            intelligence-center.html \
+            wpa-live-intelligence-feed.html \
+            wpa-global-institutions-master-list.html \
+            master-list-verification.html \
+            wpa-metrics-status.html \
+            wpa_institutions_master_list_v1.0.html \
+            data/master-list-verification-status.json \
+            data/wpa-canonical-metrics-status.json \
+            data/global-institutions/v1.0-corrected-4f-rev7 \
+            tools/data/institutions-master-rev7.json \
+            tools/assets/wpa-five-engines.js \
+            forms/wpa-index-public-disclaimer.md
+          git commit -m "Integrate verified institutions into Master List REV7"
+          git push origin HEAD:rev7-global-institutions-control-list-2026-09-10
