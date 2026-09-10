@@ -1,0 +1,72 @@
+name: WPA Master List REV5 Integration
+
+on:
+  push:
+    branches: [rev5-global-institutions-candidates-2026-09-10]
+    paths:
+      - 'scripts/wpa-master-list-rev5-integration.py'
+      - 'data/global-institutions/patches/4f-rev5/**'
+      - '.github/workflows/wpa-master-list-rev5-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build REV5 and run QA
+        run: python scripts/wpa-master-list-rev5-integration.py
+
+      - name: Validate generated outputs
+        run: |
+          git diff --check
+          test -f data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.json
+          test -f data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.csv
+          test -f data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev5/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV5.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev5/WPA_Professional_Communities_Watchlist_REV5.md
+          grep -q '"total_records": 172' data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.json
+          grep -q 'The British Protocol Academy' data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.json
+          grep -q 'International Etiquette and Protocol Academy of London' data/global-institutions/v1.0-corrected-4f-rev5/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV5.json
+          grep -q 'statTotal">172' wpa-global-institutions-master-list.html
+          grep -q 'statExternal">171' wpa-global-institutions-master-list.html
+          grep -q 'statUnique">166' wpa-global-institutions-master-list.html
+
+      - name: Commit generated REV5 outputs
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            MASTER-LIST-CANONICAL.md \
+            README.md \
+            institute.html \
+            intelligence-center.html \
+            wpa-live-intelligence-feed.html \
+            wpa-global-institutions-master-list.html \
+            master-list-verification.html \
+            wpa-metrics-status.html \
+            wpa_institutions_master_list_v1.0.html \
+            data/master-list-verification-status.json \
+            data/wpa-canonical-metrics-status.json \
+            data/global-institutions/v1.0-corrected-4f-rev5 \
+            tools/data/institutions-master-rev5.json \
+            tools/assets/wpa-five-engines.js \
+            forms/wpa-index-public-disclaimer.md
+          git commit -m "Integrate new institutions into Master List REV5"
+          git push origin HEAD:rev5-global-institutions-candidates-2026-09-10
