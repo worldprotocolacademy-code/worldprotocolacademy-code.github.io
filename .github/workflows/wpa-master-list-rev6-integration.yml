@@ -1,0 +1,76 @@
+name: WPA Master List REV6 Integration
+
+on:
+  push:
+    branches: [rev6-global-institutions-second-sweep-2026-09-10]
+    paths:
+      - 'scripts/wpa-master-list-rev6-integration.py'
+      - 'data/global-institutions/patches/4f-rev6/**'
+      - '.github/workflows/wpa-master-list-rev6-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build REV6 and run QA
+        run: python scripts/wpa-master-list-rev6-integration.py
+
+      - name: Validate generated outputs
+        run: |
+          git diff --check
+          test -f data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          test -f data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.csv
+          test -f data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev6/WPA_Master_List_QA_Report_v1.0-CORRECTED-4F-REV6.md
+          test -f data/global-institutions/v1.0-corrected-4f-rev6/WPA_Professional_Communities_Watchlist_REV6.md
+          test -f tools/data/institutions-master-rev6.json
+          grep -q '"total_records": 223' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q '"external_records": 222' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q '"unique_external_institutions": 214' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q 'Diplomatic Institute to the Minister of Foreign Affairs of the Republic of Bulgaria' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q 'Protocol International (Netherlands)' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q 'Protocol International (United States)' data/global-institutions/v1.0-corrected-4f-rev6/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV6.json
+          grep -q 'statTotal">223' wpa-global-institutions-master-list.html
+          grep -q 'statExternal">222' wpa-global-institutions-master-list.html
+          grep -q 'statUnique">214' wpa-global-institutions-master-list.html
+
+      - name: Commit generated REV6 outputs
+        run: |
+          if git diff --quiet && [ -z "$(git ls-files --others --exclude-standard)" ]; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            MASTER-LIST-CANONICAL.md \
+            README.md \
+            institute.html \
+            intelligence-center.html \
+            wpa-live-intelligence-feed.html \
+            wpa-global-institutions-master-list.html \
+            master-list-verification.html \
+            wpa-metrics-status.html \
+            wpa_institutions_master_list_v1.0.html \
+            data/master-list-verification-status.json \
+            data/wpa-canonical-metrics-status.json \
+            data/global-institutions/v1.0-corrected-4f-rev6 \
+            tools/data/institutions-master-rev6.json \
+            tools/assets/wpa-five-engines.js \
+            forms/wpa-index-public-disclaimer.md
+          git commit -m "Integrate reconciled institutions into Master List REV6"
+          git push origin HEAD:rev6-global-institutions-second-sweep-2026-09-10
