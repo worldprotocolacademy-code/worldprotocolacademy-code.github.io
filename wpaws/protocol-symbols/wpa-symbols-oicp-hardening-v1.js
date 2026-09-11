@@ -1,9 +1,12 @@
-/* WPA Symbols OICP Hardening v1.0 — 2026-09-11
+/* WPA Symbols OICP Hardening v1.1 — 2026-09-11
    Final deterministic guard loaded after the specialist Symbols layers.
    Goals:
    - verified boolean fields outrank legacy descriptive runtime notes;
    - English country/entity resolution works across the 197-record runtime;
    - English answers never invent untranslated WPA fields;
+   - natural-language matching never treats ordinary two-letter words as ISO IDs;
+   - unknown current flag facts remain unknown rather than inferred from history;
+   - wrapper retries preserve an acyclic fallback chain;
    - known OICP demo regressions remain deterministic and testable.
 */
 (function(){
@@ -16,8 +19,6 @@
   var verifiedById={};
   var ready=false;
   var busy=false;
-  var previousAnswer=typeof window.wpaBotAnswer==='function'?window.wpaBotAnswer:null;
-  var previousSend=typeof window.sendChat==='function'?window.sendChat:null;
 
   var ACTIVE_URL='./data/active-runtime-197.json?v=20260911-oicp1';
   var VERIFIED_URL='./data/countries.json?v=20260911-oicp1';
@@ -95,8 +96,14 @@
     var aliases=EN_ALIAS_OVERRIDES[id(r.id)]||[];
     return aliases.length?aliases[0].replace(/\b\w/g,function(c){return c.toUpperCase();}):s(r.name_mk||r.id);
   }
+  function explicitCode(q){
+    var raw=s(q).trim();
+    if(/^[A-Z]{2}$/.test(raw)) return raw.toLowerCase();
+    var m=raw.match(/\b(?:iso(?:\s+3166(?:-1)?)?|country\s+code|code)\s*[:=#-]?\s*([A-Za-z]{2})\b/i);
+    return m?m[1].toLowerCase():null;
+  }
   function aliasesFor(r){
-    var out=[r.name_mk,r.id,englishRegionName(r)];
+    var out=[r.name_mk,englishRegionName(r)];
     var v=vr(r);
     if(v){
       out.push(v.name_mk,v.name_en);
@@ -107,6 +114,11 @@
   }
   function findEntity(q){
     if(!ready) return null;
+    var code=explicitCode(q);
+    if(code){
+      var coded=active.records.find(function(r){return id(r.id)===code;});
+      if(coded) return coded;
+    }
     var z=clean(q);
     var best=null,bestLen=0;
     active.records.forEach(function(r){
@@ -121,12 +133,17 @@
   function eagleOnFlag(r){
     var v=vr(r);
     if(hasVerifiedBoolean(v,'has_eagle_on_flag')) return v.has_eagle_on_flag;
-    return !!r.eagle_on_flag_note;
+    return null;
   }
   function instrumentalAnthem(r){
     var v=vr(r);
     if(hasVerifiedBoolean(v,'anthem_officially_instrumental')) return v.anthem_officially_instrumental;
     return !!r.instrumental_anthem;
+  }
+  function eagleStatusText(value,en){
+    if(value===true) return en?'yes':'да';
+    if(value===false) return en?'no':'не';
+    return en?'not verified in the controlled overlay':'не е верифицирано во контролираниот overlay';
   }
 
   function entityEagleAnswer(q,r){
@@ -135,11 +152,15 @@
     if(!/(eagle|орел)/.test(z)||!/(flag|знаме|знамиња)/.test(z)) return null;
     var en=isEnglish(q),v=vr(r),value=eagleOnFlag(r);
     if(en){
-      return '🏳️ '+englishRegionName(r)+' — Eagle on the national flag: '+(value?'yes':'no')+'.'+
-        (v&&hasVerifiedBoolean(v,'has_eagle_on_flag')?' Verified boolean has precedence over legacy descriptive notes.':'');
+      return '🏳️ '+englishRegionName(r)+' — Eagle on the national flag: '+eagleStatusText(value,true)+'.'+
+        (v&&hasVerifiedBoolean(v,'has_eagle_on_flag')
+          ? ' Verified boolean has precedence over legacy descriptive notes.'
+          : ' Legacy descriptive or historical notes are not treated as proof of current flag presence.');
     }
-    return '🏳️ '+s(r.name_mk||r.id)+' — Орел на државното знаме: '+(value?'да':'не')+'.'+
-      (v&&hasVerifiedBoolean(v,'has_eagle_on_flag')?' Verified boolean има предност пред legacy описни белешки.':'');
+    return '🏳️ '+s(r.name_mk||r.id)+' — Орел на државното знаме: '+eagleStatusText(value,false)+'.'+
+      (v&&hasVerifiedBoolean(v,'has_eagle_on_flag')
+        ? ' Verified boolean има предност пред legacy описни белешки.'
+        : ' Legacy описни или историски белешки не се третираат како доказ за сегашна појава на знамето.');
   }
 
   function eagleList(q){
@@ -147,19 +168,19 @@
     if(!/(eagle|орел)/.test(z)||!/(flag|знаме|знамиња)/.test(z)) return null;
     if(!/(which|list|countries|states|entities|кои|листа|држав|земј)/.test(z)) return null;
     var en=isEnglish(q);
-    var hits=active.records.filter(eagleOnFlag);
+    var hits=active.records.filter(function(r){return eagleOnFlag(r)===true;});
     if(!hits.length) return null;
-    return (en?'🦅 Eagle ON THE FLAG — WPA verified-precedence records:\n':'🦅 Орел НА САМОТО ЗНАМЕ — WPA записи со verified-precedence:\n')+
+    return (en?'🦅 Eagle ON THE FLAG — verified WPA records:\n':'🦅 Орел НА САМОТО ЗНАМЕ — верифицирани WPA записи:\n')+
       hits.map(function(r){
         var v=vr(r);
         var note=en
           ? (v&&v.flag_description_en)||''
-          : (r.eagle_on_flag_note||(v&&v.flag_description_mk)||'');
+          : ((v&&v.flag_description_mk)||r.eagle_on_flag_note||'');
         return '• '+(en?englishRegionName(r):s(r.name_mk||r.id))+(note?' — '+note:'');
       }).join('\n')+'\n\n'+
       (en
-        ? 'WPA rule: when a verified boolean conflicts with a legacy descriptive runtime note, the verified boolean controls. A coat-of-arms eagle does not automatically mean an eagle is on the national flag.'
-        : 'WPA правило: кога verified boolean е во конфликт со legacy описна runtime белешка, verified boolean има предност. Орел во грбот не значи автоматски орел на државното знаме.');
+        ? 'WPA rule: only controlled records explicitly verified true are included. Legacy, emblem-only or historical notes are excluded from current-flag claims.'
+        : 'WPA правило: се вклучуваат само контролираните записи што се експлицитно верифицирани како true. Legacy, грбовни или историски белешки не се користат како доказ за сегашното знаме.');
   }
 
   function nationalDays(r){
@@ -192,7 +213,9 @@
       return '🎼 '+name+' — '+title+'. Officially instrumental/textless in the controlled layer: '+(instrumentalAnthem(r)?'yes':'no / not marked')+'.';
     }
     if(/eagle/.test(z)&&/flag/.test(z)){
-      return '🏳️ '+name+' — Eagle on the national flag: '+(eagleOnFlag(r)?'yes':'no')+'.'+(v&&hasVerifiedBoolean(v,'has_eagle_on_flag')?' Verified boolean has precedence.':'');
+      var eagle=eagleOnFlag(r);
+      return '🏳️ '+name+' — Eagle on the national flag: '+eagleStatusText(eagle,true)+'.'+
+        (v&&hasVerifiedBoolean(v,'has_eagle_on_flag')?' Verified boolean has precedence.':' Legacy notes are not treated as current proof.');
     }
     if(/flag/.test(z)){
       var flag=v&&(v.flag_description_en||v.flag_description_mk);
@@ -201,6 +224,7 @@
     if(/all about|country profile|full profile|complete profile/.test(z)){
       var verifiedCapital=v&&(v.capital_en||v.capital);
       var capitalRow='Capital: '+s(verifiedCapital||r.capital_mk||'—')+(verifiedCapital?'':' [WPA source field: Macedonian; no unverified translation inserted]');
+      var eagleState=eagleOnFlag(r);
       var rows=[
         '🌍 Country / entity: '+name+' ('+s(r.id).toUpperCase()+')',
         '🏙️ '+capitalRow,
@@ -210,7 +234,7 @@
         '⛏️ '+sourceFallback('Resources',r.resources_mk),
         '🎼 Anthem: '+((v&&v.anthem_title)||(r.anthem_code?'WPA code: '+r.anthem_code:'—')),
         '🎵 Officially instrumental/textless: '+(instrumentalAnthem(r)?'yes':'no / not marked'),
-        '🦅 Eagle on national flag: '+(eagleOnFlag(r)?'yes':'no'),
+        '🦅 Eagle on national flag: '+eagleStatusText(eagleState,true),
         '📅 National day: '+(days.length?days.map(function(d){return s(d.date)+' — '+s(d.title||'');}).join('; '):'no active record in this feed'),
         '⚖️ Source discipline: untranslated WPA fields stay explicitly marked rather than being guessed. Reconfirm time-sensitive or official-use facts with primary sources.'
       ];
@@ -236,7 +260,7 @@
       gold:['злато'],oil:['нафта'],'natural gas':['природен гас'],gas:['природен гас'],
       coal:['јаглен'],copper:['бакар'],iron:['железо','железна руда'],diamonds:['дијамант'],
       uranium:['ураниум','уран'],silver:['сребро'],nickel:['никел'],chromium:['хром'],
-      phosphate:['фосфат'],bauxite:['бауксит'],zinc:['цинк'],lead:['олово'],manganese:['манган'],
+      phosphate:['фосфат'],bauxite:['бауксит','боксит'],zinc:['цинк'],lead:['олово'],manganese:['манган'],
       lithium:['литиум'],cobalt:['кобалт'],timber:['дрво'],salt:['сол']
     };
     var resourceKey=Object.keys(resourceMap).find(function(k){return (' '+z+' ').indexOf(' '+k+' ')>=0;});
@@ -272,13 +296,13 @@
 
   function direct(q){
     if(!ready) return null;
+    var list=eagleList(q); if(list) return list;
+    var enList=englishListAnswer(q); if(enList) return enList;
     var r=findEntity(q);
     if(r){
       var eagle=entityEagleAnswer(q,r); if(eagle) return eagle;
       var a=englishEntityAnswer(q,r); if(a) return a;
     }
-    var list=eagleList(q); if(list) return list;
-    var enList=englishListAnswer(q); if(enList) return enList;
     return null;
   }
 
@@ -297,20 +321,20 @@
 
   function install(){
     if(typeof window.wpaBotAnswer==='function'&&!window.wpaBotAnswer.__wpaOicpHardeningV1){
-      previousAnswer=window.wpaBotAnswer;
-      var wrapped=function(q){return direct(q)||previousAnswer(q);};
+      var priorAnswer=window.wpaBotAnswer;
+      var wrapped=function(q){return direct(q)||priorAnswer(q);};
       wrapped.__wpaOicpHardeningV1=true;
       window.wpaBotAnswer=wrapped;
     }
     if(typeof window.sendChat==='function'&&!window.sendChat.__wpaOicpHardeningV1){
-      previousSend=window.sendChat;
+      var priorSend=window.sendChat;
       var send=async function(){
         var input=document.getElementById('chatInput');
-        if(!input||busy) return previousSend();
-        var q=input.value.trim(); if(!q) return previousSend();
+        if(!input||busy) return priorSend();
+        var q=input.value.trim(); if(!q) return priorSend();
         try{await loadPromise;}catch(e){}
         var a=direct(q);
-        if(!a) return previousSend();
+        if(!a) return priorSend();
         add('user',q); input.value=''; setBusy(true);
         add('bot',a); setBusy(false); input.focus();
       };
