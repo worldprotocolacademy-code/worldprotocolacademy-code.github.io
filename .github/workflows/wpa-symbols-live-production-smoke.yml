@@ -1,0 +1,70 @@
+name: WPA Symbols Live Production Smoke
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'wpaws/protocol-symbols/**'
+      - '.github/workflows/wpa-symbols-live-production-smoke.yml'
+      - '.github/workflows/wpa-symbols-oicp-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-symbols-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify live Symbols production endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://worldprotocolacademy.mk/wpaws/protocol-symbols'
+
+          fetch_with_retry() {
+            local url="$1"
+            local out="$2"
+            local i
+            for i in {1..18}; do
+              if curl --fail --silent --show-error --location --max-time 20 \
+                -H 'Cache-Control: no-cache' \
+                -H 'Pragma: no-cache' \
+                "${url}?production_smoke=${GITHUB_SHA}-${GITHUB_RUN_ID}-${i}" \
+                -o "$out"; then
+                return 0
+              fi
+              sleep 10
+            done
+            echo "Failed to fetch $url after retries" >&2
+            return 1
+          }
+
+          fetch_with_retry "$base/" /tmp/symbols-index.html
+          grep -q 'wpa-symbols-serbia-kosovo-case-v1.js' /tmp/symbols-index.html
+          grep -q 'chatInput' /tmp/symbols-index.html
+
+          fetch_with_retry "$base/wpa-symbols-serbia-kosovo-case-v1.js" /tmp/serbia-kosovo.js
+          grep -q 'wpa-symbols-oicp-hardening-v1.js' /tmp/serbia-kosovo.js
+
+          fetch_with_retry "$base/wpa-symbols-oicp-hardening-v1.js" /tmp/oicp-hardening.js
+          grep -q 'WPA Symbols OICP Hardening v1.1' /tmp/oicp-hardening.js
+          grep -q 'active.records.length===197' /tmp/oicp-hardening.js
+
+          fetch_with_retry "$base/data/active-runtime-197.json" /tmp/active-runtime-197.json
+          python - <<'PY'
+          import json
+          with open('/tmp/active-runtime-197.json', encoding='utf-8') as f:
+              data = json.load(f)
+          assert len(data.get('records', [])) == 197, len(data.get('records', []))
+          counts = data.get('counts', {})
+          assert counts.get('entities') == 197, counts
+          assert counts.get('organizations') == 9, counts
+          assert counts.get('national_day_records') == 95, counts
+          assert data.get('governance', {}).get('no_llm_guessing_for_missing_fields') is True
+          print('Live WPA Symbols dataset: PASS')
+          PY
+
+          echo 'WPA Symbols live production smoke: PASS'
