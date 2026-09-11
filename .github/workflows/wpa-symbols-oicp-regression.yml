@@ -8,11 +8,13 @@ on:
       - '.github/workflows/wpa-symbols-oicp-regression.yml'
   push:
     branches:
+      - main
       - 'fix/symbols-oicp-hardening-20260911'
     paths:
       - 'wpaws/protocol-symbols/**'
       - 'scripts/wpa-symbols-oicp-regression.cjs'
       - '.github/workflows/wpa-symbols-oicp-regression.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
