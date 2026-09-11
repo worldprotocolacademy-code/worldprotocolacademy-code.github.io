@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'wpaws/protocol-symbols/**'
+      - 'CNAME'
       - '.github/workflows/wpa-symbols-live-production-smoke.yml'
       - '.github/workflows/wpa-symbols-oicp-regression.yml'
   workflow_dispatch:
@@ -24,37 +25,41 @@ jobs:
           set -euo pipefail
           base='https://worldprotocolacademy.mk/wpaws/protocol-symbols'
 
-          fetch_with_retry() {
-            local url="$1"
-            local out="$2"
-            local i
-            for i in {1..18}; do
-              if curl --fail --silent --show-error --location --max-time 20 \
-                -H 'Cache-Control: no-cache' \
-                -H 'Pragma: no-cache' \
-                "${url}?production_smoke=${GITHUB_SHA}-${GITHUB_RUN_ID}-${i}" \
-                -o "$out"; then
-                return 0
-              fi
-              sleep 10
-            done
-            echo "Failed to fetch $url after retries" >&2
-            return 1
-          }
+          # Retry the whole evidence set, not only HTTP failures. GitHub Pages can
+          # briefly return HTTP 200 with the previous deployment while propagation
+          # is still completing, so content assertions must also participate in
+          # the bounded retry window.
+          for i in {1..10}; do
+            suffix="?production_smoke=${GITHUB_SHA}-${GITHUB_RUN_ID}-${i}"
+            ok=1
 
-          fetch_with_retry "$base/" /tmp/symbols-index.html
-          grep -q 'wpa-symbols-serbia-kosovo-case-v1.js' /tmp/symbols-index.html
-          grep -q 'chatInput' /tmp/symbols-index.html
+            curl --fail --silent --show-error --location \
+              --connect-timeout 4 --max-time 8 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "$base/$suffix" -o /tmp/symbols-index.html || ok=0
 
-          fetch_with_retry "$base/wpa-symbols-serbia-kosovo-case-v1.js" /tmp/serbia-kosovo.js
-          grep -q 'wpa-symbols-oicp-hardening-v1.js' /tmp/serbia-kosovo.js
+            curl --fail --silent --show-error --location \
+              --connect-timeout 4 --max-time 8 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "$base/wpa-symbols-serbia-kosovo-case-v1.js$suffix" -o /tmp/serbia-kosovo.js || ok=0
 
-          fetch_with_retry "$base/wpa-symbols-oicp-hardening-v1.js" /tmp/oicp-hardening.js
-          grep -q 'WPA Symbols OICP Hardening v1.1' /tmp/oicp-hardening.js
-          grep -q 'active.records.length===197' /tmp/oicp-hardening.js
+            curl --fail --silent --show-error --location \
+              --connect-timeout 4 --max-time 8 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "$base/wpa-symbols-oicp-hardening-v1.js$suffix" -o /tmp/oicp-hardening.js || ok=0
 
-          fetch_with_retry "$base/data/active-runtime-197.json" /tmp/active-runtime-197.json
-          python - <<'PY'
+            curl --fail --silent --show-error --location \
+              --connect-timeout 4 --max-time 8 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "$base/data/active-runtime-197.json$suffix" -o /tmp/active-runtime-197.json || ok=0
+
+            if [ "$ok" -eq 1 ] \
+              && grep -q 'wpa-symbols-serbia-kosovo-case-v1.js' /tmp/symbols-index.html \
+              && grep -q 'chatInput' /tmp/symbols-index.html \
+              && grep -q 'wpa-symbols-oicp-hardening-v1.js' /tmp/serbia-kosovo.js \
+              && grep -q 'WPA Symbols OICP Hardening v1.1' /tmp/oicp-hardening.js \
+              && grep -q 'active.records.length===197' /tmp/oicp-hardening.js \
+              && python - <<'PY'
           import json
           with open('/tmp/active-runtime-197.json', encoding='utf-8') as f:
               data = json.load(f)
@@ -64,7 +69,16 @@ jobs:
           assert counts.get('organizations') == 9, counts
           assert counts.get('national_day_records') == 95, counts
           assert data.get('governance', {}).get('no_llm_guessing_for_missing_fields') is True
-          print('Live WPA Symbols dataset: PASS')
           PY
+            then
+              echo 'Live WPA Symbols dataset: PASS'
+              echo 'WPA Symbols live production smoke: PASS'
+              exit 0
+            fi
 
-          echo 'WPA Symbols live production smoke: PASS'
+            echo "Live Symbols evidence not fully propagated yet (attempt $i/10)." >&2
+            sleep 10
+          done
+
+          echo 'WPA Symbols live production smoke: FAIL after bounded propagation retries.' >&2
+          exit 1
