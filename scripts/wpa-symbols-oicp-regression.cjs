@@ -32,16 +32,30 @@ const context = {
 vm.createContext(context);
 vm.runInContext(fs.readFileSync('wpaws/protocol-symbols/wpa-symbols-oicp-hardening-v1.js','utf8'), context);
 
+async function settleAsyncDatasetLoad(){
+  // The production guard intentionally loads both datasets asynchronously.
+  // In this VM harness we must allow the nested fetch/json/Promise callbacks to
+  // drain before exercising the synchronous answer wrapper. A macrotask boundary
+  // is deterministic here and avoids false negatives caused by an arbitrary
+  // number of Promise.resolve() microtask hops.
+  await new Promise(resolve => setImmediate(resolve));
+  await new Promise(resolve => setImmediate(resolve));
+}
+
 async function run(){
-  await Promise.resolve();
-  await Promise.resolve();
+  await settleAsyncDatasetLoad();
 
   const ask = q => window.wpaBotAnswer(q);
 
-  assert.match(ask('What is the capital of Brunei?'), /Brunei/);
-  assert.doesNotMatch(ask('What is the capital of Brunei?'), /^BASE:/);
+  const bruneiCapital = ask('What is the capital of Brunei?');
+  assert.match(bruneiCapital, /Brunei/);
+  assert.doesNotMatch(bruneiCapital, /^BASE:/);
   assert.match(ask('What is the population of Brunei?'), /452,524/);
   assert.match(ask('Give me the full country profile of Brunei.'), /Country \/ entity: Brunei/);
+
+  const bruneiDay = ask('What is the national day of Brunei?');
+  assert.doesNotMatch(bruneiDay, /^BASE:/);
+  assert.match(bruneiDay, /No active national-day record/i);
 
   const eagleList = ask('Which countries have an eagle on the flag?');
   assert.match(eagleList, /Albania/);
