@@ -82,3 +82,13 @@
   setTimeout(install,2800);
   setTimeout(install,4500);
 })();
+
+/* Final deterministic hardening layer for OICP-grade Symbols demos. */
+(function(){
+  if(window.__WPA_SYMBOLS_OICP_HARDENING_LOADER_V1__) return;
+  window.__WPA_SYMBOLS_OICP_HARDENING_LOADER_V1__=true;
+  var script=document.createElement('script');
+  script.src='./wpa-symbols-oicp-hardening-v1.js?v=20260911-1';
+  script.async=false;
+  document.head.appendChild(script);
+})();
