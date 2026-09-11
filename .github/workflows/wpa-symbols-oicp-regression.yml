@@ -1,0 +1,32 @@
+name: WPA Symbols OICP regression
+
+on:
+  pull_request:
+    paths:
+      - 'wpaws/protocol-symbols/**'
+      - 'scripts/wpa-symbols-oicp-regression.cjs'
+      - '.github/workflows/wpa-symbols-oicp-regression.yml'
+  push:
+    branches:
+      - 'fix/symbols-oicp-hardening-20260911'
+    paths:
+      - 'wpaws/protocol-symbols/**'
+      - 'scripts/wpa-symbols-oicp-regression.cjs'
+      - '.github/workflows/wpa-symbols-oicp-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check JavaScript syntax
+        run: |
+          node --check wpaws/protocol-symbols/wpa-symbols-oicp-hardening-v1.js
+          node --check wpaws/protocol-symbols/wpa-symbols-serbia-kosovo-case-v1.js
+          node --check scripts/wpa-symbols-oicp-regression.cjs
+      - name: Run OICP deterministic regression
+        run: node scripts/wpa-symbols-oicp-regression.cjs
