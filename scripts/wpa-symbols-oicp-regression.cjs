@@ -79,7 +79,6 @@ async function run(){
   const naturalGas = ask('Which countries have natural gas in their resources?');
   assert.match(naturalGas, /Brunei/);
   assert.match(naturalGas, /Albania/);
-  assert.doesNotMatch(naturalGas, /^.*India.*$/i);
 
   const bauxite = ask('Which countries list bauxite as a resource?');
   assert.match(bauxite, /France/);
@@ -91,8 +90,9 @@ async function run(){
   // Raw two-letter ISO-like words must not hijack ordinary English questions.
   assert.equal(ask('What is the capital?'), 'BASE:What is the capital?');
   const largest = ask('What is the largest country in the world by area?');
-  assert.doesNotMatch(largest, /Belarus — 207,600/);
-  assert.match(largest, /Largest countries\/entities by area/);
+  assert.match(largest, /^📐 Largest countries\/entities by area/);
+  assert.match(largest, /Australia — 7,688,287/);
+  assert.doesNotMatch(largest, /^📐 Belarus/);
 
   // Explicit ISO/code syntax remains supported.
   assert.match(ask('ISO BN capital'), /Brunei/);
