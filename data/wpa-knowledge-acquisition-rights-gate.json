@@ -1,0 +1,53 @@
+{
+  "schema": "wpa-knowledge-acquisition-rights-gate/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-12",
+  "status": "CANONICAL_INTERNAL_GOVERNANCE_EXTENSION",
+  "doctrinal_package": "R13",
+  "name": "WPA Knowledge Acquisition & Rights Gate",
+  "acronym": "KARG",
+  "core_rule": "Discovery is not permission. Access is not a licence. The ability to ingest knowledge does not create the right to appropriate it.",
+  "pipeline": [
+    "SOURCE_IDENTITY",
+    "ACCESS_STATUS",
+    "RIGHTS_BASIS",
+    "PERMITTED_USE",
+    "RETENTION_AUTHORITY",
+    "ATTRIBUTION",
+    "PROVENANCE",
+    "HUMAN_OR_POLICY_GATE"
+  ],
+  "decision_rules": {
+    "pirated_source": "BLOCK",
+    "login_captcha_or_paywall_bypass": "BLOCK",
+    "unclear_rights": "METADATA_OR_DISCOVERY_ONLY",
+    "restricted_external": "DISCOVERY_ONLY",
+    "open_license": "ALLOW_WITH_LICENSE_AND_ATTRIBUTION",
+    "public_domain": "ALLOW_WITH_PROVENANCE",
+    "authorised_full_text": "ALLOW_WITH_PROVENANCE_AND_RETENTION_SCOPE"
+  },
+  "persistent_full_text_requirements": [
+    "source_identity",
+    "access_status",
+    "rights_basis",
+    "permitted_use",
+    "retention_authority",
+    "attribution",
+    "provenance",
+    "applicable_human_gate"
+  ],
+  "forbidden": [
+    "silent_full_text_ingestion_from_restricted_platforms",
+    "access_control_bypass",
+    "copyright_harvesting",
+    "rights_assumption_from_technical_access",
+    "redistribution_without_rights_basis"
+  ],
+  "signature_rule": "Build the world's knowledge map, not a shadow library.",
+  "references": [
+    "/data/wpa-global-scholarly-knowledge-layer.json",
+    "/data/wpa-preventive-source-compliance-gate.json",
+    "/data/wpa-human-gate-policy.json"
+  ],
+  "source_note": "Bartz v. Anthropic is used as a contemporary legal-governance case distinguishing technical acquisition and training utility from source-rights compliance."
+}
