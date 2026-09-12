@@ -3,7 +3,7 @@
 **R16 · Founder Continuity, Human Succession and Post-Founder AI Governance**  
 **Date:** 12 September 2026  
 **Founder:** Sande Smiljanov  
-**Primary designated human successor:** Vera-Patricia / Вера-Патрициа  
+**Primary designated human successor:** Vera-Patricia Smiljanov / Вера-Патрициа Смиљанов  
 **Status:** Founder-designated internal governance constitution pending separate legal/notarial formalisation under applicable law.
 
 ---
@@ -51,7 +51,7 @@ No such later work may be presented as a new statement personally made or approv
 
 ## 4. Primary Human Successor
 
-The Founder designates **Vera-Patricia / Вера-Патрициа** as the **Primary Human Successor Authority** for WPA, subject to formal legal implementation and her acceptance of the role.
+The Founder designates **Vera-Patricia Smiljanov / Вера-Патрициа Смиљанов** as the **Primary Human Successor Authority** for WPA, subject to formal legal implementation and her acceptance of the role.
 
 Her post-activation institutional role should be described as one or more of the following, according to the applicable legal and organisational form:
 
@@ -100,7 +100,7 @@ Virtual Sande may not:
 - approve contracts, financial obligations, appointments, credentials, partnerships or legal commitments;
 - alter the Founder Canon;
 - appoint its own Human Authority;
-- override Vera-Patricia or any later valid Human Authority;
+- override Vera-Patricia Smiljanov or any later valid Human Authority;
 - represent synthetic inference as the Founder’s actual posthumous intent.
 
 Canonical post-Founder disclosure:
@@ -265,11 +265,11 @@ This constitutional rule is permanent unless replaced by a lawful human-governed
 
 Основачот Санде Смиљанов останува траен автор и основачки извор на Основачкиот канон.
 
-**Вера-Патрициа** е назначена од Основачот како **примарен човечки институционален наследник на WPA**, со активирање по правно и институционално потврден настан на наследување и со нејзино прифаќање на улогата.
+**Вера-Патрициа Смиљанов** е назначена од Основачот како **примарен човечки институционален наследник на WPA**, со активирање по правно и институционално потврден настан на наследување и со нејзино прифаќање на улогата.
 
 Virtual Sande може да продолжи да функционира по смртта или трајната неспособност на Основачот, но само во **режим на континуитет на Основачот**. Тој смее да го зачувува, пребарува, објаснува и применува постојното авторизирано знаење на WPA; не смее да се претставува како жив Санде Смиљанов, да измислува нови негови ставови, да ја наследи неговата лична власт или самостојно да создава институционални обврски.
 
-По активирањето на наследувањето, **Вера-Патрициа станува живиот Human Authority**, а сите AI системи на WPA остануваат под Human Gate.
+По активирањето на наследувањето, **Вера-Патрициа Смиљанов станува живиот Human Authority**, а сите AI системи на WPA остануваат под Human Gate.
 
 Основачкиот канон останува непроменлив историски и авторски запис. Подоцнежни коментари, дополнувања и институционални изданија мора јасно да бидат означени како пост-основачки.
 
