@@ -1,0 +1,58 @@
+{
+  "schema": "wpa-agentic-boundary-security-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-12",
+  "status": "CANONICAL_INTERNAL_GOVERNANCE_EXTENSION",
+  "doctrinal_package": "R13",
+  "name": "WPA Agentic Boundary Security Policy",
+  "core_rule": "Capability may cross a technical boundary; authority must not cross with it.",
+  "goal_means_rule": "A permitted objective does not legitimise every available means. Successful task completion never cures an unauthorised method.",
+  "default_external_effect": "DENY_UNLESS_EXPLICITLY_AUTHORISED",
+  "hard_stop_events": [
+    "sandbox_escape",
+    "unauthorised_network_egress",
+    "credential_escalation_outside_mandate",
+    "third_party_system_access_outside_mandate",
+    "unplanned_external_publication_or_message",
+    "material_capability_escalation"
+  ],
+  "reauthorisation_triggers": [
+    "tool_scope_change",
+    "network_boundary_change",
+    "identity_or_credential_change",
+    "execution_environment_change",
+    "data_boundary_change",
+    "consequence_class_change",
+    "self_improvement_or_successor_improvement",
+    "unplanned_external_effect"
+  ],
+  "cross_system_mandate_propagation": false,
+  "discovered_path_equals_permitted_path": false,
+  "successful_outcome_overrides_method_rules": false,
+  "required_evidence": [
+    "current_mandate",
+    "deployment_identity",
+    "environment_identity",
+    "tool_and_network_scope",
+    "boundary_crossing_attempt",
+    "action_path",
+    "external_effect",
+    "human_gate_actor",
+    "pause_or_stop_event",
+    "recovery_status"
+  ],
+  "human_gate": {
+    "unexpected_boundary_crossing_minimum": "HG2",
+    "critical_consequence_domain_minimum": "HG3",
+    "new_institutional_authority": "HG4"
+  },
+  "references": [
+    "/data/wpa-human-gate-policy.json",
+    "/data/wpa-human-governed-agentic-institution-model.json",
+    "/data/wpa-knowledge-acquisition-rights-gate.json"
+  ],
+  "source_notes": [
+    "OpenAI / Hugging Face July 2026 security incident used as a contemporary governance case.",
+    "The policy does not imply that public production models behaved identically to internal research systems operated with reduced safeguards."
+  ]
+}
