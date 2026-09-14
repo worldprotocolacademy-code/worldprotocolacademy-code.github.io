@@ -1,0 +1,72 @@
+name: WPA WP-014 Canonical Sync 2026-09-14
+
+on:
+  push:
+    paths:
+      - 'scripts/wpa-wp014-sync-20260914.py'
+      - '.github/workflows/wpa-wp014-sync-20260914.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply WP-014 canonical synchronization
+        run: python scripts/wpa-wp014-sync-20260914.py
+
+      - name: Diff integrity
+        run: git diff --check
+
+      - name: Verify WP-014 invariants
+        shell: bash
+        run: |
+          grep -q '10.5281/zenodo.22749104' working-papers/index.html
+          grep -q '10.5281/zenodo.22749104' bibliography/index.html
+          grep -q 'WPA Working Papers · 14' scholar/index.html
+          grep -q 'citation_doi" content="10.5281/zenodo.22749104' scholar/wpa-wp-014.html
+          grep -q '"total_records": 24' data/wpa-canonical-public-facts.json
+          grep -q '"working_papers": 14' data/wpa-canonical-public-facts.json
+          grep -q '"total_records": 24' data/wpa-canonical-metrics-status.json
+          grep -q '"working_papers": 14' data/wpa-canonical-metrics-status.json
+
+      - name: Commit synchronized canonical corpus
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes required.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            working-papers/index.html \
+            bibliography/index.html \
+            scholar/index.html \
+            scholar/wpa-wp-014.html \
+            wpa-scholar-records-2026.ris \
+            wpa-scholar-records-2026.bib \
+            sitemap-scholar.xml \
+            data/wpa-canonical-public-facts.json \
+            data/wpa-canonical-metrics-status.json \
+            wpa-metrics-status.html \
+            papers.html \
+            scripts/site_quality_check.py \
+            scripts/wpa-performance-core.js \
+            scripts/wpa-wp014-runtime-sync-20260914.js \
+            README.md \
+            docs/WPA_CANONICAL_REFERENCE_STATE_2026-09-14.md
+          git commit -m 'Synchronize WP-014 across canonical WPA publication surfaces'
+          git push
