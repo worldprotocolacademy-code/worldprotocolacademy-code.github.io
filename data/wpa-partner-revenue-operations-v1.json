@@ -1,16 +1,19 @@
 {
-  "schema": "wpa-partner-revenue-operations/1.0",
-  "version": "1.0.0",
-  "updated": "2026-08-27",
-  "status": "PRECOMMERCIAL_OPERATIONS_ACTIVE_COMMERCIAL_ACTIVATION_INACTIVE",
-  "purpose": "Operationalise the WPA 17+3 partner architecture now through discovery, due diligence, non-binding dialogue and benefit design while keeping payments, paid memberships, contracts, benefit redemption and official credential issuance fail-closed until the required institutional activation gates are satisfied.",
+  "schema": "wpa-partner-revenue-operations/1.1",
+  "version": "1.1.0",
+  "updated": "2026-09-14",
+  "status": "STRATEGIC_NETWORK_AND_PRECOMMERCIAL_OPERATIONS_ACTIVE_COMMERCIAL_ACTIVATION_INACTIVE",
+  "purpose": "Operationalise the WPA strategic-network and 17+3 partner architecture through private prospect mapping, public-source research, prioritisation, discovery, due diligence, non-binding dialogue and benefit design while keeping public partner claims, payments, paid memberships, contracts, benefit redemption and official credential issuance fail-closed until the required evidence, permissions and institutional activation gates are satisfied.",
   "activation_truth": {
+    "strategic_network_mapping_active": true,
+    "private_prospect_registry_active": true,
     "partner_discovery_active": true,
     "due_diligence_active": true,
     "partner_classification_active": true,
     "expressions_of_interest_active": true,
     "non_binding_dialogue_active": true,
     "benefit_design_active": true,
+    "public_prospect_naming_as_partner_active": false,
     "commercial_offers_active": false,
     "payments_active": false,
     "paid_memberships_active": false,
@@ -20,13 +23,66 @@
     "partner_logo_publication_without_confirmation": false,
     "human_gate_required": true
   },
+  "relationship_status_governance": {
+    "levels": [
+      {
+        "id": "strategic_network_discovery_pool",
+        "label": "WPA Strategic Network / Partner Discovery Pool",
+        "definition": "Internal mapping of relevant people and organisations from public professional sources. Presence in the registry does not create partnership, endorsement, affiliation or obligation.",
+        "public_partner_claim": false
+      },
+      {
+        "id": "cooperation_under_exploration",
+        "label": "Institutional Dialogue / Cooperation Under Exploration",
+        "definition": "A real enquiry, exchange of materials, expression of interest or non-binding dialogue exists, but no formal partner status has been created.",
+        "public_partner_claim": false
+      },
+      {
+        "id": "formal_partner",
+        "label": "Formal WPA Partner",
+        "definition": "May be used only after documented formalisation through an appropriate instrument such as an MoU, cooperation agreement, contract, letter of cooperation or other authorised act, plus WPA Human Gate approval.",
+        "public_partner_claim": true,
+        "evidence_required": true,
+        "human_gate_required": true
+      }
+    ],
+    "public_naming_policy": [
+      "A prospect, contact candidate or organisation under research must not be presented publicly as a partner, prospective partner, supporter or affiliated organisation solely because it appears in an internal registry.",
+      "Public partner naming requires evidence of formalisation and WPA Human Gate approval.",
+      "Logo use requires relevant permission before publication.",
+      "Concrete prospect records belong in a private operational registry, not in the public website or public repository."
+    ]
+  },
+  "strategic_network_state_machine": [
+    "IDENTIFIED",
+    "RESEARCHED",
+    "PRIORITY_A",
+    "PRIORITY_B",
+    "PRIORITY_C",
+    "CONTACT_CANDIDATE",
+    "CONTACTED",
+    "DIALOGUE",
+    "DUE_DILIGENCE",
+    "MOU_OR_AGREEMENT_DRAFT",
+    "FORMAL_PARTNER"
+  ],
+  "strategic_network_rules": {
+    "priority_labels_are_internal_only": true,
+    "public_sources_only_for_initial_mapping": true,
+    "private_or_sensitive_data_collection_prohibited": true,
+    "mass_outreach_prohibited": true,
+    "selective_value_based_contact_only": true,
+    "formal_partner_requires_evidence": true
+  },
   "operating_principles": [
     "value_before_revenue",
     "credibility_before_conversion",
     "partner_fit_before_logo",
     "evidence_before_claim",
+    "relationship_status_must_match_evidence",
     "benefit_relevance_before_discount",
     "privacy_and_data_minimisation",
+    "no_public_prospect_registry",
     "no_contract_or_payment_without_institutional_activation",
     "human_authority_final"
   ],
@@ -75,190 +131,31 @@
     "human_review_required": true
   },
   "partner_slots": [
-    {
-      "slot": 1,
-      "id": "travel_mobility",
-      "label": "Travel & Mobility",
-      "purpose": "Travel, transport, business routes and executive movement support relevant to WPA members and institutional activity.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 2,
-      "id": "hotels_hospitality",
-      "label": "Hotels & Hospitality",
-      "purpose": "Executive stays, meeting hospitality and protocol-appropriate accommodation contexts.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 3,
-      "id": "restaurants_formal_dining",
-      "label": "Restaurants & Formal Dining",
-      "purpose": "Formal hosting, dining etiquette and representative hospitality contexts.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 4,
-      "id": "event_venues",
-      "label": "Event Venues",
-      "purpose": "Conference, training and institutional gathering spaces with protocol suitability.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 5,
-      "id": "publishing_print",
-      "label": "Publishing & Print",
-      "purpose": "Books, certificates, formal documentation, secure print and branded material production.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 6,
-      "id": "books_academic_retail",
-      "label": "Books & Academic Retail",
-      "purpose": "Academic distribution, bookstores and knowledge-commerce channels.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 7,
-      "id": "language_translation",
-      "label": "Language & Translation",
-      "purpose": "Professional English, translation, formal correspondence and multilingual support.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 8,
-      "id": "media_production",
-      "label": "Media & Production",
-      "purpose": "Video, podcast, studio, public communication and content production support.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 9,
-      "id": "audio_laboratory",
-      "label": "Audio & Laboratory",
-      "purpose": "Audio tools, laboratory support, voice clarity and premium production infrastructure.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 10,
-      "id": "apparel_presence",
-      "label": "Apparel & Presence",
-      "purpose": "Business appearance, executive presence, ceremonial readiness and public image support.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 11,
-      "id": "gifts_protocol_items",
-      "label": "Gifts & Protocol Items",
-      "purpose": "Protocol gifts, formal gifting and ceremonial object categories.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 12,
-      "id": "identity_qr_solutions",
-      "label": "Identity & QR Solutions",
-      "purpose": "Card production, serial systems, QR verification and controlled identity infrastructure.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 13,
-      "id": "cloud_infrastructure",
-      "label": "Cloud & Infrastructure",
-      "purpose": "Hosting, storage, backup, resilience and secure platform operations.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 14,
-      "id": "payments_commerce",
-      "label": "Payments & Commerce",
-      "purpose": "Future governed checkout, membership, subscription and transaction rails after legal and financial activation.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false,
-      "activation_note": "Provider discovery is allowed; transaction activation is not."
-    },
-    {
-      "slot": 15,
-      "id": "legal_compliance",
-      "label": "Legal & Compliance",
-      "purpose": "Legal readiness, terms, privacy, rights, credential governance and commercial activation support.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 16,
-      "id": "executive_services",
-      "label": "Executive Services",
-      "purpose": "High-touch support for executive-facing and protocol-sensitive professional contexts.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    },
-    {
-      "slot": 17,
-      "id": "educational_extensions",
-      "label": "Educational Extensions",
-      "purpose": "Micro-courses, specialist packs, webinars, toolkits and structured learning extensions.",
-      "status": "DISCOVERY_OPEN",
-      "candidate_name": null,
-      "public_partner_claim": false
-    }
+    {"slot":1,"id":"travel_mobility","label":"Travel & Mobility","purpose":"Travel, transport, business routes and executive movement support relevant to WPA members and institutional activity.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":2,"id":"hotels_hospitality","label":"Hotels & Hospitality","purpose":"Executive stays, meeting hospitality and protocol-appropriate accommodation contexts.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":3,"id":"restaurants_formal_dining","label":"Restaurants & Formal Dining","purpose":"Formal hosting, dining etiquette and representative hospitality contexts.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":4,"id":"event_venues","label":"Event Venues","purpose":"Conference, training and institutional gathering spaces with protocol suitability.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":5,"id":"publishing_print","label":"Publishing & Print","purpose":"Books, certificates, formal documentation, secure print and branded material production.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":6,"id":"books_academic_retail","label":"Books & Academic Retail","purpose":"Academic distribution, bookstores and knowledge-commerce channels.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":7,"id":"language_translation","label":"Language & Translation","purpose":"Professional English, translation, formal correspondence and multilingual support.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":8,"id":"media_production","label":"Media & Production","purpose":"Video, podcast, studio, public communication and content production support.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":9,"id":"audio_laboratory","label":"Audio & Laboratory","purpose":"Audio tools, laboratory support, voice clarity and premium production infrastructure.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":10,"id":"apparel_presence","label":"Apparel & Presence","purpose":"Business appearance, executive presence, ceremonial readiness and public image support.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":11,"id":"gifts_protocol_items","label":"Gifts & Protocol Items","purpose":"Protocol gifts, formal gifting and ceremonial object categories.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":12,"id":"identity_qr_solutions","label":"Identity & QR Solutions","purpose":"Card production, serial systems, QR verification and controlled identity infrastructure.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":13,"id":"cloud_infrastructure","label":"Cloud & Infrastructure","purpose":"Hosting, storage, backup, resilience and secure platform operations.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":14,"id":"payments_commerce","label":"Payments & Commerce","purpose":"Future governed checkout, membership, subscription and transaction rails after legal and financial activation.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false,"activation_note":"Provider discovery is allowed; transaction activation is not."},
+    {"slot":15,"id":"legal_compliance","label":"Legal & Compliance","purpose":"Legal readiness, terms, privacy, rights, credential governance and commercial activation support.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":16,"id":"executive_services","label":"Executive Services","purpose":"High-touch support for executive-facing and protocol-sensitive professional contexts.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false},
+    {"slot":17,"id":"educational_extensions","label":"Educational Extensions","purpose":"Micro-courses, specialist packs, webinars, toolkits and structured learning extensions.","status":"DISCOVERY_OPEN","candidate_name":null,"public_partner_claim":false}
   ],
   "strategic_rails": [
-    {
-      "id": "institutional",
-      "label": "Institutional",
-      "scope": "Ministries, embassies, public institutions, universities and professional organisations."
-    },
-    {
-      "id": "executive_ambassadorial",
-      "label": "Executive / Ambassadorial",
-      "scope": "Leadership, diplomatic, ceremonial and other high-trust front-facing environments."
-    },
-    {
-      "id": "international_comparative",
-      "label": "International Comparative",
-      "scope": "Cross-border, comparative and international partnership relations."
-    }
+    {"id":"institutional","label":"Institutional","scope":"Ministries, embassies, public institutions, universities and professional organisations."},
+    {"id":"executive_ambassadorial","label":"Executive / Ambassadorial","scope":"Leadership, diplomatic, ceremonial and other high-trust front-facing environments."},
+    {"id":"international_comparative","label":"International Comparative","scope":"Cross-border, comparative and international partnership relations."}
   ],
   "benefit_design": {
-    "states": [
-      "CONCEPT",
-      "VALUE_DEFINED",
-      "ELIGIBILITY_DEFINED",
-      "LEGAL_REVIEW_REQUIRED",
-      "PARTNER_CONFIRMATION_REQUIRED",
-      "READY_FOR_ACTIVATION",
-      "ACTIVE",
-      "PAUSED",
-      "WITHDRAWN"
-    ],
+    "states": ["CONCEPT","VALUE_DEFINED","ELIGIBILITY_DEFINED","LEGAL_REVIEW_REQUIRED","PARTNER_CONFIRMATION_REQUIRED","READY_FOR_ACTIVATION","ACTIVE","PAUSED","WITHDRAWN"],
     "current_maximum_state": "LEGAL_REVIEW_REQUIRED",
     "rules": [
       "No benefit may be advertised before partner confirmation and WPA Human Gate approval.",
@@ -268,18 +165,20 @@
     ]
   },
   "revenue_engines": [
-    {"id": 1, "label": "Programmes", "current_status": "ARCHITECTURE_ACTIVE_REVENUE_INACTIVE"},
-    {"id": 2, "label": "Certification", "current_status": "FRAMEWORK_ACTIVE_ISSUANCE_AND_REVENUE_INACTIVE"},
-    {"id": 3, "label": "WPA Card", "current_status": "MEMBERSHIP_MODEL_ACTIVE_PAID_MEMBERSHIP_INACTIVE"},
-    {"id": 4, "label": "WPAWS", "current_status": "TOOLING_ACTIVE_PAID_ACCESS_INACTIVE"},
-    {"id": 5, "label": "Books & Digital Materials", "current_status": "PUBLICATION_LAYER_ACTIVE_COMMERCIAL_DISPLAY_FROZEN"},
-    {"id": 6, "label": "Institutional Formats", "current_status": "ENQUIRY_AND_BRIEFING_ACTIVE_CONTRACTING_INACTIVE"}
+    {"id":1,"label":"Programmes","current_status":"ARCHITECTURE_ACTIVE_REVENUE_INACTIVE"},
+    {"id":2,"label":"Certification","current_status":"FRAMEWORK_ACTIVE_ISSUANCE_AND_REVENUE_INACTIVE"},
+    {"id":3,"label":"WPA Card","current_status":"MEMBERSHIP_MODEL_ACTIVE_PAID_MEMBERSHIP_INACTIVE"},
+    {"id":4,"label":"WPAWS","current_status":"TOOLING_ACTIVE_PAID_ACCESS_INACTIVE"},
+    {"id":5,"label":"Books & Digital Materials","current_status":"PUBLICATION_LAYER_ACTIVE_COMMERCIAL_DISPLAY_FROZEN"},
+    {"id":6,"label":"Institutional Formats","current_status":"ENQUIRY_AND_BRIEFING_ACTIVE_CONTRACTING_INACTIVE"}
   ],
   "human_gate": {
     "required_for": [
       "candidate_shortlisting",
+      "priority_assignment_for_external_action",
       "external_partner_contact_using_wpa_name",
       "non_binding_proposal_release",
+      "formal_partner_status_assignment",
       "partner_logo_publication",
       "benefit_publication",
       "commercial_terms",
