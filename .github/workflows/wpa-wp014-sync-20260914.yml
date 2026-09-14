@@ -33,6 +33,11 @@ jobs:
       - name: Apply WP-014 canonical synchronization
         run: python scripts/wpa-wp014-sync-20260914.py
 
+      - name: Normalize generated text
+        shell: bash
+        run: |
+          sed -i 's/[[:space:]]\+$//' wpa-scholar-records-2026.ris
+
       - name: Diff integrity
         run: git diff --check
 
