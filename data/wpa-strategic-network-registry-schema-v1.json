@@ -1,0 +1,90 @@
+{
+  "schema": "wpa-strategic-network-registry/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-14",
+  "status": "PRIVATE_RECORDS_ONLY_PUBLIC_SCHEMA",
+  "purpose": "Define the minimum governed structure for a private WPA strategic-network and partner-discovery registry without publishing concrete prospect records in the public repository or website.",
+  "privacy_boundary": {
+    "concrete_records_location": "PRIVATE_ONLY",
+    "public_repository_may_contain_records": false,
+    "public_website_may_list_unconfirmed_prospects": false,
+    "public_sources_only_for_initial_mapping": true,
+    "private_or_sensitive_data_collection_prohibited": true,
+    "data_minimisation_required": true
+  },
+  "source_cohort_taxonomy": [
+    "AI_TECH_SUMMIT_SKOPJE_2026",
+    "SALES_CONGRESS_BELGRADE_2026",
+    "OICP_NETWORK",
+    "DIRECT_PROFESSIONAL_CONTACT",
+    "INSTITUTIONAL_REFERRAL",
+    "PUBLIC_EVENT_OR_CONFERENCE",
+    "PUBLICATION_OR_RESEARCH_NETWORK",
+    "OTHER_VERIFIED_PUBLIC_SOURCE"
+  ],
+  "relationship_statuses": [
+    "IDENTIFIED",
+    "RESEARCHED",
+    "CONTACT_CANDIDATE",
+    "CONTACTED",
+    "DIALOGUE",
+    "DUE_DILIGENCE",
+    "MOU_OR_AGREEMENT_DRAFT",
+    "FORMAL_PARTNER",
+    "PAUSED",
+    "DO_NOT_PROCEED"
+  ],
+  "priority_labels": [
+    "A_PLUS",
+    "A",
+    "B",
+    "C"
+  ],
+  "relationship_access_labels": [
+    "WARM_DIRECT",
+    "WARM_INDIRECT",
+    "SECOND_DEGREE_OR_MUTUAL",
+    "COLD_PUBLIC",
+    "NO_CONTACT_ACTION"
+  ],
+  "record_fields": [
+    {"id":"record_id","required":true,"public":false,"description":"Internal non-semantic identifier."},
+    {"id":"person_or_organisation_name","required":true,"public":false,"description":"Professional name as shown in a verified public source."},
+    {"id":"record_type","required":true,"public":false,"allowed":["PERSON","ORGANISATION"]},
+    {"id":"current_role","required":false,"public":false,"description":"Current public professional role; time-stamped and source-backed."},
+    {"id":"organisation","required":false,"public":false,"description":"Current public professional organisation; time-stamped and source-backed."},
+    {"id":"country_or_region","required":false,"public":false,"description":"Broad professional geography only; no private location data."},
+    {"id":"source_cohort","required":true,"public":false,"description":"Where the record entered WPA discovery, using the controlled cohort taxonomy."},
+    {"id":"source_reference","required":true,"public":false,"description":"Verified public URL, event programme, official profile or equivalent provenance."},
+    {"id":"source_checked_at","required":true,"public":false,"description":"Date of last public-source verification."},
+    {"id":"topic_tags","required":false,"public":false,"description":"Controlled professional-fit tags such as AI governance, agentic AI, human-centred AI, robotics, infrastructure, protocol, education or institutional communication."},
+    {"id":"strategic_relevance","required":true,"public":false,"description":"A+/A/B/C internal relevance assessment. Prestige alone is not sufficient."},
+    {"id":"relevance_rationale","required":true,"public":false,"description":"Short evidence-based explanation of fit with WPA mission, projects or programmes."},
+    {"id":"relationship_access","required":true,"public":false,"description":"Separate relationship-access assessment; must not be conflated with strategic relevance."},
+    {"id":"relationship_status","required":true,"public":false,"description":"Current state in the governed relationship state machine."},
+    {"id":"next_action","required":false,"public":false,"description":"Specific, value-based next action if Human Gate permits contact."},
+    {"id":"human_gate_required","required":true,"public":false,"default":true},
+    {"id":"public_partner_claim","required":true,"public":false,"default":false},
+    {"id":"formalisation_evidence","required":false,"public":false,"description":"Only populated when an authorised cooperation instrument exists."},
+    {"id":"notes","required":false,"public":false,"description":"Minimal professional notes; no sensitive or speculative personal profiling."}
+  ],
+  "governance_rules": [
+    "Strategic relevance and relationship access are separate dimensions.",
+    "Event participation or speaker status does not create affiliation with WPA.",
+    "Presence in the private registry does not create endorsement, partnership or obligation.",
+    "A company affiliation on a speaker profile does not imply that the company endorses WPA or is itself a WPA prospect unless separately assessed.",
+    "Mass outreach is prohibited; contact must be selective, relevant and value-based.",
+    "Do not infer private beliefs, sensitive traits or non-public relationships.",
+    "Do not publish prospect names, logos or partner claims without evidence, permission where required, and Human Gate approval.",
+    "Formal WPA Partner status requires documented formalisation and Human Gate approval."
+  ],
+  "human_gate_triggers": [
+    "external_contact_using_wpa_name",
+    "priority_assignment_for_external_action",
+    "non_binding_proposal_release",
+    "formal_partner_status_assignment",
+    "logo_or_brand_publication",
+    "commercial_terms",
+    "contracting"
+  ]
+}
