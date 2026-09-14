@@ -6,7 +6,7 @@ def fail(m): errors.append(m)
 def text(r): return (ROOT/r).read_text(encoding="utf-8",errors="replace")
 metrics=json.loads(text("data/wpa-canonical-metrics-status.json")); ap=metrics.get("academic_publications",{}); zen=metrics.get("zenodo_doi_corpus",{})
 if (ap.get("total"),ap.get("monographs_and_handbooks"),ap.get("doctoral_dissertations"),ap.get("scientific_papers_and_contributions")) != (26,6,1,19): fail("Academic metrics must remain 26 = 6 + 1 + 19 unless canonically updated.")
-if (zen.get("total_records"),zen.get("working_papers"),zen.get("protocol_notes"),zen.get("global_strategic_plans")) != (23,13,9,1): fail("Zenodo metrics must remain 23 = 13 + 9 + 1 unless canonically updated.")
+if (zen.get("total_records"),zen.get("working_papers"),zen.get("protocol_notes"),zen.get("global_strategic_plans")) != (24,14,9,1): fail("Zenodo metrics must remain 24 = 14 + 9 + 1 unless canonically updated.")
 active=["index.html","institute.html","mk.json","index/mk.json","locales/index/mk.json","locales/locales/index/mk.json","scripts/wpa-about-interactive.js"]
 for rel in active:
     if not (ROOT/rel).exists(): continue
