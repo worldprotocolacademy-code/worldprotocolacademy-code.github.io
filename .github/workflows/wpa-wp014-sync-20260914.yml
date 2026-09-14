@@ -6,6 +6,10 @@ on:
     paths:
       - 'scripts/wpa-wp014-sync-20260914.py'
       - '.github/workflows/wpa-wp014-sync-20260914.yml'
+  pull_request:
+    paths:
+      - 'scripts/wpa-wp014-sync-20260914.py'
+      - '.github/workflows/wpa-wp014-sync-20260914.yml'
   workflow_dispatch:
 
 permissions:
@@ -15,10 +19,11 @@ jobs:
   synchronize:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -70,4 +75,4 @@ jobs:
             README.md \
             docs/WPA_CANONICAL_REFERENCE_STATE_2026-09-14.md
           git commit -m 'Synchronize WP-014 across canonical WPA publication surfaces'
-          git push
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
