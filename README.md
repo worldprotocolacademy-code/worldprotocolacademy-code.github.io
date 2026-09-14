@@ -9,7 +9,7 @@ World Protocol Academy is an **independent digital educational, research, author
 WPA keeps two publication corpora separate:
 
 - **26 academic publications** = 6 monographs/handbooks + 1 doctoral dissertation + 19 scientific papers/contributions.
-- **23 public Zenodo records** = 13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
+- **24 public Zenodo records** = 14 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
 
 Canonical references:
 
