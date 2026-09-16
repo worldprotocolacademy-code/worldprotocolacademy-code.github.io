@@ -28,7 +28,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Apply strict Macedonian visible-UI cleanup
-        run: python scripts/translator_strict_mk_cleanup.py
+        run: |
+          python scripts/translator_strict_mk_cleanup.py
+          sed -i 's/[[:space:]]*$//' index.html
       - name: Run current translator gates
         run: |
           python scripts/translator_architecture_check.py
