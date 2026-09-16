@@ -23,6 +23,8 @@
     const map=document.querySelector('[data-i18n="map.desc"]');
     if(hero)hero.textContent=copy.hero;
     if(map)map.textContent=copy.map;
+    const description=document.querySelector('meta[name="description"]');
+    if(description)description.setAttribute('content',`10 free WPA tools for protocol and diplomacy, including a reference map synced to the current canonical Master List (${meta.total} records / ${meta.distinct} distinct external institutions).`);
     document.querySelectorAll('.next-step-link').forEach((a)=>{
       if(!/Global Protocol Reference Map/i.test(a.textContent||''))return;
       a.textContent=lang()==='en'
