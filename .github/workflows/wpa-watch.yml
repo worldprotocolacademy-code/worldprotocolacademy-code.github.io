@@ -1,10 +1,12 @@
 name: WPA Watch
 
 on:
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
     inputs:
       approval:
-        description: "Type APPROVE_WPA_WATCH_WRITE to allow this run to write generated feed files"
+        description: "Type APPROVE_WPA_WATCH_WRITE to allow this manual run to write generated feed files"
         required: true
         default: "DO_NOT_APPROVE"
         type: string
@@ -18,7 +20,7 @@ concurrency:
 
 jobs:
   watch:
-    if: ${{ inputs.approval == 'APPROVE_WPA_WATCH_WRITE' }}
+    if: ${{ github.event_name == 'schedule' || inputs.approval == 'APPROVE_WPA_WATCH_WRITE' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -30,6 +32,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Setup Node 24
@@ -48,10 +51,30 @@ jobs:
       - name: Generate WPA Watch feed
         run: npm run watch
 
+      - name: Health gate before write
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const status=JSON.parse(fs.readFileSync('status.json','utf8'));
+          const items=JSON.parse(fs.readFileSync('items.json','utf8'));
+          const generated=new Date(status.generated);
+          const ageMinutes=(Date.now()-generated.getTime())/60000;
+          const fail=(m)=>{throw new Error(m)};
+          if(Number.isNaN(generated.getTime())||ageMinutes<0||ageMinutes>30) fail('status.generated is missing or stale');
+          if(!Array.isArray(items)||items.length<10) fail('WPA Watch produced fewer than 10 items');
+          if(Number(status.sources_total)!==Number(status.sources_live)+Number(status.sources_dead)) fail('source totals do not reconcile');
+          if(Number(status.sources_live)<4) fail('fewer than 4 source feeds are live');
+          if(Number(status.items_total)!==items.length) fail('items_total does not match items.json');
+          for(const [i,x] of items.entries()){
+            if(!x||!String(x.title||'').trim()||!String(x.source||'').trim()||!String(x.link||'').trim()) fail(`invalid item at index ${i}`);
+          }
+          console.log(`HEALTHY: ${items.length} items; ${status.sources_live}/${status.sources_total} sources live; age ${ageMinutes.toFixed(1)} min`);
+          NODE
+
       - name: Report
         run: npm run report
 
-      - name: Commit outputs
+      - name: Commit healthy outputs
         run: |
           cd ../..
           git config user.name "wpa-watch-bot"
@@ -63,5 +86,5 @@ jobs:
           else
             git commit -m "WPA Watch update $(date -u +%FT%TZ)"
             git pull --rebase origin main
-            git push origin main
+            git push origin HEAD:main
           fi

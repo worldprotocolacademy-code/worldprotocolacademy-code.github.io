@@ -1,0 +1,95 @@
+name: WPA Watch Recovery CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/wpa-watch.yml'
+      - '.github/workflows/wpa-journal-watch.yml'
+      - '.github/workflows/watch-recovery-ci.yml'
+      - 'tools/wpa-watch/aggregate.mjs'
+      - 'tools/wpa-watch/feeds.json'
+      - 'tools/wpa-watch/rss-config.json'
+      - 'generate-journal-watch.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax checks
+        run: |
+          node --check tools/wpa-watch/aggregate.mjs
+          node --check generate-journal-watch.mjs
+
+      - name: Feed policy and configuration
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const f=JSON.parse(fs.readFileSync('tools/wpa-watch/feeds.json','utf8'));
+          if(f.policy!=='RSS/Atom only. No scraping.') throw new Error('RSS/Atom-only policy changed');
+          if(!Array.isArray(f.feeds)||f.feeds.length<5) throw new Error('insufficient configured feeds');
+          for(const x of f.feeds){
+            if(!x.name||!/^https:\/\//.test(x.url||'')||!x.domain) throw new Error(`invalid feed config: ${JSON.stringify(x)}`);
+          }
+          JSON.parse(fs.readFileSync('tools/wpa-watch/rss-config.json','utf8'));
+          NODE
+
+      - name: Resilient aggregator contract
+        run: |
+          grep -F 'const maxAttempts = 3' tools/wpa-watch/aggregate.mjs
+          grep -F 'WorldProtocolAcademy-WPAWatch/1.3' tools/wpa-watch/aggregate.mjs
+          grep -F 'RSS/Atom only. No scraping.' tools/wpa-watch/aggregate.mjs
+          grep -F 'sources_live' tools/wpa-watch/aggregate.mjs
+          grep -F 'attempts' tools/wpa-watch/aggregate.mjs
+
+      - name: Scheduled Watch fail-closed contract
+        run: |
+          grep -F 'cron: "17 */6 * * *"' .github/workflows/wpa-watch.yml
+          grep -F "github.event_name == 'schedule'" .github/workflows/wpa-watch.yml
+          grep -F 'Health gate before write' .github/workflows/wpa-watch.yml
+          grep -F "Number(status.sources_live)<4" .github/workflows/wpa-watch.yml
+          grep -F "items.length<10" .github/workflows/wpa-watch.yml
+          grep -F 'git push origin HEAD:main' .github/workflows/wpa-watch.yml
+
+      - name: Journal chain and upstream freshness contract
+        run: |
+          grep -F 'workflows: ["WPA Watch"]' .github/workflows/wpa-journal-watch.yml
+          grep -F "github.event.workflow_run.conclusion == 'success'" .github/workflows/wpa-journal-watch.yml
+          grep -F 'Validate fresh WPA Watch upstream' .github/workflows/wpa-journal-watch.yml
+          grep -F 'MAX_UPSTREAM_AGE_HOURS = 8' generate-journal-watch.mjs
+          grep -F 'MIN_LIVE_SOURCES = 4' generate-journal-watch.mjs
+          grep -F 'MIN_ITEMS = 10' generate-journal-watch.mjs
+          grep -F 'refuses to publish an empty placeholder queue' generate-journal-watch.mjs
+          grep -F 'Topic candidates only. No automatic journal publication.' generate-journal-watch.mjs
+
+      - name: Canonical five-discipline thematic scope
+        run: |
+          grep -F 'new Set(["protocol", "diplomacy", "pr", "security", "communicology"])' generate-journal-watch.mjs
+          grep -F 'thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"]' generate-journal-watch.mjs
+          grep -F 'classification_version: "JW2.2"' generate-journal-watch.mjs
+          grep -F "queue.schema_version!=='2.2'||queue.classification_version!=='JW2.2'" .github/workflows/wpa-journal-watch.yml
+          grep -F "queue.thematic_scope.join(',')!=='protocol,diplomacy,public_relations,security,communicology'" .github/workflows/wpa-journal-watch.yml
+          if grep -F 'return "academic"' generate-journal-watch.mjs; then
+            echo 'academic must not be a sixth Journal Watch discipline' >&2
+            exit 1
+          fi
+
+      - name: Existing generated JSON remains parseable
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('tools/wpa-watch/items.json','utf8'));JSON.parse(require('fs').readFileSync('tools/wpa-watch/status.json','utf8'));JSON.parse(require('fs').readFileSync('journal/watch/topics.json','utf8'));JSON.parse(require('fs').readFileSync('journal/watch/editorial-queue.json','utf8'));"
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
