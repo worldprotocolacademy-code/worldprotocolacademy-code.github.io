@@ -46,11 +46,27 @@ class AuthorityEngine:
         auth = self.calculate(record)
         external_only = bool(record.get("external_only"))
         supplementary = record.get("source_type") == "Supplementary"
+        source_verified = bool(record.get("source_verified"))
+        source_open = bool(record.get("open_access"))
+        manually_approved = bool(record.get("manually_approved"))
+        evidence_url = record.get("evidence_source_url") or record.get("url") or record.get("doi")
+        evidence_status = str(record.get("evidence_status") or "").lower()
+        evidence_ok = bool(evidence_url) and evidence_status not in {"missing", "fabricated", "unverified"}
+        source_eligible = source_verified or source_open or manually_approved
         ok = (
             auth["authority_score"] >= 60 and
             trace["traceability_score"] >= 50 and
+            source_eligible and
+            evidence_ok and
             not external_only and
             not supplementary
         )
         reason = "included" if ok else "blocked_by_rag_gate_policy"
-        return {"rag_include": ok, "reason": reason, **trace, **auth}
+        return {
+            "rag_include": ok,
+            "reason": reason,
+            "source_eligible": source_eligible,
+            "evidence_ok": evidence_ok,
+            **trace,
+            **auth,
+        }
