@@ -1,0 +1,90 @@
+name: WPA Student Desk P2 Privacy CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/student-desk-p2-privacy-ci.yml'
+      - 'student-desk/**'
+      - 'governance/student-desk-privacy/**'
+      - 'sitemap.xml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Lock Student Desk indexing boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          required = 'noindex,nofollow,noarchive,noimageindex,nosnippet'
+          pages = [
+              Path('student-desk/index.html'),
+              Path('student-desk/index-en.html'),
+              Path('student-desk/student-desk/index-en.html'),
+          ]
+          for page in pages:
+              text = page.read_text(encoding='utf-8').lower().replace(' ', '')
+              assert f'name="robots"content="{required}"' in text, f'{page}: fail-closed robots meta missing'
+              assert 'content="index,follow"' not in text, f'{page}: indexable robots directive remains'
+          PY
+
+      - name: Keep Student Desk out of public sitemap
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('sitemap.xml').read_text(encoding='utf-8').lower()
+          forbidden = ['/student-desk/', '/ai/student-desk.html']
+          for token in forbidden:
+              assert token not in text, f'public sitemap exposes {token}'
+          PY
+
+      - name: Governance contract remains explicit
+        run: |
+          grep -F 'Student Desk is a working tool, not a public SEO landing page.' governance/student-desk-privacy/README.md
+          grep -F 'Student Desk and WPAWS must not be in the public sitemap.' governance/student-desk-privacy/README.md
+          grep -F 'Non-public tool pages require `noindex`, `nofollow`, `noarchive`, `nosnippet`.' governance/student-desk-privacy/README.md
+          grep -F 'API keys and tokens must never appear in public HTML or JavaScript.' governance/student-desk-privacy/README.md
+
+      - name: Credential-shaped public residue scan
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          roots = [Path('student-desk')]
+          patterns = {
+              'OpenAI-style secret': re.compile(r'\bsk-[A-Za-z0-9_-]{20,}\b'),
+              'Bearer credential': re.compile(r'\bBearer\s+[A-Za-z0-9._~+/-]{20,}', re.I),
+              'private key marker': re.compile(r'BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY'),
+          }
+          for root in roots:
+              for path in root.rglob('*'):
+                  if not path.is_file() or path.suffix.lower() not in {'.html','.js','.json','.css','.md','.ts'}:
+                      continue
+                  text = path.read_text(encoding='utf-8', errors='ignore')
+                  for label, rx in patterns.items():
+                      assert not rx.search(text), f'{path}: possible {label}'
+          PY
+
+      - name: Public preview claims remain bounded
+        run: |
+          grep -F 'не врши продажба' student-desk/index.html
+          grep -F 'не прима уплати' student-desk/index.html
+          grep -F 'не чува лични документи' student-desk/index.html
+          grep -F 'Not an official certificate.' student-desk/index-en.html
+          grep -F 'not an accredited credential' student-desk/index-en.html
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
