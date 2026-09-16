@@ -61,7 +61,8 @@ jobs:
           const topics=JSON.parse(fs.readFileSync('journal/watch/topics.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json','utf8'));
           if(!Array.isArray(topics)||topics.length<10) throw new Error('Journal Watch produced fewer than 10 topics');
-          if(queue.schema_version!=='2.1'||queue.classification_version!=='JW2.1') throw new Error('Journal Watch output contract mismatch');
+          if(queue.schema_version!=='2.2'||queue.classification_version!=='JW2.2') throw new Error('Journal Watch output contract mismatch');
+          if(!Array.isArray(queue.thematic_scope)||queue.thematic_scope.join(',')!=='protocol,diplomacy,public_relations,security,communicology') throw new Error('Journal Watch thematic scope mismatch');
           if(!Array.isArray(queue.queue)||queue.queue.length!==topics.length) throw new Error('Journal Watch queue/topic count mismatch');
           if(queue.policy!=='Topic candidates only. No automatic journal publication.') throw new Error('Journal governance policy changed unexpectedly');
           console.log(`JOURNAL HEALTHY: ${topics.length} governed topic candidates`);
