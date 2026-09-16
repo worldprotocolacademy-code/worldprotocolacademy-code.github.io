@@ -1,0 +1,142 @@
+name: WPA Academic Search Hub v3.1 CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/academic-search-hub-v31-ci.yml'
+      - 'tools/academic-search-hub/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: tools/academic-search-hub/wpa-final-v3.1
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile Python modules
+        run: |
+          python -m py_compile wpa_authority_engine.py wpa_harvester.py wpa_precedence_engine.py wpa_protocol_breach_observatory.py wpa_search_hub.py wpa_state_db.py
+
+      - name: Parse governed configuration
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          connectors = json.loads(Path('connectors.json').read_text(encoding='utf-8'))
+          overrides = json.loads(Path('wpa_manual_overrides.json').read_text(encoding='utf-8'))
+          verified = json.loads(Path('wpa_verified_sources.json').read_text(encoding='utf-8'))
+          config = json.loads(Path('config.example.json').read_text(encoding='utf-8'))
+
+          assert connectors['_meta']['version'] == '3.1'
+          assert 'No Scraping' in connectors['_meta']['policy']
+          assert isinstance(connectors.get('sources'), dict) and len(connectors['sources']) >= 30
+          assert isinstance(overrides.get('records'), list)
+          assert isinstance(verified, dict)
+          assert isinstance(config, dict)
+          PY
+
+      - name: Legal-safe connector contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(Path('connectors.json').read_text(encoding='utf-8'))
+          sources = data['sources']
+          restricted = ['ceeol','google_scholar','jstor','project_muse','cnki','elibrary_ru','researchgate','academia_edu','ad_scientific_index','scribd']
+          for key in restricted:
+              cfg = sources[key]
+              assert cfg.get('harvestable') is False, f'{key} must remain non-harvestable'
+              assert cfg.get('search_url'), f'{key} must expose external-link mode'
+          for key, cfg in sources.items():
+              for field in ('base_url','search_url'):
+                  value = str(cfg.get(field) or '')
+                  assert 'example.com' not in value, f'fabricated placeholder URL in {key}.{field}'
+          PY
+
+      - name: Manual override fail-closed contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          records = json.loads(Path('wpa_manual_overrides.json').read_text(encoding='utf-8')).get('records', [])
+          for r in records:
+              if r.get('rag_include_override') is True:
+                  assert r.get('evidence_source_url'), 'RAG include override requires evidence URL'
+                  assert str(r.get('evidence_status') or '').lower() not in {'', 'missing', 'fabricated', 'unverified'}, 'RAG include override requires verified evidence status'
+          PY
+
+      - name: RAG gate fail-closed behavioral contract
+        run: |
+          python - <<'PY'
+          from wpa_authority_engine import AuthorityEngine
+
+          engine = AuthorityEngine()
+          base = {
+              'title': 'Verified protocol research',
+              'year': 2026,
+              'doi': '10.1234/wpa.test',
+              'url': 'https://worldprotocolacademy.mk/evidence/test',
+              'source_database': 'test',
+              'authors': 'WPA Test Author',
+              'abstract': 'Traceable test record',
+              'open_access': False,
+              'external_only': False,
+              'source_verified': True,
+              'evidence_source_url': 'https://worldprotocolacademy.mk/evidence/test',
+              'evidence_status': 'verified',
+              'source_type': 'Official API',
+          }
+          allowed = engine.rag_gate(dict(base))
+          assert allowed['rag_include'] is True, allowed
+
+          unverified = dict(base, source_verified=False, open_access=False, manually_approved=False)
+          assert engine.rag_gate(unverified)['rag_include'] is False
+
+          missing_evidence = dict(base, evidence_source_url=None, url=None, doi=None, evidence_status='missing')
+          assert engine.rag_gate(missing_evidence)['rag_include'] is False
+
+          external = dict(base, external_only=True)
+          assert engine.rag_gate(external)['rag_include'] is False
+
+          supplementary = dict(base, source_type='Supplementary')
+          assert engine.rag_gate(supplementary)['rag_include'] is False
+          PY
+
+      - name: Deterministic staging smoke tests
+        run: |
+          rm -rf wpa_output
+          python wpa_harvester.py --dry-run
+          python wpa_harvester.py --test
+          test -f wpa_output/wpa_state.db
+          test -f wpa_output/WPA_RAG_Gate_Report.html
+          python wpa_search_hub.py --external-links-only 'diplomatic protocol' > /tmp/wpa-academic-links.txt
+          test -s /tmp/wpa-academic-links.txt
+
+      - name: Policy text remains explicit
+        run: |
+          grep -F 'Never scrape protected, paywalled, login-restricted or restricted platforms.' LEGAL_SAFE_SOURCE_POLICY.md
+          grep -F 'Do not automatically include weak-traceability records in Virtual Sande / RAG.' RAG_GATE_POLICY.md
+          grep -F 'authority_score >= 60' RAG_GATE_POLICY.md
+          grep -F 'traceability_score >= 50' RAG_GATE_POLICY.md
+
+      - name: Diff hygiene
+        working-directory: .
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
