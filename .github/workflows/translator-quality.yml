@@ -33,8 +33,17 @@ jobs:
       - name: Compile validators
         run: |
           python -m py_compile scripts/translator_quality_check.py
+          python -m py_compile scripts/translator_architecture_check.py
+          python -m py_compile scripts/mk_home_language_integrity_check.py
+          python -m py_compile scripts/en_public_language_integrity_check.py
           python -m py_compile scripts/fr_full_mirror_check.py
           python -m py_compile scripts/fr_complete_parity_check.py
+      - name: Validate current public translator architecture
+        run: python scripts/translator_architecture_check.py
+      - name: Validate canonical Macedonian Home language integrity
+        run: python scripts/mk_home_language_integrity_check.py
+      - name: Validate canonical English Home and Institute language integrity
+        run: python scripts/en_public_language_integrity_check.py
       - name: Validate current SAFE-8R French parity
         run: python scripts/fr_complete_parity_check.py
       - name: Validate historical SAFE-8Q snapshot
