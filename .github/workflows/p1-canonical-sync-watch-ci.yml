@@ -1,0 +1,81 @@
+name: P1 Canonical Sync and Watch Freshness CI
+
+on:
+  pull_request:
+    paths:
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs'
+      - 'tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs'
+      - 'tools/wpa-five-engines.html'
+      - 'tools/assets/wpa-five-engines-d001-a010-overlay.js'
+      - 'tools/assets/wpa-five-engines-canonical-sync.js'
+      - 'scripts/virtual-sande-connected-vessels.js'
+      - 'scripts/wpa-watch-freshness.js'
+      - 'data/master-list-verification-status.json'
+      - 'tools/wpa-watch/status.json'
+      - 'journal/watch/topics.json'
+      - '.github/workflows/p1-canonical-sync-watch-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p1-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax checks
+        run: |
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          node --check tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+          node --check tools/assets/wpa-five-engines-d001-a010-overlay.js
+          node --check tools/assets/wpa-five-engines-canonical-sync.js
+          node --check scripts/virtual-sande-connected-vessels.js
+          node --check scripts/wpa-watch-freshness.js
+
+      - name: Canonical institution resolver tests
+        run: node --test tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.test.mjs
+
+      - name: Canonical status contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync('data/master-list-verification-status.json','utf8'));
+          if(s.canonical_dataset!=='v1.0-CORRECTED-4F-REV7') throw new Error('unexpected canonical dataset');
+          if(s.dataset.total_records!==250) throw new Error('unexpected record total');
+          if(s.dataset.distinct_external_institutions!==241) throw new Error('unexpected distinct total');
+          const p=s.canonical_sources.find(x=>/WPA_Global_Institutions_Master_.*\.json$/.test(x));
+          if(!p) throw new Error('canonical master JSON missing');
+          const d=JSON.parse(fs.readFileSync('.'+p,'utf8'));
+          if(!Array.isArray(d.institutions)||d.institutions.length!==250) throw new Error('canonical dataset length mismatch');
+          NODE
+
+      - name: No stale REV2 / 160-count references in P1 public surfaces
+        run: |
+          ! grep -Eqi 'rev2|search 160 records' tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          ! grep -Eqi 'baza od 160|атлас на 160|Master List REV2' tools/wpa-five-engines.html
+          grep -F '/data/master-list-verification-status.json' tools/virtual-sande/wpa-protocol-bot-v35.1-multisystem-orchestrator.mjs
+          grep -F '/data/master-list-verification-status.json' tools/assets/wpa-five-engines-canonical-sync.js
+
+      - name: Watch freshness diagnostics wiring
+        run: |
+          grep -F '/scripts/wpa-watch-freshness.js?v=20260916-1' scripts/virtual-sande-connected-vessels.js
+          grep -F "id!=='wpa_watch'&&id!=='journal_watch'" scripts/virtual-sande-connected-vessels.js
+          grep -F '/tools/wpa-watch/status.json' scripts/wpa-watch-freshness.js
+          grep -F '/journal/watch/topics.json' scripts/wpa-watch-freshness.js
+          grep -F 'Feed freshness' scripts/wpa-watch-freshness.js
+          grep -F 'Editorial freshness' scripts/wpa-watch-freshness.js
+
+      - name: Source status inputs remain parseable
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('tools/wpa-watch/status.json','utf8'));JSON.parse(require('fs').readFileSync('journal/watch/topics.json','utf8'));"
+
+      - name: Diff hygiene
+        run: git diff --check
