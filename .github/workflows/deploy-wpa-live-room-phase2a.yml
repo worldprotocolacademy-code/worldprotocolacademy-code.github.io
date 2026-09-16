@@ -55,7 +55,7 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           npx --yes wrangler@4 deploy --config workers/wpa-live-room-signaling/wrangler.toml 2>&1 | tee /tmp/wpa-live-room-deploy.log
 
-      - name: Verify deployed service
+      - name: Verify deployed service after propagation
         run: |
           set -euo pipefail
           URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/wpa-live-room-deploy.log | tail -n 1 | sed 's:/$::')"
@@ -64,7 +64,37 @@ jobs:
             https://wpa-live-room-signaling.*.workers.dev) ;;
             *) echo "Unexpected worker URL: $URL" >&2; exit 1 ;;
           esac
-          curl --fail --silent --show-error --retry 5 --retry-delay 2 "$URL/health" | tee /tmp/health.json
+
+          rm -f /tmp/health.json
+          verified=0
+          for attempt in $(seq 1 18); do
+            echo "Health verification attempt ${attempt}/18"
+            if curl --fail --silent --show-error \
+              --connect-timeout 5 --max-time 10 \
+              -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' \
+              "$URL/health?deploy=${GITHUB_SHA}&attempt=${attempt}" \
+              -o /tmp/health.json; then
+              if grep -Fq '"ok":true' /tmp/health.json \
+                && grep -Fq '"version":"2A.2"' /tmp/health.json \
+                && grep -Fq '"media":"webrtc-peer-to-peer"' /tmp/health.json \
+                && grep -Fq '"access":"token-gated-host-and-guest"' /tmp/health.json; then
+                verified=1
+                break
+              fi
+              echo "Worker edge has not converged to Phase 2A.2 yet."
+              cat /tmp/health.json
+              echo
+            fi
+            sleep 5
+          done
+
+          if [ "$verified" -ne 1 ]; then
+            echo "Phase 2A.2 did not become observable before the propagation deadline." >&2
+            test -f /tmp/health.json && cat /tmp/health.json >&2 || true
+            exit 1
+          fi
+
+          cat /tmp/health.json
           grep -F '"ok":true' /tmp/health.json
           grep -F '"version":"2A.2"' /tmp/health.json
           grep -F '"media":"webrtc-peer-to-peer"' /tmp/health.json
