@@ -2,7 +2,8 @@
 """Follow-up for the one-shot translator finalizer.
 
 Handles HTML-entity variants in the canonical MK source, tightens the generated MK
-integrity checker, and installs a current EN visible-language purity gate. The older
+integrity checker, installs a current EN visible-language purity gate, and normalizes
+patched Home trailing whitespace before git diff checks. The older
 public_translation_quality_check.py remains preserved as historical evidence but is
 not promoted into active CI because its metadata/provenance contract is stale.
 """
@@ -24,6 +25,7 @@ def patch_home() -> None:
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
+    text = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
     path.write_text(text, encoding="utf-8")
 
 
