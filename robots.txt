@@ -1,9 +1,15 @@
-# robots.txt — WPA Institute Maximum Protection Layer v1.2
+# robots.txt — WPA Institute Maximum Protection Layer v1.3
 # World Protocol Academy / WPA Institute
-# Canonical-domain sync: 2026-08-25
+# Cloudflare AI policy sync: 2026-09-16
+#
+# Policy:
+# - Search: ALLOW
+# - Agent / user-directed retrieval: ALLOW
+# - Training / model-building: BLOCK
 #
 # Goal:
-# - Keep public search visibility open for ordinary search engines.
+# - Keep public search and AI-search discoverability open.
+# - Allow user-directed AI assistants to retrieve and cite public WPA content.
 # - Block targeted AI-training, model-building, bulk-dataset and synthetic-persona crawlers.
 # - Do NOT use User-agent: * + Disallow: / because that would close the public site.
 #
@@ -25,11 +31,36 @@ Allow: /
 User-agent: Applebot
 Allow: /
 
-# AI / model-training / dataset-ingestion crawlers blocked
-User-agent: GPTBot
-Disallow: /
+# AI search and user-directed assistant retrieval allowed
+User-agent: OAI-SearchBot
+Allow: /
 
 User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: DuckAssistBot
+Allow: /
+
+User-agent: MistralAI-User
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+# AI / model-training / dataset-ingestion crawlers blocked
+User-agent: GPTBot
 Disallow: /
 
 User-agent: Google-Extended
@@ -38,16 +69,7 @@ Disallow: /
 User-agent: ClaudeBot
 Disallow: /
 
-User-agent: Claude-Web
-Disallow: /
-
-User-agent: Claude-User
-Disallow: /
-
 User-agent: CCBot
-Disallow: /
-
-User-agent: PerplexityBot
 Disallow: /
 
 User-agent: Bytespider
