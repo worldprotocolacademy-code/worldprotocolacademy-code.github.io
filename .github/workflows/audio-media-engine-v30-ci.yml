@@ -1,0 +1,105 @@
+name: WPA Audio Media Engine v3.0 CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/audio-media-engine-v30-ci.yml'
+      - 'audio-media-engine.html'
+      - 'audio-media-engine/**'
+      - 'tools/wpa-audio-media-engine/**'
+      - 'docs/WPA_AUDIO_MEDIA_ENGINE_REVIEW_MK.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Canonical public entry contract
+        run: |
+          test -f audio-media-engine.html
+          test -f tools/wpa-audio-media-engine/index.html
+          grep -F 'https://worldprotocolacademy.mk/audio-media-engine.html' audio-media-engine.html
+          grep -F 'rel="canonical" href="https://worldprotocolacademy.mk/audio-media-engine.html"' tools/wpa-audio-media-engine/index.html
+          grep -F 'http-equiv="refresh" content="0; url=/audio-media-engine.html"' tools/wpa-audio-media-engine/index.html
+          grep -F 'content="noindex,follow"' tools/wpa-audio-media-engine/index.html
+          grep -F 'href="/audio-media-engine.html"' tools/wpa-audio-media-engine/index.html
+
+      - name: Reference mirror canonical contract
+        run: |
+          test -f audio-media-engine/wpa-audio-media-engine/index.html
+          grep -F 'https://worldprotocolacademy.mk/audio-media-engine.html' audio-media-engine/wpa-audio-media-engine/index.html
+          grep -F 'Canonical public UI: `/audio-media-engine.html`.' audio-media-engine/wpa-audio-media-engine/README.md
+          grep -F 'Governed public alias: `/tools/wpa-audio-media-engine/`' audio-media-engine/wpa-audio-media-engine/README.md
+
+      - name: Core syntax and 10-module contract
+        run: |
+          cp audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-core.js /tmp/wpa-audio-engine-core.mjs
+          node --check /tmp/wpa-audio-engine-core.mjs
+          node --input-type=module - <<'NODE'
+          import {
+            WPA_AUDIO_ENGINE_VERSION,
+            WPA_AUDIO_MODULES,
+            WPA_PRODUCTION_STAGES,
+            createRoomPolicy,
+            certificateRoadmap
+          } from 'file:///tmp/wpa-audio-engine-core.mjs';
+
+          if (WPA_AUDIO_ENGINE_VERSION !== '3.0') throw new Error('Audio Engine version drift');
+          if (WPA_AUDIO_MODULES.length !== 10) throw new Error('Audio Engine must expose exactly 10 canonical modules');
+          if (new Set(WPA_AUDIO_MODULES.map(x => x.id)).size !== 10) throw new Error('Duplicate module id');
+          const byId = Object.fromEntries(WPA_AUDIO_MODULES.map(x => [x.id, x]));
+          if (byId.voice?.phase !== 'guarded') throw new Error('Voice module must remain guarded');
+          if (byId.monetization?.phase !== 'guarded') throw new Error('Monetization module must remain guarded');
+          if (WPA_PRODUCTION_STAGES.join(',') !== 'script,record,edit,master,review,export') throw new Error('Production stage contract drift');
+
+          for (const mode of ['class','workshop','webinar','institutional']) {
+            const p = createRoomPolicy(mode);
+            if (p.audienceDefault !== 'muted') throw new Error(`${mode}: audience default must be muted`);
+            if (p.antiOverlap !== true) throw new Error(`${mode}: anti-overlap must remain enabled`);
+            if (p.consentRequiredForRecording !== true) throw new Error(`${mode}: recording consent must remain mandatory`);
+            if (p.biometricAuth !== 'phase-2-only-with-legal-review') throw new Error(`${mode}: biometric guard weakened`);
+          }
+
+          const cert = certificateRoadmap();
+          if (!/legal, privacy and accreditation-language review/i.test(cert.phase2)) throw new Error('Web3/legal review guard weakened');
+          if (!/Do not describe NFT certificates as accredited/i.test(cert.warning)) throw new Error('Accreditation warning missing');
+          NODE
+
+      - name: Phase 1 and human authority guards
+        run: |
+          grep -F 'This is NOT biometric production, NFT minting or voice cloning.' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-core.js
+          grep -F 'consent-first workflow and governance engine' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-core.js
+          grep -F 'No false production claims, no unauthorized voice cloning, no biometric processing in Phase 1.' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-architecture.ts
+          grep -F 'recordingConsentRequired: true' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-architecture.ts
+          grep -F 'biometricAuth: "disabled_phase_1"' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-architecture.ts
+          grep -F 'AI-assisted draft; requires human editorial review before publication.' audio-media-engine/wpa-audio-media-engine/wpa-audio-engine-architecture.ts
+
+      - name: Public UI disclosure contract
+        run: |
+          grep -F 'consent-first voice workflow' audio-media-engine.html
+          grep -F 'Phase 2' audio-media-engine.html
+          grep -F 'WebRTC' audio-media-engine.html
+          grep -F 'biometric' audio-media-engine.html
+
+      - name: Review document routes resolve in repository
+        run: |
+          grep -F 'https://worldprotocolacademy-code.github.io/audio-media-engine.html' docs/WPA_AUDIO_MEDIA_ENGINE_REVIEW_MK.md
+          grep -F 'https://worldprotocolacademy-code.github.io/tools/wpa-audio-media-engine/' docs/WPA_AUDIO_MEDIA_ENGINE_REVIEW_MK.md
+          test -f tools/wpa-audio-media-engine/index.html
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
