@@ -27,26 +27,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Apply one-shot migration
-        run: |
-          python scripts/translator_finalize_one_shot.py
-          python scripts/translator_finalize_followup.py
+      - name: Apply strict Macedonian visible-UI cleanup
+        run: python scripts/translator_strict_mk_cleanup.py
       - name: Run current translator gates
         run: |
           python scripts/translator_architecture_check.py
           python scripts/mk_home_language_integrity_check.py
           python scripts/en_public_language_integrity_check.py
-      - name: Prepare non-workflow durable state
-        run: |
-          rm scripts/translator_finalize_one_shot.py
-          rm scripts/translator_finalize_followup.py
-          git checkout -- .github/workflows/translator-quality.yml
-      - name: Commit finalized translator code state
+      - name: Remove one-shot strict cleanup helper
+        run: rm scripts/translator_strict_mk_cleanup.py
+      - name: Commit strict translator state
         run: |
           set -euo pipefail
           git config user.name "worldprotocolacademy-code"
           git config user.email "worldprotocolacademy@gmail.com"
-          git add index.html languages/wpa-language-menu-10.js data/translator-runtime-registry.json scripts/translator_architecture_check.py scripts/mk_home_language_integrity_check.py scripts/en_public_language_integrity_check.py scripts/translator_finalize_one_shot.py scripts/translator_finalize_followup.py
+          git add index.html scripts/mk_home_language_integrity_check.py scripts/translator_strict_mk_cleanup.py
           git diff --cached --check
-          git commit -m "Translator: finalize MK/EN language integrity [translator-finalized]"
+          git commit -m "Translator: enforce strict MK visible-language integrity [translator-finalized]"
           git push origin HEAD:fix/translator-language-integrity-20260916
