@@ -14,3 +14,16 @@ test('preserves prototype and Student Desk governance boundaries',()=>{
   assert.match(__test.SYSTEMS.student_desk.limit.join(' '),/no automatic enrolment, official grade or certificate issuance/i);
   assert.equal(__test.SYSTEMS.symbols.status,'verified_dataset_ui');
 });
+
+test('institution search is resolved through canonical status with REV7 fail-safe',()=>{
+  assert.equal(__test.MASTER_STATUS_PATH,'/data/master-list-verification-status.json');
+  assert.match(__test.MASTER_FALLBACK_PATH,/v1\.0-corrected-4f-rev7\/WPA_Global_Institutions_Master_v1\.0-CORRECTED-4F-REV7\.json$/);
+  const status={canonical_sources:[
+    '/MASTER-LIST-CANONICAL.md',
+    '/data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json'
+  ]};
+  assert.equal(__test.canonicalSourcePathFromStatus(status),status.canonical_sources[1]);
+  assert.equal(__test.canonicalSourcePathFromStatus({}),__test.MASTER_FALLBACK_PATH);
+  assert.match(__test.SYSTEMS.institutions.can.join(' '),/current canonical master-list dataset/i);
+  assert.doesNotMatch(__test.SYSTEMS.institutions.can.join(' '),/160 records/i);
+});
