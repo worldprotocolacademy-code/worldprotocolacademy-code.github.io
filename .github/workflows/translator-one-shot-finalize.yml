@@ -28,7 +28,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Apply one-shot migration
-        run: python scripts/translator_finalize_one_shot.py
+        run: |
+          python scripts/translator_finalize_one_shot.py
+          python scripts/translator_finalize_followup.py
       - name: Run current translator gates
         run: |
           python scripts/translator_architecture_check.py
@@ -37,13 +39,14 @@ jobs:
       - name: Remove one-shot migration machinery
         run: |
           rm scripts/translator_finalize_one_shot.py
+          rm scripts/translator_finalize_followup.py
           rm .github/workflows/translator-one-shot-finalize.yml
       - name: Commit finalized translator state
         run: |
           set -euo pipefail
           git config user.name "worldprotocolacademy-code"
           git config user.email "worldprotocolacademy@gmail.com"
-          git add index.html languages/wpa-language-menu-10.js data/translator-runtime-registry.json scripts/translator_architecture_check.py scripts/mk_home_language_integrity_check.py .github/workflows/translator-quality.yml scripts/translator_finalize_one_shot.py .github/workflows/translator-one-shot-finalize.yml
+          git add index.html languages/wpa-language-menu-10.js data/translator-runtime-registry.json scripts/translator_architecture_check.py scripts/mk_home_language_integrity_check.py .github/workflows/translator-quality.yml scripts/translator_finalize_one_shot.py scripts/translator_finalize_followup.py .github/workflows/translator-one-shot-finalize.yml
           git diff --cached --check
           git commit -m "Translator: finalize MK/EN language integrity [translator-finalized]"
           git push origin HEAD:fix/translator-language-integrity-20260916
