@@ -8,6 +8,7 @@ check = ROOT / "scripts/mk_home_language_integrity_check.py"
 text = home.read_text(encoding="utf-8")
 replacements = {
     '<strong>AI слој</strong>Virtual Sande, прашања и одговори, ревизија': '<strong>ВИ слој</strong>Virtual Sande, прашања и одговори, ревизија',
+    'AI слојот на WPA е создаден да поддржи учење, ревизија, протоколарни сценарија и самопроценка.': 'ВИ слојот на WPA е создаден да поддржи учење, ревизија, протоколарни сценарија и самопроценка.',
     '<strong>Тренерски слој</strong>train-the-trainer и консултантско ниво': '<strong>Тренерски слој</strong>обука за обучувачи и консултантско ниво',
     '<strong>Revenue слој</strong>membership, partner benefits и одржлива growth логика': '<strong>Слој за одржливост</strong>членство, партнерски придобивки и одржлива логика на раст',
 }
