@@ -80,6 +80,8 @@ jobs:
           grep -F 'new Set(["protocol", "diplomacy", "pr", "security", "communicology"])' generate-journal-watch.mjs
           grep -F 'thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"]' generate-journal-watch.mjs
           grep -F 'classification_version: "JW2.2"' generate-journal-watch.mjs
+          grep -F "queue.schema_version!=='2.2'||queue.classification_version!=='JW2.2'" .github/workflows/wpa-journal-watch.yml
+          grep -F "queue.thematic_scope.join(',')!=='protocol,diplomacy,public_relations,security,communicology'" .github/workflows/wpa-journal-watch.yml
           if grep -F 'return "academic"' generate-journal-watch.mjs; then
             echo 'academic must not be a sixth Journal Watch discipline' >&2
             exit 1
