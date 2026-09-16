@@ -40,6 +40,7 @@ FORBIDDEN_FRAGMENTS = (
     " · Learn", " · Research", "General information:", "General contact:",
     " · Administration:", " · Author:", " · WPA direct:", "Last updated:",
     "partnerships and member benefits", "member benefits, recurring value",
+    "AI слој", "train-the-trainer", "Revenue слој", "membership, partner benefits", "growth логика",
 )
 
 class P(HTMLParser):
