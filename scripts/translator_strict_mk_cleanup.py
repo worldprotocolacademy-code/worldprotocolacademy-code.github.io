@@ -14,7 +14,6 @@ CHECK = ROOT / "scripts/mk_home_language_integrity_check.py"
 
 def replace_all(text: str) -> str:
     replacements = {
-        # Parallel/bilingual UI shells
         '<span class="wpa-name-en">WORLD PROTOCOL ACADEMY</span>': '',
         '<span class="wpa-inst-en">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>': '',
         '<span class="wpa-platform-en">Independent digital educational, research and authorial platform</span>': '',
@@ -22,8 +21,6 @@ def replace_all(text: str) -> str:
         '<span class="wpa-brand-en">World Protocol Academy</span>': '',
         '<h2>Светска академија за протокол<br><em>World Protocol Academy</em></h2>': '<h2>Светска академија за протокол</h2>',
         '<p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><em>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</em><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.<br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.</p>': '<p class="hero-sub" data-i18n="heroP"><strong>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</strong><br><br>Независна дигитална образовна, истражувачка и авторска платформа. Развојна, тест и пробна фаза — 2026.</p>',
-
-        # Quick start / user-facing navigation
         'Учење · Learn': 'Учење',
         'Истражување · Research': 'Истражување',
         'Институционално · Institutional': 'Институционално',
@@ -31,8 +28,6 @@ def replace_all(text: str) -> str:
         'Напредна WPA технологија · Advanced WPA Technology': 'Напредна WPA технологија',
         '📐 Protocolometry Center · методолошки центар': '📐 Центар за протоколометрија · методолошки центар',
         'Protocolometry Center · методолошки центар': 'Центар за протоколометрија · методолошки центар',
-
-        # Mixed explanatory copy
         'Foundation → Professional → Advanced → Trainer': 'Основно → Професионално → Напредно → Обука за обучувачи',
         'Protocol · Diplomatic · Institutional · Conference': 'Протоколарен · Дипломатски · Институционален · Конференциски',
         'continuity, symbolic integrity и communication authority': 'континуитет, симболички интегритет и комуникациски авторитет',
@@ -50,14 +45,10 @@ def replace_all(text: str) -> str:
         'Professional English Toolkit': 'алатник за професионален англиски',
         'Open Professional English Toolkit →': 'Отвори го алатникот за професионален англиски →',
         'Open Professional English Toolkit': 'Отвори го алатникот за професионален англиски',
-
-        # Audio/media explanatory copy
         'Sande voice engine, protocol scenario lab,\n      viral media studio, live video room governance и monetization workflows.': 'Sande voice engine, лабораторија за протоколарни сценарија,\n      студио за вирални медиуми, управување со видео соба во живо и работни текови за монетизација.',
         'protocol scenario lab, viral media studio, live video room governance и monetization workflows.': 'лабораторија за протоколарни сценарија, студио за вирални медиуми, управување со видео соба во живо и работни текови за монетизација.',
         'Open WPA Audio Media Engine': 'Отвори WPA Audio Media Engine',
         'Explore WPA Programmes': 'Истражи ги WPA програмите',
-
-        # Footer and legal UI
         'partnerships and member benefits': 'партнерства и членски придобивки',
         'Општи информации · General information:': 'Општи информации:',
         'Општа комуникација · General contact:': 'Општа комуникација:',
@@ -72,8 +63,6 @@ def replace_all(text: str) -> str:
         '>Cookie Policy<': '>Политика за колачиња<',
         '>Correction Request<': '>Барање за исправка<',
         'Последно ажурирано: 26 август 2026 · Last updated: 26 August 2026': 'Последно ажурирано: 26 август 2026',
-
-        # Selected bilingual publication card: retain original EN title, translate explanatory slash-tail and metadata labels
         ' / A bilingual, source-audited Protocol Note introducing a replicable WPA method for contemporary multilateral ceremonial analysis.': '',
         '<span>Version 1.0</span>': '<span>Верзија 1.0</span>',
         '<span>16 July 2026</span>': '<span>16 јули 2026</span>',
@@ -81,8 +70,6 @@ def replace_all(text: str) -> str:
         'Нова Zenodo публикација · New Zenodo publication ·': 'Нова Zenodo публикација ·',
         'Најнова Zenodo публикација · Latest Zenodo publication ·': 'Најнова Zenodo публикација ·',
         'НОВА КНИГА · NEW BOOK · 2026': 'НОВА КНИГА · 2026',
-
-        # Legal/status headings and simple UI labels
         'WPA GLOBAL CHANNELS': 'WPA ГЛОБАЛНИ КАНАЛИ',
         'WPA · Protocol Symbols Lab · Верифицирана база': 'WPA · Лабораторија за протоколарни симболи · Верифицирана база',
         'Отвори Protocol Symbols Lab →': 'Отвори ја Лабораторијата за протоколарни симболи →',
@@ -97,7 +84,7 @@ def replace_all(text: str) -> str:
 def patch_checker() -> None:
     text = CHECK.read_text(encoding="utf-8")
     anchor = '''FORBIDDEN_SHORT = {\n    "Institutional map","Evidence & Benchmark","Learning & Access","Programme Architecture","Certification Logic",\n    "Membership & Access","Partner & Growth Logic","Executive Briefings","Institutional Profile",\n    "Certificates & Recognition","Sources, Authorship and Educational Use","Global reach","Regional expansion",\n    "Book-to-Screen Method","Educational Film Cases","Production Workflow","Protocol Lesson","Diplomatic Impact",\n    "Academic Cooperation","Humanism & Dialogue","Ohrid Intellectual Tradition",\n}\n'''
-    replacement = '''FORBIDDEN_SHORT = {\n    "Institutional map","Evidence & Benchmark","Learning & Access","Programme Architecture","Certification Logic",\n    "Membership & Access","Partner & Growth Logic","Executive Briefings","Institutional Profile",\n    "Certificates & Recognition","Sources, Authorship and Educational Use","Global reach","Regional expansion",\n    "Book-to-Screen Method","Educational Film Cases","Production Workflow","Protocol Lesson","Diplomatic Impact",\n    "Academic Cooperation","Humanism & Dialogue","Ohrid Intellectual Tradition",\n    "Учење · Learn","Истражување · Research","Институционално · Institutional",\n    "WPA Quick Start · Брз почеток","Напредна WPA технологија · Advanced WPA Technology",\n    "Privacy Policy","Terms of Use","Cookie Policy","Correction Request",\n}\nFORBIDDEN_FRAGMENTS = (\n    " · Learn", " · Research", " · Institutional", "General information:", "General contact:",\n    " · Administration:", " · Author:", " · WPA direct:", "Last updated:",\n    "partnerships and member benefits", "member benefits, recurring value",\n)\n'''
+    replacement = '''FORBIDDEN_SHORT = {\n    "Institutional map","Evidence & Benchmark","Learning & Access","Programme Architecture","Certification Logic",\n    "Membership & Access","Partner & Growth Logic","Executive Briefings","Institutional Profile",\n    "Certificates & Recognition","Sources, Authorship and Educational Use","Global reach","Regional expansion",\n    "Book-to-Screen Method","Educational Film Cases","Production Workflow","Protocol Lesson","Diplomatic Impact",\n    "Academic Cooperation","Humanism & Dialogue","Ohrid Intellectual Tradition",\n    "Учење · Learn","Истражување · Research","Институционално · Institutional",\n    "WPA Quick Start · Брз почеток","Напредна WPA технологија · Advanced WPA Technology",\n    "Privacy Policy","Terms of Use","Cookie Policy","Correction Request",\n}\nFORBIDDEN_FRAGMENTS = (\n    " · Learn", " · Research", "General information:", "General contact:",\n    " · Administration:", " · Author:", " · WPA direct:", "Last updated:",\n    "partnerships and member benefits", "member benefits, recurring value",\n)\n'''
     if anchor not in text:
         raise SystemExit("MK checker anchor changed; refusing unsafe rewrite")
     text = text.replace(anchor, replacement)
