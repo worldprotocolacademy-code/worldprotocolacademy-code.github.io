@@ -74,6 +74,16 @@ jobs:
           grep -F 'refuses to publish an empty placeholder queue' generate-journal-watch.mjs
           grep -F 'Topic candidates only. No automatic journal publication.' generate-journal-watch.mjs
 
+      - name: Canonical five-discipline thematic scope
+        run: |
+          grep -F 'new Set(["protocol", "diplomacy", "pr", "security", "communicology"])' generate-journal-watch.mjs
+          grep -F 'thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"]' generate-journal-watch.mjs
+          grep -F 'classification_version: "JW2.2"' generate-journal-watch.mjs
+          if grep -F 'return "academic"' generate-journal-watch.mjs; then
+            echo 'academic must not be a sixth Journal Watch discipline' >&2
+            exit 1
+          fi
+
       - name: Existing generated JSON remains parseable
         run: |
           node -e "JSON.parse(require('fs').readFileSync('tools/wpa-watch/items.json','utf8'));JSON.parse(require('fs').readFileSync('tools/wpa-watch/status.json','utf8'));JSON.parse(require('fs').readFileSync('journal/watch/topics.json','utf8'));JSON.parse(require('fs').readFileSync('journal/watch/editorial-queue.json','utf8'));"
