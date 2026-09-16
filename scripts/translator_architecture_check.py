@@ -145,6 +145,12 @@ def main() -> int:
         if marker in legacy_core:
             errors.append(f"legacy language core regained routing authority marker: {marker}")
 
+    home = read("index.html")
+    if "/languages/wpa-language-menu-10.js" in home:
+        errors.append("canonical MK Home still consumes legacy page-sync runtime")
+    if home.count("/languages/wpa-public-language-router-v2.js?v=2.0") != 1:
+        errors.append("canonical MK Home must consume exactly one direct public language router")
+
     if errors:
         return fail(errors)
 
