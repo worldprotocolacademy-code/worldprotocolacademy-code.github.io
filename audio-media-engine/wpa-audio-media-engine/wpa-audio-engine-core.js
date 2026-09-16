@@ -4,10 +4,11 @@
  * This is NOT biometric production, NFT minting or voice cloning.
  * It is a consent-first workflow and governance engine.
  *
- * NOTE: This module is reference scaffolding. The shipped UI
- * (audio-media-engine.html / tools/wpa-audio-media-engine/index.html)
- * is fully self-contained and does NOT import this file. Use it as the
- * canonical model when a backend or build step is added in Phase 2.
+ * NOTE: This module is reference scaffolding. The canonical shipped UI is
+ * /audio-media-engine.html. The governed /tools/wpa-audio-media-engine/
+ * entry redirects to that canonical UI. This module is NOT imported by
+ * the public page; use it as the canonical model when a backend or build
+ * step is added in Phase 2.
  */
 export const WPA_AUDIO_ENGINE_VERSION = "3.0";
 
