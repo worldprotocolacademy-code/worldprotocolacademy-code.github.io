@@ -1,0 +1,90 @@
+name: WPA Live Room TURN Auth Hardening CI
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-room-turn-auth-hardening-ci.yml'
+      - '.github/workflows/deploy-wpa-live-room-phase2a.yml'
+      - 'live-room/**'
+      - 'workers/wpa-live-room-signaling/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Syntax and version gate
+        run: |
+          set -euo pipefail
+          node --check workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'const VERSION = "2A.2"' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'Phase 2A.2' live-room/index.html
+
+      - name: Capability auth invariant
+        run: |
+          set -euo pipefail
+          grep -F 'token-gated-host-and-guest' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'hostHash: await sha256(hostToken)' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'guestHash: await sha256(guestToken)' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'invalid_room_token' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'closed.role === "host"' workers/wpa-live-room-signaling/src/index.mjs
+          ! grep -F 'promoted.state.role = "host"' workers/wpa-live-room-signaling/src/index.mjs
+          ! grep -F 'sockets.length === 0 ? "host" : "guest"' workers/wpa-live-room-signaling/src/index.mjs
+
+      - name: Browser token boundary
+        run: |
+          set -euo pipefail
+          grep -F 'wpa.live-room.host.' live-room/index.html
+          grep -F '#guest=' live-room/index.html
+          grep -F 'Host capability was not shared.' live-room/index.html
+          ! grep -F 'TURN_KEY_API_TOKEN' live-room/index.html
+          ! grep -F 'TURN_KEY_ID' live-room/index.html
+
+      - name: TURN backend-only invariant
+        run: |
+          set -euo pipefail
+          grep -F 'generate-ice-servers' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'Bearer ${this.env.TURN_KEY_API_TOKEN}' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'short-lived-credentials' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'stun-fallback' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'Do not commit either value' workers/wpa-live-room-signaling/README.md
+
+      - name: Secret-shaped residue scan
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          paths=[Path('live-room/index.html'),Path('workers/wpa-live-room-signaling/src/index.mjs'),Path('workers/wpa-live-room-signaling/README.md')]
+          patterns={
+            'OpenAI-style secret': re.compile(r'\bsk-[A-Za-z0-9_-]{20,}\b'),
+            'private key marker': re.compile(r'BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY'),
+            'Cloudflare token literal': re.compile(r'\b[A-Za-z0-9_-]{40,}\b'),
+          }
+          allowed_markers={'TURN_KEY_API_TOKEN','TURN_KEY_ID'}
+          for path in paths:
+            text=path.read_text(encoding='utf-8',errors='ignore')
+            for label,rx in patterns.items():
+              for match in rx.finditer(text):
+                value=match.group(0)
+                if value in allowed_markers: continue
+                if label=='Cloudflare token literal' and value.startswith(('worldprotocolacademy','wpa-live-room-signaling')): continue
+                assert False, f'{path}: possible {label}: {value[:12]}...'
+          PY
+
+      - name: Deploy contract tracks hardening
+        run: |
+          set -euo pipefail
+          grep -F '"version":"2A.2"' .github/workflows/deploy-wpa-live-room-phase2a.yml
+          grep -F '"access":"token-gated-host-and-guest"' .github/workflows/deploy-wpa-live-room-phase2a.yml
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
