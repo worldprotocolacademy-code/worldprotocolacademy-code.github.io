@@ -35,8 +35,12 @@ jobs:
           grep -F 'wpa-live-room-signaling' workers/wpa-live-room-signaling/wrangler.toml
           grep -F 'WpaLiveRoom' workers/wpa-live-room-signaling/wrangler.toml
           grep -F 'https://worldprotocolacademy.mk' workers/wpa-live-room-signaling/wrangler.toml
+          grep -F 'const VERSION = "2A.2"' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'token-gated-host-and-guest' workers/wpa-live-room-signaling/src/index.mjs
+          grep -F 'generate-ice-servers' workers/wpa-live-room-signaling/src/index.mjs
           grep -F 'RTCPeerConnection' live-room/index.html
-          grep -F 'stun:stun.cloudflare.com:3478' live-room/index.html
+          grep -F 'wpa.live-room.host.' live-room/index.html
+          grep -F '#guest=' live-room/index.html
           grep -F 'WPA Live Room' scripts/wpa-home-audio-video-session-card.js
 
       - name: Deploy isolated signaling Worker
@@ -62,8 +66,9 @@ jobs:
           esac
           curl --fail --silent --show-error --retry 5 --retry-delay 2 "$URL/health" | tee /tmp/health.json
           grep -F '"ok":true' /tmp/health.json
-          grep -F '"version":"2A.1"' /tmp/health.json
+          grep -F '"version":"2A.2"' /tmp/health.json
           grep -F '"media":"webrtc-peer-to-peer"' /tmp/health.json
+          grep -F '"access":"token-gated-host-and-guest"' /tmp/health.json
           printf '%s\n' "$URL" > /tmp/wpa-live-room-url.txt
 
       - name: Upload deployment evidence
@@ -78,4 +83,5 @@ jobs:
       - name: Boundary
         run: |
           echo 'This deploys only the isolated WPA Live Room signaling Worker on workers.dev.'
+          echo 'TURN long-lived credentials, when configured, remain Worker secrets and are never committed.'
           echo 'No production custom route, KV, D1, R2, AI binding, or existing WPA Worker is modified.'
