@@ -32,7 +32,15 @@ FORBIDDEN_SHORT = {
     "Certificates & Recognition","Sources, Authorship and Educational Use","Global reach","Regional expansion",
     "Book-to-Screen Method","Educational Film Cases","Production Workflow","Protocol Lesson","Diplomatic Impact",
     "Academic Cooperation","Humanism & Dialogue","Ohrid Intellectual Tradition",
+    "Учење · Learn","Истражување · Research","Институционално · Institutional",
+    "WPA Quick Start · Брз почеток","Напредна WPA технологија · Advanced WPA Technology",
+    "Privacy Policy","Terms of Use","Cookie Policy","Correction Request",
 }
+FORBIDDEN_FRAGMENTS = (
+    " · Learn", " · Research", "General information:", "General contact:",
+    " · Administration:", " · Author:", " · WPA direct:", "Last updated:",
+    "partnerships and member benefits", "member benefits, recurring value",
+)
 
 class P(HTMLParser):
     def __init__(self):
@@ -88,8 +96,8 @@ def main() -> int:
     if router_count != 1:
         errors.append(f"expected exactly one direct public router on MK Home, found {router_count}")
     for s, in_em in p.visible:
-        if s in FORBIDDEN_SHORT:
-            errors.append(f"forbidden English UI label remains: {s}")
+        if s in FORBIDDEN_SHORT or any(fragment in s for fragment in FORBIDDEN_FRAGMENTS):
+            errors.append(f"forbidden English UI label/fragment remains: {s}")
         elif english_heavy(s) and not allowed(s, in_em):
             errors.append(f"English-heavy visible MK Home chunk remains: {s}")
     if errors:
