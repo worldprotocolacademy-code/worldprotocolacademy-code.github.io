@@ -24,7 +24,7 @@
   }
 
   function isRelevantPage(){
-    return isInstitutePage() || isHomePage();
+    return isInstitutePage();
   }
 
   function addInstituteClarityStyles(){
