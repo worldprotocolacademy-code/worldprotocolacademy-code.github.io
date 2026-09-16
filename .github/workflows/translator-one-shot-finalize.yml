@@ -1,0 +1,49 @@
+name: Translator One-Shot Finalize
+
+on:
+  push:
+    branches:
+      - fix/translator-language-integrity-20260916
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  finalize:
+    if: ${{ !contains(github.event.head_commit.message, '[translator-finalized]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout translator branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/translator-language-integrity-20260916
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply one-shot migration
+        run: python scripts/translator_finalize_one_shot.py
+      - name: Run current translator gates
+        run: |
+          python scripts/translator_architecture_check.py
+          python scripts/mk_home_language_integrity_check.py
+          python scripts/public_translation_quality_check.py
+      - name: Remove one-shot migration machinery
+        run: |
+          rm scripts/translator_finalize_one_shot.py
+          rm .github/workflows/translator-one-shot-finalize.yml
+      - name: Commit finalized translator state
+        run: |
+          set -euo pipefail
+          git config user.name "worldprotocolacademy-code"
+          git config user.email "worldprotocolacademy@gmail.com"
+          git add index.html languages/wpa-language-menu-10.js data/translator-runtime-registry.json scripts/translator_architecture_check.py scripts/mk_home_language_integrity_check.py .github/workflows/translator-quality.yml scripts/translator_finalize_one_shot.py .github/workflows/translator-one-shot-finalize.yml
+          git diff --cached --check
+          git commit -m "Translator: finalize MK/EN language integrity [translator-finalized]"
+          git push origin HEAD:fix/translator-language-integrity-20260916
