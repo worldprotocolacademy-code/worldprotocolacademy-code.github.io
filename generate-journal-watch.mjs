@@ -8,6 +8,7 @@ const MAP_PATH = path.join(process.cwd(), "tools", "wpa-watch", "journal-map.jso
 const MAX_UPSTREAM_AGE_HOURS = 8;
 const MIN_LIVE_SOURCES = 4;
 const MIN_ITEMS = 10;
+const ALLOWED_DISCIPLINES = new Set(["protocol", "diplomacy", "pr", "security", "communicology"]);
 
 function clean(s = "") {
   return String(s).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -15,7 +16,17 @@ function clean(s = "") {
 
 function normalizeDomain(domain, map) {
   const raw = clean(domain || "").toLowerCase();
-  return map.domain_aliases?.[raw] || raw || "komunikologija";
+  return map.domain_aliases?.[raw] || raw || "communicology";
+}
+
+function canonicalDiscipline(value) {
+  const x = clean(value || "").toLowerCase();
+  if (x === "protocol") return "protocol";
+  if (x === "diplomacy") return "diplomacy";
+  if (x === "security") return "security";
+  if (x === "pr" || x === "public relations" || x === "public-relations") return "pr";
+  if (x === "communicology" || x === "communication" || x === "communications") return "communicology";
+  return "communicology";
 }
 
 function inferArticleType(domain, map) {
@@ -25,7 +36,7 @@ function inferArticleType(domain, map) {
 
 function inferDiscipline(domain, map) {
   const normalized = normalizeDomain(domain, map);
-  return map.domain_to_journal?.[normalized]?.discipline || "communicology";
+  return canonicalDiscipline(map.domain_to_journal?.[normalized]?.discipline || normalized);
 }
 
 function textFor(item) {
@@ -42,14 +53,13 @@ function textFor(item) {
 function classifyByContent(item, mappedDiscipline) {
   const x = textFor(item);
 
-  if (/metadata|crossref|doaj|openalex|datacite|doi\b|citation|scholarly|open access|research infrastructure|journal records|affiliation|pid\b|publishing practices|research integrity|research software/.test(x)) return "academic";
   if (/protocol|ceremon|precedence|state visit|official visit|flag order|anthem|forms? of address|diplomatic protocol|seating plan/.test(x)) return "protocol";
   if (/weapon|armed conflict|security|risk|deterrence|drone|trafficking|attack on healthcare|research security|cyber|terror|violence|war zone|epidemic|outbreak|earthquake|\bquake\b|natural disaster|public health emergency|health emergency/.test(x)) return "security";
   if (/summit|diplomat|diplomacy|bilateral|multilateral|foreign minister|foreign ministry|recognition|sovereignty|ceasefire|sanctions|peace talks|un security council|nato|eeas|osce|gaza|west bank|sudan|ukraine/.test(x)) return "diplomacy";
-  if (/public communication|media|communication|communications|newsroom|podcast|narrative|legitimacy|reputation|public information|campaign|messaging|heat alert|health alert|public warning|warning campaign|behaviou?r change/.test(x)) return "pr";
-  if (/communicology|intercultural|nonverbal|persuasion|organizational communication|human communication/.test(x)) return "communicology";
+  if (/public relations|public communication|media relations|media|newsroom|podcast|narrative|legitimacy|reputation|public information|campaign|messaging|heat alert|health alert|public warning|warning campaign|behaviou?r change/.test(x)) return "pr";
+  if (/communicology|intercultural|nonverbal|persuasion|organizational communication|human communication|metadata|crossref|doaj|openalex|datacite|doi\b|citation|scholarly|open access|research infrastructure|journal records|affiliation|pid\b|publishing practices|research integrity|research software/.test(x)) return "communicology";
 
-  return mappedDiscipline || "communicology";
+  return canonicalDiscipline(mappedDiscipline);
 }
 
 function reviewReason(item) {
@@ -77,14 +87,14 @@ function researchAngle(discipline) {
   if (discipline === "protocol") return "Possible WPA Journal angle in protocol: ceremonial order, state representation, visual statecraft, precedence, official visits or institutional protocol performance. Manual framing required.";
   if (discipline === "diplomacy") return "Possible WPA Journal angle in diplomacy: diplomatic signalling, bilateral or multilateral context, crisis diplomacy, state representation or institutional relations. Manual framing required.";
   if (discipline === "security") return "Possible WPA Journal angle in security studies: public-source risk, crisis governance, event security, strategic stability, human security, research security or technological-security implications. Manual framing required.";
-  if (discipline === "academic") return "Possible WPA Journal angle in academic infrastructure: metadata quality, source traceability, DOI/PID systems, open scholarly infrastructure, publication ethics or research integrity. Manual framing required.";
-  if (discipline === "pr") return "Possible WPA Journal angle in public communication: narrative, legitimacy, institutional reputation, crisis messaging, media framing or public information. Manual framing required.";
-  return "Possible WPA Journal angle in communicology: communication processes, institutional meaning, intercultural context or human communication. Manual editorial framing required.";
+  if (discipline === "pr") return "Possible WPA Journal angle in public relations: institutional reputation, media relations, crisis communication, narrative, legitimacy, public information or stakeholder communication. Manual framing required.";
+  return "Possible WPA Journal angle in communicology: communication processes, institutional meaning, intercultural context, nonverbal communication, persuasion, scholarly communication or human communication. Manual editorial framing required.";
 }
 
 function makeTopic(item, idx, map) {
   const mappedDiscipline = inferDiscipline(item.domain || "communicology", map);
   const discipline = classifyByContent(item, mappedDiscipline);
+  if (!ALLOWED_DISCIPLINES.has(discipline)) throw new Error(`Unsupported Journal Watch discipline: ${discipline}`);
   const articleType = inferArticleType(item.domain || discipline, map);
   const title = clean(item.title || "Untitled public-source development");
   const hold = reviewReason(item);
@@ -108,7 +118,7 @@ function makeTopic(item, idx, map) {
       : "Manual verification required. Not an accepted article. Not peer reviewed.",
     review_hold: hold || null,
     source_domain: item.domain || null,
-    classification_version: "JW2.1"
+    classification_version: "JW2.2"
   };
 }
 
@@ -137,14 +147,15 @@ async function main() {
   const generatedAt = new Date().toISOString();
   await fs.writeFile(path.join(OUT, "topics.json"), JSON.stringify(topics, null, 2), "utf8");
   await fs.writeFile(path.join(OUT, "editorial-queue.json"), JSON.stringify({
-    schema_version: "2.1",
+    schema_version: "2.2",
     generated: generatedAt,
     upstream_watch_generated: watchStatus.generated,
     upstream_watch_sources_live: watchStatus.sources_live,
     upstream_watch_items_total: watchStatus.items_total,
+    thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"],
     status: "staging",
     policy: "Topic candidates only. No automatic journal publication.",
-    classification_version: "JW2.1",
+    classification_version: "JW2.2",
     queue: topics.map(t => ({
       topic_id: t.id,
       stage: t.status === "classification_review" ? "classification_review" : (t.status === "detected" ? "detected_event" : "candidate_topic"),
