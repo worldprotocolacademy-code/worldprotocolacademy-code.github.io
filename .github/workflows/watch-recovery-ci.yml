@@ -10,6 +10,7 @@ on:
       - 'tools/wpa-watch/feeds.json'
       - 'tools/wpa-watch/rss-config.json'
       - 'generate-journal-watch.mjs'
+      - 'scripts/publish_protected_main.sh'
   workflow_dispatch:
 
 permissions:
@@ -62,7 +63,12 @@ jobs:
           grep -F 'Health gate before write' .github/workflows/wpa-watch.yml
           grep -F "Number(status.sources_live)<4" .github/workflows/wpa-watch.yml
           grep -F "items.length<10" .github/workflows/wpa-watch.yml
-          grep -F 'git push origin HEAD:main' .github/workflows/wpa-watch.yml
+          grep -F 'Publish healthy outputs through protected PR' .github/workflows/wpa-watch.yml
+          grep -F 'scripts/publish_protected_main.sh' .github/workflows/wpa-watch.yml
+          if grep -F 'git push origin HEAD:main' .github/workflows/wpa-watch.yml; then
+            echo 'WPA Watch must not push directly to protected main' >&2
+            exit 1
+          fi
 
       - name: Journal chain and upstream freshness contract
         run: |
@@ -74,6 +80,12 @@ jobs:
           grep -F 'MIN_ITEMS = 10' generate-journal-watch.mjs
           grep -F 'refuses to publish an empty placeholder queue' generate-journal-watch.mjs
           grep -F 'Topic candidates only. No automatic journal publication.' generate-journal-watch.mjs
+          grep -F 'Publish Journal Watch updates through protected PR' .github/workflows/wpa-journal-watch.yml
+          grep -F 'scripts/publish_protected_main.sh' .github/workflows/wpa-journal-watch.yml
+          if grep -F 'git push origin HEAD:main' .github/workflows/wpa-journal-watch.yml; then
+            echo 'Journal Watch must not push directly to protected main' >&2
+            exit 1
+          fi
 
       - name: Canonical five-discipline thematic scope
         run: |
@@ -86,6 +98,16 @@ jobs:
             echo 'academic must not be a sixth Journal Watch discipline' >&2
             exit 1
           fi
+
+      - name: Protected-main publisher contract
+        run: |
+          bash -n scripts/publish_protected_main.sh
+          grep -F 'gh pr create' scripts/publish_protected_main.sh
+          grep -F 'site-quality.yml' scripts/publish_protected_main.sh
+          grep -F 'translator-quality.yml' scripts/publish_protected_main.sh
+          grep -F 'Validate public site' scripts/publish_protected_main.sh
+          grep -F 'Validate translator system' scripts/publish_protected_main.sh
+          grep -F 'merge_method=squash' scripts/publish_protected_main.sh
 
       - name: Existing generated JSON remains parseable
         run: |
