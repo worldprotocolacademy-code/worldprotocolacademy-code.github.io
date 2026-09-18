@@ -1,0 +1,115 @@
+{
+  "schema": "wpa-social-messenger-security-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-10",
+  "name": "WPA Social and Messenger Security Policy",
+  "status": "CANONICAL_INTERNAL_SECURITY_POLICY",
+  "purpose": "Protect WPA and its creator from account takeover, impersonation, synthetic-media abuse, unauthorised publishing, reputational misconduct and unsafe community behaviour across official social networks, public channels, groups and messaging services.",
+  "scope": [
+    "Facebook",
+    "Instagram",
+    "LinkedIn",
+    "X / Twitter",
+    "TikTok",
+    "YouTube",
+    "Telegram",
+    "WhatsApp",
+    "Viber",
+    "Signal",
+    "future WeChat, VK, twinme, Webex and other approved channels"
+  ],
+  "security_objectives": {
+    "account_integrity": "Prevent unauthorised access, credential theft and silent privilege expansion.",
+    "identity_integrity": "Make official WPA channels and creator-controlled statements distinguishable from impersonation and synthetic media.",
+    "content_integrity": "No official release without attributable human authorisation and traceable source context.",
+    "community_integrity": "Harassment, threats, hate, sexual misconduct, doxxing, fraud, impersonation, spam and abusive behaviour are not permitted in WPA-governed spaces.",
+    "incident_resilience": "Contain, document, report, correct and recover from security or impersonation incidents quickly."
+  },
+  "mandatory_controls": {
+    "authentication": [
+      "Use a unique password for every platform.",
+      "Enable the strongest available two-factor authentication; prefer authenticator app, passkey or hardware security key over SMS where the platform supports it.",
+      "Store recovery codes offline in a controlled location.",
+      "Do not share passwords, one-time codes, recovery codes, QR login secrets or session tokens.",
+      "Review active sessions and signed-in devices regularly and revoke anything unrecognised."
+    ],
+    "admin_and_roles": [
+      "Grant admin or moderator rights only to named trusted persons with a defined need.",
+      "Use the least-privilege role available.",
+      "Any new admin, owner, publisher or moderator role requires Human Gate approval.",
+      "Remove stale or unused roles promptly.",
+      "Do not use shared credentials."
+    ],
+    "publishing": [
+      "Official WPA publishing remains human-governed.",
+      "No automatic publishing unless a platform-specific official adapter, credential scope, security review and Human Gate mandate are separately approved.",
+      "High-impact statements, crisis communication, corrections, personal statements attributed to the creator, and sensitive video/audio releases require explicit human review before publication.",
+      "Where practicable, retain the original source file, creation date, approved caption and final published URL for important media."
+    ],
+    "device_and_browser": [
+      "Keep operating system, browser and platform apps updated.",
+      "Use device screen lock and full-disk encryption where available.",
+      "Avoid account administration from shared or public computers.",
+      "Do not approve unexpected login prompts or QR-login requests.",
+      "Treat browser extensions with account access as privileged software and keep the set minimal."
+    ]
+  },
+  "synthetic_media_and_impersonation": {
+    "rule": "No video, audio, image, quote or statement should be treated as an official statement of Sande Smiljanov or WPA merely because it visually or audibly resembles them.",
+    "official_source_rule": "Authoritative confirmation should come from an official WPA channel listed in the canonical registry or another creator-controlled verified source.",
+    "deepfake_response": [
+      "Preserve evidence: URL, account name, timestamps, screenshots and, where lawful, the file itself.",
+      "Do not publicly amplify the synthetic or impersonating content more than necessary for correction.",
+      "Report the content and impersonating account through the platform's impersonation, manipulated-media, harassment or fraud process as applicable.",
+      "Publish a concise correction from an official WPA channel when the false content creates material reputational or public confusion.",
+      "Cross-reference the canonical official-channel registry so audiences know where authentic WPA statements appear.",
+      "Escalate threats, extortion, identity theft, coordinated harassment or other potentially criminal conduct to the appropriate competent authorities or legal counsel."
+    ],
+    "provenance_principle": "For important original media, preserve source provenance and publication records. Provenance supports verification but does not by itself guarantee that external copies cannot be manipulated."
+  },
+  "community_conduct": {
+    "prohibited": [
+      "impersonation or false claims of speaking for WPA or its creator",
+      "threats or encouragement of violence",
+      "harassment, stalking or targeted abuse",
+      "hate or degrading conduct based on protected characteristics",
+      "sexual harassment or sexually abusive conduct",
+      "doxxing or publication of private personal data",
+      "fraud, phishing, credential solicitation or malicious links",
+      "spam, coordinated manipulation or deceptive promotion",
+      "knowingly fabricated media presented as authentic",
+      "attempts to obtain private credentials or security information"
+    ],
+    "moderation_rule": "WPA-governed groups and channels may remove content, restrict participation, block accounts and preserve evidence when behaviour violates this policy or platform rules.",
+    "human_gate": "Material bans, public accusations, legal-risk claims and reputational corrections should receive attributable human review."
+  },
+  "incident_response": {
+    "severity_levels": {
+      "S1": "spam, nuisance or isolated misconduct with no account compromise",
+      "S2": "credible impersonation, abusive campaign or suspicious login without confirmed takeover",
+      "S3": "confirmed account takeover, unauthorised publishing, credential exposure, synthetic-media campaign causing material harm or coordinated targeted abuse",
+      "S4": "threats to physical safety, extortion, serious identity theft, significant data exposure or other emergency-level incident"
+    },
+    "first_actions": [
+      "Contain access: change the affected platform password from a trusted device and revoke unknown sessions where possible.",
+      "Strengthen authentication and recovery settings.",
+      "Remove unauthorised admins, apps, integrations or forwarding rules.",
+      "Preserve evidence before deleting malicious posts when safe and lawful.",
+      "Use the platform's official recovery and reporting mechanisms.",
+      "Issue a correction from a known-good official WPA channel if the public may have been misled.",
+      "Record the incident, actions taken and recovery status."
+    ],
+    "fail_closed_rule": "If account control, identity, authorship or publishing authority is uncertain, pause official publication from that platform until control is re-established."
+  },
+  "operational_limits": [
+    "This policy reduces risk but cannot guarantee that hacking, impersonation, deepfakes or abusive behaviour will never occur.",
+    "WPA systems do not currently have direct security control over external social-platform infrastructure.",
+    "Automated continuous monitoring or takedown is not claimed unless a lawful, authorised and technically verified integration is separately activated.",
+    "Security features differ by platform and must be configured inside each external account."
+  ],
+  "references": [
+    "/data/wpa-social-network.json",
+    "/data/wpa-connected-vessels-system.json",
+    "/data/wpa-human-gate-policy.json"
+  ]
+}
