@@ -6,7 +6,7 @@ const WATCH_ITEMS = path.join(process.cwd(), "tools", "wpa-watch", "items.json")
 const WATCH_STATUS = path.join(process.cwd(), "tools", "wpa-watch", "status.json");
 const MAP_PATH = path.join(process.cwd(), "tools", "wpa-watch", "journal-map.json");
 const MAX_UPSTREAM_AGE_HOURS = 8;
-const MIN_LIVE_SOURCES = 4;
+const MIN_LIVE_SOURCES = 20;
 const MIN_ITEMS = 10;
 const ALLOWED_DISCIPLINES = new Set(["protocol", "diplomacy", "pr", "security", "communicology"]);
 
@@ -118,6 +118,9 @@ function makeTopic(item, idx, map) {
       : "Manual verification required. Not an accepted article. Not peer reviewed.",
     review_hold: hold || null,
     source_domain: item.domain || null,
+    source_tier: item.source_tier || null,
+    source_class: item.source_class || null,
+    source_provenance: item.source_provenance || null,
     classification_version: "JW2.2"
   };
 }
@@ -151,6 +154,8 @@ async function main() {
     generated: generatedAt,
     upstream_watch_generated: watchStatus.generated,
     upstream_watch_sources_live: watchStatus.sources_live,
+    upstream_watch_tier_a_live: watchStatus.tier_a_live ?? null,
+    upstream_watch_live_ratio: watchStatus.live_ratio ?? null,
     upstream_watch_items_total: watchStatus.items_total,
     thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"],
     status: "staging",

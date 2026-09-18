@@ -1,0 +1,100 @@
+name: WPA RSS Registry Audit
+
+on:
+  pull_request:
+    paths:
+      - 'data/wpa-rss-source-registry-v1.json'
+      - 'scripts/audit-rss-source-registry.mjs'
+      - '.github/workflows/rss-registry-audit.yml'
+  schedule:
+    - cron: '43 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-rss-registry-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate recovered registry contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='data/wpa-rss-source-registry-v1.json';
+          const d=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(d.schema!=='wpa-rss-source-registry/1.0') throw new Error('wrong schema');
+          if(d.policy?.status!=='CANDIDATE_REGISTRY') throw new Error('registry must remain candidate-only');
+          if(!Array.isArray(d.records)||d.records.length!==1035) throw new Error('historical record count mismatch');
+          if(d.records.some(x=>x.active!==false)) throw new Error('historical candidates must not auto-activate');
+          const unique=new Set(d.records.map(x=>x.url));
+          if(unique.size!==1025) throw new Error('historical unique URL count mismatch');
+          const feed=d.records.filter(x=>x.candidate_kind==='feed_candidate');
+          if(feed.length!==941) throw new Error('historical feed-candidate count mismatch');
+          const https=feed.filter(x=>x.transport==='https');
+          if(https.length!==848) throw new Error('historical HTTPS feed-candidate count mismatch');
+          console.log('Registry contract OK:', {records:d.records.length,unique:unique.size,feed:feed.length,https:https.length});
+          NODE
+
+      - name: Live RSS/Atom audit
+        if: github.event_name != 'pull_request'
+        env:
+          RSS_AUDIT_TIMEOUT_MS: '6000'
+          RSS_AUDIT_CONCURRENCY: '12'
+        run: node scripts/audit-rss-source-registry.mjs
+
+      - name: Summarize audit
+        if: github.event_name != 'pull_request' && always()
+        run: |
+          if [ -f /tmp/wpa-rss-audit.json ]; then
+            node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('/tmp/wpa-rss-audit.json','utf8'));console.log(JSON.stringify(d.totals,null,2));"
+          fi
+
+      - name: Install WPA Watch dependencies
+        working-directory: tools/wpa-watch
+        run: npm install --no-audit --no-fund
+
+      - name: Smoke active WPA Watch v2 registry
+        working-directory: tools/wpa-watch
+        run: npm run watch
+
+      - name: Validate active registry health
+        working-directory: tools/wpa-watch
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync('status.json','utf8'));
+          const items=JSON.parse(fs.readFileSync('items.json','utf8'));
+          if(s.schema_version!=='2.0') throw new Error('wrong active status schema');
+          if(Number(s.sources_total)!==48) throw new Error(`expected 48 active feeds, got ${s.sources_total}`);
+          if(Number(s.sources_live)<20) throw new Error(`only ${s.sources_live} active feeds live`);
+          if(Number(s.tier_a_live)<12) throw new Error(`only ${s.tier_a_live} Tier A feeds live`);
+          if(Number(s.live_ratio)<0.50) throw new Error(`live ratio too low: ${s.live_ratio}`);
+          if(!Array.isArray(items)||items.length<10) throw new Error('too few active Watch items');
+          if(s.dead?.some(x=>String(x.error||'').includes('PROVENANCE_HOST_MISMATCH'))) {
+            console.warn('Host-lock quarantined unexpected redirects:', s.dead.filter(x=>String(x.error||'').includes('PROVENANCE_HOST_MISMATCH')).map(x=>x.name));
+          }
+          console.log(`ACTIVE REGISTRY HEALTHY: ${s.sources_live}/${s.sources_total}; Tier A ${s.tier_a_live}/${s.tier_a_total}; items ${items.length}`);
+          NODE
+
+      - name: Upload audit artifact
+        if: github.event_name != 'pull_request' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-rss-registry-audit
+          path: /tmp/wpa-rss-audit.json
+          if-no-files-found: warn
+          retention-days: 14
