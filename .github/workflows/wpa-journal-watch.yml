@@ -13,7 +13,10 @@ on:
         type: string
 
 permissions:
+  actions: write
+  checks: read
   contents: write
+  pull-requests: write
 
 concurrency:
   group: wpa-journal-watch
@@ -68,15 +71,12 @@ jobs:
           console.log(`JOURNAL HEALTHY: ${topics.length} governed topic candidates`);
           NODE
 
-      - name: Commit Journal Watch updates
-        run: |
-          git config user.name "wpa-journal-watch-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add journal/watch/topics.json journal/watch/editorial-queue.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "WPA Journal Watch update $(date -u +%FT%TZ)"
-            git pull --rebase origin main
-            git push origin HEAD:main
-          fi
+      - name: Publish Journal Watch updates through protected PR
+        env:
+          GH_TOKEN: ${{ secrets.WPA_AUTOMATION_TOKEN || github.token }}
+          PUBLISH_BRANCH_PREFIX: wpa-journal-watch
+          PUBLISH_TITLE: WPA Journal Watch automated refresh
+          PUBLISH_BODY: Automated WPA Journal Watch refresh generated from a fresh, healthy WPA Watch upstream. Topic candidates remain governed editorial inputs only and are merged only after the repository's required public-site and translator checks pass on the exact generated commit.
+          PUBLISH_FILES: journal/watch/topics.json journal/watch/editorial-queue.json
+          PUBLISH_GIT_NAME: wpa-journal-watch-bot
+        run: bash scripts/publish_protected_main.sh
