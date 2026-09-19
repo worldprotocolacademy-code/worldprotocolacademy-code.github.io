@@ -2243,9 +2243,8 @@ function metaReply(type, lang = "mk") {
 // MISC HELPERS
 // ============================================================
 
-function safeErrorPayload(error, env) {
-  const debug = String(env?.DEBUG_MODE || "").toLowerCase() === "true";
-  return debug ? { ok: false, error: String(error?.message || error) } : { ok: false, error: "Service temporarily unavailable." };
+function safeErrorPayload() {
+  return { ok: false, error: "Service temporarily unavailable." };
 }
 
 function sourceList(items = []) {
@@ -3946,8 +3945,8 @@ export default {
       }, request, env, 200);
 
     } catch (e) {
-      wpaLog({ DEBUG_MODE: "false" }, { t: "unhandled_error", err: String(e?.message || e) });
-      return json(safeErrorPayload(e, env), request, env, 500);
+      wpaLog(env, { t: "unhandled_error", err: String(e?.message || "request failed").slice(0, 160) });
+      return json(safeErrorPayload(), request, env, 500);
     }
   }
 };
