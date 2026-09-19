@@ -152,14 +152,60 @@ def verify_token_id(account_id: str, token: str) -> str:
     raise CutoverError("unable to verify R2 token: " + "; ".join(errors))
 
 
+def temporary_r2_credentials(
+    account_id: str,
+    token: str,
+    *,
+    bucket: str,
+    prefixes: list[str] | None = None,
+    ttl_seconds: int = 900,
+) -> tuple[str, str, str]:
+    parent_access_key_id = verify_token_id(account_id, token)
+    payload = {
+        "bucket": bucket,
+        "parentAccessKeyId": parent_access_key_id,
+        "permission": "object-read-only",
+        "ttlSeconds": ttl_seconds,
+    }
+    if prefixes:
+        payload["prefixes"] = list(prefixes)
+
+    response = requests.post(
+        f"{API}/accounts/{account_id}/r2/temp-access-credentials",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+        json=payload,
+        timeout=60,
+    )
+    response.raise_for_status()
+    body = response.json()
+    result = body.get("result") or {}
+    if body.get("success") is not True:
+        raise CutoverError("Cloudflare R2 temporary credential request failed")
+    access_key_id = result.get("accessKeyId")
+    secret_access_key = result.get("secretAccessKey")
+    session_token = result.get("sessionToken")
+    if not access_key_id or not secret_access_key or not session_token:
+        raise CutoverError("Cloudflare R2 temporary credential response was incomplete")
+    return access_key_id, secret_access_key, session_token
+
+
 def r2_client(account_id: str, token: str):
-    access_key_id = verify_token_id(account_id, token)
-    secret_access_key = hashlib.sha256(token.encode("utf-8")).hexdigest()
+    access_key_id, secret_access_key, session_token = temporary_r2_credentials(
+        account_id,
+        token,
+        bucket=BUCKET,
+        prefixes=[TARGET_PREFIX],
+        ttl_seconds=900,
+    )
     return boto3.client(
         "s3",
         endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
         aws_access_key_id=access_key_id,
         aws_secret_access_key=secret_access_key,
+        aws_session_token=session_token,
         region_name="auto",
         config=Config(
             signature_version="s3v4",
@@ -168,7 +214,6 @@ def r2_client(account_id: str, token: str):
             read_timeout=300,
         ),
     )
-
 
 def inventory_from_objects(objects: list[dict]) -> dict:
     rows = sorted((str(x["Key"]), int(x["Size"])) for x in objects)
