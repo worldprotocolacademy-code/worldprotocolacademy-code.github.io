@@ -7204,14 +7204,38 @@ a{color:inherit;}
     });
   }
 
+  function appendHighlightedText(parent, text, query) {
+    var source = String(text || '');
+    var needle = String(query || '');
+    if (!needle) {
+      parent.textContent = source;
+      return;
+    }
+    var sourceLower = source.toLowerCase();
+    var needleLower = needle.toLowerCase();
+    var pos = 0;
+    while (pos < source.length) {
+      var idx = sourceLower.indexOf(needleLower, pos);
+      if (idx === -1) {
+        parent.appendChild(document.createTextNode(source.slice(pos)));
+        break;
+      }
+      if (idx > pos) parent.appendChild(document.createTextNode(source.slice(pos, idx)));
+      var mark = document.createElement('mark');
+      mark.textContent = source.slice(idx, idx + needle.length);
+      parent.appendChild(mark);
+      pos = idx + needle.length;
+    }
+  }
+
   window.doSearch = function(query){
-    const res = el("srch-results");
-    const cnt = el("srch-count");
+    const res = el("sr-results");
+    const cnt = el("sr-count");
     if(!res || !cnt) return;
 
     const q = String(query || "").trim();
+    res.replaceChildren();
     if(q.length < 2){
-      res.innerHTML = "";
       cnt.textContent = "";
       return;
     }
@@ -7224,22 +7248,22 @@ a{color:inherit;}
     cnt.textContent = matches.length + " рез.";
 
     if(matches.length === 0){
-      res.innerHTML = '<div class="sr-item">Нема резултати / No results</div>';
+      const empty = document.createElement('div');
+      empty.className = 'sr-item';
+      empty.textContent = 'Нема резултати / No results';
+      res.appendChild(empty);
       return;
     }
 
-    const esc = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp("(" + esc + ")", "gi");
-
-    res.innerHTML = matches.map(function(item){
-      const hi = item.txt.replace(re, "<mark>$1</mark>");
-      return '<div class="sr-item" data-target="' + item.id + '">' + hi + "...</div>";
-    }).join("");
-
-    res.querySelectorAll(".sr-item[data-target]").forEach(function(item){
-      item.addEventListener("click", function(){
-        window.SC(item.getAttribute("data-target"));
+    matches.forEach(function(item){
+      const row = document.createElement('div');
+      row.className = 'sr-item';
+      row.dataset.target = String(item.id || '');
+      appendHighlightedText(row, String(item.txt || '') + '...', q);
+      row.addEventListener('click', function(){
+        window.SC(String(item.id || ''));
       });
+      res.appendChild(row);
     });
   };
 
