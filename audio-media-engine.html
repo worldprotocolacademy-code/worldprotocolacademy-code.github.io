@@ -50,12 +50,126 @@ var stages=['Скрипта','Снимање','Монтажа','Мастер','�
 var roomModes={class:{name:'Класа',min:90,att:100,co:2},workshop:{name:'Работилница',min:120,att:150,co:4},webinar:{name:'Вебинар',min:60,att:500,co:2},institutional:{name:'Институционална',min:60,att:80,co:3}};
 function q(id){return document.getElementById(id)} function esc(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})} function toast(s){var el=q('toast');el.textContent=s;el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2200)}
 function policy(){var r=roomModes[roomMode];return r.min+' min · '+r.att+' учесници · 1 host + '+r.co+' co-hosts'}
-function renderModules(){q('moduleGrid').innerHTML=modules.map(function(m,i){return '<article class="module-card" data-tab="'+m[1]+'"><div><span class="mnum">'+String(i+1).padStart(2,'0')+'</span><h3>'+esc(m[0])+'</h3></div><span class="badge '+m[2]+'">'+m[2]+'</span></article>'}).join('')}
-function renderProjects(){q('projectRows').innerHTML=projects.map(function(p,i){return '<tr><td>'+esc(p[0])+'</td><td>'+esc(p[1])+'</td><td>'+esc(p[2])+'</td><td>'+esc(p[3])+'</td><td><button data-project-ready="'+i+'">Ready</button></td></tr>'}).join('');q('projectCount').textContent=projects.length}
-function renderDelivery(){q('deliveryRows').innerHTML=delivery.map(function(d,i){return '<tr><td>'+esc(d[0])+'</td><td>'+esc(d[1])+'</td><td>'+esc(d[2])+'</td><td><button data-delivery="'+i+'">Означи готово</button></td></tr>'}).join('')}
-function renderParticipants(){q('participantList').innerHTML=participants.map(function(p){return '<div class="participant"><strong>'+esc(p.name)+'</strong><span class="status '+p.status+'">'+(p.status==='floor'?'збор':'исклучен')+'</span>'+(p.id==='host'?'':'<button data-grant="'+p.id+'">Дај збор</button>')+'</div>'}).join('');var holder=participants.find(function(p){return p.status==='floor'});q('floorText').textContent='FLOOR: '+(holder?holder.name:'—')}
-function renderStages(){q('stageTrack').innerHTML=stages.map(function(s,i){return '<span class="stage '+(i<stage?'done':i===stage?'current':'')+'">'+(i+1)+'. '+s+'</span>'}).join('')}
-function renderRoomModes(){q('roomModes').innerHTML=Object.keys(roomModes).map(function(k){var r=roomModes[k];return '<div class="room-mode '+(k===roomMode?'active':'')+'" data-room="'+k+'"><h3>'+r.name+'</h3><p>'+r.min+' min · '+r.att+' учесници · 1 host + '+r.co+' co-hosts</p></div>'}).join('')}
+function renderModules(){
+  var grid=q('moduleGrid');
+  grid.replaceChildren();
+  modules.forEach(function(m,i){
+    var article=document.createElement('article');
+    article.className='module-card';
+    article.dataset.tab=String(m[1]||'');
+
+    var head=document.createElement('div');
+    var num=document.createElement('span');
+    num.className='mnum';
+    num.textContent=String(i+1).padStart(2,'0');
+    var title=document.createElement('h3');
+    title.textContent=String(m[0]||'');
+    head.append(num,title);
+
+    var badge=document.createElement('span');
+    badge.className='badge '+String(m[2]||'');
+    badge.textContent=String(m[2]||'');
+
+    article.append(head,badge);
+    grid.appendChild(article);
+  });
+}
+function renderProjects(){
+  var rows=q('projectRows');
+  rows.replaceChildren();
+  projects.forEach(function(p,i){
+    var tr=document.createElement('tr');
+    [p[0],p[1],p[2],p[3]].forEach(function(value){
+      var td=document.createElement('td');
+      td.textContent=String(value||'');
+      tr.appendChild(td);
+    });
+    var action=document.createElement('td');
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.dataset.projectReady=String(i);
+    btn.textContent='Ready';
+    action.appendChild(btn);
+    tr.appendChild(action);
+    rows.appendChild(tr);
+  });
+  q('projectCount').textContent=String(projects.length);
+}
+function renderDelivery(){
+  var rows=q('deliveryRows');
+  rows.replaceChildren();
+  delivery.forEach(function(d,i){
+    var tr=document.createElement('tr');
+    [d[0],d[1],d[2]].forEach(function(value){
+      var td=document.createElement('td');
+      td.textContent=String(value||'');
+      tr.appendChild(td);
+    });
+    var action=document.createElement('td');
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.dataset.delivery=String(i);
+    btn.textContent='Означи готово';
+    action.appendChild(btn);
+    tr.appendChild(action);
+    rows.appendChild(tr);
+  });
+}
+function renderParticipants(){
+  var list=q('participantList');
+  list.replaceChildren();
+  participants.forEach(function(p){
+    var row=document.createElement('div');
+    row.className='participant';
+
+    var name=document.createElement('strong');
+    name.textContent=String(p.name||'');
+
+    var status=document.createElement('span');
+    status.className='status '+String(p.status||'');
+    status.textContent=p.status==='floor'?'збор':'исклучен';
+
+    row.append(name,status);
+    if(p.id!=='host'){
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.dataset.grant=String(p.id||'');
+      btn.textContent='Дај збор';
+      row.appendChild(btn);
+    }
+    list.appendChild(row);
+  });
+  var holder=participants.find(function(p){return p.status==='floor'});
+  q('floorText').textContent='FLOOR: '+(holder?String(holder.name||''):'—');
+}
+function renderStages(){
+  var track=q('stageTrack');
+  track.replaceChildren();
+  stages.forEach(function(s,i){
+    var span=document.createElement('span');
+    span.className='stage '+(i<stage?'done':i===stage?'current':'');
+    span.textContent=String(i+1)+'. '+String(s||'');
+    track.appendChild(span);
+  });
+}
+function renderRoomModes(){
+  var host=q('roomModes');
+  host.replaceChildren();
+  Object.keys(roomModes).forEach(function(k){
+    var r=roomModes[k];
+    var card=document.createElement('div');
+    card.className='room-mode '+(k===roomMode?'active':'');
+    card.dataset.room=k;
+
+    var title=document.createElement('h3');
+    title.textContent=String(r.name||'');
+    var p=document.createElement('p');
+    p.textContent=String(r.min)+' min · '+String(r.att)+' учесници · 1 host + '+String(r.co)+' co-hosts';
+
+    card.append(title,p);
+    host.appendChild(card);
+  });
+}
 function renderConsole(){q('metaLang').textContent=lang;q('metaMode').textContent=mode;q('metaPolicy').textContent=policy();var txt='WPA Audio Media Engine · режим: '+(labels.mk[mode]||mode)+' · статус: '+q('metaStatus').value+'\nПроект: '+q('projName').value+'\nПолитика на соба: '+policy()+'\nБелешки: '+(q('notes').value||'—')+'\nPhase 1: static workflow. Phase 2: backend/WebRTC/voice/Web3 only after consent, security and legal review.';q('previewBox').textContent=txt}
 function activateTab(id){document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('active',b.dataset.tab===id)});document.querySelectorAll('.section').forEach(function(s){s.classList.toggle('active',s.id===id)})}
 function flavor(){return {academic:'академски, прецизен',formal:'формален, церемонијален',executive:'извршен, концизен',viral:'достоинствено вирален'}[mode]}
