@@ -222,11 +222,40 @@ function getBadgeLabel(status){
   return { draft:'Draft', validating:'Validating', review:'Founder Review', approved:'Approved', queued:'Queued', live:'Live', rejected:'Rejected', hold:'Hold' }[status] || status;
 }
 
-function getRowActions(item){
-  if(item.status === 'live') return `<button class="qa-btn qa-view" onclick="viewItem('${item.id}')">View</button><button class="qa-btn qa-hold" onclick="archiveItem('${item.id}')">Archive</button>`;
-  if(item.status === 'approved') return `<button class="qa-btn qa-publish" onclick="publishItem('${item.id}')">Deploy →</button><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','hold')">Hold</button>`;
-  if(item.status === 'validating') return `<span style="font-size:11px;color:var(--muted)">Auto-checking citations...</span><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','review')">Mark Ready</button>`;
-  return `<button class="qa-btn qa-approve" onclick="approveItem('${item.id}')">Approve</button><button class="qa-btn qa-revise" onclick="openRevise('${item.id}')">Revise</button><button class="qa-btn qa-hold" onclick="setStatus('${item.id}','hold')">Hold</button><button class="qa-btn qa-reject" onclick="rejectItem('${item.id}')">Reject</button>`;
+function appendActionButton(container, label, className, handler){
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'qa-btn ' + className;
+  button.textContent = label;
+  button.addEventListener('click', handler);
+  container.appendChild(button);
+}
+
+function appendRowActions(container, item){
+  const id = String(item.id || '');
+  if(item.status === 'live'){
+    appendActionButton(container, 'View', 'qa-view', () => viewItem(id));
+    appendActionButton(container, 'Archive', 'qa-hold', () => archiveItem(id));
+    return;
+  }
+  if(item.status === 'approved'){
+    appendActionButton(container, 'Deploy →', 'qa-publish', () => publishItem(id));
+    appendActionButton(container, 'Hold', 'qa-hold', () => setStatus(id, 'hold'));
+    return;
+  }
+  if(item.status === 'validating'){
+    const note = document.createElement('span');
+    note.style.fontSize = '11px';
+    note.style.color = 'var(--muted)';
+    note.textContent = 'Auto-checking citations...';
+    container.appendChild(note);
+    appendActionButton(container, 'Mark Ready', 'qa-hold', () => setStatus(id, 'review'));
+    return;
+  }
+  appendActionButton(container, 'Approve', 'qa-approve', () => approveItem(id));
+  appendActionButton(container, 'Revise', 'qa-revise', () => openRevise(id));
+  appendActionButton(container, 'Hold', 'qa-hold', () => setStatus(id, 'hold'));
+  appendActionButton(container, 'Reject', 'qa-reject', () => rejectItem(id));
 }
 
 function getRowClass(item){
@@ -240,23 +269,52 @@ function renderQueue(){
   updateStats();
   const filtered = activeFilter === 'all' ? QUEUE : QUEUE.filter(x => x.status === activeFilter);
   const list = document.getElementById('queueList');
+  list.replaceChildren();
+
   if(!filtered.length){
-    list.innerHTML = '<div class="empty-state"><p>No items in this queue.</p><small>Items will appear here when sent from Book Studio, Paper Studio, or Analysis Studio.</small></div>';
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    const p = document.createElement('p');
+    p.textContent = 'No items in this queue.';
+    const small = document.createElement('small');
+    small.textContent = 'Items will appear here when sent from Book Studio, Paper Studio, or Analysis Studio.';
+    empty.append(p, small);
+    list.appendChild(empty);
     return;
   }
-  list.innerHTML = filtered.map(item => `
-    <div class="${getRowClass(item)}" id="row_${item.id}">
-      <div>
-        <div class="q-name">${item.title}</div>
-        <div class="q-meta">${item.meta || item.type || ''}</div>
-      </div>
-      <div class="q-type-cell">${item.type || '—'}</div>
-      <div><span class="badge ${getBadgeClass(item.status)}">${getBadgeLabel(item.status)}</span></div>
-      <div class="q-actions">${getRowActions(item)}</div>
-    </div>
-  `).join('');
-}
 
+  filtered.forEach(item => {
+    const row = document.createElement('div');
+    row.className = getRowClass(item);
+    row.id = 'row_' + String(item.id || '');
+
+    const primary = document.createElement('div');
+    const name = document.createElement('div');
+    name.className = 'q-name';
+    name.textContent = String(item.title || '');
+    const meta = document.createElement('div');
+    meta.className = 'q-meta';
+    meta.textContent = String(item.meta || item.type || '');
+    primary.append(name, meta);
+
+    const type = document.createElement('div');
+    type.className = 'q-type-cell';
+    type.textContent = String(item.type || '—');
+
+    const badgeCell = document.createElement('div');
+    const badge = document.createElement('span');
+    badge.className = 'badge ' + getBadgeClass(item.status);
+    badge.textContent = String(getBadgeLabel(item.status) || '');
+    badgeCell.appendChild(badge);
+
+    const actions = document.createElement('div');
+    actions.className = 'q-actions';
+    appendRowActions(actions, item);
+
+    row.append(primary, type, badgeCell, actions);
+    list.appendChild(row);
+  });
+}
 function filterQueue(filter, btn){
   activeFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
