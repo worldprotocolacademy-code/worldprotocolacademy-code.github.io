@@ -3,13 +3,42 @@
 from __future__ import annotations
 
 import json
-import re
 
 import finalize_homepage
 import normalize_media_markup
 import optimize_site_media as optimizer
 
-SAFE_IMG_RE = re.compile(r'<img\b(?:[^>\'\"]+|\'[^\']*\'|\"[^\"]*\")*>', re.I | re.S)
+def iter_img_tags(text):
+    """Yield (start, end, tag) for <img ...> tags using a linear quote-aware scan."""
+    lower = text.lower()
+    i = 0
+    n = len(text)
+    while i < n:
+        start = lower.find('<img', i)
+        if start < 0:
+            return
+        boundary = start + 4
+        if boundary < n and not (text[boundary].isspace() or text[boundary] in '/>'):
+            i = boundary
+            continue
+
+        quote = None
+        j = boundary
+        while j < n:
+            ch = text[j]
+            if quote is not None:
+                if ch == quote:
+                    quote = None
+            elif ch in ("'", '"'):
+                quote = ch
+            elif ch == '>':
+                end = j + 1
+                yield start, end, text[start:end]
+                i = end
+                break
+            j += 1
+        else:
+            return
 optimizer.PERFORMANCE_SCRIPT = '<script defer src="/scripts/wpa-performance.js?v=20260909-3"></script>'
 
 
@@ -17,18 +46,23 @@ def safe_optimize_page(page, quality, force, stats):
     original = optimizer.read(page)
     image_index = 0
 
-    def replace(match):
-        nonlocal image_index
-        before = original[:match.start()].lower()
+    chunks = []
+    cursor = 0
+    lower_original = original.lower()
+    for start, end, tag in iter_img_tags(original):
+        chunks.append(original[cursor:start])
+        before = lower_original[:start]
         inside_picture = before.rfind('<picture') > before.rfind('</picture')
         if inside_picture:
             image_index += 1
-            return match.group(0)
-        value = optimizer.optimize_img(page, match.group(0), image_index, quality, force, stats)
-        image_index += 1
-        return value
-
-    updated = SAFE_IMG_RE.sub(replace, original)
+            replacement = tag
+        else:
+            replacement = optimizer.optimize_img(page, tag, image_index, quality, force, stats)
+            image_index += 1
+        chunks.append(replacement)
+        cursor = end
+    chunks.append(original[cursor:])
+    updated = ''.join(chunks)
     updated, injected = optimizer.inject_performance_script(updated)
     if injected:
         stats['scripts_injected'] += 1
