@@ -353,35 +353,34 @@
    *   /zh/about.html   + fr  →  /fr/about.html
    */
   function buildTargetUrl(targetLang) {
-    var loc = window.location;
-    var path = loc.pathname || '/';
-    var search = loc.search || '';
+    var safeLang = normalise(targetLang);
+    if (!safeLang || !isSupported(safeLang)) return null;
 
-    // Strip leading language segment if present
+    var loc = window.location;
+    var path = String(loc.pathname || '/');
     var stripped = path.replace(/^\/([a-z]{2,3})(?=\/|$)/i, function (m, code) {
       return isSupported(normalise(code)) ? '' : m;
     });
-    if (!stripped || stripped === '') stripped = '/';
+    if (!stripped) stripped = '/';
     if (stripped.charAt(0) !== '/') stripped = '/' + stripped;
 
-    var prefix;
-    if (targetLang === CONFIG.defaultLang) {
-      prefix = '';        // root for Macedonian
-    } else {
-      prefix = '/' + targetLang;
-    }
+    // Only preserve ordinary site path characters. Anything unusual falls back to index.
+    if (!/^\/[A-Za-z0-9._~\/-]*$/.test(stripped)) stripped = '/index.html';
 
-    // Ensure we don't double-slash
-    var target = prefix + stripped;
+    var target = safeLang === CONFIG.defaultLang ? stripped : '/' + safeLang + stripped;
     target = target.replace(/\/+/g, '/');
 
-    // Strip ?lang= from search so it doesn't loop
+    var search = String(loc.search || '');
     if (search) {
-      var cleaned = search.replace(/[?&]lang=[^&]*/g, '').replace(/^&/, '?');
-      if (cleaned === '?') cleaned = '';
-      target += cleaned;
+      var params = new URLSearchParams(search);
+      params.delete(CONFIG.queryParam);
+      var cleanSearch = params.toString();
+      if (cleanSearch) target += '?' + cleanSearch;
     }
-    return target + (loc.hash || '');
+
+    var hash = String(loc.hash || '');
+    if (/^#[A-Za-z0-9._~:%-]*$/.test(hash)) target += hash;
+    return target;
   }
 
   function shouldRedirect(chosen, currentPageLang) {
@@ -394,12 +393,9 @@
 
   function performRedirect(targetLang) {
     var url = buildTargetUrl(targetLang);
+    if (!url || url.charAt(0) !== '/' || url.indexOf('//') === 0) return;
     log('Redirecting to', url);
-    try {
-      window.location.replace(url);
-    } catch (e) {
-      window.location.href = url;
-    }
+    window.location.replace(url);
   }
 
   // ============================================================
@@ -475,7 +471,7 @@
    *   • Главни јазици    (priority 1)
    *   • Други јазици     (priority 2)
    */
-  function buildOptionsHtml(currentCode) {
+  function appendSelectorOptions(select, currentCode) {
     function groupLabel(priority, langCode) {
       var labels = {
         mk: ['Канонски јазици', 'Главни јазици', 'Други јазици'],
@@ -490,39 +486,30 @@
       if (!REGISTRY.hasOwnProperty(code)) continue;
       groups[REGISTRY[code].priority].push(code);
     }
-
-    // Sort each group alphabetically by native name
     function sortByName(a, b) {
       var an = REGISTRY[a].name.toLowerCase();
       var bn = REGISTRY[b].name.toLowerCase();
       return an < bn ? -1 : (an > bn ? 1 : 0);
     }
-    // Priority 0 keeps mk first then en (canonical order, no sort)
     groups[1].sort(sortByName);
     groups[2].sort(sortByName);
 
-    var html = '';
     for (var p = 0; p < 3; p++) {
       if (!groups[p].length) continue;
-      html += '<optgroup label="' + escapeAttr(groupLabel(p, currentCode)) + '">';
+      var group = document.createElement('optgroup');
+      group.label = groupLabel(p, currentCode);
       for (var k = 0; k < groups[p].length; k++) {
-        var c = groups[p][k];
-        var entry = REGISTRY[c];
-        var selected = (c === currentCode) ? ' selected' : '';
-        var label = entry.name;
-        if (entry.en && entry.en !== entry.name) label += ' (' + entry.en + ')';
-        html += '<option value="' + escapeAttr(c) + '"' + selected + '>' + escapeText(label) + '</option>';
+        var code = groups[p][k];
+        var entry = REGISTRY[code];
+        var option = document.createElement('option');
+        option.value = code;
+        option.selected = code === currentCode;
+        option.textContent = entry.en && entry.en !== entry.name ?
+          entry.name + ' (' + entry.en + ')' : entry.name;
+        group.appendChild(option);
       }
-      html += '</optgroup>';
+      select.appendChild(group);
     }
-    return html;
-  }
-
-  function escapeAttr(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-  }
-  function escapeText(s) {
-    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function buildSelectorElement(currentCode, options) {
@@ -543,7 +530,7 @@
     select.id = 'wpa-lang-select';
     select.className = 'wpa-lang-selector__select';
     select.setAttribute('aria-label', labelText);
-    select.innerHTML = buildOptionsHtml(currentCode);
+    appendSelectorOptions(select, currentCode);
     wrapper.appendChild(select);
 
     select.addEventListener('change', function () {
@@ -552,8 +539,9 @@
       safeStorage('set', CONFIG.storageKey, picked);
       // Build target URL, then navigate
       var url = buildTargetUrl(picked);
+      if (!url || url.charAt(0) !== '/' || url.indexOf('//') === 0) return;
       log('Manual selection:', picked, '→', url);
-      try { window.location.assign(url); } catch (e) { window.location.href = url; }
+      window.location.assign(url);
     });
 
     return wrapper;
