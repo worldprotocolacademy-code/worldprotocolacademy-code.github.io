@@ -311,17 +311,23 @@
   }
 
   async function getJson(path, signal) {
-    const response = await fetch(`${api}${path}`, {
-      cache: "no-store",
-      signal,
-      headers: { Accept: "application/json" }
-    });
-    if (!response.ok) {
-      const error = new Error(`HTTP ${response.status}`);
-      error.status = response.status;
-      throw error;
+    const ownController = !signal && typeof AbortController !== "undefined" ? new AbortController() : null;
+    const ownTimeout = ownController ? setTimeout(() => ownController.abort(), 10000) : null;
+    try {
+      const response = await fetch(`${api}${path}`, {
+        cache: "no-store",
+        signal: signal || ownController?.signal,
+        headers: { Accept: "application/json" }
+      });
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
+      return response.json();
+    } finally {
+      if (ownTimeout) clearTimeout(ownTimeout);
     }
-    return response.json();
   }
 
   function setConnection(ok, message) {
@@ -674,7 +680,7 @@
     const banner = $("demoBanner");
     if (banner) banner.hidden = true;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 18000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
     try {
       setConnection(false, "Се синхронизира со WPA Live API…");
