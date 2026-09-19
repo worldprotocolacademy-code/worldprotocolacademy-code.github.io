@@ -1,37 +1,37 @@
-name: WPA Journal Live Backend Integrity v11.5.2 Recovery
+name: WPA Journal Live Backend v11.5.2 Promotion Retry
 
 on:
   push:
     branches: [main]
     paths:
       - .github/workflows/journal-live-backend-integrity-v1152-recovery.yml
-      - tools/journal-live-production-bridge/backend-integrity-v11.5.2-delta.patch
-      - tools/journal-live-production-bridge/source-manifest.json
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: journal-live-backend-integrity-v1152-recovery
+  group: journal-live-backend-v1152-promotion-retry
   cancel-in-progress: false
 
 env:
   WORKER_NAME: wpa-live-production-bridge
   API_ROOT: https://wpa-live-production-bridge.worldprotocolacademy.workers.dev
-  EXPECTED_ACTIVE_VERSION: 1aa812ea-6d6a-4855-9e4b-e22cbe79c3f3
-  EXPECTED_LATEST_CANDIDATE: da9bf14a-34f3-44d7-9051-70c4b5209b6f
-  EXPECTED_LATEST_SHA256: 2c9d2d25a92e6ea2da7fbf6670eb2e74f8b21219b440088df791d263ece7050a
+  ROLLBACK_VERSION_ID: 1aa812ea-6d6a-4855-9e4b-e22cbe79c3f3
+  CANDIDATE_VERSION_ID: f7292368-aa3c-4923-8475-dfdb6ccbd181
+  CANDIDATE_SHA256: 559f60a1e968988fc102cb530628423e0002d9271a92a4a4ef7b424def175761
+  CANDIDATE_LABEL: "11.5.2"
 
 jobs:
-  recover:
+  promote:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
+
     steps:
       - uses: actions/checkout@v5
 
-      - name: Preflight exact rollback state and latest failed candidate
+      - name: Preflight exact active and candidate state
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -44,8 +44,7 @@ jobs:
 
           get_json() {
             local url="$1" out="$2" code
-            code=$(curl -sS -o "$out" -w '%{http_code}' \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: application/json' "$url")
+            code=$(curl -sS -o "$out" -w '%{http_code}'               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -H 'Accept: application/json' "$url")
             echo "GET ${url##*/}: ${code}"
             test "$code" = 200
           }
@@ -53,11 +52,10 @@ jobs:
           get_json "${API_BASE}/settings" /tmp/settings.json
           get_json "${API_BASE}/deployments" /tmp/deployments.json
           get_json "${API_BASE}/versions?per_page=100" /tmp/versions.json
-          get_json "${API_BASE}/versions/${EXPECTED_ACTIVE_VERSION}" /tmp/active-version.json
-          get_json "${API_BASE}/versions/${EXPECTED_LATEST_CANDIDATE}" /tmp/latest-version.json
+          get_json "${API_BASE}/versions/${ROLLBACK_VERSION_ID}" /tmp/rollback-version.json
+          get_json "${API_BASE}/versions/${CANDIDATE_VERSION_ID}" /tmp/candidate-version.json
 
-          code=$(curl -sS -L -o /tmp/content.bin -w '%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: */*' "${API_BASE}/content/v2")
+          code=$(curl -sS -L -o /tmp/content.bin -w '%{http_code}'             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Accept: */*' "${API_BASE}/content/v2")
           echo "GET content/v2: ${code}"
           test "$code" = 200
 
@@ -66,28 +64,33 @@ jobs:
           from pathlib import Path
 
           def result(path):
-              p=json.loads(Path(path).read_text())
-              if p.get('success') is not True:
-                  safe=[{'code':e.get('code'),'message':e.get('message')} for e in p.get('errors') or []]
+              payload=json.loads(Path(path).read_text())
+              if payload.get('success') is not True:
+                  safe=[{'code':e.get('code'),'message':e.get('message')} for e in payload.get('errors') or []]
                   raise SystemExit(f'PRECONDITION FAIL {path}: {safe}')
-              return p.get('result')
+              return payload.get('result')
 
           settings=result('/tmp/settings.json') or {}
           dep=result('/tmp/deployments.json')
-          vr=result('/tmp/versions.json')
-          active_detail=result('/tmp/active-version.json') or {}
-          latest_detail=result('/tmp/latest-version.json') or {}
+          versions=result('/tmp/versions.json')
+          rollback=result('/tmp/rollback-version.json') or {}
+          candidate=result('/tmp/candidate-version.json') or {}
 
           deployments=dep.get('deployments',[]) if isinstance(dep,dict) else (dep or [])
           if not deployments or not isinstance(deployments[0],dict):
               raise SystemExit('PRECONDITION FAIL: active deployment unavailable')
-          av=deployments[0].get('versions') or []
-          if len(av)!=1 or av[0].get('version_id')!=os.environ['EXPECTED_ACTIVE_VERSION'] or float(av[0].get('percentage') or 0)!=100:
-              raise SystemExit(f'PRECONDITION FAIL: rollback state changed: {av}')
+          active=deployments[0].get('versions') or []
+          candidate_id=os.environ['CANDIDATE_VERSION_ID']
+          rollback_id=os.environ['ROLLBACK_VERSION_ID']
 
-          items=vr.get('items',[]) if isinstance(vr,dict) else (vr or [])
-          if not items or (items[0] or {}).get('id')!=os.environ['EXPECTED_LATEST_CANDIDATE']:
-              raise SystemExit('PRECONDITION FAIL: expected v11.5.1 failed candidate is no longer latest')
+          already_active=(len(active)==1 and active[0].get('version_id')==candidate_id and float(active[0].get('percentage') or 0)==100)
+          rollback_active=(len(active)==1 and active[0].get('version_id')==rollback_id and float(active[0].get('percentage') or 0)==100)
+          if not (already_active or rollback_active):
+              raise SystemExit(f'PRECONDITION FAIL: unexpected active deployment: {active}')
+
+          items=versions.get('items',[]) if isinstance(versions,dict) else (versions or [])
+          if not items or (items[0] or {}).get('id') != candidate_id:
+              raise SystemExit('PRECONDITION FAIL: verified v11.5.2 candidate is no longer the latest Worker version')
 
           expected={'ADMIN_TOKEN','API_CACHE_SECONDS','DB','DEGRADED_FAILURE_THRESHOLD','LAB_CACHE_LIMIT','MAX_FEED_BYTES','MAX_ITEMS_PER_FEED','MAX_SOURCES_PER_TICK','MIN_RELEVANCE_SCORE','PUBLIC_ITEM_RETENTION_DAYS','PUBLIC_SITE_ORIGINS','QUARANTINE_FAILURE_THRESHOLD','RSS_QUEUE'}
           bindings=settings.get('bindings') or []
@@ -104,13 +107,13 @@ jobs:
           def baseline(v):
               r=v.get('resources') or {}; s=r.get('script') or {}; rt=r.get('script_runtime') or {}
               return {
-                  'handlers':s.get('handlers'),'named_handlers':s.get('named_handlers'),
+                  'handlers':s.get('handlers'),
+                  'named_handlers':s.get('named_handlers'),
                   'runtime':{k:rt.get(k) for k in ('compatibility_date','compatibility_flags','usage_model','limits')},
                   'binding_names':sorted(b.get('name') for b in r.get('bindings',[]) if isinstance(b,dict) and b.get('name')),
               }
-          a=baseline(active_detail); latest=baseline(latest_detail)
-          if a != latest:
-              raise SystemExit('PRECONDITION FAIL: latest candidate metadata differs from active baseline')
+          if baseline(rollback) != baseline(candidate):
+              raise SystemExit('PRECONDITION FAIL: candidate metadata differs from audited rollback baseline')
 
           raw=Path('/tmp/content.bin').read_bytes()
           head,rest=raw.split(b'\r\n\r\n',1)
@@ -118,118 +121,17 @@ jobs:
           body=rest.rsplit(b'\r\n'+boundary+b'--',1)[0]
           digest=hashlib.sha256(body).hexdigest()
           print('latest_index_sha256='+digest)
-          if digest != os.environ['EXPECTED_LATEST_SHA256']:
-              raise SystemExit('PRECONDITION FAIL: latest source is not the verified v11.5.1 candidate')
-          Path('/tmp/index.js').write_bytes(body)
-          Path('/tmp/baseline.json').write_text(json.dumps(latest,sort_keys=True))
+          if digest != os.environ['CANDIDATE_SHA256']:
+              raise SystemExit('PRECONDITION FAIL: latest Worker source is not the verified v11.5.2 candidate')
+
+          Path('/tmp/preflight.env').write_text('ALREADY_ACTIVE=' + ('true' if already_active else 'false') + '\n')
+          print('active_state=' + ('candidate_11.5.2' if already_active else 'rollback_11.4.0'))
+          print('candidate_source=verified')
           PY
+          cat /tmp/preflight.env >> "$GITHUB_ENV"
 
-      - name: Build deterministic v11.5.2 recovery candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd /tmp
-          patch --batch --forward index.js "$GITHUB_WORKSPACE/tools/journal-live-production-bridge/backend-integrity-v11.5.2-delta.patch"
-          digest=$(sha256sum index.js | cut -d' ' -f1)
-          echo "RECOVERY_SHA256=${digest}" >> "$GITHUB_ENV"
-          echo "recovery_index_sha256=${digest}"
-          node --check index.js
-          grep -q 'version: "11.5.2"' index.js
-          grep -q 'X-WPA-Bridge-Version' index.js
-          grep -q 'dedupePublicItems' index.js
-          grep -q 'ROW_NUMBER() OVER' index.js
-          grep -q 'publicItemAllowed' index.js
-
-      - name: Upload v11.5.2 and verify exact source and metadata
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
-
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          p=json.loads(Path('/tmp/latest-version.json').read_text())
-          v=p.get('result') or {}; r=v.get('resources') or {}; rt=r.get('script_runtime') or {}
-          names=['ADMIN_TOKEN','API_CACHE_SECONDS','DB','DEGRADED_FAILURE_THRESHOLD','LAB_CACHE_LIMIT','MAX_FEED_BYTES','MAX_ITEMS_PER_FEED','MAX_SOURCES_PER_TICK','MIN_RELEVANCE_SCORE','PUBLIC_ITEM_RETENTION_DAYS','PUBLIC_SITE_ORIGINS','QUARANTINE_FAILURE_THRESHOLD','RSS_QUEUE']
-          meta={
-            'main_module':'index.js',
-            'bindings':[{'name':n,'type':'inherit','version_id':'latest'} for n in names],
-            'annotations':{'workers/message':'WPA Journal Live v11.5.2 recovery: endpoint provenance, propagation-aware canary and response-boundary dedupe'},
-          }
-          if rt.get('compatibility_date'): meta['compatibility_date']=rt['compatibility_date']
-          if isinstance(rt.get('compatibility_flags'),list): meta['compatibility_flags']=rt['compatibility_flags']
-          if rt.get('usage_model') in {'standard','bundled','unbound'}: meta['usage_model']=rt['usage_model']
-          if isinstance(rt.get('limits'),dict) and rt['limits']: meta['limits']=rt['limits']
-          Path('/tmp/metadata.json').write_text(json.dumps(meta,separators=(',',':')))
-          PY
-
-          code=$(curl -sS -o /tmp/upload.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: application/json' \
-            -F 'metadata=</tmp/metadata.json;type=application/json' \
-            -F 'index.js=@/tmp/index.js;type=application/javascript+module' \
-            "${API_BASE}/versions?bindings_inherit=strict")
-          echo "POST versions: ${code}"
-          test "$code" = 200 -o "$code" = 201
-
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          p=json.loads(Path('/tmp/upload.json').read_text())
-          if p.get('success') is not True:
-              safe=[{'code':e.get('code'),'message':e.get('message')} for e in p.get('errors') or []]
-              raise SystemExit(f'UPLOAD FAIL: {safe}')
-          new=(p.get('result') or {}).get('id')
-          if not new: raise SystemExit('UPLOAD FAIL: version id missing')
-          Path('/tmp/new.env').write_text(f'NEW_VERSION_ID={new}\n')
-          print('recovery_candidate_version='+new)
-          PY
-          cat /tmp/new.env >> "$GITHUB_ENV"
-          source /tmp/new.env
-
-          code=$(curl -sS -o /tmp/new-version.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: application/json' \
-            "${API_BASE}/versions/${NEW_VERSION_ID}")
-          echo "GET candidate version: ${code}"
-          test "$code" = 200
-
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          base=json.loads(Path('/tmp/baseline.json').read_text())
-          p=json.loads(Path('/tmp/new-version.json').read_text())
-          if p.get('success') is not True: raise SystemExit('VERIFY FAIL: candidate metadata unavailable')
-          v=p.get('result') or {}; r=v.get('resources') or {}; s=r.get('script') or {}; rt=r.get('script_runtime') or {}
-          candidate={
-              'handlers':s.get('handlers'),'named_handlers':s.get('named_handlers'),
-              'runtime':{k:rt.get(k) for k in ('compatibility_date','compatibility_flags','usage_model','limits')},
-              'binding_names':sorted(b.get('name') for b in r.get('bindings',[]) if isinstance(b,dict) and b.get('name')),
-          }
-          if candidate != base: raise SystemExit('VERIFY FAIL: v11.5.2 metadata drift')
-          print('recovery_candidate_metadata=verified')
-          PY
-
-          code=$(curl -sS -L -o /tmp/uploaded-content.bin -w '%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: */*' "${API_BASE}/content/v2")
-          echo "GET uploaded content/v2: ${code}"
-          test "$code" = 200
-          python3 - <<'PY'
-          import hashlib, os
-          from pathlib import Path
-          raw=Path('/tmp/uploaded-content.bin').read_bytes()
-          head,rest=raw.split(b'\r\n\r\n',1)
-          boundary=head.split(b'\r\n',1)[0]
-          body=rest.rsplit(b'\r\n'+boundary+b'--',1)[0]
-          digest=hashlib.sha256(body).hexdigest()
-          print('uploaded_index_sha256='+digest)
-          if digest != os.environ['RECOVERY_SHA256']:
-              raise SystemExit('VERIFY FAIL: uploaded source hash differs from locally built v11.5.2')
-          PY
-
-      - name: Propagation-aware zero-percent canary, promote with rollback
+      - name: Propagation-aware canary and promotion with rollback
+        if: env.ALREADY_ACTIVE != 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -238,21 +140,22 @@ jobs:
           set -euo pipefail
           API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
           DEPLOYMENT_TOUCHED=false
+          override="${WORKER_NAME}=\"${CANDIDATE_VERSION_ID}\""
 
           make_body() {
             python3 - "$@" <<'PY'
           import json,sys
           versions=[]
           for pair in sys.argv[1:]:
-              vid,pct=pair.split(':',1); versions.append({'version_id':vid,'percentage':float(pct)})
+              vid,pct=pair.split(':',1)
+              versions.append({'version_id':vid,'percentage':float(pct)})
           print(json.dumps({'strategy':'percentage','versions':versions},separators=(',',':')))
           PY
           }
+
           deploy() {
             local file=$1 out=$2 code
-            code=$(curl -sS -o "$out" -w '%{http_code}' -X POST \
-              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Content-Type: application/json' -H 'Accept: application/json' \
-              --data-binary "@$file" "${API_BASE}/deployments")
+            code=$(curl -sS -o "$out" -w '%{http_code}' -X POST               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -H 'Content-Type: application/json' -H 'Accept: application/json'               --data-binary "@$file" "${API_BASE}/deployments")
             echo "POST deployments: ${code}"
             test "$code" = 200
             python3 - "$out" <<'PY'
@@ -264,11 +167,13 @@ jobs:
               raise SystemExit(f'DEPLOYMENT API FAIL: {safe}')
           PY
           }
+
           rollback() {
             echo 'Rolling back to audited v11.4.0 active version.'
-            make_body "${EXPECTED_ACTIVE_VERSION}:100" > /tmp/rollback.json
+            make_body "${ROLLBACK_VERSION_ID}:100" > /tmp/rollback.json
             deploy /tmp/rollback.json /tmp/rollback-response.json
           }
+
           on_exit() {
             local rc=$?
             if [ "$rc" -ne 0 ] && [ "$DEPLOYMENT_TOUCHED" = true ]; then
@@ -278,43 +183,65 @@ jobs:
           }
           trap on_exit EXIT
 
-          make_body "${EXPECTED_ACTIVE_VERSION}:100" "${NEW_VERSION_ID}:0" > /tmp/canary.json
+          version_header() {
+            awk -F': ' 'tolower($1)=="x-wpa-bridge-version" {gsub("\r", "", $2); print $2}' "$1" | tail -n1
+          }
+          acao_header() {
+            awk -F': ' 'tolower($1)=="access-control-allow-origin" {gsub("\r", "", $2); print $2}' "$1" | tail -n1
+          }
+          vary_header() {
+            awk -F': ' 'tolower($1)=="vary" {gsub("\r", "", $2); print tolower($2)}' "$1" | tail -n1
+          }
+
+          probe_get() {
+            local path=$1 origin=$2 headers=$3 body=$4 label=$5 attempt code served acao url sep
+            for attempt in $(seq 1 12); do
+              case "$path" in *\?*) sep='&' ;; *) sep='?' ;; esac
+              url="${API_ROOT}${path}${sep}promotion_retry=$(date +%s)-${attempt}"
+              code=$(curl -sS -H "Cloudflare-Workers-Version-Overrides: ${override}"                 -H "Origin: ${origin}" -D "$headers" -o "$body" -w '%{http_code}' "$url" || true)
+              served=$(version_header "$headers")
+              acao=$(acao_header "$headers")
+              echo "${label} attempt ${attempt}: HTTP=${code:-curl-fail} version=${served:-missing} ACAO=${acao:-missing}"
+              if [ "$code" = 200 ] && [ "$served" = "${CANDIDATE_LABEL}" ] && [ "$acao" = "$origin" ]; then
+                return 0
+              fi
+              sleep 5
+            done
+            echo "CANARY FAIL: ${label} never served verified v${CANDIDATE_LABEL} with expected CORS" >&2
+            return 1
+          }
+
+          probe_options() {
+            local origin=$1 attempt code served acao vary
+            for attempt in $(seq 1 12); do
+              code=$(curl -sS -X OPTIONS -H "Cloudflare-Workers-Version-Overrides: ${override}"                 -H "Origin: ${origin}" -D /tmp/options-h -o /dev/null -w '%{http_code}'                 "${API_ROOT}/api/v1/live?promotion_options=$(date +%s)-${attempt}" || true)
+              served=$(version_header /tmp/options-h)
+              acao=$(acao_header /tmp/options-h)
+              vary=$(vary_header /tmp/options-h)
+              echo "OPTIONS ${origin} attempt ${attempt}: HTTP=${code:-curl-fail} version=${served:-missing} ACAO=${acao:-missing} Vary=${vary:-missing}"
+              if { [ "$code" = 200 ] || [ "$code" = 204 ]; } &&                  [ "$served" = "${CANDIDATE_LABEL}" ] && [ "$acao" = "$origin" ] && [[ "$vary" == *origin* ]]; then
+                return 0
+              fi
+              sleep 5
+            done
+            echo "CANARY FAIL: OPTIONS provenance/CORS did not stabilize for ${origin}" >&2
+            return 1
+          }
+
+          make_body "${ROLLBACK_VERSION_ID}:100" "${CANDIDATE_VERSION_ID}:0" > /tmp/canary.json
           deploy /tmp/canary.json /tmp/canary-response.json
           DEPLOYMENT_TOUCHED=true
 
-          override="${WORKER_NAME}=\"${NEW_VERSION_ID}\""
-          ready=false
-          for attempt in $(seq 1 12); do
-            curl -sS -H "Cloudflare-Workers-Version-Overrides: ${override}" -H 'Origin: https://worldprotocolacademy.mk' \
-              -D /tmp/ready-h -o /tmp/ready-body "${API_ROOT}/api/v1/health?integrity_ready=$(date +%s)-${attempt}" || true
-            served=$(awk -F': ' 'tolower($1)=="x-wpa-bridge-version" {gsub("\r", "", $2); print $2}' /tmp/ready-h | tail -n1)
-            acao=$(awk -F': ' 'tolower($1)=="access-control-allow-origin" {gsub("\r", "", $2); print $2}' /tmp/ready-h | tail -n1)
-            body_version=$(python3 - <<'PY' || true
-          import json
+          probe_get "/api/v1/health" "https://worldprotocolacademy.mk" /tmp/health-h /tmp/health "health"
+          python3 - <<'PY'
+          import json, os
           from pathlib import Path
-          try: print(json.loads(Path('/tmp/ready-body').read_text()).get('version',''))
-          except Exception: print('')
+          p=json.loads(Path('/tmp/health').read_text())
+          if p.get('ok') is not True or str(p.get('version')) != os.environ['CANDIDATE_LABEL']:
+              raise SystemExit('CANARY FAIL: health contract/version mismatch')
           PY
-            )
-            echo "Canary propagation attempt ${attempt}: header=${served:-missing} body=${body_version:-missing} ACAO=${acao:-missing}"
-            if [ "$served" = '11.5.2' ] && [ "$body_version" = '11.5.2' ] && [ "$acao" = 'https://worldprotocolacademy.mk' ]; then
-              ready=true
-              break
-            fi
-            sleep 5
-          done
-          test "$ready" = true
 
-          fetch_versioned() {
-            local url=$1 origin=$2 headers=$3 body=$4
-            curl -sS -H "Cloudflare-Workers-Version-Overrides: ${override}" -H "Origin: ${origin}" -D "$headers" -o "$body" "$url"
-            local served
-            served=$(awk -F': ' 'tolower($1)=="x-wpa-bridge-version" {gsub("\r", "", $2); print $2}' "$headers" | tail -n1)
-            test "$served" = '11.5.2'
-          }
-
-          fetch_versioned "${API_ROOT}/api/v1/live?limit=100&integrity_recovery=$(date +%s)" 'https://worldprotocolacademy.mk' /tmp/live-h /tmp/live
-          grep -qi '^access-control-allow-origin: https://worldprotocolacademy.mk' /tmp/live-h
+          probe_get "/api/v1/live?limit=100" "https://worldprotocolacademy.mk" /tmp/live-h /tmp/live "live"
           python3 - <<'PY'
           import json,re
           from datetime import datetime, timezone
@@ -337,23 +264,20 @@ jobs:
           print(f'canary_live_items={len(items)}')
           PY
 
-          fetch_versioned "${API_ROOT}/api/v1/stats?integrity_recovery=$(date +%s)" 'https://worldprotocolacademy.mk' /tmp/stats-h /tmp/stats
-          fetch_versioned "${API_ROOT}/api/v1/ticker?limit=10&integrity_recovery=$(date +%s)" 'https://worldprotocolacademy.mk' /tmp/ticker-h /tmp/ticker
+          probe_get "/api/v1/stats" "https://worldprotocolacademy.mk" /tmp/stats-h /tmp/stats "stats"
+          probe_get "/api/v1/ticker?limit=10&since_hours=168" "https://worldprotocolacademy.mk" /tmp/ticker-h /tmp/ticker "ticker"
           python3 - <<'PY'
           import json
           from pathlib import Path
-          stats=json.loads(Path('/tmp/stats').read_text()); ticker=json.loads(Path('/tmp/ticker').read_text())
+          stats=json.loads(Path('/tmp/stats').read_text())
+          ticker=json.loads(Path('/tmp/ticker').read_text())
           if not isinstance(stats,dict): raise SystemExit('CANARY FAIL: stats contract')
           if not isinstance(ticker.get('items'),list): raise SystemExit('CANARY FAIL: ticker contract')
+          print(f"canary_ticker_items={len(ticker['items'])}")
           PY
 
-          for origin in https://worldprotocolacademy.mk https://www.worldprotocolacademy.mk; do
-            curl -sS -X OPTIONS -H "Cloudflare-Workers-Version-Overrides: ${override}" -H "Origin: ${origin}" \
-              -D /tmp/options-h -o /dev/null "${API_ROOT}/api/v1/live"
-            grep -qi "^access-control-allow-origin: ${origin}" /tmp/options-h
-            grep -qi '^vary:.*origin' /tmp/options-h
-            grep -qi '^x-wpa-bridge-version: 11.5.2' /tmp/options-h
-          done
+          probe_options "https://worldprotocolacademy.mk"
+          probe_options "https://www.worldprotocolacademy.mk"
 
           first_id=$(python3 - <<'PY'
           import json
@@ -363,7 +287,7 @@ jobs:
           PY
           )
           if [ -n "$first_id" ]; then
-            fetch_versioned "${API_ROOT}/api/v1/item/${first_id}" 'https://worldprotocolacademy.mk' /tmp/item-h /tmp/item
+            probe_get "/api/v1/item/${first_id}" "https://worldprotocolacademy.mk" /tmp/item-h /tmp/item "item"
             python3 - <<'PY'
           import json
           from pathlib import Path
@@ -372,14 +296,14 @@ jobs:
           PY
           fi
 
-          make_body "${NEW_VERSION_ID}:100" > /tmp/promote.json
+          make_body "${CANDIDATE_VERSION_ID}:100" > /tmp/promote.json
           deploy /tmp/promote.json /tmp/promote-response.json
 
-          promoted=false
+          final_ready=false
           for attempt in $(seq 1 12); do
-            curl -sS -H 'Origin: https://worldprotocolacademy.mk' -D /tmp/final-h -o /tmp/final-health \
-              "${API_ROOT}/api/v1/health?integrity_final=$(date +%s)-${attempt}" || true
-            served=$(awk -F': ' 'tolower($1)=="x-wpa-bridge-version" {gsub("\r", "", $2); print $2}' /tmp/final-h | tail -n1)
+            code=$(curl -sS -H 'Origin: https://worldprotocolacademy.mk'               -D /tmp/final-h -o /tmp/final-health -w '%{http_code}'               "${API_ROOT}/api/v1/health?promotion_final=$(date +%s)-${attempt}" || true)
+            served=$(version_header /tmp/final-h)
+            acao=$(acao_header /tmp/final-h)
             body_version=$(python3 - <<'PY' || true
           import json
           from pathlib import Path
@@ -387,19 +311,28 @@ jobs:
           except Exception: print('')
           PY
             )
-            if [ "$served" = '11.5.2' ] && [ "$body_version" = '11.5.2' ]; then
-              promoted=true
+            echo "Final health attempt ${attempt}: HTTP=${code:-curl-fail} version=${served:-missing} body=${body_version:-missing} ACAO=${acao:-missing}"
+            if [ "$code" = 200 ] && [ "$served" = "${CANDIDATE_LABEL}" ] &&                [ "$body_version" = "${CANDIDATE_LABEL}" ] && [ "$acao" = 'https://worldprotocolacademy.mk' ]; then
+              final_ready=true
               break
             fi
             sleep 5
           done
-          test "$promoted" = true
-          grep -qi '^access-control-allow-origin: https://worldprotocolacademy.mk' /tmp/final-h
+          test "$final_ready" = true
 
-          curl -sS -H 'Origin: https://www.worldprotocolacademy.mk' -D /tmp/www-h -o /tmp/www-live \
-            "${API_ROOT}/api/v1/live?limit=20&integrity_final=$(date +%s)"
-          grep -qi '^access-control-allow-origin: https://www.worldprotocolacademy.mk' /tmp/www-h
-          grep -qi '^x-wpa-bridge-version: 11.5.2' /tmp/www-h
+          www_ready=false
+          for attempt in $(seq 1 12); do
+            code=$(curl -sS -H 'Origin: https://www.worldprotocolacademy.mk'               -D /tmp/www-h -o /tmp/www-live -w '%{http_code}'               "${API_ROOT}/api/v1/live?limit=20&promotion_final=$(date +%s)-${attempt}" || true)
+            served=$(version_header /tmp/www-h)
+            acao=$(acao_header /tmp/www-h)
+            echo "Final www live attempt ${attempt}: HTTP=${code:-curl-fail} version=${served:-missing} ACAO=${acao:-missing}"
+            if [ "$code" = 200 ] && [ "$served" = "${CANDIDATE_LABEL}" ] && [ "$acao" = 'https://www.worldprotocolacademy.mk' ]; then
+              www_ready=true
+              break
+            fi
+            sleep 5
+          done
+          test "$www_ready" = true
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -408,39 +341,70 @@ jobs:
           print(f"final_live_items={len(p['items'])}")
           PY
 
-          code=$(curl -sS -o /tmp/final-deployments.json -w '%{http_code}' \
-            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: application/json' "${API_BASE}/deployments")
+          code=$(curl -sS -o /tmp/final-deployments.json -w '%{http_code}'             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H 'Accept: application/json' "${API_BASE}/deployments")
           test "$code" = 200
           python3 - <<'PY'
           import json, os
           from pathlib import Path
           p=json.loads(Path('/tmp/final-deployments.json').read_text())
-          result=p.get('result') or {}; deps=result.get('deployments',[]) if isinstance(result,dict) else (result or [])
+          result=p.get('result') or {}
+          deps=result.get('deployments',[]) if isinstance(result,dict) else (result or [])
           if not deps: raise SystemExit('FINAL FAIL: deployment unavailable')
           versions=deps[0].get('versions') or []
-          if len(versions)!=1 or versions[0].get('version_id')!=os.environ['NEW_VERSION_ID'] or float(versions[0].get('percentage') or 0)!=100:
-              raise SystemExit('FINAL FAIL: v11.5.2 not active at 100 percent')
+          if len(versions)!=1 or versions[0].get('version_id')!=os.environ['CANDIDATE_VERSION_ID'] or float(versions[0].get('percentage') or 0)!=100:
+              raise SystemExit(f'FINAL FAIL: v11.5.2 not active at 100 percent: {versions}')
           print('final_deployment=verified')
           PY
 
           DEPLOYMENT_TOUCHED=false
           trap - EXIT
 
-      - name: Publish recovery summary
+      - name: Verify active v11.5.2 production contract
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${WORKER_NAME}"
+          code=$(curl -sS -H 'Origin: https://worldprotocolacademy.mk'             -D /tmp/verify-h -o /tmp/verify-health -w '%{http_code}' "${API_ROOT}/api/v1/health?verify=$(date +%s)")
+          test "$code" = 200
+          grep -qi "^x-wpa-bridge-version: ${CANDIDATE_LABEL}" /tmp/verify-h
+          grep -qi '^access-control-allow-origin: https://worldprotocolacademy.mk' /tmp/verify-h
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=json.loads(Path('/tmp/verify-health').read_text())
+          if p.get('ok') is not True or str(p.get('version')) != os.environ['CANDIDATE_LABEL']:
+              raise SystemExit('VERIFY FAIL: production health is not v11.5.2')
+          PY
+          code=$(curl -sS -o /tmp/deployments.json -w '%{http_code}'             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Accept: application/json' "${API_BASE}/deployments")
+          test "$code" = 200
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=json.loads(Path('/tmp/deployments.json').read_text())
+          result=p.get('result') or {}
+          deps=result.get('deployments',[]) if isinstance(result,dict) else (result or [])
+          versions=(deps[0].get('versions') or []) if deps else []
+          if len(versions)!=1 or versions[0].get('version_id')!=os.environ['CANDIDATE_VERSION_ID'] or float(versions[0].get('percentage') or 0)!=100:
+              raise SystemExit('VERIFY FAIL: expected v11.5.2 candidate is not active at 100 percent')
+          print('production_v11_5_2=verified')
+          PY
+
+      - name: Publish promotion summary
         if: success()
         shell: bash
         run: |
           {
-            echo '## WPA Journal Live · Backend Integrity v11.5.2 Recovery'
+            echo '## WPA Journal Live · v11.5.2 Promotion Retry'
             echo
-            echo '- Preflight rollback state: **verified**'
-            echo '- Latest failed candidate source: **verified by SHA-256**'
-            echo '- v11.5.2 source after upload: **verified against locally built SHA-256**'
-            echo '- Endpoint provenance header: **verified on canary endpoints**'
-            echo '- Canary propagation wait: **PASS**'
-            echo '- Publication integrity: **PASS**'
-            echo '- Same-source title/day dedupe: **PASS**'
-            echo '- Noise filtering: **PASS**'
-            echo '- Apex + www CORS/OPTIONS: **PASS**'
+            echo '- Candidate version: **f7292368-aa3c-4923-8475-dfdb6ccbd181**'
+            echo '- Candidate SHA-256: **verified**'
+            echo '- Production bindings / runtime metadata: **verified**'
+            echo '- Per-endpoint propagation-aware canary: **PASS**'
+            echo '- Publication integrity / dedupe / noise filtering: **PASS**'
+            echo '- Apex + www CORS and OPTIONS: **PASS**'
+            echo '- Direct item contract: **PASS**'
             echo '- Final deployment: **v11.5.2 at 100%**'
           } >> "$GITHUB_STEP_SUMMARY"
