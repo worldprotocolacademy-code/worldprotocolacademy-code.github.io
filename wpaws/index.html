@@ -3189,7 +3189,15 @@ function renderSlide(){
   const d=document.getElementById('slideDisplay'); const c=document.getElementById('slideCtr');
   if(!d||!pppSlides.length)return;
   const s=pppSlides[pppIdx];
-  d.innerHTML=`<h2>${s.title}</h2><ul>${s.body.map(b=>`<li>${b}</li>`).join('')}</ul>`;
+  const title=document.createElement('h2');
+  title.textContent=String(s.title||'');
+  const list=document.createElement('ul');
+  (Array.isArray(s.body)?s.body:[]).forEach(function(line){
+    const li=document.createElement('li');
+    li.textContent=String(line||'');
+    list.appendChild(li);
+  });
+  d.replaceChildren(title,list);
   if(c) c.textContent=`${pppIdx+1}/${pppSlides.length}`;
   document.querySelectorAll('.slide-pill').forEach((p,i)=>p.classList.toggle('active',i===pppIdx));
 }
@@ -3424,7 +3432,16 @@ function addDialogMsg(boxId, role, text){
   if(!msgs)return;
   const div=document.createElement('div');
   div.className=`dmsg ${role}`;
-  div.innerHTML=`<div class="dmsg-av">${role==='bot'?'⚜️':'👤'}</div><div class="dmsg-bub">${text.replace(/\n/g,'<br>')}</div>`;
+  const avatar=document.createElement('div');
+  avatar.className='dmsg-av';
+  avatar.textContent=role==='bot'?'⚜️':'👤';
+  const bubble=document.createElement('div');
+  bubble.className='dmsg-bub';
+  String(text||'').split('\n').forEach(function(line,index){
+    if(index) bubble.appendChild(document.createElement('br'));
+    bubble.appendChild(document.createTextNode(line));
+  });
+  div.append(avatar,bubble);
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
 }
@@ -4362,7 +4379,11 @@ function rTxt(id) { const el = $(id); return el ? el.innerText.replace(/📋 К�
 function toast(icon, msg) {
     const t = document.createElement('div');
     t.className = 'toast';
-    t.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+    const iconSpan=document.createElement('span');
+    iconSpan.textContent=String(icon||'');
+    const msgSpan=document.createElement('span');
+    msgSpan.textContent=String(msg||'');
+    t.append(iconSpan,msgSpan);
     document.body.appendChild(t);
     setTimeout(() => t.remove(), 3500);
 }

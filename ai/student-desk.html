@@ -2335,12 +2335,43 @@ function quickSend(msg) {
   sendChat();
 }
 
+function appendDeskFormattedText(target, text) {
+  var parts = String(text || '').split(/(\*\*.*?\*\*|\n)/g);
+  parts.forEach(function(part) {
+    if (!part) return;
+    if (part === '\n') {
+      target.appendChild(document.createElement('br'));
+      return;
+    }
+    if (/^\*\*.*\*\*$/.test(part)) {
+      var strong = document.createElement('strong');
+      strong.textContent = part.slice(2, -2);
+      target.appendChild(strong);
+      return;
+    }
+    target.appendChild(document.createTextNode(part));
+  });
+}
 function addMsg(text, type) {
   var c = document.getElementById('chatMessages');
   var d = document.createElement('div');
   d.className = 'msg ' + type;
   var now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  d.innerHTML = '<div class="msg-avatar ' + type + '">' + (type === 'agent' ? '\u26DC' : '\u00B7') + '</div><div><div class="msg-bubble">' + text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') + '</div><div class="msg-time">' + now + '</div></div>';
+
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar ' + type;
+  avatar.textContent = type === 'agent' ? '\u26DC' : '\u00B7';
+
+  var wrapper = document.createElement('div');
+  var bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  appendDeskFormattedText(bubble, text);
+  var time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = now;
+  wrapper.append(bubble, time);
+
+  d.append(avatar, wrapper);
   c.appendChild(d);
   c.scrollTop = c.scrollHeight;
 }
@@ -2349,8 +2380,21 @@ function addTyping() {
   var id = 't' + (++typingCounter);
   var c = document.getElementById('chatMessages');
   var d = document.createElement('div');
-  d.className = 'msg agent'; d.id = id;
-  d.innerHTML = '<div class="msg-avatar agent">\u26DC</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  d.className = 'msg agent';
+  d.id = id;
+
+  var avatar = document.createElement('div');
+  avatar.className = 'msg-avatar agent';
+  avatar.textContent = '\u26DC';
+
+  var bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  var typing = document.createElement('div');
+  typing.className = 'typing';
+  typing.append(document.createElement('span'), document.createElement('span'), document.createElement('span'));
+  bubble.appendChild(typing);
+
+  d.append(avatar, bubble);
   c.appendChild(d);
   c.scrollTop = c.scrollHeight;
   return id;
@@ -2375,7 +2419,22 @@ function submitAdmission() {
   var list = document.getElementById('studentCards');
   var card = document.createElement('div');
   card.className = 'student-card';
-  card.innerHTML = '<div class="s-avatar">' + initials + '</div><div style="flex:1"><div class="s-name">Application received privately</div><div class="s-meta">No personal data is displayed on the public page.</div></div><span class="s-badge badge-pending">' + L.admit.pending + '</span>';
+  var avatar = document.createElement('div');
+  avatar.className = 's-avatar';
+  avatar.textContent = initials;
+  var details = document.createElement('div');
+  details.style.flex = '1';
+  var title = document.createElement('div');
+  title.className = 's-name';
+  title.textContent = 'Application received privately';
+  var meta = document.createElement('div');
+  meta.className = 's-meta';
+  meta.textContent = 'No personal data is displayed on the public page.';
+  details.append(title, meta);
+  var badge = document.createElement('span');
+  badge.className = 's-badge badge-pending';
+  badge.textContent = String(L.admit.pending || '');
+  card.append(avatar, details, badge);
   list.insertBefore(card, list.firstChild);
   ['f-name','f-surname','f-email','f-country','f-position','f-motivation'].forEach(function(id) {
     document.getElementById(id).value = '';

@@ -996,7 +996,16 @@
     if (clearBtn) clearBtn.addEventListener("click", () => { precedenceEntries = []; renderPrecedenceBuilder(); });
 
     const list = mount.querySelector("#precList");
-    list.innerHTML = precedenceEntries.map((e) => `<li>${e.name} <span class="rank-tag">${t(e.rank.mk, e.rank.en)}</span></li>`).join("");
+    list.replaceChildren();
+    precedenceEntries.forEach((e) => {
+      const li = document.createElement("li");
+      li.appendChild(document.createTextNode(String(e.name || "") + " "));
+      const rankTag = document.createElement("span");
+      rankTag.className = "rank-tag";
+      rankTag.textContent = String(t(e.rank.mk, e.rank.en) || "");
+      li.appendChild(rankTag);
+      list.appendChild(li);
+    });
   }
 
   /* ------------------------------------------------------------------
