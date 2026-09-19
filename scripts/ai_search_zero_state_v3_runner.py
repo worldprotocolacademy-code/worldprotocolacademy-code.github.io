@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Run v3 planning/staging with stable AI Search pagination and fail-closed R2 S3 fallback."""
-import hashlib
 import os
 import subprocess
 import sys
@@ -178,14 +177,55 @@ def verify_token_id(account_id, token):
     raise RuntimeError('unable to verify R2 API token and obtain Access Key ID: ' + '; '.join(errors))
 
 
-def s3_client(cf, token):
-    access_key_id = verify_token_id(cf.a, token)
-    secret_access_key = hashlib.sha256(token.encode('utf-8')).hexdigest()
+def temporary_s3_credentials(account_id, token, bucket, *, objects=None, prefixes=None, ttl_seconds=900):
+    parent_access_key_id = verify_token_id(account_id, token)
+    payload = {
+        'bucket': bucket,
+        'parentAccessKeyId': parent_access_key_id,
+        'permission': 'object-read-only',
+        'ttlSeconds': ttl_seconds,
+    }
+    if objects:
+        payload['objects'] = list(objects)
+    if prefixes:
+        payload['prefixes'] = list(prefixes)
+
+    response = requests.post(
+        f'{stage.API}/accounts/{account_id}/r2/temp-access-credentials',
+        headers={
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+        },
+        json=payload,
+        timeout=60,
+    )
+    response.raise_for_status()
+    body = response.json()
+    result = body.get('result') or {}
+    if body.get('success') is not True:
+        raise RuntimeError('Cloudflare R2 temporary credential request failed')
+    access_key_id = result.get('accessKeyId')
+    secret_access_key = result.get('secretAccessKey')
+    session_token = result.get('sessionToken')
+    if not access_key_id or not secret_access_key or not session_token:
+        raise RuntimeError('Cloudflare R2 temporary credential response was incomplete')
+    return access_key_id, secret_access_key, session_token
+
+
+def s3_client(cf, token, key):
+    access_key_id, secret_access_key, session_token = temporary_s3_credentials(
+        cf.a,
+        token,
+        cf.b,
+        objects=[key],
+        ttl_seconds=900,
+    )
     return boto3.client(
         service_name='s3',
         endpoint_url=f'https://{cf.a}.r2.cloudflarestorage.com',
         aws_access_key_id=access_key_id,
         aws_secret_access_key=secret_access_key,
+        aws_session_token=session_token,
         region_name='auto',
         config=Config(
             signature_version='s3v4',
@@ -195,14 +235,13 @@ def s3_client(cf, token):
         ),
     )
 
-
 def s3_get(cf, key, destination):
     token = os.environ.get('CLOUDFLARE_API_TOKEN', '')
     if not token:
         raise RuntimeError('CLOUDFLARE_API_TOKEN is required for R2 S3 fallback')
     destination = Path(destination)
     part = destination.with_name(destination.name + '.part')
-    client = s3_client(cf, token)
+    client = s3_client(cf, token, key)
     last_error = None
     for attempt in range(1, S3_ATTEMPTS + 1):
         part.unlink(missing_ok=True)
