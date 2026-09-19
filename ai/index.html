@@ -41,9 +41,78 @@ const sensitive=/(classified|confidential|secret|службен|доверлив
 const modeLens={balanced:'избалансиран одговор со практични препораки',deep:'подлабока анализа, ризици и методолошки слоеви',research:'фокус на извори, проверливост и research questions',corporate:'институционален, executive и advisory формат',code:'архитектура, имплементација, QA и технички чекори'};
 function sanitizePrompt(p){return p.replace(/\s+/g,' ').trim().slice(0,1200)}
 function guard(prompt){if(!prompt)return {ok:false,msg:'Внеси прашање.'};if(sensitive.test(prompt))return {ok:false,msg:'Блокирано: prompt-от изгледа дека содржи лични, службени, доверливи или класифицирани податоци. Отстрани ги чувствителните детали и користи општ опис.'};return {ok:true,msg:'Guardrail OK · simulation only.'}}
-function renderProviders(){ $('providerSelector').innerHTML=providers.map((p,i)=>'<label><input type="checkbox" value="'+p.id+'" '+(i<5?'checked':'')+'> '+p.name.split(' · ')[0]+'</label>').join(''); $('providerSelector').addEventListener('change',()=>{});}
+function renderProviders(){
+  const host=$('providerSelector');
+  host.replaceChildren();
+  providers.forEach((p,i)=>{
+    const label=document.createElement('label');
+    const input=document.createElement('input');
+    input.type='checkbox';
+    input.value=String(p.id||'');
+    input.checked=i<5;
+    label.append(input,document.createTextNode(' '+String(p.name||'').split(' · ')[0]));
+    host.appendChild(label);
+  });
+  host.addEventListener('change',()=>{});
+}
 function selected(){return [...document.querySelectorAll('#providerSelector input:checked')].map(x=>x.value)}
-function renderCards(){ $('advisorsTab').innerHTML=providers.map(p=>'<article class="ai-card" id="card-'+p.id+'"><div class="ai-header"><div><div class="ai-name">'+p.emoji+' '+p.name+'</div><div class="ai-role">'+p.role+'</div></div><span class="ai-status idle" id="status-'+p.id+'">● Мирува</span></div><div class="ai-response" id="response-'+p.id+'"><pre>✨ Чекам прашање...</pre></div><div class="individual-prompt-area"><textarea class="individual-prompt" id="prompt-'+p.id+'" placeholder="Прашај само '+p.name+'... остави празно за главниот prompt"></textarea><button class="ask-single-btn" data-single="'+p.id+'">🎯 Прашај го само '+p.name+'</button></div><div class="ai-footer"><span id="time-'+p.id+'">⏱️ — ms</span><span>💰 simulation</span></div></article>').join('');}
+function renderCards(){
+  const host=$('advisorsTab');
+  host.replaceChildren();
+  providers.forEach(p=>{
+    const card=document.createElement('article');
+    card.className='ai-card';
+    card.id='card-'+String(p.id||'');
+
+    const header=document.createElement('div');
+    header.className='ai-header';
+    const identity=document.createElement('div');
+    const name=document.createElement('div');
+    name.className='ai-name';
+    name.textContent=String(p.emoji||'')+' '+String(p.name||'');
+    const role=document.createElement('div');
+    role.className='ai-role';
+    role.textContent=String(p.role||'');
+    identity.append(name,role);
+    const status=document.createElement('span');
+    status.className='ai-status idle';
+    status.id='status-'+String(p.id||'');
+    status.textContent='● Мирува';
+    header.append(identity,status);
+
+    const response=document.createElement('div');
+    response.className='ai-response';
+    response.id='response-'+String(p.id||'');
+    const pre=document.createElement('pre');
+    pre.textContent='✨ Чекам прашање...';
+    response.appendChild(pre);
+
+    const promptArea=document.createElement('div');
+    promptArea.className='individual-prompt-area';
+    const textarea=document.createElement('textarea');
+    textarea.className='individual-prompt';
+    textarea.id='prompt-'+String(p.id||'');
+    textarea.placeholder='Прашај само '+String(p.name||'')+'... остави празно за главниот prompt';
+    const askButton=document.createElement('button');
+    askButton.type='button';
+    askButton.className='ask-single-btn';
+    askButton.dataset.single=String(p.id||'');
+    askButton.textContent='🎯 Прашај го само '+String(p.name||'');
+    promptArea.append(textarea,askButton);
+
+    const footer=document.createElement('div');
+    footer.className='ai-footer';
+    const time=document.createElement('span');
+    time.id='time-'+String(p.id||'');
+    time.textContent='⏱️ — ms';
+    const cost=document.createElement('span');
+    cost.textContent='💰 simulation';
+    footer.append(time,cost);
+
+    card.append(header,response,promptArea,footer);
+    host.appendChild(card);
+  });
+}
 function responseFor(id,prompt,mode){const q=sanitizePrompt(prompt);const lens=modeLens[mode]||modeLens.balanced;const map={
 openai:`📊 **Strategic synthesis**\n\nПрашање: "${q}"\n\n**Главна проценка:** темата треба да се претвори во јасна WPA рамка: цел, публика, граници, докази, deliverables и чекори.\n\n**Фокус (${lens}):**\n1. дефинирај што е одлука, што е анализа, а што е само идеја;\n2. оддели јавни факти од интерпретации;\n3. заврши со краток action plan.\n\n**WPA препорака:** користи executive summary + annex за извори.`,
 gemini:`🔮 **Multimodal / ecosystem angle**\n\nПрашање: "${q}"\n\n**Агол:** гледај ја темата низ текст, визуелен сигнал, публика, канал и институционален контекст.\n\n**Што да се провери:**\n- дали има визуелни докази или само опис;\n- дали пораката е кон домашна, меѓународна или експертска публика;\n- дали форматот е погоден за web, briefing, lecture или report.\n\n**Заклучок:** додај визуелен/комуникациски слој пред финален став.`,
@@ -53,15 +122,81 @@ qwen:`🐉 **East-West / intercultural bridge**\n\nПрашање: "${q}"\n\n**�
 perplexity:`🔍 **Source-verification simulation**\n\nПрашање: "${q}"\n\n**Важно:** ова е симулација; не пребарувам web и не проверувам live извори од оваа страница.\n\n**Verification checklist:**\n1. наведи примарен извор;\n2. додади датум на пристап;\n3. оддели цитат од парафраза;\n4. провери DOI/URL;\n5. означи непотврдени тврдења.\n\n**Препорака:** пред објава отвори Academic Search Hub и WPA Watch.`,
 kimi:`🎯 **Task manager**\n\nПрашање: "${q}"\n\n**Работен план:**\n1. формулирај цел во една реченица;\n2. собери јавни извори;\n3. направи краток briefing;\n4. пушти низ risk/ethics check;\n5. изработи финален output;\n6. зачувај session и changelog.\n\n**Следна акција:** избери еден deliverable: memo, page update, lecture plan, report или proposal.`};return map[id]||'Simulation response unavailable.';}
 function setStatus(id,cls,text){const el=$('status-'+id); if(el){el.className='ai-status '+cls;el.textContent=text}}
-function ask(id,prompt){const g=guard(prompt);if(!g.ok){setStatus(id,'blocked','● Блокирано');$('response-'+id).innerHTML='<pre>⚠ '+g.msg+'</pre>';return}const start=performance.now();setStatus(id,'loading','● Генерира...');$('response-'+id).innerHTML='<pre>⏳ Simulation response...</pre>';setTimeout(()=>{const text=responseFor(id,prompt,currentMode);currentResponses[id]={provider:providers.find(p=>p.id===id),prompt:sanitizePrompt(prompt),mode:currentMode,text,ts:new Date().toISOString()};$('response-'+id).innerHTML='<pre>'+esc(text)+'</pre>';$('time-'+id).textContent='⏱️ '+Math.round(performance.now()-start)+' ms';setStatus(id,'success','● Готово');},250+Math.random()*550)}
+function setResponsePre(id,text){
+  const host=$('response-'+id);
+  if(!host)return;
+  host.replaceChildren();
+  const pre=document.createElement('pre');
+  pre.textContent=String(text||'');
+  host.appendChild(pre);
+}
+function ask(id,prompt){
+  const g=guard(prompt);
+  if(!g.ok){
+    setStatus(id,'blocked','● Блокирано');
+    setResponsePre(id,'⚠ '+String(g.msg||''));
+    return;
+  }
+  const start=performance.now();
+  setStatus(id,'loading','● Генерира...');
+  setResponsePre(id,'⏳ Simulation response...');
+  setTimeout(()=>{
+    const text=responseFor(id,prompt,currentMode);
+    currentResponses[id]={provider:providers.find(p=>p.id===id),prompt:sanitizePrompt(prompt),mode:currentMode,text,ts:new Date().toISOString()};
+    setResponsePre(id,text);
+    $('time-'+id).textContent='⏱️ '+Math.round(performance.now()-start)+' ms';
+    setStatus(id,'success','● Готово');
+  },250+Math.random()*550);
+}
 function sendAll(){const prompt=$('mainPrompt').value;const g=guard(prompt);$('guardStatus').textContent=g.msg;if(!g.ok){$('guardStatus').style.color='var(--danger)';return}else{$('guardStatus').style.color='var(--ok)'}selected().forEach(id=>ask(id,prompt));}
 function clearAll(){currentResponses={};lastConsensus='';providers.forEach(p=>{setStatus(p.id,'idle','● Мирува');$('response-'+p.id).innerHTML='<pre>✨ Чекам прашање...</pre>';$('time-'+p.id).textContent='⏱️ — ms';});$('consensusContent').innerHTML='<p class="small">Прво испрати прашање до AI советниците, потоа генерирај консензус.</p>';}
 function consensus(){const keys=Object.keys(currentResponses);if(!keys.length){$('consensusContent').innerHTML='<p class="small">Нема одговори за консензус.</p>';return}lastConsensus=`# WPA Multi-AI Consensus\n\nMode: ${currentMode}\nAdvisors: ${keys.map(k=>currentResponses[k].provider.name).join(', ')}\nGenerated: ${new Date().toISOString()}\n\n## Common direction\nСите симулирани советници препорачуваат структура, проверливост, human review и јасни граници.\n\n## Strong recommendations\n- Оддели јавни факти од интерпретации.\n- Додај traceability, disclaimer и correction path.\n- Користи schema/QA пред production.\n- За live API: backend proxy, redaction, rate-limit и key security.\n\n## Risks\n- Внесување чувствителни податоци во prototype.\n- Претставување simulation како реални AI одговори.\n- Објавување без човечка ревизија.\n\n## Next actions\n1. Направи јавен prompt без чувствителни детали.\n2. Извези Markdown.\n3. Зачувај session.\n4. Дури потоа планирај backend API интеграција.`;$('consensusContent').innerHTML='<div class="consensus-content"><div class="consensus-card"><h4>Common direction</h4><p>Структура, проверливост, human review и јасни граници.</p></div><div class="consensus-card"><h4>Recommendations</h4><p>Traceability, disclaimer, QA schema, source separation, backend-only APIs.</p></div><div class="consensus-card"><h4>Risks</h4><p>Чувствителни податоци, лажен live-AI впечаток, објава без ревизија.</p></div><div class="consensus-card"><h4>Next actions</h4><p>Export Markdown, save session, review, then plan secure API backend.</p></div></div>';}
 function markdown(){const lines=['# WPA Multi-AI Command Center Session','',`Mode: ${currentMode}`,`Generated: ${new Date().toISOString()}`,'','## Main prompt',sanitizePrompt($('mainPrompt').value),''];Object.values(currentResponses).forEach(r=>{lines.push('---','',`## ${r.provider.name}`,`Role: ${r.provider.role}`,'',r.text,'')});if(lastConsensus)lines.push('---','',lastConsensus);return lines.join('\n')}
 function exportMd(){const blob=new Blob([markdown()],{type:'text/markdown'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='wpa-multi-ai-session.md';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 function saveSession(){const item={id:Date.now(),date:new Date().toISOString(),mode:currentMode,prompt:sanitizePrompt($('mainPrompt').value),responses:currentResponses,consensus:lastConsensus};sessions.unshift(item);sessions=sessions.slice(0,30);localStorage.setItem('wpa_multi_ai_sessions',JSON.stringify(sessions));renderArchive();alert('Session saved locally.')} 
-function renderArchive(){const box=$('sessionList');if(!sessions.length){box.innerHTML='<p class="small">Нема зачувани сесии.</p>';return}box.innerHTML=sessions.map(s=>'<div class="session-item" data-session="'+s.id+'"><strong>'+new Date(s.date).toLocaleString()+'</strong><br><span class="small">'+esc(s.mode)+' · '+esc((s.prompt||'').slice(0,90))+'</span></div>').join('')}
-function restore(id){const s=sessions.find(x=>String(x.id)===String(id));if(!s)return;$('mainPrompt').value=s.prompt||'';currentMode=s.mode||'balanced';currentResponses=s.responses||{};lastConsensus=s.consensus||'';document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===currentMode));providers.forEach(p=>{const r=currentResponses[p.id];if(r){$('response-'+p.id).innerHTML='<pre>'+esc(r.text)+'</pre>';setStatus(p.id,'success','● Архива');}else{$('response-'+p.id).innerHTML='<pre>—</pre>';setStatus(p.id,'idle','● Мирува')}});showTab('advisors')}
+function renderArchive(){
+  const box=$('sessionList');
+  box.replaceChildren();
+  if(!sessions.length){
+    const p=document.createElement('p');
+    p.className='small';
+    p.textContent='Нема зачувани сесии.';
+    box.appendChild(p);
+    return;
+  }
+  sessions.forEach(s=>{
+    const item=document.createElement('div');
+    item.className='session-item';
+    item.dataset.session=String(s.id||'');
+    const strong=document.createElement('strong');
+    strong.textContent=new Date(s.date).toLocaleString();
+    const detail=document.createElement('span');
+    detail.className='small';
+    detail.textContent=String(s.mode||'')+' · '+String(s.prompt||'').slice(0,90);
+    item.append(strong,document.createElement('br'),detail);
+    box.appendChild(item);
+  });
+}
+function restore(id){
+  const s=sessions.find(x=>String(x.id)===String(id));
+  if(!s)return;
+  $('mainPrompt').value=s.prompt||'';
+  currentMode=s.mode||'balanced';
+  currentResponses=s.responses||{};
+  lastConsensus=s.consensus||'';
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===currentMode));
+  providers.forEach(p=>{
+    const r=currentResponses[p.id];
+    if(r){
+      setResponsePre(p.id,r.text);
+      setStatus(p.id,'success','● Архива');
+    }else{
+      setResponsePre(p.id,'—');
+      setStatus(p.id,'idle','● Мирува');
+    }
+  });
+  showTab('advisors');
+}
 function showTab(tab){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));$('advisorsTab').classList.toggle('hidden',tab!=='advisors');$('consensusTab').classList.toggle('active',tab==='consensus');$('archiveTab').classList.toggle('active',tab==='archive');if(tab==='archive')renderArchive();}
 function init(){renderProviders();renderCards();document.querySelectorAll('.mode-btn').forEach(b=>b.onclick=()=>{currentMode=b.dataset.mode;document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active')});$('sendToAllBtn').onclick=sendAll;$('clearAllBtn').onclick=clearAll;$('saveSessionBtn').onclick=saveSession;$('exportMarkdownBtn').onclick=exportMd;$('generateConsensusBtn').onclick=consensus;$('copyConsensusBtn').onclick=()=>{if(!lastConsensus)consensus();navigator.clipboard&&navigator.clipboard.writeText(lastConsensus).then(()=>alert('Consensus copied.'))};$('clearArchiveBtn').onclick=()=>{if(confirm('Clear local archive?')){sessions=[];localStorage.removeItem('wpa_multi_ai_sessions');renderArchive();}};document.addEventListener('click',e=>{const single=e.target.closest('[data-single]');if(single){const id=single.dataset.single;const p=$('prompt-'+id).value||$('mainPrompt').value;ask(id,p)}const tab=e.target.closest('[data-tab]');if(tab)showTab(tab.dataset.tab);const session=e.target.closest('[data-session]');if(session)restore(session.dataset.session)});}
 init();
