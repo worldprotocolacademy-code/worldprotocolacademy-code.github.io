@@ -488,6 +488,13 @@
       });
     }
 
+    function wpaAppendStatusPart(parent, label, value) {
+      const strong = document.createElement("strong");
+      strong.textContent = label;
+      parent.appendChild(strong);
+      parent.appendChild(document.createTextNode(" " + String(value || "")));
+    }
+
     function wpaRunSearch() {
       let q = wpaGetQuery();
       if (!q) {
@@ -503,46 +510,79 @@
 
       wpaRenderActiveButtons();
 
-      status.innerHTML =
-        "<strong>Active filter:</strong> " + wpaCategoryLabel(wpaCurrentFilter) +
-        " · <strong>Region:</strong> " + wpaRegionLabel(wpaCurrentRegion) +
-        " · <strong>Search term:</strong> " + q +
-        " · <strong>Sources shown:</strong> " + filteredSources.length +
-        " · Manual academic verification required.";
+      status.replaceChildren();
+      wpaAppendStatusPart(status, "Active filter:", wpaCategoryLabel(wpaCurrentFilter));
+      status.appendChild(document.createTextNode(" · "));
+      wpaAppendStatusPart(status, "Region:", wpaRegionLabel(wpaCurrentRegion));
+      status.appendChild(document.createTextNode(" · "));
+      wpaAppendStatusPart(status, "Search term:", q);
+      status.appendChild(document.createTextNode(" · "));
+      wpaAppendStatusPart(status, "Sources shown:", filteredSources.length);
+      status.appendChild(document.createTextNode(" · Manual academic verification required."));
 
+      box.replaceChildren();
       if (!filteredSources.length) {
-        box.innerHTML = "<p>No sources match the selected filter and region.</p>";
+        const empty = document.createElement("p");
+        empty.textContent = "No sources match the selected filter and region.";
+        box.appendChild(empty);
         return;
       }
 
-      box.innerHTML = filteredSources.map(([name, url, category, region, note]) => {
+      filteredSources.forEach(([name, url, category, region, note]) => {
         const isFavorite = favorites.includes(name);
         const categoryClass = category === "open" ? "open" : (category === "restricted" ? "restricted" : "");
-        return `
-          <div class="card">
-            <h3>${isFavorite ? "⭐ " : ""}${name}</h3>
-            <div class="source-meta">
-              <span class="${categoryClass}">${wpaCategoryLabel(category)}</span>
-              <span>${wpaRegionLabel(region)}</span>
-            </div>
-            <p>${note}. Legal-safe external search link. Manual academic verification required.</p>
-            <div class="actions" style="margin:16px 0 0;">
-              <a class="btn secondary" href="${url}${encoded}" target="_blank" rel="noopener noreferrer">Search ${name}</a>
-              <button class="btn secondary favorite-btn" type="button" data-source-name="${name}">${isFavorite ? "Remove Favorite" : "⭐ Favorite"}</button>
-            </div>
-          </div>
-        `;
-      }).join("");
+
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const heading = document.createElement("h3");
+        heading.textContent = (isFavorite ? "⭐ " : "") + String(name || "");
+
+        const meta = document.createElement("div");
+        meta.className = "source-meta";
+        const categorySpan = document.createElement("span");
+        if (categoryClass) categorySpan.className = categoryClass;
+        categorySpan.textContent = String(wpaCategoryLabel(category) || "");
+        const regionSpan = document.createElement("span");
+        regionSpan.textContent = String(wpaRegionLabel(region) || "");
+        meta.append(categorySpan, regionSpan);
+
+        const description = document.createElement("p");
+        description.textContent = String(note || "") + ". Legal-safe external search link. Manual academic verification required.";
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        actions.style.margin = "16px 0 0";
+
+        const link = document.createElement("a");
+        link.className = "btn secondary";
+        link.href = String(url || "") + encoded;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Search " + String(name || "");
+
+        const favorite = document.createElement("button");
+        favorite.className = "btn secondary favorite-btn";
+        favorite.type = "button";
+        favorite.dataset.sourceName = String(name || "");
+        favorite.textContent = isFavorite ? "Remove Favorite" : "⭐ Favorite";
+
+        actions.append(link, favorite);
+        card.append(heading, meta, description, actions);
+        box.appendChild(card);
+      });
     }
 
     function wpaShowCoreSources() {
       wpaCurrentFilter = "open";
       wpaCurrentRegion = "all";
       wpaRunSearch();
-      document.getElementById("wpaSearchStatus").insertAdjacentHTML(
-        "beforeend",
-        "<br><span class='small'>Browser pop-up blockers often block mass opening. Core source links are shown below for manual one-by-one opening.</span>"
-      );
+      const status = document.getElementById("wpaSearchStatus");
+      status.appendChild(document.createElement("br"));
+      const note = document.createElement("span");
+      note.className = "small";
+      note.textContent = "Browser pop-up blockers often block mass opening. Core source links are shown below for manual one-by-one opening.";
+      status.appendChild(note);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
