@@ -1890,66 +1890,240 @@ function toggleFav(id) {
 }
 
 // === COUNTRY MODAL ===
+function safeCountryToken(value) {
+  var token = String(value || '');
+  return /^[a-z0-9_-]+$/i.test(token) ? token : '';
+}
+function safeDisplayColor(value) {
+  var color = String(value || '');
+  return /^#[0-9a-f]{3,8}$/i.test(color) ? color : '#777777';
+}
+function appendInfoItem(container, label, value, color) {
+  var item = document.createElement('div');
+  item.className = 'wpa-modal-info-item';
+  var key = document.createElement('div');
+  key.className = 'wpa-modal-info-label';
+  key.textContent = label;
+  var val = document.createElement('div');
+  val.className = 'wpa-modal-info-value';
+  val.textContent = String(value || '');
+  if (color) {
+    var dot = document.createElement('span');
+    dot.className = 'wpa-modal-color-dot';
+    dot.style.background = safeDisplayColor(color);
+    val.appendChild(dot);
+  }
+  item.append(key, val);
+  container.appendChild(item);
+}
+function appendModalSection(container, label, text, muted) {
+  var section = document.createElement('div');
+  section.className = 'wpa-modal-section';
+  var title = document.createElement('div');
+  title.className = 'wpa-modal-section-label';
+  title.textContent = label;
+  var p = document.createElement('p');
+  p.style.fontSize = '13px';
+  p.style.lineHeight = '1.6';
+  p.style.color = muted ? 'var(--text2)' : 'var(--text)';
+  p.textContent = String(text || '');
+  section.append(title, p);
+  container.appendChild(section);
+}
+function makeModalLink(url, iconText, iconStyle, name, description) {
+  var link = document.createElement('a');
+  link.className = 'wpa-modal-link';
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+  var inner = document.createElement('div');
+  inner.className = 'wpa-modal-link-inner';
+  var icon = document.createElement('div');
+  icon.className = 'wpa-modal-link-icon';
+  icon.style.cssText = iconStyle;
+  icon.textContent = iconText;
+  var copy = document.createElement('div');
+  var title = document.createElement('div');
+  title.className = 'wpa-modal-link-name';
+  title.textContent = name;
+  var desc = document.createElement('div');
+  desc.className = 'wpa-modal-link-desc';
+  desc.textContent = description;
+  copy.append(title, desc);
+  inner.append(icon, copy);
+  link.appendChild(inner);
+  return link;
+}
+function makeShareButton(label, style, handler) {
+  var button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'wpa-modal-share-btn';
+  button.style.cssText = style;
+  button.textContent = label;
+  button.addEventListener('click', handler);
+  return button;
+}
 function openCountryModal(id) {
-  var c = worldData.find(function(x) { return x.id === id; });
+  var safeId = safeCountryToken(id);
+  var c = worldData.find(function(x) { return x.id === safeId; });
   if (!c) return;
-  document.getElementById('modalFav').style.display = '';
-  document.getElementById('modalSpeak').style.display = '';
-  document.getElementById('modalSpeak').innerHTML = '&#128266;';
-  var isFav = state.favorites.indexOf(id) >= 0;
-  document.getElementById('modalTitle').textContent = c.n;
-  document.getElementById('modalFav').innerHTML = isFav ? '&#9829;' : '&#9825;';
-  document.getElementById('modalFav').style.color = isFav ? 'var(--gold)' : 'var(--text2)';
-  document.getElementById('modalFav').onclick = function() { toggleFav(id); openCountryModal(id); };
-  document.getElementById('modalSpeak').onclick = function() { speakCountry(c.n); };
 
-  var lat = toLatin(c.n);
-  var body = '<div class="wpa-modal-subtitle">' + c.continent + ' / ' + c.id.toUpperCase() + '</div>' +
-    '<img class="wpa-modal-flag" src="' + flagUrl(id,640) + '" alt="' + c.n + '" onerror="this.src=' + "'" + flagUrl(id,320) + "'" + '">' +
-    '<div class="wpa-modal-info">' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Capital</div><div class="wpa-modal-info-value">' + c.cap + '</div></div>' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Population</div><div class="wpa-modal-info-value">' + c.pop + '</div></div>' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Area</div><div class="wpa-modal-info-value">' + c.area + '</div></div>' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Coordinates</div><div class="wpa-modal-info-value">' + c.g + '</div></div>' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Color</div><div class="wpa-modal-info-value">' + c.color + '<span class="wpa-modal-color-dot" style="background:' + c.color + '"></span></div></div>' +
-      '<div class="wpa-modal-info-item"><div class="wpa-modal-info-label">Flag</div><div class="wpa-modal-info-value" style="font-size:11px;">' + c.f + '</div></div>' +
-    '</div>' +
-    '<div class="wpa-modal-weather" id="modalWeather"><div class="wpa-modal-weather-label">Current Weather</div><div class="wpa-modal-weather-data"><span style="color:var(--text3);font-size:12px;">Loading...</span></div></div>' +
-    '<div class="wpa-modal-section"><div class="wpa-modal-section-label">Natural Resources</div><p style="font-size:13px;color:var(--text);">' + c.r + '</p></div>' +
-    '<div class="wpa-modal-section"><div class="wpa-modal-section-label">National Anthem</div><audio class="wpa-modal-audio" controls><source src="https://www.nationalanthems.info/' + c.anthem + '.mp3" type="audio/mpeg"><source src="https://www.nationalanthems.info/' + c.anthem + '.ogg" type="audio/ogg"></audio></div>';
-  if (funFacts[id]) body += '<div class="wpa-modal-section"><div class="wpa-modal-section-label">Fun Fact</div><p style="font-size:13px;color:var(--text2);line-height:1.6;">&#128161; ' + funFacts[id] + '</p></div>';
-  body += '<div class="wpa-modal-section-label">Resources</div><div class="wpa-modal-links">' +
-    '<a class="wpa-modal-link" href="https://imslp.org/wiki/Special:Search/' + encodeURIComponent(lat + ' national anthem') + '" target="_blank"><div class="wpa-modal-link-inner"><div class="wpa-modal-link-icon" style="background:var(--wpa-red)">IM</div><div><div class="wpa-modal-link-name">IMSLP</div><div class="wpa-modal-link-desc">Sheet music</div></div></div></a>' +
-    '<a class="wpa-modal-link" href="https://musescore.com/search?s=' + encodeURIComponent(c.n + ' national anthem') + '" target="_blank"><div class="wpa-modal-link-inner"><div class="wpa-modal-link-icon" style="background:#1976d2">MS</div><div><div class="wpa-modal-link-name">MuseScore</div><div class="wpa-modal-link-desc">Scores</div></div></div></a>' +
-    '<a class="wpa-modal-link" href="https://en.wikipedia.org/wiki/' + encodeURIComponent(lat + ' national anthem') + '" target="_blank"><div class="wpa-modal-link-inner"><div class="wpa-modal-link-icon" style="background:var(--bg3);color:var(--text)">W</div><div><div class="wpa-modal-link-name">Wikipedia</div><div class="wpa-modal-link-desc">Anthem article</div></div></div></a>' +
-    '<a class="wpa-modal-link" href="https://flagcdn.com/w640/' + c.id + '.png" target="_blank" download="' + c.id + '_flag_HD.png"><div class="wpa-modal-link-inner"><div class="wpa-modal-link-icon" style="background:var(--wpa-navy-lighter);color:var(--gold)">HD</div><div><div class="wpa-modal-link-name">HD Flag</div><div class="wpa-modal-link-desc">640px PNG</div></div></div></a>' +
-    '</div>' +
-    '<button class="wpa-modal-copy" onclick="copyCountryInfo(' + "'" + id + "'" + ')">&#128203; Copy Information</button>' +
-    '<div class="wpa-modal-share-label">Share</div><div class="wpa-modal-share">' +
-    '<button class="wpa-modal-share-btn" style="background:#1877F2" onclick="shareCountry(' + "'" + id + "','facebook'" + ')">FB</button>' +
-    '<button class="wpa-modal-share-btn" style="background:var(--wpa-navy)" onclick="shareCountry(' + "'" + id + "','x'" + ')">X</button>' +
-    '<button class="wpa-modal-share-btn" style="background:#25D366" onclick="shareCountry(' + "'" + id + "','whatsapp'" + ')">WA</button>' +
-    '<button class="wpa-modal-share-btn" style="background:#0088CC" onclick="shareCountry(' + "'" + id + "','telegram'" + ')">TG</button>' +
-    '<button class="wpa-modal-share-btn" style="background:#7360F2" onclick="shareCountry(' + "'" + id + "','viber'" + ')">VB</button>' +
-    '</div>';
-  document.getElementById('modalBody').innerHTML = body;
+  var modalFav = document.getElementById('modalFav');
+  var modalSpeak = document.getElementById('modalSpeak');
+  modalFav.style.display = '';
+  modalSpeak.style.display = '';
+  modalSpeak.textContent = '🔊';
+
+  var isFav = state.favorites.indexOf(safeId) >= 0;
+  document.getElementById('modalTitle').textContent = String(c.n || '');
+  modalFav.textContent = isFav ? '♥' : '♡';
+  modalFav.style.color = isFav ? 'var(--gold)' : 'var(--text2)';
+  modalFav.onclick = function() { toggleFav(safeId); openCountryModal(safeId); };
+  modalSpeak.onclick = function() { speakCountry(String(c.n || '')); };
+
+  var body = document.getElementById('modalBody');
+  body.replaceChildren();
+
+  var subtitle = document.createElement('div');
+  subtitle.className = 'wpa-modal-subtitle';
+  subtitle.textContent = String(c.continent || '') + ' / ' + safeId.toUpperCase();
+
+  var flag = document.createElement('img');
+  flag.className = 'wpa-modal-flag';
+  flag.src = flagUrl(safeId, 640);
+  flag.alt = String(c.n || '');
+  flag.addEventListener('error', function() {
+    if (flag.dataset.fallbackApplied === '1') return;
+    flag.dataset.fallbackApplied = '1';
+    flag.src = flagUrl(safeId, 320);
+  });
+
+  var info = document.createElement('div');
+  info.className = 'wpa-modal-info';
+  appendInfoItem(info, 'Capital', c.cap);
+  appendInfoItem(info, 'Population', c.pop);
+  appendInfoItem(info, 'Area', c.area);
+  appendInfoItem(info, 'Coordinates', c.g);
+  appendInfoItem(info, 'Color', c.color, c.color);
+  appendInfoItem(info, 'Flag', c.f);
+
+  var weather = document.createElement('div');
+  weather.className = 'wpa-modal-weather';
+  weather.id = 'modalWeather';
+  var weatherLabel = document.createElement('div');
+  weatherLabel.className = 'wpa-modal-weather-label';
+  weatherLabel.textContent = 'Current Weather';
+  var weatherData = document.createElement('div');
+  weatherData.className = 'wpa-modal-weather-data';
+  var loading = document.createElement('span');
+  loading.style.color = 'var(--text3)';
+  loading.style.fontSize = '12px';
+  loading.textContent = 'Loading...';
+  weatherData.appendChild(loading);
+  weather.append(weatherLabel, weatherData);
+
+  body.append(subtitle, flag, info, weather);
+  appendModalSection(body, 'Natural Resources', c.r, false);
+
+  var anthemSection = document.createElement('div');
+  anthemSection.className = 'wpa-modal-section';
+  var anthemLabel = document.createElement('div');
+  anthemLabel.className = 'wpa-modal-section-label';
+  anthemLabel.textContent = 'National Anthem';
+  var audio = document.createElement('audio');
+  audio.className = 'wpa-modal-audio';
+  audio.controls = true;
+  var anthemToken = safeCountryToken(c.anthem);
+  if (anthemToken) {
+    var mp3 = document.createElement('source');
+    mp3.src = 'https://www.nationalanthems.info/' + anthemToken + '.mp3';
+    mp3.type = 'audio/mpeg';
+    var ogg = document.createElement('source');
+    ogg.src = 'https://www.nationalanthems.info/' + anthemToken + '.ogg';
+    ogg.type = 'audio/ogg';
+    audio.append(mp3, ogg);
+  }
+  anthemSection.append(anthemLabel, audio);
+  body.appendChild(anthemSection);
+
+  if (funFacts[safeId]) appendModalSection(body, 'Fun Fact', '💡 ' + String(funFacts[safeId]), true);
+
+  var resourcesLabel = document.createElement('div');
+  resourcesLabel.className = 'wpa-modal-section-label';
+  resourcesLabel.textContent = 'Resources';
+  var links = document.createElement('div');
+  links.className = 'wpa-modal-links';
+  var latinName = toLatin(String(c.n || ''));
+  links.append(
+    makeModalLink('https://imslp.org/wiki/Special:Search/' + encodeURIComponent(latinName + ' national anthem'), 'IM', 'background:var(--wpa-red)', 'IMSLP', 'Sheet music'),
+    makeModalLink('https://musescore.com/search?s=' + encodeURIComponent(String(c.n || '') + ' national anthem'), 'MS', 'background:#1976d2', 'MuseScore', 'Scores'),
+    makeModalLink('https://en.wikipedia.org/wiki/' + encodeURIComponent(latinName + ' national anthem'), 'W', 'background:var(--bg3);color:var(--text)', 'Wikipedia', 'Anthem article')
+  );
+  var hd = makeModalLink(flagUrl(safeId, 640), 'HD', 'background:var(--wpa-navy-lighter);color:var(--gold)', 'HD Flag', '640px PNG');
+  hd.download = safeId + '_flag_HD.png';
+  links.appendChild(hd);
+  body.append(resourcesLabel, links);
+
+  var copyButton = document.createElement('button');
+  copyButton.type = 'button';
+  copyButton.className = 'wpa-modal-copy';
+  copyButton.textContent = '📋 Copy Information';
+  copyButton.addEventListener('click', function() { copyCountryInfo(safeId); });
+  body.appendChild(copyButton);
+
+  var shareLabel = document.createElement('div');
+  shareLabel.className = 'wpa-modal-share-label';
+  shareLabel.textContent = 'Share';
+  var share = document.createElement('div');
+  share.className = 'wpa-modal-share';
+  share.append(
+    makeShareButton('FB', 'background:#1877F2', function() { shareCountry(safeId, 'facebook'); }),
+    makeShareButton('X', 'background:var(--wpa-navy)', function() { shareCountry(safeId, 'x'); }),
+    makeShareButton('WA', 'background:#25D366', function() { shareCountry(safeId, 'whatsapp'); }),
+    makeShareButton('TG', 'background:#0088CC', function() { shareCountry(safeId, 'telegram'); }),
+    makeShareButton('VB', 'background:#7360F2', function() { shareCountry(safeId, 'viber'); })
+  );
+  body.append(shareLabel, share);
+
   document.getElementById('countryModal').classList.add('active');
   document.body.style.overflow = 'hidden';
-  // Fetch weather
   fetchWeather(c);
 }
 function fetchWeather(c) {
-  var match = c.g.match(/([-\d.]+)°\s*([NS]),\s*([-\d.]+)°\s*([EW])/);
+  var match = String(c.g || '').match(/([-\d.]+)°\s*([NS]),\s*([-\d.]+)°\s*([EW])/);
   if (!match) return;
   var lat = parseFloat(match[1]); if (match[2] === 'S') lat = -lat;
   var lon = parseFloat(match[3]); if (match[4] === 'W') lon = -lon;
-  fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto')
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=' + encodeURIComponent(lat) + '&longitude=' + encodeURIComponent(lon) + '&current=temperature_2m,weather_code,wind_speed_10m&timezone=auto')
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.current && document.getElementById('modalWeather')) {
-        var codes = {0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Rain',63:'Moderate rain',65:'Heavy rain',71:'Snow',73:'Moderate snow',75:'Heavy snow',77:'Snow grains',80:'Heavy rain',81:'Torrential rain',82:'Extreme rain',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Severe hail'};
-        document.getElementById('modalWeather').innerHTML = '<div class="wpa-modal-weather-label">Current Weather</div><div class="wpa-modal-weather-data"><span class="wpa-modal-temp">' + data.current.temperature_2m + '°C</span><span style="color:var(--text2);font-size:13px;">' + (codes[data.current.weather_code] || 'Unknown') + '</span><span style="font-size:11px;color:var(--text3);font-family:IBM Plex Mono,monospace;">' + data.current.wind_speed_10m + ' km/h</span></div>';
-      }
+      var target = document.getElementById('modalWeather');
+      if (!data.current || !target) return;
+      var codes = {0:'Clear',1:'Mostly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Rain',63:'Moderate rain',65:'Heavy rain',71:'Snow',73:'Moderate snow',75:'Heavy snow',77:'Snow grains',80:'Heavy rain',81:'Torrential rain',82:'Extreme rain',95:'Thunderstorm',96:'Thunderstorm with hail',99:'Severe hail'};
+
+      var label = document.createElement('div');
+      label.className = 'wpa-modal-weather-label';
+      label.textContent = 'Current Weather';
+      var row = document.createElement('div');
+      row.className = 'wpa-modal-weather-data';
+
+      var temp = document.createElement('span');
+      temp.className = 'wpa-modal-temp';
+      temp.textContent = String(data.current.temperature_2m) + '°C';
+      var condition = document.createElement('span');
+      condition.style.color = 'var(--text2)';
+      condition.style.fontSize = '13px';
+      condition.textContent = codes[data.current.weather_code] || 'Unknown';
+      var wind = document.createElement('span');
+      wind.style.fontSize = '11px';
+      wind.style.color = 'var(--text3)';
+      wind.style.fontFamily = 'IBM Plex Mono, monospace';
+      wind.textContent = String(data.current.wind_speed_10m) + ' km/h';
+
+      row.append(temp, condition, wind);
+      target.replaceChildren(label, row);
     }).catch(function(){});
 }
 function closeCountryModal() { document.getElementById('countryModal').classList.remove('active'); document.body.style.overflow = ''; }
