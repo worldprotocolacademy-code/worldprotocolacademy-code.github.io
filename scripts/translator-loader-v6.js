@@ -352,35 +352,80 @@
    *   /about.html      + en  →  /en/about.html
    *   /zh/about.html   + fr  →  /fr/about.html
    */
-  function buildTargetUrl(targetLang) {
-    var safeLang = normalise(targetLang);
-    if (!safeLang || !isSupported(safeLang)) return null;
-
-    var loc = window.location;
-    var path = String(loc.pathname || '/');
-    var stripped = path.replace(/^\/([a-z]{2,3})(?=\/|$)/i, function (m, code) {
-      return isSupported(normalise(code)) ? '' : m;
-    });
-    if (!stripped) stripped = '/';
-    if (stripped.charAt(0) !== '/') stripped = '/' + stripped;
-
-    // Only preserve ordinary site path characters. Anything unusual falls back to index.
-    if (!/^\/[A-Za-z0-9._~\/-]*$/.test(stripped)) stripped = '/index.html';
-
-    var target = safeLang === CONFIG.defaultLang ? stripped : '/' + safeLang + stripped;
-    target = target.replace(/\/+/g, '/');
-
-    var search = String(loc.search || '');
-    if (search) {
-      var params = new URLSearchParams(search);
-      params.delete(CONFIG.queryParam);
-      var cleanSearch = params.toString();
-      if (cleanSearch) target += '?' + cleanSearch;
+  function languagePrefix(code) {
+    switch (normalise(code)) {
+      case 'mk': return '';
+      case 'en': return '/en';
+      case 'zh': return '/zh';
+      case 'ru': return '/ru';
+      case 'ar': return '/ar';
+      case 'fr': return '/fr';
+      case 'de': return '/de';
+      case 'it': return '/it';
+      case 'es': return '/es';
+      case 'tr': return '/tr';
+      case 'sq': return '/sq';
+      case 'sr': return '/sr';
+      case 'bg': return '/bg';
+      case 'el': return '/el';
+      case 'ja': return '/ja';
+      case 'ko': return '/ko';
+      case 'hi': return '/hi';
+      case 'pt': return '/pt';
+      case 'nl': return '/nl';
+      case 'sv': return '/sv';
+      case 'pl': return '/pl';
+      case 'cs': return '/cs';
+      case 'sk': return '/sk';
+      case 'hu': return '/hu';
+      case 'ro': return '/ro';
+      case 'fi': return '/fi';
+      case 'da': return '/da';
+      case 'no': return '/no';
+      case 'et': return '/et';
+      case 'lv': return '/lv';
+      case 'lt': return '/lt';
+      case 'sl': return '/sl';
+      case 'hr': return '/hr';
+      case 'bs': return '/bs';
+      case 'me': return '/me';
+      case 'uk': return '/uk';
+      case 'be': return '/be';
+      case 'kk': return '/kk';
+      case 'uz': return '/uz';
+      case 'ka': return '/ka';
+      case 'hy': return '/hy';
+      case 'mt': return '/mt';
+      case 'is': return '/is';
+      case 'ga': return '/ga';
+      case 'cy': return '/cy';
+      case 'he': return '/he';
+      case 'fa': return '/fa';
+      case 'th': return '/th';
+      case 'vi': return '/vi';
+      case 'id': return '/id';
+      case 'ms': return '/ms';
+      case 'sw': return '/sw';
+      default: return null;
     }
+  }
 
-    var hash = String(loc.hash || '');
-    if (/^#[A-Za-z0-9._~:%-]*$/.test(hash)) target += hash;
-    return target;
+  function safeCurrentPath() {
+    var path = String(window.location.pathname || '/');
+    path = path.replace(/^\/([a-z]{2,3})(?=\/|$)/i, function (m, code) {
+      return languagePrefix(code) !== null ? '' : m;
+    });
+    if (!path) path = '/';
+    if (path.charAt(0) !== '/') path = '/' + path;
+    if (!/^\/[A-Za-z0-9._~\/-]*$/.test(path)) return '/index.html';
+    return path;
+  }
+
+  function buildTargetUrl(targetLang) {
+    var prefix = languagePrefix(targetLang);
+    if (prefix === null) return null;
+    var target = (prefix + safeCurrentPath()).replace(/\/+/g, '/');
+    return target.charAt(0) === '/' && target.indexOf('//') !== 0 ? target : null;
   }
 
   function shouldRedirect(chosen, currentPageLang) {
@@ -391,11 +436,25 @@
     return true;
   }
 
+  function navigateToLanguage(targetLang) {
+    var url = buildTargetUrl(targetLang);
+    if (!url) return false;
+    var anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.target = '_self';
+    anchor.rel = 'nofollow';
+    anchor.style.display = 'none';
+    (document.body || document.documentElement).appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    return true;
+  }
+
   function performRedirect(targetLang) {
     var url = buildTargetUrl(targetLang);
-    if (!url || url.charAt(0) !== '/' || url.indexOf('//') === 0) return;
+    if (!url) return;
     log('Redirecting to', url);
-    window.location.replace(url);
+    navigateToLanguage(targetLang);
   }
 
   // ============================================================
@@ -537,11 +596,10 @@
       var picked = normalise(select.value);
       if (!picked) return;
       safeStorage('set', CONFIG.storageKey, picked);
-      // Build target URL, then navigate
       var url = buildTargetUrl(picked);
-      if (!url || url.charAt(0) !== '/' || url.indexOf('//') === 0) return;
+      if (!url) return;
       log('Manual selection:', picked, '→', url);
-      window.location.assign(url);
+      navigateToLanguage(picked);
     });
 
     return wrapper;
