@@ -2395,6 +2395,7 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
 <link rel="stylesheet" href="/wpa-public-entry-layer.css?v=1.0" id="wpa-public-entry-layer-css">
 <script defer src="/scripts/wpa-public-entry-layer.js?v=1.0" id="wpa-public-entry-layer-js"></script>
 <link rel="stylesheet" href="/styles/wpa-longpage-performance.css?v=20260831-1">
+  <script defer src="/scripts/wpa-canonical-language-select.js?v=20260919-1"></script>
 </head>
 <body id="top" data-page="index">
 
@@ -2449,11 +2450,11 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
       <button type="button" class="menu-toggle" id="mToggle" data-i18n="menuBtn">Мени</button>
       <div class="lang-sw" translate="no" data-no-i18n="true">
         <label for="pageLang">🌐 Јазик</label>
-        <select id="pageLang" aria-label="Select WPA language" title="WPA Languages" onchange="if(this.value){ window.location.href=this.value; }">
+        <select id="pageLang" aria-label="Select WPA language" title="WPA Languages" data-wpa-safe-language-select="home">
           <option value="">Languages</option>
-          <option value="https://worldprotocolacademy.mk/">🇲🇰 Македонски</option>
-          <option value="https://worldprotocolacademy.mk/en/">🇬🇧 English</option>
-          <option value="https://worldprotocolacademy.mk/languages/fr/">🇫🇷 Français</option>
+          <option value="mk">🇲🇰 Македонски</option>
+          <option value="en">🇬🇧 English</option>
+          <option value="fr">🇫🇷 Français</option>
         </select>
         <a href="https://worldprotocolacademy.mk/languages/" style="margin-left:8px;color:#e8d49a;font-weight:800;font-size:12px;text-decoration:none;white-space:nowrap;">Languages hub</a>
       </div>
@@ -5548,6 +5549,22 @@ if(document.readyState==='loading'){
       return (text || "").replace(/\s+/g, " ").trim();
     }
 
+    function safeMenuHref(rawHref) {
+      var href = String(rawHref || "").trim();
+      if (!href || href === "#") return null;
+      if (href.charAt(0) === "#") {
+        return /^#[A-Za-z0-9._~:%-]+$/.test(href) ? href : null;
+      }
+      try {
+        var url = new URL(href, window.location.href);
+        if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+        if (url.origin !== window.location.origin) return null;
+        return url.pathname + url.search + url.hash;
+      } catch (error) {
+        return null;
+      }
+    }
+
     function removeOldMobilePatchArtifacts() {
       qsa(
         "#wpaMobileMenuButton, #wpaMobileMenuButtonV12, #wpaMobileMenuButtonV13, #wpaMobileMenuButtonV14, #wpaMobileOverlayV12, #wpaMobileDrawerV12, #wpaMobileOverlayV13, #wpaMobileDrawerV13, #wpaMobileHome, #wpaMobileBot, .wpa-mobile-floating-home, .wpa-mobile-floating-bot, .wpa-mobile-menu-button"
@@ -5575,12 +5592,10 @@ if(document.readyState==='loading'){
 
       selectors.forEach(function (selector) {
         qsa(selector).forEach(function (a) {
-          var href = a.getAttribute("href");
+          var href = safeMenuHref(a.getAttribute("href"));
           var label = normalizeText(a.textContent);
 
           if (!href || !label) return;
-          if (href.indexOf("javascript:") === 0) return;
-          if (href === "#") return;
 
           var key = href + "::" + label;
           if (seen[key]) return;
@@ -5638,16 +5653,34 @@ if(document.readyState==='loading'){
 
       var links = collectMenuLinks();
 
-      drawer.innerHTML =
-        '<div class="wpa-mobile-drawer-head">' +
-        '<div class="wpa-mobile-drawer-title">World Protocol Academy</div>' +
-        '<button type="button" class="wpa-mobile-drawer-close" aria-label="Close menu">' + (wpaUILang()==='en'?'✕ Close':'✕ Затвори') + '</button>' +
-        '</div>' +
-        '<div class="wpa-mobile-drawer-links">' +
-        links.map(function (link) {
-          return '<a href="' + link.href + '" target="_self">' + link.label + "</a>";
-        }).join("") +
-        "</div>";
+      drawer.replaceChildren();
+
+      var drawerHead = document.createElement("div");
+      drawerHead.className = "wpa-mobile-drawer-head";
+
+      var drawerTitle = document.createElement("div");
+      drawerTitle.className = "wpa-mobile-drawer-title";
+      drawerTitle.textContent = "World Protocol Academy";
+
+      var closeButton = document.createElement("button");
+      closeButton.type = "button";
+      closeButton.className = "wpa-mobile-drawer-close";
+      closeButton.setAttribute("aria-label", "Close menu");
+      closeButton.textContent = wpaUILang() === "en" ? "✕ Close" : "✕ Затвори";
+
+      drawerHead.append(drawerTitle, closeButton);
+
+      var drawerLinks = document.createElement("div");
+      drawerLinks.className = "wpa-mobile-drawer-links";
+      links.forEach(function (link) {
+        var anchor = document.createElement("a");
+        anchor.href = link.href;
+        anchor.target = "_self";
+        anchor.textContent = link.label;
+        drawerLinks.appendChild(anchor);
+      });
+
+      drawer.append(drawerHead, drawerLinks);
 
       return { btn: btn, overlay: overlay, drawer: drawer };
     }

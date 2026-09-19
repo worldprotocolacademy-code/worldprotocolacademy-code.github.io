@@ -61,14 +61,46 @@
     document.head.appendChild(style);
   }
 
+  function recoveryLanguageDestination(raw) {
+    switch (String(raw || '')) {
+      case 'https://worldprotocolacademy.mk/': return '/';
+      case 'https://worldprotocolacademy.mk/en/': return '/en/';
+      case 'https://worldprotocolacademy.mk/languages/fr/': return '/languages/fr/';
+      case 'https://worldprotocolacademy.mk/languages/fr/institute.html': return '/languages/fr/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/de/institute.html': return '/languages/de/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/zh/institute.html': return '/languages/zh/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/ru/institute.html': return '/languages/ru/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/hi/institute.html': return '/languages/hi/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/af/institute.html': return '/languages/af/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/ar/institute.html': return '/languages/ar/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/it/institute.html': return '/languages/it/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/sq/institute.html': return '/languages/sq/institute.html';
+      case 'https://worldprotocolacademy.mk/languages/sr/institute.html': return '/languages/sr/institute.html';
+      default: return null;
+    }
+  }
+
   function installLanguageSelect() {
     qsa('select').forEach(function (select) {
       if (select.dataset.wpaRecoveryBound === '1') return;
+      if (select.hasAttribute('data-wpa-safe-language-select')) return;
+      if (select.hasAttribute('data-wpa-language-page')) return;
+      if (select.id === 'wpa-lang-select') return;
+
       var id = String(select.id || '').toLowerCase();
       var aria = String(select.getAttribute('aria-label') || '').toLowerCase();
       if (id.indexOf('lang') === -1 && aria.indexOf('language') === -1 && aria.indexOf('јазик') === -1) return;
+
+      var hasSupportedDestination = Array.prototype.some.call(select.options || [], function (option) {
+        return recoveryLanguageDestination(option.value);
+      });
+      if (!hasSupportedDestination) return;
+
       select.dataset.wpaRecoveryBound = '1';
-      select.addEventListener('change', function () { if (select.value) window.location.href = select.value; });
+      select.addEventListener('change', function () {
+        var destination = recoveryLanguageDestination(select.value);
+        if (destination) window.location.assign(destination);
+      });
     });
   }
 
