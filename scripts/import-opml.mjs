@@ -55,9 +55,15 @@ function attr(tag, name) {
 }
 
 function decodeEntities(s) {
-  return (s || '')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
+  const entities = Object.freeze({
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'"
+  });
+  return String(s || '').replace(/&(amp|lt|gt|quot|#39|apos);/g, entity => entities[entity] || entity);
 }
 
 async function fileExists(p) {

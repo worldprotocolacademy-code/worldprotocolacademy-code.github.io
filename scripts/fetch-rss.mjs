@@ -112,10 +112,17 @@ function stripHtml(s) {
 }
 
 function cleanText(s) {
-  return (s || '')
+  const entities = Object.freeze({
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#39;': "'",
+    '&apos;': "'"
+  });
+  return String(s || '')
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
+    .replace(/&(amp|lt|gt|quot|#39|apos);/g, entity => entities[entity] || entity)
     .replace(/\s+/g, ' ').trim();
 }
 
