@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Run v3 planning/staging with stable pagination and direct fail-closed S3 I/O for staging keys."""
-import hashlib
 import os
 import sys
 import tempfile
@@ -28,7 +27,10 @@ def validate_staging_target(key):
 
 
 def cached_s3_client(cf, token):
-    cache_key = (cf.a, hashlib.sha256(token.encode('utf-8')).hexdigest())
+    # Cloudflare exposes the API token id as the non-secret S3 Access Key ID.
+    # Use that identifier for the in-process cache key; never hash/cache the token value.
+    token_id = runner.verify_token_id(cf.a, token)
+    cache_key = (cf.a, token_id)
     client = S3_CLIENT_CACHE.get(cache_key)
     if client is None:
         client = ORIGINAL_S3_CLIENT(cf, token)
