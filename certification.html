@@ -1878,16 +1878,22 @@
       return (T[key] && T[key][lang]) || (T[key] && T[key].mk) || key;
     }
 
+    function appendVerifyLine(container, label, value) {
+      container.appendChild(document.createTextNode(String(label || '') + ': ' + String(value || '')));
+      container.appendChild(document.createElement('br'));
+    }
+
     function verifyCertificate() {
       const input = document.getElementById("certificateCode");
       const result = document.getElementById("verifyResult");
       const code = (input.value || "").trim().toUpperCase();
 
       result.className = "result";
+      result.replaceChildren();
 
       if (!code) {
         result.classList.add("invalid");
-        result.innerHTML = uiText('verifyEnterId');
+        result.textContent = uiText('verifyEnterId');
         return;
       }
 
@@ -1895,19 +1901,20 @@
 
       if (record) {
         result.classList.add("valid");
-        result.innerHTML =
-          "<strong>" + uiText('verifyValid') + "</strong><br>" +
-          uiText('lblId') + ": " + code + "<br>" +
-          uiText('lblTitle') + ": " + record.title + "<br>" +
-          uiText('lblLevel') + ": " + record.level + "<br>" +
-          uiText('lblIssue') + ": " + record.issueDate + "<br>" +
-          uiText('lblScore') + ": " + record.scoreBand + "<br>" +
-          uiText('lblStatus') + ": " + record.status;
+        const strong = document.createElement('strong');
+        strong.textContent = uiText('verifyValid');
+        result.append(strong, document.createElement('br'));
+        appendVerifyLine(result, uiText('lblId'), code);
+        appendVerifyLine(result, uiText('lblTitle'), record.title);
+        appendVerifyLine(result, uiText('lblLevel'), record.level);
+        appendVerifyLine(result, uiText('lblIssue'), record.issueDate);
+        appendVerifyLine(result, uiText('lblScore'), record.scoreBand);
+        result.appendChild(document.createTextNode(uiText('lblStatus') + ': ' + String(record.status || '')));
       } else {
         result.classList.add("invalid");
-        result.innerHTML =
-          "<strong>" + uiText('verifyNotFound') + "</strong><br>" +
-          uiText('verifyNotFoundBody');
+        const strong = document.createElement('strong');
+        strong.textContent = uiText('verifyNotFound');
+        result.append(strong, document.createElement('br'), document.createTextNode(uiText('verifyNotFoundBody')));
       }
     }
 
