@@ -3274,7 +3274,8 @@ export default {
             cf: { cacheTtl: 900, cacheEverything: false },
           });
         } catch(fetchErr) {
-          return json({ ok: false, error: "Feed fetch failed: " + String(fetchErr.message || fetchErr) }, request, env, 502);
+          wpaLog(env, { t: "rss_fetch_exception", err: String(fetchErr?.message || "fetch failed").slice(0, 120) });
+          return json({ ok: false, error: "Feed fetch failed." }, request, env, 502);
         }
 
         if (!feedResp.ok) {
