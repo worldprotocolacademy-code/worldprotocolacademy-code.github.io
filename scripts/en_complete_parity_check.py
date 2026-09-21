@@ -40,8 +40,32 @@ for n in tree.findall('.//s:url/s:loc',ns):
 canon=[]
 for x in locs:
     if x not in canon: canon.append(x)
-if set(canon)!=set(mk_routes): errors.append('canonical sitemap inventory does not exactly match registry MK public routes')
-if len(canon)!=57: errors.append(f'expected 57 canonical sitemap routes, got {len(canon)}')
+canon_set=set(canon); mk_set=set(mk_routes)
+extra=canon_set-mk_set
+if extra: errors.append('canonical sitemap has routes not present in registry: ' + ', '.join(sorted(extra)))
+missing=mk_set-canon_set
+allowed_noindex_omissions=[]
+for route in sorted(missing):
+    rel=route.lstrip('/')
+    if route.endswith('/'): rel += 'index.html'
+    p=ROOT/rel
+    if not p.exists():
+        errors.append(f'registered MK route missing from sitemap and filesystem: {route}')
+        continue
+    t=p.read_text(encoding='utf-8')
+    meta_tags=re.findall(r'<meta\\b[^>]*>',t,flags=re.I)
+    noindex=any(
+        re.search(r'\\bname\\s*=\\s*["\\\']robots["\\\']',tag,re.I)
+        and re.search(r'\\bcontent\\s*=\\s*["\\\'][^"\\\']*\\bnoindex\\b',tag,re.I)
+        for tag in meta_tags
+    )
+    if noindex:
+        allowed_noindex_omissions.append(route)
+    else:
+        errors.append(f'registered MK route missing from sitemap without noindex: {route}')
+expected_sitemap_count=len(mk_routes)-len(allowed_noindex_omissions)
+if len(canon)!=expected_sitemap_count:
+    errors.append(f'expected {expected_sitemap_count} indexable canonical sitemap routes, got {len(canon)}')
 js=(ROOT/'en/wpa-en-mirror.js').read_text(encoding='utf-8')
 if re.search(r'[\u0400-\u04FF]',js): errors.append('Cyrillic residue in English shared runtime')
 for needle in ("localStorage.setItem('wpa.language','en')","data-wpa-ui-language','en"):
@@ -54,4 +78,4 @@ if errors:
     print('English parity/purity check failed under current registry.')
     for e in errors: print('-',e)
     sys.exit(1)
-print('English public parity/purity OK: 57 registered surfaces; 57 canonical sitemap routes; zero Cyrillic in EN public HTML/runtime.')
+print(f'English public parity/purity OK: 57 registered surfaces; {len(canon)} indexable canonical sitemap routes; {len(allowed_noindex_omissions)} explicit noindex omission(s); zero Cyrillic in EN public HTML/runtime.')
