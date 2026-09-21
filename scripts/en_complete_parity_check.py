@@ -53,10 +53,10 @@ for route in sorted(missing):
         errors.append(f'registered MK route missing from sitemap and filesystem: {route}')
         continue
     t=p.read_text(encoding='utf-8')
-    meta_tags=re.findall(r'<meta\\b[^>]*>',t,flags=re.I)
+    meta_tags=re.findall(r'<meta\b[^>]*>',t,flags=re.I)
     noindex=any(
-        re.search(r'\\bname\\s*=\\s*["\\\']robots["\\\']',tag,re.I)
-        and re.search(r'\\bcontent\\s*=\\s*["\\\'][^"\\\']*\\bnoindex\\b',tag,re.I)
+        re.search(r'\bname\s*=\s*["\']robots["\']',tag,re.I)
+        and re.search(r'\bcontent\s*=\s*["\'][^"\']*\bnoindex\b',tag,re.I)
         for tag in meta_tags
     )
     if noindex:
