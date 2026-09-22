@@ -147,6 +147,26 @@ Required missingness diagnostics:
 
 No imputation, country-average substitution or synthetic zeroing is allowed.
 
+### Stage 8A — Shadow Index stability
+Only after the real scoring model has survived the applicable Pilot 20 reproducibility, fairness, coverage, robustness and anti-gaming tests may WPA generate a **non-public Shadow Index**.
+
+Before that unlock, a clearly synthetic fixture may verify the stability diagnostics engine. Synthetic preflight may test:
+- Spearman rank correlation between baseline and later/stress snapshots;
+- pairwise ordinal reversals;
+- maximum absolute rank shift;
+- absolute and mean score drift;
+- outlier triggers.
+
+Synthetic preflight does **not** unlock G13, does not create a real comparative table and does not justify public ordinal ranking.
+
+For a real Shadow Index:
+- institution names and ordinal positions remain non-public;
+- material instability or unexplained outliers require human investigation;
+- software may flag movement but cannot explain causation conclusively;
+- no release mode changes automatically;
+- G11 correction testing remains a later S6 requirement and therefore is not an unlock prerequisite for S5 Shadow Index;
+- G12 reviewer conflict-of-interest control must be operational before real Shadow Index review.
+
 ### Stage 9 — Correction and contradiction test
 Before consequential use, selected real-institution dossiers must be tested through the correction process.
 
