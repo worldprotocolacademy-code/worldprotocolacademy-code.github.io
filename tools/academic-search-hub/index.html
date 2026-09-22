@@ -567,7 +567,14 @@
         favorite.dataset.sourceName = String(name || "");
         favorite.textContent = isFavorite ? "Remove Favorite" : "⭐ Favorite";
 
-        actions.append(link, favorite);
+        const draft = document.createElement("a");
+        draft.className = "btn secondary";
+        draft.href = "/tools/research-output-builder/?query=" + encodeURIComponent(q) +
+          "&source=" + encodeURIComponent(String(name || "")) +
+          "&url=" + encodeURIComponent(String(url || "") + encoded);
+        draft.textContent = "Create research draft";
+
+        actions.append(link, favorite, draft);
         card.append(heading, meta, description, actions);
         box.appendChild(card);
       });
