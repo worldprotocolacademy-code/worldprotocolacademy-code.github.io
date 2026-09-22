@@ -191,8 +191,30 @@ Synthetic assignment fixtures may verify disclosure → recusal → reassignment
 
 Payment, sponsorship, membership or other benefit cannot improve inclusion, scoring, verification or correction outcomes.
 
+### Stage 9B — Freeze candidate and independent-review chronology
+Before v1.0 can be frozen, WPA may prepare a **freeze candidate** that inventories the exact candidate methodology, scoring/evidence schemas, correction procedure and governance inputs.
+
+The freeze candidate:
+- is not Protocolometry v1.0;
+- may use repository fingerprints to detect candidate drift;
+- may expose SHA-256 preview hashes for auditability;
+- remains editable through a versioned changelog while validation and independent review are open;
+- cannot activate any public release mode.
+
+Operational order:
+1. prepare the G14 freeze candidate;
+2. conduct G15 independent methodological review after formal constitution/authorisation and COI declaration;
+3. apply and log accepted review changes;
+4. complete any outstanding real correction/validation evidence required for final closure;
+5. generate the final SHA-256 lockfile;
+6. close G14 through an authorised human v1.0 freeze decision;
+7. only then proceed to the separate G16 publication decision.
+
+Gate numbering is therefore not a claim that final G14 closure occurs before G15 review. G14 has a candidate-preparation phase and a later final-closure phase.
+
 ### Stage 10 — v1.0 Human Gate
 Freeze v1.0 only after:
+- a freeze-candidate manifest and changelog exist;
 - coverage review is documented;
 - indicator-gap review is complete;
 - double-scoring reliability is acceptable or limitations are explicit;
@@ -201,7 +223,10 @@ Freeze v1.0 only after:
 - evidence thresholds are tested;
 - correction/COI procedure is operational;
 - AAB or equivalent independent methodological review is completed after formal constitution;
-- exact definitions, formulas, weights, dataset snapshot date and changelog are frozen.
+- G15 independent methodological review is completed and accepted changes are applied;
+- exact definitions, formulas, weights, dataset snapshot date and changelog are frozen;
+- final SHA-256 checksums are generated only after all accepted changes;
+- an authorised human G14 freeze decision record is signed.
 
 ## Required validation outputs
 
