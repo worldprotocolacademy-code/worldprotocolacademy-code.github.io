@@ -14,6 +14,8 @@ on:
       - 'data/wpa-index-correction-log.json'
       - 'data/master-list-verification-status.json'
       - 'data/institute-index/**'
+      - 'wpa-metrics-status.html'
+      - 'institute.html'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -40,6 +42,7 @@ jobs:
           from pathlib import Path
           root=Path('.')
           chain=json.loads((root/'data/institute-index/measurement-chain-status.json').read_text(encoding='utf-8'))
+          g01=json.loads((root/'data/institute-index/g01-universe-control.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -59,6 +62,17 @@ jobs:
           assert chain['readiness']['not_started']==counts.get('NOT_STARTED',0)
           assert chain['readiness']['locked']==counts.get('LOCKED',0)
           assert chain['readiness']['current_release_mode']=='R0'
+          assert g01['status']=='IN_PROGRESS'
+          assert g01['canonical_baseline']['version']=='v1.0-CORRECTED-4F-REV7'
+          assert g01['canonical_baseline']['total_records']==250
+          assert g01['scoring_pilot_control']['scoring_pilot_snapshot_exists'] is False
+          assert g01['scoring_pilot_control']['pilot_ids_frozen'] is False
+          assert g01['scoring_pilot_control']['direct_rev7_crosswalks_among_completed_dossiers']==2
+          assert g01['scoring_pilot_control']['completed_dossiers_without_direct_rev7_crosswalk']==4
+          assert g01['scoring_pilot_control']['resolution_before_dossier_cases']==7
+          gate1=next(x for x in gates['gates'] if x['id']=='G01')
+          assert gate1['status']=='IN_PROGRESS'
+          assert gate1['evidence']=='/data/institute-index/g01-universe-control.json'
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -84,6 +98,8 @@ jobs:
             'center':Path('protocolometry-center.html').read_text(encoding='utf-8'),
             'form':Path('forms/wpa-index-correction-request-form.md').read_text(encoding='utf-8'),
             'disc':Path('forms/wpa-index-public-disclaimer.md').read_text(encoding='utf-8'),
+            'metrics':Path('wpa-metrics-status.html').read_text(encoding='utf-8'),
+            'institute':Path('institute.html').read_text(encoding='utf-8'),
           }
           assert 'wpa-index-appeals-and-corrections.html' in files['verification']
           assert 'wpa-institute-index-lab.html' in files['verification']
@@ -102,12 +118,27 @@ jobs:
           assert 'wpa-institute-index-lab.html' in files['center']
           assert 'wpa-index-appeals-and-corrections.html' in files['center']
           assert 'wpa_watch_count: "—"' in files['center']
+          assert 'Master List REV7 counts' in files['metrics']
+          assert '<h2>2. Master List REV7</h2>' in files['metrics']
+          assert '<strong id="masterTotal">250</strong>' in files['metrics']
+          assert '<strong id="externalTotal">249</strong>' in files['metrics']
+          assert '<strong id="distinctTotal">241</strong>' in files['metrics']
+          assert 'REV7 group counts:</strong> A87 · B35 · C25 · D34 · G25 · H38 · I5 · R1 = 250' in files['metrics']
+          assert 'Master List REV7 · 250 records · 249 external records · 241 distinct external institutions' in files['institute']
+          for needle in ['>87 records<','>35 records<','>34 records<','>38 records<']:
+            assert needle in files['institute']
+          assert "g.evidence" in files['lab']
+          assert 'G01 · Universe Control' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
             ('form','Current REV2 group'),
             ('disc','**162 total records**'),
             ('strategy','REV3 canonical baseline'),
+            ('metrics','Master List REV6'),
+            ('metrics','REV4 group counts'),
+            ('institute','Master List REV6 · 250 records'),
+            ('institute','E and F are not used in REV2'),
           ]
           for key,needle in stale:
             if needle in files[key]:
@@ -135,6 +166,7 @@ jobs:
       - name: JSON syntax
         run: |
           python -m json.tool data/institute-index/measurement-chain-status.json >/dev/null
+          python -m json.tool data/institute-index/g01-universe-control.json >/dev/null
           python -m json.tool data/institute-index/v1-readiness-gates.json >/dev/null
           python -m json.tool data/institute-index/protocolometry-v1-execution-blueprint.json >/dev/null
           python -m json.tool data/wpa-index-correction-log.json >/dev/null

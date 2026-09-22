@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G01",
+  "gate_name": "Universe control",
+  "status": "IN_PROGRESS",
+  "substatus": "REV7_BASELINE_CONTROLLED__SCORING_PILOT_UNIVERSE_NOT_FROZEN",
+  "pass_rule": "REV7 canonical baseline frozen; current entity-resolution and successor/branch rules documented; no unresolved duplicate materially affects the controlled scoring universe.",
+  "canonical_baseline": {
+    "version": "v1.0-CORRECTED-4F-REV7",
+    "source": "/MASTER-LIST-CANONICAL.md",
+    "dataset": "/data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json",
+    "total_records": 250,
+    "external_records": 249,
+    "distinct_external_institutions": 241,
+    "group_counts": {
+      "A": 87,
+      "B": 35,
+      "C": 25,
+      "D": 34,
+      "G": 25,
+      "H": 38,
+      "I": 5,
+      "R": 1
+    },
+    "status": "CONTROLLED_BASELINE"
+  },
+  "entity_resolution_controls": {
+    "successor_predecessor_aliases_do_not_create_duplicate_current_entities": true,
+    "branch_child_records_may_remain_audit_visible_without_counting_as_distinct": true,
+    "unresolved_watchlist_records_excluded_from_canonical_counts": true,
+    "current_watchlist_range": "W001-W017",
+    "scoring_rule": "A scoring-pilot institution must have a resolved identity and a documented canonical crosswalk or an explicit controlled-validation exception approved before scoring."
+  },
+  "completed_first_pass_dossier_crosswalk": [
+    {
+      "dossier_id": "COV001",
+      "institution": "MFA Diplomatic Academy",
+      "country": "Singapore",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "NO_DIRECT_CANONICAL_MATCH",
+      "canonical_record_id": null,
+      "universe_identity_ready": false,
+      "note": "First-pass dossier remains methodology-development evidence only until entity/canonical crosswalk is resolved."
+    },
+    {
+      "dossier_id": "COV005",
+      "institution": "Diplomatic Academy of the Ministry of Foreign Affairs",
+      "country": "Poland",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "NO_DIRECT_CANONICAL_MATCH",
+      "canonical_record_id": null,
+      "universe_identity_ready": false,
+      "note": "REV7 contains other Polish institutions, but no direct canonical match for this dossier identity."
+    },
+    {
+      "dossier_id": "COV006",
+      "institution": "Foreign Service Academy",
+      "country": "Kenya",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "DIRECT_CANONICAL_MATCH_PENDING_HUMAN_REVIEW",
+      "canonical_record_id": "A045",
+      "universe_identity_ready": true,
+      "note": "Direct REV7 match: Foreign Service Academy (Kenya). Dossier human review remains pending under G02."
+    },
+    {
+      "dossier_id": "COV009",
+      "institution": "Diplomatic Institute, Ministry of Foreign Affairs",
+      "country": "Qatar",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "NO_DIRECT_CANONICAL_MATCH",
+      "canonical_record_id": null,
+      "universe_identity_ready": false,
+      "note": "No Qatar record is present in REV7; canonical inclusion/crosswalk remains unresolved."
+    },
+    {
+      "dossier_id": "COV037",
+      "institution": "Devawongse Varopakarn Institute of Foreign Affairs (DVIFA)",
+      "country": "Thailand",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "NO_DIRECT_CANONICAL_MATCH",
+      "canonical_record_id": null,
+      "universe_identity_ready": false,
+      "note": "REV7 contains a Thailand university record but no direct DVIFA canonical record."
+    },
+    {
+      "dossier_id": "COV043",
+      "institution": "Academia Diplomática del Perú Javier Pérez de Cuéllar",
+      "country": "Peru",
+      "dossier_entity_status": "CANDIDATE",
+      "rev7_match_status": "DIRECT_CANONICAL_MATCH_PENDING_HUMAN_REVIEW",
+      "canonical_record_id": "A074",
+      "universe_identity_ready": true,
+      "note": "Exact REV7 canonical identity match. Dossier human review remains pending under G02."
+    }
+  ],
+  "resolution_before_dossier": [
+    {
+      "id": "COV025",
+      "country": "Cyprus",
+      "status": "UNRESOLVED",
+      "issue": "obtain fuller current academy mandate/programme source before evidence mapping"
+    },
+    {
+      "id": "COV026",
+      "country": "Moldova",
+      "status": "UNRESOLVED",
+      "issue": "confirm current organisational form"
+    },
+    {
+      "id": "COV027",
+      "country": "Albania",
+      "status": "UNRESOLVED",
+      "issue": "primary-source confirmation required"
+    },
+    {
+      "id": "COV034",
+      "country": "Oman",
+      "status": "UNRESOLVED",
+      "issue": "resolve current first-party institute page"
+    },
+    {
+      "id": "COV049",
+      "country": "Bolivia",
+      "status": "UNRESOLVED",
+      "issue": "current primary source required"
+    },
+    {
+      "id": "COV050",
+      "country": "Costa Rica",
+      "status": "UNRESOLVED",
+      "issue": "resolve current entity name and source"
+    },
+    {
+      "id": "COV051",
+      "country": "Venezuela",
+      "status": "UNRESOLVED",
+      "issue": "resolve current successor/entity name and source"
+    }
+  ],
+  "scoring_pilot_control": {
+    "protocol": "/data/institute-index/pilot-20-selection-protocol.json",
+    "scoring_pilot_snapshot_exists": false,
+    "pilot_ids_frozen": false,
+    "direct_rev7_crosswalks_among_completed_dossiers": 2,
+    "completed_dossiers_without_direct_rev7_crosswalk": 4,
+    "resolution_before_dossier_cases": 7,
+    "current_identity_ready_pool_from_completed_dossiers": 2,
+    "status": "NOT_READY_TO_FREEZE_PILOT_20"
+  },
+  "blockers_to_pass": [
+    "Resolve or formally withhold candidate dossier identities that could enter the scoring universe.",
+    "Reconcile the seven resolution-before-dossier cases against REV7 or document exclusion/withhold decisions.",
+    "Build an eligible resolved pool large and balanced enough for the published Pilot 20 selection protocol.",
+    "Freeze the 20 scoring-pilot institution IDs before any independent scoring begins.",
+    "Confirm that no unresolved duplicate, successor, branch or alias affects any selected scoring-pilot institution."
+  ],
+  "separation_rule": "The validated Master List Pilot 20 evidence package is not the Protocolometry scoring Pilot 20 and does not satisfy G01 pilot-universe freeze by itself.",
+  "human_gate": "G01 may move to PASSED only after the controlled scoring universe and Pilot 20 IDs are frozen with documented human-governed entity-resolution decisions."
+}
