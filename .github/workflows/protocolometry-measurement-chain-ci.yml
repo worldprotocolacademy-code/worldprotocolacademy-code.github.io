@@ -16,6 +16,7 @@ on:
       - 'data/institute-index/**'
       - 'wpa-metrics-status.html'
       - 'institute.html'
+      - 'scripts/protocolometry-reliability.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -44,6 +45,8 @@ jobs:
           chain=json.loads((root/'data/institute-index/measurement-chain-status.json').read_text(encoding='utf-8'))
           g01=json.loads((root/'data/institute-index/g01-universe-control.json').read_text(encoding='utf-8'))
           g02=json.loads((root/'data/institute-index/g02-evidence-corpus.json').read_text(encoding='utf-8'))
+          g03=json.loads((root/'data/institute-index/g03-scoring-reproducibility.json').read_text(encoding='utf-8'))
+          g04=json.loads((root/'data/institute-index/g04-inter-rater-reliability.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -84,6 +87,19 @@ jobs:
           assert g02['corpus_summary']['coverage_ready']==1
           assert g02['corpus_summary']['authorised_human_review_completed']==0
           assert g02['corpus_summary']['method_test_ready']==0
+          gate3=next(x for x in gates['gates'] if x['id']=='G03')
+          gate4=next(x for x in gates['gates'] if x['id']=='G04')
+          assert gate3['status']=='NOT_STARTED'
+          assert gate4['status']=='NOT_STARTED'
+          assert gate3['substatus']=='PREPARED_FOR_CONTROLLED_PILOT__BLOCKED_BY_G01_G02'
+          assert gate4['substatus']=='DIAGNOSTIC_ENGINE_PREPARED_SYNTHETICALLY__NO_REAL_PILOT_DATA'
+          assert gate3['evidence']=='/data/institute-index/g03-scoring-reproducibility.json'
+          assert gate4['evidence']=='/data/institute-index/g04-inter-rater-reliability.json'
+          assert g03['status']=='NOT_STARTED'
+          assert g04['status']=='NOT_STARTED'
+          assert g03['prerequisites']['current_method_test_ready_dossiers']==0
+          assert g03['synthetic_preflight']['real_institutions_used'] is False
+          assert g04['interpretation_rule'].startswith('Diagnostics are descriptive')
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -142,6 +158,11 @@ jobs:
           assert 'G01 · Universe Control' in files['strategy']
           assert 'G02 · Evidence Corpus' in files['strategy']
           assert '/data/institute-index/g02-evidence-corpus.json' in files['lab']
+          assert '/data/institute-index/g03-scoring-reproducibility.json' in files['lab']
+          assert '/data/institute-index/g04-inter-rater-reliability.json' in files['lab']
+          assert 'G03 · Scoring Reproducibility' in files['strategy']
+          assert 'G04 · Inter-rater Reliability' in files['strategy']
+          assert 'No automatic reliability pass threshold exists' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -219,6 +240,50 @@ jobs:
           print('completed dossier corpus: PASS')
           PY
 
+      - name: Validate synthetic G03/G04 reproducibility preflight
+        run: |
+          node --check scripts/protocolometry-reliability.mjs
+          node scripts/protocolometry-reliability.mjs             data/institute-index/fixtures/g03-g04-synthetic-pass1.json             data/institute-index/fixtures/g03-g04-synthetic-pass2.json             > /tmp/g03-g04-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root=Path('.')
+          actual=json.loads(Path('/tmp/g03-g04-report.json').read_text(encoding='utf-8'))
+          expected=json.loads((root/'data/institute-index/fixtures/g03-g04-synthetic-preflight-report.json').read_text(encoding='utf-8'))
+          schema=json.loads((root/'data/institute-index/scoring-record.schema.json').read_text(encoding='utf-8'))
+
+          assert actual['synthetic_fixture'] is True
+          assert actual['metrics']==expected['metrics']
+          for dim in ['D1','D2','D3','D4']:
+              assert actual['dimensions'][dim]==expected['dimensions'][dim]
+          assert actual['pass_1_ne_frequency']['count']==expected['pass_1_ne_frequency']['count']
+          assert actual['pass_1_ne_frequency']['percent']==expected['pass_1_ne_frequency']['percent']
+          assert actual['pass_2_ne_frequency']['count']==expected['pass_2_ne_frequency']['count']
+          assert actual['pass_2_ne_frequency']['percent']==expected['pass_2_ne_frequency']['percent']
+          assert actual['high_score_evidence_tiers']==expected['high_score_evidence_tiers']
+          assert [x['indicator_id'] for x in actual['disagreements']]==expected['disagreement_indicators']
+          assert [x['indicator_id'] for x in actual['disagreements'] if x['material']]==expected['material_disagreement_indicators']
+          assert all(x['reconciliation_status']=='PENDING_HUMAN_RECONCILIATION' for x in actual['disagreements'])
+          assert schema['properties']['scoring_lock']['properties']['other_pass_visible_before_lock']['const'] is False
+          assert 'assessor_id' in schema['required']
+          assert 'scoring_lock' in schema['required']
+
+          for p in [
+              root/'data/institute-index/fixtures/g03-g04-synthetic-pass1.json',
+              root/'data/institute-index/fixtures/g03-g04-synthetic-pass2.json'
+          ]:
+              x=json.loads(p.read_text(encoding='utf-8'))
+              assert x['synthetic_fixture'] is True
+              assert x['public_release_prohibited'] is True
+              assert x['scoring_lock']['locked'] is True
+              assert x['scoring_lock']['other_pass_visible_before_lock'] is False
+              assert x['human_review']['completed'] is False
+              assert x['public_ordinal_rank'] is None
+
+          print('G03/G04 synthetic reproducibility preflight: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -241,6 +306,12 @@ jobs:
           python -m json.tool data/institute-index/measurement-chain-status.json >/dev/null
           python -m json.tool data/institute-index/g01-universe-control.json >/dev/null
           python -m json.tool data/institute-index/g02-evidence-corpus.json >/dev/null
+          python -m json.tool data/institute-index/g03-scoring-reproducibility.json >/dev/null
+          python -m json.tool data/institute-index/g04-inter-rater-reliability.json >/dev/null
+          python -m json.tool data/institute-index/scoring-record.schema.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g03-g04-synthetic-pass1.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g03-g04-synthetic-pass2.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g03-g04-synthetic-preflight-report.json >/dev/null
           python -m json.tool data/institute-index/institution-evidence-dossier.schema.json >/dev/null
           python -m json.tool data/institute-index/v1-readiness-gates.json >/dev/null
           python -m json.tool data/institute-index/protocolometry-v1-execution-blueprint.json >/dev/null
