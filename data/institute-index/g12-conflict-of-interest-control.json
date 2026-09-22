@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G12",
+  "gate_name": "Conflict-of-interest control",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_DISCLOSURE_RECUSAL_REASSIGNMENT_PREPARED__REAL_ASSIGNMENT_TEST_PENDING",
+  "pass_rule": "Reviewer COI rules operational and tested; institutional relationships cannot affect inclusion, scoring or correction outcomes.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-correction-coi.mjs",
+    "fixture": "/data/institute-index/fixtures/g12-coi-recusal-synthetic.json"
+  },
+  "synthetic_expectations": {
+    "cases": 6,
+    "recusals_required": 5,
+    "eligible_without_recusal": 1,
+    "replacement_reviewer_eligible": true
+  },
+  "control_contract": {
+    "disclosure_required": true,
+    "recusal_recorded": true,
+    "reassignment_required_for_material_conflict": true,
+    "concealment_prohibited": true,
+    "payment_cannot_influence_outcome": true,
+    "automatic_misconduct_inference": false
+  },
+  "blockers_to_start": [
+    "AAB remains in FORMATION_PHASE",
+    "no real Protocolometry reviewer assignment has exercised disclosure and recusal",
+    "no real replacement-reviewer handoff has been tested",
+    "no authorised human governance review has closed a real COI test"
+  ],
+  "human_gate": "Conflict controls determine reviewer eligibility/recusal, not guilt; final governance remains human."
+}
