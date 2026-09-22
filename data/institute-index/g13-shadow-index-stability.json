@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G13",
+  "gate_name": "Shadow Index stability",
+  "status": "LOCKED",
+  "substatus": "SYNTHETIC_STABILITY_ENGINE_PREPARED__REAL_SHADOW_INDEX_PROHIBITED_UNTIL_VALIDATION",
+  "pass_rule": "Non-public comparative output generated and stress-tested; material ordinal instability or unexplained outliers are resolved or disclosed.",
+  "unlock_conditions": [
+    "G01 scoring universe passed and Pilot 20 IDs frozen",
+    "G02 Pilot 20 dossier corpus approved for method testing",
+    "G03/G04 real independent scoring and reconciliation completed",
+    "G05-G10 real robustness/fairness/anti-gaming validation completed",
+    "G12 operational COI controls exercised for real reviewers",
+    "validated reconciled Pilot 20 score corpus available"
+  ],
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-shadow-stability.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json"
+  },
+  "diagnostics": [
+    "Spearman rank correlation",
+    "pairwise reversal count and rate",
+    "absolute rank shift",
+    "absolute and mean score drift",
+    "outlier detection"
+  ],
+  "synthetic_expectations": {
+    "stable_scenario": {
+      "spearman_rho": 1,
+      "pairwise_reversal_count": 0,
+      "max_absolute_rank_shift": 0,
+      "human_review_required": false
+    },
+    "unstable_scenario": {
+      "spearman_rho": 0.142857,
+      "pairwise_reversal_count": 5,
+      "pairwise_reversal_rate_percent": 33.3333,
+      "max_absolute_rank_shift": 5,
+      "max_absolute_score_delta": 12,
+      "outlier_count": 1,
+      "human_review_required": true
+    }
+  },
+  "hard_boundaries": {
+    "real_institution_shadow_table_allowed": false,
+    "public_ordinal_output_allowed": false,
+    "automatic_gate_unlock": false,
+    "automatic_release_mode_change": false,
+    "current_release_mode": "R0"
+  },
+  "interpretation_rule": "Synthetic preflight proves only that instability can be detected. G13 remains LOCKED until upstream real-data validation prerequisites are satisfied and an authorised human decision explicitly unlocks the non-public Shadow Index stage.",
+  "human_gate": "Software may flag instability or outliers but cannot explain them conclusively, unlock G13, or publish any comparative result."
+}
