@@ -43,6 +43,7 @@ jobs:
           root=Path('.')
           chain=json.loads((root/'data/institute-index/measurement-chain-status.json').read_text(encoding='utf-8'))
           g01=json.loads((root/'data/institute-index/g01-universe-control.json').read_text(encoding='utf-8'))
+          g02=json.loads((root/'data/institute-index/g02-evidence-corpus.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -73,6 +74,16 @@ jobs:
           gate1=next(x for x in gates['gates'] if x['id']=='G01')
           assert gate1['status']=='IN_PROGRESS'
           assert gate1['evidence']=='/data/institute-index/g01-universe-control.json'
+          gate2=next(x for x in gates['gates'] if x['id']=='G02')
+          assert gate2['status']=='IN_PROGRESS'
+          assert gate2['evidence']=='/data/institute-index/g02-evidence-corpus.json'
+          assert g02['corpus_summary']['completed_first_pass_dossiers']==6
+          assert g02['corpus_summary']['structural_precheck_pass']==6
+          assert g02['corpus_summary']['provenance_precheck_pass']==6
+          assert g02['corpus_summary']['direct_rev7_identity_ready']==2
+          assert g02['corpus_summary']['coverage_ready']==1
+          assert g02['corpus_summary']['authorised_human_review_completed']==0
+          assert g02['corpus_summary']['method_test_ready']==0
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -129,6 +140,8 @@ jobs:
             assert needle in files['institute']
           assert "g.evidence" in files['lab']
           assert 'G01 · Universe Control' in files['strategy']
+          assert 'G02 · Evidence Corpus' in files['strategy']
+          assert '/data/institute-index/g02-evidence-corpus.json' in files['lab']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -144,6 +157,66 @@ jobs:
             if needle in files[key]:
               raise SystemExit(f'stale governance text remains in {key}: {needle}')
           print('public governance chain: PASS')
+          PY
+
+      - name: Validate completed dossier corpus
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root=Path('.')
+          method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
+          registry=json.loads((root/'data/institute-index/dossier-registry-and-queue.json').read_text(encoding='utf-8'))
+          g02=json.loads((root/'data/institute-index/g02-evidence-corpus.json').read_text(encoding='utf-8'))
+
+          weights={}
+          dim_of={}
+          dim_possible={}
+          for d in method['dimensions']:
+              dim_possible[d['id']]=d['provisional_weight_percent']
+              for i in d['indicators']:
+                  weights[i['id']]=d['indicator_weight_percent']
+                  dim_of[i['id']]=d['id']
+
+          expected=[f'I{n:02d}' for n in range(1,21)]
+          audit_by_id={x['dossier_id']:x for x in g02['dossiers']}
+
+          for row in registry['completed_first_pass_dossiers']:
+              path=root/row['path'].lstrip('/')
+              d=json.loads(path.read_text(encoding='utf-8'))
+              assert d['dossier_version']=='0.1-candidate'
+              assert d['public_evidence_only'] is True
+              assert d['entity_resolution_status']
+              assert d['agent_trace']['access_boundaries_respected'] is True
+              assert d['human_review']['reviewer_authority_required'] is True
+              ids=[x['indicator_id'] for x in d['indicator_evidence']]
+              assert sorted(ids)==expected
+              assert len(set(ids))==20
+              source_ids={s['source_id'] for s in d['source_register']}
+              assert len(source_ids)>=1
+              for s in d['source_register']:
+                  assert s['source_tier'] in {'A','B','C','D'}
+                  assert s['url'].startswith('https://')
+                  assert s['supports']
+              total=0
+              dims={k:0 for k in dim_possible}
+              for e in d['indicator_evidence']:
+                  assert e['human_score_status'] in {'NOT_REVIEWED','ACCEPTED','REVISED','WITHHELD'}
+                  refs=e['source_ids']
+                  assert all(x in source_ids for x in refs)
+                  if e['evidence_status']=='NE':
+                      assert refs==[]
+                  else:
+                      assert refs
+                      total += weights[e['indicator_id']]
+                      dims[dim_of[e['indicator_id']]] += weights[e['indicator_id']]
+              dim_pct={k:round(100*v/dim_possible[k],1) for k,v in dims.items()}
+              audit=audit_by_id[d['institution_id']]
+              assert audit['weighted_evidence_coverage_percent']==total
+              assert audit['dimension_coverage_percent']==dim_pct
+
+          print('completed dossier corpus: PASS')
           PY
 
       - name: JavaScript syntax extraction checks
@@ -167,6 +240,8 @@ jobs:
         run: |
           python -m json.tool data/institute-index/measurement-chain-status.json >/dev/null
           python -m json.tool data/institute-index/g01-universe-control.json >/dev/null
+          python -m json.tool data/institute-index/g02-evidence-corpus.json >/dev/null
+          python -m json.tool data/institute-index/institution-evidence-dossier.schema.json >/dev/null
           python -m json.tool data/institute-index/v1-readiness-gates.json >/dev/null
           python -m json.tool data/institute-index/protocolometry-v1-execution-blueprint.json >/dev/null
           python -m json.tool data/wpa-index-correction-log.json >/dev/null
