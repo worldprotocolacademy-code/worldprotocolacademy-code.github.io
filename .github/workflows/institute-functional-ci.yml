@@ -1,0 +1,74 @@
+name: WPA Institute Functional CI
+
+on:
+  pull_request:
+    paths:
+      - 'institute.html'
+      - 'practitioner-lectures/**'
+      - 'tools/institute-function-console/**'
+      - 'data/wpa-institute-functional-registry.json'
+      - 'data/wpa-module-registry.json'
+      - 'data/wpa-public-evidence-index.json'
+      - 'scripts/audit-institute-functionality.mjs'
+      - '.github/workflows/institute-functional-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'institute.html'
+      - 'practitioner-lectures/**'
+      - 'tools/institute-function-console/**'
+      - 'data/wpa-institute-functional-registry.json'
+      - 'data/wpa-module-registry.json'
+      - 'data/wpa-public-evidence-index.json'
+      - 'scripts/audit-institute-functionality.mjs'
+      - '.github/workflows/institute-functional-ci.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax checks
+        run: |
+          node --check scripts/audit-institute-functionality.mjs
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          for p in ['tools/institute-function-console/index.html','practitioner-lectures/index.html']:
+              html=Path(p).read_text(encoding='utf-8')
+              scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+              assert scripts, f'inline JS missing: {p}'
+              out=Path('/tmp')/(Path(p).parent.name+'.js')
+              out.write_text('\n'.join(scripts),encoding='utf-8')
+              print(out)
+          PY
+          node --check /tmp/institute-function-console.js
+          node --check /tmp/practitioner-lectures.js
+
+      - name: Audit Institute functional registry and routes
+        run: node scripts/audit-institute-functionality.mjs
+
+      - name: Validate machine-readable assets
+        run: |
+          python -m json.tool data/wpa-institute-functional-registry.json >/dev/null
+          python -m json.tool data/wpa-module-registry.json >/dev/null
+          python -m json.tool data/wpa-public-evidence-index.json >/dev/null
+
+      - name: Governance boundaries
+        run: |
+          grep -F 'DRAFT · NOT AN INVITATION' practitioner-lectures/index.html
+          grep -F 'No recording consent yet' practitioner-lectures/index.html
+          grep -F 'automatic payment collection' data/wpa-institute-functional-registry.json
+          grep -F 'automatic ordinal institutional ranking' data/wpa-institute-functional-registry.json
+          grep -F 'Open Function Console' institute.html
+          grep -F 'Open AAB Governance' institute.html
+          grep -F 'Open Benchmark Workspace' institute.html
+          grep -F 'Build Practitioner Lecture Brief' institute.html
+          grep -F 'Open Live Metrics & Status' institute.html
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
