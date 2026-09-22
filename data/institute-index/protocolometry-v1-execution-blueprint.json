@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0-candidate",
-  "updated": "2026-08-27",
+  "updated": "2026-09-22",
   "status": "ACTIVE_PRE_V1_EXECUTION_BLUEPRINT",
   "title": "WPA Protocolometry / Institute Index v1.0 Execution Blueprint",
   "purpose": "Operationalise the WPA measurement and future ranking strategy from global institutional discovery through evidence dossiers, scoring validation, shadow comparison, human governance and an optional later public ordinal release.",
@@ -35,72 +35,144 @@
       "stage": "S0",
       "name": "Universe and entity resolution",
       "status": "ACTIVE",
-      "inputs": ["REV3 frozen canonical baseline", "REV4 coverage cases", "official/authoritative public sources"],
-      "outputs": ["resolved institution identity", "peer type candidate", "duplicate/successor/branch decision", "canonical merge recommendation"],
+      "inputs": [
+        "REV7 canonical institutional corpus",
+        "controlled legacy coverage/entity-review cases",
+        "official/authoritative public sources"
+      ],
+      "outputs": [
+        "resolved institution identity",
+        "peer type candidate",
+        "duplicate/successor/branch decision",
+        "canonical merge recommendation"
+      ],
       "release_effect": "No score and no rank"
     },
     {
       "stage": "S1",
       "name": "Evidence Dossier factory",
       "status": "ACTIVE",
-      "inputs": ["resolved institution", "public source register", "I01-I20 methodology"],
-      "outputs": ["institutional core", "source register", "I01-I20 evidence statuses", "uncertainty register"],
+      "inputs": [
+        "resolved institution",
+        "public source register",
+        "I01-I20 methodology"
+      ],
+      "outputs": [
+        "institutional core",
+        "source register",
+        "I01-I20 evidence statuses",
+        "uncertainty register"
+      ],
       "release_effect": "Evidence preparation only"
     },
     {
       "stage": "S2",
       "name": "Independent double scoring",
       "status": "NOT_STARTED",
-      "inputs": ["human-reviewable completed dossiers"],
-      "outputs": ["two independent candidate score vectors", "disagreement log", "reconciliation record"],
+      "inputs": [
+        "human-reviewable completed dossiers"
+      ],
+      "outputs": [
+        "two independent candidate score vectors",
+        "disagreement log",
+        "reconciliation record"
+      ],
       "release_effect": "Internal candidate scoring only"
     },
     {
       "stage": "S3",
       "name": "Calibration and fairness",
       "status": "NOT_STARTED",
-      "inputs": ["Pilot 20 double-scored cases"],
-      "outputs": ["anchor consistency results", "peer-type fairness review", "small/specialist institution edge-case review", "source-quality bias review"],
+      "inputs": [
+        "Pilot 20 double-scored cases"
+      ],
+      "outputs": [
+        "anchor consistency results",
+        "peer-type fairness review",
+        "small/specialist institution edge-case review",
+        "source-quality bias review"
+      ],
       "release_effect": "No public ordinal rank"
     },
     {
       "stage": "S4",
       "name": "Robustness and sensitivity",
       "status": "NOT_STARTED",
-      "inputs": ["Pilot 20 reconciled scores"],
-      "outputs": ["weight sensitivity", "indicator correlation/redundancy", "rank-order stability diagnostic", "evidence-threshold stress test"],
+      "inputs": [
+        "Pilot 20 reconciled scores"
+      ],
+      "outputs": [
+        "weight sensitivity",
+        "indicator correlation/redundancy",
+        "rank-order stability diagnostic",
+        "evidence-threshold stress test"
+      ],
       "release_effect": "Shadow comparison only"
     },
     {
       "stage": "S5",
       "name": "Shadow Index",
       "status": "LOCKED",
-      "inputs": ["validated scoring model", "reviewed real-institution dossiers"],
-      "outputs": ["non-public comparative table", "score dispersion", "peer-type distributions", "outlier/contradiction review"],
+      "inputs": [
+        "validated scoring model",
+        "reviewed real-institution dossiers"
+      ],
+      "outputs": [
+        "non-public comparative table",
+        "score dispersion",
+        "peer-type distributions",
+        "outlier/contradiction review"
+      ],
       "release_effect": "Names and ordinal positions remain non-public"
     },
     {
       "stage": "S6",
       "name": "Correction and institution review window",
       "status": "LOCKED",
-      "inputs": ["reviewed scorecards", "evidence snapshots"],
-      "outputs": ["factual correction log", "accepted/rejected evidence decisions", "versioned score changes where justified"],
+      "inputs": [
+        "reviewed scorecards",
+        "evidence snapshots"
+      ],
+      "outputs": [
+        "factual correction log",
+        "accepted/rejected evidence decisions",
+        "versioned score changes where justified"
+      ],
       "release_effect": "No public ordinal rank until correction window closes"
     },
     {
       "stage": "S7",
       "name": "v1.0 methodology freeze",
       "status": "LOCKED",
-      "inputs": ["validation results", "correction test results", "governance review"],
-      "outputs": ["frozen definitions", "frozen weights", "frozen formulas", "source rules", "dataset snapshot rule", "changelog", "appeals procedure"],
+      "inputs": [
+        "validation results",
+        "correction test results",
+        "governance review"
+      ],
+      "outputs": [
+        "frozen definitions",
+        "frozen weights",
+        "frozen formulas",
+        "source rules",
+        "dataset snapshot rule",
+        "changelog",
+        "appeals procedure"
+      ],
       "release_effect": "Creates v1.0 eligibility, not automatic ranking publication"
     },
     {
       "stage": "S8",
       "name": "Public release decision",
       "status": "LOCKED",
-      "inputs": ["all readiness gates passed", "formal human governance decision"],
-      "outputs": ["scorecard-only release", "banded comparison release", "or ordinal ranking release"],
+      "inputs": [
+        "all readiness gates passed",
+        "formal human governance decision"
+      ],
+      "outputs": [
+        "scorecard-only release",
+        "banded comparison release",
+        "or ordinal ranking release"
+      ],
       "release_effect": "Consequential publication only if explicitly authorised"
     }
   ],
@@ -115,17 +187,19 @@
     "Do not allow paid relationships, sponsorship, partnerships or participation fees to affect inclusion, scoring or correction decisions."
   ],
   "current_state": {
-    "canonical_baseline_total_records": 161,
-    "canonical_baseline_external_records": 160,
-    "canonical_baseline_distinct_external_institutions": 155,
-    "rev4_candidate_or_entity_review_cases": 51,
+    "canonical_baseline_version": "v1.0-CORRECTED-4F-REV7",
+    "canonical_baseline_total_records": 250,
+    "canonical_baseline_external_records": 249,
+    "canonical_baseline_distinct_external_institutions": 241,
+    "legacy_rev4_coverage_validation_cases": 51,
     "first_pass_dossiers": 6,
     "queued_for_dossier": 38,
     "entity_resolution_first": 7,
-    "public_ordinal_ranking": false
+    "public_ordinal_ranking": false,
+    "current_release_mode": "R0"
   },
   "next_operational_milestones": [
-    "Complete the seven entity-resolution-first cases sufficiently for dossier eligibility or documented exclusion/withhold.",
+    "Reconcile the seven legacy entity-resolution-first coverage cases against the current REV7 corpus before using them for scoring eligibility.",
     "Complete the remaining thirty-eight first-pass Evidence Dossiers.",
     "Select a balanced Pilot 20 from the resolved dossier universe using the published pilot-selection protocol.",
     "Run two independent scoring passes on Pilot 20.",
