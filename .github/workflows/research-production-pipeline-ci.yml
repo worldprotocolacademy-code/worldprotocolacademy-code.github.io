@@ -1,0 +1,113 @@
+name: Research Production Pipeline CI
+
+on:
+  pull_request:
+    paths:
+      - 'institute.html'
+      - 'tools/research-output-builder/**'
+      - 'tools/academic-search-hub/**'
+      - 'tools/wpa-watch/**'
+      - 'journal/watch/**'
+      - 'data/research-production-pipeline-status.json'
+      - 'data/wpa-public-evidence-index.json'
+      - '.github/workflows/research-production-pipeline-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'institute.html'
+      - 'tools/research-output-builder/**'
+      - 'tools/academic-search-hub/**'
+      - 'tools/wpa-watch/**'
+      - 'journal/watch/**'
+      - 'data/research-production-pipeline-status.json'
+      - 'data/wpa-public-evidence-index.json'
+      - '.github/workflows/research-production-pipeline-ci.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate research production architecture
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root=Path('.')
+          required=[
+            'tools/research-output-builder/index.html',
+            'tools/academic-search-hub/index.html',
+            'tools/wpa-watch/index.html',
+            'journal/watch/index.html',
+            'working-papers/index.html',
+            'protocol-notes/index.html',
+            'journal/index.html',
+            'data/research-production-pipeline-status.json',
+            'data/wpa-public-evidence-index.json',
+            'institute.html'
+          ]
+          for p in required:
+              assert (root/p).exists(), f'missing required path: {p}'
+
+          builder=(root/'tools/research-output-builder/index.html').read_text(encoding='utf-8')
+          academic=(root/'tools/academic-search-hub/index.html').read_text(encoding='utf-8')
+          wpa_watch=(root/'tools/wpa-watch/index.html').read_text(encoding='utf-8')
+          journal_watch=(root/'journal/watch/index.html').read_text(encoding='utf-8')
+          institute=(root/'institute.html').read_text(encoding='utf-8')
+          status=json.loads((root/'data/research-production-pipeline-status.json').read_text(encoding='utf-8'))
+          evidence=json.loads((root/'data/wpa-public-evidence-index.json').read_text(encoding='utf-8'))
+
+          assert 'WPA Research Output Builder' in builder
+          assert 'DRAFT · NOT PUBLISHED · HUMAN REVIEW REQUIRED' in builder
+          assert 'Download HTML' in builder
+          assert 'Download Markdown' in builder
+          assert '/working-papers/' in builder
+          assert '/protocol-notes/' in builder
+          assert '/journal/' in builder
+          assert 'Create research draft' in academic
+          assert '/tools/research-output-builder/' in academic
+          assert 'Create research draft' in wpa_watch
+          assert '/tools/research-output-builder/' in wpa_watch
+          assert 'Create research draft' in journal_watch
+          assert '/tools/research-output-builder/' in journal_watch
+          assert 'id="research-production"' in institute
+          assert 'Од извор до достапен WPA труд' in institute
+          assert '/tools/research-output-builder/' in institute
+          assert '/working-papers/' in institute
+          assert '/protocol-notes/' in institute
+
+          assert status['status']=='PRODUCTION_FRONTEND_WORKFLOW_HUMAN_REVIEW_REQUIRED'
+          assert 'Markdown' in status['generated_formats']
+          assert 'HTML' in status['generated_formats']
+          assert status['publication_routes']['working_papers']=='/working-papers/'
+          assert status['publication_routes']['protocol_notes']=='/protocol-notes/'
+          assert status['publication_routes']['journal']=='/journal/'
+
+          rec=next(x for x in evidence['evidence'] if x['id']=='EVIDENCE-RESEARCH-PIPELINE-001')
+          assert rec['path']=='/tools/research-output-builder/'
+          assert rec['status']=='PRODUCTION_FRONTEND_WORKFLOW_HUMAN_REVIEW_REQUIRED'
+          assert '/working-papers/' in rec['publication_routes']
+          assert '/protocol-notes/' in rec['publication_routes']
+          assert '/journal/' in rec['publication_routes']
+
+          print('Research Production Pipeline architecture: PASS')
+          PY
+
+      - name: Validate builder JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          html=Path('tools/research-output-builder/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+          assert scripts, 'inline builder script missing'
+          Path('/tmp/research-output-builder.js').write_text('\n'.join(scripts),encoding='utf-8')
+          PY
+          node --check /tmp/research-output-builder.js
+
+      - name: Validate JSON assets
+        run: |
+          python -m json.tool data/research-production-pipeline-status.json >/dev/null
+          python -m json.tool data/wpa-public-evidence-index.json >/dev/null
