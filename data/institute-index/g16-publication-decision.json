@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G16",
+  "gate_name": "Publication decision",
+  "status": "LOCKED",
+  "substatus": "PUBLICATION_DECISION_ARCHITECTURE_PREPARED__NO_RELEASE_AUTHORISED",
+  "pass_rule": "Authorised human governance selects R0, R1, R2 or R3; no release mode activates automatically.",
+  "current_release_mode": "R0",
+  "decision_principles": [
+    "R0 is always an available safe choice.",
+    "Eligibility for a higher mode never obliges selection of that mode.",
+    "Software may calculate eligibility but cannot select or activate a release mode.",
+    "A selected release mode requires an explicit human decision record.",
+    "A later change of release mode requires a new decision record; prior decisions are not silently overwritten."
+  ],
+  "release_modes": {
+    "R0": {
+      "name": "Methodology only",
+      "effect": "No real-institution comparative publication.",
+      "minimum_prerequisite": "None beyond current governance status.",
+      "ordinal_ordering": false
+    },
+    "R1": {
+      "name": "Reviewed scorecards",
+      "effect": "Reviewed institutional scorecards and evidence coverage without ordinal ordering.",
+      "minimum_prerequisite": "G01-G15 complete, v1.0 frozen, reviewed scorecard package integrity verified.",
+      "ordinal_ordering": false
+    },
+    "R2": {
+      "name": "Bands / peer profiles",
+      "effect": "Comparative bands or peer-group profiles without strict 1..N ordering.",
+      "minimum_prerequisite": "R1 prerequisites plus human-confirmed band/profile design and fairness review.",
+      "ordinal_ordering": false
+    },
+    "R3": {
+      "name": "Ordinal ranking",
+      "effect": "Strict ordinal ranking may be published only by separate explicit human decision.",
+      "minimum_prerequisite": "All G01-G15 complete, G14 v1.0 frozen, G15 review complete, release package integrity verified, and separate explicit R3 authorisation.",
+      "ordinal_ordering": true
+    }
+  },
+  "blockers": [
+    "G01-G12 real validation/governance work is incomplete.",
+    "G13 real Shadow Index has not run.",
+    "G14 final v1.0 freeze is not complete.",
+    "G15 real independent methodological review is not complete.",
+    "No signed G16 publication decision record exists."
+  ],
+  "prepared_assets": {
+    "decision_schema": "/data/institute-index/g16-publication-decision-record.schema.json",
+    "governance_engine": "/scripts/protocolometry-publication-decision.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g16-publication-decision-synthetic.json"
+  },
+  "hard_boundaries": {
+    "automatic_escalation": false,
+    "automatic_release_mode_change": false,
+    "automatic_r3_activation": false,
+    "current_release_mode": "R0",
+    "selected_release_mode": null
+  },
+  "human_gate": "Only authorised human governance may select and activate a release mode through a signed or otherwise explicitly approved G16 decision record."
+}
