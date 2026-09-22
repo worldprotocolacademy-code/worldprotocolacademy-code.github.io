@@ -7,7 +7,9 @@ const WATCH_ITEMS = path.join(process.cwd(), "tools", "wpa-watch", "items.json")
 const WATCH_STATUS = path.join(process.cwd(), "tools", "wpa-watch", "status.json");
 const MAP_PATH = path.join(process.cwd(), "tools", "wpa-watch", "journal-map.json");
 const MAX_UPSTREAM_AGE_HOURS = 8;
-const MIN_LIVE_SOURCES = 20;
+const MIN_LIVE_SOURCES = 40;
+const MIN_LIVE_RATIO = 0.90;
+const MIN_TIER_A_RATIO = 0.90;
 const MIN_ITEMS = 10;
 const ALLOWED_TRACKS = new Set(["protocol", "diplomacy", "pr", "security", "communicology", "academic"]);
 const CLASSIFICATION_VERSION = "JW2.3";
@@ -151,6 +153,8 @@ function validateUpstream(status, items) {
   const ageHours = (Date.now() - generated.getTime()) / 3600000;
   if (ageHours < 0 || ageHours > MAX_UPSTREAM_AGE_HOURS) throw new Error(`WPA Watch upstream is stale (${ageHours.toFixed(1)}h)`);
   if (Number(status.sources_live) < MIN_LIVE_SOURCES) throw new Error(`WPA Watch has only ${status.sources_live} live sources`);
+  if (Number(status.live_ratio) < MIN_LIVE_RATIO) throw new Error(`WPA Watch live ratio is too low (${status.live_ratio})`);
+  if (Number(status.tier_a_live) < Math.ceil(Number(status.tier_a_total) * MIN_TIER_A_RATIO)) throw new Error(`WPA Watch Tier A health is too low (${status.tier_a_live}/${status.tier_a_total})`);
   if (!Array.isArray(items) || items.length < MIN_ITEMS) throw new Error(`WPA Watch has only ${Array.isArray(items) ? items.length : 0} items`);
   if (Number(status.items_total) !== items.length) throw new Error("WPA Watch status/items count mismatch");
   return { ageHours };
