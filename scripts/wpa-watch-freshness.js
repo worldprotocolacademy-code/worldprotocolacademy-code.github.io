@@ -77,7 +77,7 @@
     try{
       const [status,topics]=await Promise.all([getJson(WATCH_STATUS),getJson(JOURNAL_TOPICS)]);
       const generatedHours=ageHours(status.generated);
-      const dates=(Array.isArray(topics)?topics:[]).map(t=>new Date(t?.date).getTime()).filter(Number.isFinite);
+      const dates=(Array.isArray(topics)?topics:[]).filter(t=>t?.date && (!t.date_basis || t.date_basis === "source_published")).map(t=>new Date(t.date).getTime()).filter(Number.isFinite);
       const latest=dates.length?new Date(Math.max(...dates)):null;
       const topicHours=latest?Math.max(0,(Date.now()-latest.getTime())/HOUR):null;
       const worst=Math.max(generatedHours??Infinity,topicHours??Infinity),b=Number.isFinite(worst)?band(worst):'unknown';
@@ -99,5 +99,6 @@
     else if(p==='/journal/watch/')journalDiagnostics();
   }
 
+  document.addEventListener('wpa-journal-reloaded',journalDiagnostics);
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
