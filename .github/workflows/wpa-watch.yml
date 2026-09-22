@@ -66,9 +66,9 @@ jobs:
           if(Number.isNaN(generated.getTime())||ageMinutes<0||ageMinutes>30) fail('status.generated is missing or stale');
           if(!Array.isArray(items)||items.length<10) fail('WPA Watch produced fewer than 10 items');
           if(Number(status.sources_total)!==Number(status.sources_live)+Number(status.sources_dead)) fail('source totals do not reconcile');
-          if(Number(status.sources_live)<20) fail('fewer than 20 source feeds are live');
-          if(Number(status.tier_a_live)<12) fail('fewer than 12 Tier A feeds are live');
-          if(Number(status.live_ratio)<0.50) fail('fewer than 50% of configured feeds are live');
+          if(Number(status.sources_live)<40) fail('fewer than 40 source feeds are live');
+          if(Number(status.tier_a_live)<Math.ceil(Number(status.tier_a_total)*0.90)) fail('fewer than 90% of Tier A feeds are live');
+          if(Number(status.live_ratio)<0.90) fail('fewer than 90% of configured feeds are live');
           if(Number(status.items_total)!==items.length) fail('items_total does not match items.json');
           for(const [i,x] of items.entries()){
             if(!x||!String(x.title||'').trim()||!String(x.source||'').trim()||!String(x.link||'').trim()) fail(`invalid item at index ${i}`);
