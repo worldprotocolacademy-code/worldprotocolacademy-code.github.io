@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "g15-review-governance",
+  "synthetic_only": true,
+  "real_reviewers_used": false,
+  "aab_status": "FORMATION_PHASE",
+  "cases": [
+    {
+      "id": "G15-AAB-BLOCKED",
+      "review_route": "AAB",
+      "reviewer": {
+        "reviewer_id": "SYNTH-AAB-R1",
+        "written_acceptance": true,
+        "coi_declaration_completed": true,
+        "scope_accepted": true,
+        "material_conflict": false
+      },
+      "governance": {
+        "authorised": true,
+        "aab_formally_constituted": false
+      },
+      "expected": {
+        "eligible_for_assignment": false,
+        "block_reason": "AAB_NOT_FORMALLY_CONSTITUTED"
+      }
+    },
+    {
+      "id": "G15-EXT-ELIGIBLE",
+      "review_route": "AUTHORISED_EXTERNAL_EQUIVALENT",
+      "reviewer": {
+        "reviewer_id": "SYNTH-EXT-R1",
+        "written_acceptance": true,
+        "coi_declaration_completed": true,
+        "scope_accepted": true,
+        "material_conflict": false
+      },
+      "governance": {
+        "authorised": true,
+        "aab_formally_constituted": null
+      },
+      "expected": {
+        "eligible_for_assignment": true,
+        "block_reason": null
+      }
+    },
+    {
+      "id": "G15-EXT-COI-BLOCKED",
+      "review_route": "AUTHORISED_EXTERNAL_EQUIVALENT",
+      "reviewer": {
+        "reviewer_id": "SYNTH-EXT-R2",
+        "written_acceptance": true,
+        "coi_declaration_completed": true,
+        "scope_accepted": true,
+        "material_conflict": true
+      },
+      "governance": {
+        "authorised": true,
+        "aab_formally_constituted": null
+      },
+      "expected": {
+        "eligible_for_assignment": false,
+        "block_reason": "MATERIAL_CONFLICT_REQUIRES_RECUSAL"
+      }
+    },
+    {
+      "id": "G15-EXT-INCOMPLETE",
+      "review_route": "AUTHORISED_EXTERNAL_EQUIVALENT",
+      "reviewer": {
+        "reviewer_id": "SYNTH-EXT-R3",
+        "written_acceptance": false,
+        "coi_declaration_completed": false,
+        "scope_accepted": false,
+        "material_conflict": false
+      },
+      "governance": {
+        "authorised": true,
+        "aab_formally_constituted": null
+      },
+      "expected": {
+        "eligible_for_assignment": false,
+        "block_reason": "REVIEWER_ACCEPTANCE_OR_COI_INCOMPLETE"
+      }
+    }
+  ],
+  "synthetic_review_record": {
+    "record_version": "1.0",
+    "review_id": "SYNTH-G15-REVIEW-001",
+    "review_route": "AUTHORISED_EXTERNAL_EQUIVALENT",
+    "reviewer": {
+      "reviewer_id": "SYNTH-EXT-R1",
+      "written_acceptance": true,
+      "coi_declaration_completed": true,
+      "scope_accepted": true,
+      "public_listing_consent": null,
+      "public_name": null
+    },
+    "eligibility": {
+      "authorised": true,
+      "material_conflict": false,
+      "recusal_required": false,
+      "eligible_for_assignment": true,
+      "aab_formally_constituted": null
+    },
+    "review_target": {
+      "freeze_candidate_id": "PROTOCOLometry-v1.0-FREEZE-CANDIDATE-20260922",
+      "methodology_version": "0.9.1-candidate",
+      "manifest_path": "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json"
+    },
+    "scope": [
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07",
+      "R08",
+      "R09",
+      "R10",
+      "R11"
+    ],
+    "excluded_questions": [],
+    "findings": [
+      {
+        "finding_id": "F001",
+        "domain_id": "R05",
+        "severity": "MAJOR",
+        "finding": "Synthetic example finding: weight rationale requires stronger empirical justification.",
+        "evidence_reference": "synthetic://g15/F001",
+        "reviewer_recommendation": "Run and document real Pilot 20 sensitivity results before final freeze."
+      },
+      {
+        "finding_id": "F002",
+        "domain_id": "R11",
+        "severity": "MINOR",
+        "finding": "Synthetic example finding: limitation wording should explicitly distinguish internal review from peer review.",
+        "evidence_reference": "synthetic://g15/F002",
+        "reviewer_recommendation": "Add explicit public-language boundary."
+      }
+    ],
+    "reviewer_conclusion": "REVISION_REQUIRED",
+    "wpa_response": [
+      {
+        "finding_id": "F001",
+        "disposition": "ACCEPT",
+        "reasoning": "Synthetic governance rehearsal accepts the recommendation for demonstration purposes.",
+        "change_reference": "synthetic://change/F001"
+      },
+      {
+        "finding_id": "F002",
+        "disposition": "PARTIAL_ACCEPT",
+        "reasoning": "Synthetic governance rehearsal records a partial wording change.",
+        "change_reference": "synthetic://change/F002"
+      }
+    ],
+    "unresolved_issues": [],
+    "follow_up": {
+      "required": true,
+      "completed": false,
+      "record_reference": null
+    },
+    "public_claim_boundary": "INDEPENDENT_METHODOLOGICAL_REVIEW_NOT_PEER_REVIEW_ACCREDITATION_RECOGNITION_OR_ENDORSEMENT",
+    "final_freeze_authority": false
+  },
+  "expected": {
+    "assignment_cases": 4,
+    "eligible_assignments": 1,
+    "blocked_assignments": 3,
+    "synthetic_record_findings": 2,
+    "synthetic_record_responses": 2,
+    "review_completed": false,
+    "g15_passed": false
+  },
+  "boundary": "Synthetic governance preflight only. It does not appoint a reviewer, constitute the AAB, complete independent review, or authorise G14/G16."
+}
