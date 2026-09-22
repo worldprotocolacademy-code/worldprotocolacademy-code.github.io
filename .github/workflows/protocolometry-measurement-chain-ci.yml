@@ -23,6 +23,7 @@ on:
       - 'scripts/protocolometry-correction-coi.mjs'
       - 'scripts/protocolometry-shadow-stability.mjs'
       - 'scripts/protocolometry-freeze-preflight.mjs'
+      - 'scripts/protocolometry-independent-review.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -63,6 +64,7 @@ jobs:
           g12=json.loads((root/'data/institute-index/g12-conflict-of-interest-control.json').read_text(encoding='utf-8'))
           g13=json.loads((root/'data/institute-index/g13-shadow-index-stability.json').read_text(encoding='utf-8'))
           g14=json.loads((root/'data/institute-index/g14-methodology-freeze.json').read_text(encoding='utf-8'))
+          g15=json.loads((root/'data/institute-index/g15-independent-methodological-review.json').read_text(encoding='utf-8'))
           freeze_manifest=json.loads((root/'data/institute-index/protocolometry-v1-freeze-candidate-manifest.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
@@ -186,6 +188,13 @@ jobs:
           assert freeze_manifest['status']=='CANDIDATE_PREPARED_NOT_V1_FROZEN'
           assert freeze_manifest['mutation_policy']['final_lockfile_status']=='NOT_GENERATED'
           assert freeze_manifest['sequencing_rule']['operational_order'][1]=='G15 independent methodological review of the candidate'
+          assert gate15['evidence']=='/data/institute-index/g15-independent-methodological-review.json'
+          assert g15['status']=='LOCKED'
+          assert g15['review_routes']['AAB']['currently_operational'] is False
+          assert g15['review_routes']['AAB']['current_status']=='FORMATION_PHASE'
+          assert g15['hard_boundaries']['review_is_not_peer_review'] is True
+          assert g15['hard_boundaries']['automatic_gate_unlock'] is False
+          assert g15['hard_boundaries']['current_release_mode']=='R0'
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -278,6 +287,11 @@ jobs:
           assert 'G14 · Methodology Freeze' in files['strategy']
           assert 'LOCKED · FREEZE CANDIDATE PREPARED' in files['strategy']
           assert 'It is explicitly not v1.0' in files['strategy']
+          assert '/data/institute-index/g15-independent-methodological-review.json' in files['lab']
+          assert '/data/institute-index/G15-INDEPENDENT-METHODOLOGICAL-REVIEW-PACK.md' in files['lab']
+          assert 'G15 · Independent Methodological Review' in files['strategy']
+          assert 'LOCKED · REVIEW GOVERNANCE PACK PREPARED' in files['strategy']
+          assert 'This is not peer review' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -651,6 +665,53 @@ jobs:
           print('G14 freeze-candidate integrity: PASS')
           PY
 
+      - name: Validate synthetic G15 independent-review governance
+        run: |
+          node --check scripts/protocolometry-independent-review.mjs
+          node scripts/protocolometry-independent-review.mjs             data/institute-index/fixtures/g15-independent-review-governance-synthetic.json             > /tmp/g15-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report=json.loads(Path('/tmp/g15-report.json').read_text(encoding='utf-8'))
+          rubric=json.loads(Path('data/institute-index/g15-independent-review-rubric.json').read_text(encoding='utf-8'))
+          schema=json.loads(Path('data/institute-index/g15-review-decision-record.schema.json').read_text(encoding='utf-8'))
+          control=json.loads(Path('data/institute-index/g15-independent-methodological-review.json').read_text(encoding='utf-8'))
+          blueprint=json.loads(Path('data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
+
+          assert report['synthetic_only'] is True
+          assert report['assignment_metrics']['case_count']==4
+          assert report['assignment_metrics']['eligible_assignments']==1
+          assert report['assignment_metrics']['blocked_assignments']==3
+          assert report['assignment_metrics']['recusal_required_count']==1
+          assert all(report['assertions'].values())
+
+          rec=report['synthetic_review_record']
+          assert rec['material_findings_count']==2
+          assert rec['response_count']==2
+          assert rec['material_responses_complete'] is True
+          assert rec['follow_up_required'] is True
+          assert rec['follow_up_completed'] is False
+          assert rec['review_completed'] is False
+          assert rec['g15_passed'] is False
+          assert rec['automatic_g14_freeze'] is False
+          assert rec['automatic_g16_release'] is False
+
+          assert rubric['status']=='PREPARED_NOT_EXECUTED'
+          assert len(rubric['review_domains'])==11
+          assert schema['properties']['final_freeze_authority']['const'] is False
+          assert control['status']=='LOCKED'
+          assert control['review_routes']['AAB']['currently_operational'] is False
+
+          s7=next(x for x in blueprint['execution_stages'] if x['stage']=='S7')
+          assert s7['review_phase']['gate']=='G15'
+          assert s7['review_phase']['status']=='LOCKED'
+          assert blueprint['current_state']['g15_status']=='LOCKED'
+          assert blueprint['current_state']['real_g15_review_records']==0
+          assert blueprint['current_state']['current_release_mode']=='R0'
+          print('G15 independent-review governance preflight: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -685,6 +746,10 @@ jobs:
           python -m json.tool data/institute-index/g12-conflict-of-interest-control.json >/dev/null
           python -m json.tool data/institute-index/g13-shadow-index-stability.json >/dev/null
           python -m json.tool data/institute-index/g14-methodology-freeze.json >/dev/null
+          python -m json.tool data/institute-index/g15-independent-methodological-review.json >/dev/null
+          python -m json.tool data/institute-index/g15-independent-review-rubric.json >/dev/null
+          python -m json.tool data/institute-index/g15-review-decision-record.schema.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g15-independent-review-governance-synthetic.json >/dev/null
           python -m json.tool data/institute-index/protocolometry-v1-freeze-candidate-manifest.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g11-correction-cycle-synthetic.json >/dev/null

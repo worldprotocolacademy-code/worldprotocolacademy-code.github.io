@@ -223,7 +223,12 @@
         "/data/institute-index/g14-methodology-freeze.json",
         "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json",
         "/data/institute-index/protocolometry-v1-freeze-candidate-changelog.md",
-        "/scripts/protocolometry-freeze-preflight.mjs"
+        "/scripts/protocolometry-freeze-preflight.mjs",
+        "/data/institute-index/g15-independent-methodological-review.json",
+        "/data/institute-index/G15-INDEPENDENT-METHODOLOGICAL-REVIEW-PACK.md",
+        "/data/institute-index/g15-independent-review-rubric.json",
+        "/data/institute-index/g15-review-decision-record.schema.json",
+        "/scripts/protocolometry-independent-review.mjs"
       ],
       "finalisation_dependencies": [
         "applicable G01-G13 real validation evidence complete",
@@ -239,7 +244,25 @@
         "apply and document accepted review changes",
         "close G14 with final SHA-256 lockfile and human decision",
         "proceed to separate G16 publication decision"
-      ]
+      ],
+      "review_phase": {
+        "gate": "G15",
+        "status": "LOCKED",
+        "substatus": "REVIEW_GOVERNANCE_PACK_PREPARED__NO_REAL_INDEPENDENT_REVIEW_COMPLETED",
+        "inputs": [
+          "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json",
+          "/data/institute-index/G15-INDEPENDENT-METHODOLOGICAL-REVIEW-PACK.md",
+          "/data/institute-index/g15-independent-review-rubric.json"
+        ],
+        "outputs": [
+          "eligible-reviewer assignment record",
+          "written independent methodological review",
+          "finding/response/remediation log",
+          "follow-up closure record",
+          "G15 human-governance decision"
+        ],
+        "hard_boundary": "Review findings do not automatically alter methodology, freeze v1.0, select a release mode or authorise ranking."
+      }
     },
     {
       "stage": "S8",
@@ -317,7 +340,10 @@
     "g14_status": "LOCKED",
     "g14_preflight": "FREEZE_CANDIDATE_PREPARED",
     "v1_frozen": false,
-    "final_sha256_lockfile_generated": false
+    "final_sha256_lockfile_generated": false,
+    "g15_status": "LOCKED",
+    "g15_preflight": "REVIEW_GOVERNANCE_PACK_PREPARED",
+    "real_g15_review_records": 0
   },
   "next_operational_milestones": [
     "Reconcile the seven legacy entity-resolution-first coverage cases against the current REV7 corpus before using them for scoring eligibility.",

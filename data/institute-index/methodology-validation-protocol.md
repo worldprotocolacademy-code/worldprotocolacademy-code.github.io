@@ -212,6 +212,27 @@ Operational order:
 
 Gate numbering is therefore not a claim that final G14 closure occurs before G15 review. G14 has a candidate-preparation phase and a later final-closure phase.
 
+### Stage 9C — Independent methodological review
+The G14 freeze candidate must undergo an independent methodological review before final v1.0 freeze closure.
+
+The review may use either:
+- a formally constituted AAB reviewer; or
+- an explicitly authorised external-equivalent independent methodological reviewer.
+
+In either route, written acceptance, COI declaration, accepted scope and absence of an unmanaged material conflict are mandatory.
+
+The reviewer should evaluate the freeze candidate using the published G15 rubric and record:
+- reviewed version and scope;
+- findings by domain and severity;
+- evidence references;
+- recommendations;
+- unresolved issues;
+- whether follow-up review is required.
+
+WPA must record a response to every material finding. Recommendations do not silently modify methodology. Declined findings require written reasoning.
+
+The review is complete only when required follow-up is closed and an authorised human G15 decision is recorded. G15 completion is not peer review, accreditation, recognition or endorsement and does not itself freeze v1.0 or authorise publication.
+
 ### Stage 10 — v1.0 Human Gate
 Freeze v1.0 only after:
 - a freeze-candidate manifest and changelog exist;
