@@ -17,6 +17,8 @@
     return `${Math.floor(hours/24)} days old`;
   };
   const band=(hours)=>hours==null?'unknown':hours<=36?'fresh':hours<=72?'warning':'stale';
+  const healthBand=(live,total)=>!total?'unknown':(live/total)>=0.95?'fresh':(live/total)>=0.85?'warning':'stale';
+  const worseBand=(a,b)=>{const rank={fresh:0,warning:1,stale:2,unknown:3};return (rank[a]??3)>=(rank[b]??3)?a:b;};
   const bandLabel=(b)=>({fresh:'FRESH',warning:'AGING',stale:'STALE',unknown:'UNKNOWN'})[b]||'UNKNOWN';
 
   function style(){
@@ -58,8 +60,9 @@
     const host=mount();
     try{
       const s=await getJson(WATCH_STATUS);
-      const hours=ageHours(s.generated),b=band(hours);
+      const hours=ageHours(s.generated);
       const total=Number(s.sources_total)||0,live=Number(s.sources_live)||0,dead=Number(s.sources_dead)||0;
+      const b=worseBand(band(hours),healthBand(live,total));
       const failed=Array.isArray(s.dead)?s.dead.map(x=>x?.name).filter(Boolean):[];
       host.className='wpa-freshness '+b;
       host.innerHTML=`<strong>Feed freshness: ${bandLabel(b)}</strong> · generated ${esc(s.generated||'unknown')} · ${esc(ageLabel(hours))}<br>`+
@@ -80,12 +83,13 @@
       const dates=(Array.isArray(topics)?topics:[]).filter(t=>t?.date && (!t.date_basis || t.date_basis === "source_published")).map(t=>new Date(t.date).getTime()).filter(Number.isFinite);
       const latest=dates.length?new Date(Math.max(...dates)):null;
       const topicHours=latest?Math.max(0,(Date.now()-latest.getTime())/HOUR):null;
-      const worst=Math.max(generatedHours??Infinity,topicHours??Infinity),b=Number.isFinite(worst)?band(worst):'unknown';
+      const worst=Math.max(generatedHours??Infinity,topicHours??Infinity);
       const total=Number(status.sources_total)||0,live=Number(status.sources_live)||0;
+      const ageBand=Number.isFinite(worst)?band(worst):'unknown',b=worseBand(ageBand,healthBand(live,total));
       host.className='wpa-freshness '+b;
       host.innerHTML=`<strong>Editorial freshness: ${bandLabel(b)}</strong> · latest topic ${latest?latest.toISOString().slice(0,10):'unknown'} (${esc(ageLabel(topicHours))})<br>`+
         `Underlying Watch feed: ${esc(ageLabel(generatedHours))} · source health ${live}/${total||'—'} live.`+
-        `<small>Journal Watch is a staging editorial queue. Stale candidates require a new source sweep before being described as daily/current.</small>`;
+        `<small>Journal Watch is a production editorial-candidate queue. Human verification and editorial approval remain required; stale candidates require a new source sweep before being described as daily/current.</small>`;
     }catch(e){
       host.className='wpa-freshness unknown';
       host.innerHTML=`<strong>Editorial freshness: UNKNOWN</strong><small>Could not calculate current feed/topic age (${esc(e.message||e)}). Manual verification required.</small>`;
