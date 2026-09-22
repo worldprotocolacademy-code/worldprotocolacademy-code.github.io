@@ -29,12 +29,13 @@ footer{text-align:center;background:#fff;border-top:1px solid var(--line);paddin
 <div id="stats" class="stats"></div>
 <div class="filters" id="filters"><button class="active" data-filter="ALL">All</button><button data-filter="LIVE">LIVE</button><button data-filter="LIMITED_PRODUCTION">Limited</button><button data-filter="GOVERNED_PREVIEW">Preview</button><button data-filter="BETA">Beta</button><button data-filter="FORMATION">Formation</button></div>
 <div id="status" class="note">Loading functional registry…</div>
+<section id="frozen" class="note" aria-live="polite"></section>
 <section id="grid" class="grid" aria-live="polite"></section>
 </main>
 <footer>© 2026 World Protocol Academy · Public functional registry · Human-governed operations.</footer>
 <script>
 (()=>{"use strict";
-const grid=document.getElementById("grid"),status=document.getElementById("status"),stats=document.getElementById("stats"),filters=document.getElementById("filters");
+const grid=document.getElementById("grid"),status=document.getElementById("status"),stats=document.getElementById("stats"),filters=document.getElementById("filters"),frozen=document.getElementById("frozen");
 let data=null,filter="ALL";
 const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function render(){
@@ -45,10 +46,13 @@ function render(){
    ["LIVE",counts.LIVE||0],
    ["Limited",counts.LIMITED_PRODUCTION||0],
    ["Preview/Beta",(counts.GOVERNED_PREVIEW||0)+(counts.BETA||0)],
-   ["Formation",counts.FORMATION||0]
+   ["Formation",counts.FORMATION||0],
+   ["Frozen",(data?.frozen_capabilities||[]).length]
  ].map(x=>'<div class="stat"><strong>'+x[1]+'</strong><span>'+x[0]+'</span></div>').join("");
  grid.innerHTML=rows.map(x=>'<article class="card"><span class="status '+esc(x.status)+'">'+esc(x.status)+'</span><h2>'+esc(x.id)+'</h2><p>'+esc(x.purpose)+'</p><div class="actions"><a class="btn" href="'+esc(x.primary_action)+'">Open primary function</a>'+(x.secondary_actions||[]).slice(0,3).map(y=>'<a class="btn secondary" href="'+esc(y)+'">Related</a>').join("")+'</div>'+(x.boundary?'<div class="boundary"><strong>Boundary:</strong> '+esc(x.boundary)+'</div>':'')+'</article>').join("");
- status.innerHTML='<strong>Registry loaded.</strong> '+rows.length+' of '+all.length+' operational sections shown. Frozen capabilities remain explicitly inactive.';
+ status.innerHTML='<strong>Registry loaded.</strong> '+rows.length+' of '+all.length+' operational sections shown.';
+ const frozenItems=data?.frozen_capabilities||[];
+ frozen.innerHTML='<strong>FROZEN capabilities:</strong> '+(frozenItems.length?'<ul>'+frozenItems.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':'None declared.');
 }
 filters.addEventListener("click",e=>{const b=e.target.closest("button[data-filter]");if(!b)return;filter=b.dataset.filter;filters.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));render()});
 fetch("/data/wpa-institute-functional-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{data=j;render()}).catch(e=>{status.innerHTML='<strong>Registry unavailable.</strong> '+esc(e.message)});
