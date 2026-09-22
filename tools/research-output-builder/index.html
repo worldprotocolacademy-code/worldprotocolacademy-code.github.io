@@ -55,6 +55,16 @@ const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&
 const lines=s=>String(s||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
 const q=new URLSearchParams(location.search);
 function seedFromQuery(){
+  try{
+    const handoff=JSON.parse(sessionStorage.getItem("wpaResearchDraftHandoff")||"null");
+    if(handoff){
+      if(handoff.title) $("title").value=handoff.title;
+      if(handoff.summary) $("abstract").value=handoff.summary;
+      if(handoff.source) $("sources").value=handoff.source+(handoff.url?" | "+handoff.url:"")+" | candidate / human verification required";
+      if(handoff.domain) $("keywords").value=handoff.domain;
+      sessionStorage.removeItem("wpaResearchDraftHandoff");
+    }
+  }catch(e){}
   if(q.get("title")) $("title").value=q.get("title");
   if(q.get("summary")) $("abstract").value=q.get("summary");
   if(q.get("source")){
