@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "coi_assignment_and_recusal",
+  "synthetic_only": true,
+  "real_reviewers_used": false,
+  "cases": [
+    {
+      "id": "COI01_NONE",
+      "reviewer_id": "SYNTH-R1",
+      "relationship": {
+        "type": "NONE",
+        "current": false,
+        "recent": false,
+        "material": false
+      },
+      "expected": {
+        "eligible_to_review": true,
+        "recusal_required": false,
+        "reassignment_required": false
+      }
+    },
+    {
+      "id": "COI02_FINANCIAL",
+      "reviewer_id": "SYNTH-R2",
+      "relationship": {
+        "type": "FINANCIAL_INTEREST",
+        "current": true,
+        "recent": false,
+        "material": true
+      },
+      "expected": {
+        "eligible_to_review": false,
+        "recusal_required": true,
+        "reassignment_required": true
+      }
+    },
+    {
+      "id": "COI03_PAID_CONSULTING",
+      "reviewer_id": "SYNTH-R3",
+      "relationship": {
+        "type": "PAID_CONSULTING",
+        "current": false,
+        "recent": true,
+        "material": true
+      },
+      "expected": {
+        "eligible_to_review": false,
+        "recusal_required": true,
+        "reassignment_required": true
+      }
+    },
+    {
+      "id": "COI04_CLOSE_COLLABORATION",
+      "reviewer_id": "SYNTH-R4",
+      "relationship": {
+        "type": "CLOSE_COLLABORATION",
+        "current": true,
+        "recent": false,
+        "material": true
+      },
+      "expected": {
+        "eligible_to_review": false,
+        "recusal_required": true,
+        "reassignment_required": true
+      }
+    },
+    {
+      "id": "COI05_DIRECT_COMPETITION",
+      "reviewer_id": "SYNTH-R5",
+      "relationship": {
+        "type": "DIRECT_INSTITUTIONAL_COMPETITION",
+        "current": true,
+        "recent": false,
+        "material": true
+      },
+      "expected": {
+        "eligible_to_review": false,
+        "recusal_required": true,
+        "reassignment_required": true
+      }
+    },
+    {
+      "id": "COI06_PERSONAL_INVOLVEMENT",
+      "reviewer_id": "SYNTH-R6",
+      "relationship": {
+        "type": "PERSONAL_INVOLVEMENT_IN_DISPUTED_ITEM",
+        "current": true,
+        "recent": false,
+        "material": true
+      },
+      "expected": {
+        "eligible_to_review": false,
+        "recusal_required": true,
+        "reassignment_required": true
+      }
+    }
+  ],
+  "replacement_reviewer": {
+    "reviewer_id": "SYNTH-R7",
+    "relationship": {
+      "type": "NONE",
+      "current": false,
+      "recent": false,
+      "material": false
+    },
+    "expected_eligible": true
+  },
+  "expected": {
+    "cases": 6,
+    "recusals_required": 5,
+    "eligible_without_recusal": 1,
+    "replacement_reviewer_eligible": true,
+    "concealed_conflict_allowed": false,
+    "payment_can_influence_outcome": false
+  },
+  "boundary": "Synthetic COI control test only. It does not appoint AAB members, infer misconduct, or create a real reviewer record."
+}
