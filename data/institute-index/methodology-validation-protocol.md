@@ -73,6 +73,10 @@ Compare at least:
 - 25/25/30/20 diagnostic weighting;
 - 25/25/25/25 equal weighting.
 
+Synthetic fixtures may be used before real Pilot 20 scoring to verify the sensitivity engine. Synthetic drift or pairwise reversal proves only that the detector works; it does not establish that real institutions are weight-sensitive.
+
+The diagnostic should report score drift and pairwise reversals without choosing weights automatically. No weighting may be selected because it produces a preferred institutional outcome.
+
 Flag institutions whose composite or peer placement changes materially under reasonable alternative weights. The purpose is to identify fragile conclusions, not to select weights that create a preferred result.
 
 ### Stage 6 — Correlation and redundancy
@@ -101,6 +105,8 @@ Questions:
 
 ### Stage 8 — Evidence coverage and missingness
 Candidate composite is withheld below the published evidence thresholds.
+
+Before real edge-case testing, synthetic profiles may verify the computational rule: NE is excluded rather than converted to zero, no imputation is permitted, and an otherwise identical supported profile should retain the same normalised score when coverage remains above threshold. Synthetic success does not satisfy G05.
 
 Required missingness diagnostics:
 - NE by indicator;
