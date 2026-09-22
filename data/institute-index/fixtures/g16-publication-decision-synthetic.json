@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "g16-publication-decision",
+  "synthetic_only": true,
+  "real_institutions_used": false,
+  "scenarios": [
+    {
+      "id": "CURRENT_PRE_V1",
+      "prerequisites": {
+        "g01_to_g15_complete": false,
+        "g14_v1_frozen": false,
+        "g15_review_complete": false,
+        "release_package_integrity_verified": false,
+        "band_profile_design_approved": false,
+        "fairness_review_complete": false
+      },
+      "expected": {
+        "eligible_modes": [
+          "R0"
+        ],
+        "automatic_selected_mode": null,
+        "current_mode_must_remain": "R0"
+      }
+    },
+    {
+      "id": "V1_SCORECARDS_READY",
+      "prerequisites": {
+        "g01_to_g15_complete": true,
+        "g14_v1_frozen": true,
+        "g15_review_complete": true,
+        "release_package_integrity_verified": true,
+        "band_profile_design_approved": false,
+        "fairness_review_complete": false
+      },
+      "expected": {
+        "eligible_modes": [
+          "R0",
+          "R1"
+        ],
+        "automatic_selected_mode": null
+      }
+    },
+    {
+      "id": "BANDS_READY",
+      "prerequisites": {
+        "g01_to_g15_complete": true,
+        "g14_v1_frozen": true,
+        "g15_review_complete": true,
+        "release_package_integrity_verified": true,
+        "band_profile_design_approved": true,
+        "fairness_review_complete": true
+      },
+      "expected": {
+        "eligible_modes": [
+          "R0",
+          "R1",
+          "R2",
+          "R3"
+        ],
+        "automatic_selected_mode": null
+      }
+    }
+  ],
+  "synthetic_human_decisions": [
+    {
+      "id": "HUMAN_CHOOSES_R0_DESPITE_FULL_ELIGIBILITY",
+      "eligible_modes": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "selected_mode": "R0",
+      "explicit_human_approval": true,
+      "expected_valid": true
+    },
+    {
+      "id": "HUMAN_CHOOSES_R2",
+      "eligible_modes": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "selected_mode": "R2",
+      "explicit_human_approval": true,
+      "expected_valid": true
+    },
+    {
+      "id": "INVALID_AUTO_R3",
+      "eligible_modes": [
+        "R0",
+        "R1",
+        "R2",
+        "R3"
+      ],
+      "selected_mode": "R3",
+      "explicit_human_approval": false,
+      "expected_valid": false
+    },
+    {
+      "id": "INVALID_INELIGIBLE_R2",
+      "eligible_modes": [
+        "R0",
+        "R1"
+      ],
+      "selected_mode": "R2",
+      "explicit_human_approval": true,
+      "expected_valid": false
+    }
+  ],
+  "boundary": "Synthetic decision-governance preflight only. It does not select or activate a real release mode."
+}

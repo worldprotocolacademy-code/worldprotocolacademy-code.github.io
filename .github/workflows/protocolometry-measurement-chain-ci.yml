@@ -24,6 +24,7 @@ on:
       - 'scripts/protocolometry-shadow-stability.mjs'
       - 'scripts/protocolometry-freeze-preflight.mjs'
       - 'scripts/protocolometry-independent-review.mjs'
+      - 'scripts/protocolometry-publication-decision.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -65,6 +66,7 @@ jobs:
           g13=json.loads((root/'data/institute-index/g13-shadow-index-stability.json').read_text(encoding='utf-8'))
           g14=json.loads((root/'data/institute-index/g14-methodology-freeze.json').read_text(encoding='utf-8'))
           g15=json.loads((root/'data/institute-index/g15-independent-methodological-review.json').read_text(encoding='utf-8'))
+          g16=json.loads((root/'data/institute-index/g16-publication-decision.json').read_text(encoding='utf-8'))
           freeze_manifest=json.loads((root/'data/institute-index/protocolometry-v1-freeze-candidate-manifest.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
@@ -195,6 +197,15 @@ jobs:
           assert g15['hard_boundaries']['review_is_not_peer_review'] is True
           assert g15['hard_boundaries']['automatic_gate_unlock'] is False
           assert g15['hard_boundaries']['current_release_mode']=='R0'
+          gate16=next(x for x in gates['gates'] if x['id']=='G16')
+          assert gate16['status']=='LOCKED'
+          assert gate16['evidence']=='/data/institute-index/g16-publication-decision.json'
+          assert g16['status']=='LOCKED'
+          assert g16['current_release_mode']=='R0'
+          assert g16['hard_boundaries']['automatic_escalation'] is False
+          assert g16['hard_boundaries']['automatic_release_mode_change'] is False
+          assert g16['hard_boundaries']['automatic_r3_activation'] is False
+          assert g16['hard_boundaries']['selected_release_mode'] is None
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -292,6 +303,10 @@ jobs:
           assert 'G15 · Independent Methodological Review' in files['strategy']
           assert 'LOCKED · REVIEW GOVERNANCE PACK PREPARED' in files['strategy']
           assert 'This is not peer review' in files['strategy']
+          assert '/data/institute-index/g16-publication-decision.json' in files['lab']
+          assert 'G16 · Publication Decision' in files['strategy']
+          assert 'LOCKED · DECISION ARCHITECTURE PREPARED' in files['strategy']
+          assert 'current mode remains R0' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -712,6 +727,53 @@ jobs:
           print('G15 independent-review governance preflight: PASS')
           PY
 
+      - name: Validate synthetic G16 publication decision governance
+        run: |
+          node --check scripts/protocolometry-publication-decision.mjs
+          node scripts/protocolometry-publication-decision.mjs             data/institute-index/fixtures/g16-publication-decision-synthetic.json             > /tmp/g16-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report=json.loads(Path('/tmp/g16-report.json').read_text(encoding='utf-8'))
+          control=json.loads(Path('data/institute-index/g16-publication-decision.json').read_text(encoding='utf-8'))
+          schema=json.loads(Path('data/institute-index/g16-publication-decision-record.schema.json').read_text(encoding='utf-8'))
+          blueprint=json.loads(Path('data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
+
+          assert report['synthetic_only'] is True
+          assert all(report['assertions'].values())
+
+          by={x['id']:x for x in report['scenarios']}
+          assert by['CURRENT_PRE_V1']['eligible_modes']==['R0']
+          assert by['V1_SCORECARDS_READY']['eligible_modes']==['R0','R1']
+          assert by['BANDS_READY']['eligible_modes']==['R0','R1','R2','R3']
+          assert all(x['automatic_selected_mode'] is None for x in report['scenarios'])
+          assert all(x['automatic_escalation'] is False for x in report['scenarios'])
+
+          dec={x['id']:x for x in report['decisions']}
+          assert dec['HUMAN_CHOOSES_R0_DESPITE_FULL_ELIGIBILITY']['valid'] is True
+          assert dec['HUMAN_CHOOSES_R2']['valid'] is True
+          assert dec['INVALID_AUTO_R3']['valid'] is False
+          assert dec['INVALID_INELIGIBLE_R2']['valid'] is False
+          assert all(x['automatic_activation'] is False for x in report['decisions'])
+
+          assert control['status']=='LOCKED'
+          assert control['current_release_mode']=='R0'
+          assert control['hard_boundaries']['selected_release_mode'] is None
+          assert schema['properties']['automatic_escalation']['const'] is False
+
+          s8=next(x for x in blueprint['execution_stages'] if x['stage']=='S8')
+          assert s8['status']=='LOCKED'
+          assert 'G01-G15 prerequisite evidence complete' in s8['inputs']
+          assert 'all readiness gates passed' not in s8['inputs']
+          assert s8['preflight_status']=='PUBLICATION_DECISION_ARCHITECTURE_PREPARED__NO_RELEASE_AUTHORISED'
+          assert blueprint['current_state']['g16_status']=='LOCKED'
+          assert blueprint['current_state']['real_g16_decision_records']==0
+          assert blueprint['current_state']['selected_release_mode'] is None
+          assert blueprint['current_state']['current_release_mode']=='R0'
+          print('G16 publication decision governance preflight: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -747,6 +809,9 @@ jobs:
           python -m json.tool data/institute-index/g13-shadow-index-stability.json >/dev/null
           python -m json.tool data/institute-index/g14-methodology-freeze.json >/dev/null
           python -m json.tool data/institute-index/g15-independent-methodological-review.json >/dev/null
+          python -m json.tool data/institute-index/g16-publication-decision.json >/dev/null
+          python -m json.tool data/institute-index/g16-publication-decision-record.schema.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g16-publication-decision-synthetic.json >/dev/null
           python -m json.tool data/institute-index/g15-independent-review-rubric.json >/dev/null
           python -m json.tool data/institute-index/g15-review-decision-record.schema.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g15-independent-review-governance-synthetic.json >/dev/null
