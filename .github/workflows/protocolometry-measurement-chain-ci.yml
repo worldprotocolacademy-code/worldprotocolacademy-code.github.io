@@ -18,6 +18,7 @@ on:
       - 'institute.html'
       - 'scripts/protocolometry-reliability.mjs'
       - 'scripts/protocolometry-coverage-weight-stress.mjs'
+      - 'scripts/protocolometry-redundancy-fairness.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -50,6 +51,8 @@ jobs:
           g04=json.loads((root/'data/institute-index/g04-inter-rater-reliability.json').read_text(encoding='utf-8'))
           g05=json.loads((root/'data/institute-index/g05-evidence-coverage-behavior.json').read_text(encoding='utf-8'))
           g06=json.loads((root/'data/institute-index/g06-weight-robustness.json').read_text(encoding='utf-8'))
+          g07=json.loads((root/'data/institute-index/g07-indicator-redundancy.json').read_text(encoding='utf-8'))
+          g08=json.loads((root/'data/institute-index/g08-peer-type-fairness.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -114,6 +117,18 @@ jobs:
           assert g05['synthetic_expectations']['imputation_used'] is False
           assert g05['synthetic_expectations']['missing_data_penalty_used'] is False
           assert g06['automatic_acceptability_threshold'] is False
+          gate7=next(x for x in gates['gates'] if x['id']=='G07')
+          gate8=next(x for x in gates['gates'] if x['id']=='G08')
+          assert gate7['status']=='NOT_STARTED'
+          assert gate8['status']=='NOT_STARTED'
+          assert gate7['evidence']=='/data/institute-index/g07-indicator-redundancy.json'
+          assert gate8['evidence']=='/data/institute-index/g08-peer-type-fairness.json'
+          assert g07['status']=='NOT_STARTED'
+          assert g08['status']=='NOT_STARTED'
+          assert g07['diagnostic_contract']['automatic_indicator_deletion'] is False
+          assert g07['diagnostic_contract']['automatic_reweighting'] is False
+          assert g08['fairness_contract']['peer_type_may_not_change_absolute_score'] is True
+          assert g08['fairness_contract']['automatic_fairness_pass_threshold'] is False
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -181,6 +196,12 @@ jobs:
           assert 'G06 · Weight Robustness' in files['strategy']
           assert '/data/institute-index/g05-evidence-coverage-behavior.json' in files['lab']
           assert '/data/institute-index/g06-weight-robustness.json' in files['lab']
+          assert '/data/institute-index/g07-indicator-redundancy.json' in files['lab']
+          assert '/data/institute-index/g08-peer-type-fairness.json' in files['lab']
+          assert 'G07 · Indicator Redundancy' in files['strategy']
+          assert 'G08 · Peer-Type Fairness' in files['strategy']
+          assert 'cannot delete, merge or reweight an indicator automatically' in files['strategy']
+          assert 'Peer percentile remains secondary and sample-gated' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -344,6 +365,45 @@ jobs:
           print('G05/G06 synthetic stress diagnostics: PASS')
           PY
 
+      - name: Validate synthetic G07/G08 redundancy and fairness diagnostics
+        run: |
+          node --check scripts/protocolometry-redundancy-fairness.mjs
+          node scripts/protocolometry-redundancy-fairness.mjs redundancy             data/institute-index/fixtures/g07-indicator-redundancy-synthetic.json             > /tmp/g07-report.json
+          node scripts/protocolometry-redundancy-fairness.mjs fairness             data/institute-index/fixtures/g08-peer-type-fairness-synthetic.json             data/institute-index-methodology-candidate.json             > /tmp/g08-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          g07=json.loads(Path('/tmp/g07-report.json').read_text(encoding='utf-8'))
+          g08=json.loads(Path('/tmp/g08-report.json').read_text(encoding='utf-8'))
+
+          assert g07['synthetic_only'] is True
+          assert g07['pair_count']==190
+          assert g07['flagged_pair_count']==1
+          p=g07['flagged_pairs'][0]
+          assert (p['indicator_a'],p['indicator_b'])==('I12','I13')
+          assert p['pearson_r']==1
+          assert p['source_overlap_jaccard']==1
+          assert p['human_review_required'] is True
+          assert p['automatic_indicator_deletion'] is False
+          assert p['automatic_reweighting'] is False
+
+          assert g08['synthetic_only'] is True
+          assert len(g08['profiles'])==4
+          assert {x['peer_type'] for x in g08['profiles']}=={
+            'STATE_FOREIGN_SERVICE','INDEPENDENT_PROTOCOL','UNIVERSITY_LINKED','INTERNATIONAL_TRAINING'
+          }
+          assert all(x['candidate_composite']==80 for x in g08['profiles'])
+          assert all(x['weighted_evidence_coverage_percent']==100 for x in g08['profiles'])
+          assert all(g08['assertions'].values())
+          assert all(
+            x['status']=='WITHHELD_INSUFFICIENT_PEER_SAMPLE'
+            for x in g08['peer_percentile_diagnostics'].values()
+          )
+          assert all(x['sample_size']==1 for x in g08['peer_percentile_diagnostics'].values())
+          print('G07/G08 synthetic redundancy/fairness diagnostics: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -370,6 +430,10 @@ jobs:
           python -m json.tool data/institute-index/g04-inter-rater-reliability.json >/dev/null
           python -m json.tool data/institute-index/g05-evidence-coverage-behavior.json >/dev/null
           python -m json.tool data/institute-index/g06-weight-robustness.json >/dev/null
+          python -m json.tool data/institute-index/g07-indicator-redundancy.json >/dev/null
+          python -m json.tool data/institute-index/g08-peer-type-fairness.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g07-indicator-redundancy-synthetic.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g08-peer-type-fairness-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g05-evidence-coverage-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g06-weight-robustness-synthetic.json >/dev/null
           python -m json.tool data/institute-index/scoring-record.schema.json >/dev/null
