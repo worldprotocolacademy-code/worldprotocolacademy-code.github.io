@@ -269,15 +269,33 @@
       "name": "Public release decision",
       "status": "LOCKED",
       "inputs": [
-        "all readiness gates passed",
+        "G01-G15 prerequisite evidence complete",
+        "G14 final v1.0 freeze record",
+        "G15 independent methodological review closure",
+        "release-package integrity record",
         "formal human governance decision"
       ],
       "outputs": [
-        "scorecard-only release",
-        "banded comparison release",
-        "or ordinal ranking release"
+        "R0 remain methodology-only",
+        "R1 scorecard release",
+        "R2 band/profile release",
+        "or R3 ordinal ranking release"
       ],
-      "release_effect": "Consequential publication only if explicitly authorised"
+      "release_effect": "No release-mode change occurs without an explicit G16 human decision record.",
+      "preflight_status": "PUBLICATION_DECISION_ARCHITECTURE_PREPARED__NO_RELEASE_AUTHORISED",
+      "preflight_assets": [
+        "/data/institute-index/g16-publication-decision.json",
+        "/data/institute-index/g16-publication-decision-record.schema.json",
+        "/scripts/protocolometry-publication-decision.mjs",
+        "/data/institute-index/fixtures/g16-publication-decision-synthetic.json"
+      ],
+      "hard_boundaries": [
+        "R0 is always available",
+        "eligibility does not imply selection",
+        "no automatic escalation",
+        "R3 requires explicit human approval",
+        "a later release-mode change requires a new decision record"
+      ]
     }
   ],
   "anti_gaming_and_fairness_rules": [
@@ -343,7 +361,11 @@
     "final_sha256_lockfile_generated": false,
     "g15_status": "LOCKED",
     "g15_preflight": "REVIEW_GOVERNANCE_PACK_PREPARED",
-    "real_g15_review_records": 0
+    "real_g15_review_records": 0,
+    "g16_status": "LOCKED",
+    "g16_preflight": "PUBLICATION_DECISION_ARCHITECTURE_PREPARED",
+    "real_g16_decision_records": 0,
+    "selected_release_mode": null
   },
   "next_operational_milestones": [
     "Reconcile the seven legacy entity-resolution-first coverage cases against the current REV7 corpus before using them for scoring eligibility.",
