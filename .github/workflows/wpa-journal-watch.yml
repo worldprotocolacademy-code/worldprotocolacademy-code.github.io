@@ -1,6 +1,11 @@
 name: WPA Journal Watch
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/wpa-watch/items.json'
+      - 'tools/wpa-watch/status.json'
   workflow_run:
     workflows: ["WPA Watch"]
     types: [completed]
@@ -24,7 +29,7 @@ concurrency:
 
 jobs:
   journal-watch:
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.approval == 'APPROVE_WPA_JOURNAL_WATCH_WRITE') }}
+    if: ${{ github.event_name == 'push' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || (github.event_name == 'workflow_dispatch' && inputs.approval == 'APPROVE_WPA_JOURNAL_WATCH_WRITE') }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -54,7 +59,19 @@ jobs:
           console.log(`UPSTREAM HEALTHY: ${items.length} items, ${s.sources_live}/${s.sources_total} sources, age ${ageHours.toFixed(1)}h`);
           NODE
 
+      - name: Check whether this upstream is already published
+        id: refresh
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const upstream=JSON.parse(fs.readFileSync('tools/wpa-watch/status.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json','utf8'));
+          const needed=queue.upstream_watch_generated!==upstream.generated || queue.classification_version!=='JW2.2';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `needed=${needed}\n`);
+          NODE
+
       - name: Generate Journal Watch topics
+        if: steps.refresh.outputs.needed == 'true'
         run: node generate-journal-watch.mjs
 
       - name: Validate Journal Watch outputs
@@ -72,6 +89,7 @@ jobs:
           NODE
 
       - name: Publish Journal Watch updates through protected PR
+        if: steps.refresh.outputs.needed == 'true'
         env:
           GH_TOKEN: ${{ secrets.WPA_AUTOMATION_TOKEN || github.token }}
           PUBLISH_BRANCH_PREFIX: wpa-journal-watch

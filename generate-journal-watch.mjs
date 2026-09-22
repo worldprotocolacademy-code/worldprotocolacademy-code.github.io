@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { createHash } from "node:crypto";
 
 const OUT = path.join(process.cwd(), "journal", "watch");
 const WATCH_ITEMS = path.join(process.cwd(), "tools", "wpa-watch", "items.json");
@@ -91,7 +92,7 @@ function researchAngle(discipline) {
   return "Possible WPA Journal angle in communicology: communication processes, institutional meaning, intercultural context, nonverbal communication, persuasion, scholarly communication or human communication. Manual editorial framing required.";
 }
 
-function makeTopic(item, idx, map) {
+function makeTopic(item, map) {
   const mappedDiscipline = inferDiscipline(item.domain || "communicology", map);
   const discipline = classifyByContent(item, mappedDiscipline);
   if (!ALLOWED_DISCIPLINES.has(discipline)) throw new Error(`Unsupported Journal Watch discipline: ${discipline}`);
@@ -99,12 +100,12 @@ function makeTopic(item, idx, map) {
   const title = clean(item.title || "Untitled public-source development");
   const hold = reviewReason(item);
   const published = sourceDate(item);
-  const generated = new Date().toISOString().slice(0, 10);
 
   return {
-    id: `JWT-AUTO-${generated}-${String(idx + 1).padStart(3, "0")}`,
-    date: published || generated,
-    date_basis: published ? "source_published" : "detected_at_generation",
+    id: "JWT-" + createHash("sha256").update(String(item.link || item.id || `${item.source}|${title}`)).digest("hex").slice(0, 24),
+    detected_at: new Date().toISOString(),
+    date: published,
+    date_basis: published ? "source_published" : "unknown",
     title,
     discipline,
     status: hold ? "classification_review" : "detected",
@@ -144,7 +145,18 @@ async function main() {
   const watchStatus = JSON.parse(await fs.readFile(WATCH_STATUS, "utf8"));
   const upstream = validateUpstream(watchStatus, items);
 
-  const topics = items.slice(0, 40).map((item, idx) => makeTopic(item, idx, map));
+  let previous = [];
+  try { previous = JSON.parse(await fs.readFile(path.join(OUT, "topics.json"), "utf8")); }
+  catch (error) { if (error.code !== "ENOENT") throw error; }
+  const previousByUrl = new Map(previous.map(t => [t.source_url, t]));
+  const seen = new Set();
+  const topics = items.map(item => makeTopic(item, map)).filter(topic => {
+    if (seen.has(topic.id)) return false;
+    seen.add(topic.id);
+    const old = previousByUrl.get(topic.source_url);
+    topic.legacy_ids = old ? [...new Set([...(old.legacy_ids || []), old.id])].filter(id => id !== topic.id) : [];
+    return true;
+  });
   if (!topics.length) throw new Error("Journal Watch refuses to publish an empty placeholder queue");
 
   const generatedAt = new Date().toISOString();
