@@ -111,6 +111,28 @@ Questions:
 - Can a small specialist protocol academy demonstrate excellence without scale advantages?
 - Are outcome/process signals preferred over raw size where feasible?
 
+### Stage 7A — Language and regional fairness
+Test whether identical mission-relevant evidence receives the same treatment across language and region.
+
+Synthetic multilingual/regional profiles may verify that:
+- non-English primary evidence is not downgraded merely because translation is required;
+- English-language share is not a quality proxy;
+- web-marketing intensity, page volume and follower counts do not create a score bonus;
+- source quality and mission relevance remain the controlling evidence criteria.
+
+Synthetic invariance does **not** satisfy G09. Real Pilot 20 cases must include non-English primary evidence and cross-regional evidence-discoverability review before G09 can pass.
+
+### Stage 7B — Anti-gaming review
+Adversarially test the methodology against common manipulation routes:
+- partnership-count inflation without verified cooperation quality;
+- publication quantity without mission relevance;
+- duplicated underlying evidence presented as multiple achievements;
+- Tier D marketing-only claims presented as strong evidence;
+- follower/like counts presented as digital quality;
+- verified non-conformance hidden as NE.
+
+Anti-gaming controls may block unsupported reward or escalate review. They must not infer intent, blacklist an institution, or impose an institution-wide penalty automatically. Synthetic attack tests do **not** satisfy G10; a controlled real-workflow red-team review is still required.
+
 ### Stage 8 — Evidence coverage and missingness
 Candidate composite is withheld below the published evidence thresholds.
 
