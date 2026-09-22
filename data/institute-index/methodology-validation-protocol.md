@@ -11,10 +11,10 @@ This protocol converts the global institutional evidence corpus into a reproduci
 ## Validation sequence
 
 ### Stage 1 — Coverage completeness
-- Expand the corpus beyond the current REV3 baseline.
+- Use the current REV7 canonical baseline as the controlled universe reference while continuing evidence-corpus expansion.
 - Use IFDT and national MFA/official sources as discovery controls.
 - Record countries/regions with no identified institution separately from countries not yet searched.
-- Do not treat a fixed number such as 160 as a target ceiling.
+- Do not treat any historical record count as a target ceiling; canonical revisions remain controlled and versioned.
 
 ### Stage 2 — Institutional Core Extraction
 For every resolved institution, build a public-evidence dossier covering:
@@ -44,7 +44,16 @@ Map the extracted practices to I01-I20 and classify each practice as:
 A recurring high-value `NOT_COVERED` practice is a methodology-review trigger.
 
 ### Stage 4 — Scoring reliability
-Use the published 0-5/NE anchors and run independent double scoring.
+Use the published 0-5/NE anchors and run independent double scoring only after the Pilot 20 institution IDs and dossier snapshots are frozen.
+
+Before real scoring starts, the scoring/reliability software may be tested with clearly synthetic fixtures. Synthetic preflight does **not** satisfy G03 or G04 and must not contain real-institution results.
+
+For real Pilot 20 scoring:
+- Pass 1 and Pass 2 must use separate assessor identities;
+- each pass must be locked before the other pass becomes visible;
+- both passes must use the same methodology version and frozen dossier snapshot;
+- numeric differences of 2+ points, and NE-versus-numeric differences, require explicit disagreement reasons and human reconciliation;
+- scores must not be mechanically averaged to resolve disagreement.
 
 Required diagnostics:
 - exact agreement rate;
@@ -55,6 +64,8 @@ Required diagnostics:
 - NE frequency by indicator and peer type.
 
 Large disagreement is evidence that the rubric needs clarification; it is not a reason to average scores mechanically.
+
+Reliability metrics are descriptive unless and until an authorised methodological review adopts a documented acceptability rule. The software must not invent an automatic G04 pass threshold.
 
 ### Stage 5 — Weight sensitivity
 Compare at least:
