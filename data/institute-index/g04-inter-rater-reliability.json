@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G04",
+  "gate_name": "Inter-rater reliability",
+  "status": "NOT_STARTED",
+  "substatus": "DIAGNOSTIC_ENGINE_PREPARED_SYNTHETICALLY__NO_REAL_PILOT_DATA",
+  "pass_rule": "Agreement diagnostics calculated at indicator and dimension level; material low-agreement indicators are revised or explicitly justified.",
+  "purpose": "Predefine descriptive reliability diagnostics before real Pilot 20 scoring so metrics cannot be selected after seeing outcomes.",
+  "diagnostics": {
+    "exact_agreement_rate": "All 20 indicators; exact numeric match or NE/NE.",
+    "agreement_within_one_point": "Numeric pairs differing by <=1; NE/NE counts as agreement; NE versus numeric does not.",
+    "numeric_mean_absolute_difference": "Mean absolute point difference among numeric/numeric pairs only.",
+    "ne_mismatch_count": "Count of NE-versus-numeric disagreements.",
+    "material_disagreement_count": "Numeric difference >=2 or NE-versus-numeric.",
+    "indicator_disagreement_register": true,
+    "dimension_level_exact_and_within_one": true,
+    "high_score_evidence_tier_distribution": "Evidence tiers behind scores 4-5 are reported for audit.",
+    "ne_frequency_by_pass_and_dimension": true
+  },
+  "interpretation_rule": "Diagnostics are descriptive. No automatic reliability pass threshold is asserted at this stage. Material disagreement is a rubric-review trigger, not a reason to average mechanically.",
+  "prepared_assets": {
+    "reliability_engine": "/scripts/protocolometry-reliability.mjs",
+    "synthetic_fixture_pair": [
+      "/data/institute-index/fixtures/g03-g04-synthetic-pass1.json",
+      "/data/institute-index/fixtures/g03-g04-synthetic-pass2.json"
+    ]
+  },
+  "blockers_to_start": [
+    "G03 real independent double-scoring has not started.",
+    "No frozen Pilot 20 score-pair corpus exists.",
+    "No real indicator-level or dimension-level agreement report exists.",
+    "Human review of any material low-agreement indicator has not occurred."
+  ],
+  "human_gate": "Only authorised methodological review may decide whether observed agreement is acceptable, whether anchors require revision, and whether G04 may pass."
+}
