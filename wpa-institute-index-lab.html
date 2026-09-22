@@ -130,7 +130,7 @@ document.getElementById('rows').innerHTML=D.map(d=>'<section class="panel" style
 function renderGates(gates, source='fallback'){
   const counts={PASSED:0,IN_PROGRESS:0,NOT_STARTED:0,LOCKED:0};
   gates.forEach(g=>{counts[g.status]=(counts[g.status]||0)+1;});
-  document.getElementById('gates').innerHTML=gates.map(g=>'<div class="gate"><strong>'+g.id+' · '+g.name+'</strong> · <code>'+g.status+'</code>'+(g.pass_rule?'<br><span class="muted small">'+g.pass_rule+'</span>':'')+'</div>').join('');
+  document.getElementById('gates').innerHTML=gates.map(g=>'<div class="gate"><strong>'+g.id+' · '+g.name+'</strong> · <code>'+g.status+'</code>'+(g.substatus?'<br><span class="muted small">Control state: '+g.substatus+'</span>':'')+(g.pass_rule?'<br><span class="muted small">'+g.pass_rule+'</span>':'')+(Array.isArray(g.blockers)&&g.blockers.length?'<br><span class="muted small"><strong>Blockers:</strong> '+g.blockers.join(' · ')+'</span>':'')+(g.evidence?'<br><a class="small" href="'+g.evidence+'">Open gate evidence</a>':'')+'</div>').join('');
   document.getElementById('gateSummary').textContent=gates.length+' governed gates · '+(counts.PASSED||0)+' passed · '+(counts.IN_PROGRESS||0)+' in progress · '+(counts.NOT_STARTED||0)+' not started · '+(counts.LOCKED||0)+' locked · source: '+source+'.';
 }
 renderGates(gateFallback);
