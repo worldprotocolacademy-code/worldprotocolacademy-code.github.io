@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G09",
+  "gate_name": "Language and regional fairness",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_MULTILINGUAL_REGIONAL_INVARIANCE_PREPARED__REAL_EDGE_CASES_PENDING",
+  "pass_rule": "Non-English primary evidence workflow tested; no score advantage is created merely by English-language or web-marketing intensity.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-language-antigaming.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g09-language-regional-fairness-synthetic.json"
+  },
+  "fairness_contract": {
+    "primary_evidence_language_is_not_quality_proxy": true,
+    "translation_need_is_not_quality_penalty": true,
+    "english_language_share_is_not_quality_proxy": true,
+    "web_marketing_intensity_is_not_quality_proxy": true,
+    "follower_counts_are_not_quality_proxy": true,
+    "source_quality_and_mission_relevance_still_required": true,
+    "automatic_fairness_pass_threshold": false
+  },
+  "synthetic_expectations": {
+    "profiles": 6,
+    "regions_covered": 5,
+    "non_english_primary_evidence_profiles": 5,
+    "expected_absolute_composite_each": 80,
+    "expected_evidence_coverage_each": 100,
+    "english_marketing_advantage_points": 0,
+    "translation_penalty_points": 0
+  },
+  "interpretation_rule": "Synthetic invariance proves only that language, region and marketing intensity are excluded from the formula when evidence quality and mission relevance are held constant. G09 still requires real non-English and cross-regional evidence workflow tests.",
+  "blockers_to_start": [
+    "No frozen Pilot 20 with meaningful regional and language diversity exists.",
+    "No authorised non-English primary-evidence workflow has been exercised on real Pilot 20 cases.",
+    "No real comparison of English-rich versus non-English evidence discoverability exists.",
+    "No human review of regional/language missingness patterns has occurred."
+  ],
+  "human_gate": "Software may detect score drift linked to language/region proxies, but only authorised methodological review may conclude that the workflow is fair enough for G09 to pass."
+}
