@@ -32,8 +32,12 @@ for(const section of registry.operational_sections||[]){
   if(!section.primary_action) errors.push(`${section.id}: missing primary_action`);
   if(!institute.includes(`id="${section.id}"`)) errors.push(`${section.id}: section not found in institute.html`);
   const body=sectionBody(section.id);
-  if(body && !body.includes(`href="${section.primary_action}"`) && !body.includes(`href="${String(section.primary_action).replace(/^\//,"")}"`)){
-    errors.push(`${section.id}: primary_action is not linked from its Institute section: ${section.primary_action}`);
+  if(body){
+    const primaryTarget=localTarget(section.primary_action);
+    const bodyTargets=[...body.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>/gi)].map(m=>localTarget(m[1])).filter(Boolean);
+    if(primaryTarget && !bodyTargets.includes(primaryTarget)){
+      errors.push(`${section.id}: primary_action is not linked from its Institute section: ${section.primary_action}`);
+    }
   }
 
   for(const route of [section.primary_action,...(section.secondary_actions||[])]){
