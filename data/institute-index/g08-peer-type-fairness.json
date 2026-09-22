@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G08",
+  "gate_name": "Peer-type fairness",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_PEER_INVARIANCE_PREPARED__REAL_EDGE_CASES_PENDING",
+  "pass_rule": "State academies, university-linked, independent protocol and international training bodies tested for structural advantage/disadvantage unrelated to intended quality constructs.",
+  "peer_types": [
+    "STATE_FOREIGN_SERVICE",
+    "INDEPENDENT_PROTOCOL",
+    "UNIVERSITY_LINKED",
+    "INTERNATIONAL_TRAINING"
+  ],
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-redundancy-fairness.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g08-peer-type-fairness-synthetic.json"
+  },
+  "fairness_contract": {
+    "absolute_standard_referenced_score_first": true,
+    "peer_type_may_not_change_absolute_score": true,
+    "forbidden_hidden_quality_proxies": [
+      "institution size",
+      "budget",
+      "country power/prestige",
+      "parent-brand prestige",
+      "social-media audience"
+    ],
+    "peer_percentile_secondary_only": true,
+    "minimum_peer_sample_for_percentile": 5,
+    "automatic_fairness_pass_threshold": false
+  },
+  "synthetic_expectations": {
+    "profiles": 4,
+    "expected_absolute_composite_each": 80,
+    "peer_type_score_invariance": true,
+    "peer_percentile_available": false,
+    "expected_peer_percentile_status": "WITHHELD_INSUFFICIENT_PEER_SAMPLE"
+  },
+  "interpretation_rule": "Synthetic invariance proves only that forbidden contextual proxies are not in the computational formula. G08 still requires real edge-case review for structural evidence availability, mission differences and indicator applicability.",
+  "blockers_to_start": [
+    "No frozen Pilot 20 with all four peer types is available.",
+    "No real small-specialist versus large state/university edge-case review exists.",
+    "No real peer-type missingness and indicator-applicability analysis exists.",
+    "No authorised human fairness review has occurred."
+  ],
+  "human_gate": "Software may detect score differences and proxy leakage; only authorised methodological review may determine whether an indicator structurally advantages or disadvantages a peer type."
+}
