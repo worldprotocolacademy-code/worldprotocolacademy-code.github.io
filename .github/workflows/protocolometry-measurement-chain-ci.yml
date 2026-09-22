@@ -21,6 +21,7 @@ on:
       - 'scripts/protocolometry-redundancy-fairness.mjs'
       - 'scripts/protocolometry-language-antigaming.mjs'
       - 'scripts/protocolometry-correction-coi.mjs'
+      - 'scripts/protocolometry-shadow-stability.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -59,6 +60,7 @@ jobs:
           g10=json.loads((root/'data/institute-index/g10-anti-gaming-review.json').read_text(encoding='utf-8'))
           g11=json.loads((root/'data/institute-index/g11-correction-test.json').read_text(encoding='utf-8'))
           g12=json.loads((root/'data/institute-index/g12-conflict-of-interest-control.json').read_text(encoding='utf-8'))
+          g13=json.loads((root/'data/institute-index/g13-shadow-index-stability.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -160,6 +162,14 @@ jobs:
           assert g12['control_contract']['concealment_prohibited'] is True
           assert g12['control_contract']['payment_cannot_influence_outcome'] is True
           assert g12['control_contract']['automatic_misconduct_inference'] is False
+          gate13=next(x for x in gates['gates'] if x['id']=='G13')
+          assert gate13['status']=='LOCKED'
+          assert gate13['evidence']=='/data/institute-index/g13-shadow-index-stability.json'
+          assert g13['status']=='LOCKED'
+          assert g13['hard_boundaries']['real_institution_shadow_table_allowed'] is False
+          assert g13['hard_boundaries']['public_ordinal_output_allowed'] is False
+          assert g13['hard_boundaries']['automatic_gate_unlock'] is False
+          assert g13['hard_boundaries']['current_release_mode']=='R0'
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -243,6 +253,10 @@ jobs:
           assert 'G11 · Correction Test' in files['strategy']
           assert 'G12 · Conflict-of-Interest Control' in files['strategy']
           assert 'without creating a fake public CPR entry' in files['strategy']
+          assert '/data/institute-index/g13-shadow-index-stability.json' in files['lab']
+          assert 'G13 · Shadow Index Stability' in files['strategy']
+          assert 'LOCKED · SYNTHETIC STABILITY ENGINE PREPARED' in files['strategy']
+          assert 'Release mode remains R0' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -517,6 +531,52 @@ jobs:
           print('G11/G12 synthetic governance diagnostics: PASS')
           PY
 
+      - name: Validate synthetic G13 Shadow Index stability diagnostics
+        run: |
+          node --check scripts/protocolometry-shadow-stability.mjs
+          node scripts/protocolometry-shadow-stability.mjs             data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json             > /tmp/g13-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report=json.loads(Path('/tmp/g13-report.json').read_text(encoding='utf-8'))
+          fixture=json.loads(Path('data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json').read_text(encoding='utf-8'))
+          blueprint=json.loads(Path('data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
+
+          assert report['synthetic_only'] is True
+          assert report['public_release_prohibited'] is True
+          by={x['scenario_id']:x for x in report['scenarios']}
+          stable=by['STABLE_SMALL_NOISE']
+          unstable=by['MATERIAL_OUTLIER']
+
+          exp=fixture['expected']['stable']
+          for key in ['spearman_rho','pairwise_reversal_count','pairwise_reversal_rate_percent','max_absolute_rank_shift','max_absolute_score_delta','mean_absolute_score_delta','outlier_count','human_review_required']:
+              assert stable[key]==exp[key], (key,stable[key],exp[key])
+
+          exp=fixture['expected']['unstable']
+          for key in ['spearman_rho','pairwise_reversal_count','pairwise_reversal_rate_percent','max_absolute_rank_shift','max_absolute_score_delta','mean_absolute_score_delta','outlier_count','human_review_required']:
+              assert unstable[key]==exp[key], (key,unstable[key],exp[key])
+
+          assert stable['automatic_public_release'] is False
+          assert stable['automatic_gate_unlock'] is False
+          assert unstable['automatic_public_release'] is False
+          assert unstable['automatic_gate_unlock'] is False
+          assert unstable['outlier_ids']==['SYNTH-F']
+
+          s5=next(x for x in blueprint['execution_stages'] if x['stage']=='S5')
+          s6=next(x for x in blueprint['execution_stages'] if x['stage']=='S6')
+          assert s5['status']=='LOCKED'
+          assert '/data/institute-index/g13-shadow-index-stability.json' in s5['preflight_assets']
+          assert '/data/institute-index/g11-correction-test.json' not in s5['preflight_assets']
+          assert '/data/institute-index/g12-conflict-of-interest-control.json' not in s5['preflight_assets']
+          assert '/data/institute-index/g11-correction-test.json' in s6['preflight_assets']
+          assert '/data/institute-index/g12-conflict-of-interest-control.json' in s6['preflight_assets']
+          assert blueprint['current_state']['g13_status']=='LOCKED'
+          assert blueprint['current_state']['real_shadow_index_runs']==0
+          assert blueprint['current_state']['current_release_mode']=='R0'
+          print('G13 synthetic Shadow Index stability diagnostics: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -549,6 +609,8 @@ jobs:
           python -m json.tool data/institute-index/g10-anti-gaming-review.json >/dev/null
           python -m json.tool data/institute-index/g11-correction-test.json >/dev/null
           python -m json.tool data/institute-index/g12-conflict-of-interest-control.json >/dev/null
+          python -m json.tool data/institute-index/g13-shadow-index-stability.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g11-correction-cycle-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g12-coi-recusal-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g09-language-regional-fairness-synthetic.json >/dev/null

@@ -164,11 +164,19 @@
       ],
       "release_effect": "Names and ordinal positions remain non-public",
       "preflight_assets": [
-        "/data/institute-index/g11-correction-test.json",
-        "/data/institute-index/g12-conflict-of-interest-control.json",
-        "/scripts/protocolometry-correction-coi.mjs"
+        "/data/institute-index/g13-shadow-index-stability.json",
+        "/data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json",
+        "/scripts/protocolometry-shadow-stability.mjs"
       ],
-      "preflight_status": "PREPARED_SYNTHETICALLY__REAL_GOVERNANCE_TESTS_PENDING"
+      "preflight_status": "SYNTHETIC_STABILITY_ENGINE_PREPARED__REAL_SHADOW_INDEX_LOCKED",
+      "unlock_conditions": [
+        "G01/G02 provide a frozen and authorised Pilot 20 corpus",
+        "G03/G04 real independent scoring and human reconciliation completed",
+        "G05-G10 real robustness/fairness/anti-gaming validation completed",
+        "G12 real reviewer COI control exercised",
+        "validated reconciled Pilot 20 score corpus available"
+      ],
+      "hard_boundary": "G11 is not required to unlock S5 because correction/institution review is S6 after Shadow Index; S5 remains non-public and names/ordinal positions remain internal."
     },
     {
       "stage": "S6",
@@ -183,7 +191,13 @@
         "accepted/rejected evidence decisions",
         "versioned score changes where justified"
       ],
-      "release_effect": "No public ordinal rank until correction window closes"
+      "release_effect": "No public ordinal rank until correction window closes",
+      "preflight_assets": [
+        "/data/institute-index/g11-correction-test.json",
+        "/data/institute-index/g12-conflict-of-interest-control.json",
+        "/scripts/protocolometry-correction-coi.mjs"
+      ],
+      "preflight_status": "G11_G12_GOVERNANCE_REHEARSAL_PREPARED__REAL_CORRECTION_WINDOW_LOCKED"
     },
     {
       "stage": "S7",
@@ -274,7 +288,10 @@
     "g11_status": "NOT_STARTED",
     "g11_preflight": "PREPARED",
     "g12_status": "NOT_STARTED",
-    "g12_preflight": "PREPARED"
+    "g12_preflight": "PREPARED",
+    "g13_status": "LOCKED",
+    "g13_preflight": "PREPARED",
+    "real_shadow_index_runs": 0
   },
   "next_operational_milestones": [
     "Reconcile the seven legacy entity-resolution-first coverage cases against the current REV7 corpus before using them for scoring eligibility.",

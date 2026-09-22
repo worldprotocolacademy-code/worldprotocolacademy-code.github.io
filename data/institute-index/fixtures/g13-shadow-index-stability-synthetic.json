@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "shadow_index_stability",
+  "synthetic_only": true,
+  "real_institutions_used": false,
+  "public_release_prohibited": true,
+  "methodology_version": "0.9.1-candidate",
+  "shadow_run_id": "SYNTH-G13-SHADOW-001",
+  "baseline": {
+    "snapshot_id": "T0",
+    "scores": {
+      "SYNTH-A": 82,
+      "SYNTH-B": 80,
+      "SYNTH-C": 78,
+      "SYNTH-D": 76,
+      "SYNTH-E": 74,
+      "SYNTH-F": 72
+    }
+  },
+  "scenarios": [
+    {
+      "id": "STABLE_SMALL_NOISE",
+      "explanation": "Small score drift without ordinal movement.",
+      "scores": {
+        "SYNTH-A": 81.5,
+        "SYNTH-B": 80.4,
+        "SYNTH-C": 78.2,
+        "SYNTH-D": 75.8,
+        "SYNTH-E": 74.3,
+        "SYNTH-F": 72.2
+      }
+    },
+    {
+      "id": "MATERIAL_OUTLIER",
+      "explanation": "One synthetic profile jumps sharply to exercise outlier and ordinal-instability detection.",
+      "scores": {
+        "SYNTH-A": 82.2,
+        "SYNTH-B": 80.1,
+        "SYNTH-C": 78.1,
+        "SYNTH-D": 76.2,
+        "SYNTH-E": 74.1,
+        "SYNTH-F": 84
+      }
+    }
+  ],
+  "diagnostic_review_triggers": {
+    "absolute_score_delta_at_least": 5,
+    "absolute_rank_shift_at_least": 3,
+    "pairwise_reversal_rate_percent_at_least": 20,
+    "spearman_rho_below": 0.9
+  },
+  "expected": {
+    "stable": {
+      "scenario_id": "STABLE_SMALL_NOISE",
+      "spearman_rho": 1,
+      "pairwise_reversal_count": 0,
+      "pairwise_reversal_rate_percent": 0,
+      "max_absolute_rank_shift": 0,
+      "max_absolute_score_delta": 0.5,
+      "mean_absolute_score_delta": 0.3,
+      "outlier_count": 0,
+      "human_review_required": false
+    },
+    "unstable": {
+      "scenario_id": "MATERIAL_OUTLIER",
+      "spearman_rho": 0.142857,
+      "pairwise_reversal_count": 5,
+      "pairwise_reversal_rate_percent": 33.3333,
+      "max_absolute_rank_shift": 5,
+      "max_absolute_score_delta": 12,
+      "mean_absolute_score_delta": 2.1167,
+      "outlier_count": 1,
+      "human_review_required": true
+    }
+  },
+  "boundary": "This fixture tests the Shadow Index stability detector only. It is not a real comparative table, does not use real institutions, and cannot unlock G13 or produce a public ordinal ranking."
+}
