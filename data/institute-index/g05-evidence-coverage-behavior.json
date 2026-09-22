@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G05",
+  "gate_name": "Evidence coverage behavior",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_MISSINGNESS_STRESS_PREPARED__REAL_EDGE_CASES_PENDING",
+  "pass_rule": "80% overall and 60% per-dimension thresholds tested against high- and low-transparency institutions; no systematic missing-data penalty is introduced indirectly.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-coverage-weight-stress.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g05-evidence-coverage-synthetic.json"
+  },
+  "synthetic_expectations": {
+    "full_evidence_composite": 80,
+    "balanced_80pct_evidence_composite": 80,
+    "balanced_80pct_evidence_status": "AVAILABLE",
+    "below_overall_74pct_status": "INSUFFICIENT_EVIDENCE_FOR_COMPOSITE",
+    "dimension_fail_overall_82pct_status": "INSUFFICIENT_EVIDENCE_FOR_COMPOSITE",
+    "verified_nonconformance_composite": 76.8,
+    "imputation_used": false,
+    "missing_data_penalty_used": false
+  },
+  "interpretation_rule": "Synthetic tests may demonstrate that NE is withheld rather than zeroed or imputed. G05 cannot pass until the same threshold behavior is tested on approved real Pilot 20 edge cases across transparency, region and peer type.",
+  "blockers_to_start": [
+    "Frozen Pilot 20 does not exist.",
+    "G02 has zero authorised method-test-ready dossiers.",
+    "No high-transparency versus low-transparency real-institution edge-case set is approved.",
+    "No real missingness analysis by region and peer type exists."
+  ],
+  "human_gate": "Only authorised methodological review may conclude whether threshold behavior is fair enough for G05 to pass."
+}
