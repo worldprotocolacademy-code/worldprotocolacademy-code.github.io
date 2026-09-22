@@ -82,6 +82,10 @@ Flag institutions whose composite or peer placement changes materially under rea
 ### Stage 6 — Correlation and redundancy
 Check whether two indicators repeatedly measure the same institutional signal.
 
+Before real Pilot 20 analysis, synthetic matrices may verify the correlation/overlap engine. Synthetic high correlation or shared-source overlap is only a detector test and does not prove that two real indicators are conceptually redundant.
+
+For real analysis, report both statistical association and shared-evidence overlap where feasible. Neither correlation nor overlap may automatically delete, merge or reweight an indicator.
+
 High correlation triggers human review of:
 - conceptual overlap;
 - shared evidence sources;
@@ -96,6 +100,10 @@ Run edge-case review across:
 - INDEPENDENT_PROTOCOL;
 - UNIVERSITY_LINKED;
 - INTERNATIONAL_TRAINING.
+
+Synthetic peer profiles may verify that peer type, institution size, budget, country prestige, parent-brand prestige and social-media audience are excluded from the absolute standard-referenced scoring formula. Synthetic invariance does not satisfy G08.
+
+Peer percentile remains a secondary diagnostic and must be withheld when the minimum peer sample is not met.
 
 Questions:
 - Does an indicator structurally privilege large universities?
