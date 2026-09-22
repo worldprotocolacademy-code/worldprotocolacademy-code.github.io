@@ -81,7 +81,7 @@
 
 <section style="margin-top:34px">
 <h2>Validation before v1.0</h2>
-<div class="panel" id="gates"></div>
+<div class="panel"><p class="muted" id="gateSummary">Loading governed readiness gates…</p><div id="gates"></div></div>
 </section>
 
 <section style="margin-top:34px">
@@ -95,7 +95,7 @@
 <li>secondary peer percentile only when minimum-sample rules are satisfied;</li>
 <li>methodology version, dataset snapshot date and correction/dispute status.</li>
 </ul>
-<p><a href="/data/institute-index-methodology-candidate.json">Open machine-readable methodology JSON</a> · <a href="/wpa-index-appeals-and-corrections.html">Corrections & Appeals</a> · <a href="/master-list-verification.html">Master List Verification</a> · <a href="/aab-governance.html">AAB Governance</a></p>
+<p><a href="/data/institute-index-methodology-candidate.json">Open machine-readable methodology JSON</a> · <a href="/data/institute-index/v1-readiness-gates.json">Readiness Gates JSON</a> · <a href="/data/institute-index/measurement-chain-status.json">Measurement Chain Status</a> · <a href="/wpa-institute-measurement-ranking-strategy.html">Execution Strategy</a> · <a href="/wpa-index-appeals-and-corrections.html">Corrections & Appeals</a> · <a href="/master-list-verification.html">Master List Verification</a> · <a href="/protocolometry-center.html">Protocolometry Center</a> · <a href="/aab-governance.html">AAB Governance</a></p>
 </section>
 </main>
 <footer><div class="wrap">WPA Institute Index · Candidate methodology · Measurement is not accreditation</div></footer>
@@ -106,11 +106,35 @@ const D=[
 {id:'D3',name:'Professional Practice',weight:25,iw:5,items:[['I11','Documented institutional practice'],['I12','Applied protocol & diplomacy cases'],['I13','Simulations & practice-based training'],['I14','Practitioner integration'],['I15','Knowledge transfer & documented impact']]},
 {id:'D4',name:'Transparency, Governance & Cooperation',weight:20,iw:4,items:[['I16','Institutional identity & governance clarity'],['I17','Evidence, provenance & correction mechanism'],['I18','Verified international cooperation'],['I19','Digital & multilingual public transparency'],['I20','Ethics, COI, data & credential governance']]}
 ];
-const gates=['Record-level evidence and source-verification procedure documented.','Twenty indicator definitions and 0–5/NE scoring anchors tested for consistency.','Pilot 20 dry run completed without public ordinal ranking.','Independent double-scoring completed and material disagreements logged.','Weight-sensitivity and indicator-correlation diagnostics completed.','Evidence-coverage thresholds tested against edge cases.','Conflict-of-interest and correction procedure published and tested.','AAB or equivalent independent methodological review completed and logged after formal constitution.','Public wording distinguishes measurement from accreditation, legal recognition and official ranking.','Exact v1.0 methodology, dataset snapshot, formulas and changelog frozen before any public ordinal ranking decision.'];
+const gateFallback=[
+{id:'G01',name:'Universe control',status:'IN_PROGRESS'},
+{id:'G02',name:'Evidence corpus',status:'IN_PROGRESS'},
+{id:'G03',name:'Scoring reproducibility',status:'NOT_STARTED'},
+{id:'G04',name:'Inter-rater reliability',status:'NOT_STARTED'},
+{id:'G05',name:'Evidence coverage behavior',status:'NOT_STARTED'},
+{id:'G06',name:'Weight robustness',status:'NOT_STARTED'},
+{id:'G07',name:'Indicator redundancy',status:'NOT_STARTED'},
+{id:'G08',name:'Peer-type fairness',status:'NOT_STARTED'},
+{id:'G09',name:'Language and regional fairness',status:'NOT_STARTED'},
+{id:'G10',name:'Anti-gaming review',status:'NOT_STARTED'},
+{id:'G11',name:'Correction test',status:'NOT_STARTED'},
+{id:'G12',name:'Conflict-of-interest control',status:'NOT_STARTED'},
+{id:'G13',name:'Shadow Index stability',status:'LOCKED'},
+{id:'G14',name:'Methodology freeze',status:'LOCKED'},
+{id:'G15',name:'Independent methodological review',status:'LOCKED'},
+{id:'G16',name:'Publication decision',status:'LOCKED'}
+];
 document.getElementById('indicatorRegister').innerHTML=D.map(d=>'<article class="card" style="margin:12px 0"><h3>'+d.id+' · '+d.name+' · '+d.weight+'%</h3>'+d.items.map(x=>'<div class="indicator"><strong>'+x[0]+' · '+x[1]+'</strong><br><span class="muted small">Indicator weight: '+d.iw+'%</span></div>').join('')+'</article>').join('');
 const opts='<option value="NE">NE · Not evidenced</option>'+[0,1,2,3,4,5].map(n=>'<option value="'+n+'">'+n+'</option>').join('');
 document.getElementById('rows').innerHTML=D.map(d=>'<section class="panel" style="margin:14px 0"><h3>'+d.id+' · '+d.name+' · '+d.weight+'%</h3>'+d.items.map(x=>'<div class="score-grid"><label for="'+x[0]+'"><strong>'+x[0]+' · '+x[1]+'</strong><br><span class="muted small">Weight '+d.iw+'%</span></label><select id="'+x[0]+'">'+opts+'</select></div>').join('')+'</section>').join('');
-document.getElementById('gates').innerHTML=gates.map((g,i)=>'<div class="gate"><strong>Gate '+(i+1)+'</strong> · '+g+'</div>').join('');
+function renderGates(gates, source='fallback'){
+  const counts={PASSED:0,IN_PROGRESS:0,NOT_STARTED:0,LOCKED:0};
+  gates.forEach(g=>{counts[g.status]=(counts[g.status]||0)+1;});
+  document.getElementById('gates').innerHTML=gates.map(g=>'<div class="gate"><strong>'+g.id+' · '+g.name+'</strong> · <code>'+g.status+'</code>'+(g.pass_rule?'<br><span class="muted small">'+g.pass_rule+'</span>':'')+'</div>').join('');
+  document.getElementById('gateSummary').textContent=gates.length+' governed gates · '+(counts.PASSED||0)+' passed · '+(counts.IN_PROGRESS||0)+' in progress · '+(counts.NOT_STARTED||0)+' not started · '+(counts.LOCKED||0)+' locked · source: '+source+'.';
+}
+renderGates(gateFallback);
+fetch('/data/institute-index/v1-readiness-gates.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(j=>{if(Array.isArray(j.gates)&&j.gates.length===16)renderGates(j.gates,'v1-readiness-gates.json');}).catch(()=>{});
 document.getElementById('calcBtn').onclick=()=>{
  let totalContribution=0,evidenceWeight=0,dimensionResults=[],allDimensionsPass=true;
  D.forEach(d=>{let dc=0,dw=0;d.items.forEach(x=>{const v=document.getElementById(x[0]).value;if(v!=='NE'){const n=Number(v);dc+=(n/5)*d.iw;dw+=d.iw;totalContribution+=(n/5)*d.iw;evidenceWeight+=d.iw;}});const cov=d.weight?100*dw/d.weight:0;const ds=dw?100*dc/dw:null;if(cov<60)allDimensionsPass=false;dimensionResults.push({d,ds,cov});});
