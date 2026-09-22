@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G03",
+  "gate_name": "Scoring reproducibility",
+  "status": "NOT_STARTED",
+  "substatus": "PREPARED_FOR_CONTROLLED_PILOT__BLOCKED_BY_G01_G02",
+  "pass_rule": "Two independent scoring passes completed on Pilot 20 with disagreement log and human reconciliation.",
+  "purpose": "Prepare a reproducible independent double-scoring workflow without scoring real institutions before the governed Pilot 20 is frozen.",
+  "prerequisites": {
+    "g01_status_required": "PASSED",
+    "g02_status_required": "PASSED_OR_PILOT20_ELIGIBLE_CORPUS_FORMALLY_FROZEN",
+    "pilot20_ids_frozen_required": true,
+    "approved_for_method_test_dossiers_required": 20,
+    "current_g01_status": "IN_PROGRESS",
+    "current_g02_status": "IN_PROGRESS",
+    "current_method_test_ready_dossiers": 0
+  },
+  "scoring_contract": {
+    "same_frozen_methodology_version": true,
+    "same_frozen_dossier_snapshot": true,
+    "separate_assessor_ids_required": true,
+    "pass_1_and_pass_2_locked_before_comparison": true,
+    "other_pass_visible_before_lock": false,
+    "independent_scoring_required": true,
+    "no_mechanical_averaging": true,
+    "material_disagreement_rule": "Numeric difference >=2 points, or NE versus numeric, requires explicit disagreement reason and human reconciliation.",
+    "public_ordinal_rank": null
+  },
+  "prepared_assets": {
+    "scoring_record_schema": "/data/institute-index/scoring-record.schema.json",
+    "reliability_engine": "/scripts/protocolometry-reliability.mjs",
+    "synthetic_pass_1": "/data/institute-index/fixtures/g03-g04-synthetic-pass1.json",
+    "synthetic_pass_2": "/data/institute-index/fixtures/g03-g04-synthetic-pass2.json"
+  },
+  "synthetic_preflight": {
+    "real_institutions_used": false,
+    "public_ranking_created": false,
+    "expected_exact_agreement_percent": 70,
+    "expected_within_one_agreement_percent": 85,
+    "expected_material_disagreements": 3,
+    "expected_numeric_mean_absolute_difference": 0.4375,
+    "role": "Software and rubric-diagnostics preflight only; it is not evidence for passing G03."
+  },
+  "blockers_to_start": [
+    "G01 scoring Pilot 20 universe is not frozen.",
+    "G02 has zero authorised method-test-ready dossiers.",
+    "Two independent assessor assignments have not been issued against a frozen Pilot 20.",
+    "No real Pilot 20 pass records exist."
+  ],
+  "human_gate": "A machine may compute disagreement diagnostics, but it may not reconcile contested scores or mark G03 PASSED. Human reconciliation and an authorised gate decision are required."
+}
