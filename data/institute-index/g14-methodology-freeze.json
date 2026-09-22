@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G14",
+  "gate_name": "Methodology freeze",
+  "status": "LOCKED",
+  "substatus": "FREEZE_CANDIDATE_MANIFEST_PREPARED__FINAL_V1_BLOCKED_BY_G15_AND_REAL_VALIDATION",
+  "pass_rule": "Exact indicator definitions, anchors, weights, formulas, evidence rules, snapshot date, peer logic, correction procedure and changelog frozen as v1.0.",
+  "prepared_assets": {
+    "manifest": "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json",
+    "changelog": "/data/institute-index/protocolometry-v1-freeze-candidate-changelog.md",
+    "preflight_engine": "/scripts/protocolometry-freeze-preflight.mjs"
+  },
+  "candidate_status": {
+    "methodology_version": "0.9.1-candidate",
+    "candidate_integrity_check_available": true,
+    "git_blob_fingerprints_locked_for_candidate": true,
+    "sha256_preview_available": true,
+    "final_sha256_lockfile_generated": false,
+    "v1_frozen": false
+  },
+  "finalisation_dependency": {
+    "g15_independent_review_required": true,
+    "real_correction_cycle_required": true,
+    "accepted_review_changes_must_precede_final_checksums": true,
+    "operational_order": [
+      "prepare freeze candidate",
+      "G15 independent review",
+      "apply/document accepted changes",
+      "final G14 freeze closure with SHA-256 lockfile",
+      "G16 publication decision"
+    ]
+  },
+  "blockers": [
+    "G01-G13 real validation evidence is incomplete.",
+    "G11 real correction-cycle evidence is not completed.",
+    "G15 independent methodological review has not been completed.",
+    "Final SHA-256 lockfile does not exist.",
+    "No authorised human final-freeze decision record exists."
+  ],
+  "hard_boundaries": {
+    "candidate_must_not_be_labeled_v1": true,
+    "automatic_finalize_command_available": false,
+    "automatic_gate_unlock": false,
+    "release_mode_change_allowed": false,
+    "current_release_mode": "R0"
+  },
+  "human_gate": "CI may verify candidate integrity and prerequisites but only authorised human governance may close G14 and declare Protocolometry v1.0 frozen."
+}
