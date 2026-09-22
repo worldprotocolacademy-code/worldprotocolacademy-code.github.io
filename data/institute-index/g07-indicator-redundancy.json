@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G07",
+  "gate_name": "Indicator redundancy",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_CORRELATION_OVERLAP_ENGINE_PREPARED__REAL_PILOT_MATRIX_PENDING",
+  "pass_rule": "Correlation/overlap diagnostics performed; double-counting or near-duplicate signals are documented and addressed.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-redundancy-fairness.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g07-indicator-redundancy-synthetic.json"
+  },
+  "diagnostic_contract": {
+    "correlation_metric": "Pearson r",
+    "correlation_review_trigger_absolute": 0.95,
+    "minimum_comparable_cases": 8,
+    "source_overlap_metric": "Jaccard",
+    "source_overlap_review_trigger": 0.8,
+    "automatic_indicator_deletion": false,
+    "automatic_indicator_merge": false,
+    "automatic_reweighting": false
+  },
+  "synthetic_expectations": {
+    "comparable_cases": 10,
+    "total_indicator_pairs": 190,
+    "flagged_pair_count": 1,
+    "flagged_pair": {
+      "indicator_a": "I12",
+      "indicator_b": "I13",
+      "pearson_r": 1,
+      "source_overlap_jaccard": 1
+    },
+    "human_review_required": true
+  },
+  "interpretation_rule": "High correlation or evidence overlap is a review trigger, not proof of conceptual redundancy. Human review must distinguish shared source/evidence effects from genuinely duplicated constructs.",
+  "blockers_to_start": [
+    "No frozen real Pilot 20 reconciled indicator matrix exists.",
+    "G03/G04 real scoring and reconciliation have not occurred.",
+    "No real shared-evidence overlap report exists.",
+    "No human conceptual review of flagged indicator pairs has occurred."
+  ],
+  "human_gate": "Only authorised methodological review may retain, revise, merge, split or reweight an indicator after redundancy diagnostics."
+}
