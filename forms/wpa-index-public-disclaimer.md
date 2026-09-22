@@ -1,8 +1,8 @@
 # WPA Institute Index / Master List — Public Disclaimer
 
 **Document ID:** WPA-INDEX-DISC-2026-001  
-**Version:** 1.2 — REV4 GOVERNANCE ALIGNMENT  
-**Date:** 9 September 2026  
+**Version:** 1.3 — REV7 GOVERNANCE ALIGNMENT  
+**Date:** 22 September 2026  
 **Institution:** World Protocol Academy  
 **Place:** Skopje, Republic of North Macedonia
 
@@ -12,20 +12,20 @@ The current canonical institutional dataset is **WPA Global Institutions Master 
 
 Current dataset facts are governed by `/MASTER-LIST-CANONICAL.md` and `/data/wpa-canonical-metrics-status.json` and presently include:
 
-- **162 total records**;
-- **161 external records**;
-- **156 distinct external institutions**;
+- **250 total records**;
+- **249 external records**;
+- **241 distinct external institutions**;
 - **1 internal WPA reference record**;
 - **8 dataset groups:** **A–D, G–I, R**;
 - source verification still in progress.
 
-The REV4 group counts are **A26 + B25 + C25 + D26 + G25 + H29 + I5 + R1 = 162**.
+The REV7 group counts are **A87 + B35 + C25 + D34 + G25 + H38 + I5 + R1 = 250**.
 
-The difference between 161 external records and 156 distinct external institutions is not a counting error. The canonical count file documents five methodological/entity adjustments: A005, B008, A010 under D001, C022/H027 (ICC duplicate context), and G002/G022 (IAEA duplicate context).
+The difference between 249 external records and 241 distinct external institutions reflects preserved methodological/entity adjustments documented in the canonical count file and REV7 reconciliation record.
 
 The group labels are **descriptive institutional-mapping categories**. They are not grades, accreditation classes, endorsements or a final ranking.
 
-Earlier references to REV2 counts, an A–I external taxonomy, seven groups, 125 institutions or a fully verified ranking are legacy wording and are not current REV4 claims.
+Earlier REV2–REV6 counts and labels are legacy wording and are not current REV7 claims.
 
 ## What this programme is
 
@@ -87,9 +87,12 @@ The programme must not be used for unsupported attacks, political retaliation, c
 
 ## Short public footer
 
-> **WPA institutional mapping is an independent public-source research programme. It is not accreditation, official recognition, legal judgment or paid ranking. REV4 source verification remains in progress. Corrections are free. AAB second-stage appeals are not claimed operational while the AAB remains in formation.**
+> **WPA institutional mapping is an independent public-source research programme. It is not accreditation, official recognition, legal judgment or paid ranking. REV7 legacy-record source verification remains in progress. Corrections are free. AAB second-stage appeals are not claimed operational while the AAB remains in formation.**
 
 **Correction contact:** institute@worldprotocolacademy.mk  
 **Public procedure:** `/wpa-index-appeals-and-corrections.html`  
 **Canonical counts:** `/MASTER-LIST-CANONICAL.md`  
 **AAB status:** `/aab-governance.html`
+
+
+**Measurement chain status:** `/data/institute-index/measurement-chain-status.json`

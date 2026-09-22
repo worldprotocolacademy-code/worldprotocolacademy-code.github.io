@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "status": "ACTIVE_GOVERNED_PRE_V1_MEASUREMENT_CHAIN",
+  "title": "WPA Master List Verification -> Appeals -> Institute Index -> Protocolometry Measurement Chain",
+  "principle": "Evidence before score; correction before consequential release; human authority before publication.",
+  "canonical_dataset": {
+    "version": "v1.0-CORRECTED-4F-REV7",
+    "source": "/MASTER-LIST-CANONICAL.md",
+    "public_surface": "/wpa-global-institutions-master-list.html",
+    "total_records": 250,
+    "external_records": 249,
+    "distinct_external_institutions": 241,
+    "records_with_website_url": 243,
+    "records_without_website_url": 7
+  },
+  "verification": {
+    "status": "REV7_CONTROL_LIST_SWEEP_COMPLETE_LEGACY_RECORD_VERIFICATION_IN_PROGRESS",
+    "public_surface": "/master-list-verification.html",
+    "machine_status": "/data/master-list-verification-status.json",
+    "record_level_totals_published": false,
+    "rule": "URL presence does not equal source verification."
+  },
+  "corrections_and_appeals": {
+    "status": "PUBLIC_FIRST_STAGE_OPERATIONAL_SECOND_STAGE_AAB_NOT_OPERATIONAL",
+    "public_surface": "/wpa-index-appeals-and-corrections.html",
+    "request_template": "/forms/wpa-index-correction-request-form.md",
+    "correction_log": "/data/wpa-index-correction-log.json",
+    "logged_material_cpr_entries": 0,
+    "aab_status": "FORMATION_PHASE",
+    "second_stage_final_decisions_operational": false,
+    "fixed_response_sla_claimed": false,
+    "human_authority_required": true
+  },
+  "measurement_methodology": {
+    "version": "0.9.1-candidate",
+    "status": "PUBLIC_METHODOLOGY_CANDIDATE_AAB_REVIEW_PENDING",
+    "public_lab": "/wpa-institute-index-lab.html",
+    "machine_methodology": "/data/institute-index-methodology-candidate.json",
+    "dimensions": 4,
+    "indicators": 20,
+    "weights_percent": {
+      "D1": 30,
+      "D2": 25,
+      "D3": 25,
+      "D4": 20
+    },
+    "scoring_scale": "0-5 plus NE",
+    "overall_minimum_evidence_coverage_percent": 80,
+    "dimension_minimum_evidence_coverage_percent": 60,
+    "missing_evidence_imputation": false,
+    "public_real_institution_ordinal_ranking": false
+  },
+  "readiness": {
+    "source": "/data/institute-index/v1-readiness-gates.json",
+    "total_gates": 16,
+    "passed": 0,
+    "in_progress": 2,
+    "not_started": 10,
+    "locked": 4,
+    "automatic_escalation": false,
+    "current_release_mode": "R0"
+  },
+  "execution": {
+    "source": "/data/institute-index/protocolometry-v1-execution-blueprint.json",
+    "active_stages": ["S0", "S1"],
+    "not_started_stages": ["S2", "S3", "S4"],
+    "locked_stages": ["S5", "S6", "S7", "S8"],
+    "current_public_release": "Methodology only; no real-institution comparative publication."
+  },
+  "pilot_distinction": {
+    "master_list_pilot20_evidence_package": "/data/global-institutions/pilot-20/v1.3.1/",
+    "protocolometry_scoring_pilot_protocol": "/data/institute-index/pilot-20-selection-protocol.json",
+    "rule": "The validated Master List Pilot 20 evidence package is not by itself completion of the Protocolometry double-scored Pilot 20 validation gates."
+  },
+  "chain": [
+    {
+      "step": 1,
+      "id": "canonical_mapping",
+      "label": "Canonical institutional mapping",
+      "path": "/wpa-global-institutions-master-list.html",
+      "output": "REV7 controlled institutional corpus"
+    },
+    {
+      "step": 2,
+      "id": "verification",
+      "label": "Evidence verification",
+      "path": "/master-list-verification.html",
+      "output": "claim-level evidence state and provenance"
+    },
+    {
+      "step": 3,
+      "id": "correction",
+      "label": "Correction / review / appeal",
+      "path": "/wpa-index-appeals-and-corrections.html",
+      "output": "versioned correction provenance or visible unresolved dispute"
+    },
+    {
+      "step": 4,
+      "id": "measurement",
+      "label": "Institute Index Laboratory",
+      "path": "/wpa-institute-index-lab.html",
+      "output": "synthetic or controlled candidate score under evidence thresholds"
+    },
+    {
+      "step": 5,
+      "id": "validation",
+      "label": "Protocolometry readiness and validation",
+      "path": "/wpa-institute-measurement-ranking-strategy.html",
+      "output": "reproducibility, fairness, robustness and correction testing"
+    },
+    {
+      "step": 6,
+      "id": "human_gate",
+      "label": "Human-governed release decision",
+      "path": "/protocolometry-center.html",
+      "output": "R0/R1/R2/R3 release mode only through explicit authority"
+    }
+  ],
+  "release_modes": {
+    "R0": "Methodology only; no real-institution comparative publication.",
+    "R1": "Reviewed institutional scorecards and evidence coverage without ordinal ordering.",
+    "R2": "Score bands or peer-group comparative profiles without strict ordinal ranking.",
+    "R3": "Ordinal ranking only after all gates pass and a separate explicit human governance decision."
+  },
+  "hard_boundaries": {
+    "not_accreditation": true,
+    "not_official_recognition": true,
+    "not_legal_judgment": true,
+    "not_paid_ranking": true,
+    "no_automatic_ranking": true,
+    "human_gate_required": true
+  }
+}

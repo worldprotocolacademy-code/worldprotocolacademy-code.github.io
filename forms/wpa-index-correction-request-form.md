@@ -1,17 +1,17 @@
 # WPA Institute Index — Correction & Review Request Form
 
 **Document ID:** WPA-INDEX-CORR-FORM-2026-001  
-**Version:** 1.1 — REV2 GOVERNANCE ALIGNMENT  
-**Date:** 26 August 2026  
+**Version:** 1.2 — REV7 GOVERNANCE ALIGNMENT  
+**Date:** 22 September 2026  
 **Institution:** World Protocol Academy  
 **Place:** Skopje, Republic of North Macedonia  
-**Submit to:** worldprotocolacademy@gmail.com
+**Submit to:** institute@worldprotocolacademy.mk
 
 ## Current scope
 
-This form applies to the **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV2** and to any future public Institute Index record that explicitly adopts this procedure.
+This form applies to the **WPA Global Institutions Master List v1.0-CORRECTED-4F-REV7** and to any future public Institute Index record that explicitly adopts this procedure.
 
-Current REV2 group scheme: **A–D, G–I, R**. One internal WPA reference record is tracked separately and is not an external comparison group.
+Current REV7 group scheme: **A–D, G–I, R**. One internal WPA reference record is tracked separately and is not an external comparison group.
 
 The Master List / Institute Index programme is **not accreditation, official recognition, legal judgment or a final verified ranking**. Source verification remains evidence-gated.
 
@@ -55,7 +55,7 @@ Until then:
 
 - WPA record ID (if known):
 - Institution / record name:
-- Current REV2 group: [A / B / C / D / G / H / I / R / internal WPA reference / unknown]
+- Current REV7 group: [A / B / C / D / G / H / I / R / internal WPA reference / unknown]
 - Public WPA URL (if any):
 - Version / access date:
 
@@ -125,7 +125,7 @@ Maximum 500 words:
 - [ ] urgent — explain the ongoing material harm or time-sensitive event
 - [ ] legal/rights-sensitive — explain without sharing confidential material unnecessarily
 
-WPA's operational target is a substantive response **generally within 30 calendar days**. This is a governance target, not a statutory or contractual service-level guarantee.
+No fixed response SLA is claimed. WPA handles correction requests under reasonable editorial capacity, with urgent legal/rights-sensitive matters prioritised where appropriate.
 
 ### J. Accuracy declaration
 
@@ -156,4 +156,5 @@ WPA should log:
 
 **Public procedure:** `/wpa-index-appeals-and-corrections.html`  
 **AAB governance:** `/aab-governance.html`  
-**Master List verification:** `/master-list-verification.html`
+**Master List verification:** `/master-list-verification.html`  
+**Measurement chain status:** `/data/institute-index/measurement-chain-status.json`
