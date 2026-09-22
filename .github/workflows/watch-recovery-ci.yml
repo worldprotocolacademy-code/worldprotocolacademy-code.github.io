@@ -14,6 +14,8 @@ on:
       - '.github/workflows/rss-registry-audit.yml'
       - 'generate-journal-watch.mjs'
       - 'scripts/publish_protected_main.sh'
+      - 'journal/watch/index.html'
+      - 'scripts/wpa-watch-freshness.js'
   workflow_dispatch:
 
 permissions:
@@ -70,9 +72,9 @@ jobs:
           grep -F 'cron: "17 */6 * * *"' .github/workflows/wpa-watch.yml
           grep -F "github.event_name == 'schedule'" .github/workflows/wpa-watch.yml
           grep -F 'Health gate before write' .github/workflows/wpa-watch.yml
-          grep -F "Number(status.sources_live)<20" .github/workflows/wpa-watch.yml
-          grep -F "Number(status.tier_a_live)<12" .github/workflows/wpa-watch.yml
-          grep -F "Number(status.live_ratio)<0.50" .github/workflows/wpa-watch.yml
+          grep -F "Number(status.sources_live)<40" .github/workflows/wpa-watch.yml
+          grep -F "Number(status.tier_a_live)<Math.ceil(Number(status.tier_a_total)*0.90)" .github/workflows/wpa-watch.yml
+          grep -F "Number(status.live_ratio)<0.90" .github/workflows/wpa-watch.yml
           grep -F "items.length<10" .github/workflows/wpa-watch.yml
           grep -F 'Publish healthy outputs through protected PR' .github/workflows/wpa-watch.yml
           grep -F 'scripts/publish_protected_main.sh' .github/workflows/wpa-watch.yml
@@ -87,7 +89,9 @@ jobs:
           grep -F "github.event.workflow_run.conclusion == 'success'" .github/workflows/wpa-journal-watch.yml
           grep -F 'Validate fresh WPA Watch upstream' .github/workflows/wpa-journal-watch.yml
           grep -F 'MAX_UPSTREAM_AGE_HOURS = 8' generate-journal-watch.mjs
-          grep -F 'MIN_LIVE_SOURCES = 20' generate-journal-watch.mjs
+          grep -F 'MIN_LIVE_SOURCES = 40' generate-journal-watch.mjs
+          grep -F 'MIN_LIVE_RATIO = 0.90' generate-journal-watch.mjs
+          grep -F 'MIN_TIER_A_RATIO = 0.90' generate-journal-watch.mjs
           grep -F 'source_tier: item.source_tier || null' generate-journal-watch.mjs
           grep -F 'source_provenance: item.source_provenance || null' generate-journal-watch.mjs
           grep -F 'MIN_ITEMS = 10' generate-journal-watch.mjs
@@ -100,17 +104,18 @@ jobs:
             exit 1
           fi
 
-      - name: Canonical five-discipline thematic scope
+      - name: Canonical five-discipline scope plus academic support track
         run: |
-          grep -F 'new Set(["protocol", "diplomacy", "pr", "security", "communicology"])' generate-journal-watch.mjs
+          grep -F 'new Set(["protocol", "diplomacy", "pr", "security", "communicology", "academic"])' generate-journal-watch.mjs
           grep -F 'thematic_scope: ["protocol", "diplomacy", "public_relations", "security", "communicology"]' generate-journal-watch.mjs
-          grep -F 'classification_version: "JW2.2"' generate-journal-watch.mjs
-          grep -F "queue.schema_version!=='2.2'||queue.classification_version!=='JW2.2'" .github/workflows/wpa-journal-watch.yml
+          grep -F 'support_tracks: ["academic_infrastructure"]' generate-journal-watch.mjs
+          grep -F 'CLASSIFICATION_VERSION = "JW2.3"' generate-journal-watch.mjs
+          grep -F "queue.schema_version!=='2.3'||queue.classification_version!=='JW2.3'" .github/workflows/wpa-journal-watch.yml
           grep -F "queue.thematic_scope.join(',')!=='protocol,diplomacy,public_relations,security,communicology'" .github/workflows/wpa-journal-watch.yml
-          if grep -F 'return "academic"' generate-journal-watch.mjs; then
-            echo 'academic must not be a sixth Journal Watch discipline' >&2
-            exit 1
-          fi
+          grep -F "queue.support_tracks.join(',')!=='academic_infrastructure'" .github/workflows/wpa-journal-watch.yml
+          grep -F 'person_profile_or_bio' generate-journal-watch.mjs
+          grep -F 'procurement_or_operational_notice' generate-journal-watch.mjs
+          grep -F 'production_editorial_candidates' generate-journal-watch.mjs
 
       - name: Protected-main publisher contract
         run: |

@@ -69,7 +69,7 @@ architecture = {
         {'id': 'protocolometry', 'status': 'OPERATIONAL_METHODOLOGICAL_CENTER'},
         {'id': 'academic_search', 'status': 'STAGING', 'version': '3.1'},
         {'id': 'wpa_watch', 'status': 'PUBLIC_SOURCE_CANDIDATE_MONITORING', 'human_verification_required': True},
-        {'id': 'journal_watch', 'status': 'STAGING_READY_EDITORIAL_REVIEW_REQUIRED'},
+        {'id': 'journal_watch', 'status': 'PRODUCTION_EDITORIAL_CANDIDATES_HUMAN_REVIEW_REQUIRED'},
         {'id': 'student_desk', 'status': 'BETA_GOVERNED_PUBLIC_PREVIEW', 'backend_required_before_live_operations': True}
     ],
     'evidence_and_governance': ['/data/wpa-academic-quality-standard.json', '/data/wpa-canonical-version-manifest.json', '/data/wpa-public-evidence-index.json', '/data/wpa-preventive-source-compliance-gate.json', '/data/wpa-student-operations-backend-schema.json'],
