@@ -1,8 +1,8 @@
-# WPA Journal Watch v0.1 STAGING READY
+# WPA Journal Watch — Production Editorial Candidate Queue
 
 WPA Journal Watch connects the WPA Journal with WPA Watch.
 
-It generates **daily topic candidates**, not automatic articles.
+It generates **production editorial topic candidates**, not automatic articles. Human editorial review remains mandatory.
 
 ## Public URLs after upload
 
