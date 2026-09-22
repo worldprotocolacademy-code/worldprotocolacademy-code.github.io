@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'institute.html'
+      - 'protocolometry-center.html'
       - 'tools/research-output-builder/**'
       - 'tools/academic-search-hub/**'
       - 'tools/wpa-watch/**'
@@ -15,6 +16,7 @@ on:
     branches: [main]
     paths:
       - 'institute.html'
+      - 'protocolometry-center.html'
       - 'tools/research-output-builder/**'
       - 'tools/academic-search-hub/**'
       - 'tools/wpa-watch/**'
@@ -46,7 +48,8 @@ jobs:
             'journal/index.html',
             'data/research-production-pipeline-status.json',
             'data/wpa-public-evidence-index.json',
-            'institute.html'
+            'institute.html',
+            'protocolometry-center.html'
           ]
           for p in required:
               assert (root/p).exists(), f'missing required path: {p}'
@@ -56,6 +59,7 @@ jobs:
           wpa_watch=(root/'tools/wpa-watch/index.html').read_text(encoding='utf-8')
           journal_watch=(root/'journal/watch/index.html').read_text(encoding='utf-8')
           institute=(root/'institute.html').read_text(encoding='utf-8')
+          protocolometry=(root/'protocolometry-center.html').read_text(encoding='utf-8')
           status=json.loads((root/'data/research-production-pipeline-status.json').read_text(encoding='utf-8'))
           evidence=json.loads((root/'data/wpa-public-evidence-index.json').read_text(encoding='utf-8'))
 
@@ -77,6 +81,13 @@ jobs:
           assert '/tools/research-output-builder/' in institute
           assert '/working-papers/' in institute
           assert '/protocol-notes/' in institute
+          assert 'Инструмент V · Research Output Production' in protocolometry
+          assert '/tools/research-output-builder/' in protocolometry
+          assert '/working-papers/' in protocolometry
+          assert '/protocol-notes/' in protocolometry
+          assert '→ Research Output Builder' in protocolometry
+          assert '→ Human Review' in protocolometry
+          assert '→ Working Paper / Protocol Note / Journal' in protocolometry
 
           assert status['status']=='PRODUCTION_FRONTEND_WORKFLOW_HUMAN_REVIEW_REQUIRED'
           assert 'Markdown' in status['generated_formats']
@@ -84,6 +95,8 @@ jobs:
           assert status['publication_routes']['working_papers']=='/working-papers/'
           assert status['publication_routes']['protocol_notes']=='/protocol-notes/'
           assert status['publication_routes']['journal']=='/journal/'
+          assert status['protocolometry_center']['integrated'] is True
+          assert status['protocolometry_center']['human_review_required'] is True
 
           rec=next(x for x in evidence['evidence'] if x['id']=='EVIDENCE-RESEARCH-PIPELINE-001')
           assert rec['path']=='/tools/research-output-builder/'
