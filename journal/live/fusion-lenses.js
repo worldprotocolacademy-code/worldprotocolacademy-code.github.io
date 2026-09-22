@@ -283,6 +283,15 @@
     });
   }
 
+  function syncPostEditorialItems(items, kind = "live") {
+    const enriched = sortForLens((Array.isArray(items) ? items : []).map(enrichItem));
+    if (kind === "ticker") state.tickerItems = enriched;
+    else state.liveItems = enriched;
+    state.payloadRevision += 1;
+    scheduleEnhance();
+    return enriched;
+  }
+
   function requestKind(input) {
     try {
       const value = typeof input === "string" ? input : input?.url;
@@ -618,6 +627,7 @@
     scoreProtocolImpact,
     enrichItem,
     lensScore,
+    syncPostEditorialItems,
     setActiveLens,
     getActiveLens: () => state.activeLens
   };

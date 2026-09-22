@@ -1,0 +1,104 @@
+name: WPA Journal Live Semantic Integrity CI
+
+on:
+  pull_request:
+    paths:
+      - 'journal/live/index.html'
+      - 'journal/live/fusion-lenses.js'
+      - 'journal/live/analyst-workflow.js'
+      - 'journal/live/x119-editorial-intelligence.js'
+      - 'journal/live/x1192-semantic-polish.js'
+      - 'journal/live/x1110-semantic-integrity.js'
+      - '.github/workflows/journal-live-semantic-integrity-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax checks
+        run: |
+          node --check journal/live/fusion-lenses.js
+          node --check journal/live/x1110-semantic-integrity.js
+
+      - name: Script order and integration contract
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('journal/live/index.html','utf8');
+          const order=[
+            'fusion-lenses.js',
+            'analyst-workflow.js',
+            'x119-editorial-intelligence.js',
+            'x1192-semantic-polish.js',
+            'x1110-semantic-integrity.js',
+            'analyst-core.js',
+            'live-app.js'
+          ].map(x=>html.indexOf(x));
+          if(order.some(x=>x<0)) throw new Error('Journal Live runtime script missing');
+          for(let i=1;i<order.length;i++) if(order[i]<=order[i-1]) throw new Error('Journal Live runtime script order regressed');
+          const fusion=fs.readFileSync('journal/live/fusion-lenses.js','utf8');
+          if(!fusion.includes('syncPostEditorialItems')) throw new Error('Fusion final-item synchronization missing');
+          NODE
+
+      - name: Semantic fixtures
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const code=fs.readFileSync('journal/live/x1110-semantic-integrity.js','utf8');
+          class H { set(){} delete(){} }
+          class R { constructor(body,opt={}){this.body=body;this.status=opt.status||200;this.statusText=opt.statusText||'';this.headers=opt.headers||new H();this.ok=true;} }
+          const listeners={};
+          const document={
+            readyState:'loading',
+            addEventListener:(name,fn)=>{listeners[name]=fn;},
+            dispatchEvent:()=>{},
+            getElementById:()=>null,
+            querySelectorAll:()=>[]
+          };
+          const window={
+            fetch:async()=>({ok:false}),
+            setTimeout:()=>0,
+            clearTimeout:()=>{},
+            WPA_X118_DATA:null,
+            WPA_FUSION_X117:null
+          };
+          const context={window,document,location:{href:'https://worldprotocolacademy.mk/journal/live/'},console,Headers:H,Response:R,CustomEvent:function(){},MutationObserver:function(){this.observe=()=>{};}};
+          vm.createContext(context);vm.runInContext(code,context);
+          const api=context.window.WPA_X1110;
+          if(!api) throw new Error('X11.10 API not exposed');
+          const fixtures=[
+            [{title:'Turkish president calls for UN Security Council reform, end to veto privilege',summary:'A concrete roadmap for reform and abolition of veto privilege.',primary_category:'security'},'diplomacy'],
+            [{title:'US, China agree on AI dialogues ahead of Washington summit',summary:'Negotiators prepare a Trump-Xi meeting and communication channel.',primary_category:'communication'},'diplomacy'],
+            [{title:'38 Human Trafficking Reports Received in Bulgaria in First Half of 2026, Commission Says',summary:'Victims were identified, including children.',primary_category:'communication'},'security'],
+            [{title:'CNN, Politico, MS NOW sue Trump administration over White House ban',summary:'The ban targets media organisations and fake news claims.',primary_category:'security'},'communication'],
+            [{title:'Qatar pushes for revival of US-Iran talks, warns against cycles of escalation',summary:'Qatar is working to restart negotiations and discusses a regional security framework.',primary_category:'communication'},'diplomacy']
+          ];
+          for(const [item,expected] of fixtures){
+            const actual=api.semanticCategory(item);
+            if(actual!==expected) throw new Error(`category fixture failed: ${item.title}: ${actual} != ${expected}`);
+          }
+          const mk=api.inferEventGeo({title:'North Macedonia Ready to Discuss Minorities Plan with Bulgaria, but with EU Participation'});
+          if(!mk||mk.region!=='БАЛКАН'||mk.country!=='Северна Македонија') throw new Error('North Macedonia geo correction failed');
+          const rs=api.inferEventGeo({title:'Serbia to Hold Elections for National Minority Councils on November 8'});
+          if(!rs||rs.country!=='Србија') throw new Error('Serbia geo correction failed');
+          if(api.semanticReviewReason({title:'Australia news live: RBA governor warns AI investment boom could be a bubble',source:'The Guardian',source_type:'media'})!=='rolling_live_or_roundup') throw new Error('rolling live review gate failed');
+          if(api.semanticReviewReason({title:'KBC Raises Forecast for Bulgaria Average Annual Inflation in 2026',summary:'GDP growth remains unchanged.',source:'BTA (Bulgarian Telegraph Agency)',source_type:'news_agency'})!=='weak_wpa_thematic_scope') throw new Error('weak-scope BTA review gate failed');
+          console.log('semantic fixtures: PASS');
+          NODE
+
+      - name: Diff hygiene
+        run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
