@@ -74,6 +74,11 @@ jobs:
           assert '/tools/research-output-builder/' in academic
           assert 'Create research draft' in wpa_watch
           assert '/tools/research-output-builder/' in wpa_watch
+          assert 'wpaResearchDraftHandoff' in wpa_watch
+          assert 'sessionStorage.setItem' in wpa_watch
+          assert '/tools/research-output-builder/?title=' not in wpa_watch
+          assert 'wpaResearchDraftHandoff' in builder
+          assert 'sessionStorage.getItem' in builder
           assert 'Create research draft' in journal_watch
           assert '/tools/research-output-builder/' in journal_watch
           assert 'id="research-production"' in institute

@@ -139,7 +139,9 @@ function makeTopic(item, map) {
       ? `Manual classification review required (${hold}). Not an accepted article. Not peer reviewed.`
       : "Manual verification required. Not an accepted article. Not peer reviewed.",
     review_hold: hold || null,
-    source_domain: item.domain || null,
+    source_domain: item.source_domain || item.domain || null,
+    watch_item_domain: item.domain || null,
+    watch_classification_version: item.classification_version || null,
     source_tier: item.source_tier || null,
     source_class: item.source_class || null,
     source_provenance: item.source_provenance || null,

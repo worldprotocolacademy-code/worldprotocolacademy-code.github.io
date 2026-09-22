@@ -70,8 +70,13 @@ jobs:
           if(Number(status.tier_a_live)<Math.ceil(Number(status.tier_a_total)*0.90)) fail('fewer than 90% of Tier A feeds are live');
           if(Number(status.live_ratio)<0.90) fail('fewer than 90% of configured feeds are live');
           if(Number(status.items_total)!==items.length) fail('items_total does not match items.json');
+          if(status.classification_version!=='WW3.0') fail('unexpected WPA Watch classification version');
           for(const [i,x] of items.entries()){
             if(!x||!String(x.title||'').trim()||!String(x.source||'').trim()||!String(x.link||'').trim()) fail(`invalid item at index ${i}`);
+            if(String(x.title).length>240) fail(`title exceeds 240 characters at index ${i}`);
+            if(!String(x.source_domain||'').trim()) fail(`source_domain missing at index ${i}`);
+            if(x.classification_version!=='WW3.0') fail(`classification version missing at index ${i}`);
+            if(!['protocol','diplomacy','pr','security','communicology','academic','general'].includes(x.domain)) fail(`unsupported item domain at index ${i}`);
           }
           console.log(`HEALTHY: ${items.length} items; ${status.sources_live}/${status.sources_total} sources live; Tier A ${status.tier_a_live}/${status.tier_a_total}; ratio ${status.live_ratio}; age ${ageMinutes.toFixed(1)} min`);
           NODE
