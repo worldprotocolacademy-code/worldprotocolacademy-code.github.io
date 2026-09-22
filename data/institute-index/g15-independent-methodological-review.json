@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G15",
+  "gate_name": "Independent methodological review",
+  "status": "LOCKED",
+  "substatus": "REVIEW_GOVERNANCE_PACK_PREPARED__NO_REAL_INDEPENDENT_REVIEW_COMPLETED",
+  "pass_rule": "AAB or equivalent authorised independent methodological review completed after formal constitution and COI declaration.",
+  "review_routes": {
+    "AAB": {
+      "allowed": true,
+      "currently_operational": false,
+      "current_status": "FORMATION_PHASE",
+      "requirements": [
+        "formal constitution",
+        "written acceptance",
+        "COI declaration",
+        "accepted scope",
+        "no material unrecused conflict"
+      ]
+    },
+    "AUTHORISED_EXTERNAL_EQUIVALENT": {
+      "allowed": true,
+      "currently_operational": "POTENTIALLY_ELIGIBLE_ONLY_IF_SPECIFIC_REVIEWER_IS_AUTHORISED_AND_CLEARED",
+      "requirements": [
+        "specific authorisation",
+        "written acceptance",
+        "COI declaration",
+        "accepted scope",
+        "no material unrecused conflict"
+      ]
+    }
+  },
+  "prepared_assets": {
+    "review_pack": "/data/institute-index/G15-INDEPENDENT-METHODOLOGICAL-REVIEW-PACK.md",
+    "rubric": "/data/institute-index/g15-independent-review-rubric.json",
+    "decision_record_schema": "/data/institute-index/g15-review-decision-record.schema.json",
+    "governance_engine": "/scripts/protocolometry-independent-review.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g15-independent-review-governance-synthetic.json",
+    "freeze_candidate": "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json"
+  },
+  "completion_requirements": [
+    "eligible independent reviewer assigned through a documented route",
+    "written acceptance and COI declaration completed",
+    "review scope/version frozen and recorded",
+    "written findings completed against the freeze candidate",
+    "every material finding receives a recorded WPA response",
+    "accepted remediation is applied and referenced",
+    "required follow-up review is completed",
+    "unresolved issues remain visible",
+    "final reviewer conclusion is recorded",
+    "authorised human governance closes G15"
+  ],
+  "blockers": [
+    "AAB is still in FORMATION_PHASE.",
+    "No real authorised external-equivalent reviewer is assigned in the repository evidence.",
+    "No real G15 review decision record exists.",
+    "No real material finding/response/remediation cycle has been completed.",
+    "No required follow-up review has been closed."
+  ],
+  "hard_boundaries": {
+    "reviewer_does_not_freeze_v1": true,
+    "reviewer_does_not_authorise_publication": true,
+    "reviewer_does_not_authorise_ranking": true,
+    "review_is_not_peer_review": true,
+    "review_is_not_accreditation": true,
+    "review_is_not_recognition": true,
+    "review_is_not_endorsement": true,
+    "automatic_gate_unlock": false,
+    "current_release_mode": "R0"
+  },
+  "sequencing": {
+    "input": "G14 freeze candidate",
+    "output": "independent methodological review record and remediation log",
+    "then": "accepted changes applied before final G14 closure",
+    "final_publication_gate": "G16"
+  },
+  "human_gate": "Only authorised human governance may close G15 after independent review evidence and follow-up are complete."
+}
