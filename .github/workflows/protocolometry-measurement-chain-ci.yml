@@ -20,6 +20,7 @@ on:
       - 'scripts/protocolometry-coverage-weight-stress.mjs'
       - 'scripts/protocolometry-redundancy-fairness.mjs'
       - 'scripts/protocolometry-language-antigaming.mjs'
+      - 'scripts/protocolometry-correction-coi.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -56,6 +57,8 @@ jobs:
           g08=json.loads((root/'data/institute-index/g08-peer-type-fairness.json').read_text(encoding='utf-8'))
           g09=json.loads((root/'data/institute-index/g09-language-regional-fairness.json').read_text(encoding='utf-8'))
           g10=json.loads((root/'data/institute-index/g10-anti-gaming-review.json').read_text(encoding='utf-8'))
+          g11=json.loads((root/'data/institute-index/g11-correction-test.json').read_text(encoding='utf-8'))
+          g12=json.loads((root/'data/institute-index/g12-conflict-of-interest-control.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -145,6 +148,18 @@ jobs:
           assert g10['control_contract']['automatic_institution_blacklist'] is False
           assert g10['control_contract']['automatic_institution_wide_penalty'] is False
           assert g10['control_contract']['inferred_bad_intent_prohibited'] is True
+          gate11=next(x for x in gates['gates'] if x['id']=='G11')
+          gate12=next(x for x in gates['gates'] if x['id']=='G12')
+          assert gate11['status']=='NOT_STARTED'
+          assert gate12['status']=='NOT_STARTED'
+          assert gate11['evidence']=='/data/institute-index/g11-correction-test.json'
+          assert gate12['evidence']=='/data/institute-index/g12-conflict-of-interest-control.json'
+          assert g11['status']=='NOT_STARTED'
+          assert g12['status']=='NOT_STARTED'
+          assert g11['synthetic_expectations']['public_real_cpr_log_mutation'] is False
+          assert g12['control_contract']['concealment_prohibited'] is True
+          assert g12['control_contract']['payment_cannot_influence_outcome'] is True
+          assert g12['control_contract']['automatic_misconduct_inference'] is False
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -223,6 +238,11 @@ jobs:
           assert 'G09 · Language & Regional Fairness' in files['strategy']
           assert 'G10 · Anti-Gaming Review' in files['strategy']
           assert 'No automatic blacklist or institution-wide penalty is permitted' in files['strategy']
+          assert '/data/institute-index/g11-correction-test.json' in files['lab']
+          assert '/data/institute-index/g12-conflict-of-interest-control.json' in files['lab']
+          assert 'G11 · Correction Test' in files['strategy']
+          assert 'G12 · Conflict-of-Interest Control' in files['strategy']
+          assert 'without creating a fake public CPR entry' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -462,6 +482,41 @@ jobs:
           print('G09/G10 synthetic language fairness/anti-gaming diagnostics: PASS')
           PY
 
+      - name: Validate synthetic G11/G12 correction and COI governance
+        run: |
+          node --check scripts/protocolometry-correction-coi.mjs
+          node scripts/protocolometry-correction-coi.mjs correction             data/institute-index/fixtures/g11-correction-cycle-synthetic.json             > /tmp/g11-report.json
+          node scripts/protocolometry-correction-coi.mjs coi             data/institute-index/fixtures/g12-coi-recusal-synthetic.json             > /tmp/g12-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          g11=json.loads(Path('/tmp/g11-report.json').read_text(encoding='utf-8'))
+          g12=json.loads(Path('/tmp/g12-report.json').read_text(encoding='utf-8'))
+          public_log=json.loads(Path('data/wpa-index-correction-log.json').read_text(encoding='utf-8'))
+
+          assert g11['synthetic_only'] is True
+          assert g11['metrics']['score_delta']==2
+          assert g11['metrics']['composite_delta']==1.6
+          assert g11['metrics']['version_incremented'] is True
+          assert g11['metrics']['provenance_complete'] is True
+          assert g11['disposition']['correction_provenance_record_required'] is True
+          assert g11['disposition']['real_public_log_mutation_allowed'] is False
+          assert g11['disposition']['automatic_decision_allowed'] is False
+          assert all(g11['assertions'].values())
+          assert public_log['entries']==[]
+
+          assert g12['synthetic_only'] is True
+          assert g12['metrics']['case_count']==6
+          assert g12['metrics']['recusals_required']==5
+          assert g12['metrics']['eligible_without_recusal']==1
+          assert g12['metrics']['replacement_reviewer_eligible'] is True
+          assert all(g12['assertions'].values())
+          assert sum(1 for x in g12['cases'] if x['recusal_required'])==5
+          assert all(x['automatic_misconduct_inference'] is False for x in g12['cases'])
+          print('G11/G12 synthetic governance diagnostics: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -492,6 +547,10 @@ jobs:
           python -m json.tool data/institute-index/g08-peer-type-fairness.json >/dev/null
           python -m json.tool data/institute-index/g09-language-regional-fairness.json >/dev/null
           python -m json.tool data/institute-index/g10-anti-gaming-review.json >/dev/null
+          python -m json.tool data/institute-index/g11-correction-test.json >/dev/null
+          python -m json.tool data/institute-index/g12-conflict-of-interest-control.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g11-correction-cycle-synthetic.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g12-coi-recusal-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g09-language-regional-fairness-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g10-anti-gaming-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g07-indicator-redundancy-synthetic.json >/dev/null

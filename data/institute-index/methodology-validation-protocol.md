@@ -150,12 +150,26 @@ No imputation, country-average substitution or synthetic zeroing is allowed.
 ### Stage 9 — Correction and contradiction test
 Before consequential use, selected real-institution dossiers must be tested through the correction process.
 
+A synthetic end-to-end correction rehearsal may verify request intake, evidence submission, reviewer decision fields, version history, score-impact calculation and CPR requirements. Synthetic rehearsal does **not** create a real Correction Provenance Record and does not satisfy G11.
+
 Record:
 - factual corrections accepted;
 - evidence rejected and why;
 - unresolved contradictions;
 - changes to scores after stronger evidence;
-- reviewer conflicts of interest.
+- reviewer conflicts of interest;
+- version before/after;
+- conflict/recusal note;
+- whether a real public CPR entry was required and created.
+
+### Stage 9A — Conflict-of-interest control
+Every real scoring, correction or methodological review assignment must record the reviewer identity and COI declaration. A material conflict requires recusal and reassignment; recusal is recorded.
+
+Relevant conflicts include financial interests, paid consulting, direct institutional competition, close collaboration, family/contractual relationships and personal involvement in the disputed item. Disclosure does not imply wrongdoing.
+
+Synthetic assignment fixtures may verify disclosure → recusal → reassignment logic, but synthetic tests do **not** constitute AAB operation or satisfy G12.
+
+Payment, sponsorship, membership or other benefit cannot improve inclusion, scoring, verification or correction outcomes.
 
 ### Stage 10 — v1.0 Human Gate
 Freeze v1.0 only after:

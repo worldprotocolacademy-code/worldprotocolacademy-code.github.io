@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "correction_cycle",
+  "synthetic_only": true,
+  "real_institution_used": false,
+  "case_id": "SYNTH-G11-CORR-001",
+  "record": {
+    "institution_id": "SYNTH-CORR-001",
+    "methodology_version": "0.9.1-candidate",
+    "dataset_snapshot": "2026-09-22",
+    "indicator_id": "I18",
+    "indicator_weight_percent": 4
+  },
+  "before": {
+    "version": "v1",
+    "score": 2,
+    "evidence": [
+      {
+        "source_tier": "D",
+        "locator": "https://example.invalid/synthetic/old-claim",
+        "supports_claim": "Synthetic weak cooperation claim"
+      }
+    ],
+    "candidate_composite": 72
+  },
+  "request": {
+    "submitted_at": "2026-09-22",
+    "request_type": "factual correction",
+    "challenged_field": "I18 evidence and score",
+    "proposed_action": "Replace weak promotional evidence with verified primary cooperation evidence.",
+    "evidence_submission": [
+      {
+        "source_tier": "A",
+        "locator": "https://example.invalid/synthetic/verified-cooperation",
+        "supports_claim": "Synthetic verified cooperation record"
+      }
+    ],
+    "payment_or_benefit_offered": false
+  },
+  "review": {
+    "reviewer_id": "SYNTH-REVIEWER-1",
+    "coi_status": "CLEARED",
+    "evidence_checked": true,
+    "decision": "ACCEPTED",
+    "human_decision_required": true,
+    "human_decision_simulated_for_fixture": true
+  },
+  "after": {
+    "version": "v2",
+    "score": 4,
+    "evidence": [
+      {
+        "source_tier": "A",
+        "locator": "https://example.invalid/synthetic/verified-cooperation",
+        "supports_claim": "Synthetic verified cooperation record"
+      }
+    ],
+    "candidate_composite": 73.6
+  },
+  "expected": {
+    "score_delta": 2,
+    "composite_delta": 1.6,
+    "version_incremented": true,
+    "correction_provenance_required": true,
+    "public_real_cpr_log_mutation": false,
+    "unresolved_dispute": false
+  },
+  "boundary": "Synthetic governance rehearsal only. It does not create a real correction record, real institutional score, or public CPR entry."
+}
