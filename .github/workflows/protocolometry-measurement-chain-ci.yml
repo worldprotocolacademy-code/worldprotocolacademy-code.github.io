@@ -22,6 +22,7 @@ on:
       - 'scripts/protocolometry-language-antigaming.mjs'
       - 'scripts/protocolometry-correction-coi.mjs'
       - 'scripts/protocolometry-shadow-stability.mjs'
+      - 'scripts/protocolometry-freeze-preflight.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -61,6 +62,8 @@ jobs:
           g11=json.loads((root/'data/institute-index/g11-correction-test.json').read_text(encoding='utf-8'))
           g12=json.loads((root/'data/institute-index/g12-conflict-of-interest-control.json').read_text(encoding='utf-8'))
           g13=json.loads((root/'data/institute-index/g13-shadow-index-stability.json').read_text(encoding='utf-8'))
+          g14=json.loads((root/'data/institute-index/g14-methodology-freeze.json').read_text(encoding='utf-8'))
+          freeze_manifest=json.loads((root/'data/institute-index/protocolometry-v1-freeze-candidate-manifest.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -170,6 +173,19 @@ jobs:
           assert g13['hard_boundaries']['public_ordinal_output_allowed'] is False
           assert g13['hard_boundaries']['automatic_gate_unlock'] is False
           assert g13['hard_boundaries']['current_release_mode']=='R0'
+          gate14=next(x for x in gates['gates'] if x['id']=='G14')
+          gate15=next(x for x in gates['gates'] if x['id']=='G15')
+          assert gate14['status']=='LOCKED'
+          assert gate15['status']=='LOCKED'
+          assert gate14['evidence']=='/data/institute-index/g14-methodology-freeze.json'
+          assert g14['status']=='LOCKED'
+          assert g14['candidate_status']['v1_frozen'] is False
+          assert g14['candidate_status']['final_sha256_lockfile_generated'] is False
+          assert g14['hard_boundaries']['automatic_finalize_command_available'] is False
+          assert g14['hard_boundaries']['current_release_mode']=='R0'
+          assert freeze_manifest['status']=='CANDIDATE_PREPARED_NOT_V1_FROZEN'
+          assert freeze_manifest['mutation_policy']['final_lockfile_status']=='NOT_GENERATED'
+          assert freeze_manifest['sequencing_rule']['operational_order'][1]=='G15 independent methodological review of the candidate'
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -257,6 +273,11 @@ jobs:
           assert 'G13 · Shadow Index Stability' in files['strategy']
           assert 'LOCKED · SYNTHETIC STABILITY ENGINE PREPARED' in files['strategy']
           assert 'Release mode remains R0' in files['strategy']
+          assert '/data/institute-index/g14-methodology-freeze.json' in files['lab']
+          assert '/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json' in files['lab']
+          assert 'G14 · Methodology Freeze' in files['strategy']
+          assert 'LOCKED · FREEZE CANDIDATE PREPARED' in files['strategy']
+          assert 'It is explicitly not v1.0' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -577,6 +598,59 @@ jobs:
           print('G13 synthetic Shadow Index stability diagnostics: PASS')
           PY
 
+      - name: Validate locked G14 freeze-candidate integrity
+        run: |
+          node --check scripts/protocolometry-freeze-preflight.mjs
+          node scripts/protocolometry-freeze-preflight.mjs verify > /tmp/g14-freeze-preflight.json
+          if node scripts/protocolometry-freeze-preflight.mjs finalize >/tmp/g14-finalize.out 2>/tmp/g14-finalize.err; then
+            echo "ERROR: finalize command unexpectedly succeeded"
+            exit 1
+          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report=json.loads(Path('/tmp/g14-freeze-preflight.json').read_text(encoding='utf-8'))
+          manifest=json.loads(Path('data/institute-index/protocolometry-v1-freeze-candidate-manifest.json').read_text(encoding='utf-8'))
+          blueprint=json.loads(Path('data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
+          gates=json.loads(Path('data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
+
+          assert report['status']=='FREEZE_CANDIDATE_PREFLIGHT_PASS'
+          assert report['v1_frozen'] is False
+          assert report['final_lockfile_generated'] is False
+          assert report['methodology_candidate_version']=='0.9.1-candidate'
+          assert report['dimensions']==4
+          assert report['indicators']==20
+          assert report['dimension_weight_sum_percent']==100
+          assert len(report['candidate_assets'])==7
+          assert all(len(x['sha256_preview'])==64 for x in report['candidate_assets'])
+          assert report['human_gate_required'] is True
+
+          assert manifest['status']=='CANDIDATE_PREPARED_NOT_V1_FROZEN'
+          assert manifest['mutation_policy']['final_checksum_algorithm']=='SHA-256'
+          assert manifest['mutation_policy']['final_lockfile_status']=='NOT_GENERATED'
+          assert manifest['explicit_non_claims'][0]=='This is not Protocolometry v1.0.'
+
+          g14=next(x for x in gates['gates'] if x['id']=='G14')
+          g15=next(x for x in gates['gates'] if x['id']=='G15')
+          assert g14['status']=='LOCKED'
+          assert g15['status']=='LOCKED'
+
+          s7=next(x for x in blueprint['execution_stages'] if x['stage']=='S7')
+          assert s7['status']=='LOCKED'
+          assert s7['preflight_status']=='FREEZE_CANDIDATE_PREPARED__FINAL_FREEZE_BLOCKED'
+          assert '/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json' in s7['preflight_assets']
+          assert 'G15 independent methodological review complete' in s7['finalisation_dependencies']
+          assert blueprint['current_state']['g14_status']=='LOCKED'
+          assert blueprint['current_state']['v1_frozen'] is False
+          assert blueprint['current_state']['final_sha256_lockfile_generated'] is False
+          assert blueprint['current_state']['current_release_mode']=='R0'
+
+          err=Path('/tmp/g14-finalize.err').read_text(encoding='utf-8')
+          assert 'Finalisation is intentionally unavailable' in err
+          print('G14 freeze-candidate integrity: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -610,6 +684,8 @@ jobs:
           python -m json.tool data/institute-index/g11-correction-test.json >/dev/null
           python -m json.tool data/institute-index/g12-conflict-of-interest-control.json >/dev/null
           python -m json.tool data/institute-index/g13-shadow-index-stability.json >/dev/null
+          python -m json.tool data/institute-index/g14-methodology-freeze.json >/dev/null
+          python -m json.tool data/institute-index/protocolometry-v1-freeze-candidate-manifest.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g13-shadow-index-stability-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g11-correction-cycle-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g12-coi-recusal-synthetic.json >/dev/null
