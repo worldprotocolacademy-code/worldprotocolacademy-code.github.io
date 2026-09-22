@@ -19,6 +19,7 @@ on:
       - 'scripts/protocolometry-reliability.mjs'
       - 'scripts/protocolometry-coverage-weight-stress.mjs'
       - 'scripts/protocolometry-redundancy-fairness.mjs'
+      - 'scripts/protocolometry-language-antigaming.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -53,6 +54,8 @@ jobs:
           g06=json.loads((root/'data/institute-index/g06-weight-robustness.json').read_text(encoding='utf-8'))
           g07=json.loads((root/'data/institute-index/g07-indicator-redundancy.json').read_text(encoding='utf-8'))
           g08=json.loads((root/'data/institute-index/g08-peer-type-fairness.json').read_text(encoding='utf-8'))
+          g09=json.loads((root/'data/institute-index/g09-language-regional-fairness.json').read_text(encoding='utf-8'))
+          g10=json.loads((root/'data/institute-index/g10-anti-gaming-review.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -129,6 +132,19 @@ jobs:
           assert g07['diagnostic_contract']['automatic_reweighting'] is False
           assert g08['fairness_contract']['peer_type_may_not_change_absolute_score'] is True
           assert g08['fairness_contract']['automatic_fairness_pass_threshold'] is False
+          gate9=next(x for x in gates['gates'] if x['id']=='G09')
+          gate10=next(x for x in gates['gates'] if x['id']=='G10')
+          assert gate9['status']=='NOT_STARTED'
+          assert gate10['status']=='NOT_STARTED'
+          assert gate9['evidence']=='/data/institute-index/g09-language-regional-fairness.json'
+          assert gate10['evidence']=='/data/institute-index/g10-anti-gaming-review.json'
+          assert g09['status']=='NOT_STARTED'
+          assert g10['status']=='NOT_STARTED'
+          assert g09['fairness_contract']['primary_evidence_language_is_not_quality_proxy'] is True
+          assert g09['fairness_contract']['automatic_fairness_pass_threshold'] is False
+          assert g10['control_contract']['automatic_institution_blacklist'] is False
+          assert g10['control_contract']['automatic_institution_wide_penalty'] is False
+          assert g10['control_contract']['inferred_bad_intent_prohibited'] is True
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -202,6 +218,11 @@ jobs:
           assert 'G08 · Peer-Type Fairness' in files['strategy']
           assert 'cannot delete, merge or reweight an indicator automatically' in files['strategy']
           assert 'Peer percentile remains secondary and sample-gated' in files['strategy']
+          assert '/data/institute-index/g09-language-regional-fairness.json' in files['lab']
+          assert '/data/institute-index/g10-anti-gaming-review.json' in files['lab']
+          assert 'G09 · Language & Regional Fairness' in files['strategy']
+          assert 'G10 · Anti-Gaming Review' in files['strategy']
+          assert 'No automatic blacklist or institution-wide penalty is permitted' in files['strategy']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -404,6 +425,43 @@ jobs:
           print('G07/G08 synthetic redundancy/fairness diagnostics: PASS')
           PY
 
+      - name: Validate synthetic G09/G10 language fairness and anti-gaming diagnostics
+        run: |
+          node --check scripts/protocolometry-language-antigaming.mjs
+          node scripts/protocolometry-language-antigaming.mjs fairness             data/institute-index/fixtures/g09-language-regional-fairness-synthetic.json             data/institute-index-methodology-candidate.json             > /tmp/g09-report.json
+          node scripts/protocolometry-language-antigaming.mjs gaming             data/institute-index/fixtures/g10-anti-gaming-synthetic.json             > /tmp/g10-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          g09=json.loads(Path('/tmp/g09-report.json').read_text(encoding='utf-8'))
+          g10=json.loads(Path('/tmp/g10-report.json').read_text(encoding='utf-8'))
+
+          assert g09['synthetic_only'] is True
+          assert g09['metrics']['profile_count']==6
+          assert g09['metrics']['region_count']==5
+          assert g09['metrics']['non_english_primary_evidence_profiles']==5
+          assert g09['metrics']['english_marketing_advantage_points']==0
+          assert g09['metrics']['translation_penalty_points']==0
+          assert all(x['candidate_composite']==80 for x in g09['profiles'])
+          assert all(x['weighted_evidence_coverage_percent']==100 for x in g09['profiles'])
+          assert all(g09['assertions'].values())
+
+          assert g10['synthetic_only'] is True
+          assert g10['attack_count']==6
+          assert g10['reward_allowed_count']==0
+          assert g10['human_review_flag_count']==6
+          assert g10['automatic_institution_penalty'] is False
+          assert all(g10['assertions'].values())
+          by={x['route']:x for x in g10['attacks']}
+          assert by['duplicated_evidence']['duplicate_claim_detected'] is True
+          assert by['marketing_only_claim']['tier_d_only'] is True
+          assert by['strategic_ne_laundering']['ne_laundering_detected'] is True
+          assert by['strategic_ne_laundering']['required_score_class']=='VERIFIED_NON_CONFORMANCE_NOT_NE'
+          assert all(x['automatic_institution_penalty'] is False for x in g10['attacks'])
+          print('G09/G10 synthetic language fairness/anti-gaming diagnostics: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -432,6 +490,10 @@ jobs:
           python -m json.tool data/institute-index/g06-weight-robustness.json >/dev/null
           python -m json.tool data/institute-index/g07-indicator-redundancy.json >/dev/null
           python -m json.tool data/institute-index/g08-peer-type-fairness.json >/dev/null
+          python -m json.tool data/institute-index/g09-language-regional-fairness.json >/dev/null
+          python -m json.tool data/institute-index/g10-anti-gaming-review.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g09-language-regional-fairness-synthetic.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g10-anti-gaming-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g07-indicator-redundancy-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g08-peer-type-fairness-synthetic.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g05-evidence-coverage-synthetic.json >/dev/null
