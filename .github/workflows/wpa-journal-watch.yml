@@ -53,7 +53,9 @@ jobs:
           const generated=new Date(s.generated);
           const ageHours=(Date.now()-generated.getTime())/3600000;
           if(Number.isNaN(generated.getTime())||ageHours<0||ageHours>8) throw new Error(`WPA Watch upstream stale or invalid: ${ageHours.toFixed(1)}h`);
-          if(Number(s.sources_live)<4) throw new Error(`WPA Watch upstream degraded: ${s.sources_live} live sources`);
+          if(Number(s.sources_live)<40) throw new Error(`WPA Watch upstream degraded: ${s.sources_live} live sources`);
+          if(Number(s.live_ratio)<0.90) throw new Error(`WPA Watch upstream live ratio too low: ${s.live_ratio}`);
+          if(Number(s.tier_a_live)<Math.ceil(Number(s.tier_a_total)*0.90)) throw new Error(`WPA Watch Tier A health too low: ${s.tier_a_live}/${s.tier_a_total}`);
           if(!Array.isArray(items)||items.length<10) throw new Error(`WPA Watch upstream too small: ${Array.isArray(items)?items.length:0} items`);
           if(Number(s.items_total)!==items.length) throw new Error('WPA Watch upstream count mismatch');
           console.log(`UPSTREAM HEALTHY: ${items.length} items, ${s.sources_live}/${s.sources_total} sources, age ${ageHours.toFixed(1)}h`);
@@ -66,7 +68,7 @@ jobs:
           const fs=require('fs');
           const upstream=JSON.parse(fs.readFileSync('tools/wpa-watch/status.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json','utf8'));
-          const needed=queue.upstream_watch_generated!==upstream.generated || queue.classification_version!=='JW2.2';
+          const needed=queue.upstream_watch_generated!==upstream.generated || queue.classification_version!=='JW2.3';
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `needed=${needed}\n`);
           NODE
 
@@ -81,8 +83,10 @@ jobs:
           const topics=JSON.parse(fs.readFileSync('journal/watch/topics.json','utf8'));
           const queue=JSON.parse(fs.readFileSync('journal/watch/editorial-queue.json','utf8'));
           if(!Array.isArray(topics)||topics.length<10) throw new Error('Journal Watch produced fewer than 10 topics');
-          if(queue.schema_version!=='2.2'||queue.classification_version!=='JW2.2') throw new Error('Journal Watch output contract mismatch');
+          if(queue.schema_version!=='2.3'||queue.classification_version!=='JW2.3') throw new Error('Journal Watch output contract mismatch');
           if(!Array.isArray(queue.thematic_scope)||queue.thematic_scope.join(',')!=='protocol,diplomacy,public_relations,security,communicology') throw new Error('Journal Watch thematic scope mismatch');
+          if(!Array.isArray(queue.support_tracks)||queue.support_tracks.join(',')!=='academic_infrastructure') throw new Error('Journal Watch support track mismatch');
+          if(queue.status!=='production_editorial_candidates') throw new Error('Journal Watch production status mismatch');
           if(!Array.isArray(queue.queue)||queue.queue.length!==topics.length) throw new Error('Journal Watch queue/topic count mismatch');
           if(queue.policy!=='Topic candidates only. No automatic journal publication.') throw new Error('Journal governance policy changed unexpectedly');
           console.log(`JOURNAL HEALTHY: ${topics.length} governed topic candidates`);
