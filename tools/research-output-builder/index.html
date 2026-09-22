@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Research Output Builder | World Protocol Academy</title>
+<meta name="description" content="Governed WPA research drafting workspace for turning verified research candidates into accessible Markdown and HTML drafts. Human review required before publication.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/tools/research-output-builder/">
+<style>
+:root{--navy:#071526;--panel:#102844;--gold:#d4af37;--gold2:#f3d77a;--paper:#fbfaf6;--ink:#17233a;--muted:#617086;--line:#ccd2dc;--ok:#2f6b3a}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#edf0f4;color:var(--ink);line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy),#123253);color:white;padding:38px 20px;border-bottom:4px solid var(--gold)}
+.wrap{max-width:1180px;margin:auto}.eyebrow{color:var(--gold2);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem}
+h1{font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.5rem);margin:.25em 0}.lead{max-width:900px;color:#dce6f2}
+nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn,button{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-weight:800;text-decoration:none;cursor:pointer;font:inherit}.btn.secondary,button.secondary{background:transparent;color:var(--gold2)}main{max-width:1180px;margin:auto;padding:30px 20px 70px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(20,40,70,.08)}
+.card h2,.card h3{margin-top:0;font-family:Georgia,serif;color:#243b61}label{display:block;font-weight:750;margin:13px 0 6px}input,textarea,select{width:100%;padding:11px 12px;border:1px solid #aeb8c6;border-radius:8px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:94px;resize:vertical}
+.note{background:#fff8dd;border-left:4px solid var(--gold);padding:14px 16px;border-radius:8px;margin:18px 0}.ok{background:#eef8f1;border-left-color:var(--ok)}
+.preview{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px;min-height:520px}.preview article{max-width:780px;margin:auto}.preview h1{font-size:2rem;color:#17233a}.preview h2{margin-top:1.6em}.meta{font-size:.9rem;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:20px}.status{display:inline-block;padding:4px 9px;border-radius:999px;background:#fff3c7;color:#674d00;font-weight:800;font-size:.78rem}.source-list{padding-left:20px}.source-list li{margin:.35em 0;word-break:break-word}
+.out{white-space:pre-wrap;background:#0b1624;color:#e7eef7;border-radius:10px;padding:16px;max-height:360px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.84rem}
+footer{text-align:center;padding:25px;color:#687487;border-top:1px solid var(--line);background:white}
+@media(max-width:860px){.grid{grid-template-columns:1fr}.btn,button{width:100%}}
+@media print{header,nav,.editor,.actions,.raw,footer{display:none!important}body{background:white}.grid{display:block}.preview{border:0;box-shadow:none}.preview article{max-width:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">World Protocol Academy · Research Production Pipeline</div><h1>WPA Research Output Builder</h1><p class="lead">Од проверена тема или извор до структуриран WPA research draft. Алатката создава достапен HTML и Markdown документ, но не објавува автоматски и не доделува DOI. Финалната публикација бара човечка проверка.</p>
+<nav><a class="btn secondary" href="/tools/academic-search-hub/">Academic Search Hub</a><a class="btn secondary" href="/tools/wpa-watch/">WPA Watch</a><a class="btn secondary" href="/journal/watch/">Journal Watch</a><a class="btn secondary" href="/working-papers/">Published Working Papers</a><a class="btn secondary" href="/protocol-notes/">Protocol Notes</a></nav></div></header>
+<main>
+<div class="note ok"><strong>Работен тек:</strong> Discover → Verify → Draft → Human Review → Correct → Publish. Генерираниот документ е <strong>DRAFT / NOT PUBLISHED</strong> додека овластен човек не ја заврши проверката.</div>
+<div class="grid">
+<section class="card editor" aria-labelledby="builderTitle"><h2 id="builderTitle">1. Build the research draft</h2>
+<label for="outputType">Output type</label><select id="outputType"><option>WPA Working Paper draft</option><option>WPA Protocol Note draft</option><option>WPA Journal candidate draft</option><option>WPA Research Brief</option></select>
+<label for="title">Title</label><input id="title" placeholder="Research title">
+<label for="question">Research question / objective</label><textarea id="question" placeholder="What does the paper investigate?"></textarea>
+<label for="abstract">Abstract / working summary</label><textarea id="abstract" placeholder="Short structured summary"></textarea>
+<label for="method">Method / analytical approach</label><textarea id="method" placeholder="Public-source analysis, comparative protocol analysis, literature review..."></textarea>
+<label for="findings">Findings / analytical propositions</label><textarea id="findings" placeholder="One point per line"></textarea>
+<label for="sources">Sources / provenance</label><textarea id="sources" placeholder="One source per line: Title | URL | verification status"></textarea>
+<label for="limitations">Limitations / uncertainty</label><textarea id="limitations" placeholder="What is not established or remains provisional?"></textarea>
+<label for="keywords">Keywords</label><input id="keywords" placeholder="protocol, diplomacy, public communication">
+<div class="actions"><button id="buildBtn">Build draft</button><button class="secondary" id="sampleBtn">Load example</button><button class="secondary" id="clearBtn">Clear</button></div>
+</section>
+<section class="card"><h2>2. Accessible preview</h2><div id="preview" class="preview" aria-live="polite"></div>
+<div class="actions"><button id="downloadHtml">Download HTML</button><button id="downloadMd">Download Markdown</button><button class="secondary" id="printBtn">Print / Save PDF</button></div></section>
+</div>
+<section class="card raw" style="margin-top:18px"><h2>3. Markdown source</h2><div id="rawOut" class="out" aria-live="polite"></div><div class="actions"><button id="copyBtn">Copy Markdown</button></div></section>
+<section class="card" style="margin-top:18px"><h2>4. Governed publication routes</h2><p>По Human Review, финалниот документ може да продолжи во соодветниот WPA канал. Овие линкови не значат автоматско прифаќање или објавување.</p><div class="actions"><a class="btn" href="/working-papers/">Working Papers / DOI Corpus</a><a class="btn" href="/protocol-notes/">Protocol Notes</a><a class="btn" href="/journal/">WPA Journal</a><a class="btn" href="/bibliography/">Canonical Bibliography</a></div></section>
+</main>
+<footer>© 2026 World Protocol Academy · Human-reviewed research workflow · Draft generation is local to the browser.</footer>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const lines=s=>String(s||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+const q=new URLSearchParams(location.search);
+function seedFromQuery(){
+  if(q.get("title")) $("title").value=q.get("title");
+  if(q.get("summary")) $("abstract").value=q.get("summary");
+  if(q.get("source")){
+    const url=q.get("url")||"";
+    $("sources").value=q.get("source")+(url?" | "+url:"")+" | candidate / human verification required";
+  }
+  if(q.get("query")){$("title").value=$("title").value||("Research draft: "+q.get("query"));$("question").value=$("question").value||("Assess the available public and scholarly evidence for: "+q.get("query"));}
+}
+function slug(s){return String(s||"wpa-research-draft").toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,70)||"wpa-research-draft";}
+function data(){
+ return {type:$("outputType").value,title:$("title").value.trim()||"Untitled WPA Research Draft",question:$("question").value.trim(),abstract:$("abstract").value.trim(),method:$("method").value.trim(),findings:lines($("findings").value),sources:lines($("sources").value),limitations:$("limitations").value.trim(),keywords:$("keywords").value.trim(),date:new Date().toISOString().slice(0,10)};
+}
+function md(d){
+ const bullets=a=>a.length?a.map(x=>"- "+x).join("\n"):"- [To be completed after verification]";
+ return `# ${d.title}
+
+**Status:** DRAFT · NOT PUBLISHED · HUMAN REVIEW REQUIRED  
+**Output type:** ${d.type}  
+**Prepared:** ${d.date}  
+**Institution:** World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies
+
+## Research question / objective
+${d.question||"[To be completed]"}
+
+## Abstract
+${d.abstract||"[To be completed]"}
+
+## Method
+${d.method||"[To be completed]"}
+
+## Findings / analytical propositions
+${bullets(d.findings)}
+
+## Sources and provenance
+${bullets(d.sources)}
+
+## Limitations and uncertainty
+${d.limitations||"[To be completed]"}
+
+## Keywords
+${d.keywords||"[To be completed]"}
+
+## Human-review record
+- Source verification: PENDING
+- Author/editor review: PENDING
+- Correction check: PENDING
+- Publication approval: NOT GRANTED
+- DOI: NOT ASSIGNED
+
+## Public boundary
+This draft is a research-development output. It is not a published paper, not a peer-reviewed journal article, not an accreditation or recognition decision, and not an authorised institutional ranking.
+`;
+}
+function render(){
+ const d=data(); const m=md(d); $("rawOut").textContent=m;
+ const fs=d.findings.length?d.findings:["To be completed after verification"];
+ const ss=d.sources.length?d.sources:["To be completed after verification"];
+ $("preview").innerHTML=`<article><span class="status">DRAFT · HUMAN REVIEW REQUIRED</span><h1>${esc(d.title)}</h1><div class="meta">${esc(d.type)} · ${esc(d.date)} · World Protocol Academy</div><h2>Research question / objective</h2><p>${esc(d.question||"To be completed")}</p><h2>Abstract</h2><p>${esc(d.abstract||"To be completed")}</p><h2>Method</h2><p>${esc(d.method||"To be completed")}</p><h2>Findings / analytical propositions</h2><ul>${fs.map(x=>"<li>"+esc(x)+"</li>").join("")}</ul><h2>Sources and provenance</h2><ol class="source-list">${ss.map(x=>"<li>"+esc(x)+"</li>").join("")}</ol><h2>Limitations and uncertainty</h2><p>${esc(d.limitations||"To be completed")}</p><h2>Keywords</h2><p>${esc(d.keywords||"To be completed")}</p><h2>Human-review record</h2><ul><li>Source verification: PENDING</li><li>Author/editor review: PENDING</li><li>Correction check: PENDING</li><li>Publication approval: NOT GRANTED</li><li>DOI: NOT ASSIGNED</li></ul><h2>Public boundary</h2><p>This draft is a research-development output. It is not a published paper, peer-reviewed journal article, accreditation/recognition decision or authorised ranking.</p></article>`;
+ return {d,m};
+}
+function file(name,text,type){const u=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+function htmlDoc(d){return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(d.title)}</title><style>body{font-family:system-ui,Arial,sans-serif;line-height:1.65;color:#17233a;max-width:850px;margin:40px auto;padding:0 24px}h1,h2{font-family:Georgia,serif}.status{display:inline-block;padding:4px 8px;background:#fff3c7;border-radius:999px;font-weight:700}.meta{color:#667085;border-bottom:1px solid #ddd;padding-bottom:12px}li{margin:.35em 0}</style></head><body>${$("preview").innerHTML}<\/body><\/html>`;}
+$("buildBtn").onclick=render;
+$("sampleBtn").onclick=()=>{$("title").value="Protocol, Public Evidence and Institutional Visibility";$("question").value="How can public-source evidence support protocol analysis without converting visibility into authority?";$("abstract").value="A structured WPA draft examining evidence provenance, protocol analysis and the distinction between public visibility and institutional legitimacy.";$("method").value="Public-source literature and document review; source-provenance mapping; qualitative protocol analysis; Human Review before publication.";$("findings").value="Public visibility should not be treated as institutional authority.\nEvidence provenance should remain visible through the analytical chain.\nHuman review is required before consequential publication.";$("sources").value="OpenAlex / Crossref / Zenodo search results | URLs to be inserted | verification pending\nRelevant official institutional sources | URLs to be inserted | verification pending";$("limitations").value="Synthetic example only; no factual claims are treated as verified until source review.";$("keywords").value="protocol, evidence, provenance, institutional visibility";render();};
+$("clearBtn").onclick=()=>{document.querySelectorAll("input,textarea").forEach(x=>x.value="");$("outputType").selectedIndex=0;render();};
+$("downloadMd").onclick=()=>{const {d,m}=render();file(slug(d.title)+".md",m,"text/markdown;charset=utf-8");};
+$("downloadHtml").onclick=()=>{const {d}=render();file(slug(d.title)+".html",htmlDoc(d),"text/html;charset=utf-8");};
+$("printBtn").onclick=()=>{render();window.print();};
+$("copyBtn").onclick=()=>{const {m}=render();navigator.clipboard?.writeText(m).then(()=>alert("Markdown copied."),()=>prompt("Copy Markdown:",m));};
+seedFromQuery();render();
+})();
+</script>
+</body></html>
