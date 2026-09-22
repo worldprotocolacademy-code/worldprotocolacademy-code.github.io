@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G10",
+  "gate_name": "Anti-gaming review",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_ATTACK_SUITE_PREPARED__REAL_RED_TEAM_REVIEW_PENDING",
+  "pass_rule": "Common gaming routes tested: partnership inflation, publication quantity without relevance, duplicated evidence, marketing-only claims and superficial digital presence.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-language-antigaming.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g10-anti-gaming-synthetic.json"
+  },
+  "attack_routes": [
+    "partnership_inflation",
+    "publication_quantity_without_relevance",
+    "duplicated_evidence",
+    "marketing_only_claim",
+    "superficial_digital_presence",
+    "strategic_ne_laundering"
+  ],
+  "control_contract": {
+    "unsupported_reward_blocked": true,
+    "duplicated_underlying_achievement_requires_review": true,
+    "tier_d_alone_cannot_support_score_above_2": true,
+    "popularity_metrics_cannot_drive_quality_score": true,
+    "verified_non_conformance_cannot_be_laundered_as_ne": true,
+    "automatic_institution_blacklist": false,
+    "automatic_institution_wide_penalty": false,
+    "inferred_bad_intent_prohibited": true
+  },
+  "synthetic_expectations": {
+    "attack_count": 6,
+    "reward_allowed_count": 0,
+    "human_review_flag_count": 6,
+    "duplicate_evidence_detected": true,
+    "tier_d_ceiling_enforced": true,
+    "ne_laundering_detected": true
+  },
+  "interpretation_rule": "Synthetic attack success demonstrates that known gaming patterns are detected or blocked. G10 still requires real adversarial/red-team review against the frozen methodology and scoring workflow.",
+  "blockers_to_start": [
+    "No frozen Pilot 20 scoring workflow exists for adversarial testing.",
+    "No real red-team exercise has tested dossier/source manipulation routes.",
+    "No human review has assessed false-positive risk in anti-gaming flags.",
+    "No operational escalation procedure has been exercised on a real or controlled institution dossier."
+  ],
+  "human_gate": "Anti-gaming flags may trigger evidence review; they may not infer intent, blacklist an institution, or impose an institution-wide penalty without authorised human review."
+}

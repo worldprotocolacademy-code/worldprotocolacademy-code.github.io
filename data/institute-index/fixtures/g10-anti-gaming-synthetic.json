@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "fixture_type": "anti_gaming_attacks",
+  "synthetic_only": true,
+  "real_institutions_used": false,
+  "methodology_version": "0.9.1-candidate",
+  "attacks": [
+    {
+      "id": "AG01_PARTNERSHIP_INFLATION",
+      "route": "partnership_inflation",
+      "target_indicator": "I18",
+      "proposed_score": 5,
+      "partnership_count": 120,
+      "authoritative_listing": true,
+      "verified_cooperation_quality": false,
+      "claim": "Quantity of listed partnerships is presented as proof of exemplary cooperation."
+    },
+    {
+      "id": "AG02_PUBLICATION_QUANTITY",
+      "route": "publication_quantity_without_relevance",
+      "target_indicator": "I01",
+      "proposed_score": 5,
+      "publication_count": 500,
+      "mission_relevance": false,
+      "claim": "Raw publication quantity is presented as mission-relevant research quality."
+    },
+    {
+      "id": "AG03_DUPLICATED_EVIDENCE",
+      "route": "duplicated_evidence",
+      "proposed_scores": {
+        "I05": 5,
+        "I18": 5
+      },
+      "evidence_claims": [
+        {
+          "indicator_id": "I05",
+          "claim_fingerprint": "SAME-MOU-001"
+        },
+        {
+          "indicator_id": "I18",
+          "claim_fingerprint": "SAME-MOU-001"
+        }
+      ],
+      "claim": "The same underlying cooperation event is presented as two independent achievements."
+    },
+    {
+      "id": "AG04_MARKETING_ONLY",
+      "route": "marketing_only_claim",
+      "target_indicator": "I09",
+      "proposed_score": 4,
+      "evidence_tiers": [
+        "D",
+        "D"
+      ],
+      "claim": "Promotional biographies alone are presented as strong faculty transparency evidence."
+    },
+    {
+      "id": "AG05_SUPERFICIAL_DIGITAL",
+      "route": "superficial_digital_presence",
+      "target_indicator": "I19",
+      "proposed_score": 5,
+      "follower_count": 1500000,
+      "likes_count": 9000000,
+      "documented_multilingual_transparency": false,
+      "usable_public_contact_routes": false,
+      "claim": "Popularity metrics are presented as digital/multilingual transparency quality."
+    },
+    {
+      "id": "AG06_NE_LAUNDERING",
+      "route": "strategic_ne_laundering",
+      "target_indicator": "I20",
+      "proposed_score": "NE",
+      "evidence_status": "CONTRADICTED_OR_NONCONFORMING",
+      "sufficient_verified_evidence": true,
+      "claim": "Verified non-conformance is hidden as NE to avoid a zero."
+    }
+  ],
+  "expected": {
+    "attack_count": 6,
+    "reward_allowed_count": 0,
+    "human_review_flag_count": 6,
+    "automatic_institution_penalty": false
+  },
+  "boundary": "Anti-gaming controls block unsupported reward or require review; they do not create an automatic institution-wide penalty, blacklist or rank adjustment."
+}
