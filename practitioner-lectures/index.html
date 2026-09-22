@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Practitioner Lecture Builder | World Protocol Academy</title>
+<meta name="description" content="Governed practitioner lecture intake and briefing builder for WPA Institute.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/practitioner-lectures/">
+<style>
+:root{--navy:#071526;--gold:#d4af37;--ink:#17233a;--muted:#617086;--line:#ccd4df;--paper:#f7f3e8}
+*{box-sizing:border-box}body{margin:0;background:#eef1f5;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy),#153b61);color:#fff;padding:38px 20px;border-bottom:4px solid var(--gold)}.wrap{max-width:1120px;margin:auto}
+h1,h2{font-family:Georgia,serif}.eyebrow{color:#f0d778;font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem}main{max-width:1120px;margin:auto;padding:28px 20px 65px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}.note{padding:14px 16px;background:#fff8df;border-left:4px solid var(--gold);border-radius:8px;margin:16px 0}
+label{display:block;font-weight:800;margin:12px 0 5px}input,textarea,select{width:100%;padding:11px;border:1px solid #aeb8c6;border-radius:8px;font:inherit}textarea{min-height:92px}
+button,.btn{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font:inherit;font-weight:850;border-radius:9px;padding:10px 14px;cursor:pointer}.secondary{background:#fff;border-color:var(--line);color:var(--ink)}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.out{white-space:pre-wrap;background:#0c1827;color:#eef4fa;border-radius:10px;padding:16px;min-height:420px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.84rem;overflow:auto}
+.status{display:inline-block;background:#fff2ca;color:#75550d;border-radius:999px;padding:4px 9px;font-size:.76rem;font-weight:900}
+footer{text-align:center;padding:22px;background:#fff;border-top:1px solid var(--line);color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.btn,button{width:100%}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">WPA Institute · Practitioner Lecture Series</div><h1>Practitioner Lecture Builder</h1><p>Од идеја за гостин-предавач до структуриран, проверлив lecture brief. Алатката не испраќа покани автоматски и не создава согласност за снимање или јавно објавување.</p><div class="actions"><a class="btn secondary" href="/institute.html#practitioner-lectures">← Institute</a><a class="btn secondary" href="/wpaws/index.html">WPAWS Teaching Studio</a><a class="btn secondary" href="/tools/wpa-audio-media-engine/">Audio/Media Engine</a></div></div></header>
+<main>
+<div class="note"><strong>Human Gate:</strong> идентификација на кандидат ≠ покана; покана ≠ прифаќање; прифаќање ≠ право на снимање; снимање ≠ право на јавно архивирање. Секоја фаза бара соодветна човечка и писмена потврда.</div>
+<div class="grid">
+<section class="card">
+<h2>1. Prepare lecture brief</h2>
+<label for="speaker">Proposed practitioner / speaker</label><input id="speaker" placeholder="Name or role; do not imply acceptance">
+<label for="role">Publicly documented role / expertise</label><input id="role" placeholder="e.g. former ambassador, protocol officer, media adviser">
+<label for="domain">Domain</label><select id="domain"><option>Protocol and diplomacy</option><option>Defence and security</option><option>Public communication / PR</option><option>Visual diplomacy / documentation</option><option>Communicology</option></select>
+<label for="title">Proposed lecture title</label><input id="title" placeholder="Lecture title">
+<label for="objective">Learning objective</label><textarea id="objective" placeholder="What should participants understand or be able to do?"></textarea>
+<label for="evidence">Public evidence supporting expertise</label><textarea id="evidence" placeholder="One public source / credential evidence per line"></textarea>
+<label for="scope">Scope and boundaries</label><textarea id="scope" placeholder="Topics included/excluded; confidentiality or institutional boundaries"></textarea>
+<label for="format">Format</label><select id="format"><option>45–60 min lecture + 15 min Q&A</option><option>30 min expert briefing</option><option>60–90 min workshop</option><option>Recorded interview / oral history</option></select>
+<label for="recording">Recording / archive status</label><select id="recording"><option value="NO_CONSENT">No recording consent yet</option><option value="PRIVATE_ONLY">Written consent for private educational archive only</option><option value="PUBLIC_PENDING">Public recording permission pending final written approval</option></select>
+<div class="actions"><button id="build">Build governed brief</button><button id="sample" class="secondary">Load example</button><button id="clear" class="secondary">Clear</button></div>
+</section>
+<section class="card">
+<span class="status">DRAFT · NOT AN INVITATION</span>
+<h2>2. Brief preview</h2>
+<div id="out" class="out" aria-live="polite"></div>
+<div class="actions"><button id="download">Download Markdown</button><button id="copy" class="secondary">Copy brief</button><a class="btn secondary" href="mailto:institute@worldprotocolacademy.mk?subject=WPA%20Practitioner%20Lecture%20Brief">Open email draft</a></div>
+</section>
+</div>
+<section class="card" style="margin-top:18px"><h2>3. Next governed steps</h2><p><strong>Verify public role → Human selection → written invitation → written acceptance → recording/usage consent → lecture delivery → metadata/provenance check → archive/publication decision.</strong></p><p>No academic title, accreditation, licence, partnership or formal institutional endorsement is created by participation.</p></section>
+</main>
+<footer>© 2026 World Protocol Academy · Practitioner Lecture Series · Human-reviewed participation and consent.</footer>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);const lines=s=>String(s||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+function data(){return {speaker:$("speaker").value.trim(),role:$("role").value.trim(),domain:$("domain").value,title:$("title").value.trim(),objective:$("objective").value.trim(),evidence:lines($("evidence").value),scope:$("scope").value.trim(),format:$("format").value,recording:$("recording").value,date:new Date().toISOString().slice(0,10)}}
+function md(d){return `# WPA Practitioner Lecture Brief
+
+**Status:** DRAFT · NOT AN INVITATION · HUMAN REVIEW REQUIRED
+**Prepared:** ${d.date}
+**Proposed practitioner:** ${d.speaker||"[To be verified]"}
+**Publicly documented role / expertise:** ${d.role||"[To be verified]"}
+**Domain:** ${d.domain}
+**Proposed title:** ${d.title||"[To be completed]"}
+**Format:** ${d.format}
+
+## Learning objective
+${d.objective||"[To be completed]"}
+
+## Public evidence supporting expertise
+${d.evidence.length?d.evidence.map(x=>"- "+x).join("\n"):"- [Public evidence required before invitation]"}
+
+## Scope and boundaries
+${d.scope||"[To be completed]"}
+
+## Consent / recording state
+${d.recording}
+
+## Human-gate checklist
+- Public role / expertise verified: PENDING
+- Conflict / sensitivity check: PENDING
+- Invitation authorised: NOT GRANTED
+- Written acceptance: NOT RECEIVED
+- Recording rights: ${d.recording}
+- Public archive rights: NOT GRANTED unless separately documented
+- Lecture delivered: NO
+- Archive/publication decision: NOT MADE
+
+## Institutional boundary
+This brief does not constitute an invitation, appointment, partnership, academic title, licence, accreditation, endorsement or recording/publication consent.
+`;}
+function render(){const m=md(data());$("out").textContent=m;return m}
+function save(name,text){const u=URL.createObjectURL(new Blob([text],{type:"text/markdown;charset=utf-8"}));const a=document.createElement("a");a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),500)}
+$("build").onclick=render;$("download").onclick=()=>save("wpa-practitioner-lecture-brief.md",render());
+$("copy").onclick=()=>navigator.clipboard?.writeText(render()).then(()=>alert("Lecture brief copied."));
+$("sample").onclick=()=>{$("speaker").value="Proposed senior practitioner";$("role").value="Publicly documented senior protocol or diplomatic practitioner";$("domain").value="Protocol and diplomacy";$("title").value="From Precedence to Institutional Meaning: Lessons from Practice";$("objective").value="Connect formal protocol rules with operational decision-making, institutional signalling and correctable practice.";$("evidence").value="Official institutional biography | URL to verify\nPublic professional record | URL to verify";$("scope").value="Public professional experience only. No confidential, classified, employer-restricted or third-party private information.";$("recording").value="NO_CONSENT";render()};
+$("clear").onclick=()=>{document.querySelectorAll("input,textarea").forEach(x=>x.value="");document.querySelectorAll("select").forEach(x=>x.selectedIndex=0);render()};render();
+})();
+</script>
+</body></html>
