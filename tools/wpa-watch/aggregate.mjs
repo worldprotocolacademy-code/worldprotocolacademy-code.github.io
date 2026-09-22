@@ -148,6 +148,11 @@ for (const item of items) {
 out.sort((a, b) => new Date(b.isoDate || 0) - new Date(a.isoDate || 0));
 const finalItems = out.slice(0, config.max_total_items || 120);
 const generated = new Date().toISOString();
+const domainCounts = finalItems.reduce((acc, item) => {
+  acc[item.domain] = (acc[item.domain] || 0) + 1;
+  return acc;
+}, {});
+const truncatedTitleCount = finalItems.filter(item => item.title_truncated).length;
 const tierATotal = feeds.filter(x => x.tier === "A").length;
 const tierALive = live.filter(x => x.tier === "A").length;
 const tierBTotal = feeds.filter(x => x.tier === "B").length;
@@ -161,6 +166,11 @@ await fs.writeFile("status.json", JSON.stringify({
   provenance_policy: "Host-locked active registry; historical candidates require revalidation before promotion.",
   classification_version: CLASSIFICATION_VERSION,
   classification_policy: "Item-level content classification; source feed domain retained separately as source_domain.",
+  domain_counts: domainCounts,
+  malformed_title_policy: {
+    max_chars: 240,
+    truncated_current_items: truncatedTitleCount
+  },
   sources_total: feeds.length,
   sources_live: live.length,
   sources_dead: dead.length,
