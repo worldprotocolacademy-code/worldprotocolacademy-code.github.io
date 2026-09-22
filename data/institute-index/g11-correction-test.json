@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G11",
+  "gate_name": "Correction test",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_END_TO_END_CORRECTION_REHEARSAL_PREPARED__REAL_CONTROLLED_CASE_PENDING",
+  "pass_rule": "At least one controlled factual correction cycle tested end-to-end with source submission, reviewer decision, version history and score impact where applicable.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-correction-coi.mjs",
+    "fixture": "/data/institute-index/fixtures/g11-correction-cycle-synthetic.json"
+  },
+  "synthetic_expectations": {
+    "score_delta": 2,
+    "composite_delta": 1.6,
+    "version_incremented": true,
+    "provenance_complete": true,
+    "public_real_cpr_log_mutation": false
+  },
+  "blockers_to_start": [
+    "no authorised real controlled correction case has been selected",
+    "no real reviewer decision/version history has been completed end-to-end",
+    "no real score-impact correction rehearsal exists",
+    "public CPR log must remain free of fabricated synthetic entries"
+  ],
+  "human_gate": "Only authorised human review may accept/reject a real correction and create a real CPR entry."
+}
