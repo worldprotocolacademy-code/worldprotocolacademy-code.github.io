@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "freeze_candidate_id": "PROTOCOLometry-v1.0-FREEZE-CANDIDATE-20260922",
+  "status": "CANDIDATE_PREPARED_NOT_V1_FROZEN",
+  "methodology_candidate_version": "0.9.1-candidate",
+  "final_version_target": "1.0",
+  "release_mode": "R0",
+  "explicit_non_claims": [
+    "This is not Protocolometry v1.0.",
+    "This is not a final methodology freeze.",
+    "This does not authorise real-institution comparative publication.",
+    "This does not authorise ordinal ranking."
+  ],
+  "candidate_normative_snapshot": {
+    "dimensions": 4,
+    "indicators": 20,
+    "dimension_weights_percent": {
+      "D1": 30,
+      "D2": 25,
+      "D3": 25,
+      "D4": 20
+    },
+    "scoring_scale": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      "NE"
+    ],
+    "overall_minimum_evidence_coverage_percent": 80,
+    "dimension_minimum_evidence_coverage_percent": 60,
+    "imputation": "PROHIBITED",
+    "country_average_substitution": "PROHIBITED",
+    "missing_data_penalty": "PROHIBITED",
+    "peer_types": [
+      "STATE_FOREIGN_SERVICE",
+      "INDEPENDENT_PROTOCOL",
+      "UNIVERSITY_LINKED",
+      "INTERNATIONAL_TRAINING"
+    ],
+    "minimum_peer_sample_for_percentile": 5,
+    "public_ordinal_ranking": "DISABLED_PENDING_V1_0_AND_SEPARATE_GOVERNANCE_DECISION",
+    "human_review_required": true,
+    "correction_right_required": true,
+    "commercial_independence_required": true
+  },
+  "candidate_asset_fingerprints": {
+    "fingerprint_type": "git_blob_sha1",
+    "note": "These fingerprints lock the current freeze-candidate inputs for regression detection only. Final v1.0 requires a separate SHA-256 lockfile after independent review.",
+    "assets": [
+      {
+        "path": "/data/institute-index-methodology-candidate.json",
+        "git_blob_sha1": "5f0d3eab111521aa95dd270264960b9117e18af0",
+        "role": "methodology definitions, indicators, anchors, weights, formulas, evidence rules and peer logic"
+      },
+      {
+        "path": "/data/institute-index/scoring-record.schema.json",
+        "git_blob_sha1": "35a9f696c2fe3eef1dce0228a5da02ed6e1a27db",
+        "role": "scoring record contract"
+      },
+      {
+        "path": "/data/institute-index/institution-evidence-dossier.schema.json",
+        "git_blob_sha1": "ee15a9262736a2013a04726302d08d5eb9d97b6c",
+        "role": "evidence dossier contract"
+      },
+      {
+        "path": "/wpa-index-appeals-and-corrections.html",
+        "git_blob_sha1": "78aa5451d49d1dbd4b0e065fc7b4fafa77d65eda",
+        "role": "correction/review/appeal procedure"
+      },
+      {
+        "path": "/forms/wpa-index-correction-request-form.md",
+        "git_blob_sha1": "668721cf414b55ba25025f28c3122db702521428",
+        "role": "correction request contract"
+      },
+      {
+        "path": "/forms/wpa-index-public-disclaimer.md",
+        "git_blob_sha1": "97bd23f225c68257fa2b13cba8cf541f0c812767",
+        "role": "public measurement boundary"
+      },
+      {
+        "path": "/governance/academic-advisory-board/WPA_ACADEMIC_ADVISORY_BOARD_TOR_v1.md",
+        "git_blob_sha1": "cb9dc1c53576ebb177cef36127e5144fab94e9bd",
+        "role": "independent review and COI governance input"
+      }
+    ]
+  },
+  "final_freeze_required_outputs": [
+    "Protocolometry v1.0 methodology JSON",
+    "final scoring-record schema",
+    "final evidence-dossier schema",
+    "frozen source/evidence rules",
+    "frozen dataset snapshot rule and exact snapshot date",
+    "frozen peer logic",
+    "frozen correction and appeals procedure",
+    "v1.0 changelog",
+    "SHA-256 lockfile for every frozen normative asset",
+    "G15 independent methodological review decision record",
+    "G14 final freeze decision record"
+  ],
+  "final_freeze_conditions": [
+    "G01-G13 applicable real-data validation evidence is complete and unresolved material issues are closed or explicitly documented.",
+    "G11 real correction-cycle evidence is completed before final freeze closure.",
+    "G12 real COI control is operational.",
+    "G15 independent methodological review is completed after formal constitution/authorisation and COI declaration.",
+    "Every G15-required methodology change is applied before final checksums are generated.",
+    "No normative asset changes after final checksums except through a new version and changelog."
+  ],
+  "sequencing_rule": {
+    "gate_numbering_note": "Gate numbering is not the same as execution chronology.",
+    "operational_order": [
+      "G14 freeze-candidate preparation",
+      "G15 independent methodological review of the candidate",
+      "apply and document accepted review changes",
+      "G14 final v1.0 freeze closure with SHA-256 lockfile",
+      "G16 separate publication decision"
+    ]
+  },
+  "mutation_policy": {
+    "candidate_changes_allowed": true,
+    "candidate_change_requires_changelog": true,
+    "final_v1_changes_allowed_without_new_version": false,
+    "final_checksum_algorithm": "SHA-256",
+    "final_checksum_generation_time": "AFTER_G15_AND_ALL_ACCEPTED_CHANGES",
+    "final_lockfile_status": "NOT_GENERATED"
+  },
+  "human_gate": "Only authorised human governance may sign the final G14 freeze decision. CI can verify integrity and prerequisites but cannot declare Protocolometry v1.0 frozen."
+}
