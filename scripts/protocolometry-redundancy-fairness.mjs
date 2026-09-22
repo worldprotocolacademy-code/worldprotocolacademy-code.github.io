@@ -65,7 +65,11 @@ export function evaluateRedundancyFixture(fixture){
 
 function indicatorWeights(method){
   const out={};
-  for(const d of method.dimensions) for(const i of d.indicators) out[i.id]=i.indicator_weight_percent;
+  for(const d of method.dimensions){
+    const weight=Number(d.indicator_weight_percent);
+    if(!Number.isFinite(weight)||weight<=0) throw new Error(`invalid indicator weight for ${d.id}`);
+    for(const i of d.indicators) out[i.id]=weight;
+  }
   return out;
 }
 function composite(profile,method){
