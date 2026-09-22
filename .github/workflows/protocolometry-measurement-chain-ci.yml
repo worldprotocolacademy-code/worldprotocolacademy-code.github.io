@@ -17,6 +17,7 @@ on:
       - 'wpa-metrics-status.html'
       - 'institute.html'
       - 'scripts/protocolometry-reliability.mjs'
+      - 'scripts/protocolometry-coverage-weight-stress.mjs'
       - '.github/workflows/protocolometry-measurement-chain-ci.yml'
   workflow_dispatch:
 
@@ -47,6 +48,8 @@ jobs:
           g02=json.loads((root/'data/institute-index/g02-evidence-corpus.json').read_text(encoding='utf-8'))
           g03=json.loads((root/'data/institute-index/g03-scoring-reproducibility.json').read_text(encoding='utf-8'))
           g04=json.loads((root/'data/institute-index/g04-inter-rater-reliability.json').read_text(encoding='utf-8'))
+          g05=json.loads((root/'data/institute-index/g05-evidence-coverage-behavior.json').read_text(encoding='utf-8'))
+          g06=json.loads((root/'data/institute-index/g06-weight-robustness.json').read_text(encoding='utf-8'))
           gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
           method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
           blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
@@ -100,6 +103,17 @@ jobs:
           assert g03['prerequisites']['current_method_test_ready_dossiers']==0
           assert g03['synthetic_preflight']['real_institutions_used'] is False
           assert g04['interpretation_rule'].startswith('Diagnostics are descriptive')
+          gate5=next(x for x in gates['gates'] if x['id']=='G05')
+          gate6=next(x for x in gates['gates'] if x['id']=='G06')
+          assert gate5['status']=='NOT_STARTED'
+          assert gate6['status']=='NOT_STARTED'
+          assert gate5['evidence']=='/data/institute-index/g05-evidence-coverage-behavior.json'
+          assert gate6['evidence']=='/data/institute-index/g06-weight-robustness.json'
+          assert g05['status']=='NOT_STARTED'
+          assert g06['status']=='NOT_STARTED'
+          assert g05['synthetic_expectations']['imputation_used'] is False
+          assert g05['synthetic_expectations']['missing_data_penalty_used'] is False
+          assert g06['automatic_acceptability_threshold'] is False
           assert method['schema_version']=='0.9.1-candidate'
           assert len(method['dimensions'])==4
           assert sum(len(d['indicators']) for d in method['dimensions'])==20
@@ -163,6 +177,10 @@ jobs:
           assert 'G03 · Scoring Reproducibility' in files['strategy']
           assert 'G04 · Inter-rater Reliability' in files['strategy']
           assert 'No automatic reliability pass threshold exists' in files['strategy']
+          assert 'G05 · Evidence Coverage Behavior' in files['strategy']
+          assert 'G06 · Weight Robustness' in files['strategy']
+          assert '/data/institute-index/g05-evidence-coverage-behavior.json' in files['lab']
+          assert '/data/institute-index/g06-weight-robustness.json' in files['lab']
           stale=[
             ('appeals','Index Governance · REV4'),
             ('appeals','Canonical REV4 counts'),
@@ -284,6 +302,48 @@ jobs:
           print('G03/G04 synthetic reproducibility preflight: PASS')
           PY
 
+      - name: Validate synthetic G05/G06 stress diagnostics
+        run: |
+          node --check scripts/protocolometry-coverage-weight-stress.mjs
+          node scripts/protocolometry-coverage-weight-stress.mjs coverage             data/institute-index/fixtures/g05-evidence-coverage-synthetic.json             > /tmp/g05-report.json
+          node scripts/protocolometry-coverage-weight-stress.mjs weights             data/institute-index/fixtures/g06-weight-robustness-synthetic.json             > /tmp/g06-report.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          g05=json.loads(Path('/tmp/g05-report.json').read_text(encoding='utf-8'))
+          g06=json.loads(Path('/tmp/g06-report.json').read_text(encoding='utf-8'))
+
+          by={x['id']:x for x in g05['profiles']}
+          assert by['FULL_EVIDENCE_4']['candidate_composite']==80
+          assert by['BALANCED_THRESHOLD_4']['weighted_evidence_coverage_percent']==80
+          assert by['BALANCED_THRESHOLD_4']['candidate_composite']==80
+          assert by['BALANCED_THRESHOLD_4']['composite_status']=='AVAILABLE'
+          assert by['BELOW_OVERALL_4']['weighted_evidence_coverage_percent']==74
+          assert by['BELOW_OVERALL_4']['composite_status']=='INSUFFICIENT_EVIDENCE_FOR_COMPOSITE'
+          assert by['DIMENSION_FAIL_4']['weighted_evidence_coverage_percent']==82
+          assert by['DIMENSION_FAIL_4']['dimensions']['D1']['evidence_coverage_percent']==40
+          assert by['DIMENSION_FAIL_4']['composite_status']=='INSUFFICIENT_EVIDENCE_FOR_COMPOSITE'
+          assert by['VERIFIED_NONCONFORMANCE']['candidate_composite']==76.8
+          assert all(g05['assertions'].values())
+
+          assert g06['composites']['canonical_candidate']=={
+            'RESEARCH_HEAVY':78.25,'PRACTICE_HEAVY':76.5,'BALANCED':80
+          }
+          assert g06['composites']['practice_diagnostic']=={
+            'RESEARCH_HEAVY':76.75,'PRACTICE_HEAVY':78.25,'BALANCED':80
+          }
+          assert g06['composites']['equal_weight_diagnostic']=={
+            'RESEARCH_HEAVY':77.5,'PRACTICE_HEAVY':77.5,'BALANCED':80
+          }
+          assert g06['max_absolute_score_drift']==1.75
+          assert len(g06['pairwise_reversals'])==1
+          r=g06['pairwise_reversals'][0]
+          assert (r['a'],r['b'],r['scheme'])==('RESEARCH_HEAVY','PRACTICE_HEAVY','practice_diagnostic')
+          assert g06['automatic_acceptability_threshold'] is False
+          print('G05/G06 synthetic stress diagnostics: PASS')
+          PY
+
       - name: JavaScript syntax extraction checks
         run: |
           python - <<'PY'
@@ -308,6 +368,10 @@ jobs:
           python -m json.tool data/institute-index/g02-evidence-corpus.json >/dev/null
           python -m json.tool data/institute-index/g03-scoring-reproducibility.json >/dev/null
           python -m json.tool data/institute-index/g04-inter-rater-reliability.json >/dev/null
+          python -m json.tool data/institute-index/g05-evidence-coverage-behavior.json >/dev/null
+          python -m json.tool data/institute-index/g06-weight-robustness.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g05-evidence-coverage-synthetic.json >/dev/null
+          python -m json.tool data/institute-index/fixtures/g06-weight-robustness-synthetic.json >/dev/null
           python -m json.tool data/institute-index/scoring-record.schema.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g03-g04-synthetic-pass1.json >/dev/null
           python -m json.tool data/institute-index/fixtures/g03-g04-synthetic-pass2.json >/dev/null
