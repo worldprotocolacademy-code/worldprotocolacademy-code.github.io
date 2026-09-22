@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-22",
+  "gate_id": "G06",
+  "gate_name": "Weight robustness",
+  "status": "NOT_STARTED",
+  "substatus": "SYNTHETIC_WEIGHT_SENSITIVITY_ENGINE_PREPARED__REAL_PILOT_SCORES_PENDING",
+  "pass_rule": "30/25/25/20 compared against approved diagnostic alternatives; large unstable result changes trigger review before freeze.",
+  "prepared_assets": {
+    "engine": "/scripts/protocolometry-coverage-weight-stress.mjs",
+    "synthetic_fixture": "/data/institute-index/fixtures/g06-weight-robustness-synthetic.json"
+  },
+  "weight_schemes": {
+    "canonical_candidate": {
+      "D1": 30,
+      "D2": 25,
+      "D3": 25,
+      "D4": 20
+    },
+    "practice_diagnostic": {
+      "D1": 25,
+      "D2": 25,
+      "D3": 30,
+      "D4": 20
+    },
+    "equal_weight_diagnostic": {
+      "D1": 25,
+      "D2": 25,
+      "D3": 25,
+      "D4": 25
+    }
+  },
+  "synthetic_expectations": {
+    "canonical": {
+      "RESEARCH_HEAVY": 78.25,
+      "PRACTICE_HEAVY": 76.5,
+      "BALANCED": 80
+    },
+    "practice_diagnostic": {
+      "RESEARCH_HEAVY": 76.75,
+      "PRACTICE_HEAVY": 78.25,
+      "BALANCED": 80
+    },
+    "equal_weight_diagnostic": {
+      "RESEARCH_HEAVY": 77.5,
+      "PRACTICE_HEAVY": 77.5,
+      "BALANCED": 80
+    },
+    "max_absolute_score_drift": 1.75,
+    "pairwise_reversal_count": 1
+  },
+  "interpretation_rule": "Weight sensitivity is diagnostic. Synthetic score drift or pairwise reversal proves the detector works; it does not prove that real Pilot 20 results are unstable or choose a preferred weighting.",
+  "automatic_acceptability_threshold": false,
+  "blockers_to_start": [
+    "No frozen Pilot 20 reconciled score corpus exists.",
+    "G03/G04 real scoring and reconciliation have not occurred.",
+    "No real score-drift or pairwise-stability report exists.",
+    "No human decision defines what degree of instability requires methodology revision."
+  ],
+  "human_gate": "Software may flag drift and reversals but may not choose weights, optimise for preferred institutions, or mark G06 passed."
+}
