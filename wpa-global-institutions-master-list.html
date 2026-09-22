@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WPA Global Institutions Master List v1.0-CORRECTED-4F-REV7</title>
-  <meta name="description" content="WPA Global Institutions Master List v1.0-CORRECTED-4F-REV7 with REV3 integrated entity-resolution and D026 restoration — internal pre-publication institutional audit and full dataset table by World Protocol Academy." />
+  <meta name="description" content="WPA Global Institutions Master List v1.0-CORRECTED-4F-REV7 — reconciled internal pre-publication institutional audit with canonical counts, source-status metadata and full dataset table by World Protocol Academy." />
   <link rel="canonical" href="https://worldprotocolacademy.mk/wpa-global-institutions-master-list.html" />
   <style>
     :root {
@@ -340,8 +340,8 @@
     <h1>WPA Global Institutions Master List<br>v1.0-CORRECTED-4F-REV7</h1>
     <p>
       Internal pre-publication dataset and institutional audit package for protocol, diplomacy,
-      public communication and security studies institutions. REV3 formally integrates the D001/A010 entity-resolution decision and restores
-      National Defense University (USA) as D026. The complete REV2 package remains preserved as an archive.
+      public communication and security studies institutions. REV7 carries forward the earlier D001/A010 entity-resolution,
+      D026 restoration and subsequent controlled reconciliations. REV6 remains the immediate archive predecessor.
     </p>
   </header>
 
@@ -349,7 +349,7 @@
     <span>Pre-publication candidate / internal review</span>
     <span>Not final public benchmark</span>
     <span>Source verification pending for the wider dataset</span>
-    <span class="patch-ok">REV6 · integral reconciliation completed</span>
+    <span class="patch-ok">REV7 · control-list reconciliation completed</span>
   </div>
 
   <main class="container">
@@ -364,7 +364,7 @@
       <h2>About this package</h2>
       <p>
         This page provides access to the consolidated <strong>WPA Global Institutions Master List
-        v1.0-CORRECTED-4F-REV7</strong>. The package includes the REV4 master dataset, public-readable Markdown file, CSV/JSON files, URL-status log, QA report and changelog. REV3 remains preserved as the immediate archive predecessor.
+        v1.0-CORRECTED-4F-REV7</strong>. The package includes the REV7 master dataset, public-readable Markdown file, CSV/JSON files, URL-status log, QA report and changelog. REV6 remains preserved as the immediate archive predecessor.
       </p>
       <p>
         The dataset is intended for internal review, research structuring, institutional mapping
@@ -396,7 +396,7 @@
       <div class="download-grid">
         <article class="download-card">
           <h3>JSON Dataset</h3>
-          <p>Structured 4F-REV6 current master dataset; REV5 remains archived separately.</p>
+          <p>Structured 4F-REV7 current master dataset; REV6 remains archived separately.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json">Open JSON</a>
             <a class="btn btn-ghost" href="data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json" download>Download</a>
@@ -454,22 +454,22 @@
       <h2>Dataset summary</h2>
       <table class="meta-table">
         <tr><th>Version</th><td>v1.0-CORRECTED-4F-REV7 · integrated entity-resolution</td></tr>
-        <tr><th>Total records</th><td>223</td></tr>
-        <tr><th>External records</th><td>222</td></tr>
-        <tr><th>Unique external institutions</th><td>214 canonical methodological count</td></tr>
+        <tr><th>Total records</th><td>250</td></tr>
+        <tr><th>External records</th><td>249</td></tr>
+        <tr><th>Unique external institutions</th><td>241 canonical methodological count</td></tr>
         <tr><th>Group counts</th><td>A=87, B=35, C=25, D=34, G=25, H=38, I=5, R=1</td></tr>
-        <tr><th>Level A records</th><td>77</td></tr>
-        <tr><th>Level B records</th><td>124</td></tr>
+        <tr><th>Level A records</th><td>95</td></tr>
+        <tr><th>Level B records</th><td>133</td></tr>
         <tr><th>Level C records</th><td>22</td></tr>
         <tr><th>Level D records</th><td>0</td></tr>
-        <tr><th>Records with website</th><td>216</td></tr>
+        <tr><th>Records with website</th><td>243</td></tr>
         <tr><th>Records without website</th><td>7: A005, A010, A035, B008, C011, D027, H036</td></tr>
         <tr><th>D001 status</th><td>VERIFIED — primary source · Canonical institutional entity</td></tr>
         <tr><th>A010 status</th><td>VERIFIED — primary source, branch/de facto presence of D001 · Audit-visible child / branch / brand-presence record · No URL · Not counted as a separate distinct external institution</td></tr>
         <tr><th>D026 status</th><td>VERIFIED — primary source · National Defense University (NDU) · Restored canonical external entity · Group D · Established 1976</td></tr>
         <tr><th>A026 status</th><td>VERIFIED — primary source + independent institutional corroboration · International Organization of Ceremonial and Protocol (OICP) · Group A · Established 2001</td></tr>
         <tr><th>A005 / B008 status</th><td>Reported cooperation-model observations · Verification pending · No URL · Not verified institutional entities</td></tr>
-        <tr><th>REV5 additions</th><td>A036–A070, B026–B033, D027 and H031–H037 integrated · child/subunit entity-resolution applied · W001–W013 excluded from canonical counts</td></tr>
+        <tr><th>REV7 additions</th><td>27 reconciled additions integrated · A015 normalized to the current SSIFS name · successor/predecessor duplicate controls applied · W001–W017 excluded from canonical counts</td></tr>
         <tr><th>QA status</th><td>URL-restoration dataset checks pass. Website URL restoration does not equal source verification.</td></tr>
       </table>
     </section>
@@ -624,6 +624,18 @@
       }).join("");
     }
 
+    function normalizePublicRecord(record) {
+      if (record?.id !== "R001") return record;
+      return {
+        ...record,
+        institution_type: "Independent digital educational, research and authorial platform",
+        verification_status: "WPA internal reference record",
+        website: "https://worldprotocolacademy.mk/",
+        website_status: "official",
+        notes: "World Protocol Academy — independent digital educational, research and authorial platform in development, testing and pilot phase. It is not presented here as a state academy, university, accreditation body or degree-granting institution."
+      };
+    }
+
     async function init() {
       const body = document.getElementById("tableBody");
       try {
@@ -631,7 +643,7 @@
         if (!response.ok) throw new Error(`Dataset HTTP ${response.status}`);
         const dataset = await response.json();
         const rawRecords = Array.isArray(dataset.institutions) ? dataset.institutions : [];
-        allRecords = rawRecords;
+        allRecords = rawRecords.map(normalizePublicRecord);
         renderGroups(allRecords);
         renderTable();
       } catch (error) {

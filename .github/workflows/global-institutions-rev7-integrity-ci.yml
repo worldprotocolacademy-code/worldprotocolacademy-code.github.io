@@ -1,0 +1,120 @@
+name: WPA Global Institutions REV7 Integrity CI
+
+on:
+  pull_request:
+    paths:
+      - 'wpa-global-institutions-master-list.html'
+      - 'master-list-verification.html'
+      - 'data/master-list-verification-status.json'
+      - 'data/wpa-canonical-metrics-status.json'
+      - 'MASTER-LIST-CANONICAL.md'
+      - 'data/global-institutions/v1.0-corrected-4f-rev7/**'
+      - '.github/workflows/global-institutions-rev7-integrity-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rev7-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate REV7 cross-surface integrity
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          dataset_path = root / 'data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json'
+          dataset = json.loads(dataset_path.read_text(encoding='utf-8'))
+          canonical = (root / 'MASTER-LIST-CANONICAL.md').read_text(encoding='utf-8')
+          public = (root / 'wpa-global-institutions-master-list.html').read_text(encoding='utf-8')
+          verify_html = (root / 'master-list-verification.html').read_text(encoding='utf-8')
+          verify_json = json.loads((root / 'data/master-list-verification-status.json').read_text(encoding='utf-8'))
+          metrics = json.loads((root / 'data/wpa-canonical-metrics-status.json').read_text(encoding='utf-8'))
+
+          expected = {
+              'total_records': 250,
+              'external_records': 249,
+              'unique_external_institutions': 241,
+              'records_with_website': 243,
+              'records_without_website': 7,
+          }
+          for key, value in expected.items():
+              if dataset.get('metadata', {}).get(key) != value:
+                  raise SystemExit(f'dataset metadata mismatch: {key}')
+
+          if 'v1.0-CORRECTED-4F-REV7' not in canonical:
+              raise SystemExit('canonical file is not REV7')
+          for needle in ['| Total records | 250 |','| External records | 249 |','| Distinct external institutions | 241 |','| Records with website URL | 243 |','| Records without website URL | 7 |']:
+              if needle not in canonical:
+                  raise SystemExit(f'canonical count missing: {needle}')
+
+          stale_public = [
+              '<strong id="statTotal">223</strong>',
+              '<strong id="statExternal">222</strong>',
+              '<strong id="statUnique">214</strong>',
+              '<strong id="statUrls">216</strong>',
+              '<tr><th>Total records</th><td>223</td></tr>',
+              '<tr><th>External records</th><td>222</td></tr>',
+              '<tr><th>Unique external institutions</th><td>214 canonical methodological count</td></tr>',
+              '<tr><th>Records with website</th><td>216</td></tr>',
+              'Structured 4F-REV6 current master dataset',
+              'REV3 remains preserved as the immediate archive predecessor',
+              'REV6 · integral reconciliation completed'
+          ]
+          for needle in stale_public:
+              if needle in public:
+                  raise SystemExit(f'stale public Master List text remains: {needle}')
+
+          for needle in [
+              '<strong id="statTotal">250</strong>',
+              '<strong id="statExternal">249</strong>',
+              '<strong id="statUnique">241</strong>',
+              '<strong id="statUrls">243</strong>',
+              '<tr><th>Total records</th><td>250</td></tr>',
+              '<tr><th>External records</th><td>249</td></tr>',
+              '<tr><th>Unique external institutions</th><td>241 canonical methodological count</td></tr>',
+              '<tr><th>Records with website</th><td>243</td></tr>',
+              'REV7 · control-list reconciliation completed',
+              'function normalizePublicRecord(record)',
+              'Independent digital educational, research and authorial platform'
+          ]:
+              if needle not in public:
+                  raise SystemExit(f'current public Master List text missing: {needle}')
+
+          for stale in ['Master List REV6','for REV3','<strong>161</strong>','<strong>160</strong>','<strong>155</strong>','Known REV3']:
+              if stale in verify_html:
+                  raise SystemExit(f'stale verification dashboard text remains: {stale}')
+          for needle in ['Master List REV7','for REV7','<strong>250</strong>','<strong>249</strong>','<strong>241</strong>','Known REV7']:
+              if needle not in verify_html:
+                  raise SystemExit(f'current verification dashboard text missing: {needle}')
+
+          if verify_json.get('canonical_dataset') != 'v1.0-CORRECTED-4F-REV7':
+              raise SystemExit('verification JSON canonical dataset mismatch')
+          if verify_json.get('verification_program', {}).get('status') != 'REV7_CONTROL_LIST_SWEEP_COMPLETE_LEGACY_RECORD_VERIFICATION_IN_PROGRESS':
+              raise SystemExit('verification JSON status is stale')
+          if verify_json.get('dataset', {}).get('total_records') != 250:
+              raise SystemExit('verification JSON total mismatch')
+
+          rev7 = metrics.get('master_list_rev7', {})
+          if rev7.get('total_records') != 250 or rev7.get('distinct_external_institutions') != 241:
+              raise SystemExit('canonical metrics REV7 mismatch')
+          if metrics.get('institutional_status', {}).get('legal_positioning') != 'Independent digital educational, research and authorial platform':
+              raise SystemExit('institutional positioning mismatch')
+
+          print('REV7 cross-surface integrity: PASS')
+          PY
+
+      - name: JSON syntax
+        run: |
+          python -m json.tool data/master-list-verification-status.json >/dev/null
+          python -m json.tool data/wpa-canonical-metrics-status.json >/dev/null
+          python -m json.tool data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json >/dev/null
