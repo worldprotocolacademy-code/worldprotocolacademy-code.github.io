@@ -624,6 +624,18 @@
       }).join("");
     }
 
+    function normalizePublicRecord(record) {
+      if (record?.id !== "R001") return record;
+      return {
+        ...record,
+        institution_type: "Independent digital educational, research and authorial platform",
+        verification_status: "WPA internal reference record",
+        website: "https://worldprotocolacademy.mk/",
+        website_status: "official",
+        notes: "World Protocol Academy — independent digital educational, research and authorial platform in development, testing and pilot phase. It is not presented here as a state academy, university, accreditation body or degree-granting institution."
+      };
+    }
+
     async function init() {
       const body = document.getElementById("tableBody");
       try {
@@ -631,7 +643,7 @@
         if (!response.ok) throw new Error(`Dataset HTTP ${response.status}`);
         const dataset = await response.json();
         const rawRecords = Array.isArray(dataset.institutions) ? dataset.institutions : [];
-        allRecords = rawRecords;
+        allRecords = rawRecords.map(normalizePublicRecord);
         renderGroups(allRecords);
         renderTable();
       } catch (error) {
