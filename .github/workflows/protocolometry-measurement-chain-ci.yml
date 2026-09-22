@@ -1,0 +1,140 @@
+name: WPA Protocolometry Measurement Chain CI
+
+on:
+  pull_request:
+    paths:
+      - 'master-list-verification.html'
+      - 'wpa-index-appeals-and-corrections.html'
+      - 'wpa-institute-index-lab.html'
+      - 'wpa-institute-measurement-ranking-strategy.html'
+      - 'protocolometry-center.html'
+      - 'correction-request.html'
+      - 'forms/wpa-index-correction-request-form.md'
+      - 'forms/wpa-index-public-disclaimer.md'
+      - 'data/wpa-index-correction-log.json'
+      - 'data/master-list-verification-status.json'
+      - 'data/institute-index/**'
+      - '.github/workflows/protocolometry-measurement-chain-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  measurement-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate machine-readable chain
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('.')
+          chain=json.loads((root/'data/institute-index/measurement-chain-status.json').read_text(encoding='utf-8'))
+          gates=json.loads((root/'data/institute-index/v1-readiness-gates.json').read_text(encoding='utf-8'))
+          method=json.loads((root/'data/institute-index-methodology-candidate.json').read_text(encoding='utf-8'))
+          blueprint=json.loads((root/'data/institute-index/protocolometry-v1-execution-blueprint.json').read_text(encoding='utf-8'))
+          verify=json.loads((root/'data/master-list-verification-status.json').read_text(encoding='utf-8'))
+          corr=json.loads((root/'data/wpa-index-correction-log.json').read_text(encoding='utf-8'))
+
+          assert chain['canonical_dataset']['version']=='v1.0-CORRECTED-4F-REV7'
+          assert chain['canonical_dataset']['total_records']==250
+          assert verify['canonical_dataset']=='v1.0-CORRECTED-4F-REV7'
+          assert corr['canonical_dataset']=='v1.0-CORRECTED-4F-REV7'
+          assert len(gates['gates'])==16
+          counts={}
+          for g in gates['gates']: counts[g['status']]=counts.get(g['status'],0)+1
+          assert chain['readiness']['total_gates']==16
+          assert chain['readiness']['passed']==counts.get('PASSED',0)
+          assert chain['readiness']['in_progress']==counts.get('IN_PROGRESS',0)
+          assert chain['readiness']['not_started']==counts.get('NOT_STARTED',0)
+          assert chain['readiness']['locked']==counts.get('LOCKED',0)
+          assert chain['readiness']['current_release_mode']=='R0'
+          assert method['schema_version']=='0.9.1-candidate'
+          assert len(method['dimensions'])==4
+          assert sum(len(d['indicators']) for d in method['dimensions'])==20
+          assert sum(d['provisional_weight_percent'] for d in method['dimensions'])==100
+          assert method['scoring']['overall_minimum_evidence_coverage_percent']==80
+          assert method['scoring']['dimension_minimum_evidence_coverage_percent']==60
+          assert method['peer_comparison']['public_ordinal_ranking'].startswith('DISABLED')
+          assert blueprint['current_state']['canonical_baseline_version']=='v1.0-CORRECTED-4F-REV7'
+          assert blueprint['current_state']['canonical_baseline_total_records']==250
+          assert blueprint['current_state']['current_release_mode']=='R0'
+          print('measurement chain JSON integrity: PASS')
+          PY
+
+      - name: Validate public governance surfaces
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files={
+            'verification':Path('master-list-verification.html').read_text(encoding='utf-8'),
+            'appeals':Path('wpa-index-appeals-and-corrections.html').read_text(encoding='utf-8'),
+            'lab':Path('wpa-institute-index-lab.html').read_text(encoding='utf-8'),
+            'strategy':Path('wpa-institute-measurement-ranking-strategy.html').read_text(encoding='utf-8'),
+            'center':Path('protocolometry-center.html').read_text(encoding='utf-8'),
+            'form':Path('forms/wpa-index-correction-request-form.md').read_text(encoding='utf-8'),
+            'disc':Path('forms/wpa-index-public-disclaimer.md').read_text(encoding='utf-8'),
+          }
+          assert 'wpa-index-appeals-and-corrections.html' in files['verification']
+          assert 'wpa-institute-index-lab.html' in files['verification']
+          assert 'protocolometry-center.html' in files['verification']
+          assert 'Index Governance · REV7' in files['appeals']
+          assert '250 total records / 249 external records / 241 distinct external institutions' in files['appeals']
+          assert 'Current REV7 group' in files['form']
+          assert 'institute@worldprotocolacademy.mk' in files['form']
+          assert 'No fixed response SLA is claimed' in files['form']
+          assert '**250 total records**' in files['disc']
+          assert '16 governed gates' not in files['lab']  # dynamic runtime count, not hard-coded display
+          assert "v1-readiness-gates.json" in files['lab']
+          assert 'sync' not in ''  # no-op marker for readable diagnostics
+          assert 'REV7 canonical baseline' in files['strategy']
+          assert 'Legacy coverage-validation corpus' in files['strategy']
+          assert 'wpa-institute-index-lab.html' in files['center']
+          assert 'wpa-index-appeals-and-corrections.html' in files['center']
+          assert 'wpa_watch_count: "—"' in files['center']
+          stale=[
+            ('appeals','Index Governance · REV4'),
+            ('appeals','Canonical REV4 counts'),
+            ('form','Current REV2 group'),
+            ('disc','**162 total records**'),
+            ('strategy','REV3 canonical baseline'),
+          ]
+          for key,needle in stale:
+            if needle in files[key]:
+              raise SystemExit(f'stale governance text remains in {key}: {needle}')
+          print('public governance chain: PASS')
+          PY
+
+      - name: JavaScript syntax extraction checks
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          for src,out in [
+            ('wpa-institute-index-lab.html','/tmp/index-lab.js'),
+            ('protocolometry-center.html','/tmp/protocolometry-center.js')
+          ]:
+            text=Path(src).read_text(encoding='utf-8')
+            blocks=re.findall(r'<script(?:\s[^>]*)?>([\s\S]*?)</script>',text,re.I)
+            code='\n'.join(b for b in blocks if b.strip() and 'application/ld+json' not in b[:80])
+            Path(out).write_text(code,encoding='utf-8')
+          PY
+          node --check /tmp/index-lab.js
+          node --check /tmp/protocolometry-center.js
+
+      - name: JSON syntax
+        run: |
+          python -m json.tool data/institute-index/measurement-chain-status.json >/dev/null
+          python -m json.tool data/institute-index/v1-readiness-gates.json >/dev/null
+          python -m json.tool data/institute-index/protocolometry-v1-execution-blueprint.json >/dev/null
+          python -m json.tool data/wpa-index-correction-log.json >/dev/null
