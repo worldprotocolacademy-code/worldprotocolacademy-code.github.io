@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Institute Function Console | World Protocol Academy</title>
+<meta name="description" content="Live functional registry and navigation console for WPA Institute operational systems.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/tools/institute-function-console/">
+<style>
+:root{--navy:#071526;--panel:#102844;--gold:#d4af37;--paper:#f7f3e8;--ink:#17233a;--muted:#637083;--line:#ccd4df;--green:#28633b;--amber:#8a6417;--red:#8d2f31}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#eef1f5;color:var(--ink);line-height:1.6}
+header{background:linear-gradient(135deg,var(--navy),#153c63);color:#fff;padding:38px 20px;border-bottom:4px solid var(--gold)}.wrap{max-width:1180px;margin:auto}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:#f1d575;font-weight:800}h1{font-family:Georgia,serif;font-size:clamp(2rem,5vw,3.4rem);margin:.2em 0}
+main{max-width:1180px;margin:auto;padding:28px 20px 70px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+button,a.btn{font:inherit;font-weight:800;border-radius:10px;padding:10px 14px;text-decoration:none;border:1px solid var(--gold);background:var(--gold);color:var(--navy);cursor:pointer}
+button.secondary,a.btn.secondary{background:white;border-color:var(--line);color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:18px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}.stat strong{display:block;font-size:1.55rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:16px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 8px 20px rgba(20,40,70,.06)}.card h2{font-size:1.15rem;margin:.35em 0}
+.status{display:inline-block;border-radius:999px;padding:4px 9px;font-size:.72rem;font-weight:900;letter-spacing:.04em}.LIVE,.LIMITED_PRODUCTION{background:#e9f6ed;color:var(--green)}.GOVERNED_PREVIEW,.BETA,.FORMATION{background:#fff2cf;color:var(--amber)}.FROZEN{background:#fbe9e9;color:var(--red)}
+.meta{font-size:.86rem;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.actions a{font-size:.88rem}.boundary{margin-top:12px;padding:10px 12px;background:#fff9e6;border-left:4px solid var(--gold);font-size:.86rem}
+.note{background:#fff;border-left:4px solid var(--gold);padding:14px 16px;border-radius:8px;margin:18px 0}.filters{display:flex;gap:8px;flex-wrap:wrap}.filters button.active{outline:3px solid rgba(212,175,55,.25)}
+footer{text-align:center;background:#fff;border-top:1px solid var(--line);padding:22px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">World Protocol Academy · Institute Operations</div><h1>WPA Institute Function Console</h1><p>Една јавна контролна точка за да се види што е навистина функционално, што е ограничено, што е preview и што намерно останува frozen.</p><div class="toolbar"><a class="btn secondary" href="/institute.html">← Institute</a><a class="btn secondary" href="/wpa-metrics-status.html">Metrics & Status</a><a class="btn secondary" href="/data/wpa-institute-functional-registry.json">Machine-readable registry</a></div></div></header>
+<main>
+<div class="note"><strong>Правило:</strong> operational card без реална route и јасен status не треба да се прикажува како активна функција. Consequential actions остануваат зад соодветниот Human Gate.</div>
+<div id="stats" class="stats"></div>
+<div class="filters" id="filters"><button class="active" data-filter="ALL">All</button><button data-filter="LIVE">LIVE</button><button data-filter="LIMITED_PRODUCTION">Limited</button><button data-filter="GOVERNED_PREVIEW">Preview</button><button data-filter="BETA">Beta</button><button data-filter="FORMATION">Formation</button></div>
+<div id="status" class="note">Loading functional registry…</div>
+<section id="grid" class="grid" aria-live="polite"></section>
+</main>
+<footer>© 2026 World Protocol Academy · Public functional registry · Human-governed operations.</footer>
+<script>
+(()=>{"use strict";
+const grid=document.getElementById("grid"),status=document.getElementById("status"),stats=document.getElementById("stats"),filters=document.getElementById("filters");
+let data=null,filter="ALL";
+const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function render(){
+ const all=data?.operational_sections||[]; const rows=filter==="ALL"?all:all.filter(x=>x.status===filter);
+ const counts=all.reduce((a,x)=>(a[x.status]=(a[x.status]||0)+1,a),{});
+ stats.innerHTML=[
+   ["Operational sections",all.length],
+   ["LIVE",counts.LIVE||0],
+   ["Limited",counts.LIMITED_PRODUCTION||0],
+   ["Preview/Beta",(counts.GOVERNED_PREVIEW||0)+(counts.BETA||0)],
+   ["Formation",counts.FORMATION||0]
+ ].map(x=>'<div class="stat"><strong>'+x[1]+'</strong><span>'+x[0]+'</span></div>').join("");
+ grid.innerHTML=rows.map(x=>'<article class="card"><span class="status '+esc(x.status)+'">'+esc(x.status)+'</span><h2>'+esc(x.id)+'</h2><p>'+esc(x.purpose)+'</p><div class="actions"><a class="btn" href="'+esc(x.primary_action)+'">Open primary function</a>'+(x.secondary_actions||[]).slice(0,3).map(y=>'<a class="btn secondary" href="'+esc(y)+'">Related</a>').join("")+'</div>'+(x.boundary?'<div class="boundary"><strong>Boundary:</strong> '+esc(x.boundary)+'</div>':'')+'</article>').join("");
+ status.innerHTML='<strong>Registry loaded.</strong> '+rows.length+' of '+all.length+' operational sections shown. Frozen capabilities remain explicitly inactive.';
+}
+filters.addEventListener("click",e=>{const b=e.target.closest("button[data-filter]");if(!b)return;filter=b.dataset.filter;filters.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===b));render()});
+fetch("/data/wpa-institute-functional-registry.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(j=>{data=j;render()}).catch(e=>{status.innerHTML='<strong>Registry unavailable.</strong> '+esc(e.message)});
+})();
+</script>
+</body></html>
