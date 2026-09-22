@@ -217,7 +217,29 @@
         "changelog",
         "appeals procedure"
       ],
-      "release_effect": "Creates v1.0 eligibility, not automatic ranking publication"
+      "release_effect": "Final freeze creates v1.0 eligibility only; it does not activate publication or ranking.",
+      "preflight_status": "FREEZE_CANDIDATE_PREPARED__FINAL_FREEZE_BLOCKED",
+      "preflight_assets": [
+        "/data/institute-index/g14-methodology-freeze.json",
+        "/data/institute-index/protocolometry-v1-freeze-candidate-manifest.json",
+        "/data/institute-index/protocolometry-v1-freeze-candidate-changelog.md",
+        "/scripts/protocolometry-freeze-preflight.mjs"
+      ],
+      "finalisation_dependencies": [
+        "applicable G01-G13 real validation evidence complete",
+        "G11 real correction-cycle evidence complete",
+        "G15 independent methodological review complete",
+        "all accepted G15 changes applied and logged",
+        "final SHA-256 lockfile generated after accepted changes",
+        "authorised human G14 final-freeze decision"
+      ],
+      "operational_sequence": [
+        "prepare G14 freeze candidate",
+        "conduct G15 independent methodological review",
+        "apply and document accepted review changes",
+        "close G14 with final SHA-256 lockfile and human decision",
+        "proceed to separate G16 publication decision"
+      ]
     },
     {
       "stage": "S8",
@@ -291,7 +313,11 @@
     "g12_preflight": "PREPARED",
     "g13_status": "LOCKED",
     "g13_preflight": "PREPARED",
-    "real_shadow_index_runs": 0
+    "real_shadow_index_runs": 0,
+    "g14_status": "LOCKED",
+    "g14_preflight": "FREEZE_CANDIDATE_PREPARED",
+    "v1_frozen": false,
+    "final_sha256_lockfile_generated": false
   },
   "next_operational_milestones": [
     "Reconcile the seven legacy entity-resolution-first coverage cases against the current REV7 corpus before using them for scoring eligibility.",
