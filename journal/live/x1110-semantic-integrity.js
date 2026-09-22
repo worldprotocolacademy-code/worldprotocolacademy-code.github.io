@@ -43,11 +43,14 @@
 
     // "Security Council" is an institution, not by itself a security-event signal.
     const securityText = text.replace(/\b(?:united nations |un )?security council\b/g, " ");
-    const hardSecurity = /\b(war|attack\w*|bomb\w*|explosion\w*|military|defen[cs]e|terror\w*|traffick\w*|cyber\w*|drone\w*|weapon\w*|violence|security situation|security framework|border security|civil defence|hostage\w*|missile\w*|airstrike\w*|sabotage|covert attack\w*|војна|напад\w*|бомб\w*|експлози\w*|воен\w*|одбрана|терор\w*|трговија со луѓе|кибер\w*|дрон\w*|оруж\w*|насилств\w*)\b/i.test(securityText);
-    if (hardSecurity) return "security";
+    const operationalSecurity = /\b(war|attack\w*|bomb\w*|explosion\w*|military|defen[cs]e|terror\w*|traffick\w*|cyber\w*|drone\w*|weapon\w*|violence|security situation|border security|civil defence|hostage\w*|missile\w*|airstrike\w*|sabotage|covert attack\w*|војна|напад\w*|бомб\w*|експлози\w*|воен\w*|одбрана|терор\w*|трговија со луѓе|кибер\w*|дрон\w*|оруж\w*|насилств\w*)\b/i.test(securityText);
+    if (operationalSecurity) return "security";
 
     const diplomacy = /\b(foreign minister|foreign ministry|ministry of foreign affairs|diplomat\w*|bilateral|multilateral|summit|negotiat\w*|peace talks|talks with|ceasefire|sanction\w*|embassy|ambassador\w*|un general assembly|unga|security council reform|security council seat|treaty|memorandum|official delegation|international relations|sovereignty|eu participation|foreign investment|american chamber|regional cooperation|good relations|надворешни работи|дипломат\w*|билатерал\w*|мултилатерал\w*|самит|преговор\w*|амбасад\w*|генерално собрание|меѓународни односи)\b/i.test(text);
     if (diplomacy) return "diplomacy";
+
+    const securityGovernance = /\b(security framework|security reform|national security strategy|public safety|risk management|безбедносна рамка|безбедносна реформа|национална безбедносна стратегија|јавна безбедност|управување со ризик)\b/i.test(securityText);
+    if (securityGovernance) return "security";
 
     const communication = /\b(media|press freedom|press ban|journalist\w*|newsroom|spokesperson|rhetoric|narrative|public communication|communication campaign|disinformation|fake news|white house ban|медиум\w*|новинар\w*|портпарол\w*|реторик\w*|наратив\w*|комуникац\w*)\b/i.test(text);
     if (communication) return "communication";
