@@ -7,6 +7,7 @@ on:
       - '.github/workflows/wpa-journal-watch.yml'
       - '.github/workflows/watch-recovery-ci.yml'
       - 'tools/wpa-watch/aggregate.mjs'
+      - 'tools/wpa-watch/classification.mjs'
       - 'tools/wpa-watch/feeds.json'
       - 'tools/wpa-watch/rss-config.json'
       - 'data/wpa-rss-source-registry-v1.json'
@@ -38,6 +39,7 @@ jobs:
       - name: Syntax checks
         run: |
           node --check tools/wpa-watch/aggregate.mjs
+          node --check tools/wpa-watch/classification.mjs
           node --check generate-journal-watch.mjs
 
       - name: Feed policy and configuration
@@ -66,6 +68,45 @@ jobs:
           grep -F 'PROVENANCE_HOST_MISMATCH' tools/wpa-watch/aggregate.mjs
           grep -F 'tier_a_live' tools/wpa-watch/aggregate.mjs
           grep -F 'live_ratio' tools/wpa-watch/aggregate.mjs
+          grep -F 'classifyItemDomain' tools/wpa-watch/aggregate.mjs
+          grep -F 'source_domain' tools/wpa-watch/aggregate.mjs
+          grep -F 'classification_version' tools/wpa-watch/aggregate.mjs
+
+      - name: Item-level classification and malformed-title contract
+        run: |
+          node --input-type=module - <<'NODE'
+          import { classifyItemDomain, normalizeTitle, CLASSIFICATION_VERSION } from './tools/wpa-watch/classification.mjs';
+
+          const cases=[
+            ['protocol',{title:'Ambassador presents credentials during official ceremony'},'protocol'],
+            ['diplomacy',{title:'Foreign ministers hold bilateral consultation'},'diplomacy'],
+            ['pr',{title:'Journalists and media relations campaign'},'pr'],
+            ['security',{title:'Cybersecurity and armed conflict risk assessment'},'security'],
+            ['communicology',{title:'Intercultural nonverbal communication study'},'communicology'],
+            ['academic',{title:'Crossref DOI metadata and research infrastructure'},'academic'],
+            ['general',{title:'Regional clean cooking steering committee meeting'},'general']
+          ];
+          for(const [id,item,expected] of cases){
+            const got=classifyItemDomain(item).domain;
+            if(got!==expected) throw new Error(`${id}: expected ${expected}, got ${got}`);
+          }
+          const bounded=normalizeTitle('X'.repeat(3570));
+          if(!bounded.truncated||bounded.text.length!==240||bounded.original_length!==3570) throw new Error('title bounding failed');
+          if(CLASSIFICATION_VERSION!=='WW3.0') throw new Error('classification version drift');
+          console.log('WPA Watch item-level classification: PASS');
+          NODE
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const items=JSON.parse(fs.readFileSync('tools/wpa-watch/items.json','utf8'));
+          const status=JSON.parse(fs.readFileSync('tools/wpa-watch/status.json','utf8'));
+          if(status.classification_version!=='WW3.0') throw new Error('status classification version missing');
+          if(items.some(x=>String(x.title||'').length>240)) throw new Error('current item exceeds title bound');
+          if(items.some(x=>!x.source_domain||x.classification_version!=='WW3.0')) throw new Error('current classification provenance missing');
+          if(items.some(x=>!['protocol','diplomacy','pr','security','communicology','academic','general'].includes(x.domain))) throw new Error('unsupported current domain');
+          const diplomacy=items.filter(x=>x.domain==='diplomacy').length;
+          if(diplomacy>=100) throw new Error('feed-level diplomacy overclassification regression');
+          NODE
 
       - name: Scheduled Watch fail-closed contract
         run: |
