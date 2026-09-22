@@ -266,6 +266,21 @@ Freeze v1.0 only after:
 
 > The corpus is used to test the methodology; the methodology is not used to erase the diversity of the corpus.
 
+### Stage 11 — Publication decision
+After G01-G15 prerequisites are complete and G14 v1.0 is formally frozen, publication still requires a separate G16 Human Gate.
+
+The system may calculate which release modes are eligible, but it may not select or activate one.
+
+Release modes:
+- **R0 — Methodology only:** no real-institution comparative publication.
+- **R1 — Reviewed scorecards:** scorecards and evidence coverage without ordinal ordering.
+- **R2 — Bands / peer profiles:** comparative bands or profiles without strict 1..N ordering.
+- **R3 — Ordinal ranking:** strict ordinal ordering, requiring a separate explicit human decision even when technically eligible.
+
+R0 is always an available safe choice. Eligibility for R1, R2 or R3 never creates an obligation to select that mode.
+
+Every non-R0 release decision requires a versioned decision record identifying the authorised human authority, prerequisite state, eligible modes, selected mode, reasoning, conditions and approval reference. A later mode change requires a new decision record; it may not silently overwrite the prior decision.
+
 ## Publication boundary
 
 Candidate diagnostics may be published transparently. Final real-institution comparative scoring or ordinal ranking requires the separate Human Gate and governance decision. Measurement does not constitute accreditation, legal recognition or endorsement.
