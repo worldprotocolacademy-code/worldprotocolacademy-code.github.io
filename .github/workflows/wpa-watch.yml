@@ -13,7 +13,7 @@ on:
 
 permissions:
   actions: write
-  checks: read
+  checks: write
   contents: write
   pull-requests: write
 
@@ -33,20 +33,26 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
 
       - name: Setup Node 24
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
 
-      - name: Verify Node and npm
+      - name: Set up Python 3.12 for protected merge validation
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Verify Node, npm and Python
         run: |
           node --version
           npm --version
+          python --version
 
       - name: Install dependencies
         run: npm install --no-audit --no-fund
