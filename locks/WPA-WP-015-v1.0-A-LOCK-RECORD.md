@@ -1,4 +1,4 @@
-# WPA-WP-015 v1.0-A — Phase A Author Lock Record
+# WPA-WP-015 v1.0-A — Phase A Late-Lock Integrity Record
 
 **Work:** WPA Working Paper No. 015 — *Washington 2026: The Returned Threshold? A Prospective Protocol Study of Reciprocity, Threshold Honour and Documentary Valediction in the State Visit of President Xi Jinping to the United States*
 
@@ -6,18 +6,21 @@
 **Institution:** World Protocol Academy  
 **Phase:** Phase A Pre-Registration  
 **Version:** v1.0-A  
-**Status:** AUTHOR LOCK — FINAL PHASE A RECORD  
+**Status:** LATE-LOCK INTEGRITY RECORD — NOT A VALID TIMELY PRE-REGISTRATION UNDER §0  
 **Pre-specified cut-off:** before 2026-09-23 00:01 UTC  
-**Lock record prepared:** 2026-09-22T17:24:20Z
+**First public GitHub timestamp for this lock record:** 2026-09-23 (after the cut-off)
 
-## Locked artifact
+## Preserved Phase A artifact
 
-- Filename: `WPA-WP-015-v1_0-A-Phase-A-AUTHOR-LOCK.pdf`
-- Size: `3,017,249 bytes`
+- Filename: `WPA-WP-015-v1_0-A-Phase-A-LATE-LOCK-INTEGRITY-RECORD.pdf`
 - Pages: `23`
-- SHA-256: `0ba0bddb4deb3a906c9519fdf4536e731d0a1d7b2c521c76bf30661a4b5c813f`
+- SHA-256: `fda5ae33f6fc0ce7e9c20965e846cb91121a57897e2c8637e7958ff8c4d25132`
 
-## Locked methodological inventory
+## Important validity note
+
+The Phase A methodology, source base and review cycle were completed before the event, and a local pre-lock candidate existed before the cut-off. However, the document's own §0 requires the SHA-256 fingerprint to be **publicly released with an independent timestamp before the cut-off**. That public timestamp was not obtained in time. Therefore this record must not be described as a valid timely author lock or preregistration, and Phase B must disclose the missed lock. No backdating is permitted.
+
+## Preserved methodological inventory
 
 - Primary programme events: `N = 9` (`E01–E09`)
 - Ceremony elements: `N_S = 7` (`S1–S7`), nested under `E02`, not independent events
@@ -25,9 +28,9 @@
 - Pre-specified hypotheses: `H1–H4`
 - Core frameworks: `AR-015`, `THL`, `RHL`, `PFI-O`, `PFI-C`, `CFI-O`, `CFI-C`
 - `Code B` remains empty until verified Phase B coding
-- `Track P` remains outside locked `N`, PFI/CFI and H1–H4
+- `Track P` remains outside primary `N`, PFI/CFI and H1–H4
 
-## External AI review cycle completed before lock
+## External AI review cycle
 
 1. Perplexity
 2. Z.ai
@@ -51,6 +54,4 @@
 
 ## Preservation rule
 
-This exact byte sequence is the Phase A author-locked record. Phase B may add verified outcomes and `Code B`, but must not alter this Phase A PDF or retroactively change its admissible inventory, definitions, hypotheses, pairings or formulas. Any Phase B publication must preserve and cite this SHA-256 fingerprint.
-
-The GitHub commit containing this record provides an independent public timestamp for the fingerprint.
+This exact byte sequence is preserved as the final Phase A **late integrity record**. Phase B may add verified outcomes and `Code B`, but must not rewrite the preserved Phase A methodology retroactively. Any Phase B publication should cite this SHA-256 and explicitly state that the pre-specified public-lock timing condition was missed.
