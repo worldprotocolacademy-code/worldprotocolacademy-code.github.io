@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Author Readiness Builder | World Protocol Academy</title>
+<meta name="description" content="Local, human-reviewed manuscript readiness checklist for WPA authors and researchers.">
+<link rel="canonical" href="https://worldprotocolacademy.mk/tools/author-readiness-builder/">
+<style>
+:root{--navy:#071526;--gold:#d4af37;--paper:#f6f3eb;--ink:#17233a;--line:#cfd6df}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#eef1f5;color:var(--ink);line-height:1.55}
+header{background:var(--navy);color:#fff;border-bottom:4px solid var(--gold);padding:34px 20px}.wrap{max-width:1040px;margin:auto}
+main{max-width:1040px;margin:auto;padding:26px 20px 60px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+label{display:block;font-weight:700;margin-top:12px}input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit}textarea{min-height:92px}
+button,a.btn{display:inline-block;margin-top:14px;padding:10px 14px;border-radius:9px;border:1px solid var(--gold);background:var(--gold);color:var(--navy);font-weight:800;text-decoration:none;cursor:pointer}
+.secondary{background:#fff!important;border-color:var(--line)!important}.out{white-space:pre-wrap;background:var(--paper);padding:14px;border-radius:10px;min-height:260px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88rem}
+.note{background:#fff8df;border-left:4px solid var(--gold);padding:12px 14px;border-radius:8px;margin:14px 0}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div>WPA Institute · Author Support</div><h1>Author Readiness Builder</h1><p>Локална алатка за структурирање manuscript-readiness brief. Не испраќа труд, не врши peer review и не гарантира објавување или индексирање.</p></div></header>
+<main>
+<div class="note"><strong>Human Gate:</strong> резултатот е работен checklist за автор/уредник. Финална академска, правна и публикациска одлука останува човечка.</div>
+<div class="grid">
+<section class="card">
+<h2>1. Manuscript inputs</h2>
+<label>Working title<input id="title"></label>
+<label>Article type<select id="type"><option>Research article</option><option>Review article</option><option>Working paper</option><option>Protocol Note</option><option>Research brief</option></select></label>
+<label>Target venue<input id="venue" placeholder="Journal / series / repository"></label>
+<label>Abstract status<select id="abstract"><option>Complete</option><option>Needs revision</option><option>Missing</option></select></label>
+<label>Methodology status<select id="method"><option>Explicit and reproducible</option><option>Present but needs strengthening</option><option>Not applicable</option><option>Missing</option></select></label>
+<label>Citation status<select id="citations"><option>Verified</option><option>Partially verified</option><option>Needs audit</option></select></label>
+<label>AI transparency<select id="ai"><option>Included / not applicable</option><option>Needs note</option></select></label>
+<label>Ethics / consent / permissions<select id="ethics"><option>Checked</option><option>Needs review</option><option>Not applicable</option></select></label>
+<label>Key concerns<textarea id="concerns" placeholder="One concern per line"></textarea></label>
+<button id="build">Build readiness brief</button> <button id="clear" class="secondary">Clear</button>
+</section>
+<section class="card">
+<h2>2. Readiness brief</h2>
+<div id="out" class="out" aria-live="polite"></div>
+<button id="copy" class="secondary">Copy brief</button>
+<a class="btn secondary" href="/journal/submission-policy.html">Submission policy</a>
+<a class="btn secondary" href="/journal/indexing-roadmap.html">Indexing roadmap</a>
+</section>
+</div>
+</main>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);
+const lines=s=>String(s||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+function data(){return {title:$("title").value.trim(),type:$("type").value,venue:$("venue").value.trim(),abstract:$("abstract").value,method:$("method").value,citations:$("citations").value,ai:$("ai").value,ethics:$("ethics").value,concerns:lines($("concerns").value)}}
+function brief(d){return `# WPA Author Readiness Brief
+
+**Status:** ADVISORY · HUMAN REVIEW REQUIRED
+**Working title:** ${d.title||"[not supplied]"}
+**Type:** ${d.type}
+**Target venue:** ${d.venue||"[not supplied]"}
+
+## Readiness checks
+- Abstract: ${d.abstract}
+- Methodology: ${d.method}
+- Citations: ${d.citations}
+- AI transparency: ${d.ai}
+- Ethics / consent / permissions: ${d.ethics}
+
+## Concerns
+${d.concerns.length?d.concerns.map(x=>"- "+x).join("\n"):"- None recorded; independent human review is still required."}
+
+## Required human gates
+- Verify factual claims and source provenance.
+- Verify citation accuracy and quotation integrity.
+- Confirm ethics, consent and permissions where applicable.
+- Check target-venue scope and current author instructions.
+- Make the final submission/publication decision manually.
+
+## Boundary
+This readiness brief is not peer review, acceptance, indexing confirmation, legal advice or a guarantee of publication.
+`;}
+function render(){const t=brief(data());$("out").textContent=t;return t}
+$("build").onclick=render;$("clear").onclick=()=>{document.querySelectorAll("input,textarea").forEach(x=>x.value="");document.querySelectorAll("select").forEach(x=>x.selectedIndex=0);render()};
+$("copy").onclick=()=>navigator.clipboard?.writeText(render());render();
+})();
+</script>
+</body></html>
