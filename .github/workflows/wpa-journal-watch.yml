@@ -19,7 +19,7 @@ on:
 
 permissions:
   actions: write
-  checks: read
+  checks: write
   contents: write
   pull-requests: write
 
@@ -43,6 +43,11 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
+
+      - name: Set up Python 3.12 for protected merge validation
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
 
       - name: Validate fresh WPA Watch upstream
         run: |
