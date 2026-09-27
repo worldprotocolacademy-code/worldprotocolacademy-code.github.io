@@ -1,15 +1,17 @@
 {
   "schema": "wpa-virtual-presenters/1.0",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "status": "PILOT_HUMAN_GATED",
-  "updated": "2026-09-27",
+  "updated": "2026-09-28",
   "policy": {
     "fictional_characters_only": true,
     "real_person_likeness_targeted": false,
     "guest_voice_cloning_allowed": false,
     "persistent_ai_disclosure_required": true,
     "automatic_publication": false,
-    "human_gate_required": true
+    "human_gate_required": true,
+    "language_selection_controls_speech_and_captions": true,
+    "no_silent_language_fallback": true
   },
   "characters": {
     "protokolka": {
@@ -25,7 +27,12 @@
         "LISTENING",
         "SPEAKING",
         "EMPHASIS"
-      ]
+      ],
+      "multilingual_runtime": {
+        "policy_reference": "/media/data/language-audio-policy.json",
+        "rule": "Selected broadcast language controls this presenter's speech together with captions and transcript.",
+        "voice_lock_status": "PENDING_PROVIDER_AUDITION_AND_LANGUAGE_ADAPTERS"
+      }
     },
     "diplomat": {
       "identity_id": "WPA-DIPLOMAT-ID-v1.0",
@@ -40,7 +47,12 @@
         "LISTENING",
         "SPEAKING",
         "EMPHASIS"
-      ]
+      ],
+      "multilingual_runtime": {
+        "policy_reference": "/media/data/language-audio-policy.json",
+        "rule": "Selected broadcast language controls this presenter's speech together with captions and transcript.",
+        "voice_lock_status": "PENDING_PROVIDER_AUDITION_AND_LANGUAGE_ADAPTERS"
+      }
     }
   }
 }
