@@ -1,0 +1,92 @@
+{
+  "schema": "wpa-citation-reference-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-27",
+  "status": "ACTIVE_GOVERNANCE_POLICY",
+  "title": "WPA Citation, Reference & Source Traceability Policy",
+  "default_style": "APA 7 where bibliographic style is required; exact source locators always take priority over cosmetic formatting.",
+  "purpose": "Every material fact, core-essence extraction, Practice Atom, Scholarly Knowledge Atom, analytical brief and publication-ready output must retain a verifiable path back to its source.",
+  "non_negotiables": [
+    "Never invent an author, title, year/date, publisher, edition, DOI, ISBN, ISSN, URL, page number, section or quotation.",
+    "If essential metadata cannot be verified, use REFERENCE_VERIFICATION_REQUIRED rather than completing fields from inference.",
+    "Prefer the original/primary source. Secondary reporting must be cited as secondary reporting.",
+    "Institutional statements and press releases document what the issuer states; they are not independent corroboration.",
+    "Every derived WPA knowledge object must preserve source_id, source URL/identifier, retrieval date, access basis, citation status and correction status.",
+    "For PDFs/books/papers, page or section locators are required for material evidence whenever technically available.",
+    "A publicly accessible PDF is not automatically an open licence. Accessibility, processing permission and redistribution permission are separate fields.",
+    "WPA publishes its own synthesis. Substantial third-party expression is not republished unless an applicable licence/permission explicitly allows it."
+  ],
+  "access_modes": {
+    "PUBLIC_WEB_REFERENCE": {
+      "processing": "Source-bounded reading and factual/practice extraction from public HTML.",
+      "storage": "Metadata, provenance and derived WPA notes only.",
+      "redistribution": "No mirroring of substantial third-party text."
+    },
+    "PUBLICLY_ACCESSIBLE_ANALYSIS_ONLY": {
+      "processing": "Temporary full-document analysis of a deliberately allowlisted public PDF/document.",
+      "storage": "No third-party full text in the public repository; retain hash, metadata, locators and derived notes.",
+      "redistribution": "No full-text republication; only appropriately attributed synthesis and limited quotation.",
+      "caveat": "Public accessibility is not treated as an open licence."
+    },
+    "OPEN_ACCESS": {
+      "processing": "Full-document analysis where open-access status is explicitly established.",
+      "storage": "Derived knowledge and provenance; full-text storage only if licence and storage policy permit.",
+      "redistribution": "According to the applicable licence/rights statement."
+    },
+    "OPEN_LICENSE": {
+      "processing": "Full-document analysis.",
+      "storage": "According to licence and WPA storage policy.",
+      "redistribution": "Only within the licence terms."
+    },
+    "PUBLIC_DOMAIN": {
+      "processing": "Full-document analysis.",
+      "storage": "Permitted subject to WPA governance and provenance.",
+      "redistribution": "Permitted subject to provenance and any non-copyright restrictions."
+    },
+    "AGREEMENT_ON_FILE": {
+      "processing": "Only within the recorded agreement scope.",
+      "storage": "Only within the recorded agreement scope.",
+      "redistribution": "Not permitted unless explicitly granted."
+    },
+    "MANUALLY_AUTHORISED": {
+      "processing": "Only within the recorded permission scope.",
+      "storage": "Only within the recorded permission scope.",
+      "redistribution": "Not permitted unless explicitly granted."
+    }
+  },
+  "reference_record_required_fields": [
+    "reference_id",
+    "source_id",
+    "source_type",
+    "author_or_corporate_author",
+    "title",
+    "publisher_or_institution",
+    "publication_date_or_year",
+    "edition_or_version",
+    "doi",
+    "isbn",
+    "issn",
+    "original_url",
+    "retrieved_at",
+    "access_basis",
+    "licence_or_rights_note",
+    "locator",
+    "citation_status",
+    "metadata_evidence"
+  ],
+  "citation_statuses": [
+    "VERIFIED_REFERENCE",
+    "PARTIALLY_VERIFIED_REFERENCE",
+    "REFERENCE_VERIFICATION_REQUIRED",
+    "SOURCE_URL_VERIFIED_METADATA_PENDING",
+    "WITHHELD"
+  ],
+  "locator_policy": {
+    "pdf_book_paper": "Exact page required for material evidence when PDF text extraction preserves pagination.",
+    "html": "Use heading/section/anchor when available; otherwise record LOCATOR_NOT_AVAILABLE_AUTOMATICALLY.",
+    "audio_video": "Use timestamp when available.",
+    "dataset": "Use record ID, field and version."
+  },
+  "publication_gate": "A material claim based on an external source may not be treated as publication-ready if its citation_status is REFERENCE_VERIFICATION_REQUIRED or WITHHELD.",
+  "correction_rule": "If a source, metadata record or locator is corrected, downstream WPA objects using that reference enter RECHECK_REQUIRED until reviewed."
+}
