@@ -1,0 +1,64 @@
+{
+  "schema": "wpa-media-community-support-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-28",
+  "status": "POLICY_READY__PAYMENT_AND_PLATFORM_ADAPTERS_NOT_ACTIVATED",
+  "purpose": "Allow voluntary community support and platform-native reactions or gifts without turning WPA News into a gamified or intrusive livestream.",
+  "principles": {
+    "voluntary_only": true,
+    "editorial_influence": false,
+    "no_pay_to_shape_coverage": true,
+    "no_donor_leaderboard": true,
+    "no_competitive_gifting": true,
+    "no_pressure_language": true,
+    "no_flashing_gift_animations": true,
+    "no_amount_overlay_by_default": true,
+    "no_personal_identity_without_consent": true,
+    "tragic_or_sensitive_story_suppression": true
+  },
+  "accepted_event_classes": [
+    "LIKE",
+    "REACTION",
+    "PLATFORM_NATIVE_GIFT",
+    "VOLUNTARY_SUPPORT_CONTRIBUTION"
+  ],
+  "normalization": {
+    "platform_examples": ["rose", "coin", "platform gift", "other platform-native token"],
+    "display_label": "Поддршка од заедницата",
+    "rule": "Normalize platform-specific gift names into one discreet WPA support event. Preserve the original platform metadata only in the private audit record when lawful and available."
+  },
+  "display": {
+    "mode": "DISCREET_AGGREGATE",
+    "default_text_mk": "Благодариме за поддршката.",
+    "default_text_en": "Thank you for supporting WPA.",
+    "location": "player_edge_or_below_player",
+    "max_visible_seconds": 4,
+    "show_amount": false,
+    "show_gift_icon": false,
+    "show_sender_name": "CONSENT_ONLY",
+    "show_sender_country": "CONSENT_ONLY",
+    "large_support_rule": "A large voluntary contribution may receive the same restrained acknowledgement as any other support event. Amounts are not displayed on-air by default; exceptional public acknowledgement requires donor consent and Human Gate approval.",
+    "news_interruption": false
+  },
+  "sensitive_contexts": [
+    "death",
+    "mass_casualty",
+    "war_casualty",
+    "terrorism",
+    "serious_accident",
+    "active_criminal_case",
+    "personal_tragedy",
+    "breaking_security_emergency"
+  ],
+  "governance": {
+    "payment_activation_requires_legal_tax_and_payment_review": true,
+    "platform_native_gifts_require_official_platform_adapter_or_manual_platform_context": true,
+    "external_payment_link_status": "NOT_ACTIVE",
+    "human_gate_for_policy_change": true,
+    "audit_required": true
+  },
+  "event_contract": {
+    "browser_event": "wpa:community-support-event",
+    "fields": ["timestamp", "platform", "event_class", "public_name", "public_country", "consent_to_public_acknowledgement", "sensitive_context", "trace_id"]
+  }
+}
