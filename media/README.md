@@ -48,3 +48,14 @@ Current reality remains explicit: the runtime contract is implemented, while pro
 `/media/data/community-support-policy.json` normalises likes, reactions, roses/coins and other platform-native gifts into one restrained **Поддршка од заедницата** layer. No leaderboard, no competitive gifting, no flashing gift animations and no amount display by default. A supporter name/country is shown only with consent. Sensitive or tragic coverage suppresses the overlay. Large voluntary contributions may be acknowledged with the same restraint; editorial coverage is never for sale.
 
 Payment links and platform gift adapters are **not claimed active** until the relevant legal/tax/payment review and official platform integration are completed.
+
+
+## First morning pilot · 28 September 2026 · 07:00 Europe/Skopje
+`/media/data/morning-launch.json` is the launch manifest for the first human-governed morning edition. It keeps the first release deliberately manual: original source opened, attributed paraphrase prepared, WPA observation/analysis separated, exact presenter script approved, visual rights checked and final provenance exported before release.
+
+The first-pilot rundown is OPEN → LEAD → PROTOCOL → DIPLOMACY → SECURITY → PR/COMMUNICOLOGY → WPA NOTE → CLOSE. No slot is mandatory if evidence is insufficient; an empty or shorter bulletin is preferable to an unsupported item.
+
+## Visual, video and copyright discipline
+`/media/data/visual-rights-policy.json` governs all still images, video, graphics and AI illustrations. Third-party visuals need a visible source strip and a documented lawful-use basis. Official embeds/original links are preferred over re-upload. Agency photography/video is not reused without an applicable licence or permission. Archive, illustration and AI-generated visuals are explicitly labelled. Public availability is not treated as an open licence.
+
+For the first pilot, no automatic external posting is claimed. Human Gate approval prepares the package; actual distribution remains manual or requires a separately authorised adapter and verified delivery result.
