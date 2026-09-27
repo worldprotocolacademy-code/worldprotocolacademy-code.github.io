@@ -27,3 +27,30 @@ Never commit third-party full text to this public repository. Store metadata, pr
 `institutional_knowledge_harvester.py --document-url URL --institution-id A001 --access-basis OPEN_ACCESS` processes one direct public/authorised document URL into a provenance receipt and deterministic pre-extraction candidate. It does not publish or approve the result.
 
 Use `--dry-run` for CI/safety validation.
+
+
+## Citation & reference rule
+No extracted knowledge may become reusable WPA knowledge without a reference trail.
+
+For books, PDFs and scholarly papers, the processor preserves or requests:
+- author or corporate author
+- exact title
+- publisher / institution
+- publication year/date
+- edition/version where relevant
+- DOI / ISBN / ISSN when available
+- original URL
+- retrieval timestamp
+- access basis / rights note
+- exact page or section locator for material evidence when technically available
+
+A publicly accessible PDF is not automatically treated as an open licence. `PUBLICLY_ACCESSIBLE_ANALYSIS_ONLY` allows bounded internal analysis of an explicitly allowlisted public document, while preventing automatic republication of the full work. WPA publishes its own synthesis and appropriately attributed limited quotations unless broader reuse is expressly permitted.
+
+Unverified or incomplete metadata is never guessed. It remains `REFERENCE_VERIFICATION_REQUIRED`.
+
+Canonical policy: `/data/wpa-citation-reference-policy.json`.
+
+## Quiet scheduler
+After merge to `main`, `.github/workflows/institutional-knowledge-scheduler.yml` runs once daily at 03:47 UTC. It processes at most three explicitly allowlisted sources by default, spaces requests, never recursively crawls the web, and uploads a temporary human-review artifact instead of committing third-party full text.
+
+The scheduled run stops at `REVIEW_REQUIRED`; no derived knowledge is automatically approved or published.
