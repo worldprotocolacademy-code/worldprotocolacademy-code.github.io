@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="mk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WPA Audio Library</title>
+<meta name="description" content="Authorised audio readings of WPA books, papers and journal articles by WPA virtual presenters.">
+<style>
+:root{--bg:#07101f;--panel:#101b30;--line:#33425d;--gold:#c9a84c;--text:#f7f3e7;--muted:#b8c0cf;--ok:#6ee7b7;--warn:#f7c873}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,var(--bg),#0a1325);color:var(--text);font:15px/1.55 Inter,Segoe UI,Arial,sans-serif}a{color:inherit}.wrap{max-width:1080px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:18px}.brand{font-family:Georgia,serif;color:#f8df87;font-size:22px;font-weight:700}.pill,.btn,select,input{border:1px solid var(--line);border-radius:12px;background:#091426;color:var(--text);padding:10px 12px}.btn{display:inline-flex;text-decoration:none;cursor:pointer;font-weight:800}.hero,.panel{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.035);padding:20px}.hero h1{font:700 clamp(34px,5vw,56px)/1 Georgia,serif;margin:8px 0}.kicker{color:#f8df87;text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:900}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}.field{display:grid;gap:6px}.field label{color:#f8df87;font-size:12px;font-weight:900}.status{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted)}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.modecard{border:1px solid var(--line);border-radius:14px;padding:14px}.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.modecard b{display:block;color:#f8df87}.tiny{font-size:12px}.worktitle{font-family:Georgia,serif;font-size:28px;margin:6px 0}.foot{margin:22px 0;color:var(--muted);font-size:12px}@media(max-width:760px){.grid,.modes{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<div class="top"><div class="brand">WPA Audio Library</div><a class="btn" href="/media/">← WPA Media</a></div>
+<section class="hero">
+<div class="kicker">Books · Papers · Journal Articles · Protocol Notes</div>
+<h1>Слушај ја WPA библиотеката</h1>
+<p class="muted">Протоколка и Дипломат читаат само од одобрена, верзионирана содржина. Избраниот јазик управува со говорот, титловите и transcript-от како една целина.</p>
+</section>
+<section class="panel" style="margin-top:14px">
+<div class="kicker">Selected work</div>
+<div id="workTitle" class="worktitle">Избери дело</div>
+<div id="workId" class="muted">—</div>
+<div class="grid">
+<div class="field"><label for="language">Јазик</label><select id="language"><option value="mk">Македонски</option><option value="en">English</option><option value="fr">Français</option><option value="sq">Shqip</option><option value="zh">中文</option><option value="ru">Русский</option><option value="hi">हिन्दी</option><option value="sw">Kiswahili</option></select></div>
+<div class="field"><label for="presenter">Читач</label><select id="presenter"><option value="protokolka">Протоколка</option><option value="diplomat">Дипломат</option><option value="alternating">Протоколка + Дипломат</option></select></div>
+</div>
+<div class="modes">
+<label class="modecard"><input type="radio" name="mode" value="READ_EXACTLY" checked> <b>READ EXACTLY</b><span class="tiny muted">Збор по збор од заклучената верзија.</span></label>
+<label class="modecard"><input type="radio" name="mode" value="AUTHORS_AUDIO_EDITION"> <b>AUTHOR'S AUDIO EDITION</b><span class="tiny muted">Одобрена аудио-навигација и дикциски паузи.</span></label>
+<label class="modecard"><input type="radio" name="mode" value="WPA_EXPLAINED"> <b>WPA EXPLAINED</b><span class="tiny muted">Посебно означено објаснување, не дословно читање.</span></label>
+</div>
+<div id="status" class="status warn">Се проверува достапноста…</div>
+<div class="actions"><button id="request" class="btn" type="button">Подготви аудио издание</button><a id="sourceLink" class="btn" href="/working-papers/">Назад кон трудот</a></div>
+</section>
+<footer class="foot">Production audio is released only after source-text lock, rights verification, Human Gate, language QA, voice adapter, captions and transcript are all ready. No silent language fallback.</footer>
+</main>
+<script>
+(()=>{"use strict";
+const $=id=>document.getElementById(id);
+let policy=null,catalog=null,langPolicy=null;
+const q=new URLSearchParams(location.search);
+const work={id:q.get("work_id")||"AI-PROTOCOL",title:q.get("title")||"AI PROTOCOL",source:q.get("source")||""};
+$("workTitle").textContent=work.title;$("workId").textContent=work.id;
+if(work.source)$("sourceLink").href=work.source;
+async function j(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw Error(r.status);return r.json()}
+async function init(){
+  try{[policy,catalog,langPolicy]=await Promise.all([j("/media/data/audio-library-policy.json"),j("/media/data/audio-library-catalog.json"),j("/media/data/language-audio-policy.json")])}catch{}
+  const saved=localStorage.getItem("wpa.media.broadcast.language");if(saved&&langPolicy?.languages?.[saved])$("language").value=saved;
+  refresh();
+}
+function selectedMode(){return document.querySelector('input[name="mode"]:checked')?.value||"READ_EXACTLY"}
+function refresh(){
+  const code=$("language").value,cfg=langPolicy?.languages?.[code],entry=(catalog?.items||[]).find(x=>x.work_id===work.id);
+  const voiceReady=cfg&&(String(cfg.voice_status||"").includes("READY")||String(cfg.voice_status||"").includes("LOCKED"));
+  const ingested=entry&&entry.source_text_status!=="INGEST_REQUIRED";
+  const ready=entry?.audio_status==="READY"&&voiceReady&&ingested;
+  const s=$("status");
+  if(ready){s.textContent=cfg.label+" · audio + captions + transcript READY";s.className="status ok"}
+  else{s.textContent=(cfg?.label||code)+" · production audio PENDING. Нема да се пушти друг јазик како замена.";s.className="status warn"}
+}
+$("language").addEventListener("change",refresh);
+$("request").addEventListener("click",()=>{
+  const detail={work_id:work.id,title:work.title,mode:selectedMode(),language:$("language").value,presenter:$("presenter").value,source_text_version:"CURRENT_LOCKED_VERSION_REQUIRED"};
+  localStorage.setItem("wpa.audio.last.request",JSON.stringify(detail));
+  window.dispatchEvent(new CustomEvent("wpa:audio-library-request",{detail}));
+  $("status").textContent="Барањето е подготвено за Human Gate / production pipeline. Playback ќе се појави дури кога master audio е READY.";
+  $("status").className="status warn";
+});
+init();
+})();
+</script>
+</body>
+</html>
