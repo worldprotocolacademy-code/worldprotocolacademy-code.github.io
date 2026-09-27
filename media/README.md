@@ -1,4 +1,4 @@
-# WPA Institute Global Aggregator · v1.5
+# WPA Institute Global Aggregator · v1.6
 
 Status: **LIMITED_PRODUCTION / HUMAN_GOVERNED**
 
@@ -34,3 +34,17 @@ The growth flywheel optimises repeatable organic growth using source quality, ti
 
 ## PWA
 `/media/manifest.json` and `/media/sw.js` provide an installable web-app shell. Native Android/iOS packaging can reuse the same backend/governance layer later; Play Store/App Store publication requires separate developer accounts, privacy disclosures, platform review and store compliance.
+
+
+## Multilingual broadcast runtime
+`/media/data/language-audio-policy.json` defines a single language-selection contract: presenter speech, captions and transcript move together. Selecting French therefore means **Протоколка and Дипломат speak French and the captions/transcript are French from the same approved script version**. A language is not release-ready until both audio and captions exist; the system must not silently fall back to another language.
+
+Current reality remains explicit: the runtime contract is implemented, while production voice adapters and native-speaker QA still need to be connected before non-master languages can be claimed as live audio.
+
+## WPA News audio identity
+`/media/data/audio-identity.json` locks **WPA NEWS · SEVEN PULSE**: 7/8, grouped 3+2+2, with Macedonian tapan as the foundational pulse supported by kaval, tambura, restrained gaida colour, orchestral strings/brass and modern broadcast textures. The composition brief is locked; final mastered audio/stems are still pending.
+
+## Community support and platform-native gifts
+`/media/data/community-support-policy.json` normalises likes, reactions, roses/coins and other platform-native gifts into one restrained **Поддршка од заедницата** layer. No leaderboard, no competitive gifting, no flashing gift animations and no amount display by default. A supporter name/country is shown only with consent. Sensitive or tragic coverage suppresses the overlay. Large voluntary contributions may be acknowledged with the same restraint; editorial coverage is never for sale.
+
+Payment links and platform gift adapters are **not claimed active** until the relevant legal/tax/payment review and official platform integration are completed.
