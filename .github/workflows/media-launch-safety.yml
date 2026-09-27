@@ -1,0 +1,103 @@
+name: WPA Media Launch Safety
+
+on:
+  push:
+    branches:
+      - media-v1.6-multilingual-engagement
+      - main
+    paths:
+      - "media/**"
+      - ".github/workflows/media-launch-safety.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "media/**"
+      - ".github/workflows/media-launch-safety.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  launch-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate media policy JSON
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require("fs");
+          const read=p=>JSON.parse(fs.readFileSync(p,"utf8"));
+
+          const launch=read("media/data/morning-launch.json");
+          const visual=read("media/data/visual-rights-policy.json");
+          const language=read("media/data/language-audio-policy.json");
+          const support=read("media/data/community-support-policy.json");
+          const presenters=read("media/data/presenters.json");
+
+          if(launch.timezone!=="Europe/Skopje") throw new Error("Morning launch timezone drift.");
+          if(launch.launch_local_time!=="07:00") throw new Error("Morning pilot launch time drift.");
+          if(launch.status!=="READY_FOR_FINAL_HUMAN_GATE") throw new Error("Morning launch must remain Human-Gate pending.");
+          if(launch.production_mode!=="MANUAL_HUMAN_GOVERNED_PILOT") throw new Error("First pilot must remain manual/human-governed.");
+          if(!Array.isArray(launch.preflight)||launch.preflight.length<8) throw new Error("Launch preflight is incomplete.");
+          if(!Array.isArray(launch.launch_rules)||!launch.launch_rules.some(x=>/No story enters/.test(x))) throw new Error("Original-source launch rule missing.");
+
+          if(visual.status!=="LAUNCH_READY__HUMAN_GOVERNED") throw new Error("Visual policy not launch-governed.");
+          if(!visual.source_strip?.required) throw new Error("Visual source strip must be mandatory.");
+          if(!visual.visual_labels?.ai_generated) throw new Error("AI visual disclosure missing.");
+          if(!visual.rights_rules?.some(x=>/watermark/i.test(x))) throw new Error("Watermark rule missing.");
+          if(!visual.rights_rules?.some(x=>/Reuters, AP, AFP, Getty/i.test(x))) throw new Error("Agency rights rule missing.");
+
+          if(language.no_silent_fallback!==true) throw new Error("Language no-silent-fallback invariant broken.");
+          if(language.master_language!=="mk") throw new Error("Macedonian master language invariant broken.");
+          if(support.principles?.tragic_or_sensitive_story_suppression!==true) throw new Error("Sensitive-story support suppression missing.");
+          if(support.principles?.editorial_influence!==false) throw new Error("Support must not influence editorial coverage.");
+          if(presenters.policy?.human_gate_required!==true) throw new Error("Presenter Human Gate missing.");
+          if(presenters.policy?.automatic_publication!==false) throw new Error("Automatic publication must remain disabled.");
+
+          console.log("Policy JSON gates: PASS");
+          NODE
+
+      - name: Validate runtime safety invariants
+        shell: bash
+        run: |
+          grep -F 'function safeHttpUrl(value)' media/app.js
+          grep -F 'safe original source URL' media/app.js
+          grep -F 'visual rights/source-strip check' media/app.js
+          grep -F 'source/WPA separation' media/app.js
+          grep -F 'selectLanguage(sel.value);' media/app.js
+          grep -F 'activeSensitiveContext' media/app.js
+          grep -F 'function safeInternalSource(value)' media/audio-library/index.html
+          if grep -F 'if(work.source)$("sourceLink").href=work.source' media/audio-library/index.html; then
+            echo "Unsafe direct source-link assignment remains."
+            exit 1
+          fi
+          echo "Runtime safety invariants: PASS"
+
+      - name: Validate launch UI controls
+        shell: bash
+        run: |
+          grep -F 'id="launchState"' media/index.html
+          grep -F 'id="visualPolicyState"' media/index.html
+          grep -F 'id="sourceVerified"' media/index.html
+          grep -F 'id="rightsVerified"' media/index.html
+          grep -F 'id="separationVerified"' media/index.html
+          grep -F 'id="sensitiveContext"' media/index.html
+          grep -F 'SOURCE · publisher/author · date · Original source' media/index.html
+          echo "Launch UI gates: PASS"
+
+      - name: Validate service worker launch assets
+        shell: bash
+        run: |
+          grep -F "/media/data/visual-rights-policy.json" media/sw.js
+          grep -F "/media/data/morning-launch.json" media/sw.js
+          echo "PWA launch cache gates: PASS"
+
+      - name: Result
+        run: |
+          echo "WPA MEDIA MORNING LAUNCH SAFETY: PASS"
+          echo "This workflow does not publish or distribute anything."
