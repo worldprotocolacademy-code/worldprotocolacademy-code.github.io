@@ -6,7 +6,7 @@ const PUBLIC_BOUNDARY = [
   "No login, paywall, CAPTCHA or access-control bypass.",
   "Do not claim that a source was read, fetched or verified unless the current workflow actually supplied or retrieved it.",
   "Institutional inclusion does not equal blanket permission to ingest or reproduce full text.",
-  "For third-party protected material, prefer source-bounded facts, concise summaries, attributed short quotations and provenance-preserving knowledge atoms.",
+  "For third-party protected material, prefer source-bounded facts, concise summaries, attributed short quotations and provenance-preserving knowledge atoms.",\n  "Every material external claim must retain a citation/reference trail to the original source.",\n  "For PDF/book/paper evidence, preserve author, title, publisher/institution, date/year, DOI/ISBN/ISSN if available, original URL, retrieval date and exact page/section when technically available.",\n  "Publicly accessible PDF does not automatically mean open licence or republication permission.",
   "Full-text processing is allowed only when access basis is OPEN_ACCESS, PUBLIC_DOMAIN, OPEN_LICENSE, AGREEMENT_ON_FILE or MANUALLY_AUTHORISED.",
   "No automatic publication, commercial activation, partnership, endorsement, accreditation or doctrine mutation.",
   "Human Gate remains authoritative for consequential use."
@@ -79,9 +79,9 @@ function addKnowledgeCard(){
     '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
     '<a class="tb-btn" style="color:var(--gold);border-color:var(--gold)" href="/tools/institutional-knowledge-harvester/">Open Harvester</a>'+
     '<a class="tb-btn" href="/tools/academic-search-hub/">Academic Search</a>'+
-    '<a class="tb-btn" href="/data/wpa-global-institutional-knowledge-harvester.json">Directive</a>'+
+    '<a class="tb-btn" href="/data/wpa-global-institutional-knowledge-harvester.json">Directive</a><a class="tb-btn" href="/data/wpa-citation-reference-policy.json">Citation Policy</a><a class="tb-btn" href="/rights-takedown.html">Rights</a>'+
     '</div></div>'+
-    '<div style="margin-top:10px;font-size:11px;color:var(--dim)">Public-source / authorised-source only · No paywall bypass · No autonomous publication · No third-party full-text mirroring in public GitHub.</div>';
+    '<div style="margin-top:10px;font-size:11px;color:var(--dim)">Public/authorised sources only · Mandatory citation trail · Public PDF ≠ open licence · No paywall bypass · No autonomous publication · No third-party full-text mirroring in public GitHub.</div>';
   target.insertBefore(card,target.firstChild);
 }
 
