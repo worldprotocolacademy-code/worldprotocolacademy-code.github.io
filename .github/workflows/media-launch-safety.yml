@@ -62,36 +62,34 @@ jobs:
           console.log("Policy JSON gates: PASS");
           NODE
 
-      - name: Exercise runtime safety behavior
+      - name: Exercise production runtime safety behavior
         shell: bash
         run: |
           node <<'NODE'
           const fs=require("fs"),vm=require("vm");
           const src=fs.readFileSync("media/app.js","utf8");
 
-          if(!src.includes('url=safeHttpUrl(x.url||x.link||x.source_url||"")')) {
-            throw new Error("Live intake is not normalized through safeHttpUrl.");
-          }
-          if(!src.includes('activeSensitiveContext=false')) {
-            throw new Error("New-brief sensitivity reset missing.");
-          }
-          if(!src.includes('thirdPartyModes.has(d.visual.mode)')) {
-            throw new Error("Third-party visual mode consistency gate missing.");
-          }
-          if(!src.includes('missing.push("third-party visual source URL")')) {
-            throw new Error("Third-party visual URL requirement missing.");
-          }
-          if(!src.includes('missing.push("visual source strip")')) {
-            throw new Error("Third-party visual source-strip requirement missing.");
+          function extract(from,to){
+            const a=src.indexOf(from),b=src.indexOf(to,a);
+            if(a<0||b<0)throw new Error("Production helper extraction failed: "+from);
+            return src.slice(a,b);
           }
 
-          function safeHttpUrl(value){
-            try{
-              const u=new URL(String(value||""));
-              return ["http:","https:"].includes(u.protocol)?u.href:"";
-            }catch{return""}
-          }
-          const cases=[
+          const productionCode =
+            extract("function safeHttpUrl(value)","function validateVisualForApproval(v)") +
+            extract("function validateVisualForApproval(v)","let catalog=") +
+            ";this.safeHttpUrl=safeHttpUrl;this.validateVisualForApproval=validateVisualForApproval;";
+
+          const sandbox={URL,Set};
+          vm.createContext(sandbox);
+          vm.runInContext(productionCode,sandbox);
+
+          const safeHttpUrl=sandbox.safeHttpUrl;
+          const validateVisualForApproval=sandbox.validateVisualForApproval;
+          if(typeof safeHttpUrl!=="function"||typeof validateVisualForApproval!=="function")
+            throw new Error("Production safety helpers were not loaded.");
+
+          const urlCases=[
             ["https://example.com/a",true],
             ["http://example.com/a",true],
             ["javascript:alert(1)",false],
@@ -99,30 +97,40 @@ jobs:
             ["file:///etc/passwd",false],
             ["",false]
           ];
-          for(const [value,ok] of cases){
-            if(Boolean(safeHttpUrl(value))!==ok) throw new Error("URL validator behavior failed for "+value);
+          for(const [value,ok] of urlCases){
+            if(Boolean(safeHttpUrl(value))!==ok)
+              throw new Error("Production URL validator failed for "+value);
           }
 
-          function approveVisual(v){
-            const missing=[];
-            const thirdPartyModes=new Set(["OFFICIAL_EMBED","LICENSED_OR_PERMISSION","ARCHIVE_RIGHTS_CONFIRMED"]);
-            const ownOrSyntheticModes=new Set(["WPA_OWNED","AI_GENERATED_ILLUSTRATION"]);
-            if(thirdPartyModes.has(v.mode)){
-              if(!safeHttpUrl(v.source_url))missing.push("third-party visual source URL");
-              if(!v.source_strip)missing.push("visual source strip");
-            }
-            if(ownOrSyntheticModes.has(v.mode)&&!v.source_strip)missing.push("visual label/source strip");
-            if(v.mode==="NO_THIRD_PARTY_VISUAL"&&v.source_url)missing.push("visual mode/source mismatch");
-            return missing;
-          }
-          if(approveVisual({mode:"OFFICIAL_EMBED",source_url:"",source_strip:""}).length<2)
-            throw new Error("Third-party visual empty provenance did not fail.");
-          if(approveVisual({mode:"OFFICIAL_EMBED",source_url:"https://example.com/v",source_strip:"SOURCE · Example"}).length)
-            throw new Error("Valid third-party visual provenance failed.");
-          if(!approveVisual({mode:"NO_THIRD_PARTY_VISUAL",source_url:"https://example.com/v",source_strip:""}).includes("visual mode/source mismatch"))
-            throw new Error("Visual mode/source mismatch did not fail.");
+          const denied=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",source_url:"",source_strip:"",rights_verified:true
+          });
+          if(!denied.includes("third-party visual source URL")||!denied.includes("visual source strip"))
+            throw new Error("Production visual gate allowed empty third-party provenance.");
 
-          console.log("Runtime behavior tests: PASS");
+          const accepted=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"VIDEO · Example · Official embed",
+            rights_verified:true
+          });
+          if(accepted.length)throw new Error("Production visual gate rejected valid provenance: "+accepted.join(", "));
+
+          const unsafe=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"javascript:alert(1)",
+            source_strip:"SOURCE · Example",
+            rights_verified:true
+          });
+          if(!unsafe.some(x=>x.includes("visual source URL")))
+            throw new Error("Production visual gate did not reject unsafe URL.");
+
+          if(!src.includes('url=safeHttpUrl(x.url||x.link||x.source_url||"")'))
+            throw new Error("Live intake is not routed through production safeHttpUrl.");
+          if(!src.includes('activeSensitiveContext=false'))
+            throw new Error("New-brief sensitivity reset missing.");
+
+          console.log("Production runtime behavior tests: PASS");
           NODE
 
       - name: Validate runtime safety invariants
