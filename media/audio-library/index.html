@@ -43,7 +43,16 @@ let policy=null,catalog=null,langPolicy=null;
 const q=new URLSearchParams(location.search);
 const work={id:q.get("work_id")||"AI-PROTOCOL",title:q.get("title")||"AI PROTOCOL",source:q.get("source")||""};
 $("workTitle").textContent=work.title;$("workId").textContent=work.id;
-if(work.source)$("sourceLink").href=work.source;
+function safeInternalSource(value){
+  if(!value)return null;
+  try{
+    const u=new URL(value,location.origin);
+    if(!["http:","https:"].includes(u.protocol)||u.origin!==location.origin)return null;
+    return u.pathname+u.search+u.hash;
+  }catch{return null}
+}
+const safeSource=safeInternalSource(work.source);
+if(safeSource)$("sourceLink").href=safeSource;
 async function j(u){const r=await fetch(u,{cache:"no-store"});if(!r.ok)throw Error(r.status);return r.json()}
 async function init(){
   try{[policy,catalog,langPolicy]=await Promise.all([j("/media/data/audio-library-policy.json"),j("/media/data/audio-library-catalog.json"),j("/media/data/language-audio-policy.json")])}catch{}
