@@ -1,6 +1,6 @@
 {
   "schema": "wpa-global-institutional-knowledge-harvester/1.0",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-09-27",
   "status": "LIMITED_PRODUCTION_HUMAN_GOVERNED",
   "name": "WPA Global Institutional Knowledge Harvester",
@@ -22,7 +22,11 @@
     "evidence_dossier_schema": "/data/institute-index/institution-evidence-dossier.schema.json",
     "practice_atom_schema": "/data/institute-index/institutional-practice-atom.schema.json",
     "institutional_dna": "/data/institute-index/institutional-dna-reuse-layer.json",
-    "connected_vessels": "/data/wpa-connected-vessels-system.json"
+    "connected_vessels": "/data/wpa-connected-vessels-system.json",
+    "citation_policy": "/data/wpa-citation-reference-policy.json",
+    "source_registry": "/data/institutional-knowledge/source-registry.json",
+    "rights_registry": "/data/institutional-knowledge/rights-registry.json",
+    "reference_schema": "/data/institutional-knowledge/reference-record.schema.json"
   },
   "rights_policy": {
     "principle": "Discovery does not equal permission to ingest, reproduce or redistribute.",
@@ -35,19 +39,22 @@
       "AGREEMENT_ON_FILE",
       "MANUALLY_AUTHORISED",
       "OPEN_METADATA_ONLY",
-      "RESTRICTED_EXTERNAL_ONLY"
+      "RESTRICTED_EXTERNAL_ONLY",
+      "PUBLICLY_ACCESSIBLE_ANALYSIS_ONLY"
     ],
     "full_text_processing_eligible": [
       "OPEN_ACCESS",
       "PUBLIC_DOMAIN",
       "OPEN_LICENSE",
       "AGREEMENT_ON_FILE",
-      "MANUALLY_AUTHORISED"
+      "MANUALLY_AUTHORISED",
+      "PUBLICLY_ACCESSIBLE_ANALYSIS_ONLY"
     ],
     "public_web_rule": "Public pages may be read for source-bounded facts, practices and short evidence notes; WPA does not mirror substantial protected expression.",
     "restricted_rule": "Paywalled, login-restricted, CAPTCHA-gated or otherwise restricted sources remain metadata/external-link/manual-verification only.",
     "agreement_rule": "An institutional agreement may expand permitted internal processing only when the agreement/permission is documented in the WPA rights register. No blanket permission is inferred from institutional inclusion.",
-    "public_repo_rule": "Do not commit third-party full text to the public repository. Commit metadata, provenance, derived summaries/atoms and rights-safe evidence notes only."
+    "public_repo_rule": "Do not commit third-party full text to the public repository. Commit metadata, provenance, derived summaries/atoms and rights-safe evidence notes only.",
+    "publicly_accessible_analysis_only": "Permits bounded internal analysis of an explicitly allowlisted public document while preserving citation/provenance. It does not establish an open licence, redistribution right or permission to republish substantial text."
   },
   "document_types": [
     "OFFICIAL_WEB_PAGE",
@@ -222,10 +229,14 @@
       "evidence_points",
       "limitations",
       "reuse_status",
-      "human_review_status"
+      "human_review_status",
+      "reference_id",
+      "citation_status",
+      "locator"
     ],
     "essence_rule": "Use WPA's own concise wording. Preserve distinctive terminology only where necessary and attributed. Never present source wording or authorship as WPA's.",
-    "evidence_point_rule": "Each material evidence point must retain page/section or other locator when available."
+    "evidence_point_rule": "Each material evidence point must retain page/section or other locator when available.",
+    "reference_rule": "No reusable core-essence evidence point may lose its source reference. PDF/book/paper evidence must retain page/section locator when available."
   },
   "pipeline": [
     "INSTITUTION_QUEUE",
@@ -270,6 +281,7 @@
     "Not autonomous partnership, endorsement, accreditation or recognition.",
     "Not automatic publication.",
     "Not proof that an institution has authorised reuse unless an agreement/permission record exists.",
-    "Not a replacement for reading the original source."
+    "Not a replacement for reading the original source.",
+    "Not a substitute for legal advice; public availability is not treated as an open licence."
   ]
 }
