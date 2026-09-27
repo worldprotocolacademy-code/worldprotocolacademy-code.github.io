@@ -1,0 +1,45 @@
+name: WPA Institutional Knowledge Harvester CI
+on:
+  pull_request:
+    paths:
+      - 'tools/institutional-knowledge-harvester/**'
+      - 'data/institutional-knowledge/**'
+      - 'data/wpa-citation-reference-policy.json'
+      - 'data/wpa-global-institutional-knowledge-harvester.json'
+      - '.github/workflows/institutional-knowledge-harvester-ci.yml'
+      - '.github/workflows/institutional-knowledge-scheduler.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/institutional-knowledge-harvester/**'
+      - 'data/institutional-knowledge/**'
+      - 'data/wpa-citation-reference-policy.json'
+      - 'data/wpa-global-institutional-knowledge-harvester.json'
+      - '.github/workflows/institutional-knowledge-harvester-ci.yml'
+      - '.github/workflows/institutional-knowledge-scheduler.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: JSON and syntax
+        run: |
+          python -m json.tool data/wpa-citation-reference-policy.json >/dev/null
+          python -m json.tool data/wpa-global-institutional-knowledge-harvester.json >/dev/null
+          python -m json.tool data/institutional-knowledge/source-registry.json >/dev/null
+          python -m json.tool data/institutional-knowledge/rights-registry.json >/dev/null
+          python -m json.tool data/institutional-knowledge/reference-record.schema.json >/dev/null
+          python -m py_compile tools/institutional-knowledge-harvester/institutional_knowledge_harvester.py
+      - name: Queue dry run
+        run: python tools/institutional-knowledge-harvester/institutional_knowledge_harvester.py --build-queue --dry-run
+      - name: Registry dry run
+        run: python tools/institutional-knowledge-harvester/institutional_knowledge_harvester.py --run-registry --max-items 3 --dry-run
+      - name: Public HTML rights gate
+        run: python tools/institutional-knowledge-harvester/institutional_knowledge_harvester.py --document-url https://example.org/ --source-id TEST --institution-id TEST --access-basis PUBLIC_WEB_REFERENCE --expected-content HTML --dry-run
+      - name: PDF analysis mode gate
+        run: python tools/institutional-knowledge-harvester/institutional_knowledge_harvester.py --document-url https://example.org/sample.pdf --source-id TESTPDF --institution-id TEST --access-basis PUBLICLY_ACCESSIBLE_ANALYSIS_ONLY --expected-content PDF --dry-run
