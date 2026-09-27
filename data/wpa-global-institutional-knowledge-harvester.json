@@ -1,0 +1,275 @@
+{
+  "schema": "wpa-global-institutional-knowledge-harvester/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-27",
+  "status": "LIMITED_PRODUCTION_HUMAN_GOVERNED",
+  "name": "WPA Global Institutional Knowledge Harvester",
+  "purpose": "Continuously prepare source-traceable institutional and scholarly knowledge from publicly and lawfully accessible material produced by protocol schools, diplomatic academies, foreign-service institutes, related institutions and scholarly repositories, then route only approved abstractions into WPA systems.",
+  "canonical_universe": {
+    "master_list": "/data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json",
+    "total_records": 250,
+    "external_records": 249,
+    "unique_external_institutions": 241,
+    "records_with_url": 243,
+    "priority_rule": "Start with direct protocol/diplomacy relevance (Level A), verified/corroborated records first; expand by evidence availability and WPA domain relevance."
+  },
+  "connected_infrastructure": {
+    "global_evidence_programme": "/wpa-global-institutional-evidence-programme.html",
+    "public_evidence_agent_protocol": "/data/institute-index/public-evidence-agent-protocol.md",
+    "academic_search_hub": "/tools/academic-search-hub/",
+    "scholarly_layer": "/data/wpa-global-scholarly-knowledge-layer.json",
+    "scholarly_atom_schema": "/data/wpa-scholarly-knowledge-atom.schema.json",
+    "evidence_dossier_schema": "/data/institute-index/institution-evidence-dossier.schema.json",
+    "practice_atom_schema": "/data/institute-index/institutional-practice-atom.schema.json",
+    "institutional_dna": "/data/institute-index/institutional-dna-reuse-layer.json",
+    "connected_vessels": "/data/wpa-connected-vessels-system.json"
+  },
+  "rights_policy": {
+    "principle": "Discovery does not equal permission to ingest, reproduce or redistribute.",
+    "access_basis": [
+      "OPEN_ACCESS",
+      "PUBLIC_DOMAIN",
+      "OPEN_LICENSE",
+      "PUBLIC_ABSTRACT",
+      "PUBLIC_WEB_REFERENCE",
+      "AGREEMENT_ON_FILE",
+      "MANUALLY_AUTHORISED",
+      "OPEN_METADATA_ONLY",
+      "RESTRICTED_EXTERNAL_ONLY"
+    ],
+    "full_text_processing_eligible": [
+      "OPEN_ACCESS",
+      "PUBLIC_DOMAIN",
+      "OPEN_LICENSE",
+      "AGREEMENT_ON_FILE",
+      "MANUALLY_AUTHORISED"
+    ],
+    "public_web_rule": "Public pages may be read for source-bounded facts, practices and short evidence notes; WPA does not mirror substantial protected expression.",
+    "restricted_rule": "Paywalled, login-restricted, CAPTCHA-gated or otherwise restricted sources remain metadata/external-link/manual-verification only.",
+    "agreement_rule": "An institutional agreement may expand permitted internal processing only when the agreement/permission is documented in the WPA rights register. No blanket permission is inferred from institutional inclusion.",
+    "public_repo_rule": "Do not commit third-party full text to the public repository. Commit metadata, provenance, derived summaries/atoms and rights-safe evidence notes only."
+  },
+  "document_types": [
+    "OFFICIAL_WEB_PAGE",
+    "PUBLIC_PDF",
+    "CURRICULUM",
+    "HANDBOOK",
+    "ANNUAL_REPORT",
+    "POLICY",
+    "STATUTE",
+    "CODE_OF_ETHICS",
+    "PROGRAMME_GUIDE",
+    "JOURNAL_ARTICLE",
+    "WORKING_PAPER",
+    "REPORT",
+    "THESIS",
+    "DISSERTATION",
+    "CONFERENCE_PAPER",
+    "OTHER"
+  ],
+  "extraction_lanes": [
+    {
+      "id": "IKH-A1",
+      "name": "Institutional Core",
+      "fields": [
+        "mission",
+        "history",
+        "identity",
+        "governance",
+        "objectives",
+        "membership_or_audience",
+        "institutional_model"
+      ]
+    },
+    {
+      "id": "IKH-A2",
+      "name": "Programme Architecture",
+      "fields": [
+        "programme_structure",
+        "learning_outcomes",
+        "curriculum",
+        "career_stage",
+        "assessment",
+        "simulation",
+        "practitioner_integration"
+      ]
+    },
+    {
+      "id": "IKH-A3",
+      "name": "Protocol Practice",
+      "fields": [
+        "precedence",
+        "ceremonial",
+        "state_visits",
+        "seating",
+        "flags_symbols",
+        "hospitality",
+        "military_protocol",
+        "VIP_coordination"
+      ]
+    },
+    {
+      "id": "IKH-A4",
+      "name": "Diplomacy & Negotiation",
+      "fields": [
+        "diplomatic_training",
+        "negotiation",
+        "mediation",
+        "public_diplomacy",
+        "consular_practice",
+        "multilateral_practice"
+      ]
+    },
+    {
+      "id": "IKH-A5",
+      "name": "Communication",
+      "fields": [
+        "public_relations",
+        "strategic_communication",
+        "crisis_communication",
+        "media_relations",
+        "communicology",
+        "media_literacy"
+      ]
+    },
+    {
+      "id": "IKH-A6",
+      "name": "Security",
+      "fields": [
+        "protective_security",
+        "institutional_security",
+        "cyber",
+        "intelligence_public_source",
+        "resilience",
+        "crisis_management"
+      ]
+    },
+    {
+      "id": "IKH-A7",
+      "name": "Ethics & Authority",
+      "fields": [
+        "deontology",
+        "professional_standards",
+        "human_authority",
+        "credential_integrity",
+        "transparency",
+        "correction"
+      ]
+    },
+    {
+      "id": "IKH-A8",
+      "name": "Digital & AI",
+      "fields": [
+        "digital_protocol",
+        "AI_governance",
+        "automation",
+        "data_governance",
+        "human_gate",
+        "future_protocol"
+      ]
+    },
+    {
+      "id": "IKH-A9",
+      "name": "Scholarly Core",
+      "fields": [
+        "research_question",
+        "method",
+        "argument",
+        "principal_findings",
+        "limitations",
+        "counterevidence",
+        "future_research"
+      ]
+    },
+    {
+      "id": "IKH-A10",
+      "name": "Provenance & Rights",
+      "fields": [
+        "source_id",
+        "url_or_identifier",
+        "publisher",
+        "authors",
+        "date",
+        "retrieval_date",
+        "page_or_section",
+        "access_basis",
+        "license",
+        "agreement_id",
+        "source_tier",
+        "uncertainty"
+      ]
+    },
+    {
+      "id": "IKH-A11",
+      "name": "WPA Transformation",
+      "fields": [
+        "practice_atoms",
+        "scholarly_atoms",
+        "keep_adapt_surpass_do_not_import",
+        "reuse_domains",
+        "research_questions",
+        "methodology_review_triggers"
+      ]
+    }
+  ],
+  "core_essence_output": {
+    "required": [
+      "institution_id",
+      "source_identity",
+      "access_basis",
+      "retrieval_date",
+      "essence_summary",
+      "evidence_points",
+      "limitations",
+      "reuse_status",
+      "human_review_status"
+    ],
+    "essence_rule": "Use WPA's own concise wording. Preserve distinctive terminology only where necessary and attributed. Never present source wording or authorship as WPA's.",
+    "evidence_point_rule": "Each material evidence point must retain page/section or other locator when available."
+  },
+  "pipeline": [
+    "INSTITUTION_QUEUE",
+    "DISCOVER_PUBLIC_OR_AUTHORISED_DOCUMENT",
+    "RIGHTS_AND_ACCESS_GATE",
+    "IDENTITY_METADATA_VERIFY",
+    "TEXT_EXTRACTION_WHERE_PERMITTED",
+    "CORE_ESSENCE_PREEXTRACTION",
+    "INSTITUTIONAL_OR_SCHOLARLY_ATOM_CANDIDATE",
+    "CONTRADICTION_LIMITATION_QA",
+    "HUMAN_REVIEW",
+    "APPROVE_BOUNDED_REUSE",
+    "ROUTE_TO_WPA",
+    "CORRECTION_PROPAGATION"
+  ],
+  "routing": [
+    "Protocolometry",
+    "Research and Working Papers",
+    "WPA Journal",
+    "Programmes and Curriculum",
+    "Simulations and Case Studies",
+    "Practitioner Lectures",
+    "Student Desk",
+    "Virtual Sande",
+    "WPAWS",
+    "Briefings",
+    "Governance and QA",
+    "Strategy",
+    "Public Communication",
+    "WPA Media"
+  ],
+  "human_gate": {
+    "discovery_and_preextraction": "HG0_HG1",
+    "atom_approval": "HUMAN_REVIEW_REQUIRED",
+    "curriculum_methodology_strategy_change": "HG2_OR_HIGHER",
+    "private_or_sensitive_backend": "HG3",
+    "doctrine_or_formal_external_commitment": "HG4"
+  },
+  "non_claims": [
+    "Not a copyright harvesting system.",
+    "Not a paywall/login bypass system.",
+    "Not autonomous partnership, endorsement, accreditation or recognition.",
+    "Not automatic publication.",
+    "Not proof that an institution has authorised reuse unless an agreement/permission record exists.",
+    "Not a replacement for reading the original source."
+  ]
+}
