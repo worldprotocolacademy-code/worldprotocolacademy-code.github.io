@@ -1,0 +1,89 @@
+{
+  "schema": "wpa-media-language-audio-policy/1.0",
+  "version": "1.0.0",
+  "updated": "2026-09-28",
+  "status": "RUNTIME_CONTRACT_READY__VOICE_ADAPTER_DEPENDENT",
+  "principle": "One language choice controls presenter speech, captions and transcript as one versioned chain.",
+  "no_silent_fallback": true,
+  "release_rule": "A selected broadcast language may be released only when presenter audio and captions for the same approved script version are both available. If audio is unavailable, the UI must say so and must not silently play another language.",
+  "master_language": "mk",
+  "languages": {
+    "mk": {
+      "label": "Македонски",
+      "locale": "mk-MK",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "MASTER",
+      "voice_status": "VOICE_LOCK_PENDING"
+    },
+    "en": {
+      "label": "English",
+      "locale": "en",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "VERIFIED_FOR_LAUNCH",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "fr": {
+      "label": "Français",
+      "locale": "fr-FR",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "sq": {
+      "label": "Shqip",
+      "locale": "sq",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "zh": {
+      "label": "中文",
+      "locale": "zh-CN",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "ru": {
+      "label": "Русский",
+      "locale": "ru-RU",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "hi": {
+      "label": "हिन्दी",
+      "locale": "hi-IN",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    },
+    "sw": {
+      "label": "Kiswahili",
+      "locale": "sw",
+      "speech_required": true,
+      "captions_required": true,
+      "translation_status": "NATIVE_REVIEW_REQUIRED",
+      "voice_status": "VOICE_ADAPTER_PENDING"
+    }
+  },
+  "version_chain": [
+    "HUMAN_APPROVED_SCRIPT",
+    "LANGUAGE_TRANSLATION",
+    "LANGUAGE_QA",
+    "PRESENTER_AUDIO",
+    "CAPTIONS_VTT_SRT",
+    "TRANSCRIPT",
+    "REPLAY_ARCHIVE"
+  ],
+  "event_contract": {
+    "browser_event": "wpa:media-language-change",
+    "fields": ["language", "locale", "script_version", "speech_required", "captions_required"]
+  }
+}
