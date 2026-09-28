@@ -105,8 +105,17 @@ jobs:
           const denied=validateVisualForApproval({
             mode:"OFFICIAL_EMBED",source_url:"",source_strip:"",rights_verified:true
           });
-          if(!denied.includes("third-party visual source URL")||!denied.includes("visual source strip"))
+          if(!denied.includes("third-party visual source URL")||!denied.includes("verified visual source strip"))
             throw new Error("Production visual gate allowed empty third-party provenance.");
+
+          const placeholder=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"SOURCE · verify publisher · Original source",
+            rights_verified:true
+          });
+          if(!placeholder.includes("verified visual source strip")||!placeholder.includes("VIDEO source strip"))
+            throw new Error("Production visual gate accepted placeholder or wrong-mode provenance.");
 
           const accepted=validateVisualForApproval({
             mode:"OFFICIAL_EMBED",
@@ -131,6 +140,38 @@ jobs:
             throw new Error("New-brief sensitivity reset missing.");
 
           console.log("Production runtime behavior tests: PASS");
+          NODE
+
+      - name: Exercise production audio source-link safety
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require("fs"),vm=require("vm");
+          const src=fs.readFileSync("media/audio-library/index.html","utf8");
+          const a=src.indexOf("function safeInternalSource(value)");
+          const b=src.indexOf("const safeSource=",a);
+          if(a<0||b<0)throw new Error("Production safeInternalSource extraction failed.");
+          const code=src.slice(a,b)+";this.safeInternalSource=safeInternalSource;";
+          const sandbox={URL,location:{origin:"https://wpa.example"}};
+          vm.createContext(sandbox);
+          vm.runInContext(code,sandbox);
+          const fn=sandbox.safeInternalSource;
+          if(typeof fn!=="function")throw new Error("Production safeInternalSource not loaded.");
+
+          const same=fn("/working-papers/?x=1#p");
+          if(same!=="https://wpa.example/working-papers/?x=1#p")
+            throw new Error("Same-origin relative source was not canonicalized.");
+
+          const doubleSlash=fn("https://wpa.example//evil.example/path");
+          if(!doubleSlash||!doubleSlash.startsWith("https://wpa.example/"))
+            throw new Error("Same-origin double-slash path escaped its validated origin.");
+
+          if(fn("https://evil.example/path")!==null)
+            throw new Error("Cross-origin audio source was accepted.");
+          if(fn("javascript:alert(1)")!==null)
+            throw new Error("Unsafe audio source protocol was accepted.");
+
+          console.log("Production audio source-link behavior: PASS");
           NODE
 
       - name: Validate runtime safety invariants
