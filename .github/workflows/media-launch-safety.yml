@@ -1,0 +1,273 @@
+name: WPA Media Launch Safety
+
+on:
+  push:
+    branches:
+      - media-v1.6-multilingual-engagement
+      - main
+    paths:
+      - "media/**"
+      - ".github/workflows/media-launch-safety.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "media/**"
+      - ".github/workflows/media-launch-safety.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  launch-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate media policy JSON
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require("fs");
+          const read=p=>JSON.parse(fs.readFileSync(p,"utf8"));
+
+          const launch=read("media/data/morning-launch.json");
+          const visual=read("media/data/visual-rights-policy.json");
+          const language=read("media/data/language-audio-policy.json");
+          const support=read("media/data/community-support-policy.json");
+          const presenters=read("media/data/presenters.json");
+
+          if(launch.timezone!=="Europe/Skopje") throw new Error("Morning launch timezone drift.");
+          if(launch.launch_local_time!=="07:00") throw new Error("Morning pilot launch time drift.");
+          if(launch.status!=="READY_FOR_FINAL_HUMAN_GATE") throw new Error("Morning launch must remain Human-Gate pending.");
+          if(launch.production_mode!=="MANUAL_HUMAN_GOVERNED_PILOT") throw new Error("First pilot must remain manual/human-governed.");
+          if(!Array.isArray(launch.preflight)||launch.preflight.length<8) throw new Error("Launch preflight is incomplete.");
+          if(!Array.isArray(launch.launch_rules)||!launch.launch_rules.some(x=>/No story enters/.test(x))) throw new Error("Original-source launch rule missing.");
+
+          if(visual.status!=="LAUNCH_READY__HUMAN_GOVERNED") throw new Error("Visual policy not launch-governed.");
+          if(!visual.source_strip?.required) throw new Error("Visual source strip must be mandatory.");
+          if(!visual.visual_labels?.ai_generated) throw new Error("AI visual disclosure missing.");
+          if(!visual.rights_rules?.some(x=>/watermark/i.test(x))) throw new Error("Watermark rule missing.");
+          if(!visual.rights_rules?.some(x=>/Reuters, AP, AFP, Getty/i.test(x))) throw new Error("Agency rights rule missing.");
+
+          if(language.no_silent_fallback!==true) throw new Error("Language no-silent-fallback invariant broken.");
+          if(language.master_language!=="mk") throw new Error("Macedonian master language invariant broken.");
+          if(support.principles?.tragic_or_sensitive_story_suppression!==true) throw new Error("Sensitive-story support suppression missing.");
+          if(support.principles?.editorial_influence!==false) throw new Error("Support must not influence editorial coverage.");
+          if(presenters.policy?.human_gate_required!==true) throw new Error("Presenter Human Gate missing.");
+          if(presenters.policy?.automatic_publication!==false) throw new Error("Automatic publication must remain disabled.");
+
+          console.log("Policy JSON gates: PASS");
+          NODE
+
+      - name: Exercise production runtime safety behavior
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require("fs"),vm=require("vm");
+          const src=fs.readFileSync("media/app.js","utf8");
+
+          function extract(from,to){
+            const a=src.indexOf(from),b=src.indexOf(to,a);
+            if(a<0||b<0)throw new Error("Production helper extraction failed: "+from);
+            return src.slice(a,b);
+          }
+
+          const productionCode =
+            extract("function safeHttpUrl(value)","function validateVisualForApproval(v)") +
+            extract("function validateVisualForApproval(v)","let catalog=") +
+            ";this.safeHttpUrl=safeHttpUrl;this.validateVisualForApproval=validateVisualForApproval;";
+
+          const sandbox={URL,Set};
+          vm.createContext(sandbox);
+          vm.runInContext(productionCode,sandbox);
+
+          const safeHttpUrl=sandbox.safeHttpUrl;
+          const validateVisualForApproval=sandbox.validateVisualForApproval;
+          if(typeof safeHttpUrl!=="function"||typeof validateVisualForApproval!=="function")
+            throw new Error("Production safety helpers were not loaded.");
+
+          const urlCases=[
+            ["https://example.com/a",true],
+            ["http://example.com/a",true],
+            ["javascript:alert(1)",false],
+            ["data:text/html,boom",false],
+            ["file:///etc/passwd",false],
+            ["",false]
+          ];
+          for(const [value,ok] of urlCases){
+            if(Boolean(safeHttpUrl(value))!==ok)
+              throw new Error("Production URL validator failed for "+value);
+          }
+
+          const denied=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",source_url:"",source_strip:"",rights_verified:true
+          });
+          if(!denied.includes("third-party visual source URL")||!denied.includes("verified visual source strip"))
+            throw new Error("Production visual gate allowed empty third-party provenance.");
+
+          const placeholder=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"SOURCE · verify publisher · Original source",
+            rights_verified:true
+          });
+          if(!placeholder.includes("verified visual source strip")||!placeholder.includes("complete VIDEO attribution"))
+            throw new Error("Production visual gate accepted placeholder or wrong-mode provenance.");
+
+          const shortVideo=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"VIDEO ·",
+            rights_verified:true
+          });
+          if(!shortVideo.includes("complete VIDEO attribution"))
+            throw new Error("Production visual gate accepted structurally empty VIDEO attribution.");
+
+          const shortSource=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"https://example.com/photo",
+            source_strip:"x",
+            rights_verified:true
+          });
+          if(!shortSource.includes("complete SOURCE attribution"))
+            throw new Error("Production visual gate accepted structurally empty SOURCE attribution.");
+
+          const accepted=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"VIDEO · Example News · Official embed/original source",
+            rights_verified:true
+          });
+          if(accepted.length)throw new Error("Production visual gate rejected valid VIDEO provenance: "+accepted.join(", "));
+
+          const acceptedSource=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"https://example.com/photo",
+            source_strip:"SOURCE · Example News · Original source",
+            rights_verified:true
+          });
+          if(acceptedSource.length)throw new Error("Production visual gate rejected valid SOURCE provenance: "+acceptedSource.join(", "));
+
+          const unsafe=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"javascript:alert(1)",
+            source_strip:"SOURCE · Example",
+            rights_verified:true
+          });
+          if(!unsafe.some(x=>x.includes("visual source URL")))
+            throw new Error("Production visual gate did not reject unsafe URL.");
+
+          if(!src.includes('url=safeHttpUrl(x.url||x.link||x.source_url||"")'))
+            throw new Error("Live intake is not routed through production safeHttpUrl.");
+          const stateStart=src.indexOf("let languagePolicy=null");
+          const jsonStart=src.indexOf("async function json",stateStart);
+          if(stateStart<0||jsonStart<0)throw new Error("Sensitivity helper extraction failed.");
+          const notice={textContent:"muted",className:"support-notice is-muted"};
+          const stateCode=src.slice(stateStart,jsonStart)+";this.setSensitiveContext=setSensitiveContext;this.getSensitiveContext=getSensitiveContext;this.resetSupportNotice=resetSupportNotice;";
+          const stateSandbox={
+            $:sel=>sel==="#supportNotice"?notice:null,
+            clearTimeout:()=>{},
+            DEFAULT_SUPPORT_NOTICE:undefined
+          };
+          vm.createContext(stateSandbox);
+          vm.runInContext(stateCode,stateSandbox);
+          if(stateSandbox.setSensitiveContext(true)!==true||stateSandbox.getSensitiveContext()!==true)
+            throw new Error("Production sensitivity state could not enter sensitive mode.");
+          if(stateSandbox.setSensitiveContext(false)!==false||stateSandbox.getSensitiveContext()!==false)
+            throw new Error("Production sensitivity state could not reset for a new brief.");
+          stateSandbox.resetSupportNotice();
+          if(notice.className!=="support-notice"||!/Лајкови/.test(notice.textContent))
+            throw new Error("Production support notice did not return to neutral state.");
+
+          const initStart=src.indexOf("async function init()");
+          const firstPolicyAwait=src.indexOf('await json("/media/data/language-audio-policy.json")',initStart);
+          const attach=src.indexOf('sensitive.addEventListener("change",syncSensitive)',initStart);
+          const initialSync=src.indexOf("syncSensitive();",initStart);
+          if(initStart<0||attach<0||initialSync<0||firstPolicyAwait<0||attach>firstPolicyAwait||initialSync>firstPolicyAwait)
+            throw new Error("Sensitivity guard is not installed and synchronized before policy awaits.");
+
+          if(!src.includes('window.dispatchEvent(new CustomEvent("wpa:media-brief-prepared"))'))
+            throw new Error("Brief-prepared reset event is not emitted by production prepare().");
+          if(!src.includes('window.addEventListener("wpa:media-brief-prepared",()=>{setSensitiveContext(false);if(sensitive)sensitive.checked=false;resetSupportNotice()}'))
+            throw new Error("Support runtime does not reset state, checkbox and notice on a new brief.");
+          if(src.includes('$("#sensitiveContext").checked=false;activeSensitiveContext=false'))
+            throw new Error("Illegal cross-IIFE sensitivity access remains.");
+
+          console.log("Production runtime behavior tests: PASS");
+          NODE
+
+      - name: Exercise production audio source-link safety
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require("fs"),vm=require("vm");
+          const src=fs.readFileSync("media/audio-library/index.html","utf8");
+          const a=src.indexOf("function safeInternalSource(value)");
+          const b=src.indexOf("const safeSource=",a);
+          if(a<0||b<0)throw new Error("Production safeInternalSource extraction failed.");
+          const code=src.slice(a,b)+";this.safeInternalSource=safeInternalSource;";
+          const sandbox={URL,location:{origin:"https://wpa.example"}};
+          vm.createContext(sandbox);
+          vm.runInContext(code,sandbox);
+          const fn=sandbox.safeInternalSource;
+          if(typeof fn!=="function")throw new Error("Production safeInternalSource not loaded.");
+
+          const same=fn("/working-papers/?x=1#p");
+          if(same!=="https://wpa.example/working-papers/?x=1#p")
+            throw new Error("Same-origin relative source was not canonicalized.");
+
+          const doubleSlash=fn("https://wpa.example//evil.example/path");
+          if(!doubleSlash||!doubleSlash.startsWith("https://wpa.example/"))
+            throw new Error("Same-origin double-slash path escaped its validated origin.");
+
+          if(fn("https://evil.example/path")!==null)
+            throw new Error("Cross-origin audio source was accepted.");
+          if(fn("javascript:alert(1)")!==null)
+            throw new Error("Unsafe audio source protocol was accepted.");
+
+          console.log("Production audio source-link behavior: PASS");
+          NODE
+
+      - name: Validate runtime safety invariants
+        shell: bash
+        run: |
+          grep -F 'function safeHttpUrl(value)' media/app.js
+          grep -F 'safe original source URL' media/app.js
+          grep -F 'visual rights/source-strip check' media/app.js
+          grep -F 'source/WPA separation' media/app.js
+          grep -F 'selectLanguage(sel.value);' media/app.js
+          grep -F 'function setSensitiveContext(value)' media/app.js
+          grep -F 'wpa:media-brief-prepared' media/app.js
+          grep -F 'function safeInternalSource(value)' media/audio-library/index.html
+          if grep -F 'if(work.source)$("sourceLink").href=work.source' media/audio-library/index.html; then
+            echo "Unsafe direct source-link assignment remains."
+            exit 1
+          fi
+          echo "Runtime safety invariants: PASS"
+
+      - name: Validate launch UI controls
+        shell: bash
+        run: |
+          grep -F 'id="launchState"' media/index.html
+          grep -F 'id="visualPolicyState"' media/index.html
+          grep -F 'id="sourceVerified"' media/index.html
+          grep -F 'id="rightsVerified"' media/index.html
+          grep -F 'id="separationVerified"' media/index.html
+          grep -F 'id="sensitiveContext"' media/index.html
+          grep -F 'SOURCE · publisher/author · date · Original source' media/index.html
+          echo "Launch UI gates: PASS"
+
+      - name: Validate service worker launch assets
+        shell: bash
+        run: |
+          grep -F "/media/data/visual-rights-policy.json" media/sw.js
+          grep -F "/media/data/morning-launch.json" media/sw.js
+          echo "PWA launch cache gates: PASS"
+
+      - name: Result
+        run: |
+          echo "WPA MEDIA MORNING LAUNCH SAFETY: PASS"
+          echo "This workflow does not publish or distribute anything."

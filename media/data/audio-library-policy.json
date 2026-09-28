@@ -1,0 +1,61 @@
+{
+  "schema":"wpa-audio-library-policy/1.0",
+  "version":"1.0.0",
+  "updated":"2026-09-28",
+  "status":"LIBRARY_RUNTIME_READY__PRODUCTION_VOICE_ADAPTERS_PENDING",
+  "name":"WPA Audio Library",
+  "purpose":"Authorised audio and video reading of WPA-owned or explicitly licensed books, papers, working papers, journal articles and protocol notes.",
+  "rights_rule":"A work may enter the audio library only when WPA/the author controls the necessary reading and publication rights or explicit permission is recorded.",
+  "modes":{
+    "READ_EXACTLY":{
+      "label":"READ EXACTLY",
+      "rule":"Read the locked publication text verbatim. No paraphrase, additions, omissions or silent corrections."
+    },
+    "AUTHORS_AUDIO_EDITION":{
+      "label":"AUTHOR'S AUDIO EDITION",
+      "rule":"Preserve the publication meaning and wording while allowing approved spoken navigation such as chapter titles, figure notices, pauses and pronunciation cues. Any substantive textual change requires a new approved text version."
+    },
+    "WPA_EXPLAINED":{
+      "label":"WPA EXPLAINED",
+      "rule":"A separately scripted explanatory adaptation. It must never be presented as a verbatim reading of the source work."
+    }
+  },
+  "presenters":{
+    "protokolka":{"label":"Протоколка","eligible":true},
+    "diplomat":{"label":"Дипломат","eligible":true},
+    "alternating":{"label":"Протоколка + Дипломат","eligible":true}
+  },
+  "language_policy_reference":"/media/data/language-audio-policy.json",
+  "presenter_policy_reference":"/media/data/presenters.json",
+  "required_version_chain":[
+    "SOURCE_WORK_ID",
+    "SOURCE_TEXT_VERSION",
+    "RIGHTS_STATUS",
+    "HUMAN_GATE",
+    "MODE",
+    "LANGUAGE",
+    "TRANSLATION_VERSION_IF_ANY",
+    "PRESENTER",
+    "VOICE_MODEL_VERSION",
+    "AUDIO_MASTER",
+    "CAPTIONS_SRT_VTT",
+    "TRANSCRIPT",
+    "AUDIO_RELEASE_ID"
+  ],
+  "release_gate":{
+    "source_text_locked":true,
+    "rights_verified":true,
+    "human_gate_required":true,
+    "translation_qa_required_for_non_master_language":true,
+    "voice_adapter_required":true,
+    "captions_required":true,
+    "transcript_required":true,
+    "no_silent_fallback":true
+  },
+  "formats":["audio_master","video_reader","transcript","srt","vtt"],
+  "public_action_label":"Listen to this paper",
+  "event_contract":{
+    "browser_event":"wpa:audio-library-request",
+    "fields":["work_id","title","mode","language","presenter","source_text_version"]
+  }
+}
