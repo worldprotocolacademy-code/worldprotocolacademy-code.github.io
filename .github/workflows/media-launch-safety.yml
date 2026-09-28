@@ -136,8 +136,24 @@ jobs:
 
           if(!src.includes('url=safeHttpUrl(x.url||x.link||x.source_url||"")'))
             throw new Error("Live intake is not routed through production safeHttpUrl.");
-          if(!src.includes('activeSensitiveContext=false'))
-            throw new Error("New-brief sensitivity reset missing.");
+          const stateStart=src.indexOf("let languagePolicy=null");
+          const jsonStart=src.indexOf("async function json",stateStart);
+          if(stateStart<0||jsonStart<0)throw new Error("Sensitivity helper extraction failed.");
+          const stateCode=src.slice(stateStart,jsonStart)+";this.setSensitiveContext=setSensitiveContext;this.getSensitiveContext=getSensitiveContext;";
+          const stateSandbox={};
+          vm.createContext(stateSandbox);
+          vm.runInContext(stateCode,stateSandbox);
+          if(stateSandbox.setSensitiveContext(true)!==true||stateSandbox.getSensitiveContext()!==true)
+            throw new Error("Production sensitivity state could not enter sensitive mode.");
+          if(stateSandbox.setSensitiveContext(false)!==false||stateSandbox.getSensitiveContext()!==false)
+            throw new Error("Production sensitivity state could not reset for a new brief.");
+
+          if(!src.includes('window.dispatchEvent(new CustomEvent("wpa:media-brief-prepared"))'))
+            throw new Error("Brief-prepared reset event is not emitted by production prepare().");
+          if(!src.includes('window.addEventListener("wpa:media-brief-prepared",()=>{setSensitiveContext(false)'))
+            throw new Error("Support runtime does not consume the brief-prepared reset event.");
+          if(src.includes('$("#sensitiveContext").checked=false;activeSensitiveContext=false'))
+            throw new Error("Illegal cross-IIFE sensitivity access remains.");
 
           console.log("Production runtime behavior tests: PASS");
           NODE
@@ -182,7 +198,8 @@ jobs:
           grep -F 'visual rights/source-strip check' media/app.js
           grep -F 'source/WPA separation' media/app.js
           grep -F 'selectLanguage(sel.value);' media/app.js
-          grep -F 'activeSensitiveContext' media/app.js
+          grep -F 'function setSensitiveContext(value)' media/app.js
+          grep -F 'wpa:media-brief-prepared' media/app.js
           grep -F 'function safeInternalSource(value)' media/audio-library/index.html
           if grep -F 'if(work.source)$("sourceLink").href=work.source' media/audio-library/index.html; then
             echo "Unsafe direct source-link assignment remains."
