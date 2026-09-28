@@ -48,7 +48,7 @@ function safeInternalSource(value){
   try{
     const u=new URL(value,location.origin);
     if(!["http:","https:"].includes(u.protocol)||u.origin!==location.origin)return null;
-    return u.pathname+u.search+u.hash;
+    return u.href;
   }catch{return null}
 }
 const safeSource=safeInternalSource(work.source);
