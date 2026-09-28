@@ -117,13 +117,39 @@ jobs:
           if(!placeholder.includes("verified visual source strip")||!placeholder.includes("VIDEO source strip"))
             throw new Error("Production visual gate accepted placeholder or wrong-mode provenance.");
 
+          const shortVideo=validateVisualForApproval({
+            mode:"OFFICIAL_EMBED",
+            source_url:"https://example.com/video",
+            source_strip:"VIDEO ·",
+            rights_verified:true
+          });
+          if(!shortVideo.includes("complete VIDEO attribution"))
+            throw new Error("Production visual gate accepted structurally empty VIDEO attribution.");
+
+          const shortSource=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"https://example.com/photo",
+            source_strip:"x",
+            rights_verified:true
+          });
+          if(!shortSource.includes("complete SOURCE attribution"))
+            throw new Error("Production visual gate accepted structurally empty SOURCE attribution.");
+
           const accepted=validateVisualForApproval({
             mode:"OFFICIAL_EMBED",
             source_url:"https://example.com/video",
-            source_strip:"VIDEO · Example · Official embed",
+            source_strip:"VIDEO · Example News · Official embed/original source",
             rights_verified:true
           });
-          if(accepted.length)throw new Error("Production visual gate rejected valid provenance: "+accepted.join(", "));
+          if(accepted.length)throw new Error("Production visual gate rejected valid VIDEO provenance: "+accepted.join(", "));
+
+          const acceptedSource=validateVisualForApproval({
+            mode:"LICENSED_OR_PERMISSION",
+            source_url:"https://example.com/photo",
+            source_strip:"SOURCE · Example News · Original source",
+            rights_verified:true
+          });
+          if(acceptedSource.length)throw new Error("Production visual gate rejected valid SOURCE provenance: "+acceptedSource.join(", "));
 
           const unsafe=validateVisualForApproval({
             mode:"LICENSED_OR_PERMISSION",
