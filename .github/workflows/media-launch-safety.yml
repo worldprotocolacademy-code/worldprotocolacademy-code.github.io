@@ -139,19 +139,34 @@ jobs:
           const stateStart=src.indexOf("let languagePolicy=null");
           const jsonStart=src.indexOf("async function json",stateStart);
           if(stateStart<0||jsonStart<0)throw new Error("Sensitivity helper extraction failed.");
-          const stateCode=src.slice(stateStart,jsonStart)+";this.setSensitiveContext=setSensitiveContext;this.getSensitiveContext=getSensitiveContext;";
-          const stateSandbox={};
+          const notice={textContent:"muted",className:"support-notice is-muted"};
+          const stateCode=src.slice(stateStart,jsonStart)+";this.setSensitiveContext=setSensitiveContext;this.getSensitiveContext=getSensitiveContext;this.resetSupportNotice=resetSupportNotice;";
+          const stateSandbox={
+            $:sel=>sel==="#supportNotice"?notice:null,
+            clearTimeout:()=>{},
+            DEFAULT_SUPPORT_NOTICE:undefined
+          };
           vm.createContext(stateSandbox);
           vm.runInContext(stateCode,stateSandbox);
           if(stateSandbox.setSensitiveContext(true)!==true||stateSandbox.getSensitiveContext()!==true)
             throw new Error("Production sensitivity state could not enter sensitive mode.");
           if(stateSandbox.setSensitiveContext(false)!==false||stateSandbox.getSensitiveContext()!==false)
             throw new Error("Production sensitivity state could not reset for a new brief.");
+          stateSandbox.resetSupportNotice();
+          if(notice.className!=="support-notice"||!/Лајкови/.test(notice.textContent))
+            throw new Error("Production support notice did not return to neutral state.");
+
+          const initStart=src.indexOf("async function init()");
+          const firstPolicyAwait=src.indexOf('await json("/media/data/language-audio-policy.json")',initStart);
+          const attach=src.indexOf('sensitive.addEventListener("change",syncSensitive)',initStart);
+          const initialSync=src.indexOf("syncSensitive();",initStart);
+          if(initStart<0||attach<0||initialSync<0||firstPolicyAwait<0||attach>firstPolicyAwait||initialSync>firstPolicyAwait)
+            throw new Error("Sensitivity guard is not installed and synchronized before policy awaits.");
 
           if(!src.includes('window.dispatchEvent(new CustomEvent("wpa:media-brief-prepared"))'))
             throw new Error("Brief-prepared reset event is not emitted by production prepare().");
-          if(!src.includes('window.addEventListener("wpa:media-brief-prepared",()=>{setSensitiveContext(false)'))
-            throw new Error("Support runtime does not consume the brief-prepared reset event.");
+          if(!src.includes('window.addEventListener("wpa:media-brief-prepared",()=>{setSensitiveContext(false);if(sensitive)sensitive.checked=false;resetSupportNotice()}'))
+            throw new Error("Support runtime does not reset state, checkbox and notice on a new brief.");
           if(src.includes('$("#sensitiveContext").checked=false;activeSensitiveContext=false'))
             throw new Error("Illegal cross-IIFE sensitivity access remains.");
 
