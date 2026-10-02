@@ -20,9 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       R2_BUCKET: protocol-kb
       POLICY_FILE: ops/ai-search/ai_search_indexing_policy.md
       POLICY_KEY: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/_metadata/ai_search_indexing_policy.md
+      PREFLIGHT_KEY: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/README.md
       CLOUDFLARE_API_TOKEN_PRIMARY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
 
@@ -44,7 +46,7 @@ jobs:
             local label="$2"
             [ -n "$token" ] || return 1
             rm -f /tmp/wpa-policy-preflight
-            if CLOUDFLARE_API_TOKEN="$token" wrangler r2 object get "$R2_BUCKET/$POLICY_KEY" --remote --file /tmp/wpa-policy-preflight >/tmp/wpa-policy-preflight.log 2>&1; then
+            if CLOUDFLARE_API_TOKEN="$token" wrangler r2 object get "$R2_BUCKET/$PREFLIGHT_KEY" --remote --file /tmp/wpa-policy-preflight >/tmp/wpa-policy-preflight.log 2>&1; then
               echo "R2 credential preflight succeeded with $label."
               echo "CLOUDFLARE_API_TOKEN=$token" >> "$GITHUB_ENV"
               return 0
