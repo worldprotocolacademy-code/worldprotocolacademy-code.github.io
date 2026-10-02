@@ -1,8 +1,18 @@
 # World Protocol Academy (WPA)
 
-World Protocol Academy is an **independent digital educational, research, authorial and professional platform** focused on protocol, diplomacy, public communication and security studies.
+World Protocol Academy is an **independent digital educational, research and authorial platform** focused on protocol, diplomacy, public communication and security studies.
 
 **Current institutional status:** Development, testing and pilot phase — 2026. WPA is not presented as a university, state academy, accreditation body or degree-granting institution.
+
+## Canonical institutional identity
+
+**Светска академија за протокол — World Protocol Academy (WPA)**  
+**Институт за протокол, дипломатија, јавна комуникација и безбедносни студии**  
+Независна дигитална образовна, истражувачка и авторска платформа.
+
+**World Protocol Academy (WPA)**  
+**Institute for Protocol, Diplomacy, Public Communication and Security Studies**  
+Independent digital educational, research and authorial platform.
 
 ## Institutional and professional status — 30 September 2026
 
