@@ -53,6 +53,7 @@ requireRule(commerce.includes("state: 'prelaunch_review'"), 'Commerce config mus
 requireRule(commerce.includes('enabledforonetimeproducts: false') && commerce.includes('enabledformembership: false'), 'Commerce config must keep provider checkout disabled during PRELAUNCH_REVIEW.');
 requireRule(commerce.includes('enabledforrequests: true'), 'Bank-transfer request rail may be open only as a non-binding Human-Gated request.');
 requireRule(commerce.includes("pricingstatus: 'human_gate_pending'"), 'Commerce config must keep membership pricing Human Gate pending.');
+requireRule(!commerce.includes('worldprotocol.gumroad.com'), 'PRELAUNCH_REVIEW public config must not expose unpublished Gumroad checkout URLs.');
 
 const safety = fs.readFileSync(path.join(root, 'scripts/wpa-public-safety-layer.js'), 'utf8').toLowerCase();
 requireRule(safety.includes('no intelligence, surveillance, investigative or operational function'), 'Public safety layer must retain analytical safety boundary.');
