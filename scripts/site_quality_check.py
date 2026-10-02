@@ -107,6 +107,46 @@ def check_basic_public_html(errors,allowed):
         if 'name="viewport"' not in text and "name='viewport'" not in text:add_error(errors,f"{path}: missing viewport meta tag")
         if 'name="description"' not in text and "name='description'" not in text:add_error(errors,f"{path}: missing meta description")
         if 'rel="canonical"' not in text and "rel='canonical'" not in text:add_error(errors,f"{path}: missing canonical link")
+
+def check_publication_route_contract(errors):
+    """Prevent publication-route drift, broken legacy aliases and canonical duplication."""
+    sitemap = read_text(ROOT/"sitemap.xml") if (ROOT/"sitemap.xml").exists() else ""
+    pn_index = read_text(ROOT/"protocol-notes"/"index.html") if (ROOT/"protocol-notes"/"index.html").exists() else ""
+    bibliography = read_text(ROOT/"bibliography"/"index.html") if (ROOT/"bibliography"/"index.html").exists() else ""
+    sync = read_text(ROOT/"scripts"/"wpa-publications-sync-20260817.js") if (ROOT/"scripts"/"wpa-publications-sync-20260817.js").exists() else ""
+    for i in range(1,10):
+        n=f"{i:03d}"
+        canonical=f"https://worldprotocolacademy.mk/scholar/wpa-pn-{n}.html"
+        scholar=ROOT/"scholar"/f"wpa-pn-{n}.html"
+        legacy=ROOT/"protocol-notes"/f"wpa-pn-{n}.html"
+        if not scholar.exists():
+            add_error(errors,f"Missing canonical Scholar Protocol Note: {scholar.relative_to(ROOT)}")
+        else:
+            tx=read_text(scholar).lower()
+            if f'rel="canonical" href="{canonical}"'.lower() not in tx:
+                add_error(errors,f"Scholar Protocol Note {n} does not self-canonicalize")
+            if "noindex" in tx:
+                add_error(errors,f"Scholar Protocol Note {n} must remain indexable")
+        if not legacy.exists():
+            add_error(errors,f"Missing legacy compatibility route: {legacy.relative_to(ROOT)}")
+        else:
+            tx=read_text(legacy).lower()
+            if canonical.lower() not in tx:
+                add_error(errors,f"Legacy Protocol Note {n} does not point to canonical Scholar record")
+            if "noindex" not in tx or "follow" not in tx:
+                add_error(errors,f"Legacy Protocol Note {n} must be noindex,follow")
+        if canonical not in sitemap:
+            add_error(errors,f"Canonical Protocol Note {n} missing from sitemap.xml")
+        legacy_url=f"https://worldprotocolacademy.mk/protocol-notes/wpa-pn-{n}.html"
+        if legacy_url in sitemap:
+            add_error(errors,f"Legacy Protocol Note {n} must not appear in sitemap.xml")
+        if f'href="wpa-pn-{n}.html"' in pn_index:
+            add_error(errors,f"Protocol Notes index still links legacy route for PN-{n}")
+        if f'/protocol-notes/wpa-pn-{n}.html' in bibliography:
+            add_error(errors,f"Bibliography still links legacy route for PN-{n}")
+    if "recordUrl: '/protocol-notes/wpa-pn-" in sync:
+        add_error(errors,"Publication sync still emits a legacy Protocol Note recordUrl")
+
 def check_governance_invariants(errors):
     metrics=ROOT/"data"/"wpa-canonical-metrics-status.json"
     if metrics.exists():
@@ -146,7 +186,7 @@ def check_final_reconciliation_layer(errors):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
