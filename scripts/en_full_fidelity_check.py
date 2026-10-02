@@ -13,7 +13,7 @@ checks={
  'need':['WPA Institutional Operating Architecture','Four levels. One coherent WPA academy.','Integrated learning pillars of WPA.','The intellectual foundation of WPA.','Protocolometry','Human-Governed AI','Who WPA Is For','Founder-led. Academic in spirit. Professional in execution.','Public boundary:']},
 'en/institute.html':{
  'min':10000,'sections':8,
- 'need':['Six pillars of the Charter.','Six domains of specialisation.','Four principal research directions.','WPA Centre for Analytics, Measurability and Institutional Indices.','Categories for fair comparison.','Protocolometry &amp; Benchmarking','Human-Governed AI','Public boundary:']}
+ 'need':['Six pillars of the Charter.','Five core fields + a cross-cutting practice layer.','Four integrated research directions.','WPA Centre for Analytics, Measurability and Institutional Indices.','Categories for fair comparison.','Protocolometry &amp; Benchmarking','Human-Governed AI','Public boundary:']}
 }
 for rel,cfg in checks.items():
  p=ROOT/rel
