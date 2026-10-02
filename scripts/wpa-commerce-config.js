@@ -11,6 +11,15 @@
     state: 'PRELAUNCH_REVIEW',
     currency: 'EUR',
     contact: 'contact@worldprotocolacademy.mk',
+    humanGates: {
+      traderIdentityApproved: false,
+      geographicAddressApproved: false,
+      outboundEmailAuthenticated: false,
+      consumerConsentFlowApproved: false,
+      publicSectorInstitutionalApproved: false,
+      dataControllerDisclosureApproved: false,
+      note: 'These launch gates are intentionally false during PRELAUNCH_REVIEW. Do not place seller identity, geographic address, bank details or secrets in this public config.'
+    },
     intakeBackend: {
       mode: 'EMAIL_FALLBACK',
       endpoint: null,
@@ -24,8 +33,8 @@
         note: 'Prepared. Public checkout goes live only after the relevant Gumroad product or membership is published.'
       },
       bankTransferHumanGate: {
-        enabledForRequests: true,
-        note: 'A request is non-binding. After Human Gate review, WPA confirms the exact amount, terms and bank-transfer instructions. No bank details are published in source code.'
+        enabledForRequests: false,
+        note: 'Model B is designed but not active. It remains blocked until seller disclosure, authenticated outbound email, consumer-consent flow and applicable institutional/tax gates are approved. No bank details are published in source code.'
       }
     },
     products: [
@@ -36,7 +45,7 @@
         price: 19,
         gumroadUrl: null,
         gumroadLive: false,
-        bankRequestLive: true,
+        bankRequestLive: false,
         licence: 'WPA Premium Single-User Licence'
       },
       {
@@ -46,7 +55,7 @@
         price: 59,
         gumroadUrl: null,
         gumroadLive: false,
-        bankRequestLive: true,
+        bankRequestLive: false,
         licence: 'WPA Premium Single-User Licence'
       }
     ],
@@ -59,7 +68,7 @@
         { id: 'institutional', name: 'WPA Institutional', paid: true, enquiryOnly: true }
       ],
       billing: ['monthly', 'annual'],
-      bankTransferRequests: true,
+      bankTransferRequests: false,
       automaticCredentials: false
     },
     commercialBoundary:
