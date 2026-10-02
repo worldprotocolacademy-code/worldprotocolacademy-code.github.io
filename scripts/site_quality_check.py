@@ -217,8 +217,46 @@ def check_final_reconciliation_layer(errors):
     for token in ("Sande Smiljanov, Ph.D.","WP-001–WP-013","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
+def check_commerce_fail_closed(errors):
+    """Commerce PRELAUNCH guards: no static checkout, no live bank route, no secrets/bank data, buyer rights and independence remain explicit."""
+    import re
+    commerce=ROOT/"commerce.html";cfg=ROOT/"scripts"/"wpa-commerce-config.js";pricing=ROOT/"scripts"/"pricing-loader.js"
+    refunds=ROOT/"refunds-cancellations.html"
+    if not commerce.exists() or not cfg.exists(): return
+    ct=read_text(commerce);cf=read_text(cfg);pt=read_text(pricing) if pricing.exists() else ""
+    if re.search(r'href=["\']https?://[^"\']*gumroad\.com',ct,re.I):
+        add_error(errors,"commerce.html: static Gumroad href found; provider checkout must be config-gated")
+    if "wpa-analytics.js" in ct:
+        add_error(errors,"commerce.html: analytics must not load on the commerce interest/payment page")
+    if "state: 'PRELAUNCH_REVIEW'" in cf:
+        for forbidden in ("enabledForOneTimeProducts: true","enabledForMembership: true","enabledForRequests: true","bankRequestLive: true","bankTransferRequests: true","gumroadLive: true"):
+            if forbidden in cf:add_error(errors,f"wpa-commerce-config.js: PRELAUNCH_REVIEW contains live commerce flag {forbidden}")
+    for gate in ("traderIdentityApproved: false","geographicAddressApproved: false","outboundEmailAuthenticated: false","consumerConsentFlowApproved: false","publicSectorInstitutionalApproved: false","dataControllerDisclosureApproved: false"):
+        if gate not in cf:add_error(errors,f"wpa-commerce-config.js: unresolved Human Gate marker missing: {gate}")
+    clause="Payment buys only the stated product, access or service"
+    for name in ("commerce.html","membership-terms.html","terms.html"):
+        p=ROOT/name
+        if p.exists() and clause not in read_text(p):add_error(errors,f"{name}: commercial-independence clause missing")
+    if refunds.exists():
+        rt=read_text(refunds)
+        if "14 дена" not in rt or "претходна изрична согласност" not in rt:
+            add_error(errors,"refunds-cancellations.html: 14-day withdrawal / digital-content consent wording missing")
+    if "Бесплатно достапно:" not in ct or "Zenodo" not in ct:
+        add_error(errors,"commerce.html: explicit free-Zenodo disclosure missing for the premium compilation")
+    if "data-wpa-commerce-entry" not in pt:
+        add_error(errors,"pricing-loader.js: active homepage commerce entry loader missing")
+    if "wpa-commerce-entry.js?v=20261002-1" in read_text(ROOT/"index.html"):
+        add_error(errors,"index.html: dead direct commerce-entry tag remains in the commented block")
+    iban=re.compile(r"\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){3,7}\b")
+    secret=re.compile(r"(?i)(gumroad[_-]?(?:access|api)?[_-]?token|application_secret|sk_live_|turnstile_secret)\s*[:=]\s*['\"][^'\"]{8,}")
+    for p in (commerce,cfg,ROOT/"membership-terms.html",refunds,ROOT/"scripts"/"wpa-commerce-entry.js",pricing):
+        if not p.exists():continue
+        t=read_text(p)
+        if iban.search(t):add_error(errors,f"{p.relative_to(ROOT)}: IBAN-like bank-account string found in public file")
+        if secret.search(t):add_error(errors,f"{p.relative_to(ROOT)}: possible provider secret found in public file")
+
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
