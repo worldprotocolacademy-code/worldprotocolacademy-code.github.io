@@ -1,38 +1,81 @@
 (function () {
   'use strict';
 
+  function currentLanguage() {
+    try {
+      return localStorage.getItem('wpa.language') === 'en' ? 'en' : 'mk';
+    } catch (_) {
+      return 'mk';
+    }
+  }
+
+  function copy() {
+    var en = currentLanguage() === 'en';
+    return en ? {
+      nav: 'WPA Access & Publications',
+      kicker: 'Access · Publications · Membership',
+      title: 'WPA Access & Publications',
+      text: 'Two controlled payment routes: secure online provider when the offer is live, or Human Gate review followed by approved bank-transfer instructions. One-time digital products and future WPA membership.',
+      p1: 'EUR 19 · State Symbols / Anthems / National Days 2026',
+      p2: 'EUR 59 · WPA Working Papers & Protocol Notes Compendium 2026',
+      p3: 'WPA Pro / Academic Pro · pricing activates only after Human Gate approval',
+      button: 'Open WPA Access & Publications'
+    } : {
+      nav: 'WPA Пристап и публикации',
+      kicker: 'Пристап · Публикации · Членство',
+      title: 'WPA Пристап и публикации',
+      text: 'Два контролирани платежни патишта: сигурен online provider кога понудата е активна, или Human Gate проверка со одобрени инструкции за банкарска уплата. Еднократни дигитални производи и идно WPA членство.',
+      p1: '€19 · Државни симболи / химни / национални денови 2026',
+      p2: '€59 · WPA Working Papers & Protocol Notes Compendium 2026',
+      p3: 'WPA Pro / Academic Pro · цените се активираат само по Human Gate',
+      button: 'Отвори WPA Пристап и публикации'
+    };
+  }
+
   function addNavLink() {
     var nav = document.querySelector('.site-nav ul, header nav ul');
-    if (!nav || document.getElementById('wpaCommerceNavItem')) return;
-    var li = document.createElement('li');
-    li.id = 'wpaCommerceNavItem';
-    var a = document.createElement('a');
-    a.href = '/commerce.html';
-    a.textContent = 'WPA Access & Publications';
-    li.appendChild(a);
-    var card = nav.querySelector('a[href*="wpa-card.html"]');
-    if (card && card.closest('li')) card.closest('li').insertAdjacentElement('afterend', li);
-    else nav.appendChild(li);
+    if (!nav) return;
+
+    var c = copy();
+    var item = document.getElementById('wpaCommerceNavItem');
+    if (!item) {
+      item = document.createElement('li');
+      item.id = 'wpaCommerceNavItem';
+      var a = document.createElement('a');
+      a.href = '/commerce.html';
+      item.appendChild(a);
+      var card = nav.querySelector('a[href*="wpa-card.html"]');
+      if (card && card.closest('li')) card.closest('li').insertAdjacentElement('afterend', item);
+      else nav.appendChild(item);
+    }
+
+    var link = item.querySelector('a');
+    if (link) link.textContent = c.nav;
   }
 
   function addHomeCard() {
     if (!/^(\/|\/index\.html)$/.test(location.pathname)) return;
-    if (document.getElementById('wpaCommerceEntry')) return;
+
     var target = document.querySelector('#core-pages .cards, #core-pages .grid, .core-pages .cards, .core-pages .grid');
     if (!target) return;
 
-    var card = document.createElement('div');
-    card.className = 'card';
-    card.id = 'wpaCommerceEntry';
+    var c = copy();
+    var card = document.getElementById('wpaCommerceEntry');
+    if (!card) {
+      card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'wpaCommerceEntry';
+      target.appendChild(card);
+    }
+
     card.innerHTML =
-      '<span class="card-kicker">Access · Publications · Membership</span>' +
-      '<h4>WPA Access & Publications</h4>' +
-      '<p>Два контролирани платни патишта: online checkout преку payment provider и Human Gate → потврда → банкарска уплата. Еднократни дигитални производи и идно WPA членство.</p>' +
-      '<ul class="card-list"><li>€19 · State Symbols / Anthems / National Days 2026</li>' +
-      '<li>€59 · WPA Working Papers & Protocol Notes Compendium 2026</li>' +
-      '<li>WPA Pro / Academic Pro · цените се активираат по Human Gate</li></ul>' +
-      '<a class="card-link" href="/commerce.html">Отвори WPA Access & Publications</a>';
-    target.appendChild(card);
+      '<span class="card-kicker">' + c.kicker + '</span>' +
+      '<h4>' + c.title + '</h4>' +
+      '<p>' + c.text + '</p>' +
+      '<ul class="card-list"><li>' + c.p1 + '</li>' +
+      '<li>' + c.p2 + '</li>' +
+      '<li>' + c.p3 + '</li></ul>' +
+      '<a class="card-link" href="/commerce.html">' + c.button + '</a>';
   }
 
   function boot() {
@@ -42,4 +85,6 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
+
+  document.addEventListener('wpa:lang-changed', boot);
 })();
