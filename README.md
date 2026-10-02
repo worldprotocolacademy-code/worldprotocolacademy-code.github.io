@@ -1,12 +1,12 @@
 # World Protocol Academy (WPA)
-World Protocol Academy is an **independent digital educational, research and authorial platform** focused on protocol, diplomacy, public communication and security studies.
+World Protocol Academy is an **independent digital educational, research and authorial platform** focused on protocol, diplomacy, public relations, security and communication studies.
 **Current institutional status:** Development, testing and pilot phase — 2026. WPA is not presented as a university, state academy, accreditation body or degree-granting institution.
 ## Canonical institutional identity
-**Светска академија за протокол — World Protocol Academy (WPA)**
-**Институт за протокол, дипломатија, јавна комуникација и безбедносни студии**
+**Светска Академија за протокол — World Protocol Academy (WPA)**
+**Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија**
 Независна дигитална образовна, истражувачка и авторска платформа.
 **World Protocol Academy (WPA)**
-**Institute for Protocol, Diplomacy, Public Communication and Security Studies**
+**Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies**
 Independent digital educational, research and authorial platform.
 ## Institutional and professional status — 30 September 2026
 Основачот и раководител на World Protocol Academy, доц. д-р Санде Смиљанов, има добиено официјална согласност од Министерството за внатрешни работи на Република Северна Македонија за вршење дополнителна дејност што опфаќа авторски, академски, образовни, научноистражувачки, издавачки и дигитални професионални активности преку World Protocol Academy (WPA), како независна дигитална образовна, истражувачка и авторска платформа.
