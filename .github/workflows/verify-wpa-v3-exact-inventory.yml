@@ -1,16 +1,17 @@
 name: Verify WPA v3 Exact Inventory
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/verify-wpa-v3-exact-inventory.yml'
+  workflow_run:
+    workflows: ["Promote WPA New Corpus to AI Search v3"]
+    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -23,7 +24,7 @@ jobs:
       V3_ROOT: __ai_search_ready_v3__/80cd2f51cf9ddb429562
       MONOGRAPH_MARKER: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/_metadata/books/protocol-state-symbols-anthems-national-days-2026.json
       MONOGRAPH_NS: 01_smiljanov_books_chunks/protocol-state-symbols-anthems-national-days-2026
-      ZENODO_IDS: 21933739,21779849,21772500,21675100,21669195,21651611,21514266,21469146,21390763,21299485,20800187,20777938,20727210,20706913,20699718,20599172,20597429,20528224,20434477
+      ZENODO_IDS: 22992210,22749104,22305077,21933739,21779849,21772500,21675100,21669195,21651611,21514266,21469146,21390763,21299485,20800187,20777938,20727210,20706913,20699718,20599172,20597429,20528224,20434477,20386692,20386152,20385777,20383554
     steps:
       - name: Fetch verified marker manifests read-only
         run: |
@@ -35,7 +36,7 @@ jobs:
           done
           npx --yes wrangler@4 r2 object get "$R2_BUCKET/$MONOGRAPH_MARKER" --remote --file /tmp/markers/monograph.json >/dev/null
 
-      - name: Verify exact 93 destination keys in AI Search inventory
+      - name: Verify exact complete-corpus destination keys in AI Search inventory
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -53,7 +54,8 @@ jobs:
           mono=json.load(open('/tmp/markers/monograph.json',encoding='utf-8-sig'))
           mono_keys=[f"{v3}/{root}/{os.environ['MONOGRAPH_NS']}/{o['filename']}" for o in (mono.get('objects') or [])]
           expected.extend(mono_keys)
-          if sum(len(v) for v in zen_by_id.values()) != 80 or len(mono_keys) != 13 or len(expected) != 93 or len(set(expected)) != 93:
+          zen_count=sum(len(v) for v in zen_by_id.values())
+          if len(ids) != 26 or zen_count < 26 or len(mono_keys) != 13 or len(expected) != zen_count + 13 or len(set(expected)) != len(expected):
               raise SystemExit('Expected-key plan guard failed')
 
           account=os.environ['CLOUDFLARE_ACCOUNT_ID']; token=os.environ['CLOUDFLARE_AI_SEARCH_TOKEN']; inst=os.environ['AI_SEARCH_INSTANCE']
@@ -78,21 +80,22 @@ jobs:
               status_counts[s]=status_counts.get(s,0)+1
           result={
             'reported_total_items':total,
-            'expected_exact_keys':93,
+            'expected_exact_keys':len(expected),
             'found_exact_keys':len(found),
             'missing_exact_keys':missing,
             'status_counts':status_counts,
-            'zenodo_exact_keys':80,
+            'zenodo_records':len(ids),
+            'zenodo_exact_keys':zen_count,
             'monograph_exact_keys':13,
           }
           open('exact-inventory-verification.json','w',encoding='utf-8').write(json.dumps(result,ensure_ascii=False,indent=2,sort_keys=True)+'\n')
           print('EXACT INVENTORY:',json.dumps(result,ensure_ascii=False,sort_keys=True))
-          if missing or len(found)!=93:
+          if missing or len(found)!=len(expected):
               raise SystemExit('Exact-key inventory verification failed')
           bad=[x for x in found if str(x.get('status') or '').lower() not in ('completed','indexed')]
           if bad:
               raise SystemExit(f'Exact keys present but non-indexed status count={len(bad)}')
-          print('EXACT AI SEARCH INVENTORY VERIFIED: 93/93 expected promoted keys present and indexed/completed')
+          print(f'EXACT AI SEARCH INVENTORY VERIFIED: {len(found)}/{len(expected)} expected promoted keys present and indexed/completed')
           PY
 
       - name: Upload exact verification evidence

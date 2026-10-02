@@ -27,9 +27,10 @@ jobs:
       TARGET_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
       AI_SEARCH_INSTANCE: protocol-ai
       WPA_ZENODO_RECORD_IDS: >-
-        21933739,21779849,21772500,21675100,21669195,21651611,21514266,
-        21469146,21390763,21299485,20800187,20777938,20727210,20706913,
-        20699718,20599172,20597429,20528224,20434477
+        22992210,22749104,22305077,21933739,21779849,21772500,21675100,
+        21669195,21651611,21514266,21469146,21390763,21299485,20800187,
+        20777938,20727210,20706913,20699718,20599172,20597429,20528224,
+        20434477,20386692,20386152,20385777,20383554
 
     steps:
       - name: Check out repository
@@ -81,7 +82,7 @@ jobs:
           sed -E 's/(Authorization: Bearer )[A-Za-z0-9._-]+/\1***/g' /tmp/wpa-r2-preflight.log >&2 || true
           exit 41
 
-      - name: Sync 19 controlled Zenodo records to R2 AI-ready corpus
+      - name: Sync 26 controlled Zenodo records to R2 AI-ready corpus
         run: |
           set -euo pipefail
           python scripts/sync_zenodo_r2_ai_ready.py \
