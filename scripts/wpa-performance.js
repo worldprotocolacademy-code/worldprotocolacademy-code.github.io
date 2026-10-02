@@ -33,14 +33,14 @@
     if (lang === 'en') {
       return {
         lang: 'en',
-        instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+        instituteName: 'Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies',
         openSublimate: 'Open WPA Sublimate',
         openJournal: 'Open WPA Journal Live'
       };
     }
     return {
       lang: 'mk',
-      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+      instituteName: 'Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија',
       openSublimate: 'Отвори WPA Sublimate',
       openJournal: 'Отвори WPA Journal Live'
     };
