@@ -231,8 +231,10 @@ def check_commerce_fail_closed(errors):
     if "state: 'PRELAUNCH_REVIEW'" in cf:
         for forbidden in ("enabledForOneTimeProducts: true","enabledForMembership: true","enabledForRequests: true","bankRequestLive: true","bankTransferRequests: true","gumroadLive: true"):
             if forbidden in cf:add_error(errors,f"wpa-commerce-config.js: PRELAUNCH_REVIEW contains live commerce flag {forbidden}")
-    for gate in ("traderIdentityApproved: false","geographicAddressApproved: false","outboundEmailAuthenticated: false","consumerConsentFlowApproved: false","publicSectorInstitutionalApproved: false","dataControllerDisclosureApproved: false"):
+    for gate in ("traderIdentityApproved: false","geographicAddressApproved: false","consumerConsentFlowApproved: false","publicSectorInstitutionalApproved: false","dataControllerDisclosureApproved: false"):
         if gate not in cf:add_error(errors,f"wpa-commerce-config.js: unresolved Human Gate marker missing: {gate}")
+    if "outboundEmailAuthenticated: true" not in cf:
+        add_error(errors,"wpa-commerce-config.js: verified outbound-email authentication gate must remain true after 2026-10-02 receiver-side SPF/DKIM/DMARC evidence")
     clause="Payment buys only the stated product, access or service"
     for name in ("commerce.html","membership-terms.html","terms.html"):
         p=ROOT/name
