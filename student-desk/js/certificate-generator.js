@@ -78,8 +78,8 @@
     var isMK = CertGen.lang === "mk";
 
     var headerText = isMK
-      ? "World Protocol Academy<br>Институт за протокол, дипломатија, јавна комуникација и безбедносни студии"
-      : "World Protocol Academy<br>Institute for Protocol, Diplomacy, Public Communication &amp; Security Studies";
+      ? "World Protocol Academy<br>Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија"
+      : "World Protocol Academy<br>Institute for Protocol, Diplomacy, Public Relations, Security &amp; Communication Studies";
 
     var titleText = isMK
       ? "Едукативен преглед за учество"
