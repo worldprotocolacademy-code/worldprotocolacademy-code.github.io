@@ -84,6 +84,7 @@
     loadScript('/scripts/wpa-home-symbols-card-update.js?v=20260810-1', 'data-wpa-home-symbols-card-update');
     loadScript('/scripts/wpa-home-professional-english-icons.js?v=20260827-1', 'data-wpa-home-professional-english-icons');
     loadScript('/scripts/wpa-home-audio-video-session-card.js?v=20260827-1', 'data-wpa-home-audio-video-session-card');
+    loadScript('/scripts/wpa-commerce-entry.js?v=20261002-3', 'data-wpa-commerce-entry');
   }
 
   if (/\/professional-english\.html$/.test(path)) {
