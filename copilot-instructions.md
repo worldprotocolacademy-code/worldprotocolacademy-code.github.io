@@ -9,8 +9,8 @@ Follow these rules on every task. They are non-negotiable.
 
 ## Identity (use exactly; never alter, never delete)
 Preserve these two identity lines verbatim wherever they appear:
-- **MK:** Светска академија за протокол — Институт за протокол, дипломатија, јавна комуникација и безбедносни студии
-- **EN:** World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies
+- **MK:** Светска Академија за протокол — Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија
+- **EN:** World Protocol Academy — Institute for Protocol, Diplomacy, Public Relations, Security & Communication Studies
 
 Other fixed identity facts:
 - Thematic line: Протокол · Дипломатија · Односи со јавност · Безбедност · Комуникологија
