@@ -1,17 +1,29 @@
 /*
-  WPA Access & Future Pricing Guard v2.4
-  Commercial activation is disabled during the development, testing and pilot phase.
-  No prices, checkout links, payment actions, contracts or delivery commitments are loaded.
+  WPA Access & Commerce Guard v3.0 — 2026-10-02
+  Phase 1 state: PRELAUNCH_REVIEW.
+  One-time product prices are approved for public display; Gumroad checkout remains disabled
+  until each product is published. Bank-transfer requests are non-binding and Human-Gated.
+  Membership pricing remains HUMAN_GATE_PENDING.
 */
 (function () {
   'use strict';
 
   window.WPA_PRICING = {
-    status: 'not_activated',
-    currency: null,
-    levels: {},
-    contact: 'worldprotocolacademy@gmail.com',
-    boundary: 'Prices and payments will be activated only after an appropriate legal, ethical, tax and payment framework is established.'
+    status: 'prelaunch_review',
+    currency: 'EUR',
+    levels: {
+      free: { status: 'open', price: 0 },
+      pro: { status: 'human_gate_pending', monthly: null, annual: null },
+      academic_pro: { status: 'human_gate_pending', monthly: null, annual: null },
+      institutional: { status: 'enquiry_only', price: null }
+    },
+    products: {
+      state_symbols_2026: { price: 19, currency: 'EUR', gumroad_live: false, bank_request_live: true },
+      wpa_compendium_2026: { price: 59, currency: 'EUR', gumroad_live: false, bank_request_live: true }
+    },
+    payment_routes: ['secure_provider_when_live', 'bank_transfer_human_gate'],
+    contact: 'contact@worldprotocolacademy.mk',
+    boundary: 'Payment buys only the stated product, access or service. It does not buy academic acceptance, ranking, certification, accreditation or third-party recognition.'
   };
 
   function scriptPath(value) {
@@ -40,14 +52,17 @@
 
   function getPrice() {
     return {
-      status: 'not_activated',
-      currency: null,
+      status: 'prelaunch_review',
+      currency: 'EUR',
       range: null,
-      institutional: 'not_activated',
-      contact: 'worldprotocolacademy@gmail.com',
-      disclaimer: 'WPA commercial access, prices, payments and contractual delivery are not activated during the development, testing and pilot phase. Expressions of interest are non-binding.'
+      products: window.WPA_PRICING.products,
+      membership: window.WPA_PRICING.levels,
+      institutional: 'enquiry_only',
+      contact: 'contact@worldprotocolacademy.mk',
+      disclaimer: 'One-time product prices are visible. Public provider checkout is enabled only when the relevant product is published. Bank-transfer requests are non-binding until Human Gate confirmation. Membership pricing remains pending.'
     };
   }
+
 
   function announceBoundary() {
     document.dispatchEvent(new CustomEvent('wpa:pricing-ready', { detail: window.WPA_PRICING }));
@@ -56,6 +71,7 @@
   window.WPAGetPrice = getPrice;
   window.WPA_PRICING_READY = Promise.resolve(window.WPA_PRICING);
 
+  loadScript('/scripts/wpa-commerce-config.js?v=20261002-1', 'data-wpa-commerce-config');
   loadScript('/scripts/wpa-performance.js?v=20260810-3', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260719-2', 'data-wpa-public-safety');
 
@@ -68,6 +84,7 @@
     loadScript('/scripts/wpa-home-symbols-card-update.js?v=20260810-1', 'data-wpa-home-symbols-card-update');
     loadScript('/scripts/wpa-home-professional-english-icons.js?v=20260827-1', 'data-wpa-home-professional-english-icons');
     loadScript('/scripts/wpa-home-audio-video-session-card.js?v=20260827-1', 'data-wpa-home-audio-video-session-card');
+    loadScript('/scripts/wpa-commerce-entry.js?v=20261002-3', 'data-wpa-commerce-entry');
   }
 
   if (/\/professional-english\.html$/.test(path)) {
