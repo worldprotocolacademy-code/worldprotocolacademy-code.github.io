@@ -2,7 +2,9 @@
 
 **Canonical status record**  
 **World Protocol Academy (WPA)**  
-**Date of status:** 30 September 2026
+**Date of status:** 30 September 2026  
+**Consent reference:** Reg. No. 13.2.2-202789/1 of 28 September 2026  
+**Delivered/notified:** 30 September 2026
 
 ## Македонски
 
@@ -18,7 +20,7 @@ The founder and head of World Protocol Academy, Doc. Dr Sande Smiljanov, has rec
 
 ## Evidence record
 
-The public wording above is based on the official consent issued by the Ministry of Interior of the Republic of North Macedonia on 30 September 2026, following the competent Commission procedure. The original signed document is retained as source evidence; this repository record intentionally does not reproduce signatures, seals, registry numbers or other administrative document details.
+The public wording above is based on the official consent of the Ministry of Interior of the Republic of North Macedonia, Reg. No. 13.2.2-202789/1 of 28 September 2026, issued following the competent Commission procedure and delivered/notified on 30 September 2026. The original signed document is retained as source evidence; this repository record intentionally does not reproduce signatures, seals or other non-essential administrative document details.
 
 ## Canonical use
 
