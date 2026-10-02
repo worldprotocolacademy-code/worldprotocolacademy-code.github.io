@@ -43,7 +43,7 @@
         titleMk: 'Протокол на државни симболи, химни и национални денови 2026 — MK/EN',
         titleEn: 'Protocol of State Symbols, Anthems and National Days 2026 — MK/EN',
         price: 19,
-        gumroadUrl: null,
+        gumroadUrl: 'https://worldprotocol.gumroad.com/l/ntpmgc?wanted=true',
         gumroadLive: false,
         bankRequestLive: false,
         licence: 'WPA Premium Single-User Licence'
