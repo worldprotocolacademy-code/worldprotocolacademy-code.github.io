@@ -51,7 +51,7 @@ requireRule(pricing.includes('human_gate_pending'), 'Membership pricing must rem
 requireRule(!pricing.includes("fetch('/data/pricing-config.json"), 'Pricing loader must not fetch public pricing configuration.');
 requireRule(commerce.includes("state: 'prelaunch_review'"), 'Commerce config must remain PRELAUNCH_REVIEW until a separate commercial Human Gate.');
 requireRule(commerce.includes('enabledforonetimeproducts: false') && commerce.includes('enabledformembership: false'), 'Commerce config must keep provider checkout disabled during PRELAUNCH_REVIEW.');
-requireRule(commerce.includes('enabledforrequests: true'), 'Bank-transfer request rail may be open only as a non-binding Human-Gated request.');
+requireRule(commerce.includes('enabledforrequests: false'), 'Bank-transfer request rail must remain disabled during PRELAUNCH_REVIEW.');
 requireRule(commerce.includes("pricingstatus: 'human_gate_pending'"), 'Commerce config must keep membership pricing Human Gate pending.');
 requireRule(!commerce.includes('worldprotocol.gumroad.com'), 'PRELAUNCH_REVIEW public config must not expose unpublished Gumroad checkout URLs.');
 
