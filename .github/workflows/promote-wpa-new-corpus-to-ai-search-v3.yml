@@ -1,10 +1,9 @@
 name: Promote WPA New Corpus to AI Search v3
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/promote-wpa-new-corpus-to-ai-search-v3.yml'
+  workflow_run:
+    workflows: ["Sync WPA Zenodo Remaining Corpus to R2"]
+    types: [completed]
   workflow_dispatch:
 
 permissions:
@@ -16,6 +15,7 @@ concurrency:
 
 jobs:
   promote:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
