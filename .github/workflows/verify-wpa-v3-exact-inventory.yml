@@ -1,16 +1,17 @@
 name: Verify WPA v3 Exact Inventory
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/verify-wpa-v3-exact-inventory.yml'
+  workflow_run:
+    workflows: ["Promote WPA New Corpus to AI Search v3"]
+    types: [completed]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   verify:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
