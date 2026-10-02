@@ -42,7 +42,7 @@ footer{background:#0b172a;color:#c8d1df;padding:34px 0;font-size:13px}.footerlin
 <div class="price">€19</div>
 <p class="small">Premium digital reference · single-user licence · професионална MK/EN верзија.</p>
 <ul><li>structured digital edition</li><li>professional reference format</li><li>official-source verification reminder for time-sensitive use</li></ul>
-<div class="product-actions"><a class="btn disabled" aria-disabled="true" href="https://worldprotocol.gumroad.com/l/ntpmgc">Gumroad · preparing</a><a class="btn primary bank-request" href="#request" data-product="Протокол на државни симболи, химни и национални денови 2026 — €19">Побарај банкарска уплата</a></div>
+<div class="product-actions"><span class="btn disabled" role="status" aria-label="Gumroad checkout is not yet active">Gumroad · preparing</span><a class="btn primary bank-request" href="#request" data-product="Протокол на државни симболи, химни и национални денови 2026 — €19">Побарај банкарска уплата</a></div>
 </article>
 
 <article class="card">
@@ -51,7 +51,7 @@ footer{background:#0b172a;color:#c8d1df;padding:34px 0;font-size:13px}.footerlin
 <div class="price">€59</div>
 <p class="small">Curated premium compilation · single-user licence · added compilation/navigation value.</p>
 <ul><li>working papers & protocol notes in one premium package</li><li>curated arrangement and navigation</li><li>clear separation from individually licensed/public Zenodo records</li></ul>
-<div class="product-actions"><a class="btn disabled" aria-disabled="true" href="https://worldprotocol.gumroad.com/l/wpa-compendium-2026">Gumroad · preparing</a><a class="btn primary bank-request" href="#request" data-product="WPA Working Papers & Protocol Notes Compendium 2026 — €59">Побарај банкарска уплата</a></div>
+<div class="product-actions"><span class="btn disabled" role="status" aria-label="Gumroad checkout is not yet active">Gumroad · preparing</span><a class="btn primary bank-request" href="#request" data-product="WPA Working Papers & Protocol Notes Compendium 2026 — €59">Побарај банкарска уплата</a></div>
 </article>
 </div>
 </section>
@@ -70,17 +70,17 @@ footer{background:#0b172a;color:#c8d1df;padding:34px 0;font-size:13px}.footerlin
 <div class="head"><div class="ey">Bank Transfer · Human Gate</div><h2>Барање за членство или банкарска уплата</h2><p>Во оваа Phase-1 форма не се складираат картички и не се објавуваат банкарски детали. Формата локално подготвува e-mail до WPA. По Human Gate следува писмена потврда со точен производ/план, цена, период, услови и инструкции за уплата.</p></div>
 <form class="form" id="commerceRequest">
 <div class="formgrid">
-<label class="field"><span>Име и презиме *</span><input id="rqName" required autocomplete="name"></label>
-<label class="field"><span>Е-пошта *</span><input id="rqEmail" type="email" required autocomplete="email"></label>
-<label class="field"><span>Организација</span><input id="rqOrg" autocomplete="organization"></label>
+<label class="field"><span>Име и презиме *</span><input id="rqName" required maxlength="120" autocomplete="name"></label>
+<label class="field"><span>Е-пошта *</span><input id="rqEmail" type="email" required maxlength="254" autocomplete="email"></label>
+<label class="field"><span>Организација</span><input id="rqOrg" maxlength="160" autocomplete="organization"></label>
 <label class="field"><span>Барање *</span><select id="rqType" required><option value="">Избери</option><option>Digital product purchase</option><option>WPA Membership</option><option>Institutional access</option></select></label>
-<label class="field"><span>Производ / план *</span><input id="rqProduct" required placeholder="Пр. WPA Pro или Compendium 2026"></label>
+<label class="field"><span>Производ / план *</span><input id="rqProduct" required maxlength="220" placeholder="Пр. WPA Pro или Compendium 2026"></label>
 <label class="field"><span>Период</span><select id="rqPeriod"><option>One-time purchase</option><option>Monthly</option><option>Annual</option><option>Institutional / custom</option></select></label>
 <label class="field"><span>Payment route</span><select id="rqPayment"><option>Bank Transfer · Human Gate</option><option>Secure online provider when activated</option></select></label>
 <label class="field"><span>Јазик</span><select id="rqLang"><option>Macedonian</option><option>English</option></select></label>
-<label class="field wide"><span>Напомена</span><textarea id="rqNote" placeholder="Invoice/receipt need, institutional context, questions..."></textarea></label>
+<label class="field wide"><span>Напомена</span><textarea id="rqNote" maxlength="1200" placeholder="Invoice/receipt need, institutional context, questions..."></textarea></label>
 </div>
-<p class="form-note">Со „Подготви барање“ не вршите плаќање и не создавате претплата. Не внесувајте број на картичка, CVV, лозинка или банкарски credentials.</p>
+<p class="form-note">Со „Подготви барање“ не вршите плаќање и не создавате претплата. Не внесувајте број на картичка, CVV, лозинка или банкарски credentials. Пред да биде побарана уплата, WPA писмено ќе ги потврди продавачот/носителот на приходот, точниот износ, важечките услови и сите задолжителни pre-contract disclosures.</p>
 <div class="actions"><button class="btn primary" type="submit">Подготви барање</button><a class="btn light" id="mailRequest" href="mailto:contact@worldprotocolacademy.mk">Отвори e-mail</a></div>
 <div class="out" id="requestOut" hidden></div>
 </form>
