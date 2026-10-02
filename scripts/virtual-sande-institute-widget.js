@@ -20,7 +20,7 @@
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
       send: 'Испрати', clear: 'Исчисти', error: 'Во моментот не можам да одговорам. Обидете се повторно.',
       label: 'Отвори Virtual Sande AI', close: 'Затвори',
-      instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
+      instituteName: 'Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија',
       relatedTitle: 'Поврзани WPA модули',
       relatedIntro: 'Брзи врски кон клучни јавни ресурси што ја дополнуваат Институтската страница.',
       stress: 'Protocol Stress-Test', certification: 'Certification FAQ', english: 'Professional English', card: 'WPA Card'
@@ -34,7 +34,7 @@
       placeholder: 'Ask about protocol, diplomacy, communication or security...',
       send: 'Send', clear: 'Clear', error: 'I cannot respond at the moment. Please try again.',
       label: 'Open Virtual Sande AI', close: 'Close',
-      instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
+      instituteName: 'Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies',
       relatedTitle: 'Related WPA Modules',
       relatedIntro: 'Quick links to key public resources that complement the Institute page.',
       stress: 'Protocol Stress-Test', certification: 'Certification FAQ', english: 'Professional English', card: 'WPA Card'
