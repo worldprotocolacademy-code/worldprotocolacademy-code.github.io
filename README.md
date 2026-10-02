@@ -4,6 +4,12 @@ World Protocol Academy is an **independent digital educational, research, author
 
 **Current institutional status:** Development, testing and pilot phase — 2026. WPA is not presented as a university, state academy, accreditation body or degree-granting institution.
 
+## Institutional and professional status — 30 September 2026
+
+Основачот и раководител на World Protocol Academy, доц. д-р Санде Смиљанов, има добиено официјална согласност од Министерството за внатрешни работи на Република Северна Македонија за вршење дополнителна дејност што опфаќа авторски, академски, образовни, научноистражувачки, издавачки и дигитални професионални активности преку World Protocol Academy (WPA), како независна дигитална образовна, истражувачка и авторска платформа.
+
+The founder and head of World Protocol Academy, Doc. Dr Sande Smiljanov, has received official consent from the Ministry of Interior of the Republic of North Macedonia to perform supplementary activity encompassing authorial, academic, educational, scientific-research, publishing and digital professional activities through World Protocol Academy (WPA), as an independent digital educational, research and authorial platform.
+
 ## Canonical public metrics
 
 WPA keeps two publication corpora separate:
