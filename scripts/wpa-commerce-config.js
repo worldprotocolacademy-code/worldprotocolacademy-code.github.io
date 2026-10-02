@@ -14,11 +14,11 @@
     humanGates: {
       traderIdentityApproved: false,
       geographicAddressApproved: false,
-      outboundEmailAuthenticated: false,
+      outboundEmailAuthenticated: true,
       consumerConsentFlowApproved: false,
       publicSectorInstitutionalApproved: false,
       dataControllerDisclosureApproved: false,
-      note: 'These launch gates are intentionally false during PRELAUNCH_REVIEW. Do not place seller identity, geographic address, bank details or secrets in this public config.'
+      note: 'Most launch gates remain unresolved during PRELAUNCH_REVIEW. Outbound email authentication was independently verified on 2026-10-02 with receiver-side SPF=pass, DKIM=pass and DMARC=pass. Do not place seller identity, geographic address, bank details or secrets in this public config.'
     },
     intakeBackend: {
       mode: 'EMAIL_FALLBACK',
