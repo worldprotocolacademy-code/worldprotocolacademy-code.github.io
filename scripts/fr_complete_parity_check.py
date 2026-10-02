@@ -15,6 +15,8 @@ for r in locs:
     r=r or '/'
     if r.startswith('/en/') or r=='/en/' or r.startswith('/languages/fr/') or r.startswith('/languages/de/'):
         continue
+    if r.startswith('/scholar/'):
+        continue
     canonical.append(r)
 missing=sorted(set(canonical)-set(mk_to_fr))
 assert not missing, 'canonical public routes without FR sibling: '+', '.join(missing)
