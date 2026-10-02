@@ -147,6 +147,38 @@ def check_publication_route_contract(errors):
     if "recordUrl: '/protocol-notes/wpa-pn-" in sync:
         add_error(errors,"Publication sync still emits a legacy Protocol Note recordUrl")
 
+
+def check_scholar_metadata_integrity(errors):
+    """Fail closed on broken Scholar PDF metadata and non-production manifest canonicals."""
+    scholar=ROOT/"scholar"
+    for page in scholar.glob("*.html") if scholar.exists() else []:
+        tx=read_text(page)
+        if "upload the PDF copy into this same /scholar/ folder" in tx:
+            add_error(errors,f"{page.relative_to(ROOT)} still contains a Scholar PDF placeholder")
+        marker='name="citation_pdf_url" content="'
+        pos=tx.find(marker)
+        if pos>=0:
+            start=pos+len(marker); end=tx.find('"',start)
+            if end>start:
+                url=tx[start:end]
+                if url.startswith(BASE_URL):
+                    path=url_to_path(url)
+                    if not local_target_exists(path):
+                        add_error(errors,f"{page.relative_to(ROOT)} declares missing citation_pdf_url target: {path}")
+    manifest=ROOT/"wpa-scholar-records-2026.json"
+    if manifest.exists():
+        try: records=json.loads(read_text(manifest))
+        except (json.JSONDecodeError,OSError) as exc:
+            add_error(errors,f"Invalid Scholar manifest: {exc}"); records=[]
+        for rec in records:
+            rid=str(rec.get("id","?"))
+            canonical=str(rec.get("canonical_url",""))
+            if canonical and not canonical.startswith(BASE_URL+"/"):
+                add_error(errors,f"Scholar manifest {rid} uses non-production canonical URL: {canonical}")
+            pdf=rec.get("pdf_same_directory_name")
+            if pdf and not (scholar/str(pdf)).exists():
+                add_error(errors,f"Scholar manifest {rid} references missing same-directory PDF: {pdf}")
+
 def check_governance_invariants(errors):
     metrics=ROOT/"data"/"wpa-canonical-metrics-status.json"
     if metrics.exists():
@@ -186,7 +218,7 @@ def check_final_reconciliation_layer(errors):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
