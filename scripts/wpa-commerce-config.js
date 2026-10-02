@@ -11,6 +11,12 @@
     state: 'PRELAUNCH_REVIEW',
     currency: 'EUR',
     contact: 'contact@worldprotocolacademy.mk',
+    intakeBackend: {
+      mode: 'EMAIL_FALLBACK',
+      endpoint: null,
+      turnstileRequiredWhenWorkerEnabled: true,
+      note: 'The isolated Cloudflare commerce-intake Worker is scaffolded but not deployed. Public requests continue to use the local mailto Human Gate flow until explicit cutover approval.'
+    },
     paymentRails: {
       gumroad: {
         enabledForOneTimeProducts: false,
