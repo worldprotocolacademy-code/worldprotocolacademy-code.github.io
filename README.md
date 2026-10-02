@@ -13,7 +13,7 @@ Independent digital educational, research and authorial platform.
 The founder and head of World Protocol Academy, Doc. Dr Sande Smiljanov, has received official consent from the Ministry of Interior of the Republic of North Macedonia to perform supplementary activity encompassing authorial, academic, educational, scientific-research, publishing and digital professional activities through World Protocol Academy (WPA), as an independent digital educational, research and authorial platform.
 ## Canonical public metrics
 WPA keeps two publication corpora separate:
-- **26 academic publications** = 6 monographs/handbooks + 1 doctoral dissertation + 19 scientific papers/contributions.
+- **27 academic publications** = 6 monographs/handbooks + 1 doctoral dissertation + 20 scientific papers/contributions.
 - **24 public Zenodo records** = 14 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
 Canonical references:
 - `/wpa-metrics-status.html`

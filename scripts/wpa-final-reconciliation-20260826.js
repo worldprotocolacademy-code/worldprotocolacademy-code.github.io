@@ -1,6 +1,6 @@
 /* WPA final public reconciliation layer · 26 August 2026
    Purpose: close verified legacy drift without rewriting large public HTML files in-browser.
-   Canonical boundaries: 26 academic publications; 23 Zenodo records = 13 WP + 9 PN + 1 plan;
+   Current canonical boundaries (reconciled 2 October 2026): 27 academic publications; 24 Zenodo records = 14 WP + 9 PN + 1 plan;
    Sande Smiljanov, Ph.D. / Доц. д-р · Насловен доцент author identity; vendor-neutral public AI wording; OPC date/venue unconfirmed;
    WP-009 latest-facing reference uses the concept DOI until its v1.1 version-specific DOI is captured.
 */
@@ -21,7 +21,7 @@
     ['Gemini, Claude/Opus,','AI models,'],
     ['Gemini Omni / Video Workflow','Video AI Workflow'],
     ['Claude / Opus Research Workflow','Research AI Workflow'],
-    ['Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-012.','Сите тринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-013.'],
+    ['Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-012.','Сите четиринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-014.'],
     ['Посебна порта за универзитети, библиотеки, дипломатски академии и стратешки институционални партнери на WPA.','Посебна порта за универзитети, библиотеки, дипломатски академии и потенцијални стратешки институционални соработници на WPA.']
   ];
   function textFix(value){
@@ -63,7 +63,7 @@
     setText('[data-i18n="institute.opc.meta.venue_value"]','Ќе биде потврдено','To be confirmed');
     setText('[data-i18n="institute.opc.meta.location_value"]','Охрид, Северна Македонија · предложено / ќе биде потврдено','Ohrid, North Macedonia · proposed / to be confirmed');
     setText('[data-i18n="institute.opc.meta.status_value"]','Регистар за интерес е отворен · датумот и местото не се потврдени','Interest register open · date and venue not confirmed');
-    setText('[data-i18n="institute.publications.working_papers.text"]','Сите тринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-013.','All thirteen WPA Working Papers are published as public Zenodo DOI records: WP-001–WP-013.');
+    setText('[data-i18n="institute.publications.working_papers.text"]','Сите четиринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-014.','All fourteen WPA Working Papers are published as public Zenodo DOI records: WP-001–WP-014.');
   }
 
   function fixBibliography(){
