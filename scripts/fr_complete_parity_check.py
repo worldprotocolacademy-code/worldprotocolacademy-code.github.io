@@ -15,7 +15,7 @@ for r in locs:
     r=r or '/'
     if r.startswith('/en/') or r=='/en/' or r.startswith('/languages/fr/') or r.startswith('/languages/de/'):
         continue
-    if r.startswith('/scholar/'):
+    if r.startswith('/scholar/') and r!='/scholar/wpa-wp-009.html':
         continue
     canonical.append(r)
 missing=sorted(set(canonical)-set(mk_to_fr))
