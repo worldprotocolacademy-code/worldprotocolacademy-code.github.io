@@ -5,11 +5,11 @@
 **Consent date:** 28 September 2026<br>
 **Delivered/notified:** 30 September 2026
 ## Канонски јавен институционален идентитет
-**Светска академија за протокол — World Protocol Academy (WPA)**
-**Институт за протокол, дипломатија, јавна комуникација и безбедносни студии**
+**Светска Академија за протокол — World Protocol Academy (WPA)**
+**Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија**
 Независна дигитална образовна, истражувачка и авторска платформа.
 **World Protocol Academy (WPA)**
-**Institute for Protocol, Diplomacy, Public Communication and Security Studies**
+**Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies**
 Independent digital educational, research and authorial platform.
 > Овој јавен институционален идентитет на WPA го надградува брендот/институтскиот слој. Формулацијата на самата согласност подолу се задржува според изворниот акт.
 ## Македонски
