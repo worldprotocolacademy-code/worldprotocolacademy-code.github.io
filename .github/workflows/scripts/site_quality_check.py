@@ -53,7 +53,6 @@ PUBLIC_SITEMAP_ALLOWLIST = {
     "/book2-conference.html",
     "/book3-diplomacy.html",
     "/book4-digital-era.html",
-    "/book5-state-symbols.html",
     "/protocol-professional-track.html",
     "/communication-presence-track.html",
     "/institutional-diplomatic-track.html",
