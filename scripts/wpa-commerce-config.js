@@ -34,7 +34,7 @@
         titleMk: 'Протокол на државни симболи, химни и национални денови 2026 — MK/EN',
         titleEn: 'Protocol of State Symbols, Anthems and National Days 2026 — MK/EN',
         price: 19,
-        gumroadUrl: 'https://worldprotocol.gumroad.com/l/ntpmgc',
+        gumroadUrl: null,
         gumroadLive: false,
         bankRequestLive: true,
         licence: 'WPA Premium Single-User Licence'
@@ -44,7 +44,7 @@
         titleMk: 'WPA Working Papers & Protocol Notes Compendium 2026',
         titleEn: 'WPA Working Papers & Protocol Notes Compendium 2026',
         price: 59,
-        gumroadUrl: 'https://worldprotocol.gumroad.com/l/wpa-compendium-2026',
+        gumroadUrl: null,
         gumroadLive: false,
         bankRequestLive: true,
         licence: 'WPA Premium Single-User Licence'
