@@ -21,7 +21,7 @@
     en: 'AI Transparency and the Protocol of Authorship: Watermarking, Provenance, Human Responsibility and the EU AI Act after 2 August 2026',
     doi: '10.5281/zenodo.21933739', conceptDoi: '10.5281/zenodo.21933738',
     doiUrl: 'https://doi.org/10.5281/zenodo.21933739',
-    recordUrl: '/protocol-notes/wpa-pn-009.html',
+    recordUrl: '/scholar/wpa-pn-009.html',
     scholarUrl: '/scholar/wpa-pn-009.html',
     desc: 'A bilingual WPA Protocol Note separating the legal baseline, technical evidence and WPA normative proposal for AI transparency, authorship, provenance and human responsibility. It introduces HARP-6, the Provenance Assurance Ladder (PAL), provenance of meaning, a Low-Resource Language Safeguard, a Post-Publication Recovery Protocol, a Correction Provenance Record (CPR) and a Simulation-to-Consent Boundary.'
   };
