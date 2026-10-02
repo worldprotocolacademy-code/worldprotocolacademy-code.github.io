@@ -102,7 +102,7 @@
     var brand = document.querySelector(".nav-wrap nav .brand");
     if (!brand || brand.classList.contains("wpa-institute-brand")) return;
     brand.classList.add("wpa-institute-brand");
-    brand.setAttribute("aria-label", "Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies");
+    brand.setAttribute("aria-label", "Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија — Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies");
 
     var mark = brand.querySelector(".brand-mark");
     if (mark) {
@@ -120,10 +120,10 @@
     var brandText = brand.querySelector(".brand-text");
     if (brandText) {
       brandText.innerHTML = '<span class="wpa-institute-title-row">' +
-        '<span class="wpa-institute-name-mk">Институт за протокол, дипломатија, јавна комуникација и безбедносни студии</span>' +
+        '<span class="wpa-institute-name-mk">Институт за протокол, дипломатија, односи со јавност, безбедност и комуникологија</span>' +
         '<span class="wpa-institute-name-separator" aria-hidden="true">•</span>' +
-        '<span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Communication and Security Studies</span>' +
-        '</span><span class="wpa-institute-parent">Светска академија за протокол · World Protocol Academy</span>';
+        '<span class="wpa-institute-name-en" lang="en">Institute for Protocol, Diplomacy, Public Relations, Security and Communication Studies</span>' +
+        '</span><span class="wpa-institute-parent">Светска Академија за протокол · World Protocol Academy</span>';
     }
   }
 
