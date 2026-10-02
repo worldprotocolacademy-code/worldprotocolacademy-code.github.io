@@ -42,8 +42,18 @@ requireRule(statuses.default_status === 'detected', 'Default status must be dete
 requireRule(statuses.terminal_public_status === 'published', 'Published must be the terminal public status.');
 
 const pricing = fs.readFileSync(path.join(root, 'scripts/pricing-loader.js'), 'utf8').toLowerCase();
-requireRule(pricing.includes('not_activated'), 'Pricing loader must remain not_activated.');
+const commerce = fs.readFileSync(path.join(root, 'scripts/wpa-commerce-config.js'), 'utf8').toLowerCase();
+const pricingFailClosed = pricing.includes("status: 'not_activated'") || pricing.includes("status: 'prelaunch_review'");
+requireRule(pricingFailClosed, 'Pricing loader must remain fail-closed: not_activated or prelaunch_review only.');
+requireRule(!pricing.includes("status: 'one_time_live'") && !pricing.includes("status: 'membership_live'") && !pricing.includes("status: 'full_commercial_live'"), 'Pricing loader may not enter a live commercial state without a separate Human Gate.');
+requireRule(!pricing.includes("gumroad_live: true"), 'Pricing loader must not expose a live Gumroad checkout during PRELAUNCH_REVIEW.');
+requireRule(pricing.includes('human_gate_pending'), 'Membership pricing must remain Human Gate pending during PRELAUNCH_REVIEW.');
 requireRule(!pricing.includes("fetch('/data/pricing-config.json"), 'Pricing loader must not fetch public pricing configuration.');
+requireRule(commerce.includes("state: 'prelaunch_review'"), 'Commerce config must remain PRELAUNCH_REVIEW until a separate commercial Human Gate.');
+requireRule(commerce.includes('enabledforonetimeproducts: false') && commerce.includes('enabledformembership: false'), 'Commerce config must keep provider checkout disabled during PRELAUNCH_REVIEW.');
+requireRule(commerce.includes('enabledforrequests: false'), 'Bank-transfer request rail must remain disabled during PRELAUNCH_REVIEW.');
+requireRule(commerce.includes("pricingstatus: 'human_gate_pending'"), 'Commerce config must keep membership pricing Human Gate pending.');
+requireRule(!commerce.includes('worldprotocol.gumroad.com'), 'PRELAUNCH_REVIEW public config must not expose unpublished Gumroad checkout URLs.');
 
 const safety = fs.readFileSync(path.join(root, 'scripts/wpa-public-safety-layer.js'), 'utf8').toLowerCase();
 requireRule(safety.includes('no intelligence, surveillance, investigative or operational function'), 'Public safety layer must retain analytical safety boundary.');
