@@ -36,6 +36,7 @@ for n in tree.findall('.//s:url/s:loc',ns):
     if not u.startswith(prefix): continue
     path=u[len(prefix):] or '/'
     if path.startswith('/en/') or path.startswith('/languages/fr/') or path.startswith('/languages/de/'): continue
+    if path.startswith('/scholar/') and path!='/scholar/wpa-wp-009.html': continue
     locs.append(path)
 canon=[]
 for x in locs:

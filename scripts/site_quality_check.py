@@ -38,7 +38,15 @@ def activation_public_paths(errors):
     unlisted=set(routes)-set(public)
     if unlisted:add_error(errors,f"Activation registry contains public_routes for unlisted languages: {', '.join(sorted(unlisted))}")
     return out
-def allowed_sitemap_paths(errors):return BASE_ALLOWED_SITEMAP_PATHS|activation_public_paths(errors)
+def scholar_public_paths():
+    d=ROOT/"scholar"
+    out=set()
+    if (d/"index.html").exists(): out.add("/scholar/")
+    if d.exists():
+        for p in d.glob("*.html"):
+            if p.name!="index.html": out.add("/scholar/"+p.name)
+    return out
+def allowed_sitemap_paths(errors):return BASE_ALLOWED_SITEMAP_PATHS|activation_public_paths(errors)|scholar_public_paths()
 def check_sitemap(errors,allowed):
     s=ROOT/"sitemap.xml"
     if not s.exists():add_error(errors,"Missing sitemap.xml");return
@@ -90,6 +98,8 @@ def check_privacy_hotfixes(errors):
         if "data-nosnippet" not in tx:add_error(errors,"wpaws/index.html does not contain data-nosnippet")
 def check_basic_public_html(errors,allowed):
     for path in sorted(allowed):
+        if path.startswith("/scholar/"):
+            continue
         f=ROOT/"index.html" if path=="/" else (ROOT/path.lstrip("/")/"index.html" if path.endswith("/") else ROOT/path.lstrip("/"))
         if not f.exists():add_error(errors,f"Public sitemap page is missing locally: {path}");continue
         text=read_text(f).lower()
