@@ -1,12 +1,12 @@
-# WPA Journal Submission Policy v1.1 — Governance Alignment
+# WPA Journal Submission Policy v1.2 — Governance Alignment
 
-**Status:** Phase 0 · Charter / First Issue Preparation  
+**Status:** First Issue Preparation  
 **Updated:** 26 August 2026  
 **Contact:** journal@worldprotocolacademy.mk
 
 ## Governing boundary
 
-The WPA Academic Advisory Board (AAB) is in **FORMATION_PHASE**. AAB review and second-stage AAB appeals are designed future governance routes; they are **not operational** until the Board is formally constituted and the applicable procedure is published. No final AAB decision is currently claimed.
+WPA Journal uses an Editorial Office, Editorial Board and independent peer/practitioner reviewers. The Journal does not use an Academic Advisory Board (AAB) as an editorial review or appeal organ. Advisory governance elsewhere within WPA, including WPA Institute structures, is separate from Journal editorial governance.
 
 ## Submission requirements
 
@@ -19,7 +19,7 @@ The WPA Academic Advisory Board (AAB) is in **FORMATION_PHASE**. AAB review and 
 
 ## Review
 
-Depending on article type, the Editorial Office may use desk review, double-blind peer review, practitioner review or editorial review. Additional independent expert review may be commissioned for specialised or sensitive manuscripts. During AAB formation, such expert review must not be represented as AAB review.
+Depending on article type, the Editorial Office may use desk review, double-blind peer review, practitioner review or editorial review. Additional independent expert review may be commissioned for specialised, flagship, methodological or sensitive manuscripts.
 
 ## Editorial decisions
 
@@ -31,7 +31,11 @@ Submission and editorial judgment are not for sale. Any future publication/produ
 
 ## Appeals
 
-A first-stage appeal may be submitted to the Editorial Office under the decision letter. A different qualified human reviewer/editor should assess it where practicable. **Second-stage AAB appeal is not currently operational.** Until AAB constitution, a matter requiring that route remains pending/disputed rather than being presented as finally determined by an independent AAB.
+An appeal may be submitted to the Editorial Office under the decision letter. A different qualified human editor and, where appropriate, a different reviewer should assess it where practicable. The handling editor for the original decision should not be the sole decision-maker on the appeal.
+
+## Editor-authored manuscripts and conflicts
+
+When the Editor-in-Chief is an author or co-author, the manuscript is handled independently by the Deputy Editor-in-Chief or another designated qualified editor. The Editor-in-Chief is recused from reviewer selection, peer-review management, editorial discussion and the final publication decision. The same principle applies to any editor with a relevant conflict of interest.
 
 ## Human Authority
 
