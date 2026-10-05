@@ -61,3 +61,23 @@ test('integrates WIIE as a non-authority operational engine for major WPA work',
   assert.ok(plan.wpaws_agents.some(a=>a.id===13));
   assert.ok(plan.pipeline.includes('wpa_institutional_intelligence_engine'));
 });
+
+
+test('uses minimal sufficient WPAWS activation for lightweight work',()=>{
+  const plan=buildOrchestrationPlan('Кој е подобар наслов за краток WPA briefing?');
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L0_LIGHTWEIGHT');
+  assert.ok(plan.wpaws_agents.length<=6);
+  assert.ok(plan.wpaws_agents.some(a=>a.id===2));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===4));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===17));
+  assert.ok(!plan.wpaws_agents.some(a=>a.id===9));
+  assert.ok(!plan.wpaws_agents.some(a=>a.id===10));
+});
+
+test('escalates major WPA work to institutional WIIE profile',()=>{
+  const plan=buildOrchestrationPlan('Направи стратегија за WPA до 2040',{majorWpa:true});
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L2_INSTITUTIONAL');
+  assert.equal(plan.institutional_intelligence_engine.system_map.required,true);
+  assert.equal(plan.institutional_intelligence_engine.options.required,true);
+  assert.equal(plan.institutional_intelligence_engine.observability.trace_required,true);
+});
