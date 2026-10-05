@@ -97,7 +97,7 @@ function classifyProblem(q){
 function classifyConsequence(q,options={}){
   if(options.consequenceClass)return String(options.consequenceClass).toUpperCase();
   if(has(q,[
-    'doctrine change','смени доктрин','constitutional rule','уставно правило','new institutional authority','ново институционално овластување',
+    'doctrine change','change doctrine','change the doctrine','смени доктрин','смени ја доктрин','измени доктрин','измени ја доктрин','constitutional rule','уставно правило','new institutional authority','ново институционално овластување',
     'weaken human gate','ослаби human gate','accreditation claim','тврдење за акредитац','official external commitment','официјална надворешна обврска',
     'announce partnership','објави партнерство','claim partnership','тврди партнерство','sign contract','потпиши договор'
   ]))return'HG4';
