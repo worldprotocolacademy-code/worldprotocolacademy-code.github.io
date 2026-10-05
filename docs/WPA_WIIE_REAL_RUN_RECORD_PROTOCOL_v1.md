@@ -1,6 +1,6 @@
 # WPA WIIE Real Run Record Protocol v1.0
 
-**Status:** CANONICAL INTERNAL MEASUREMENT METHOD  
+**Status:** CANONICAL INTERNAL MEASUREMENT METHOD
 **Date:** 6 October 2026
 
 ## Purpose
