@@ -165,3 +165,22 @@ test('preserves disagreement and graceful degradation as assurance invariants',(
   assert.equal(plan.assurance.graceful_degradation_on_provider_or_tool_failure,true);
   assert.equal(plan.assurance.invented_completion_forbidden,true);
 });
+
+
+test('preserves all explicitly relevant cross-domain specialists even when soft target budget is lower',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Анализирај дипломатски протокол и безбедносни ризици');
+  const ids=plan.specialist_routing.profiles.map(x=>x.id);
+  assert.ok(ids.includes('protocol'));
+  assert.ok(ids.includes('diplomacy'));
+  assert.ok(ids.includes('security'));
+  assert.equal(plan.specialist_routing.budget_is_soft_target,true);
+  assert.equal(plan.specialist_routing.budget_exceeded_for_explicit_or_mandatory_scope,true);
+});
+
+test('deep WIIE missions always preserve research and adversarial assurance profiles',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Анализирај нова технологија за протокол, дипломатија, PR, безбедност и комуникологија до 2040');
+  const ids=plan.specialist_routing.profiles.map(x=>x.id);
+  assert.equal(plan.mission_profile.id,'L2_INSTITUTIONAL');
+  assert.ok(ids.includes('research_evidence'));
+  assert.ok(ids.includes('adversarial_verification'));
+});
