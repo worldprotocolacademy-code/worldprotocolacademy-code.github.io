@@ -104,17 +104,23 @@ function selectProfiles(q,{major=false,missionProfile=MISSION_PROFILES.L0_LIGHTW
     const hits=signals.filter(s=>q.includes(normalise(s).trim()));
     if(hits.length){ids.push(id);reasons[id]=['signal:'+hits.slice(0,3).join(',')];}
   }
+  const mandatory=[];
   if(major){
     for(const id of ['research_evidence','adversarial_verification']){
       if(!ids.includes(id))ids.push(id);
+      if(!mandatory.includes(id))mandatory.push(id);
       reasons[id]=[...(reasons[id]||[]),'major_mission'];
     }
   }
-  if(!ids.length){ids.push('research_evidence');reasons.research_evidence=['minimal_default'];}
+  if(!ids.length)return {ids:[],reasons:{}};
   const budget=missionProfile.specialist_profile_budget||ids.length;
   const priority=['protocol','diplomacy','security','strategic_communication','communicology','ai_governance','legal_compliance','foresight','research_evidence','adversarial_verification'];
   const ordered=[...new Set(ids)].sort((a,b)=>priority.indexOf(a)-priority.indexOf(b));
-  const selected=ordered.slice(0,budget);
+  const selected=[...mandatory];
+  for(const id of ordered){
+    if(selected.length>=budget)break;
+    if(!selected.includes(id))selected.push(id);
+  }
   return {ids:selected,reasons:Object.fromEntries(selected.map(id=>[id,reasons[id]||['bounded_selection']]))};
 }
 
@@ -124,7 +130,7 @@ function wpawsIdsForProfiles(profileIds){
 
 export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
-  const major=options.majorWpa===true||has(q,MAJOR_SIGNALS);
+  const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
   const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
