@@ -37,9 +37,7 @@ function selectAgents(message='',comprehensive=false,promptRoute=null,wiiePlan=n
   ids.add(2);ids.add(4);ids.add(17);
   if(['L1_STANDARD','L2_INSTITUTIONAL','L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(wiiePlan?.mission_profile?.id))ids.add(5);
   if(['L2_INSTITUTIONAL','L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(wiiePlan?.mission_profile?.id)){ids.add(9);ids.add(10);}
-  const budget=(wiiePlan?.mission_profile?.specialist_profile_budget||6)+3;
-  const ordered=WPAWS_AGENTS.filter(a=>ids.has(a.id));
-  return ordered.slice(0,Math.min(budget,ordered.length));
+  return WPAWS_AGENTS.filter(a=>ids.has(a.id));
 }
 function selectOutputs(message='',promptRoute=null){const q=normalize(message),selected=[];const add=id=>{if(!selected.includes(id))selected.push(id);};if(/brief|бриф|извештај/.test(q))add('premium_briefings');if(/услуг|service|понуда|proposal/.test(q))add('services');if(/профил|profile|institution/.test(q))add('institutional_profile');if(/павилјон|pavilion|јавн|public experience/.test(q))add('digital_pavilion');if(/journal|журнал|article|статиј/.test(q))add('journal_candidate');if(/книг|book|source|извор|академ|research/.test(q))add('academic_search');if(/студент|student|пријав|enrol|сертифик/.test(q))add('student_desk');if(promptRoute?.selected)add('prompt_desk');if(!selected.length)add('premium_briefings');return selected.map(id=>({id,path:OUTPUTS[id]}));}
 function buildCommandChain(){return [...DOCTRINE_CHAIN,'virtual_sande_synthesis','evidence_gate','safety_gate','sande_human_approval','wpa_output'];}
