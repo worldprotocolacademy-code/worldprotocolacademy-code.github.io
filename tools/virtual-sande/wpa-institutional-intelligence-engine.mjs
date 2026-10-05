@@ -103,26 +103,23 @@ function selectProfiles(q,{major=false,missionProfile=MISSION_PROFILES.L0_LIGHTW
   const ids=[],reasons={};
   for(const [id,signals] of Object.entries(PROFILE_SIGNALS)){
     const hits=signals.filter(s=>q.includes(normalise(s).trim()));
-    if(hits.length){ids.push(id);reasons[id]=['signal:'+hits.slice(0,3).join(',')];}
+    if(hits.length){ids.push(id);reasons[id]=['explicit_signal:'+hits.slice(0,3).join(',')];}
   }
-  const mandatory=[];
-  if(major){
+  const deepProfile=['L2_INSTITUTIONAL','L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(missionProfile.id);
+  if(major||deepProfile){
     for(const id of ['research_evidence','adversarial_verification']){
       if(!ids.includes(id))ids.push(id);
-      if(!mandatory.includes(id))mandatory.push(id);
-      reasons[id]=[...(reasons[id]||[]),'major_mission'];
+      reasons[id]=[...(reasons[id]||[]),major?'major_mission':'deep_mission_assurance'];
     }
   }
-  if(!ids.length)return {ids:[],reasons:{}};
-  const budget=missionProfile.specialist_profile_budget||ids.length;
   const priority=['protocol','diplomacy','security','strategic_communication','communicology','ai_governance','legal_compliance','foresight','research_evidence','adversarial_verification'];
-  const ordered=[...new Set(ids)].sort((a,b)=>priority.indexOf(a)-priority.indexOf(b));
-  const selected=[...mandatory];
-  for(const id of ordered){
-    if(selected.length>=budget)break;
-    if(!selected.includes(id))selected.push(id);
-  }
-  return {ids:selected,reasons:Object.fromEntries(selected.map(id=>[id,reasons[id]||['bounded_selection']]))};
+  const selected=[...new Set(ids)].sort((a,b)=>priority.indexOf(a)-priority.indexOf(b));
+  return {
+    ids:selected,
+    reasons:Object.fromEntries(selected.map(id=>[id,reasons[id]||['bounded_selection']])),
+    target_budget:missionProfile.specialist_profile_budget||0,
+    budget_exceeded_for_explicit_or_mandatory_scope:selected.length>(missionProfile.specialist_profile_budget||0)
+  };
 }
 
 function wpawsIdsForProfiles(profileIds){
@@ -241,6 +238,8 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       routing_reasons:Object.freeze(routed.reasons),
       recommended_wpaws_agent_ids:Object.freeze(wpawsIdsForProfiles(profileIds)),
       specialist_profile_budget:missionProfile.specialist_profile_budget,
+      budget_is_soft_target:true,
+      budget_exceeded_for_explicit_or_mandatory_scope:routed.budget_exceeded_for_explicit_or_mandatory_scope,
       specialists_are_bounded:true,
       reuse_before_new_research:true,
       over_routing_is_efficiency_defect:true,
