@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-institutional-operating-protocol/1.0",
-  "version": "1.0.0",
+  "schema": "wpa-institutional-operating-protocol/1.1",
+  "version": "1.1.0",
   "updated": "2026-10-05",
   "name": "WPA Institutional Operating Protocol",
   "short_name": "WPA IOP",
@@ -37,7 +37,8 @@
     "state_machine": "/data/wpa-end-to-end-institutional-state-machine.json",
     "operating_architecture": "/data/wpa-institutional-operating-architecture.json",
     "prompt_framework": "/data/wpa-strategic-prompt-framework.json",
-    "futures_framework": "/data/wpa-futures-2040-framework.json"
+    "futures_framework": "/data/wpa-futures-2040-framework.json",
+    "institutional_intelligence_engine": "/data/wpa-institutional-intelligence-engine.json"
   },
   "procedure": [
     {
@@ -52,7 +53,12 @@
       "id": "knowledge",
       "name": "KNOWLEDGE",
       "question": "What verified WPA, authorised and public-source knowledge already exists?",
-      "rules": ["corpus_first_when_applicable", "source_identity_required", "provenance_required", "missing_support_must_be_visible"],
+      "rules": [
+        "corpus_first_when_applicable",
+        "source_identity_required",
+        "provenance_required",
+        "missing_support_must_be_visible"
+      ],
       "output": "evidence map with verified facts, assumptions, gaps and source status"
     },
     {
@@ -60,7 +66,17 @@
       "id": "system_map",
       "name": "SYSTEM MAP",
       "question": "How does the current system actually work?",
-      "dimensions": ["people", "roles", "authority", "processes", "data", "tools", "communications", "dependencies", "risks"],
+      "dimensions": [
+        "people",
+        "roles",
+        "authority",
+        "processes",
+        "data",
+        "tools",
+        "communications",
+        "dependencies",
+        "risks"
+      ],
       "output": "current-state institutional map"
     },
     {
@@ -82,8 +98,19 @@
       "id": "options",
       "name": "OPTIONS",
       "question": "What materially different options exist?",
-      "required_options": ["conservative", "balanced", "transformative"],
-      "compare_on": ["benefits", "costs", "risks", "dependencies", "reversibility", "institutional consequences"],
+      "required_options": [
+        "conservative",
+        "balanced",
+        "transformative"
+      ],
+      "compare_on": [
+        "benefits",
+        "costs",
+        "risks",
+        "dependencies",
+        "reversibility",
+        "institutional consequences"
+      ],
       "output": "decision matrix without allowing agent consensus to become institutional will"
     },
     {
@@ -98,7 +125,15 @@
       "order": 8,
       "id": "ai_protocol_gate",
       "name": "AI PROTOCOL GATE",
-      "questions": ["Who has authority?", "Who granted the mandate?", "What is the scope?", "When does the mandate expire?", "What proves provenance?", "Where is the Human Gate?", "Who remains finally responsible?"],
+      "questions": [
+        "Who has authority?",
+        "Who granted the mandate?",
+        "What is the scope?",
+        "When does the mandate expire?",
+        "What proves provenance?",
+        "Where is the Human Gate?",
+        "Who remains finally responsible?"
+      ],
       "output": "authority-mandate-provenance-responsibility record"
     },
     {
@@ -106,7 +141,19 @@
       "id": "solution_design",
       "name": "SOLUTION DESIGN",
       "question": "What concrete institutional artifact solves the problem?",
-      "possible_outputs": ["policy", "procedure", "directive", "code change", "training module", "research design", "scenario", "risk register", "communication plan", "grant concept note", "journal or policy paper"],
+      "possible_outputs": [
+        "policy",
+        "procedure",
+        "directive",
+        "code change",
+        "training module",
+        "research design",
+        "scenario",
+        "risk register",
+        "communication plan",
+        "grant concept note",
+        "journal or policy paper"
+      ],
       "output": "implementation-ready design with evidence, owner and Human Gate"
     },
     {
@@ -114,7 +161,13 @@
       "id": "implementation",
       "name": "IMPLEMENTATION",
       "question": "What can be implemented inside the approved mandate now?",
-      "rules": ["no_mandate_expansion", "no_silent_external_action", "no_automatic_publication", "version_control_required", "reversible_changes_preferred_before_consequential_commitment"],
+      "rules": [
+        "no_mandate_expansion",
+        "no_silent_external_action",
+        "no_automatic_publication",
+        "version_control_required",
+        "reversible_changes_preferred_before_consequential_commitment"
+      ],
       "output": "bounded implemented change or human-gated implementation package"
     },
     {
@@ -122,7 +175,16 @@
       "id": "adversarial_review",
       "name": "ADVERSARIAL REVIEW",
       "question": "How could this fail, be misused, be bypassed or become illegitimate?",
-      "tests": ["authority_bypass", "human_gate_bypass", "provenance_loss", "source_failure", "dependency_failure", "future_capability_shift", "reputational_failure", "privacy_or_security_failure"],
+      "tests": [
+        "authority_bypass",
+        "human_gate_bypass",
+        "provenance_loss",
+        "source_failure",
+        "dependency_failure",
+        "future_capability_shift",
+        "reputational_failure",
+        "privacy_or_security_failure"
+      ],
       "output": "red-team findings and required corrections"
     },
     {
@@ -137,7 +199,12 @@
       "id": "learn",
       "name": "LEARN",
       "question": "What verified lesson should improve future WPA work?",
-      "rules": ["no_silent_doctrine_change", "preserve_provenance", "propagate_material_corrections", "separate_working_knowledge_from_constitutional_doctrine"],
+      "rules": [
+        "no_silent_doctrine_change",
+        "preserve_provenance",
+        "propagate_material_corrections",
+        "separate_working_knowledge_from_constitutional_doctrine"
+      ],
       "output": "governed lesson, reusable asset, new test, corrected directive or research question"
     }
   ],
@@ -159,13 +226,37 @@
     "The procedure may narrow a task within mandate but may not expand authority autonomously.",
     "A failed evidence, safety, source-rights or mandate check blocks or returns the work for revision.",
     "Implementation must preserve a traceable link between source, analysis, decision, human authorisation and released artifact.",
-    "Learning may update working knowledge only with provenance; Doctrine Kernel changes remain separate HG4 actions."
+    "Learning may update working knowledge only with provenance; Doctrine Kernel changes remain separate HG4 actions.",
+    "WIIE is an execution/orchestration engine and may not become a source of institutional authority."
   ],
   "activation": {
-    "major_wpa_work": "REQUIRED",
+    "major_wpa_work": "WPA_IOP_AND_WIIE_REQUIRED",
     "ordinary_low_consequence_queries": "OPTIONAL_LIGHTWEIGHT",
     "consequential_action": "HUMAN_GATE_REQUIRED",
     "doctrine_change": "HG4_SANDЕ_ONLY",
     "automatic_external_commitment": false
-  }
+  },
+  "execution_engine": {
+    "id": "WPA_WIIE_v1",
+    "name": "WPA Institutional Intelligence Engine",
+    "reference": "/data/wpa-institutional-intelligence-engine.json",
+    "runtime": "/tools/virtual-sande/wpa-institutional-intelligence-engine.mjs",
+    "status": "IMPLEMENTED_MVP_GOVERNED_ORCHESTRATION",
+    "creates_authority": false,
+    "role": "Execute and orchestrate the master procedure; it does not replace Human Authority, Doctrine Kernel or Human Gate."
+  },
+  "execution_architecture": [
+    "Human Authority",
+    "WPA Doctrine Kernel / AI PROTOCOL doctrine",
+    "WPA Institutional Operating Protocol",
+    "WPA Institutional Intelligence Engine (WIIE)",
+    "Source Compliance + WPA Corpus / Authorised Sources",
+    "Bounded Specialist Profiles / WPAWS / approved tools",
+    "WPA FUTURES 2040 stress-testing",
+    "AI PROTOCOL Gate",
+    "Human Gate",
+    "Bounded Implementation",
+    "Adversarial Review + Verification",
+    "Governed Learning"
+  ]
 }
