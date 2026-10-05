@@ -1,6 +1,6 @@
 # WPA Institutional Intelligence Engine — WIIE
 
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 **Status:** IMPLEMENTED MVP · GOVERNED ORCHESTRATION  
 **Date:** 5 October 2026
 
@@ -128,3 +128,17 @@ A faster change that weakens evidence, provenance, Human Gate correctness, autho
 ## External-methodology boundary
 
 WIIE may learn from contemporary agent tracing/evaluation, human-review and AI risk/management-system practice. These references do not imply OpenAI endorsement, NIST endorsement, ISO certification or formal conformity.
+
+
+## Assurance and graceful degradation
+
+WIIE 1.2 adds six assurance disciplines:
+
+1. **Source freshness** — current/status-sensitive claims require appropriately fresh evidence.
+2. **Specialist disagreement preservation** — material disagreement is not hidden and is not resolved by machine majority vote.
+3. **Graceful degradation** — unavailable providers, tools or sources reduce capability transparently rather than trigger invented completion.
+4. **Data minimisation** — auditability does not justify unnecessary sensitive logging.
+5. **Incident and reopen** — material adverse outcomes or provenance/Human Gate failures can reopen a case and quarantine reusable assets.
+6. **Uncertainty discipline** — uncalibrated numerical confidence is not treated as institutional evidence.
+
+These assurance rules reinforce rather than replace the AI PROTOCOL Gate and Human Gate.
