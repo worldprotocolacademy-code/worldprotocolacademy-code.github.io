@@ -54,7 +54,7 @@ const PROFILE_SIGNALS=Object.freeze({
   legal_compliance:['law','legal','право','правен','compliance','усогласеност','regulation','регулатив','standard','стандард'],
   foresight:['foresight','futures','future','иднин','2030','2035','2040','scenario','сценари','horizon scan','emerging technolog','нова технолог'],
   research_evidence:['research','истраж','source','извор','evidence','доказ','journal','журнал','paper','труд','study','студи'],
-  adversarial_verification:['audit','аудит','verify','провери','weakness','слабост','red team','adversarial','контрадикц','test','тест']
+  adversarial_verification:['audit','аудит','independent verification','независна проверка','weakness','слабост','red team','adversarial','контрадикц','challenge review','критичка проверка']
 });
 
 const MAJOR_SIGNALS=['strategy','стратег','institution','институц','architecture','архитект','policy','политика','directive','директив','programme','програм','system','систем','2040','major wpa','голем wpa','governance','управување'];
