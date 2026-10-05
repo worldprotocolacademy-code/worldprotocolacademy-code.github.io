@@ -1,10 +1,10 @@
-# WPA Journal Submission Form v1.1 — Phase 0
+# WPA Journal Submission Form v1.2 — First Issue Preparation
 
 **Journal:** WPA Journal of Protocol, Diplomacy, Public Communication, Security & Communicology  
 **Contact:** journal@worldprotocolacademy.mk  
-**Governance status:** Phase 0 · AAB = FORMATION_PHASE
+**Governance status:** First Issue Preparation · Editorial Office + Editorial Board + independent reviewers
 
-> This form does not imply acceptance, accreditation, indexing, DOI assignment or an operational AAB review route.
+> This form does not imply acceptance, accreditation, indexing or DOI assignment. WPA Journal does not use an Academic Advisory Board (AAB) as an editorial review or appeal organ.
 
 ## A. Manuscript
 
@@ -49,8 +49,8 @@ State the applicable consent or ethics basis, or explain why it is not applicabl
 
 - [ ] I understand that review and editorial decisions remain human-governed.
 - [ ] I understand that payment, sponsorship, donation or waiver status cannot purchase acceptance.
-- [ ] I understand that the AAB is currently in **FORMATION_PHASE**.
-- [ ] I understand that a future second-stage AAB appeal is **not currently operational** and no final AAB decision is currently claimed.
+- [ ] I understand that WPA Journal uses an Editorial Office, Editorial Board and independent peer/practitioner reviewers.
+- [ ] I understand that an editorial appeal should, where practicable, be assessed by a different qualified editor and/or reviewer.
 
 ## E. Submission
 

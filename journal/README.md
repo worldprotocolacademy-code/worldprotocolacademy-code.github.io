@@ -93,7 +93,7 @@ Each cover page has a "Print / Save as PDF" button bottom-right. It triggers `wi
 - ❌ **Do not add DOI before formal setup through Crossref or another recognised DOI registration agency.**
 - ❌ **Do not add ISBN.** Cover templates are for journal issues; journal issues do not carry ISBNs. ISBN is used only for WPA Books / Monographs / Proceedings as standalone volumes.
 - ❌ **Do not add Editorial Board names** to the cover before completed consent workflow (Acceptance Form + Public Listing Consent + COI Declaration + approved biography + Founder final approval).
-- ❌ **Do not add AAB names** under the same rule.
+- ❌ **Do not present an Academic Advisory Board (AAB) as a WPA Journal editorial organ.** Independent specialist reviewers may be commissioned where needed; WPA Institute advisory governance is separate from Journal governance.
 - ❌ **Do not add "endorsed by", "supported by", "in partnership with", "accredited by"** without a signed official document.
 - ❌ **Do not change the doctrine line.** The doctrine *„Преговарањето е опционално. Протоколот е апсолутен."* is institutional.
 - ❌ **Do not invent author names, article titles, or sample TOCs on the cover.**
