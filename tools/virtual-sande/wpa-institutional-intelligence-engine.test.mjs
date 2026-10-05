@@ -11,7 +11,7 @@ import {
 } from './wpa-institutional-intelligence-engine.mjs';
 
 test('WIIE exposes the canonical 13-stage operating cycle',()=>{
-  assert.equal(VERSION,'wpa-institutional-intelligence-engine-1.1.0');
+  assert.equal(VERSION,'wpa-institutional-intelligence-engine-1.2.0');
   assert.deepEqual(OPERATING_CYCLE,[
     'intake','knowledge','system_map','diagnosis','specialist_routing','options',
     'futures_stress_test','ai_protocol_gate','solution_design','implementation',
@@ -146,4 +146,22 @@ test('strategic prompt intent raises lightweight work to standard depth without 
   assert.equal(plan.strategic_prompt_id,'SP06');
   assert.equal(plan.system_map.required,false);
   assert.equal(plan.futures_stress_test.required,false);
+});
+
+
+test('requires fresh-source assurance for current or latest claims',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Која е најновата состојба денес со AI governance?');
+  assert.equal(plan.knowledge.time_sensitive,true);
+  assert.equal(plan.knowledge.source_freshness_required,true);
+  assert.equal(plan.assurance.source_freshness_required,true);
+  const record=buildRunRecord(plan,{runId:'TEST-FRESH',startedAt:'2026-10-05T23:00:00+02:00'});
+  assert.equal(record.source_freshness_state,'REFRESH_REQUIRED');
+});
+
+test('preserves disagreement and graceful degradation as assurance invariants',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Направи институционална анализа',{majorWpa:true});
+  assert.equal(plan.assurance.preserve_material_specialist_disagreement,true);
+  assert.equal(plan.assurance.majority_vote_does_not_create_institutional_truth,true);
+  assert.equal(plan.assurance.graceful_degradation_on_provider_or_tool_failure,true);
+  assert.equal(plan.assurance.invented_completion_forbidden,true);
 });
