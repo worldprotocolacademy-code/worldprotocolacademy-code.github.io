@@ -1,4 +1,4 @@
-# WPA Institutional Operating Protocol v1.1
+# WPA Institutional Operating Protocol v1.2
 
 **Status:** CANONICAL WORKING INSTITUTIONAL METHOD  
 **Date:** 5 October 2026  
@@ -17,6 +17,17 @@ The **WPA Institutional Intelligence Engine (WIIE)** is the execution and orches
 WIIE is a **non-authority operational layer**. It cannot create institutional will, expand mandate, change doctrine, approve its own consequential actions or bypass Human Gate.
 
 **Master relationship:** Human Authority -> Doctrine Kernel / AI PROTOCOL doctrine -> WPA Institutional Operating Protocol -> WIIE -> bounded specialists/tools/sources -> Futures Stress Test -> AI PROTOCOL Gate -> Human Gate -> bounded implementation -> adversarial verification -> governed learning.
+
+## Full discipline, variable depth
+
+The protocol is **not** a requirement to run every stage at maximum depth for every request. WIIE classifies work into L0–L4 mission profiles.
+
+- L0/L1 may use a lightweight route and governed early exit when evidence, authority and consequence conditions are satisfied.
+- L2 requires institutional depth: system map, materially different options, Futures stress test and adversarial review.
+- L3 adds staged implementation, regression verification and rollback planning where practical.
+- L4 remains advisory until explicit HG4 human authorisation.
+
+**Over-processing low-consequence work is an efficiency defect. Under-processing high-consequence work is a governance defect.**
 
 ## Canonical 13-stage procedure
 
