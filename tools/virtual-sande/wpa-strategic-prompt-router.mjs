@@ -1,4 +1,4 @@
-export const VERSION='wpa-strategic-prompt-router-1.0.1';
+export const VERSION='wpa-strategic-prompt-router-1.1.0';
 export const FRAMEWORK_PATH='/data/wpa-strategic-prompt-framework.json';
 export const PROMPT_DESK_PATH='/tools/wpa-prompt-desk/';
 export const DEFAULT_MODEL='@cf/meta/llama-3.3-70b-instruct-fp8-fast';
