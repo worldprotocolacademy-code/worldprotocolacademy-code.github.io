@@ -138,3 +138,12 @@ test('builds an audit-ready run record without inventing completion',()=>{
   assert.equal(record.release_status,'BLOCKED');
   assert.equal(record.outcome_state,'UNKNOWN');
 });
+
+
+test('strategic prompt intent raises lightweight work to standard depth without forcing institutional mode',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Забрзај го проектот',{strategicPromptId:'SP06'});
+  assert.equal(plan.mission_profile.id,'L1_STANDARD');
+  assert.equal(plan.strategic_prompt_id,'SP06');
+  assert.equal(plan.system_map.required,false);
+  assert.equal(plan.futures_stress_test.required,false);
+});
