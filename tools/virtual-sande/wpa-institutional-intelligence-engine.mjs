@@ -4,7 +4,7 @@
 // requires alternative options and foresight stress-testing where appropriate,
 // and preserves AI PROTOCOL + Human Gate controls.
 
-export const VERSION='wpa-institutional-intelligence-engine-1.0.0';
+export const VERSION='wpa-institutional-intelligence-engine-1.1.0';
 export const ENGINE_ID='WPA_WIIE_v1';
 export const SPEC_PATH='/data/wpa-institutional-intelligence-engine.json';
 export const OPERATING_PROTOCOL_PATH='/data/wpa-institutional-operating-protocol.json';
@@ -15,6 +15,14 @@ export const OPERATING_CYCLE=Object.freeze([
   'futures_stress_test','ai_protocol_gate','solution_design','implementation',
   'adversarial_review','verify','learn'
 ]);
+
+export const MISSION_PROFILES=Object.freeze({
+  L0_LIGHTWEIGHT:Object.freeze({id:'L0_LIGHTWEIGHT',name:'Lightweight',specialist_profile_budget:2,system_map:'optional',options:'optional',futures:'no_unless_triggered',adversarial:'no_unless_triggered',implementation:'no_external_side_effect'}),
+  L1_STANDARD:Object.freeze({id:'L1_STANDARD',name:'Standard',specialist_profile_budget:4,system_map:'light',options:'when_decision_exists',futures:'when_future_material',adversarial:'targeted',implementation:'bounded_reversible_only'}),
+  L2_INSTITUTIONAL:Object.freeze({id:'L2_INSTITUTIONAL',name:'Institutional',specialist_profile_budget:6,system_map:'required',options:'three_required',futures:'required',adversarial:'required',implementation:'version_controlled_and_regression_tested'}),
+  L3_CONSEQUENTIAL:Object.freeze({id:'L3_CONSEQUENTIAL',name:'Consequential',specialist_profile_budget:8,system_map:'required',options:'required_when_decisional',futures:'required_when_strategic_or_technology_related',adversarial:'required',implementation:'staged_with_rollback_when_practicable'}),
+  L4_CONSTITUTIONAL:Object.freeze({id:'L4_CONSTITUTIONAL',name:'Constitutional / Doctrine',specialist_profile_budget:10,system_map:'required',options:'required',futures:'required',adversarial:'required',implementation:'advisory_only_until_hg4'})
+});
 
 export const AI_PROTOCOL_DIMENSIONS=Object.freeze([
   'Authority','Mandate','Scope','Temporal Mandate','Provenance','Human Gate','Responsibility'
@@ -54,6 +62,24 @@ const IMPLEMENT_VERBS=['implement','имплементи','update','ажурир
 const IMPLEMENT_OBJECTS=['code','код','module','модул','strategy','стратег','directive','директив','test','тест','documentation','документац','registry','регистар','architecture','архитект'];
 function detectsImplementationIntent(q){return has(q,['implement','имплементи'])||(has(q,IMPLEMENT_VERBS)&&has(q,IMPLEMENT_OBJECTS));}
 
+function selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q}){
+  if(consequenceClass==='HG4')return MISSION_PROFILES.L4_CONSTITUTIONAL;
+  if(consequenceClass==='HG3'||(consequenceClass==='HG2'&&implementationRequested))return MISSION_PROFILES.L3_CONSEQUENTIAL;
+  if(major||problemClass==='foresight_and_institutional_futures')return MISSION_PROFILES.L2_INSTITUTIONAL;
+  if(consequenceClass==='HG2'||has(q,['research','истраж','briefing','брифинг','analysis','анализа','recommendation','препорак']))return MISSION_PROFILES.L1_STANDARD;
+  return MISSION_PROFILES.L0_LIGHTWEIGHT;
+}
+
+function buildEarlyExitPolicy({missionProfile,implementationRequested,consequenceClass,futuresRequired}){
+  const allowed=missionProfile.id==='L0_LIGHTWEIGHT'||missionProfile.id==='L1_STANDARD';
+  return Object.freeze({
+    allowed,
+    reason_required_if_used:true,
+    forbidden:implementationRequested||['HG2','HG3','HG4'].includes(consequenceClass)||futuresRequired&&missionProfile.id!=='L1_STANDARD',
+    conditions:Object.freeze(['objective_resolved','evidence_sufficient_for_consequence','no_material_contradiction','no_side_effect_requested','no_human_gate_escalation','no_material_future_uncertainty'])
+  });
+}
+
 function classifyProblem(q){
   if(has(q,['futures','foresight','scenario','сценари','2040','2035','emerging technolog','нова технолог']))return'foresight_and_institutional_futures';
   if(has(q,['weakness','слабост','audit','аудит','risk','ризик','verify','провери']))return'institutional_assurance';
@@ -72,14 +98,24 @@ function classifyConsequence(q,options={}){
   return'HG1';
 }
 
-function selectProfiles(q,{major=false}={}){
-  const ids=[];
-  for(const [id,signals] of Object.entries(PROFILE_SIGNALS))if(has(q,signals))ids.push(id);
-  if(major){
-    for(const id of ['research_evidence','adversarial_verification'])if(!ids.includes(id))ids.push(id);
+function selectProfiles(q,{major=false,missionProfile=MISSION_PROFILES.L0_LIGHTWEIGHT}={}){
+  const ids=[],reasons={};
+  for(const [id,signals] of Object.entries(PROFILE_SIGNALS)){
+    const hits=signals.filter(s=>q.includes(normalise(s).trim()));
+    if(hits.length){ids.push(id);reasons[id]=['signal:'+hits.slice(0,3).join(',')];}
   }
-  if(!ids.length)ids.push('research_evidence');
-  return ids;
+  if(major){
+    for(const id of ['research_evidence','adversarial_verification']){
+      if(!ids.includes(id))ids.push(id);
+      reasons[id]=[...(reasons[id]||[]),'major_mission'];
+    }
+  }
+  if(!ids.length){ids.push('research_evidence');reasons.research_evidence=['minimal_default'];}
+  const budget=missionProfile.specialist_profile_budget||ids.length;
+  const priority=['protocol','diplomacy','security','strategic_communication','communicology','ai_governance','legal_compliance','foresight','research_evidence','adversarial_verification'];
+  const ordered=[...new Set(ids)].sort((a,b)=>priority.indexOf(a)-priority.indexOf(b));
+  const selected=ordered.slice(0,budget);
+  return {ids:selected,reasons:Object.fromEntries(selected.map(id=>[id,reasons[id]||['bounded_selection']]))};
 }
 
 function wpawsIdsForProfiles(profileIds){
@@ -92,11 +128,15 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
-  const profileIds=selectProfiles(q,{major});
-  const futuresRequired=major||problemClass==='foresight_and_institutional_futures'||has(q,['future','иднин','2030','2035','2040','emerging technolog','нова технолог']);
-  const optionsRequired=major||consequenceClass!=='HG1';
+  const provisionalFuturesRequired=major||problemClass==='foresight_and_institutional_futures'||has(q,['future','иднин','2030','2035','2040','emerging technolog','нова технолог']);
+  const missionProfile=selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q});
+  const routed=selectProfiles(q,{major,missionProfile});
+  const profileIds=routed.ids;
+  const futuresRequired=missionProfile.id==='L2_INSTITUTIONAL'||missionProfile.id==='L4_CONSTITUTIONAL'||(missionProfile.id==='L3_CONSEQUENTIAL'&&provisionalFuturesRequired)||provisionalFuturesRequired;
+  const optionsRequired=['L2_INSTITUTIONAL','L4_CONSTITUTIONAL'].includes(missionProfile.id)||consequenceClass!=='HG1';
   const humanGateRequired=consequenceClass!=='HG1'||implementationRequested;
   const profiles=profileIds.map(id=>SPECIALIST_PROFILES[id]);
+  const earlyExit=buildEarlyExitPolicy({missionProfile,implementationRequested,consequenceClass,futuresRequired});
 
   return Object.freeze({
     version:VERSION,
@@ -105,6 +145,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     master_protocol:OPERATING_PROTOCOL_PATH,
     problem_class:problemClass,
     major,
+    mission_profile:missionProfile,
     operating_cycle:OPERATING_CYCLE,
     intake:Object.freeze({
       objective:String(message||'').trim(),
@@ -119,7 +160,8 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       access_is_not_mandate:true
     }),
     system_map:Object.freeze({
-      required:major,
+      required:['L2_INSTITUTIONAL','L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(missionProfile.id),
+      mode:missionProfile.system_map,
       dimensions:Object.freeze(['people','roles','authority','processes','data','tools','communications','dependencies','risks'])
     }),
     diagnosis:Object.freeze({
@@ -127,12 +169,17 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     }),
     specialist_routing:Object.freeze({
       profiles:Object.freeze(profiles),
+      routing_reasons:Object.freeze(routed.reasons),
       recommended_wpaws_agent_ids:Object.freeze(wpawsIdsForProfiles(profileIds)),
+      specialist_profile_budget:missionProfile.specialist_profile_budget,
       specialists_are_bounded:true,
+      reuse_before_new_research:true,
+      over_routing_is_efficiency_defect:true,
       specialist_consensus_is_not_institutional_will:true
     }),
     options:Object.freeze({
       required:optionsRequired,
+      mode:missionProfile.options,
       defaults:Object.freeze(['conservative','balanced','transformative']),
       compare_on:Object.freeze(['benefits','costs','risks','dependencies','reversibility','institutional_consequences','human_authority_risk'])
     }),
@@ -150,6 +197,13 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       dimensions:AI_PROTOCOL_DIMENSIONS,
       fail_closed:true
     }),
+    early_exit:earlyExit,
+    observability:Object.freeze({
+      run_record_schema:'/data/wpa-wiie-run-record.schema.json',
+      trace_required:['L2_INSTITUTIONAL','L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(missionProfile.id),
+      excellence_framework:'/data/wpa-wiie-excellence-framework.json',
+      evaluation_suite:'/data/wpa-wiie-evaluation-suite.json'
+    }),
     solution_design:Object.freeze({
       allowed_artifacts:Object.freeze(['policy','procedure','directive','code_change','training_module','research_proposal','scenario','risk_register','communication_plan','budget_concept','grant_concept_note','journal_paper','institutional_recommendation'])
     }),
@@ -159,13 +213,16 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       may_use_tools:true,
       version_control_required:true,
       regression_check_required:true,
+      staged_change_preferred:['L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(missionProfile.id),
+      rollback_plan_required:['L3_CONSEQUENTIAL','L4_CONSTITUTIONAL'].includes(missionProfile.id),
+      pre_change_version_reference_required:implementationRequested,
       automatic_external_commitment:false,
       automatic_publication:false,
       automatic_doctrine_change:false,
       automatic_authority_expansion:false
     }),
     adversarial_review:Object.freeze({
-      required:major||implementationRequested,
+      required:missionProfile.id!=='L0_LIGHTWEIGHT'&&(major||implementationRequested||consequenceClass!=='HG1'),
       questions:Object.freeze(['what_was_missed','misuse_path','human_gate_bypass','provenance_loss','future_fragility','dependency_failure'])
     }),
     verify:Object.freeze({
@@ -178,6 +235,13 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       automatic_doctrine_mutation:false,
       candidates:Object.freeze(['verified_lesson','new_test','new_risk_pattern','research_question','reusable_asset','directive_amendment_candidate','specialist_profile_proposal'])
     }),
+    effectiveness_efficiency:Object.freeze({
+      north_star:'verified useful institutional outcome with minimal justified activation and no governance loss',
+      baseline_status:'TO_BE_MEASURED',
+      numerical_excellence_claim_allowed:false,
+      metrics_framework:'/data/wpa-wiie-excellence-framework.json',
+      speed_may_not_override_evidence_or_human_authority:true
+    }),
     governance:Object.freeze({
       creates_authority:false,
       final_institutional_responsibility:'human',
@@ -188,4 +252,4 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   });
 }
 
-export const __test={normalise,has,classifyProblem,classifyConsequence,selectProfiles,wpawsIdsForProfiles,detectsImplementationIntent};
+export const __test={normalise,has,classifyProblem,classifyConsequence,selectMissionProfile,buildEarlyExitPolicy,selectProfiles,wpawsIdsForProfiles,detectsImplementationIntent};
