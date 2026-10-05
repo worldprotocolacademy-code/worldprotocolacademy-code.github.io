@@ -50,7 +50,7 @@ const PROFILE_SIGNALS=Object.freeze({
 });
 
 const MAJOR_SIGNALS=['strategy','стратег','institution','институц','architecture','архитект','policy','политика','directive','директив','programme','програм','system','систем','2040','major wpa','голем wpa','governance','управување'];
-const IMPLEMENT_SIGNALS=['implement','имплементи','update code','ажурира код','change code','измени код','modify code','new module','нов модул','update strategy','ажурира стратег','update directive','ажурира директив','add test','додај тест'];
+const IMPLEMENT_SIGNALS=['implement','имплементи','update','ажурира','change','измени','modify','модифици','code','код','new module','нов модул','strategy','стратег','directive','директив','add test','додај тест'];
 
 function classifyProblem(q){
   if(has(q,['futures','foresight','scenario','сценари','2040','2035','emerging technolog','нова технолог']))return'foresight_and_institutional_futures';
