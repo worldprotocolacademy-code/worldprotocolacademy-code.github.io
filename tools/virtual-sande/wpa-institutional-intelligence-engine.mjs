@@ -63,12 +63,12 @@ const MUTATION_OBJECTS=['code','код','module','модул','strategy','стр
 const CREATE_VERBS=['add','додај','create','креира'];
 const EXECUTABLE_OBJECTS=['code','код','module','модул','test','тест','registry','регистар','architecture','архитект'];
 function detectsImplementationIntent(q){
-  return has(q,['implement','имплементи'])||(has(q,MUTATION_VERBS)&&has(q,MUTATION_OBJECTS))||(has(q,CREATE_VERBS)&&has(q,EXECUTABLE_OBJECTS));
+  return has(q,['implement','имплементи','deploy','deployment','release','merge to main','publish','објави','испрати','submit'])||(has(q,MUTATION_VERBS)&&has(q,MUTATION_OBJECTS))||(has(q,CREATE_VERBS)&&has(q,EXECUTABLE_OBJECTS));
 }
 
 function selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q,strategicPromptId=null}){
   if(consequenceClass==='HG4')return MISSION_PROFILES.L4_CONSTITUTIONAL;
-  if(consequenceClass==='HG3'||(consequenceClass==='HG2'&&implementationRequested))return MISSION_PROFILES.L3_CONSEQUENTIAL;
+  if(consequenceClass==='HG2'||consequenceClass==='HG3')return MISSION_PROFILES.L3_CONSEQUENTIAL;
   if(major||strategicPromptId==='SP08'||problemClass==='foresight_and_institutional_futures')return MISSION_PROFILES.L2_INSTITUTIONAL;
   if(/^SP0[1-7]$/.test(String(strategicPromptId||'')))return MISSION_PROFILES.L1_STANDARD;
   if(consequenceClass==='HG2'||has(q,['research','истраж','analysis','анализа','recommendation','препорак','evidence','доказ','source','извор','trend','тренд']))return MISSION_PROFILES.L1_STANDARD;
