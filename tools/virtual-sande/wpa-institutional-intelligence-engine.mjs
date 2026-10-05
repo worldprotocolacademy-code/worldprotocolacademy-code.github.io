@@ -150,7 +150,7 @@ export function buildRunRecord(plan,meta={}){
   return Object.freeze({
     run_id:String(meta.runId||'UNASSIGNED'),
     case_id:meta.caseId??null,
-    started_at:meta.startedAt||null,
+    started_at:String(meta.startedAt||'UNASSIGNED'),
     finished_at:meta.finishedAt??null,
     mission_profile:plan?.mission_profile?.id||'L0_LIGHTWEIGHT',
     problem_class:plan?.problem_class||'institutional_problem_solving',
@@ -158,7 +158,7 @@ export function buildRunRecord(plan,meta={}){
     objective:plan?.intake?.objective||null,
     routing_reasons:plan?.specialist_routing?.routing_reasons||{},
     specialist_profiles:Object.freeze((plan?.specialist_routing?.profiles||[]).map(x=>x.id)),
-    wpaws_agent_ids:plan?.specialist_routing?.recommended_wpaws_agent_ids||[],
+    wpaws_agent_ids:Object.freeze(meta.wpawsAgentIds||plan?.specialist_routing?.recommended_wpaws_agent_ids||[]),
     source_verification_state:meta.sourceVerificationState||'PENDING',
     futures_stress_test_state:plan?.futures_stress_test?.required?'PENDING':'NOT_REQUIRED',
     ai_protocol_gate_state:'PENDING',
