@@ -96,10 +96,22 @@ function classifyProblem(q){
 
 function classifyConsequence(q,options={}){
   if(options.consequenceClass)return String(options.consequenceClass).toUpperCase();
-  if(has(q,['doctrine','доктрин','constitutional','устав','official commitment','официјална обврска','new authority','ново овластување']))return'HG4';
-  if(has(q,['legal','правен','financial','финанс','credential','сертифик','privacy','приватност','personal data','лични податоци']))return'HG3';
-  if(has(q,['publish','објав','public recommendation','јавна препорака','partnership','партнерство','funding','финансирање','contract','договор']))return'HG2';
-  if(detectsImplementationIntent(q))return'HG2';
+  if(has(q,[
+    'doctrine change','смени доктрин','constitutional rule','уставно правило','new institutional authority','ново институционално овластување',
+    'weaken human gate','ослаби human gate','accreditation claim','тврдење за акредитац','official external commitment','официјална надворешна обврска',
+    'announce partnership','објави партнерство','claim partnership','тврди партнерство','sign contract','потпиши договор'
+  ]))return'HG4';
+  if(has(q,[
+    'identity verification','проверка на идентитет','enrolment decision','одлука за запишување','payment status','payment decision','одлука за плаќање',
+    'certificate authorisation','certificate issue','certificate revocation','издавање сертификат','одземање сертификат',
+    'privacy sensitive record','privacy-sensitive record','приватен запис','лични податоци промена','personal data change',
+    'neural inference','неврална инференц','biometric inference','биометриска инференц','highly intimate interface','legal filing','поднеси тужба','поднеси жалба','legal representation','правно застапување'
+  ]))return'HG3';
+  if(has(q,[
+    'publish','објави','public release','јавна објава','production deploy','deploy to production','production release','merge to main',
+    'institutional statement','институционално соопштение','external deliverable','надворешен deliverable','material correction','материјална корекција',
+    'public benchmark conclusion','јавен benchmark заклучок','submit proposal','испрати предлог','apply for grant','аплицирај за грант','send to partner','испрати до партнер'
+  ]))return'HG2';
   return'HG1';
 }
 
@@ -210,6 +222,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     engine_id:ENGINE_ID,
     identity:'WIIE is a non-authority institutional analysis and orchestration engine under the WPA Institutional Operating Protocol.',
     master_protocol:OPERATING_PROTOCOL_PATH,
+    human_gate_policy:'/data/wpa-human-gate-policy.json',
     problem_class:problemClass,
     major,
     mission_profile:missionProfile,
