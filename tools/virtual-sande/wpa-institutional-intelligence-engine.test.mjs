@@ -184,3 +184,15 @@ test('deep WIIE missions always preserve research and adversarial assurance prof
   assert.ok(ids.includes('research_evidence'));
   assert.ok(ids.includes('adversarial_verification'));
 });
+
+
+test('does not confuse protocol with PR and does not over-escalate drafting a new strategy',()=>{
+  const protocol=buildInstitutionalIntelligencePlan('Анализирај протокол за официјална посета');
+  const ids=protocol.specialist_routing.profiles.map(x=>x.id);
+  assert.ok(ids.includes('protocol'));
+  assert.ok(!ids.includes('strategic_communication'));
+
+  const draft=buildInstitutionalIntelligencePlan('Create a strategy for WPA to 2040');
+  assert.equal(draft.implementation.requested,false);
+  assert.equal(draft.mission_profile.id,'L2_INSTITUTIONAL');
+});
