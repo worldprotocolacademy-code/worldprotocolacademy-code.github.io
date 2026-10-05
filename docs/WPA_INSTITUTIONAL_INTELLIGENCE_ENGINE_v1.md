@@ -142,3 +142,19 @@ WIIE 1.2 adds six assurance disciplines:
 6. **Uncertainty discipline** — uncalibrated numerical confidence is not treated as institutional evidence.
 
 These assurance rules reinforce rather than replace the AI PROTOCOL Gate and Human Gate.
+
+
+## Real Run Records
+
+WIIE effectiveness and efficiency measurement now uses a canonical real-run evidence store.
+
+- Run schema: `/data/wpa-wiie-run-record.schema.json`
+- Real-run index: `/data/wiie-runs/index.json`
+- Records: `/data/wiie-runs/records/`
+- Measurement protocol: `/docs/WPA_WIIE_REAL_RUN_RECORD_PROTOCOL_v1.md`
+- Metrics baseline: `/data/wpa-wiie-metrics-baseline.json`
+- CI validator: `/scripts/validate-wiie-run-records.mjs`
+
+The first real record is `WIIE-2026-0001`, reconstructed from verified PR #459 and CI evidence. It preserves the fact that correction was required before successful closure.
+
+Public-repository records must not contain sensitive raw mission content. Unknown telemetry remains unknown; it is never backfilled by estimation merely to complete a metric.
