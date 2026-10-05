@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-institutional-intelligence-engine/1.0",
-  "version": "1.0.0",
+  "schema": "wpa-institutional-intelligence-engine/1.1",
+  "version": "1.1.0",
   "updated": "2026-10-05",
   "engine_id": "WPA_WIIE_v1",
   "name": "WPA Institutional Intelligence Engine",
@@ -285,7 +285,10 @@
     "automatic_external_commitment": false,
     "automatic_publication": false,
     "automatic_doctrine_change": false,
-    "automatic_authority_expansion": false
+    "automatic_authority_expansion": false,
+    "staged_change_preferred_for_material_changes": true,
+    "rollback_plan_required_for_material_production_changes": true,
+    "pre_change_version_reference_required": true
   },
   "verification_contract": [
     "tests_passed_or_failed_visible",
@@ -294,7 +297,9 @@
     "mandate_verified_before_consequential_action",
     "human_gate_state_visible",
     "future_stress_test_state_visible_for_major_decisions",
-    "provenance_chain_preserved"
+    "provenance_chain_preserved",
+    "mission_profile_and_specialist_routing_reason_visible",
+    "efficiency_gain_must_not_hide_quality_regression"
   ],
   "learning_policy": {
     "continuous_improvement": true,
@@ -309,7 +314,8 @@
       "directive amendment candidate",
       "specialist-profile proposal"
     ],
-    "doctrine_change_requires": "HG4_AND_AUTHORISED_HUMAN_DECISION"
+    "doctrine_change_requires": "HG4_AND_AUTHORISED_HUMAN_DECISION",
+    "material_learning_requires_human_review": true
   },
   "runtime_boundary": {
     "chief_orchestrator": "Virtual Sande",
@@ -375,5 +381,53 @@
       "biotechnology where institutionally relevant"
     ],
     "rule": "Do not evaluate AI in isolation when cross-technology interaction materially changes institutional authority, security, communication or protocol."
+  },
+  "excellence_framework": "/data/wpa-wiie-excellence-framework.json",
+  "run_record_schema": "/data/wpa-wiie-run-record.schema.json",
+  "evaluation_suite": "/data/wpa-wiie-evaluation-suite.json",
+  "mission_profiles": [
+    {
+      "id": "L0_LIGHTWEIGHT",
+      "specialist_profile_budget": 2,
+      "rule": "minimal sufficient route; no Futures cycle unless triggered"
+    },
+    {
+      "id": "L1_STANDARD",
+      "specialist_profile_budget": 4,
+      "rule": "bounded research/analysis with targeted verification"
+    },
+    {
+      "id": "L2_INSTITUTIONAL",
+      "specialist_profile_budget": 6,
+      "rule": "system map + three options + Futures + adversarial review"
+    },
+    {
+      "id": "L3_CONSEQUENTIAL",
+      "specialist_profile_budget": 8,
+      "rule": "Human Gate + staged implementation + rollback when practicable"
+    },
+    {
+      "id": "L4_CONSTITUTIONAL",
+      "specialist_profile_budget": 10,
+      "rule": "HG4; advisory-only until explicit human authorisation"
+    }
+  ],
+  "efficiency_policy": {
+    "minimal_sufficient_activation": true,
+    "every_specialist_requires_routing_reason": true,
+    "reuse_verified_internal_assets_before_new_research": true,
+    "duplicate_research_is_defect": true,
+    "early_exit_allowed_for_low_consequence_resolved_tasks": true,
+    "speed_never_overrides_evidence_or_human_authority": true
+  },
+  "observability": {
+    "run_record_schema": "/data/wpa-wiie-run-record.schema.json",
+    "trace_required_for": [
+      "L2_INSTITUTIONAL",
+      "L3_CONSEQUENTIAL",
+      "L4_CONSTITUTIONAL"
+    ],
+    "numerical_excellence_claims_without_baseline": false,
+    "baseline_status": "TO_BE_MEASURED"
   }
 }
