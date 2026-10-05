@@ -47,7 +47,7 @@ const has=(q,patterns)=>patterns.some(p=>q.includes(normalise(p).trim()));
 const PROFILE_SIGNALS=Object.freeze({
   protocol:['protocol','протокол','precedence','церемон','ceremon','official visit','официјална посета'],
   diplomacy:['diplom','дипломат','ambassador','амбасад','embassy','амбасада','negotiat','прегов'],
-  strategic_communication:['strategic communication','стратешк комуникац','public relations','односи со јавност',' pr ','media','медиум','public communication','јавна комуникац'],
+  strategic_communication:['strategic communication','стратешк комуникац','public relations','односи со јавност','media relations','медиумски односи','public communication','јавна комуникац'],
   security:['security','безбед','risk','ризик','crisis','криз','cyber','сајбер','resilience','отпорност'],
   communicology:['communicology','комуниколог','communication system','комуникациски систем','meaning','семантик'],
   ai_governance:['ai governance','управување со ai','human gate','mandate','мандат','provenance','agent','агент','artificial intelligence','вештачка интелигенција'],
@@ -58,9 +58,13 @@ const PROFILE_SIGNALS=Object.freeze({
 });
 
 const MAJOR_SIGNALS=['strategy','стратег','institution','институц','architecture','архитект','policy','политика','directive','директив','programme','програм','system','систем','2040','major wpa','голем wpa','governance','управување'];
-const IMPLEMENT_VERBS=['implement','имплементи','update','ажурира','change','измени','modify','модифици','add','додај','create','креира'];
-const IMPLEMENT_OBJECTS=['code','код','module','модул','strategy','стратег','directive','директив','test','тест','documentation','документац','registry','регистар','architecture','архитект'];
-function detectsImplementationIntent(q){return has(q,['implement','имплементи'])||(has(q,IMPLEMENT_VERBS)&&has(q,IMPLEMENT_OBJECTS));}
+const MUTATION_VERBS=['update','ажурира','change','измени','modify','модифици'];
+const MUTATION_OBJECTS=['code','код','module','модул','strategy','стратег','directive','директив','test','тест','documentation','документац','registry','регистар','architecture','архитект'];
+const CREATE_VERBS=['add','додај','create','креира'];
+const EXECUTABLE_OBJECTS=['code','код','module','модул','test','тест','registry','регистар','architecture','архитект'];
+function detectsImplementationIntent(q){
+  return has(q,['implement','имплементи'])||(has(q,MUTATION_VERBS)&&has(q,MUTATION_OBJECTS))||(has(q,CREATE_VERBS)&&has(q,EXECUTABLE_OBJECTS));
+}
 
 function selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q,strategicPromptId=null}){
   if(consequenceClass==='HG4')return MISSION_PROFILES.L4_CONSTITUTIONAL;
@@ -187,7 +191,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
   const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
   const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
-  const timeSensitive=options.timeSensitive===true||has(q,['today','денес','latest','најнов','current','актуел','now','сега','this week','оваа недела']);
+  const timeSensitive=options.timeSensitive===true||has(q,['today','денес','latest','најнов','current','актуел','this week','оваа недела']);
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
   const provisionalFuturesRequired=major||problemClass==='foresight_and_institutional_futures'||has(q,['future','иднин','2030','2035','2040','emerging technolog','нова технолог']);
