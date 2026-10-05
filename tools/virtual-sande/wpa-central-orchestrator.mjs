@@ -9,7 +9,7 @@ export const PERFORMANCE_DIRECTIVE={principle:'Maximise speed through controlled
 export const SOURCE_COMPLIANCE_GATE={id:'wpa_preventive_source_compliance_gate',document:'/data/wpa-preventive-source-compliance-gate.json',position:'before_any_content_access',mode:'fail_closed',required_checks:['source_identity','provenance','access_method','licence_or_permission','intended_use','quotation_retention_and_rag_rights'],prohibited_actions:['credential_bypass','paywall_or_drm_bypass','restricted_scraping','silent_download','unverified_rag_ingestion','log_deletion_or_concealment'],unknown_rights_action:'block_quarantine_record_notify_sande',content_reading_allowed_before_pass:false};
 export const PROMPT_ROUTING={version:PROMPT_ROUTER_VERSION,framework:PROMPT_FRAMEWORK_PATH,mode:'automatic_when_strategic_intent_is_confident',fallback:'no_prompt_injection_for_ordinary_or_ambiguous_queries',default_major_wpa_prompt:'SP08',creates_authority:false,human_gate_unchanged:true};
 export const INSTITUTIONAL_OPERATING_PROTOCOL={
-  version:'1.1.0',
+  version:'1.2.0',
   document:'/data/wpa-institutional-operating-protocol.json',
   futures_framework:'/data/wpa-futures-2040-framework.json',
   execution_engine:WIIE_SPEC_PATH,
