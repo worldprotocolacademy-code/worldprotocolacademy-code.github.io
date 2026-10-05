@@ -128,6 +128,57 @@ function wpawsIdsForProfiles(profileIds){
   return [...new Set(profileIds.flatMap(id=>SPECIALIST_PROFILES[id]?.wpaws_agent_ids||[]))].sort((a,b)=>a-b);
 }
 
+export function evaluateEarlyExit(plan,state={}){
+  const policy=plan?.early_exit||{};
+  const checks={
+    objective_resolved:state.objectiveResolved===true,
+    evidence_sufficient_for_consequence:state.evidenceSufficient===true,
+    no_material_contradiction:state.materialContradiction!==true,
+    no_side_effect_requested:plan?.implementation?.requested!==true,
+    no_human_gate_escalation:plan?.intake?.human_gate_required!==true,
+    no_material_future_uncertainty:state.materialFutureUncertainty!==true
+  };
+  const allowed=policy.allowed===true&&policy.forbidden!==true&&Object.values(checks).every(Boolean);
+  return Object.freeze({
+    allowed,
+    checks:Object.freeze(checks),
+    reason:allowed?(state.reason||'all_early_exit_conditions_satisfied'):'conditions_not_satisfied'
+  });
+}
+
+export function buildRunRecord(plan,meta={}){
+  return Object.freeze({
+    run_id:String(meta.runId||'UNASSIGNED'),
+    case_id:meta.caseId??null,
+    started_at:meta.startedAt||null,
+    finished_at:meta.finishedAt??null,
+    mission_profile:plan?.mission_profile?.id||'L0_LIGHTWEIGHT',
+    problem_class:plan?.problem_class||'institutional_problem_solving',
+    consequence_class:plan?.intake?.consequence_class||'HG1',
+    objective:plan?.intake?.objective||null,
+    routing_reasons:plan?.specialist_routing?.routing_reasons||{},
+    specialist_profiles:Object.freeze((plan?.specialist_routing?.profiles||[]).map(x=>x.id)),
+    wpaws_agent_ids:plan?.specialist_routing?.recommended_wpaws_agent_ids||[],
+    source_verification_state:meta.sourceVerificationState||'PENDING',
+    futures_stress_test_state:plan?.futures_stress_test?.required?'PENDING':'NOT_REQUIRED',
+    ai_protocol_gate_state:'PENDING',
+    human_gate_state:plan?.intake?.human_gate_required?'PENDING':'NOT_REQUIRED',
+    implementation_state:plan?.implementation?.requested?'PLANNED':'NOT_REQUESTED',
+    rollback_reference:meta.rollbackReference??null,
+    adversarial_review_state:plan?.adversarial_review?.required?'PENDING':'NOT_REQUIRED',
+    verification_state:'PENDING',
+    early_exit_used:false,
+    early_exit_reason:null,
+    elapsed_ms:null,
+    tool_calls:null,
+    measured_cost:null,
+    outcome_state:'UNKNOWN',
+    correction_required:false,
+    learning_candidates:Object.freeze([]),
+    release_status:'BLOCKED'
+  });
+}
+
 export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
   const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
