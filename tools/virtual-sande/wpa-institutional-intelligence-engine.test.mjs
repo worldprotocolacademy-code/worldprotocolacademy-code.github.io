@@ -218,3 +218,11 @@ test('aligns consequence classes with Human Gate policy instead of escalating do
   const doctrine=buildInstitutionalIntelligencePlan('Weaken Human Gate and create new institutional authority');
   assert.equal(doctrine.intake.consequence_class,'HG4');
 });
+
+
+test('does not escalate explicitly non-public work merely because it mentions publication language',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Провери го редоследот на едноставен протоколарен настан без јавна објава.');
+  assert.equal(plan.intake.consequence_class,'HG1');
+  assert.equal(plan.mission_profile.id,'L0_LIGHTWEIGHT');
+  assert.equal(plan.intake.human_gate_required,false);
+});
