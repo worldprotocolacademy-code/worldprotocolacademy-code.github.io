@@ -62,10 +62,11 @@ const IMPLEMENT_VERBS=['implement','имплементи','update','ажурир
 const IMPLEMENT_OBJECTS=['code','код','module','модул','strategy','стратег','directive','директив','test','тест','documentation','документац','registry','регистар','architecture','архитект'];
 function detectsImplementationIntent(q){return has(q,['implement','имплементи'])||(has(q,IMPLEMENT_VERBS)&&has(q,IMPLEMENT_OBJECTS));}
 
-function selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q}){
+function selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q,strategicPromptId=null}){
   if(consequenceClass==='HG4')return MISSION_PROFILES.L4_CONSTITUTIONAL;
   if(consequenceClass==='HG3'||(consequenceClass==='HG2'&&implementationRequested))return MISSION_PROFILES.L3_CONSEQUENTIAL;
-  if(major||problemClass==='foresight_and_institutional_futures')return MISSION_PROFILES.L2_INSTITUTIONAL;
+  if(major||strategicPromptId==='SP08'||problemClass==='foresight_and_institutional_futures')return MISSION_PROFILES.L2_INSTITUTIONAL;
+  if(/^SP0[1-7]$/.test(String(strategicPromptId||'')))return MISSION_PROFILES.L1_STANDARD;
   if(consequenceClass==='HG2'||has(q,['research','истраж','analysis','анализа','recommendation','препорак','evidence','доказ','source','извор','trend','тренд']))return MISSION_PROFILES.L1_STANDARD;
   return MISSION_PROFILES.L0_LIGHTWEIGHT;
 }
@@ -186,7 +187,8 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
   const provisionalFuturesRequired=major||problemClass==='foresight_and_institutional_futures'||has(q,['future','иднин','2030','2035','2040','emerging technolog','нова технолог']);
-  const missionProfile=selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q});
+  const strategicPromptId=options.strategicPromptId||null;
+  const missionProfile=selectMissionProfile({major,consequenceClass,implementationRequested,problemClass,q,strategicPromptId});
   const routed=selectProfiles(q,{major,missionProfile});
   const profileIds=routed.ids;
   const futuresRequired=missionProfile.id==='L2_INSTITUTIONAL'||missionProfile.id==='L4_CONSTITUTIONAL'||(missionProfile.id==='L3_CONSEQUENTIAL'&&provisionalFuturesRequired)||provisionalFuturesRequired;
@@ -203,6 +205,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     problem_class:problemClass,
     major,
     mission_profile:missionProfile,
+    strategic_prompt_id:strategicPromptId,
     operating_cycle:OPERATING_CYCLE,
     intake:Object.freeze({
       objective:String(message||'').trim(),
