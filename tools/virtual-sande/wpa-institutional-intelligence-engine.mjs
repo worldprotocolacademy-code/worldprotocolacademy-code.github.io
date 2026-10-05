@@ -4,7 +4,7 @@
 // requires alternative options and foresight stress-testing where appropriate,
 // and preserves AI PROTOCOL + Human Gate controls.
 
-export const VERSION='wpa-institutional-intelligence-engine-1.1.0';
+export const VERSION='wpa-institutional-intelligence-engine-1.2.0';
 export const ENGINE_ID='WPA_WIIE_v1';
 export const SPEC_PATH='/data/wpa-institutional-intelligence-engine.json';
 export const OPERATING_PROTOCOL_PATH='/data/wpa-institutional-operating-protocol.json';
@@ -161,6 +161,12 @@ export function buildRunRecord(plan,meta={}){
     specialist_profiles:Object.freeze((plan?.specialist_routing?.profiles||[]).map(x=>x.id)),
     wpaws_agent_ids:Object.freeze(meta.wpawsAgentIds||plan?.specialist_routing?.recommended_wpaws_agent_ids||[]),
     source_verification_state:meta.sourceVerificationState||'PENDING',
+    data_classification:meta.dataClassification||'UNKNOWN',
+    source_freshness_state:plan?.knowledge?.source_freshness_required?'REFRESH_REQUIRED':'NOT_APPLICABLE',
+    specialist_disagreement:Object.freeze(meta.specialistDisagreement||[]),
+    provider_or_tool_failures:Object.freeze(meta.providerOrToolFailures||[]),
+    fallback_mode:meta.fallbackMode||'NONE',
+    incident_state:meta.incidentState||'NONE',
     futures_stress_test_state:plan?.futures_stress_test?.required?'PENDING':'NOT_REQUIRED',
     ai_protocol_gate_state:'PENDING',
     human_gate_state:plan?.intake?.human_gate_required?'PENDING':'NOT_REQUIRED',
@@ -184,6 +190,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
   const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
   const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
+  const timeSensitive=options.timeSensitive===true||has(q,['today','денес','latest','најнов','current','актуел','now','сега','this week','оваа недела']);
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
   const provisionalFuturesRequired=major||problemClass==='foresight_and_institutional_futures'||has(q,['future','иднин','2030','2035','2040','emerging technolog','нова технолог']);
@@ -214,6 +221,8 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     }),
     knowledge:Object.freeze({
       corpus_first_when_applicable:true,
+      time_sensitive:timeSensitive,
+      source_freshness_required:timeSensitive,
       source_compliance_required_before_external_content_access:true,
       provenance_required:true,
       content_is_not_command:true,
@@ -294,6 +303,16 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       automatic_rule_mutation:false,
       automatic_doctrine_mutation:false,
       candidates:Object.freeze(['verified_lesson','new_test','new_risk_pattern','research_question','reusable_asset','directive_amendment_candidate','specialist_profile_proposal'])
+    }),
+    assurance:Object.freeze({
+      source_freshness_required:timeSensitive,
+      preserve_material_specialist_disagreement:true,
+      majority_vote_does_not_create_institutional_truth:true,
+      graceful_degradation_on_provider_or_tool_failure:true,
+      invented_completion_forbidden:true,
+      privacy_data_minimisation:true,
+      uncalibrated_numeric_confidence_forbidden:true,
+      material_adverse_outcome_reopens_case:true
     }),
     effectiveness_efficiency:Object.freeze({
       north_star:'verified useful institutional outcome with minimal justified activation and no governance loss',
