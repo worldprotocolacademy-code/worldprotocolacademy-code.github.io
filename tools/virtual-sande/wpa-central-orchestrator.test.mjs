@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE, SOURCE_COMPLIANCE_GATE, COGNITIVE_CONSCIENCE_GOVERNANCE } from './wpa-central-orchestrator.mjs';
+import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE, SOURCE_COMPLIANCE_GATE, COGNITIVE_CONSCIENCE_GOVERNANCE, INSTITUTIONAL_OPERATING_PROTOCOL } from './wpa-central-orchestrator.mjs';
 
 test('keeps Sande as supreme human authority and sole doctrine change authority',()=>{assert.equal(COMMAND_HIERARCHY.supreme_human_authority.id,'sande_smiljanov');assert.equal(COMMAND_HIERARCHY.supreme_human_authority.can_authorise_official_wpa_action,true);assert.equal(COMMAND_HIERARCHY.doctrine_kernel.change_authority,'sande_only');});
 test('defines Doctrine Kernel before GPT and Claude and Virtual Sande',()=>{assert.equal(COMMAND_HIERARCHY.doctrine_kernel.id,'wpa_doctrine_kernel');assert.equal(COMMAND_HIERARCHY.strategic_core.length,2);assert.equal(COMMAND_HIERARCHY.strategic_core[1].connection_mode,'adapter_unconfigured');assert.equal(COMMAND_HIERARCHY.orchestrator.id,'virtual_sande');});
@@ -34,4 +34,57 @@ test('intimate interface plan preserves stronger safeguards and pause-refuse-con
   const plan=buildOrchestrationPlan('Review biometric implant interface',{authorialCorpusVerified:true,intimateInterface:true});
   assert.equal(plan.doctrine_review.alignment.status,'aligned');
   assert.equal(plan.cognitive_conscience_governance.human_gate_escalation,'required');
+});
+
+
+test('requires institutional operating protocol and Futures stress test for major WPA missions',()=>{
+  const plan=buildOrchestrationPlan('WPA Institute major institutional architecture and strategy',{majorWpa:true});
+  assert.equal(INSTITUTIONAL_OPERATING_PROTOCOL.creates_authority,false);
+  assert.equal(plan.institutional_operating_protocol.required,true);
+  assert.equal(plan.wpa_futures_stress_test.required,true);
+  assert.deepEqual(plan.wpa_futures_stress_test.horizons,[2030,2035,2040]);
+  assert.equal(plan.governance.adversarial_review_does_not_replace_human_gate,true);
+});
+
+
+test('integrates WIIE as a non-authority operational engine for major WPA work',()=>{
+  const plan=buildOrchestrationPlan('Анализирај нова технологија и кажи како влијае врз протокол, дипломатија, PR, безбедност и комуникологија',{majorWpa:true});
+  assert.equal(plan.version,'wpa-central-orchestrator-2.0.0');
+  assert.equal(plan.institutional_intelligence_engine.engine_id,'WPA_WIIE_v1');
+  assert.equal(plan.institutional_intelligence_engine.governance.creates_authority,false);
+  assert.equal(plan.institutional_intelligence_engine.options.required,true);
+  assert.equal(plan.institutional_intelligence_engine.futures_stress_test.required,true);
+  assert.equal(plan.governance.wiie_creates_authority,false);
+  assert.equal(plan.governance.wiie_specialist_consensus_is_not_institutional_will,true);
+  assert.ok(plan.wpaws_agents.some(a=>a.id===11));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===12));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===13));
+  assert.ok(plan.pipeline.includes('wpa_institutional_intelligence_engine'));
+});
+
+
+test('uses minimal sufficient WPAWS activation for lightweight work',()=>{
+  const plan=buildOrchestrationPlan('Кој е подобар наслов за краток WPA briefing?');
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L0_LIGHTWEIGHT');
+  assert.ok(plan.wpaws_agents.length<=6);
+  assert.ok(plan.wpaws_agents.some(a=>a.id===2));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===4));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===17));
+  assert.ok(!plan.wpaws_agents.some(a=>a.id===9));
+  assert.ok(!plan.wpaws_agents.some(a=>a.id===10));
+});
+
+test('escalates major WPA work to institutional WIIE profile',()=>{
+  const plan=buildOrchestrationPlan('Направи стратегија за WPA до 2040',{majorWpa:true});
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L2_INSTITUTIONAL');
+  assert.equal(plan.institutional_intelligence_engine.system_map.required,true);
+  assert.equal(plan.institutional_intelligence_engine.options.required,true);
+  assert.equal(plan.institutional_intelligence_engine.observability.trace_required,true);
+});
+
+
+test('requires master IOP whenever WIIE classifies a mission as deep',()=>{
+  const plan=buildOrchestrationPlan('Направи стратегија за WPA до 2040');
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L2_INSTITUTIONAL');
+  assert.equal(plan.institutional_operating_protocol.required,true);
 });

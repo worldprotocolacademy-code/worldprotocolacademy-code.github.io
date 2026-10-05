@@ -13,7 +13,7 @@ concurrency:
 env:
   EXPECTED_WORKER_NAME: wpa-virtual-sande-v35-1-production
   EXPECTED_PRODUCTION_URL: https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev
-  EXPECTED_ROUTER_VERSION: wpa-strategic-prompt-router-1.0.1
+  EXPECTED_ROUTER_VERSION: wpa-strategic-prompt-router-1.1.0
 
 jobs:
   test-and-deploy:
@@ -35,7 +35,7 @@ jobs:
           import json
           from pathlib import Path
           data=json.loads(Path('data/wpa-strategic-prompt-framework.json').read_text())
-          assert data['version']=='1.0.0'
+          assert data['version']=='1.2.0'
           assert len(data['prompts'])==8
           assert data['recommended_default_for_major_wpa_work']=='SP08'
           assert data['governance']['human_review_required_for_consequential_actions'] is True
@@ -154,11 +154,12 @@ jobs:
         run: |
           {
             echo '## WPA Strategic Prompt Router · Production'
-            echo '- Router: **wpa-strategic-prompt-router-1.0.1**'
+            echo '- Router: **wpa-strategic-prompt-router-1.1.0**'
             echo '- Prompt library: **8 governed prompts**'
-            echo '- Central Orchestrator: **1.7.0 integration**'
+            echo '- Central Orchestrator: **2.0.0 integration**'
             echo '- Router ↔ Orchestrator integration tests: **Passed**'
             echo '- Explicit SP08 routing regression: **Passed**'
+            echo '- SP08 selective core + WIIE routing: **Passed**'
             echo '- Exact-version propagation verification: **Passed**'
             echo '- Ordinary factual query bypass: **Passed**'
             echo '- SP06 automatic route: **Passed**'

@@ -33,3 +33,18 @@ test('refinement prompt preserves evidence and Human Gate boundaries',()=>{const
 test('wrapper exposes router health without touching base worker',async()=>{let calls=0;const base={fetch:async()=>{calls++;return new Response(JSON.stringify({ok:true,answer:'base',mode:'none'}),{headers:{'content-type':'application/json'}});}};const wrapped=withStrategicPromptRouting(base);const res=await wrapped.fetch(new Request('https://example.test/prompt-router/health'),{},{});const body=await res.json();assert.equal(body.ok,true);assert.equal(body.version,VERSION);assert.equal(body.prompts,8);assert.equal(calls,0);});
 
 test('wrapper annotates routed responses and fails safe when AI refinement is unavailable',async()=>{const base={fetch:async()=>new Response(JSON.stringify({ok:true,answer:'base answer',mode:'delegate',sources:[]}),{headers:{'content-type':'application/json'}})};const wrapped=withStrategicPromptRouting(base);const res=await wrapped.fetch(new Request('https://example.test/ask?message='+encodeURIComponent('Забрзај го проектот со automation, parallel work и bottleneck')+'&lang=mk'),{WPA_PROMPT_ROUTING_MODE:'enhance'},{});const body=await res.json();assert.equal(body.strategic_prompt.id,'SP06');assert.equal(body.strategic_prompt.refinement_status,'routing_only');assert.equal(body.answer,'base answer');});
+
+
+test('SP08 recommends selective core and leaves domain expansion to WIIE',()=>{
+  const r=routeStrategicPrompt('Направи сеопфатен WPA institutional architecture audit и OPN evidence package',{lang:'mk'});
+  assert.equal(r.id,'SP08');
+  assert.deepEqual(r.recommended_agent_ids,[2,4,5,9,10,17]);
+  assert.ok(r.recommended_agent_ids.length<17);
+});
+
+
+test('does not route a bare WPA identity question to SP08',()=>{
+  const r=routeStrategicPrompt('Што е WPA Institute?',{lang:'mk'});
+  assert.equal(r.selected,false);
+  assert.equal(r.id,null);
+});
