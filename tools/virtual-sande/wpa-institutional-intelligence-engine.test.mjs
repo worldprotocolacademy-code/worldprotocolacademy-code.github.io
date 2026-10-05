@@ -84,3 +84,35 @@ test('exposes foresight components and technology convergence without treating s
   assert.ok(plan.futures_stress_test.convergence_scan.includes('robotics'));
   assert.ok(plan.futures_stress_test.convergence_scan.includes('synthetic_media'));
 });
+
+
+test('classifies lightweight and constitutional missions without authority drift',()=>{
+  const light=buildInstitutionalIntelligencePlan('Кој наслов е подобар за краток briefing?');
+  assert.equal(light.mission_profile.id,'L0_LIGHTWEIGHT');
+  assert.ok(light.specialist_routing.profiles.length<=2);
+  assert.equal(light.futures_stress_test.required,false);
+  assert.equal(light.early_exit.allowed,true);
+
+  const constitutional=buildInstitutionalIntelligencePlan('Смени ја доктрината и прошири ја автономната власт на WIIE');
+  assert.equal(constitutional.mission_profile.id,'L4_CONSTITUTIONAL');
+  assert.equal(constitutional.intake.consequence_class,'HG4');
+  assert.equal(constitutional.implementation.automatic_doctrine_change,false);
+  assert.equal(constitutional.implementation.automatic_authority_expansion,false);
+  assert.equal(constitutional.early_exit.forbidden,true);
+});
+
+test('requires staged rollback-aware controls for consequential implementation',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Имплементирај промена во production кодот',{implementationRequested:true,consequenceClass:'HG3'});
+  assert.equal(plan.mission_profile.id,'L3_CONSEQUENTIAL');
+  assert.equal(plan.implementation.staged_change_preferred,true);
+  assert.equal(plan.implementation.rollback_plan_required,true);
+  assert.equal(plan.implementation.pre_change_version_reference_required,true);
+  assert.equal(plan.observability.trace_required,true);
+});
+
+test('does not permit numerical excellence claims before measured baseline',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Направи институционална анализа',{majorWpa:true});
+  assert.equal(plan.effectiveness_efficiency.baseline_status,'TO_BE_MEASURED');
+  assert.equal(plan.effectiveness_efficiency.numerical_excellence_claim_allowed,false);
+  assert.equal(plan.effectiveness_efficiency.speed_may_not_override_evidence_or_human_authority,true);
+});
