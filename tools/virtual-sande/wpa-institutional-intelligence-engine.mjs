@@ -107,11 +107,16 @@ function classifyConsequence(q,options={}){
     'privacy sensitive record','privacy-sensitive record','приватен запис','лични податоци промена','personal data change',
     'neural inference','неврална инференц','biometric inference','биометриска инференц','highly intimate interface','legal filing','поднеси тужба','поднеси жалба','legal representation','правно застапување'
   ]))return'HG3';
-  if(has(q,[
-    'publish','објави','public release','јавна објава','production deploy','deploy to production','production release','merge to main',
+  const noPublicRelease=has(q,[
+    'без јавна објава','без објава','не објавувај','не го објавувај','do not publish','without public release','no public release','no publication'
+  ]);
+  const otherHg2Action=has(q,[
+    'production deploy','deploy to production','production release','merge to main',
     'institutional statement','институционално соопштение','external deliverable','надворешен deliverable','material correction','материјална корекција',
     'public benchmark conclusion','јавен benchmark заклучок','submit proposal','испрати предлог','apply for grant','аплицирај за грант','send to partner','испрати до партнер'
-  ]))return'HG2';
+  ]);
+  const positivePublishAction=!noPublicRelease&&has(q,['publish','објави','public release','јавна објава']);
+  if(otherHg2Action||positivePublishAction)return'HG2';
   return'HG1';
 }
 
