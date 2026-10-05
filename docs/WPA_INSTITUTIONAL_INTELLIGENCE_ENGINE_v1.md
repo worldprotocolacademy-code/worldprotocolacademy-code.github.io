@@ -1,7 +1,7 @@
 # WPA Institutional Intelligence Engine — WIIE
 
-**Version:** 1.2.1  
-**Status:** IMPLEMENTED MVP · GOVERNED ORCHESTRATION  
+**Version:** 1.2.1
+**Status:** IMPLEMENTED MVP · GOVERNED ORCHESTRATION
 **Date:** 5 October 2026
 
 ## Formula
@@ -14,26 +14,26 @@ WIIE is **not** a new institutional authority. It is not an intelligence service
 
 ## Architecture
 
-**Human Authority**  
-↓  
-**WPA Doctrine Kernel / AI PROTOCOL doctrine**  
-↓  
-**WPA Institutional Operating Protocol — master procedure**  
-↓  
-**WIIE — institutional analysis & orchestration engine**  
-↓  
-**Bounded specialist profiles + WPA corpus/sources + tools**  
-↓  
-**WPA FUTURES 2040 / scenario stress testing**  
-↓  
-**AI PROTOCOL Gate — Authority / Mandate / Scope / Temporal Mandate / Provenance / Human Gate / Responsibility**  
-↓  
-**Human Gate**  
-↓  
-**Bounded implementation**  
-↓  
-**Adversarial review + verification**  
-↓  
+**Human Authority**
+↓
+**WPA Doctrine Kernel / AI PROTOCOL doctrine**
+↓
+**WPA Institutional Operating Protocol — master procedure**
+↓
+**WIIE — institutional analysis & orchestration engine**
+↓
+**Bounded specialist profiles + WPA corpus/sources + tools**
+↓
+**WPA FUTURES 2040 / scenario stress testing**
+↓
+**AI PROTOCOL Gate — Authority / Mandate / Scope / Temporal Mandate / Provenance / Human Gate / Responsibility**
+↓
+**Human Gate**
+↓
+**Bounded implementation**
+↓
+**Adversarial review + verification**
+↓
 **Governed learning and reintegration**
 
 The AI PROTOCOL governance layer applies across the cycle, not only at the end.
