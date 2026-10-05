@@ -4,38 +4,234 @@
   "title": "WIIE Governed Run Record",
   "type": "object",
   "additionalProperties": false,
-  "required": ["run_id", "started_at", "mission_profile", "problem_class", "consequence_class", "release_status"],
+  "required": [
+    "run_id",
+    "started_at",
+    "mission_profile",
+    "problem_class",
+    "consequence_class",
+    "release_status"
+  ],
   "properties": {
-    "run_id": {"type": "string", "minLength": 1},
-    "case_id": {"type": ["string", "null"]},
-    "started_at": {"type": "string"},
-    "finished_at": {"type": ["string", "null"]},
-    "mission_profile": {"enum": ["L0_LIGHTWEIGHT","L1_STANDARD","L2_INSTITUTIONAL","L3_CONSEQUENTIAL","L4_CONSTITUTIONAL"]},
-    "problem_class": {"type": "string"},
-    "consequence_class": {"enum": ["HG0","HG1","HG2","HG3","HG4"]},
-    "objective": {"type": ["string", "null"]},
-    "routing_reasons": {"type": "array", "items": {"type": "string"}, "default": []},
-    "specialist_profiles": {"type": "array", "items": {"type": "string"}, "default": []},
-    "wpaws_agent_ids": {"type": "array", "items": {"type": "integer"}, "default": []},
-    "sources": {"type": "array", "items": {"type": "string"}, "default": []},
-    "source_verification_state": {"enum": ["NOT_REQUIRED","PENDING","PARTIAL","VERIFIED","FAILED"], "default": "PENDING"},
-    "options_generated": {"type": "integer", "minimum": 0, "default": 0},
-    "futures_stress_test_state": {"enum": ["NOT_REQUIRED","PENDING","PASSED","FAILED","PROVISIONAL"], "default": "NOT_REQUIRED"},
-    "ai_protocol_gate_state": {"enum": ["PENDING","PASSED","FAILED","NOT_APPLICABLE"], "default": "PENDING"},
-    "human_gate_state": {"enum": ["NOT_REQUIRED","PENDING","APPROVED","REJECTED","RETURNED_FOR_REVISION"], "default": "PENDING"},
-    "implementation_state": {"enum": ["NOT_REQUESTED","PLANNED","STAGED","IMPLEMENTED","ROLLED_BACK","FAILED"], "default": "NOT_REQUESTED"},
-    "rollback_reference": {"type": ["string", "null"]},
-    "adversarial_review_state": {"enum": ["NOT_REQUIRED","PENDING","PASSED","FAILED","PROVISIONAL"], "default": "NOT_REQUIRED"},
-    "verification_state": {"enum": ["PENDING","PASSED","FAILED","PROVISIONAL"], "default": "PENDING"},
-    "early_exit_used": {"type": "boolean", "default": false},
-    "early_exit_reason": {"type": ["string", "null"]},
-    "elapsed_ms": {"type": ["integer", "null"], "minimum": 0},
-    "tool_calls": {"type": ["integer", "null"], "minimum": 0},
-    "measured_cost": {"type": ["number", "null"], "minimum": 0},
-    "outcome_state": {"enum": ["UNKNOWN","SUCCESS","PARTIAL_SUCCESS","NO_CHANGE","FAILURE","ADVERSE_OUTCOME"], "default": "UNKNOWN"},
-    "correction_required": {"type": "boolean", "default": false},
-    "learning_candidates": {"type": "array", "items": {"type": "string"}, "default": []},
-    "release_status": {"enum": ["BLOCKED","PROVISIONAL","HUMAN_APPROVED","RELEASED_WITHIN_APPROVED_ENVELOPE","CLOSED"]}
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "case_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "finished_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mission_profile": {
+      "enum": [
+        "L0_LIGHTWEIGHT",
+        "L1_STANDARD",
+        "L2_INSTITUTIONAL",
+        "L3_CONSEQUENTIAL",
+        "L4_CONSTITUTIONAL"
+      ]
+    },
+    "problem_class": {
+      "type": "string"
+    },
+    "consequence_class": {
+      "enum": [
+        "HG0",
+        "HG1",
+        "HG2",
+        "HG3",
+        "HG4"
+      ]
+    },
+    "objective": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "routing_reasons": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "default": {}
+    },
+    "specialist_profiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "wpaws_agent_ids": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "default": []
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "source_verification_state": {
+      "enum": [
+        "NOT_REQUIRED",
+        "PENDING",
+        "PARTIAL",
+        "VERIFIED",
+        "FAILED"
+      ],
+      "default": "PENDING"
+    },
+    "options_generated": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "futures_stress_test_state": {
+      "enum": [
+        "NOT_REQUIRED",
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "PROVISIONAL"
+      ],
+      "default": "NOT_REQUIRED"
+    },
+    "ai_protocol_gate_state": {
+      "enum": [
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "NOT_APPLICABLE"
+      ],
+      "default": "PENDING"
+    },
+    "human_gate_state": {
+      "enum": [
+        "NOT_REQUIRED",
+        "PENDING",
+        "APPROVED",
+        "REJECTED",
+        "RETURNED_FOR_REVISION"
+      ],
+      "default": "PENDING"
+    },
+    "implementation_state": {
+      "enum": [
+        "NOT_REQUESTED",
+        "PLANNED",
+        "STAGED",
+        "IMPLEMENTED",
+        "ROLLED_BACK",
+        "FAILED"
+      ],
+      "default": "NOT_REQUESTED"
+    },
+    "rollback_reference": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "adversarial_review_state": {
+      "enum": [
+        "NOT_REQUIRED",
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "PROVISIONAL"
+      ],
+      "default": "NOT_REQUIRED"
+    },
+    "verification_state": {
+      "enum": [
+        "PENDING",
+        "PASSED",
+        "FAILED",
+        "PROVISIONAL"
+      ],
+      "default": "PENDING"
+    },
+    "early_exit_used": {
+      "type": "boolean",
+      "default": false
+    },
+    "early_exit_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "elapsed_ms": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "tool_calls": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "measured_cost": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "outcome_state": {
+      "enum": [
+        "UNKNOWN",
+        "SUCCESS",
+        "PARTIAL_SUCCESS",
+        "NO_CHANGE",
+        "FAILURE",
+        "ADVERSE_OUTCOME"
+      ],
+      "default": "UNKNOWN"
+    },
+    "correction_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "learning_candidates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "release_status": {
+      "enum": [
+        "BLOCKED",
+        "PROVISIONAL",
+        "HUMAN_APPROVED",
+        "RELEASED_WITHIN_APPROVED_ENVELOPE",
+        "CLOSED"
+      ]
+    }
   },
   "governance_note": "The run record is an audit and improvement artifact. Logging does not create authority or replace Human Gate decisions."
 }
