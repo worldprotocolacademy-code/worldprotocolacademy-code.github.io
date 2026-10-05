@@ -1,7 +1,7 @@
 # WPA Institutional Operating Protocol v1.2
 
-**Status:** CANONICAL WORKING INSTITUTIONAL METHOD  
-**Date:** 5 October 2026  
+**Status:** CANONICAL WORKING INSTITUTIONAL METHOD
+**Date:** 5 October 2026
 **Applies to:** major WPA Institute strategy, research, architecture, programmes, publications, AI governance and institutional-system work.
 
 ## Core rule
