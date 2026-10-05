@@ -81,3 +81,10 @@ test('escalates major WPA work to institutional WIIE profile',()=>{
   assert.equal(plan.institutional_intelligence_engine.options.required,true);
   assert.equal(plan.institutional_intelligence_engine.observability.trace_required,true);
 });
+
+
+test('requires master IOP whenever WIIE classifies a mission as deep',()=>{
+  const plan=buildOrchestrationPlan('Направи стратегија за WPA до 2040');
+  assert.equal(plan.institutional_intelligence_engine.mission_profile.id,'L2_INSTITUTIONAL');
+  assert.equal(plan.institutional_operating_protocol.required,true);
+});
