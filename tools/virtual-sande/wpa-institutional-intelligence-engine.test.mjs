@@ -74,3 +74,13 @@ test('learning produces candidates but never mutates rules or doctrine automatic
   assert.equal(plan.learn.automatic_rule_mutation,false);
   assert.equal(plan.learn.automatic_doctrine_mutation,false);
 });
+
+
+test('exposes foresight components and technology convergence without treating scenarios as forecasts',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Анализирај нова технологија за WPA до 2040',{majorWpa:true});
+  assert.equal(plan.futures_stress_test.scenarios_are_not_forecasts,true);
+  assert.equal(plan.futures_stress_test.components.action_cards,'/data/wpa-institutional-ai-action-card.schema.json');
+  assert.equal(plan.futures_stress_test.components.scenario_lab,'/wpa-scenario-film-lab.html');
+  assert.ok(plan.futures_stress_test.convergence_scan.includes('robotics'));
+  assert.ok(plan.futures_stress_test.convergence_scan.includes('synthetic_media'));
+});
