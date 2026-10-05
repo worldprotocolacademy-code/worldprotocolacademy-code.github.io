@@ -1,6 +1,6 @@
 # WPA Institutional Intelligence Engine — WIIE
 
-**Version:** 1.2.0  
+**Version:** 1.2.1  
 **Status:** IMPLEMENTED MVP · GOVERNED ORCHESTRATION  
 **Date:** 5 October 2026
 
