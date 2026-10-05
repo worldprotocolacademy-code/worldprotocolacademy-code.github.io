@@ -41,3 +41,10 @@ test('SP08 recommends selective core and leaves domain expansion to WIIE',()=>{
   assert.deepEqual(r.recommended_agent_ids,[2,4,5,9,10,17]);
   assert.ok(r.recommended_agent_ids.length<17);
 });
+
+
+test('does not route a bare WPA identity question to SP08',()=>{
+  const r=routeStrategicPrompt('Што е WPA Institute?',{lang:'mk'});
+  assert.equal(r.selected,false);
+  assert.equal(r.id,null);
+});
