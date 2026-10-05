@@ -1,7 +1,7 @@
 {
   "schema": "wpa-canonical-version-manifest/1.0",
-  "version": "2.0.4",
-  "updated": "2026-10-05",
+  "version": "2.1.0",
+  "updated": "2026-10-06",
   "institution": "World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies",
   "purpose": "Single machine-readable reference for current canonical WPA component versions and deployment-status boundaries.",
   "rule": "Canonical means the currently designated reference version. It does not convert a prototype, staging component, deployment request or candidate registry into production.",
@@ -36,7 +36,7 @@
       "human_gate_unchanged": true
     },
     "wpa_module_registry": {
-      "canonical_version": "3.8.3",
+      "canonical_version": "3.9.0",
       "path": "/data/wpa-module-registry.json",
       "status": "MACHINE_READABLE_ARCHITECTURE_REGISTRY_WITH_IOP_WIIE_AND_FUTURES",
       "strategic_prompt_framework_registered": true,
@@ -153,7 +153,9 @@
       "performance_claim_boundary": "No numerical effectiveness/efficiency claim before measured baseline.",
       "metrics_baseline": "/data/wpa-wiie-metrics-baseline.json",
       "assurance": "freshness, disagreement preservation, graceful degradation, privacy minimisation, incident/reopen",
-      "staging_path": "CENTRAL_ORCHESTRATOR_INTEGRATED; V35_2_CONNECTED_VESSELS_CANDIDATE_USES_CENTRAL_ORCHESTRATOR"
+      "staging_path": "CENTRAL_ORCHESTRATOR_INTEGRATED; V35_2_CONNECTED_VESSELS_CANDIDATE_USES_CENTRAL_ORCHESTRATOR",
+      "run_record_index": "/data/wiie-runs/index.json",
+      "real_run_collection": "ACTIVE"
     },
     "wpa_futures_2040": {
       "canonical_version": "1.1.0",
@@ -176,9 +178,15 @@
       "external_certification_claim": false
     },
     "wiie_run_record": {
-      "schema_version": "1.0",
-      "path": "/data/wpa-wiie-run-record.schema.json",
-      "status": "AUDIT_AND_OBSERVABILITY_SCHEMA"
+      "schema_version": "1.1",
+      "schema_path": "/data/wpa-wiie-run-record.schema.json",
+      "index": "/data/wiie-runs/index.json",
+      "store": "/data/wiie-runs/records/",
+      "protocol": "/docs/WPA_WIIE_REAL_RUN_RECORD_PROTOCOL_v1.md",
+      "validator": "/scripts/validate-wiie-run-records.mjs",
+      "status": "ACTIVE_REAL_RUN_COLLECTION",
+      "first_real_run_id": "WIIE-2026-0001",
+      "sensitive_raw_content_in_public_store": false
     },
     "wiie_evaluation_suite": {
       "canonical_version": "1.0.0",
@@ -193,11 +201,13 @@
       "effectiveness_efficiency_integrated": true
     },
     "wiie_metrics_baseline": {
-      "canonical_version": "1.0.0",
+      "canonical_version": "1.1.0",
       "path": "/data/wpa-wiie-metrics-baseline.json",
-      "status": "BASELINE_NOT_YET_MEASURED",
+      "status": "BASELINE_COLLECTION_STARTED",
       "null_means": "NOT_YET_MEASURED",
-      "numeric_claims_allowed": false
+      "numeric_claims_allowed": false,
+      "sample_size": 1,
+      "performance_claim_ready": false
     },
     "continuous_institutional_learning_loop": {
       "canonical_version": "1.2.0",
