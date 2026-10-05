@@ -283,7 +283,66 @@
         "RESOLVED"
       ],
       "default": "NONE"
+    },
+    "record_origin": {
+      "enum": [
+        "LIVE_WIIE",
+        "RETROSPECTIVE_VERIFIED",
+        "MIGRATED",
+        "TEST"
+      ],
+      "default": "LIVE_WIIE"
+    },
+    "first_pass_verification": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "default": null
+    },
+    "verification_attempts": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "default": null
+    },
+    "metric_eligibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "effectiveness": {
+          "type": "boolean"
+        },
+        "time": {
+          "type": "boolean"
+        },
+        "activation": {
+          "type": "boolean"
+        },
+        "tooling": {
+          "type": "boolean"
+        },
+        "cost": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "effectiveness",
+        "time",
+        "activation",
+        "tooling",
+        "cost"
+      ]
+    },
+    "measurement_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
     }
   },
-  "governance_note": "The run record is an audit and improvement artifact. Logging does not create authority or replace Human Gate decisions."
+  "governance_note": "The run record is an audit and improvement artifact. Logging does not create authority or replace Human Gate decisions. Public-repository records must not contain sensitive raw mission content."
 }
