@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE, SOURCE_COMPLIANCE_GATE, COGNITIVE_CONSCIENCE_GOVERNANCE } from './wpa-central-orchestrator.mjs';
+import { buildOrchestrationPlan, WPAWS_AGENTS, COMMAND_HIERARCHY, PERFORMANCE_DIRECTIVE, SOURCE_COMPLIANCE_GATE, COGNITIVE_CONSCIENCE_GOVERNANCE, INSTITUTIONAL_OPERATING_PROTOCOL } from './wpa-central-orchestrator.mjs';
 
 test('keeps Sande as supreme human authority and sole doctrine change authority',()=>{assert.equal(COMMAND_HIERARCHY.supreme_human_authority.id,'sande_smiljanov');assert.equal(COMMAND_HIERARCHY.supreme_human_authority.can_authorise_official_wpa_action,true);assert.equal(COMMAND_HIERARCHY.doctrine_kernel.change_authority,'sande_only');});
 test('defines Doctrine Kernel before GPT and Claude and Virtual Sande',()=>{assert.equal(COMMAND_HIERARCHY.doctrine_kernel.id,'wpa_doctrine_kernel');assert.equal(COMMAND_HIERARCHY.strategic_core.length,2);assert.equal(COMMAND_HIERARCHY.strategic_core[1].connection_mode,'adapter_unconfigured');assert.equal(COMMAND_HIERARCHY.orchestrator.id,'virtual_sande');});
@@ -34,4 +34,14 @@ test('intimate interface plan preserves stronger safeguards and pause-refuse-con
   const plan=buildOrchestrationPlan('Review biometric implant interface',{authorialCorpusVerified:true,intimateInterface:true});
   assert.equal(plan.doctrine_review.alignment.status,'aligned');
   assert.equal(plan.cognitive_conscience_governance.human_gate_escalation,'required');
+});
+
+
+test('requires institutional operating protocol and Futures stress test for major WPA missions',()=>{
+  const plan=buildOrchestrationPlan('WPA Institute major institutional architecture and strategy',{majorWpa:true});
+  assert.equal(INSTITUTIONAL_OPERATING_PROTOCOL.creates_authority,false);
+  assert.equal(plan.institutional_operating_protocol.required,true);
+  assert.equal(plan.wpa_futures_stress_test.required,true);
+  assert.deepEqual(plan.wpa_futures_stress_test.horizons,[2030,2035,2040]);
+  assert.equal(plan.governance.adversarial_review_does_not_replace_human_gate,true);
 });
