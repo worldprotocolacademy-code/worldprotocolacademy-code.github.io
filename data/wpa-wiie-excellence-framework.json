@@ -1,6 +1,6 @@
 {
   "schema": "wpa-wiie-excellence-framework/1.0",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "updated": "2026-10-05",
   "name": "WIIE Excellence, Effectiveness & Efficiency Framework",
   "status": "INTERNAL_GOVERNANCE_AND_EVALUATION_FRAMEWORK",
@@ -112,7 +112,10 @@
     "measured_outcome_improvement",
     "repeat_error_rate_inverse",
     "material_contradiction_escape_rate_inverse",
-    "human_reviewer_acceptance_or_revision_signal"
+    "human_reviewer_acceptance_or_revision_signal",
+    "source_freshness_compliance",
+    "material_disagreement_resolution_quality",
+    "incident_reopen_correctness"
   ],
   "efficiency_metrics": [
     "time_to_verified_result",
@@ -134,7 +137,11 @@
   },
   "observability": {
     "run_record_schema": "/data/wpa-wiie-run-record.schema.json",
-    "trace_required_for": ["L2_INSTITUTIONAL", "L3_CONSEQUENTIAL", "L4_CONSTITUTIONAL"],
+    "trace_required_for": [
+      "L2_INSTITUTIONAL",
+      "L3_CONSEQUENTIAL",
+      "L4_CONSTITUTIONAL"
+    ],
     "record": [
       "problem_class",
       "mission_profile",
@@ -179,7 +186,11 @@
       "futures_reasoning_when_required",
       "human_gate_correctness",
       "verification_completeness",
-      "efficiency_without_quality_loss"
+      "efficiency_without_quality_loss",
+      "graceful_degradation",
+      "source_freshness",
+      "disagreement_handling",
+      "privacy_minimisation"
     ]
   },
   "learning_governance": {
@@ -189,5 +200,37 @@
     "automatic_doctrine_mutation": false,
     "material_learning_requires_human_review": true,
     "doctrine_change_requires_hg4": true
+  },
+  "assurance_layers": {
+    "source_freshness": {
+      "rule": "Time-sensitive or status-sensitive claims require freshness appropriate to the decision; stale evidence must be labelled or refreshed.",
+      "no_stale_current_claims": true
+    },
+    "disagreement": {
+      "rule": "Material specialist disagreement must be preserved and resolved through evidence/verification or human adjudication; majority vote does not create institutional truth or will.",
+      "agent_majority_is_not_authority": true
+    },
+    "graceful_degradation": {
+      "rule": "Provider, model, tool or source unavailability must reduce capability transparently rather than manufacture completion.",
+      "actions": [
+        "retry_only_when_safe",
+        "use_approved_fallback_if_available",
+        "label_provisional",
+        "pause_or_escalate_when_material"
+      ],
+      "invented_completion_forbidden": true
+    },
+    "data_minimisation": {
+      "rule": "Collect and retain only data necessary for the authorised mission, audit, safety and learning purpose.",
+      "sensitive_logging_by_default": false
+    },
+    "incident_and_reopen": {
+      "rule": "Material adverse outcomes, provenance failures, Human Gate bypass attempts or repeated errors reopen the case and may quarantine reusable assets until review.",
+      "automatic_silent_closure": false
+    },
+    "uncertainty": {
+      "rule": "Do not use uncalibrated numeric confidence as institutional evidence. Use verified/provisional/unresolved states unless calibration exists.",
+      "uncalibrated_confidence_percentages_forbidden": true
+    }
   }
 }
