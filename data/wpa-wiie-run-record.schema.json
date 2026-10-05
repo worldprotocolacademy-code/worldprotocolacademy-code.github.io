@@ -231,6 +231,58 @@
         "RELEASED_WITHIN_APPROVED_ENVELOPE",
         "CLOSED"
       ]
+    },
+    "data_classification": {
+      "enum": [
+        "PUBLIC",
+        "INTERNAL",
+        "SENSITIVE_AUTHORISED",
+        "UNKNOWN"
+      ],
+      "default": "UNKNOWN"
+    },
+    "source_freshness_state": {
+      "enum": [
+        "NOT_APPLICABLE",
+        "CURRENT",
+        "STALE_LABELLED",
+        "REFRESH_REQUIRED",
+        "FAILED"
+      ],
+      "default": "NOT_APPLICABLE"
+    },
+    "specialist_disagreement": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "provider_or_tool_failures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "fallback_mode": {
+      "enum": [
+        "NONE",
+        "APPROVED_FALLBACK",
+        "PROVISIONAL_REDUCED_CAPABILITY",
+        "PAUSED_FOR_HUMAN"
+      ],
+      "default": "NONE"
+    },
+    "incident_state": {
+      "enum": [
+        "NONE",
+        "OPEN",
+        "REOPENED",
+        "QUARANTINE_REVIEW",
+        "RESOLVED"
+      ],
+      "default": "NONE"
     }
   },
   "governance_note": "The run record is an audit and improvement artifact. Logging does not create authority or replace Human Gate decisions."
