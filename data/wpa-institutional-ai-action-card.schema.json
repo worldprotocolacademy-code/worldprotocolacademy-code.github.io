@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldprotocolacademy.mk/data/wpa-institutional-ai-action-card.schema.json",
+  "title": "WPA Institutional AI Action Card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "action_id",
+    "problem",
+    "proposed_action",
+    "expected_impact_1_10",
+    "feasibility_1_10",
+    "urgency_1_10",
+    "human_authority_risk_1_10",
+    "implementation_horizon",
+    "human_gate",
+    "evidence_required",
+    "status"
+  ],
+  "properties": {
+    "action_id": {"type": "string", "minLength": 1},
+    "problem": {"type": "string", "minLength": 1},
+    "proposed_action": {"type": "string", "minLength": 1},
+    "expected_impact_1_10": {"type": "integer", "minimum": 1, "maximum": 10},
+    "feasibility_1_10": {"type": "integer", "minimum": 1, "maximum": 10},
+    "urgency_1_10": {"type": "integer", "minimum": 1, "maximum": 10},
+    "human_authority_risk_1_10": {"type": "integer", "minimum": 1, "maximum": 10},
+    "implementation_horizon": {"enum": ["NOW", "2030", "2035", "2040"]},
+    "dependencies": {"type": "array", "items": {"type": "string"}, "default": []},
+    "human_gate": {"enum": ["HG0", "HG1", "HG2", "HG3", "HG4"]},
+    "evidence_required": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "owner": {"type": ["string", "null"]},
+    "status": {"enum": ["CANDIDATE", "HUMAN_REVIEW", "APPROVED", "REJECTED", "PILOT", "IMPLEMENTED", "RETIRED"]},
+    "scenario_links": {"type": "array", "items": {"enum": ["A", "B", "C", "OTHER"]}, "default": []},
+    "authority": {"type": ["string", "null"]},
+    "mandate": {"type": ["string", "null"]},
+    "temporal_mandate": {"type": ["string", "null"]},
+    "provenance": {"type": "array", "items": {"type": "string"}, "default": []},
+    "verification_state": {"enum": ["NOT_REVIEWED", "PROVISIONAL", "VERIFIED", "FAILED"], "default": "NOT_REVIEWED"},
+    "notes": {"type": ["string", "null"]}
+  },
+  "governance_note": "An Action Card is a research and decision-support artifact. It is not self-authorising and does not create institutional authority or implementation permission."
+}
