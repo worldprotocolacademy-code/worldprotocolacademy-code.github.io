@@ -1,25 +1,28 @@
 {
   "schema": "wpa-wiie-metrics-baseline/1.0",
-  "version": "1.0.0",
-  "updated": "2026-10-05",
-  "status": "BASELINE_NOT_YET_MEASURED",
+  "version": "1.1.0",
+  "updated": "2026-10-06",
+  "status": "BASELINE_COLLECTION_STARTED",
   "purpose": "Machine-readable starting point for future WIIE effectiveness and efficiency measurement. Null values mean not yet measured, not zero performance.",
-  "measurement_window": null,
-  "sample_size": 0,
+  "measurement_window": {
+    "started_at": "2026-10-05T20:48:58Z",
+    "ended_at": "2026-10-05T22:04:10Z"
+  },
+  "sample_size": 1,
   "effectiveness": {
-    "objective_completion_rate": null,
+    "objective_completion_rate": 1,
     "verified_evidence_coverage": null,
     "decision_provenance_completeness": null,
-    "human_gate_compliance_rate": null,
-    "first_pass_verification_rate": null,
-    "implementation_success_rate": null,
+    "human_gate_compliance_rate": 1,
+    "first_pass_verification_rate": 0,
+    "implementation_success_rate": 1,
     "measured_outcome_improvement": null,
     "repeat_error_rate": null,
     "material_contradiction_escape_rate": null,
-    "human_reviewer_acceptance_signal": null
+    "human_reviewer_acceptance_signal": 1
   },
   "efficiency": {
-    "median_time_to_verified_result_ms": null,
+    "median_time_to_verified_result_ms": 4512000,
     "median_specialist_profiles_activated": null,
     "unnecessary_specialist_activation_rate": null,
     "median_tool_calls_per_verified_result": null,
@@ -27,13 +30,27 @@
     "verified_asset_reuse_rate": null,
     "rework_ratio": null,
     "median_correction_loop_time_ms": null,
-    "first_pass_success_rate": null,
+    "first_pass_success_rate": 0,
     "resource_cost_per_successful_mission": null
   },
   "governance": {
     "no_numeric_claim_before_baseline": true,
     "human_review_required_before_target_setting": true,
     "speed_gain_with_material_quality_loss_is_failure": true,
-    "baseline_values_must_be_evidence_backed": true
-  }
+    "baseline_values_must_be_evidence_backed": true,
+    "numeric_values_require_visible_sample_size": true,
+    "single_record_metrics_are_descriptive_not_generalizable": true,
+    "baseline_collection_started": true,
+    "performance_claim_ready": false,
+    "performance_claim_requires_human_review": true
+  },
+  "metric_sample_sizes": {
+    "effectiveness": 1,
+    "time_to_verified_result": 1,
+    "activation": 0,
+    "tooling": 0,
+    "cost": 0
+  },
+  "interpretation": "Initial observed baseline from one verified real repository mission. n=1 is not representative and must not be generalised into an excellence or performance claim.",
+  "source_index": "/data/wiie-runs/index.json"
 }

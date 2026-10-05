@@ -7,6 +7,10 @@ on:
       - 'data/wpa-doctrine-kernel.json'
       - 'data/wpa-human-gate-policy.json'
       - 'data/wpa-strategic-speed-directive.json'
+      - 'data/wpa-wiie-run-record.schema.json'
+      - 'data/wpa-wiie-metrics-baseline.json'
+      - 'data/wiie-runs/**'
+      - 'scripts/validate-wiie-run-records.mjs'
       - 'data/wpa-cognitive-conscience-integrity-strategy.json'
       - '.github/workflows/virtual-sande-v35-2-connected-vessels-ci.yml'
   pull_request: {}
@@ -76,6 +80,8 @@ jobs:
         run: node --test tools/virtual-sande/wpa-institutional-intelligence-engine.test.mjs
       - name: WIIE canonical evaluation suite
         run: node scripts/evaluate-wiie.mjs
+      - name: WIIE real run-record validation
+        run: node scripts/validate-wiie-run-records.mjs
       - name: Council tests
         run: node --test tools/virtual-sande/wpa-ai-council-phase3.test.mjs
       - name: Prompt compiler tests
