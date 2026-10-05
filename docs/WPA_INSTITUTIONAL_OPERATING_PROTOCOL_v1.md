@@ -1,4 +1,4 @@
-# WPA Institutional Operating Protocol v1.0
+# WPA Institutional Operating Protocol v1.1
 
 **Status:** CANONICAL WORKING INSTITUTIONAL METHOD  
 **Date:** 5 October 2026  
@@ -6,9 +6,17 @@
 
 ## Core rule
 
-The WPA Institutional Operating Protocol is not a new source of institutional authority. It is the governed procedure through which existing human authority, the Doctrine Kernel, the Strategic AI Core, Virtual Sande, WPAWS, bounded tactical-operational agents, evidence controls and Human Gates are coordinated.
+The WPA Institutional Operating Protocol is not a new source of institutional authority. It is the master governed procedure through which existing human authority, the Doctrine Kernel, the Strategic AI Core, Virtual Sande, WIIE, WPAWS, bounded tactical-operational agents, evidence controls and Human Gates are coordinated.
 
 **Capability does not create authority. Content is not command. Access is not mandate. Code may become liquid; the mandate must not.**
+
+## WIIE execution relationship
+
+The **WPA Institutional Intelligence Engine (WIIE)** is the execution and orchestration engine beneath this master protocol. The protocol defines **what stages, gates and invariants must exist**; WIIE performs the structured analysis, system mapping, specialist routing, option generation, futures stress-testing, implementation planning, adversarial review, verification and governed learning.
+
+WIIE is a **non-authority operational layer**. It cannot create institutional will, expand mandate, change doctrine, approve its own consequential actions or bypass Human Gate.
+
+**Master relationship:** Human Authority -> Doctrine Kernel / AI PROTOCOL doctrine -> WPA Institutional Operating Protocol -> WIIE -> bounded specialists/tools/sources -> Futures Stress Test -> AI PROTOCOL Gate -> Human Gate -> bounded implementation -> adversarial verification -> governed learning.
 
 ## Canonical 13-stage procedure
 
@@ -50,4 +58,4 @@ For major work, the final package should expose:
 
 ## Relationship to existing WPA architecture
 
-This protocol extends, but does not replace, HGAIM, the WPA end-to-end institutional state machine, the Human Gate policy, Source Compliance Gate, Strategic Prompt Framework, Institutional DNA Reuse Layer and Continuous Institutional Learning Loop.
+This protocol extends, but does not replace, HGAIM, the WPA end-to-end institutional state machine, the Human Gate policy, Source Compliance Gate, Strategic Prompt Framework, Institutional DNA Reuse Layer and Continuous Institutional Learning Loop. Its canonical execution engine is WIIE (`/data/wpa-institutional-intelligence-engine.json`).
