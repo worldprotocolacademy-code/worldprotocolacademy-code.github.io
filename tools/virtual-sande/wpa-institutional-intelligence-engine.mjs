@@ -201,7 +201,8 @@ export function buildRunRecord(plan,meta={}){
 
 export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
-  const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
+  const persistentAgency=options.persistentAgency===true||has(q,['persistent agent','persistent ai','persistent system','долготраен агент','перзистентен агент','six months','шест месеци','autonomous agent','автономен агент']);
+  const major=options.majorWpa===true||has(q,MAJOR_SIGNALS)||persistentAgency;
   const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
   const timeSensitive=options.timeSensitive===true||has(q,['today','денес','latest','најнов','current','актуел','this week','оваа недела']);
   const problemClass=classifyProblem(q);
@@ -213,7 +214,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   const profileIds=routed.ids;
   const futuresRequired=missionProfile.id==='L2_INSTITUTIONAL'||missionProfile.id==='L4_CONSTITUTIONAL'||(missionProfile.id==='L3_CONSEQUENTIAL'&&provisionalFuturesRequired)||provisionalFuturesRequired;
   const optionsRequired=['L2_INSTITUTIONAL','L4_CONSTITUTIONAL'].includes(missionProfile.id)||consequenceClass!=='HG1';
-  const humanGateRequired=consequenceClass!=='HG1'||implementationRequested;
+  const humanGateRequired=consequenceClass!=='HG1'||implementationRequested||persistentAgency;
   const profiles=profileIds.map(id=>SPECIALIST_PROFILES[id]);
   const earlyExit=buildEarlyExitPolicy({missionProfile,implementationRequested,consequenceClass,futuresRequired});
 
@@ -225,6 +226,7 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
     human_gate_policy:'/data/wpa-human-gate-policy.json',
     problem_class:problemClass,
     major,
+    persistent_agency:persistentAgency,
     mission_profile:missionProfile,
     strategic_prompt_id:strategicPromptId,
     operating_cycle:OPERATING_CYCLE,
