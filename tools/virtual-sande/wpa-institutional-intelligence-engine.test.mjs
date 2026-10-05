@@ -5,7 +5,9 @@ import {
   OPERATING_CYCLE,
   AI_PROTOCOL_DIMENSIONS,
   SPECIALIST_PROFILES,
-  buildInstitutionalIntelligencePlan
+  buildInstitutionalIntelligencePlan,
+  evaluateEarlyExit,
+  buildRunRecord
 } from './wpa-institutional-intelligence-engine.mjs';
 
 test('WIIE exposes the canonical 13-stage operating cycle',()=>{
@@ -115,4 +117,24 @@ test('does not permit numerical excellence claims before measured baseline',()=>
   assert.equal(plan.effectiveness_efficiency.baseline_status,'TO_BE_MEASURED');
   assert.equal(plan.effectiveness_efficiency.numerical_excellence_claim_allowed,false);
   assert.equal(plan.effectiveness_efficiency.speed_may_not_override_evidence_or_human_authority,true);
+});
+
+
+test('permits governed early exit only when all conditions are satisfied',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Кој наслов е подобар за краток briefing?');
+  const ok=evaluateEarlyExit(plan,{objectiveResolved:true,evidenceSufficient:true,materialContradiction:false,materialFutureUncertainty:false,reason:'simple wording choice resolved'});
+  assert.equal(ok.allowed,true);
+  const blocked=evaluateEarlyExit(plan,{objectiveResolved:true,evidenceSufficient:false,materialContradiction:false,materialFutureUncertainty:false});
+  assert.equal(blocked.allowed,false);
+});
+
+test('builds an audit-ready run record without inventing completion',()=>{
+  const plan=buildInstitutionalIntelligencePlan('Направи стратегија за WPA до 2040',{majorWpa:true});
+  const record=buildRunRecord(plan,{runId:'TEST-001',startedAt:'2026-10-05T23:00:00+02:00'});
+  assert.equal(record.run_id,'TEST-001');
+  assert.equal(record.mission_profile,'L2_INSTITUTIONAL');
+  assert.equal(record.futures_stress_test_state,'PENDING');
+  assert.equal(record.verification_state,'PENDING');
+  assert.equal(record.release_status,'BLOCKED');
+  assert.equal(record.outcome_state,'UNKNOWN');
 });
