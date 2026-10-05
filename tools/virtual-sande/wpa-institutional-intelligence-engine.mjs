@@ -66,7 +66,7 @@ function selectMissionProfile({major,consequenceClass,implementationRequested,pr
   if(consequenceClass==='HG4')return MISSION_PROFILES.L4_CONSTITUTIONAL;
   if(consequenceClass==='HG3'||(consequenceClass==='HG2'&&implementationRequested))return MISSION_PROFILES.L3_CONSEQUENTIAL;
   if(major||problemClass==='foresight_and_institutional_futures')return MISSION_PROFILES.L2_INSTITUTIONAL;
-  if(consequenceClass==='HG2'||has(q,['research','истраж','briefing','брифинг','analysis','анализа','recommendation','препорак']))return MISSION_PROFILES.L1_STANDARD;
+  if(consequenceClass==='HG2'||has(q,['research','истраж','analysis','анализа','recommendation','препорак','evidence','доказ','source','извор','trend','тренд']))return MISSION_PROFILES.L1_STANDARD;
   return MISSION_PROFILES.L0_LIGHTWEIGHT;
 }
 
