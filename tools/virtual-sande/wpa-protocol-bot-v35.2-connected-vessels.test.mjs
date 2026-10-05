@@ -33,3 +33,11 @@ test('preserves safety and public-brand boundaries',()=>{
   assert.equal(plan.governance.no_automatic_publication,true);
   assert.equal(plan.release_status,'blocked_pending_mandatory_gates');
 });
+
+
+test('exposes WIIE through the v35.2 central orchestration path',()=>{
+  const plan=__test.buildOrchestrationPlan('Направи стратегија за WPA до 2040');
+  assert.equal(plan.institutional_intelligence_engine.version,'wpa-institutional-intelligence-engine-1.2.1');
+  assert.equal(plan.institutional_intelligence_engine.governance.creates_authority,false);
+  assert.equal(plan.institutional_operating_protocol.required,true);
+});
