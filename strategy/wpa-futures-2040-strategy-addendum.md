@@ -69,3 +69,16 @@ Foresight becomes a teaching method through Scenario Lab, case simulations, inst
 The preferred external-funding proposition is not “support the printing of a book.” It is a public-interest **WPA Institute Programme on Human Authority & AI Governance**, with AI PROTOCOL publication/dissemination as one deliverable alongside expert review, policy briefs, international dialogue, workshops, research and educational outputs.
 
 All funder, partner, sponsor, expert-network and event claims remain unconfirmed unless separately evidenced and human-approved.
+
+
+## WIIE integration
+
+WPA FUTURES 2040 is not a standalone forecasting island. It is the **foresight and institutional stress-test component inside the WPA Institutional Intelligence Engine (WIIE)**.
+
+For major WPA problems, WIIE routes the proposed solution through the 2030/2035/2040 horizons, alternative scenarios, second- and third-order consequences, institutional legitimacy questions and the seven-part AI PROTOCOL stress test before consequential implementation.
+
+The relationship is:
+
+**WPA Institutional Operating Protocol -> WIIE -> specialist profiles / evidence -> WPA FUTURES 2040 -> AI PROTOCOL Gate -> Human Gate -> implementation -> adversarial review -> verification -> governed learning.**
+
+This preserves the distinction between **scenario analysis** and **prediction**, and between **machine capability** and **institutional authority**.
