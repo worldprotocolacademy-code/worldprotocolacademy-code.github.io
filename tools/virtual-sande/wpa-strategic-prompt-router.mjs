@@ -33,7 +33,7 @@ const SIGNALS={
   SP05:['живот','life design','баланс','balance','wellbeing','благосостој','односи','relationships','финансиска стабил','financial stability','време здравје','time health'],
   SP06:['побрзо','забрза','accelerat','рок','deadline','автоматизац','automation','делегира','delegat','80 20','time compression','компресија на врем','паралел','parallel','bottleneck','reusable'],
   SP07:['најдобра верзија','best version','професионален развој','professional development','лидер','leadership','дисциплин','discipline','навики','habits','посакувана верзија','desired version'],
-  SP08:['opn','partner network','сеопфатен аудит','comprehensive audit','institutional architecture','институционална архитектура','evidence package','пакет докази','external pilot','надворешен пилот','publication master','издавачки master','major wpa','голем wpa проект','wpa institute','wpa институт','world protocol academy']
+  SP08:['opn','partner network','сеопфатен аудит','comprehensive audit','institutional architecture','институционална архитектура','evidence package','пакет докази','external pilot','надворешен пилот','publication master','издавачки master','major wpa','голем wpa проект']
 };
 
 const MAJOR_TERMS=['сеопфат','comprehensive','master','целосен','full','architecture','архитектура','package','пакет','publication','публикац','book','книга','opn','partner network','pilot','пилот','audit','аудит','deployment','deploy','production','институцион'];
