@@ -4,7 +4,7 @@
 // requires alternative options and foresight stress-testing where appropriate,
 // and preserves AI PROTOCOL + Human Gate controls.
 
-export const VERSION='wpa-institutional-intelligence-engine-1.2.0';
+export const VERSION='wpa-institutional-intelligence-engine-1.2.1';
 export const ENGINE_ID='WPA_WIIE_v1';
 export const SPEC_PATH='/data/wpa-institutional-intelligence-engine.json';
 export const OPERATING_PROTOCOL_PATH='/data/wpa-institutional-operating-protocol.json';
