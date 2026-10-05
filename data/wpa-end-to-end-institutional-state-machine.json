@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-end-to-end-institutional-state-machine/1.1",
-  "version": "1.1.0",
+  "schema": "wpa-end-to-end-institutional-state-machine/1.2",
+  "version": "1.2.0",
   "updated": "2026-10-05",
   "name": "WPA End-to-End Institutional State Machine",
   "name_mk": "WPA институционален state machine од влез до излез",
@@ -144,7 +144,8 @@
     "Release and application are distinct from preparation; draft completion is not institutional release.",
     "Measured adverse outcomes may reopen a closed case.",
     "Learning may update working knowledge only with provenance; Doctrine Kernel changes are a separate HG4 action.",
-    "WIIE major-mission processing is an overlay, not a second authority chain or separate release mechanism."
+    "WIIE major-mission processing is an overlay, not a second authority chain or separate release mechanism.",
+    "A lower-cost or faster route may be used only when it does not weaken mandatory evidence, Human Gate, authority, provenance or verification requirements."
   ],
   "cross_domain_profiles": {
     "research_publication": [
@@ -235,6 +236,16 @@
       "learn"
     ],
     "mapping_rule": "WIIE stages execute inside or across the canonical case states while preserving the same case_id, source-compliance state, Human Gate class and release state.",
-    "creates_new_authority": false
-  }
+    "creates_new_authority": false,
+    "mission_profiles": [
+      "L0_LIGHTWEIGHT",
+      "L1_STANDARD",
+      "L2_INSTITUTIONAL",
+      "L3_CONSEQUENTIAL",
+      "L4_CONSTITUTIONAL"
+    ],
+    "early_exit_rule": "Allowed only when objective/evidence/governance conditions are satisfied; reason must be recorded.",
+    "material_production_change_rule": "Require pre-change version reference, regression check and rollback plan where practicable."
+  },
+  "wiie_run_record_schema": "/data/wpa-wiie-run-record.schema.json"
 }
