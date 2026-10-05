@@ -1,7 +1,7 @@
 # WPA FUTURES 2040 — Strategy Addendum
 
-**Title:** Human Authority, Protocol and Institutional Governance in the Age of AI  
-**Status:** Research Development / Pilot  
+**Title:** Human Authority, Protocol and Institutional Governance in the Age of AI
+**Status:** Research Development / Pilot
 **Date:** 5 October 2026
 
 ## Strategic purpose
