@@ -1,8 +1,8 @@
 # WIIE Excellence Standard v1.0
 
-**WPA Institutional Intelligence Engine**  
-**Internal effectiveness, efficiency, observability and continuous-improvement standard**  
-**Date:** 5 October 2026  
+**WPA Institutional Intelligence Engine**
+**Internal effectiveness, efficiency, observability and continuous-improvement standard**
+**Date:** 5 October 2026
 **Status:** Internal governance and evaluation framework
 
 ## 1. Objective
@@ -21,8 +21,8 @@ Did WPA solve the right problem with adequate evidence, correct authority bounda
 ### Efficiency
 Did WPA reach that verified result with only the specialist profiles, sources, tools, time and rework that were actually justified?
 
-A fast wrong answer is ineffective.  
-A correct answer produced through unnecessary institutional machinery is inefficient.  
+A fast wrong answer is ineffective.
+A correct answer produced through unnecessary institutional machinery is inefficient.
 WIIE must optimize both.
 
 ## 3. Five mission profiles
