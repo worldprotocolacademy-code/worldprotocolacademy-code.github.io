@@ -209,6 +209,8 @@ test('aligns consequence classes with Human Gate policy instead of escalating do
 
   const production=buildInstitutionalIntelligencePlan('Deploy to production и објави ја промената');
   assert.equal(production.intake.consequence_class,'HG2');
+  assert.equal(production.mission_profile.id,'L3_CONSEQUENTIAL');
+  assert.equal(production.implementation.requested,true);
 
   const privateRecord=buildInstitutionalIntelligencePlan('Направи personal data change во privacy-sensitive record');
   assert.equal(privateRecord.intake.consequence_class,'HG3');
