@@ -45,3 +45,19 @@ test('requires institutional operating protocol and Futures stress test for majo
   assert.deepEqual(plan.wpa_futures_stress_test.horizons,[2030,2035,2040]);
   assert.equal(plan.governance.adversarial_review_does_not_replace_human_gate,true);
 });
+
+
+test('integrates WIIE as a non-authority operational engine for major WPA work',()=>{
+  const plan=buildOrchestrationPlan('Анализирај нова технологија и кажи како влијае врз протокол, дипломатија, PR, безбедност и комуникологија',{majorWpa:true});
+  assert.equal(plan.version,'wpa-central-orchestrator-2.0.0');
+  assert.equal(plan.institutional_intelligence_engine.engine_id,'WPA_WIIE_v1');
+  assert.equal(plan.institutional_intelligence_engine.governance.creates_authority,false);
+  assert.equal(plan.institutional_intelligence_engine.options.required,true);
+  assert.equal(plan.institutional_intelligence_engine.futures_stress_test.required,true);
+  assert.equal(plan.governance.wiie_creates_authority,false);
+  assert.equal(plan.governance.wiie_specialist_consensus_is_not_institutional_will,true);
+  assert.ok(plan.wpaws_agents.some(a=>a.id===11));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===12));
+  assert.ok(plan.wpaws_agents.some(a=>a.id===13));
+  assert.ok(plan.pipeline.includes('wpa_institutional_intelligence_engine'));
+});
