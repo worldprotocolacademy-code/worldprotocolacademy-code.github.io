@@ -196,3 +196,23 @@ test('does not confuse protocol with PR and does not over-escalate drafting a ne
   assert.equal(draft.implementation.requested,false);
   assert.equal(draft.mission_profile.id,'L2_INSTITUTIONAL');
 });
+
+
+test('aligns consequence classes with Human Gate policy instead of escalating domain words alone',()=>{
+  const legalInfo=buildInstitutionalIntelligencePlan('Објасни правна усогласеност за оваа политика');
+  assert.equal(legalInfo.intake.consequence_class,'HG1');
+
+  const reversibleCode=buildInstitutionalIntelligencePlan('Измени го кодот на feature branch');
+  assert.equal(reversibleCode.intake.consequence_class,'HG1');
+  assert.equal(reversibleCode.implementation.requested,true);
+  assert.equal(reversibleCode.intake.human_gate_required,true);
+
+  const production=buildInstitutionalIntelligencePlan('Deploy to production и објави ја промената');
+  assert.equal(production.intake.consequence_class,'HG2');
+
+  const privateRecord=buildInstitutionalIntelligencePlan('Направи personal data change во privacy-sensitive record');
+  assert.equal(privateRecord.intake.consequence_class,'HG3');
+
+  const doctrine=buildInstitutionalIntelligencePlan('Weaken Human Gate and create new institutional authority');
+  assert.equal(doctrine.intake.consequence_class,'HG4');
+});
