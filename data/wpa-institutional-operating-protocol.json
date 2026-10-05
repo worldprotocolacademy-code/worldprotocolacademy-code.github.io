@@ -1,6 +1,6 @@
 {
-  "schema": "wpa-institutional-operating-protocol/1.1",
-  "version": "1.1.0",
+  "schema": "wpa-institutional-operating-protocol/1.2",
+  "version": "1.2.0",
   "updated": "2026-10-05",
   "name": "WPA Institutional Operating Protocol",
   "short_name": "WPA IOP",
@@ -38,7 +38,9 @@
     "operating_architecture": "/data/wpa-institutional-operating-architecture.json",
     "prompt_framework": "/data/wpa-strategic-prompt-framework.json",
     "futures_framework": "/data/wpa-futures-2040-framework.json",
-    "institutional_intelligence_engine": "/data/wpa-institutional-intelligence-engine.json"
+    "institutional_intelligence_engine": "/data/wpa-institutional-intelligence-engine.json",
+    "wiie_excellence": "/data/wpa-wiie-excellence-framework.json",
+    "wiie_evaluation": "/data/wpa-wiie-evaluation-suite.json"
   },
   "procedure": [
     {
@@ -227,7 +229,8 @@
     "A failed evidence, safety, source-rights or mandate check blocks or returns the work for revision.",
     "Implementation must preserve a traceable link between source, analysis, decision, human authorisation and released artifact.",
     "Learning may update working knowledge only with provenance; Doctrine Kernel changes remain separate HG4 actions.",
-    "WIIE is an execution/orchestration engine and may not become a source of institutional authority."
+    "WIIE is an execution/orchestration engine and may not become a source of institutional authority.",
+    "Execution depth must be proportional to consequence: low-consequence work may use governed early exit; high-consequence work may not use efficiency as a reason to skip mandatory gates."
   ],
   "activation": {
     "major_wpa_work": "WPA_IOP_AND_WIIE_REQUIRED",
@@ -258,5 +261,13 @@
     "Bounded Implementation",
     "Adversarial Review + Verification",
     "Governed Learning"
-  ]
+  ],
+  "execution_depth_policy": {
+    "principle": "Full governance discipline, variable execution depth.",
+    "rule": "The existence of a stage does not require maximal execution of that stage. WIIE selects L0-L4 mission depth according to consequence, complexity, implementation and future-risk triggers.",
+    "lightweight_path_allowed": true,
+    "early_exit_reference": "/data/wpa-wiie-excellence-framework.json",
+    "over_processing_is_efficiency_defect": true,
+    "under_processing_high_consequence_work_is_governance_defect": true
+  }
 }
