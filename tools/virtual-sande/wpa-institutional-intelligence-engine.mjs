@@ -50,7 +50,9 @@ const PROFILE_SIGNALS=Object.freeze({
 });
 
 const MAJOR_SIGNALS=['strategy','стратег','institution','институц','architecture','архитект','policy','политика','directive','директив','programme','програм','system','систем','2040','major wpa','голем wpa','governance','управување'];
-const IMPLEMENT_SIGNALS=['implement','имплементи','update','ажурира','change','измени','modify','модифици','code','код','new module','нов модул','strategy','стратег','directive','директив','add test','додај тест'];
+const IMPLEMENT_VERBS=['implement','имплементи','update','ажурира','change','измени','modify','модифици','add','додај','create','креира'];
+const IMPLEMENT_OBJECTS=['code','код','module','модул','strategy','стратег','directive','директив','test','тест','documentation','документац','registry','регистар','architecture','архитект'];
+function detectsImplementationIntent(q){return has(q,['implement','имплементи'])||(has(q,IMPLEMENT_VERBS)&&has(q,IMPLEMENT_OBJECTS));}
 
 function classifyProblem(q){
   if(has(q,['futures','foresight','scenario','сценари','2040','2035','emerging technolog','нова технолог']))return'foresight_and_institutional_futures';
@@ -66,7 +68,7 @@ function classifyConsequence(q,options={}){
   if(has(q,['doctrine','доктрин','constitutional','устав','official commitment','официјална обврска','new authority','ново овластување']))return'HG4';
   if(has(q,['legal','правен','financial','финанс','credential','сертифик','privacy','приватност','personal data','лични податоци']))return'HG3';
   if(has(q,['publish','објав','public recommendation','јавна препорака','partnership','партнерство','funding','финансирање','contract','договор']))return'HG2';
-  if(has(q,IMPLEMENT_SIGNALS))return'HG2';
+  if(detectsImplementationIntent(q))return'HG2';
   return'HG1';
 }
 
@@ -87,7 +89,7 @@ function wpawsIdsForProfiles(profileIds){
 export function buildInstitutionalIntelligencePlan(message='',options={}){
   const q=normalise(message);
   const major=options.majorWpa===true||has(q,MAJOR_SIGNALS);
-  const implementationRequested=options.implementationRequested===true||has(q,IMPLEMENT_SIGNALS);
+  const implementationRequested=options.implementationRequested===true||detectsImplementationIntent(q);
   const problemClass=classifyProblem(q);
   const consequenceClass=classifyConsequence(q,options);
   const profileIds=selectProfiles(q,{major});
@@ -184,4 +186,4 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
   });
 }
 
-export const __test={normalise,has,classifyProblem,classifyConsequence,selectProfiles,wpawsIdsForProfiles};
+export const __test={normalise,has,classifyProblem,classifyConsequence,selectProfiles,wpawsIdsForProfiles,detectsImplementationIntent};
