@@ -11,7 +11,7 @@ import {
 } from './wpa-institutional-intelligence-engine.mjs';
 
 test('WIIE exposes the canonical 13-stage operating cycle',()=>{
-  assert.equal(VERSION,'wpa-institutional-intelligence-engine-1.2.0');
+  assert.equal(VERSION,'wpa-institutional-intelligence-engine-1.2.1');
   assert.deepEqual(OPERATING_CYCLE,[
     'intake','knowledge','system_map','diagnosis','specialist_routing','options',
     'futures_stress_test','ai_protocol_gate','solution_design','implementation',
