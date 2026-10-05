@@ -141,6 +141,8 @@ export function buildInstitutionalIntelligencePlan(message='',options={}){
       framework:FUTURES_PATH,
       horizons:Object.freeze([2030,2035,2040]),
       scenarios_are_not_forecasts:true,
+      components:Object.freeze({observatory:'WPA Institutional Futures Observatory',expert_network:'WPA International Expert Network',action_cards:'/data/wpa-institutional-ai-action-card.schema.json',scenario_lab:'/wpa-scenario-film-lab.html',foresight_education:'Strategic Foresight for Protocol, Diplomacy and Institutional Leadership'}),
+      convergence_scan:Object.freeze(['AI/AGI','robotics','synthetic_media','AR/VR','digital_identity','autonomous_systems','IoT_cloud_analytics','quantum_cybersecurity']),
       conditions:Object.freeze(['more_capable_ai','persistent_agents','original_authoriser_unavailable','self_modification','false_information','public_trust_loss'])
     }),
     ai_protocol_gate:Object.freeze({
