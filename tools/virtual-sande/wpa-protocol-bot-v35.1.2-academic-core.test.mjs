@@ -9,7 +9,7 @@ const definitions = [
   ['Што е егзекватура?','exequatur'],['Што е персона нон грата?','persona_non_grata'],['Што е дипломатски кор?','diplomatic_corps'],
   ['Што е дипломатска акредитација?','accreditation'],['Што се акредитивни писма?','credentials'],['Што е официјална посета?','official_visit'],
   ['Што е државна посета?','state_visit'],['Што е работна посета?','working_visit'],['Што е одбранбена дипломатија?','defence_diplomacy'],
-  ['Што е воена дипломатија?','military_diplomacy'],['Што е Протоколометрија?','protocolometry'],
+  ['Што е воена дипломатија?','military_diplomacy'],['Што подразбираме под поимот Односи со јавност?','public_relations'],['Што е Протоколометрија?','protocolometry'],
 ];
 for (const [question,id] of definitions) test(`definition ${id}`,()=>assert.equal(academicIntent(question,'mk')?.id,id));
 
