@@ -1670,7 +1670,7 @@ function intentBoost(item, message = "") {
   // For Türkiye presidential protocol-practice questions, prefer official Turkish Presidency sources.
   const wantsTurkiyeProtocol =
     q.includes("turkiye protocol") || q.includes("turkey protocol") ||
-    q.includes("турски протокол") || q.includes("турција протокол") ||
+    q.includes("турски протокол") || q.includes("турскиот протокол") || q.includes("турски државен протокол") || q.includes("турскиот државен протокол") || q.includes("турција протокол") ||
     q.includes("cumhurbaşkanlığı protokol") || q.includes("cumhurbaskanligi protokol") ||
     q.includes("presidential complex") || q.includes("murat eris") || q.includes("murat eriş");
   const isTurkiyePrimary =
@@ -1703,6 +1703,40 @@ function sortByRelevance(items, topicHints = [], style = { wantsExamples: false 
     const bScore = b.score + topicAlignmentScore(b, topicHints) + (style.wantsExamples ? b.exampleScore * 0.02 : 0) + intentBoost(b, message);
     return bScore - aScore;
   });
+}
+
+function turkiyeInstitutionalProtocolAnswer(message = "", lang = "mk") {
+  const q = String(message || "").toLowerCase();
+  const asksTurkiye =
+    q.includes("турски протокол") || q.includes("турскиот протокол") ||
+    q.includes("турски државен протокол") || q.includes("турскиот државен протокол") ||
+    q.includes("турција протокол") || q.includes("турција протоколот") ||
+    q.includes("turkiye protocol") || q.includes("turkey protocol") ||
+    q.includes("turkish protocol") || q.includes("cumhurbaşkanlığı protokol") ||
+    q.includes("cumhurbaskanligi protokol");
+  if (!asksTurkiye) return null;
+
+  if (lang === "en") {
+    return {
+      answer:
+        "Türkiye's presidential protocol is organized around the Presidency and the Presidential Complex in Ankara. Official Turkish Presidency / Directorate of Communications material documents formal welcoming ceremonies that can include the protocol gate, guard of honour, national anthems, a 21-gun salute and presentation of the delegations. These practices are used for high-level state and official visits and are coordinated within the Presidency's ceremonial framework.\n\nCurrent leadership should be stated cautiously: Murat Eriş has been reported in Turkish media as Cumhurbaşkanlığı Protokol Müdürü, but Virtual Sande should not present that title as officially confirmed until a current Presidency or other official Turkish-government source names him directly.\n\nFor Türkiye-specific questions, official Turkish Presidency and government sources have factual priority; broader protocol doctrine remains grounded first in Sande Smiljanov's author corpus.",
+      sources:["https://www.iletisim.gov.tr/","https://www.cb.gov.tr/"],
+      sourceDetails:[
+        {type:"official_primary",title:"Presidency of the Republic of Türkiye / Directorate of Communications",url:"https://www.iletisim.gov.tr/",verified:true},
+        {type:"official_primary",title:"Presidency of the Republic of Türkiye",url:"https://www.cb.gov.tr/",verified:true}
+      ]
+    };
+  }
+
+  return {
+    answer:
+      "Турскиот претседателски протокол е организиран околу Претседателството и Претседателскиот комплекс во Анкара. Официјалните материјали на турското Претседателство / Дирекцијата за комуникации ги документираат формалните церемонии за пречек, кои можат да вклучуваат protocol gate, почесна гарда, национални химни, артилериски поздрав од 21 плотун и претставување на делегациите. Овие постапки се применуваат при државни и други посети на високо ниво и се координираат во рамките на претседателската церемонијална структура.\n\nЗа актуелниот раководител треба да бидеме прецизни: Мурат Ериш (Murat Eriş) е јавно наведуван во турски медиуми како Cumhurbaşkanlığı Protokol Müdürü, но Virtual Sande не треба да го претставува тоа како официјално потврдена актуелна функција додека не постои тековен официјален извор на Претседателството или друга турска државна институција што го именува директно.\n\nЗа прашања конкретно за Турција, официјалните турски државни извори имаат фактички приоритет; за општата протоколарна доктрина останува author-corpus-first пристапот на Санде Смиљанов.",
+    sources:["https://www.iletisim.gov.tr/","https://www.cb.gov.tr/"],
+    sourceDetails:[
+      {type:"official_primary",title:"Претседателство на Република Турција / Дирекција за комуникации",url:"https://www.iletisim.gov.tr/",verified:true},
+      {type:"official_primary",title:"Претседателство на Република Турција",url:"https://www.cb.gov.tr/",verified:true}
+    ]
+  };
 }
 
 function isProtocolMistakeQuestion(message = "") {
@@ -3725,6 +3759,26 @@ export default {
                         answer
           }, request, env, 200);
         }
+      }
+
+      // Deterministic institutional fallback for Türkiye-specific protocol questions.
+      // This prevents a retrieval miss from collapsing into an unrelated author-corpus or generic flag answer.
+      const turkiyeProtocol = turkiyeInstitutionalProtocolAnswer(message, baseAnswerLang);
+      if (turkiyeProtocol) {
+        wpaLog(env, { t: "institutional_turkiye_protocol_hit", uid: uid.slice(0, 8), lang: baseAnswerLang });
+        let answer = turkiyeProtocol.answer;
+        if (requestedLang !== "mk" && requestedLang !== "en") {
+          try { answer = await translateFinalAnswer(answer, requestedLang, env); } catch (_) {}
+        }
+        return json({
+          ok: true, version: VERSION, requestedLang, answerLang: baseAnswerLang,
+          hasContext: true, mode: "institutional_protocol_primary", followUpUsed: false,
+          sources: turkiyeProtocol.sources, sourceDetails: turkiyeProtocol.sourceDetails,
+          historyUsed: history.length > 0,
+          servedBy: "institutional-turkiye-protocol", plan: userPlan,
+          human_review_required: true,
+          answer
+        }, request, env, 200);
       }
 
       // Retrieval
