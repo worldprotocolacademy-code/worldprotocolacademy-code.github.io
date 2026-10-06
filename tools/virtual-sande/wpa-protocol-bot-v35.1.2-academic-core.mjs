@@ -42,7 +42,7 @@ const C = [
 ].map(([id,left,right,mk,en])=>({id,left,right,mk,en}));
 
 const COMPLEX=['како да','како се','постапка','чекор','сценарио','пример','листа','наведи','организирај','распореди','седење','план','анализа','случај','што ако','how to','procedure','steps','scenario','example','list','organise','organize','seating','plan','analyse','analyze','case study','what if'];
-const DEF=['што е','што се','што претставува','дефинирај','објасни го поимот','what is','what are','define','explain the term'];
+const DEF=['што е','што се','што претставува','што подразбираме под поимот','дефинирај','објасни го поимот','what is','what are','define','explain the term'];
 const COMP=['разлика','разликува','спореди','наспроти','difference','compare','versus',' vs '];
 export function normalizeAcademicQuery(v=''){return String(v).normalize('NFKC').toLowerCase().replace(/[!?.,:;()[\]{}"'“”„’]+/g,' ').replace(/\s+/g,' ').trim();}
 const any=(q,a)=>a.some(x=>q.includes(x));
