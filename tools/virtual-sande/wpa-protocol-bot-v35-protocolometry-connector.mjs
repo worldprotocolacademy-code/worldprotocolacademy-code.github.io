@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing","port courtesy handbook","airport protocol","vip lounge","vvip lounge","airport greeter","foreign.gov.mt","mfa.gov.lk","mae.gouvernement.lu"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing","port courtesy handbook","airport protocol","vip lounge","vvip lounge","airport greeter","foreign.gov.mt","mfa.gov.lk","mae.gouvernement.lu","protocol gifts","official gifts","gifts and hospitality","anti-bribery","fcpa","bribery act","podaroci.dksk.mk","gift register"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1717,6 +1717,24 @@ function intentBoost(item, message = "") {
     String(item.rawName || "").toLowerCase().includes("mae.gouvernement.lu") ||
     (String(item.text || "").toLowerCase().includes("chief of protocol") && String(item.text || "").toLowerCase().includes("airport"));
   if (wantsAirportProtocol && isAirportProtocolPrimary) boost += 0.45;
+
+  // For VIP/official gift compliance questions, prefer official legal and ethics sources.
+  const wantsProtocolGifts =
+    q.includes("protocol gift") || q.includes("protocol gifts") ||
+    q.includes("протоколарен подарок") || q.includes("протоколарни подароци") ||
+    q.includes("vip gift") || q.includes("vip gifts") ||
+    q.includes("подарок за вип") || q.includes("подароци за вип") ||
+    q.includes("gifts and hospitality") || q.includes("anti-bribery") ||
+    q.includes("fcpa") || q.includes("bribery act") ||
+    q.includes("gift register") || q.includes("регистар на подароци");
+  const isProtocolGiftPrimary =
+    String(item.rawName || "").toLowerCase().includes("justice.gov") ||
+    String(item.rawName || "").toLowerCase().includes("gov.uk") ||
+    String(item.rawName || "").toLowerCase().includes("dksk") ||
+    String(item.rawName || "").toLowerCase().includes("podaroci.dksk.mk") ||
+    String(item.text || "").toLowerCase().includes("foreign corrupt practices act") ||
+    String(item.text || "").toLowerCase().includes("gift register");
+  if (wantsProtocolGifts && isProtocolGiftPrimary) boost += 0.45;
 
   return boost;
 }
