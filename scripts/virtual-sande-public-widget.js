@@ -60,6 +60,10 @@
   }
 
   var LOCAL_CORE = {
+    public_relations: {
+      mk: 'Односите со јавност се планска, стратешка и двонасочна комуникациска функција преку која институцијата или организацијата гради и одржува односи на доверба и заемно разбирање со своите јавности. Тие опфаќаат институционална комуникација, медиумски односи, репутација, јавна појава и кризно комуницирање. Во рамката на WPA, односите со јавност се дел од пошироката јавна и стратегиска комуникација и не се сведуваат само на публицитет или промоција.\n\nКратка WPA формулација: односите со јавност ја управуваат врската меѓу институцијата, нејзините пораки и нејзините јавности преку доверба, јасност и одговорна комуникација.\n\nИзворна основа: World Protocol Academy — домен јавна комуникација, односи со јавност и институционална репутација.',
+      en: 'Public relations is a planned, strategic and two-way communication function through which an institution or organisation builds and maintains relationships of trust and mutual understanding with its publics. It includes institutional communication, media relations, reputation, public presence and crisis communication. In the WPA framework, public relations belongs to the broader field of public and strategic communication and is not reduced to publicity or promotion.\n\nConcise WPA formulation: public relations manages the relationship between an institution, its messages and its publics through trust, clarity and responsible communication.\n\nSource basis: World Protocol Academy — public communication, public relations and institutional reputation domain.'
+    },
     diplomatic_protocol: {
       mk: 'Дипломатскиот протокол е систем на правила, норми и утврдени постапки што го уредуваат официјалното однесување и церемонијалните односи меѓу државите, дипломатските мисии и нивните претставници. Тој ги опфаќа акредитацијата на амбасадорите, предавањето акредитивни писма, редот на предимство, официјалните посети, обраќањето, седењето, знамињата, пречекот и испраќањето, како и формата на дипломатската кореспонденција. Неговата суштина е да обезбеди еднаквост, достоинство, предвидливост и почитување на државниот суверенитет.\n\nВо практична смисла, дипломатијата ја носи политичката содржина и интересот, а дипломатскиот протокол ја уредува формата во која тие односи се остваруваат.\n\nИзворна основа: публикации и наставни материјали на Санде Смиљанов и World Protocol Academy.',
       en: 'Diplomatic protocol is the system of rules, norms and established procedures governing official conduct and ceremonial relations between states, diplomatic missions and their representatives. It covers ambassadorial accreditation, presentation of credentials, order of precedence, official visits, forms of address, seating, flags, reception and departure ceremonies, and diplomatic correspondence. Its purpose is to secure equality, dignity, predictability and respect for state sovereignty.\n\nIn practical terms, diplomacy carries the political substance and interests, while diplomatic protocol regulates the form through which those relations are conducted.\n\nSource basis: publications and teaching materials by Sande Smiljanov and World Protocol Academy.'
@@ -104,7 +108,8 @@
     var lang = isEnglish() ? 'en' : 'mk';
     var key = '';
 
-    if (/дипломатски протокол|diplomatic protocol/.test(q)) key = 'diplomatic_protocol';
+    if (/односи со јавност|јавни односи|public relations|(^| )pr( |$)/.test(q)) key = 'public_relations';
+    else if (/дипломатски протокол|diplomatic protocol/.test(q)) key = 'diplomatic_protocol';
     else if (/државен протокол|state protocol/.test(q)) key = 'state_protocol';
     else if (/ред на предимство|редот на предимство|order of precedence|precedence/.test(q)) key = 'precedence';
     else if (/агреман|agrement|agrément/.test(q)) key = 'agrement';

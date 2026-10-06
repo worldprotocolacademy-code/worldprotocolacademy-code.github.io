@@ -13,6 +13,10 @@ const DEFAULT_ALLOWED_ORIGINS = [
   'https://worldprotocolacademy-code.github.io',
   'https://worldprotocolacademy.com',
   'https://www.worldprotocolacademy.com',
+  'https://worldprotocolacademy.mk',
+  'https://www.worldprotocolacademy.mk',
+  'https://wpa.mk',
+  'https://www.wpa.mk',
 ];
 const NO_CONTEXT = new Set(['no-context','llm-no-context','timeout-no-context','mk-purity-fallback','external-author-hard-fail-fallback','persona-hard-fail']);
 
