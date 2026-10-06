@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1678,6 +1678,20 @@ function intentBoost(item, message = "") {
     String(item.rawName || "").toLowerCase().includes("cb.gov.tr") ||
     String(item.text || "").toLowerCase().includes("presidential complex");
   if (wantsTurkiyeProtocol && isTurkiyePrimary) boost += 0.45;
+
+  // For U.S.-specific protocol questions, prefer official U.S. government sources.
+  const wantsUSProtocol =
+    q.includes("us protocol") || q.includes("u.s. protocol") ||
+    q.includes("американски протокол") || q.includes("сад протокол") ||
+    q.includes("chief of protocol of the united states") ||
+    q.includes("monica crowley") || q.includes("моника кроули") ||
+    q.includes("office of the chief of protocol");
+  const isUSPrimary =
+    String(item.rawName || "").toLowerCase().includes("whitehouse.gov") ||
+    String(item.rawName || "").toLowerCase().includes("state.gov") ||
+    String(item.rawName || "").toLowerCase().includes("senate.gov") ||
+    String(item.text || "").toLowerCase().includes("chief of protocol of the united states");
+  if (wantsUSProtocol && isUSPrimary) boost += 0.45;
 
   return boost;
 }
