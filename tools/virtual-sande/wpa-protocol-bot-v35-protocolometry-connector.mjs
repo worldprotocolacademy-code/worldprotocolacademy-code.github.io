@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1618,6 +1618,17 @@ function intentBoost(item, message = "") {
     String(item.rawName || "").toLowerCase().includes("north atlantic council") ||
     String(item.text || "").toLowerCase().includes("chief of protocol of nato");
   if (wantsNATOProtocol && isNATOPrimary) boost += 0.45;
+
+  // For European Commission-specific protocol questions, prefer official Commission material.
+  const wantsEUCommissionProtocol =
+    q.includes("european commission protocol") || q.includes("европска комисија протокол") ||
+    q.includes("commission protocol service") || q.includes("protocol service") && q.includes("commission") ||
+    q.includes("pernilla sj") || q.includes("eu protocol") || q.includes("еu протокол");
+  const isEUCommissionPrimary =
+    String(item.rawName || "").toLowerCase().includes("commission.europa.eu") ||
+    String(item.rawName || "").toLowerCase().includes("european commission protocol service") ||
+    String(item.text || "").toLowerCase().includes("secretariat-general") && String(item.text || "").toLowerCase().includes("protocol service");
+  if (wantsEUCommissionProtocol && isEUCommissionPrimary) boost += 0.45;
 
   return boost;
 }
