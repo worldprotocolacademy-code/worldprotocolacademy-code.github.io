@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing","port courtesy handbook","airport protocol","vip lounge","vvip lounge","airport greeter","foreign.gov.mt","mfa.gov.lk","mae.gouvernement.lu"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1703,6 +1703,20 @@ function intentBoost(item, message = "") {
     String(item.rawName || "").toLowerCase().includes("inter-parliamentary union") ||
     String(item.text || "").toLowerCase().includes("guidelines for ai in parliaments");
   if (wantsIPUAI && isIPUPrimary) boost += 0.45;
+
+  // For airport/VIP arrival protocol questions, prefer official state protocol sources.
+  const wantsAirportProtocol =
+    q.includes("airport protocol") || q.includes("аеродромски протокол") ||
+    q.includes("аеродромскиот протокол") || q.includes("vip lounge") ||
+    q.includes("vvip lounge") || q.includes("port courtesy") ||
+    q.includes("дипломатски салон") || q.includes("пречек на аеродром");
+  const isAirportProtocolPrimary =
+    String(item.rawName || "").toLowerCase().includes("port courtesy handbook") ||
+    String(item.rawName || "").toLowerCase().includes("mfa.gov.lk") ||
+    String(item.rawName || "").toLowerCase().includes("foreign.gov.mt") ||
+    String(item.rawName || "").toLowerCase().includes("mae.gouvernement.lu") ||
+    (String(item.text || "").toLowerCase().includes("chief of protocol") && String(item.text || "").toLowerCase().includes("airport"));
+  if (wantsAirportProtocol && isAirportProtocolPrimary) boost += 0.45;
 
   return boost;
 }
