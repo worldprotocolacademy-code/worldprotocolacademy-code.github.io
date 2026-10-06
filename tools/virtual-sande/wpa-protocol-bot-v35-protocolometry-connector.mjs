@@ -1342,6 +1342,23 @@ function cleanSource(name = "") {
     .replace(/_/g," ").replace(/\s+/g," ").trim();
 }
 
+function isMixedPublicRelationsCorpus(rawName = "") {
+  const s = String(rawName || "").toLowerCase();
+  return s.includes("05_smiljanov_protocol_public_relations/");
+}
+
+function isExplicitSmiljanovPublicRelationsSource(rawName = "") {
+  const s = String(rawName || "").toLowerCase();
+  return (
+    s.includes("p18-protocol-public-relations") ||
+    s.includes("protocol-public-relations") && s.includes("smiljanov") ||
+    s.includes("protokolot-i-odnosite-so-javnosta") ||
+    s.includes("протоколот-и-односите-со-јавноста") ||
+    s.includes("sande_smiljanov") ||
+    s.includes("sande-smiljanov")
+  );
+}
+
 function sourceTier(rawName = "", text = "") {
   const s = String(rawName || "").toLowerCase();
   const t = String(text || "").toLowerCase();
@@ -1354,6 +1371,14 @@ function sourceTier(rawName = "", text = "") {
   if (s.includes("03_smiljanov_interviews/")) return 1;
   if (s.includes("01 smiljanov books/")) return 1;
   if (s.includes("02 smiljanov papers/")) return 1;
+
+  // Mixed PR/communicology corpus: the folder name contains "smiljanov"
+  // but also stores third-party reference material. Do not infer authorship
+  // from the folder name alone.
+  if (isMixedPublicRelationsCorpus(s)) {
+    return isExplicitSmiljanovPublicRelationsSource(s) ? 1 : 2;
+  }
+
   if (s.includes("books_output/")) return 2;
   if (/smiljanov|смиљанов|sande|санде/.test(joined)) return 1;
   return 2;
@@ -1407,7 +1432,14 @@ function isEnglishLanguageFile(rawName = "") {
 }
 
 function sourceUsageMode(rawName = "", text = "") {
-  const hay = `${String(rawName||"").toLowerCase()} ${String(text||"").toLowerCase()}`;
+  const raw = String(rawName || "").toLowerCase();
+  const hay = `${raw} ${String(text||"").toLowerCase()}`;
+
+  // Same mixed-corpus rule as sourceTier: authorship must be explicit.
+  if (isMixedPublicRelationsCorpus(raw)) {
+    return isExplicitSmiljanovPublicRelationsSource(raw) ? "own" : "third_party_reference";
+  }
+
   for (const p of OWN_SOURCE_PATTERNS) if (hay.includes(p)) return "own";
   for (const p of THIRD_PARTY_REFERENCE_PATTERNS) if (hay.includes(p)) return "third_party_reference";
   if (/smiljanov|смиљанов|sande|санде/.test(hay)) return "own";
@@ -1509,6 +1541,16 @@ function intentBoost(item, message = "") {
   }
   const wantsProtocolMistakes = q.includes("грешк") || q.includes("mistake") || q.includes("flag") || q.includes("знаме") || q.includes("посет") || q.includes("visit") || q.includes("пречек") || q.includes("пресеанс");
   if (wantsProtocolMistakes && isBiographyLikeSource(item.rawName, item.text)) boost -= 0.25;
+
+  // PR / communicology: favour the user's own P18 paper when the question
+  // concerns public relations, strategic communication or communication theory.
+  const wantsPRCommunicology =
+    q.includes("односи со јавност") || q.includes("јавни односи") ||
+    q.includes("комуниколог") || q.includes("стратешк") && q.includes("комуникац") ||
+    q.includes("public relations") || q.includes("communicolog") ||
+    q.includes("strategic communication");
+  if (wantsPRCommunicology && isExplicitSmiljanovPublicRelationsSource(item.rawName)) boost += 0.30;
+
   return boost;
 }
 
