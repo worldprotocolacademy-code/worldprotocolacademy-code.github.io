@@ -14,6 +14,7 @@ const definitions = [
 for (const [question,id] of definitions) test(`definition ${id}`,()=>assert.equal(academicIntent(question,'mk')?.id,id));
 
 test('English academic definition',()=>{const x=academicIntent('What is agrément?','en');assert.equal(x.id,'agrement');assert.equal(academicPayload(x).answerLang,'en');});
+test('English AI academic definition',()=>{const x=academicIntent('What is artificial intelligence?','en');assert.equal(x.id,'artificial_intelligence');assert.equal(academicPayload(x).answerLang,'en');});
 test('Article 4 legal anchor',()=>{const p=academicPayload(academicIntent('Што е агреман?','mk'));assert.equal(p.sourceDetails[1].article,'Article 4');assert.match(p.sourceDetails[1].url,/legal\.un\.org/);});
 test('Article 9 legal anchor',()=>assert.equal(academicPayload(academicIntent('Што е персона нон грата?','mk')).sourceDetails[1].article,'Article 9'));
 test('Article 12 legal anchor',()=>assert.equal(academicPayload(academicIntent('Што е егзекватура?','mk')).sourceDetails[1].article,'Article 12'));
