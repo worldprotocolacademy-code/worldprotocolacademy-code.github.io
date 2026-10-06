@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1641,6 +1641,16 @@ function intentBoost(item, message = "") {
     String(item.rawName || "").toLowerCase().includes("office of the secretary general") ||
     String(item.text || "").toLowerCase().includes("osce secretariat");
   if (wantsOSCE && isOSCEPrimary) boost += 0.45;
+
+  // For FIFA governance and COO questions, prefer official FIFA material.
+  const wantsFIFA =
+    q.includes("fifa") || q.includes("kevin lamour") ||
+    q.includes("chief operating officer") && q.includes("fifa");
+  const isFIFAPrimary =
+    String(item.rawName || "").toLowerCase().includes("fifa.com") ||
+    String(item.rawName || "").toLowerCase().includes("kevin lamour") ||
+    String(item.text || "").toLowerCase().includes("fifa") && String(item.text || "").toLowerCase().includes("chief operating officer");
+  if (wantsFIFA && isFIFAPrimary) boost += 0.45;
 
   return boost;
 }
