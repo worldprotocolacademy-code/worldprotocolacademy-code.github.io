@@ -115,10 +115,53 @@
       .trim();
   }
 
+  function protocolDefinitionList(lang) {
+    var mk = [
+      'Во актуелното WPA академско јадро, основните протоколарни дефиниции се:',
+      '',
+      '1. Протокол — ' + LOCAL_CORE.protocol.mk.split('\n\n')[0],
+      '',
+      '2. Дипломатски протокол — ' + LOCAL_CORE.diplomatic_protocol.mk.split('\n\n')[0],
+      '',
+      '3. Државен протокол — ' + LOCAL_CORE.state_protocol.mk.split('\n\n')[0],
+      '',
+      '4. Ред на предимство — ' + LOCAL_CORE.precedence.mk.split('\n\n')[0],
+      '',
+      '5. Агреман — ' + LOCAL_CORE.agrement.mk.split('\n\n')[0],
+      '',
+      '6. Етикеција / бон-тон — ' + LOCAL_CORE.etiquette.mk.split('\n\n')[0],
+      '',
+      'Ова е листата на контролирани протоколарни дефиниции достапни во јавниот Virtual Sande fallback. За поширок академски корпус, одговорот треба да се прошири преку WPA публикациите и академското јадро.'
+    ].join('\n');
+
+    var en = [
+      'In the current WPA academic core, the principal protocol-related definitions are:',
+      '',
+      '1. Protocol — ' + LOCAL_CORE.protocol.en.split('\n\n')[0],
+      '',
+      '2. Diplomatic protocol — ' + LOCAL_CORE.diplomatic_protocol.en.split('\n\n')[0],
+      '',
+      '3. State protocol — ' + LOCAL_CORE.state_protocol.en.split('\n\n')[0],
+      '',
+      '4. Order of precedence — ' + LOCAL_CORE.precedence.en.split('\n\n')[0],
+      '',
+      '5. Agrément — ' + LOCAL_CORE.agrement.en.split('\n\n')[0],
+      '',
+      '6. Etiquette / bon ton — ' + LOCAL_CORE.etiquette.en.split('\n\n')[0],
+      '',
+      'This is the list of controlled protocol-related definitions available in the public Virtual Sande fallback. A broader academic corpus should be expanded through WPA publications and the academic core.'
+    ].join('\n');
+    return lang === 'en' ? en : mk;
+  }
+
   function localCoreAnswer(question) {
     var q = normalizeQuestion(question);
     var lang = isEnglish() ? 'en' : 'mk';
     var key = '';
+
+    if ((/наброј|наведи|листа|сите дефиниции|сите поими|all definitions|list all|enumerate/.test(q)) && /протокол|protocol/.test(q)) {
+      return protocolDefinitionList(lang);
+    }
 
     if (/безбедност|безбедносни студии|security|security studies/.test(q)) key = 'security';
     else if (/комуникологија|communicology|communication science/.test(q)) key = 'communicology';
