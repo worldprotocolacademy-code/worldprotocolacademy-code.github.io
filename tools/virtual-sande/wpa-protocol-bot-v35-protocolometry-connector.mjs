@@ -1474,8 +1474,9 @@ function normalizeSearchItems(rawItems = [], answerLang = "mk") {
     };
   })
   .filter(x => x.text.length > 40)
-  // PATCH v33.1: Filter out english-language files when answer lang is mk
-  .filter(x => !(answerLang === "mk" && x.isEnglishFile))
+  // Author-corpus-first: English-language Smiljanov sources remain valid evidence
+  // for Macedonian questions; synthesis/translation happens in the answer layer.
+  .filter(x => !(answerLang === "mk" && x.isEnglishFile && !x.smiljanov))
   // v33.24: Early blocked-author exclusion — Damjanović and other blocked sources
   // excluded before they can influence answer building
   .filter(x => {
@@ -3513,9 +3514,9 @@ export default {
       // ─────────────────────────────────────────────────────────────
 
 
-      // PATCH v33.6: Core definition fast-path — 8 primary WPA terms
+      // Author-corpus-first: never let a static definition bypass retrieval.
       const coreDefKey = isCoreDefinitionQuestion(message);
-      if (coreDefKey) {
+      if (false && coreDefKey) {
         const kbLang = baseAnswerLang === "en" ? "en" : "mk";
         const kb = EXPANDED_FALLBACK_KB[kbLang] || EXPANDED_FALLBACK_KB.mk;
         const coreAnswer = kb[coreDefKey];
@@ -3601,7 +3602,8 @@ export default {
         }
 
         const expandedKBAnswer = lookupExpandedKB(message, baseAnswerLang);
-        if (expandedKBAnswer && expandedKBAnswer.length > 50) {
+        // Static KB must not pre-empt the proactive agent after retrieval misses.
+        if (false && expandedKBAnswer && expandedKBAnswer.length > 50) {
           wpaLog(env, { t: "expanded_kb_postretrieval", uid: uid.slice(0, 8) });
           let answer = expandedKBAnswer;
           if (requestedLang !== "mk" && requestedLang !== "en") { try { answer = await translateFinalAnswer(answer, requestedLang, env); } catch (_) {} }
@@ -3624,7 +3626,8 @@ export default {
         // MICRO-PATCH v33.4.1: For comparison questions, try expanded KB before strict-guard
         if (v29IsComparisonQuestion(message)) {
           const comparisonKB = lookupExpandedKB(message, baseAnswerLang);
-          if (comparisonKB && comparisonKB.length > 50) {
+          // Comparison fallback is retained only as an emergency layer, not as first response.
+          if (false && comparisonKB && comparisonKB.length > 50) {
             wpaLog(env, { t: "comparison_kb_override", uid: uid.slice(0, 8) });
             let kbAnswer = comparisonKB;
             if (requestedLang !== "mk" && requestedLang !== "en") { try { kbAnswer = await translateFinalAnswer(kbAnswer, requestedLang, env); } catch (_) {} }

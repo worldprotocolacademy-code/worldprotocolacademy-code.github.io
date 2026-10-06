@@ -231,6 +231,18 @@
     return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
   }
 
+  function isNoContextAnswer(answer) {
+    var q = normalizeQuestion(answer);
+    return !q ||
+      q.indexOf('нема доволно информации') !== -1 ||
+      q.indexOf('не е доволно опфатено') !== -1 ||
+      q.indexOf('нема доволно детали') !== -1 ||
+      q.indexOf('консултирајте ја соодветната wpa публикација') !== -1 ||
+      q.indexOf('insufficient information') !== -1 ||
+      q.indexOf('not sufficiently covered') !== -1 ||
+      q.indexOf('does not contain sufficient information') !== -1;
+  }
+
   async function callEndpoint(endpoint, payload) {
     var response = await fetchWithTimeout(endpoint, {
       method: 'POST',
@@ -244,13 +256,10 @@
     var data = await response.json();
     var answer = answerFrom(data);
     if (!answer) throw new Error('Empty answer');
-    return answer;
+    return { answer: answer, data: data };
   }
 
   async function requestAnswer(question) {
-    var local = localCoreAnswer(question);
-    if (local) return { answer: local, local: true };
-
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -260,16 +269,26 @@
       language: lang,
       history: history.slice(-6),
       quality: '3layer_academic',
+      source_priority: 'sande_author_corpus_first',
+      proactive_fallback: true,
       context: 'World Protocol Academy public page: ' + currentPath
     };
     var lastError = null;
     for (var i = 0; i < ENDPOINTS.length; i += 1) {
       try {
-        return { answer: await callEndpoint(ENDPOINTS[i], payload), local: false };
+        var remote = await callEndpoint(ENDPOINTS[i], payload);
+        if (!isNoContextAnswer(remote.answer)) {
+          return { answer: remote.answer, local: false, data: remote.data };
+        }
+        lastError = new Error('Academic backend returned no-context after retrieval/proactive path');
       } catch (error) {
         lastError = error;
       }
     }
+
+    // Last-resort fail-safe only. It must never pre-empt the author corpus or proactive agent.
+    var local = localCoreAnswer(question);
+    if (local) return { answer: local, local: true };
     throw lastError || new Error('All endpoints unavailable');
   }
 
