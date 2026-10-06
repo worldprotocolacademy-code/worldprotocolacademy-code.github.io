@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
