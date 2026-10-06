@@ -60,10 +60,6 @@
   }
 
   var LOCAL_CORE = {
-    security: {
-      mk: 'Безбедноста е состојба и организиран систем на мерки, институции и постапки насочени кон заштита на луѓето, вредностите, институциите и општеството од закани, ризици и штетни дејства, како и кон зачувување на стабилноста и способноста за нормално функционирање. Во академска смисла, безбедноста не е само отсуство на опасност, туку и способност за превенција, подготвеност, одговор и закрепнување.\n\nКратка WPA формулација: безбедноста е организирана способност за заштита, превенција, отпорност и континуитет пред закани и ризици.\n\nИзворна основа: World Protocol Academy — домен безбедносни студии, одбранбена дипломатија, кризни процедури и јавни настани.',
-      en: 'Security is a condition and organised system of measures, institutions and procedures aimed at protecting people, values, institutions and society from threats, risks and harmful acts, while preserving stability and the ability to function normally. In academic terms, security is not merely the absence of danger; it also includes the capacity for prevention, preparedness, response and recovery.\n\nConcise WPA formulation: security is the organised capacity for protection, prevention, resilience and continuity in the face of threats and risks.\n\nSource basis: World Protocol Academy — security studies, defence diplomacy, crisis procedures and public events domain.'
-    },
     public_relations: {
       mk: 'Односите со јавност се планска, стратешка и двонасочна комуникациска функција преку која институцијата или организацијата гради и одржува односи на доверба и заемно разбирање со своите јавности. Тие опфаќаат институционална комуникација, медиумски односи, репутација, јавна појава и кризно комуницирање. Во рамката на WPA, односите со јавност се дел од пошироката јавна и стратегиска комуникација и не се сведуваат само на публицитет или промоција.\n\nКратка WPA формулација: односите со јавност ја управуваат врската меѓу институцијата, нејзините пораки и нејзините јавности преку доверба, јасност и одговорна комуникација.\n\nИзворна основа: World Protocol Academy — домен јавна комуникација, односи со јавност и институционална репутација.',
       en: 'Public relations is a planned, strategic and two-way communication function through which an institution or organisation builds and maintains relationships of trust and mutual understanding with its publics. It includes institutional communication, media relations, reputation, public presence and crisis communication. In the WPA framework, public relations belongs to the broader field of public and strategic communication and is not reduced to publicity or promotion.\n\nConcise WPA formulation: public relations manages the relationship between an institution, its messages and its publics through trust, clarity and responsible communication.\n\nSource basis: World Protocol Academy — public communication, public relations and institutional reputation domain.'
@@ -112,8 +108,7 @@
     var lang = isEnglish() ? 'en' : 'mk';
     var key = '';
 
-    if (/безбедност|безбедносни студии|security|security studies/.test(q)) key = 'security';
-    else if (/односи со јавност|јавни односи|public relations|(^| )pr( |$)/.test(q)) key = 'public_relations';
+    if (/односи со јавност|јавни односи|public relations|(^| )pr( |$)/.test(q)) key = 'public_relations';
     else if (/дипломатски протокол|diplomatic protocol/.test(q)) key = 'diplomatic_protocol';
     else if (/државен протокол|state protocol/.test(q)) key = 'state_protocol';
     else if (/ред на предимство|редот на предимство|order of precedence|precedence/.test(q)) key = 'precedence';
