@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1589,6 +1589,22 @@ function intentBoost(item, message = "") {
     q.includes("public relations") || q.includes("communicolog") ||
     q.includes("strategic communication");
   if (wantsPRCommunicology && isExplicitSmiljanovPublicRelationsSource(item.rawName)) boost += 0.30;
+
+  // For questions specifically about UN procedure or UN protocol practice,
+  // prefer the official UN Protocol and Liaison Service / Manual of Protocol.
+  const wantsUNProtocol =
+    q.includes("un protocol") || q.includes("united nations protocol") ||
+    q.includes("обединети нации") || q.includes("он протокол") ||
+    q.includes("permanent mission") || q.includes("permanent representative") ||
+    q.includes("credentials") || q.includes("акредитив") ||
+    q.includes("note verbale") || q.includes("нота вербал") ||
+    q.includes("blue book") || q.includes("vip pass") ||
+    q.includes("protocol and liaison service");
+  const isUNPrimary =
+    String(item.rawName || "").toLowerCase().includes("un.org") ||
+    String(item.rawName || "").toLowerCase().includes("manual of protocol") ||
+    String(item.text || "").toLowerCase().includes("protocol and liaison service");
+  if (wantsUNProtocol && isUNPrimary) boost += 0.45;
 
   return boost;
 }
