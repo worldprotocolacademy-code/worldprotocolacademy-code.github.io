@@ -254,8 +254,8 @@ const EXAMPLE_NOT_FOUND_MESSAGE = {
 };
 
 const TOPIC_BOUNDARY_MESSAGE = {
-  mk: "Овој асистент е наменет за прашања од протокол, дипломатија, државен протокол, етикеција, меѓународни односи и сродни академски теми.",
-  en: "This assistant is intended for protocol, diplomacy, state protocol, etiquette, international relations, and related academic topics."
+  mk: "Овој асистент е наменет за прашања од протокол, дипломатија, односи со јавност, безбедност, комуникологија, вештачка интелигенција, државен протокол, етикеција, меѓународни односи и сродни академски теми.",
+  en: "This assistant is intended for protocol, diplomacy, public relations, security, communicology, artificial intelligence, state protocol, etiquette, international relations, and related academic topics."
 };
 
 // PATCH v33.1 — SYMBOLS SAFETY MESSAGES
@@ -908,7 +908,11 @@ const DOMAIN_HINTS = [
   "химна","anthem","грб","coat of arms","emblem","хералдик","heraldry",
   // PATCH v33.3: Added agreman, егзекватура, етикеција, bon-ton as separate hints
   "егзекватура","exequatur","агреман","agrément","бон-тон","bon-ton","етикеција","etiquette",
-  "протоколометрија","protocolometry","protocolometric","комуникологија","communicology","односи со јавност","public relations","public communication","journal watch","wpa watch","academic search hub","protocolometry center","protocolometry framework","protocolometry engine"
+  "протоколометрија","protocolometry","protocolometric","комуникологија","communicology","communication science",
+  "односи со јавност","public relations","public affairs","public communication","стратешки комуникации","strategic communication","strategic communications",
+  "комуникациска теорија","communication theory","вербална комуникација","невербална комуникација","паравербална комуникација",
+  "verbal communication","non-verbal communication","paraverbal communication",
+  "journal watch","wpa watch","academic search hub","protocolometry center","protocolometry framework","protocolometry engine"
 ];
 
 const STOPWORDS = new Set([
@@ -1323,11 +1327,45 @@ function collectTopicHints(currentMessage = "", history = []) {
   return [...new Set(hits)];
 }
 
+function expandDomainSearchText(text = "") {
+  const q = String(text || "").toLowerCase();
+  const extras = [];
+
+  // Public Relations / Public Affairs / Strategic Communication.
+  if (
+    q.includes("односи со јавност") || q.includes("јавни односи") ||
+    q.includes("public relations") || q.includes("public affairs") ||
+    q.includes("јавна комуникација") || q.includes("public communication") ||
+    (q.includes("стратешк") && q.includes("комуникац")) ||
+    q.includes("strategic communication")
+  ) {
+    extras.push(
+      "protocol public relations public affairs strategic communications media communication reputation",
+      "протокол односи со јавност јавна комуникација стратешки комуникации медиуми углед"
+    );
+  }
+
+  // Communicology questions should also retrieve communication-theory material
+  // even when the indexed source uses older terminology rather than "communicology".
+  if (
+    q.includes("комуниколог") || q.includes("communicolog") ||
+    q.includes("communication science")
+  ) {
+    extras.push(
+      "communication theory verbal communication non-verbal communication paraverbal communication public relations strategic communications",
+      "комуникациска теорија вербална комуникација невербална комуникација паравербална комуникација односи со јавност стратешки комуникации"
+    );
+  }
+
+  return [text, ...extras].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+}
+
 function buildSearchEnvelope(message = "", history = []) {
   const normalizedMessage = normalizeSearchQuery(message);
   const context = recentUserContext(history);
   const followUp = isLikelyFollowUp(message, history) && context.length > 0;
-  const searchText = followUp ? `${normalizeSearchQuery(context.join(" "))} ${normalizedMessage}`.trim() : normalizedMessage;
+  const baseSearchText = followUp ? `${normalizeSearchQuery(context.join(" "))} ${normalizedMessage}`.trim() : normalizedMessage;
+  const searchText = expandDomainSearchText(baseSearchText);
   return { searchText, followUp, topicHints: collectTopicHints(message, history) };
 }
 
