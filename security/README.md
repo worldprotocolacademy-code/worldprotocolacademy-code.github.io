@@ -1,17 +1,17 @@
 # WPA Security documentation structure
 
-This directory replaces the historical root marker file named `security`.
+This directory records the public/private publication boundary for WPA security documentation.
 
-The public security documents `01_...` through `08_...` intentionally remain at repository root for URL stability. Future moves require a separate redirect/link-migration review.
+## Public security governance
 
-## Historical marker content
+The public website may expose only policy-level material intended for external transparency:
 
-security/
-├── 01_certificate_anti_fake_system.md
-├── 02_ai_hallucination_firewall.md
-├── 03_gdpr_structure.md
-├── 04_admin_security_checklist.md
-├── 05_iso_27001_gap_analysis.md
-├── 06_budget_phase1.md
-├── 07_security_policy_v0.1.md
-└── 08_tuv_readiness_checklist.md
+- `02_ai_hallucination_firewall.md` — public AI trust / source-verification framework
+- `03_gdpr_structure.md` — public privacy-readiness structure
+- `07_security_policy_v0.1.md` — public security policy
+
+## Internal working records
+
+Administrative checklists, ISO gap analyses, implementation budgets, credential anti-fraud design details and pre-audit readiness evidence are internal working records. They are not part of the current GitHub Pages publication surface.
+
+Historical versions remain in repository history for audit continuity. Removal from the current Pages branch reduces live-site exposure but does not erase public Git history.
