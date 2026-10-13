@@ -10,11 +10,11 @@ function textFix(root){
   var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var t=n.parentNode&&n.parentNode.nodeName;return /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|OPTION)$/.test(t)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT;}}),n;
   while((n=w.nextNode())){
     var s=String(n.nodeValue||'');
-    s=s.replace(/13 Working Papers \+ 9 Protocol Notes \+ 1 (?:Global )?Strategic Plan/g,'14 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan')
-      .replace(/23 public Zenodo records/g,'24 public Zenodo records')
-      .replace(/13 WPA Working Papers \(Zenodo DOI\)/g,'14 WPA Working Papers (Zenodo DOI)')
-      .replace(/Следните тринаесет working papers/g,'Следните четиринаесет working papers')
-      .replace(/Тринаесетте WPA Working Papers/g,'Четиринаесетте WPA Working Papers')
+    s=s.replace(/13 Working Papers \+ 9 Protocol Notes \+ 1 (?:Global )?Strategic Plan/g,'15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan')
+      .replace(/23 public Zenodo records/g,'25 public Zenodo records')
+      .replace(/13 WPA Working Papers \(Zenodo DOI\)/g,'15 WPA Working Papers (Zenodo DOI)')
+      .replace(/Следните тринаесет working papers/g,'Следните петнаесет working papers')
+      .replace(/Тринаесетте WPA Working Papers/g,'Петнаесетте WPA Working Papers')
       .replace(/Current Canonical Corpus · 26 August 2026/g,'Current Canonical Corpus · 14 September 2026');
     if(s!==n.nodeValue)n.nodeValue=s;
   }
@@ -42,7 +42,7 @@ function bibliography(){
   var currentPath=path();
   if(currentPath!=='/bibliography'&&currentPath!=='/bibliography/index.html')return;
   var line=document.querySelector('.zenodo-doi-line');
-  if(line)line.innerHTML='<strong>DOI coverage: 14 Zenodo records</strong> · Сите записи се author-reviewed public releases со трајни Zenodo DOI идентификатори.';
+  if(line)line.innerHTML='<strong>DOI coverage: 15 Zenodo records</strong> · Сите записи се author-reviewed public releases со трајни Zenodo DOI идентификатори.';
   var bar=document.querySelector('.zenodo-bar-segmented');
   if(bar){
     if(!bar.querySelector('[data-wpa-wp014-segment]')){
@@ -70,7 +70,7 @@ function metrics(){
   var z=document.getElementById('zenodoTotal'),w=document.getElementById('wpTotal'),f=document.getElementById('zenodoFormula');
   if(z)z.textContent='24';
   if(w)w.textContent='14';
-  if(f)f.textContent='24 = 14 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.';
+  if(f)f.textContent='24 = 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.';
 }
 function boot(){textFix(document.body);workingPapers();bibliography();metrics();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
