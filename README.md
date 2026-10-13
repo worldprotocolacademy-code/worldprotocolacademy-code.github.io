@@ -14,7 +14,7 @@ The founder and head of World Protocol Academy, Doc. Dr Sande Smiljanov, has rec
 ## Canonical public metrics
 WPA keeps two publication corpora separate:
 - **27 academic publications** = 6 monographs/handbooks + 1 doctoral dissertation + 20 scientific papers/contributions.
-- **24 public Zenodo records** = 14 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
+- **25 public Zenodo records** = 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.
 Canonical references:
 - `/wpa-metrics-status.html`
 - `/data/wpa-canonical-metrics-status.json`
