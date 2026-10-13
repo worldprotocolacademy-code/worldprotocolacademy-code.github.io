@@ -183,7 +183,7 @@ def check_governance_invariants(errors):
     metrics=ROOT/"data"/"wpa-canonical-metrics-status.json"
     if metrics.exists():
         text=read_text(metrics)
-        for token in ['"total_records": 24','"working_papers": 14','"protocol_notes": 9','"global_strategic_plans": 1']:
+        for token in ['"total_records": 25','"working_papers": 15','"protocol_notes": 9','"global_strategic_plans": 1']:
             if token not in text:add_error(errors,f"Canonical metrics missing publication invariant: {token}")
         if '"status": "FORMATION_PHASE"' not in text:add_error(errors,"Canonical metrics missing AAB formation boundary")
     else:add_error(errors,"Missing canonical metrics JSON")
@@ -214,7 +214,7 @@ def check_final_reconciliation_layer(errors):
     if not core.exists() or "/scripts/wpa-final-reconciliation-20260826.js" not in read_text(core):add_error(errors,"Performance core does not load final reconciliation layer")
     if not layer.exists():add_error(errors,"Missing final public reconciliation layer");return
     tx=read_text(layer)
-    for token in ("Sande Smiljanov, Ph.D.","WP-001–WP-014","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
+    for token in ("Sande Smiljanov, Ph.D.","WP-001–WP-015","Video AI Workflow","Research AI Workflow","To be confirmed","10.5281/zenodo.20641840","data-wpa-wp013-category"):
         if token not in tx:add_error(errors,f"Final reconciliation layer missing invariant: {token}")
     if not note.exists():add_error(errors,"Missing canonical reference-state note")
 def check_commerce_fail_closed(errors):
