@@ -21,7 +21,7 @@
     ['Gemini, Claude/Opus,','AI models,'],
     ['Gemini Omni / Video Workflow','Video AI Workflow'],
     ['Claude / Opus Research Workflow','Research AI Workflow'],
-    ['Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-012.','Сите четиринаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-014.'],
+    ['Сите дванаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-012.','Сите петнаесет WPA Working Papers се објавени како јавни Zenodo DOI записи: WP-001–WP-015.'],
     ['Посебна порта за универзитети, библиотеки, дипломатски академии и стратешки институционални партнери на WPA.','Посебна порта за универзитети, библиотеки, дипломатски академии и потенцијални стратешки институционални соработници на WPA.']
   ];
   function textFix(value){
