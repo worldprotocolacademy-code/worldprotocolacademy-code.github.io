@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldprotocolacademy.mk/ops/ai-search/content-rights-register.schema.json",
+  "title": "WPA AI Search Content Rights Register",
+  "type": "object",
+  "required": ["schema_version", "updated", "records"],
+  "properties": {
+    "schema_version": { "type": "string" },
+    "updated": { "type": "string", "format": "date" },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_key",
+          "rights_status",
+          "promotion_eligible",
+          "reviewed_by",
+          "reviewed_on"
+        ],
+        "properties": {
+          "source_key": { "type": "string", "minLength": 1 },
+          "title": { "type": "string" },
+          "owner_or_issuer": { "type": "string" },
+          "content_sha256": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "rights_status": {
+            "enum": [
+              "AUTHOR_OWNED",
+              "EXPLICIT_LICENSE",
+              "PUBLIC_DOMAIN",
+              "OFFICIAL_PUBLIC_SOURCE_LIMITED_USE",
+              "REVIEW_REQUIRED",
+              "EXCLUDE"
+            ]
+          },
+          "promotion_eligible": { "type": "boolean" },
+          "evidence_type": { "type": "string" },
+          "evidence_reference": { "type": "string" },
+          "permitted_scope": { "type": "string" },
+          "restrictions": { "type": "string" },
+          "reviewed_by": { "type": "string", "minLength": 1 },
+          "reviewed_on": { "type": "string", "format": "date" },
+          "notes": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "rights_status": {
+                  "enum": ["REVIEW_REQUIRED", "EXCLUDE"]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "promotion_eligible": { "const": false }
+              }
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
