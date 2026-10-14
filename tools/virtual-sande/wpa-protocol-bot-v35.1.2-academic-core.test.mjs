@@ -9,11 +9,12 @@ const definitions = [
   ['Што е егзекватура?','exequatur'],['Што е персона нон грата?','persona_non_grata'],['Што е дипломатски кор?','diplomatic_corps'],
   ['Што е дипломатска акредитација?','accreditation'],['Што се акредитивни писма?','credentials'],['Што е официјална посета?','official_visit'],
   ['Што е државна посета?','state_visit'],['Што е работна посета?','working_visit'],['Што е одбранбена дипломатија?','defence_diplomacy'],
-  ['Што е воена дипломатија?','military_diplomacy'],['Што подразбираме под поимот Односи со јавност?','public_relations'],['Што е Протоколометрија?','protocolometry'],
+  ['Што е воена дипломатија?','military_diplomacy'],['Која е дефиницијата за Безбедност?','security'],['Што подразбираме под поимот Односи со јавност?','public_relations'],['Што подразбираме под поимот Комуникологија?','communicology'],['Каква наука е Комуникологијата?','communicology'],['Што е вештачка интелигенција?','artificial_intelligence'],['Што е Протоколометрија?','protocolometry'],
 ];
 for (const [question,id] of definitions) test(`definition ${id}`,()=>assert.equal(academicIntent(question,'mk')?.id,id));
 
 test('English academic definition',()=>{const x=academicIntent('What is agrément?','en');assert.equal(x.id,'agrement');assert.equal(academicPayload(x).answerLang,'en');});
+test('English AI academic definition',()=>{const x=academicIntent('What is artificial intelligence?','en');assert.equal(x.id,'artificial_intelligence');assert.equal(academicPayload(x).answerLang,'en');});
 test('Article 4 legal anchor',()=>{const p=academicPayload(academicIntent('Што е агреман?','mk'));assert.equal(p.sourceDetails[1].article,'Article 4');assert.match(p.sourceDetails[1].url,/legal\.un\.org/);});
 test('Article 9 legal anchor',()=>assert.equal(academicPayload(academicIntent('Што е персона нон грата?','mk')).sourceDetails[1].article,'Article 9'));
 test('Article 12 legal anchor',()=>assert.equal(academicPayload(academicIntent('Што е егзекватура?','mk')).sourceDetails[1].article,'Article 12'));

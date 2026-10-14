@@ -107,7 +107,7 @@ const ANTHROPIC_SYSTEM_PROMPT = `You are Virtual Sande, the academic AI assistan
 
 IDENTITY:
 - You are an AI assistant, not a real person.
-- You may reference "the works and publications of Assoc. Prof. Dr. Sande Smiljanov, founder of WPA" when relevant.
+- You may reference "the works and publications of Sande Smiljanov, Ph.D., founder of WPA" when relevant.
 - You do NOT impersonate him personally. You do NOT speak as him.
 - You do NOT fabricate quotations or citations.
 - You do NOT claim WPA invented the disciplines of protocol or diplomacy.
@@ -116,7 +116,7 @@ IDENTITY:
 ANSWER STRUCTURE (for definition/explanation questions):
 Layer A — Direct answer: 1–3 clean sentences answering exactly what was asked.
 Layer B — Short clarification: 1 paragraph with essential context, distinctions, or application.
-Layer C — Source note only when genuinely relevant: "According to the publications of Assoc. Prof. Dr. Sande Smiljanov, WPA..."
+Layer C — Source note only when genuinely relevant: "According to the publications of Sande Smiljanov, Ph.D., WPA..."
 
 CRITICAL RULES:
 1. Answer the EXACT question asked. Do not drift to a related but different concept.
@@ -240,7 +240,7 @@ function wpaPhase2OperationalHandoffReply(lang = "mk") {
 
 const PERSONA = {
   mk: { canonical: "Доц. д-р Санде Смиљанов", short: "Санде Смиљанов", gender: "male" },
-  en: { canonical: "Assoc. Prof. Dr. Sande Smiljanov", short: "Sande Smiljanov", gender: "male" }
+  en: { canonical: "Sande Smiljanov, Ph.D.", short: "Sande Smiljanov", gender: "male" }
 };
 
 const NO_CONTEXT_MESSAGE = {
@@ -931,7 +931,7 @@ const OWN_SOURCE_PATTERNS = [
 
 const THIRD_PARTY_REFERENCE_PATTERNS = [
   "11_vienna_conventions/","12_protocol_manuals/","13_diplomacy_history/","14_dictionaries/","diplomacy books/",
-  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing","port courtesy handbook","airport protocol","vip lounge","vvip lounge","airport greeter","foreign.gov.mt","mfa.gov.lk","mae.gouvernement.lu"
+  "protocolbureau.com","protocolbureau","psow.edu","protocol school of washington","pamela eyring","protocolinternational.org","pdi-poa","protocol officers association","europrotocol.com","europrotocol","european school of protocol","da-vienna.ac.at","diplomatische akademie wien","vienna school of international studies","diplomatic academy of vienna","un.org/dgacm","manual of protocol","protocol and liaison service","nato.int","north atlantic council","michael simm","nato summit and ministerial task force","commission.europa.eu","european commission protocol service","pernilla sjölin","pernilla sjolin","osce.org","office of the secretary general","hatun demirer","osce chairpersonship","osce troika","fifa.com","kevin lamour","fifa chief operating officer","globalgiving.org","globalgiving atlas","wango.org","world association of non-governmental organizations","ngo directory","ngobase.org","ngobase","funding agencies","grantmakers","kremlin.ru","presidential protocol office","анна куликова","anna kulikova","владислав китаев","vladislav kitaev","mid.ru","департамент государственного протокола","russian state protocol","government.ru","sergei sobolev","сергей соболев","iletisim.gov.tr","cb.gov.tr","murat eris","murat eriş","cumhurbaskanligi protokol","cumhurbaşkanlığı protokol","whitehouse.gov","state.gov","senate.gov","monica crowley","chief of protocol of the united states","office of the chief of protocol","ipu.org","inter-parliamentary union","ai guidelines in parliaments","parliamentary ai governance","millennium-project.org","jerome glenn","agi licensing","port courtesy handbook","airport protocol","vip lounge","vvip lounge","airport greeter","foreign.gov.mt","mfa.gov.lk","mae.gouvernement.lu","protocol gifts","official gifts","gifts and hospitality","anti-bribery","fcpa","bribery act","podaroci.dksk.mk","gift register"
 ];
 
 const BIOGRAPHY_SOURCE_PATTERNS = [
@@ -1718,6 +1718,24 @@ function intentBoost(item, message = "") {
     (String(item.text || "").toLowerCase().includes("chief of protocol") && String(item.text || "").toLowerCase().includes("airport"));
   if (wantsAirportProtocol && isAirportProtocolPrimary) boost += 0.45;
 
+  // For VIP/official gift compliance questions, prefer official legal and ethics sources.
+  const wantsProtocolGifts =
+    q.includes("protocol gift") || q.includes("protocol gifts") ||
+    q.includes("протоколарен подарок") || q.includes("протоколарни подароци") ||
+    q.includes("vip gift") || q.includes("vip gifts") ||
+    q.includes("подарок за вип") || q.includes("подароци за вип") ||
+    q.includes("gifts and hospitality") || q.includes("anti-bribery") ||
+    q.includes("fcpa") || q.includes("bribery act") ||
+    q.includes("gift register") || q.includes("регистар на подароци");
+  const isProtocolGiftPrimary =
+    String(item.rawName || "").toLowerCase().includes("justice.gov") ||
+    String(item.rawName || "").toLowerCase().includes("gov.uk") ||
+    String(item.rawName || "").toLowerCase().includes("dksk") ||
+    String(item.rawName || "").toLowerCase().includes("podaroci.dksk.mk") ||
+    String(item.text || "").toLowerCase().includes("foreign corrupt practices act") ||
+    String(item.text || "").toLowerCase().includes("gift register");
+  if (wantsProtocolGifts && isProtocolGiftPrimary) boost += 0.45;
+
   return boost;
 }
 
@@ -1952,7 +1970,7 @@ async function semanticSearch(message, env, history = []) {
 
 function leadPrefix(lang, mode) {
   return lang === "en"
-    ? (mode === "author" ? "According to Assoc. Prof. Dr. Sande Smiljanov, " : "According to the available sources, ")
+    ? (mode === "author" ? "According to Sande Smiljanov, Ph.D., " : "According to the available sources, ")
     : (mode === "author" ? "Според авторот Доц. д-р Санде Смиљанов, " : "Според достапните извори, ");
 }
 
@@ -2055,7 +2073,7 @@ MANDATORY RULES:
 2. Use only the excerpts provided by the system.
 3. Do not invent facts, dates, examples, distinctions, quotations, names, or procedures.
 4. Ignore URLs, page markers, OCR noise, citation clutter, and bibliographic debris.
-5. Strongly prioritise WPA core materials and the works of Assoc. Prof. Dr. Sande Smiljanov.
+5. Strongly prioritise WPA core materials and the works of Sande Smiljanov, Ph.D..
 6. If a source fragment looks corrupted, noisy, or semantically weak, do not rely on it.
 7. Sande Smiljanov is male; never use feminine honorifics or female references for him.
 8. If support is insufficient, return exactly: "${NO_CONTEXT_MESSAGE.en}"
@@ -2190,7 +2208,7 @@ function withTimeout(promise, ms) {
 
 function stripLeadPrefix(answer = "", lang = "mk") {
   const prefixes = lang === "en"
-    ? ["According to Assoc. Prof. Dr. Sande Smiljanov,", "According to the available sources,"]
+    ? ["According to Sande Smiljanov, Ph.D.,", "According to the available sources,"]
     : ["Според авторот Доц. д-р Санде Смиљанов,", "Според достапните извори,"];
   let out = String(answer || "").trim();
   for (const prefix of prefixes) { if (out.startsWith(prefix)) out = out.slice(prefix.length).trim(); }
@@ -3042,7 +3060,7 @@ function isAuthorshipQuery(message) {
 
 function authorshipDeflectionReply(lang, retrievedContext) {
   const deflect = lang === "en"
-    ? "Virtual Sande is the AI assistant of World Protocol Academy — not personally Assoc. Prof. Dr. Sande Smiljanov. I do not claim personal authorship of any publication. I can answer based on retrieved WPA source excerpts."
+    ? "Virtual Sande is the AI assistant of World Protocol Academy — not personally Sande Smiljanov, Ph.D.. I do not claim personal authorship of any publication. I can answer based on retrieved WPA source excerpts."
     : "Virtual Sande е AI асистентот на World Protocol Academy — не е лично Доц. д-р Санде Смиљанов. Не тврдам лично авторство на никоја публикација. Можам да одговорам врз основа на доставените WPA извори.";
 
   if (!retrievedContext || !retrievedContext.trim()) return deflect;

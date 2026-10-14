@@ -1,10 +1,10 @@
 # ЗАДАЧА A — Verification Methodology v1.1
 ## WPA Protocol Symbols Lab — Source Verification Standard
 
-**Authority:** World Protocol Academy (WPA), Skopje  
-**Director:** Doc. Dr Sande Smiljanov  
-**Document ID:** WPA-MTH-2026-001 (rev. 1)  
-**Status:** Production-grade methodology — pilot phase complete, Tranche A imminent  
+**Authority:** World Protocol Academy (WPA), Skopje
+**Director:** Sande Smiljanov, Ph.D.
+**Document ID:** WPA-MTH-2026-001 (rev. 1)
+**Status:** Production-grade methodology — pilot phase complete, Tranche A imminent
 **Effective:** 23 May 2026
 
 **Changelog v1.0 → v1.1 (Director order, 23 May 2026):**
@@ -201,12 +201,12 @@ Per WPA standard, every URL is recorded in each record's `sources[]` block with 
 
 ## 11. Issued by
 
-**Assoc. Prof. Dr. Sande Smiljanov**  
-Founder and Director, World Protocol Academy  
-Head of Protocol, Ministry of Interior of the Republic of North Macedonia  
+**Sande Smiljanov, Ph.D.**
+Founder and Director, World Protocol Academy
+Head of Protocol, Ministry of Interior of the Republic of North Macedonia
 Skopje, North Macedonia
 
-**Implementing officer:** Claude — WPA Academic & Lab Excellence Officer  
+**Implementing officer:** Claude — WPA Academic & Lab Excellence Officer
 **Date:** 23 May 2026
 
 > *Преговарањето е опционално. Протоколот е апсолутен.*
