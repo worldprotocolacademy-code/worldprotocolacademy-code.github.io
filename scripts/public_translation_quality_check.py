@@ -18,7 +18,7 @@ CONFIG = {
         "required": [
             "independent digital educational, research and authorial platform",
             "development, testing and pilot phase",
-            "26 academic publications",
+            "27 academic publications",
             "Doc. Dr Sande Smiljanov",
         ],
         "required_href": "/en/institute.html",
@@ -29,7 +29,7 @@ CONFIG = {
             "independent digital educational, research and authorial platform",
             "development, testing and pilot phase",
             "Doc. Dr Sande Smiljanov",
-            "thirteen WPA Working Papers",
+            "fifteen WPA Working Papers",
             "To be confirmed",
         ],
     },
