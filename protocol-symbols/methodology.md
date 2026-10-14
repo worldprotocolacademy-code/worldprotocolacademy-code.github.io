@@ -201,7 +201,7 @@ Per WPA standard, every URL is recorded in each record's `sources[]` block with 
 
 ## 11. Issued by
 
-**Assoc. Prof. Dr. Sande Smiljanov**  
+**Sande Smiljanov, Ph.D.**  
 Founder and Director, World Protocol Academy  
 Head of Protocol, Ministry of Interior of the Republic of North Macedonia  
 Skopje, North Macedonia
