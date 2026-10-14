@@ -107,7 +107,7 @@ const ANTHROPIC_SYSTEM_PROMPT = `You are Virtual Sande, the academic AI assistan
 
 IDENTITY:
 - You are an AI assistant, not a real person.
-- You may reference "the works and publications of Assoc. Prof. Dr. Sande Smiljanov, founder of WPA" when relevant.
+- You may reference "the works and publications of Sande Smiljanov, Ph.D., founder of WPA" when relevant.
 - You do NOT impersonate him personally. You do NOT speak as him.
 - You do NOT fabricate quotations or citations.
 - You do NOT claim WPA invented the disciplines of protocol or diplomacy.
@@ -116,7 +116,7 @@ IDENTITY:
 ANSWER STRUCTURE (for definition/explanation questions):
 Layer A — Direct answer: 1–3 clean sentences answering exactly what was asked.
 Layer B — Short clarification: 1 paragraph with essential context, distinctions, or application.
-Layer C — Source note only when genuinely relevant: "According to the publications of Assoc. Prof. Dr. Sande Smiljanov, WPA..."
+Layer C — Source note only when genuinely relevant: "According to the publications of Sande Smiljanov, Ph.D., WPA..."
 
 CRITICAL RULES:
 1. Answer the EXACT question asked. Do not drift to a related but different concept.
@@ -240,7 +240,7 @@ function wpaPhase2OperationalHandoffReply(lang = "mk") {
 
 const PERSONA = {
   mk: { canonical: "Доц. д-р Санде Смиљанов", short: "Санде Смиљанов", gender: "male" },
-  en: { canonical: "Assoc. Prof. Dr. Sande Smiljanov", short: "Sande Smiljanov", gender: "male" }
+  en: { canonical: "Sande Smiljanov, Ph.D.", short: "Sande Smiljanov", gender: "male" }
 };
 
 const NO_CONTEXT_MESSAGE = {
@@ -1952,7 +1952,7 @@ async function semanticSearch(message, env, history = []) {
 
 function leadPrefix(lang, mode) {
   return lang === "en"
-    ? (mode === "author" ? "According to Assoc. Prof. Dr. Sande Smiljanov, " : "According to the available sources, ")
+    ? (mode === "author" ? "According to Sande Smiljanov, Ph.D., " : "According to the available sources, ")
     : (mode === "author" ? "Според авторот Доц. д-р Санде Смиљанов, " : "Според достапните извори, ");
 }
 
@@ -2055,7 +2055,7 @@ MANDATORY RULES:
 2. Use only the excerpts provided by the system.
 3. Do not invent facts, dates, examples, distinctions, quotations, names, or procedures.
 4. Ignore URLs, page markers, OCR noise, citation clutter, and bibliographic debris.
-5. Strongly prioritise WPA core materials and the works of Assoc. Prof. Dr. Sande Smiljanov.
+5. Strongly prioritise WPA core materials and the works of Sande Smiljanov, Ph.D..
 6. If a source fragment looks corrupted, noisy, or semantically weak, do not rely on it.
 7. Sande Smiljanov is male; never use feminine honorifics or female references for him.
 8. If support is insufficient, return exactly: "${NO_CONTEXT_MESSAGE.en}"
@@ -2190,7 +2190,7 @@ function withTimeout(promise, ms) {
 
 function stripLeadPrefix(answer = "", lang = "mk") {
   const prefixes = lang === "en"
-    ? ["According to Assoc. Prof. Dr. Sande Smiljanov,", "According to the available sources,"]
+    ? ["According to Sande Smiljanov, Ph.D.,", "According to the available sources,"]
     : ["Според авторот Доц. д-р Санде Смиљанов,", "Според достапните извори,"];
   let out = String(answer || "").trim();
   for (const prefix of prefixes) { if (out.startsWith(prefix)) out = out.slice(prefix.length).trim(); }
@@ -3042,7 +3042,7 @@ function isAuthorshipQuery(message) {
 
 function authorshipDeflectionReply(lang, retrievedContext) {
   const deflect = lang === "en"
-    ? "Virtual Sande is the AI assistant of World Protocol Academy — not personally Assoc. Prof. Dr. Sande Smiljanov. I do not claim personal authorship of any publication. I can answer based on retrieved WPA source excerpts."
+    ? "Virtual Sande is the AI assistant of World Protocol Academy — not personally Sande Smiljanov, Ph.D.. I do not claim personal authorship of any publication. I can answer based on retrieved WPA source excerpts."
     : "Virtual Sande е AI асистентот на World Protocol Academy — не е лично Доц. д-р Санде Смиљанов. Не тврдам лично авторство на никоја публикација. Можам да одговорам врз основа на доставените WPA извори.";
 
   if (!retrievedContext || !retrievedContext.trim()) return deflect;
