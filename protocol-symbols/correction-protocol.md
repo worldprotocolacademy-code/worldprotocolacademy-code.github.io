@@ -1,10 +1,10 @@
 # WPA Diplomatic Correction Protocol (DCP) v1.1
 
-**Authority:** World Protocol Academy (WPA) — Protocol Symbols Lab  
-**Doctrine:** *Преговарањето е опционално. Протоколот е апсолутен.*  
-**Effective date:** 23 May 2026 (v1.1 amendment same day)  
-**Document ID:** WPA-DCP-2026-001 (rev. 1)  
-**Director:** Sande Smiljanov, Ph.D.  
+**Authority:** World Protocol Academy (WPA) — Protocol Symbols Lab
+**Doctrine:** *Преговарањето е опционално. Протоколот е апсолутен.*
+**Effective date:** 23 May 2026 (v1.1 amendment same day)
+**Document ID:** WPA-DCP-2026-001 (rev. 1)
+**Director:** Sande Smiljanov, Ph.D.
 **Editorial authority:** WPA Academic & Lab Excellence Office
 
 **Changelog v1.0 → v1.1 (Director order, 23 May 2026):**
@@ -65,8 +65,8 @@ The DCP operates on a **two-stage channel** to balance accessibility with diplom
 
 The eligible entity submits the request via electronic mail to the WPA correction inbox.
 
-**Inbox:** `worldprotocolacademy@gmail.com`  
-**Subject line format:** `WPA-DCR | [ISO country code] | [field affected]`  
+**Inbox:** `worldprotocolacademy@gmail.com`
+**Subject line format:** `WPA-DCR | [ISO country code] | [field affected]`
 *(Example: `WPA-DCR | MK | flag.adoption_date_current`)*
 
 **Required content of the email:**
@@ -195,11 +195,11 @@ This provision is doctrinal and cannot be altered except by formal amendment of 
 
 ## 12. Signatures
 
-**Issued by:**  
-Sande Smiljanov, Ph.D.  
-Founder and Director, World Protocol Academy  
-Head of Protocol, Ministry of Interior of the Republic of North Macedonia  
+**Issued by:**
+Sande Smiljanov, Ph.D.
+Founder and Director, World Protocol Academy
+Head of Protocol, Ministry of Interior of the Republic of North Macedonia
 Skopje, 23 May 2026
 
-**Doctrinal seal:**  
+**Doctrinal seal:**
 *Преговарањето е опционално. Протоколот е апсолутен.*
