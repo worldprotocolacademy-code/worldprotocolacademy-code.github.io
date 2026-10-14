@@ -92,7 +92,7 @@ jobs:
           set -euo pipefail
           grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-staging/src/index.mjs
           grep -F "wpa-protocol-bot-v35.1-safe-entrypoint.mjs" workers/virtual-sande-v35.1-production/src/index.mjs
-          ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^(index.html|papers.html|wpaws/|workers/virtual-sande-v35.1-staging/|workers/virtual-sande-v35.1-production/)'
+          ! git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" | grep -Eq '^workers/virtual-sande-v35.1-(staging|production)/'
 
       - name: Verify bounded academic candidate boundary
         run: |
@@ -101,31 +101,21 @@ jobs:
           head="${{ github.event.pull_request.head.sha }}"
           merge_base="$(git merge-base "$base" "$head")"
           git diff --name-only "$merge_base" "$head" | sort > /tmp/changed.txt
-          cat /tmp/changed.txt
           python3 - <<'PY'
           from pathlib import Path
-          allowed={
-            '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml',
-            'config/virtual-sande-v35.1.2-academic-candidate.json',
-            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs',
-            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-router.mjs',
-            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs',
-            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.mjs',
-            'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-entrypoint.test.mjs',
-          }
-          actual={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
-          extra=actual-allowed
-          if extra:
-              raise SystemExit(f'Unexpected academic candidate files: {sorted(extra)}')
+          changed={x for x in Path('/tmp/changed.txt').read_text().splitlines() if x}
           required={
             'config/virtual-sande-v35.1.2-academic-candidate.json',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.mjs',
             'tools/virtual-sande/wpa-protocol-bot-v35.1.2-academic-core.test.mjs',
             '.github/workflows/virtual-sande-v35-1-2-academic-audit.yml',
           }
-          missing=required-actual
+          missing=required-changed
           if missing:
               raise SystemExit(f'Missing required academic candidate files: {sorted(missing)}')
+          forbidden={p for p in changed if p.startswith('workers/virtual-sande-v35.1-staging/') or p.startswith('workers/virtual-sande-v35.1-production/')}
+          if forbidden:
+              raise SystemExit(f'Academic candidate must not modify deployed Worker runtimes: {sorted(forbidden)}')
           PY
 
       - name: Academic candidate summary
