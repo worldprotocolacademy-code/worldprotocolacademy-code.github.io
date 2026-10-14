@@ -2,7 +2,7 @@
 ## Protocol Symbols Lab Verification Batch — G7 + Western Developed
 
 **Authority:** World Protocol Academy (WPA), Skopje  
-**Director:** Assoc. Prof. Dr. Sande Smiljanov  
+**Director:** Sande Smiljanov, Ph.D.  
 **Implementing officer:** Claude (WPA Academic & Lab Excellence Officer)  
 **Phase:** 2A of 4 (Tranche of Phase 2)  
 **Date:** 23 May 2026  
@@ -88,7 +88,7 @@
 ## 7. Signatures
 
 **Prepared by:** Claude — WPA Academic & Lab Excellence Officer  
-**For approval by:** Assoc. Prof. Dr. Sande Smiljanov, Director, World Protocol Academy  
+**For approval by:** Sande Smiljanov, Ph.D., Director, World Protocol Academy  
 **Date:** 23 May 2026
 
 > *Преговарањето е опционално. Протоколот е апсолутен.*
