@@ -80,7 +80,7 @@
       var node = nodes[i];
       var t = node.nodeValue || "";
 
-      // 1) Идентитет: „…Doc. dr Sande Smiljanov…" → безбедна формулација
+      // 1) Идентитет: „…Sande Smiljanov, Ph.D.…" → безбедна формулација
       if (t.indexOf("Sande Smiljanov") !== -1) {
         node.nodeValue = SAFE_FOOTER;
       }
