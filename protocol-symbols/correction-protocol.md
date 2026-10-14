@@ -1,10 +1,10 @@
 # WPA Diplomatic Correction Protocol (DCP) v1.1
 
-**Authority:** World Protocol Academy (WPA) — Protocol Symbols Lab  
-**Doctrine:** *Преговарањето е опционално. Протоколот е апсолутен.*  
-**Effective date:** 23 May 2026 (v1.1 amendment same day)  
-**Document ID:** WPA-DCP-2026-001 (rev. 1)  
-**Director:** Assoc. Prof. Dr. Sande Smiljanov  
+**Authority:** World Protocol Academy (WPA) — Protocol Symbols Lab
+**Doctrine:** *Преговарањето е опционално. Протоколот е апсолутен.*
+**Effective date:** 23 May 2026 (v1.1 amendment same day)
+**Document ID:** WPA-DCP-2026-001 (rev. 1)
+**Director:** Sande Smiljanov, Ph.D.
 **Editorial authority:** WPA Academic & Lab Excellence Office
 
 **Changelog v1.0 → v1.1 (Director order, 23 May 2026):**
@@ -65,8 +65,8 @@ The DCP operates on a **two-stage channel** to balance accessibility with diplom
 
 The eligible entity submits the request via electronic mail to the WPA correction inbox.
 
-**Inbox:** `worldprotocolacademy@gmail.com`  
-**Subject line format:** `WPA-DCR | [ISO country code] | [field affected]`  
+**Inbox:** `worldprotocolacademy@gmail.com`
+**Subject line format:** `WPA-DCR | [ISO country code] | [field affected]`
 *(Example: `WPA-DCR | MK | flag.adoption_date_current`)*
 
 **Required content of the email:**
@@ -158,7 +158,7 @@ All decisions are signed by the WPA Director (or designate) and recorded with ti
 Where a state disputes a WPA decision, escalation follows the diplomatic hierarchy:
 
 1. **First instance:** WPA Academic & Lab Excellence Officer (decision).
-2. **Second instance:** WPA Director (Assoc. Prof. Dr. Sande Smiljanov).
+2. **Second instance:** WPA Director (Sande Smiljanov, Ph.D.).
 3. **Final instance:** WPA Governing Board — referral by the Director with a written opinion. The Governing Board (constituted with international diplomatic and academic representation) may convene a 3-member ad-hoc panel that issues a binding decision within 60 days.
 
 WPA's commitment: **no record will remain in `partial_consensus` status indefinitely once a state has formally engaged the DCP.** A definitive resolution — Approved or Rejected with rationale — will be reached.
@@ -195,11 +195,11 @@ This provision is doctrinal and cannot be altered except by formal amendment of 
 
 ## 12. Signatures
 
-**Issued by:**  
-Assoc. Prof. Dr. Sande Smiljanov  
-Founder and Director, World Protocol Academy  
-Head of Protocol, Ministry of Interior of the Republic of North Macedonia  
+**Issued by:**
+Sande Smiljanov, Ph.D.
+Founder and Director, World Protocol Academy
+Head of Protocol, Ministry of Interior of the Republic of North Macedonia
 Skopje, 23 May 2026
 
-**Doctrinal seal:**  
+**Doctrinal seal:**
 *Преговарањето е опционално. Протоколот е апсолутен.*
