@@ -102,8 +102,8 @@
       : "with a result of";
 
     var founderText = isMK
-      ? 'Основач: <strong>Assoc. Prof. Dr. Sande Smiljanov</strong>'
-      : 'Founder: <strong>Assoc. Prof. Dr. Sande Smiljanov</strong>';
+      ? 'Основач: <strong>Sande Smiljanov, Ph.D.</strong>'
+      : 'Founder: <strong>Sande Smiljanov, Ph.D.</strong>';
 
     var orcidText = "ORCID: <strong>0009-0008-3219-394X</strong>";
 
