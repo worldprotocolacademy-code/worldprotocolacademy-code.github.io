@@ -66,11 +66,11 @@ jobs:
           grep -F 'No recording consent yet' practitioner-lectures/index.html
           grep -F 'automatic payment collection' data/wpa-institute-functional-registry.json
           grep -F 'automatic ordinal institutional ranking' data/wpa-institute-functional-registry.json
-          grep -F 'Open Function Console' institute.html
-          grep -F 'Open AAB Governance' institute.html
-          grep -F 'Open Benchmark Workspace' institute.html
-          grep -F 'Build Practitioner Lecture Brief' institute.html
-          grep -F 'Open Live Metrics & Status' institute.html
+          grep -F 'href="/tools/institute-function-console/"' institute.html
+          grep -F 'href="aab-governance.html"' institute.html
+          grep -F 'href="/wpa-global-protocol-diplomacy-benchmark.html"' institute.html
+          grep -F 'href="/practitioner-lectures/"' institute.html
+          grep -F 'href="/wpa-metrics-status.html"' institute.html
 
       - name: Diff hygiene
         run: git diff --check "${{ github.event.pull_request.base.sha }}"...HEAD
