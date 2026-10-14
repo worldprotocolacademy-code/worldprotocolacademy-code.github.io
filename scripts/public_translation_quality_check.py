@@ -18,8 +18,8 @@ CONFIG = {
         "required": [
             "independent digital educational, research and authorial platform",
             "development, testing and pilot phase",
-            "26 academic publications",
-            "Doc. Dr Sande Smiljanov",
+            "27 academic publications",
+            "Sande Smiljanov, Ph.D.",
         ],
         "required_href": "/en/institute.html",
     },
@@ -28,7 +28,7 @@ CONFIG = {
         "required": [
             "independent digital educational, research and authorial platform",
             "development, testing and pilot phase",
-            "Doc. Dr Sande Smiljanov",
+            "Sande Smiljanov, Ph.D.",
             "thirteen WPA Working Papers",
             "To be confirmed",
         ],
@@ -153,7 +153,7 @@ def audit(path: Path, cfg: dict) -> list[str]:
         errors.append(f"canonical mismatch: {parser.canonicals}")
     if parser.og_urls != [cfg["canonical"]]:
         errors.append(f"og:url mismatch: {parser.og_urls}")
-    if parser.authors != ["Doc. Dr Sande Smiljanov"]:
+    if parser.authors != ["Sande Smiljanov, Ph.D."]:
         errors.append(f"author mismatch: {parser.authors}")
     if parser.provenance != 1:
         errors.append(f"expected one static provenance marker, found {parser.provenance}")
