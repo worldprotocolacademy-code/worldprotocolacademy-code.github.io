@@ -82,3 +82,61 @@ The relationship is:
 **WPA Institutional Operating Protocol -> WIIE -> specialist profiles / evidence -> WPA FUTURES 2040 -> AI PROTOCOL Gate -> Human Gate -> implementation -> adversarial review -> verification -> governed learning.**
 
 This preserves the distinction between **scenario analysis** and **prediction**, and between **machine capability** and **institutional authority**.
+
+
+---
+
+## 16 October 2026 doctrine extension — AI PROTOCOL 2030–2040
+
+This addendum is extended with a rights-and-governance layer for the transition from AI tools to increasingly agentic institutional systems.
+
+### Strategic doctrine
+
+WPA will treat 2030–2040 as a governance horizon rather than a prediction exercise. The core research question is not simply what AI will be able to do, but whether institutions retain legitimate human authority, visible responsibility, traceable provenance and meaningful human recourse as AI capability expands.
+
+### Five additional research lines
+
+1. **Agentic transition** — governance of the shift from answer-generating systems to planning, tool-using and action-taking AI agents.
+2. **Right to Human Presence** — conditions under which a person must be able to obtain accountable human review of a consequential AI-mediated process.
+3. **Verified digital provenance** — authentication of consequential voices, images, documents, instructions and synthetic media.
+4. **Intergenerational AI responsibility** — long-horizon effects of present-day infrastructure, data and automation choices on future autonomy and institutional legitimacy.
+5. **AI literacy as civic literacy** — practical ability to question outputs, verify sources, understand uncertainty and recognise when human escalation is required.
+
+### Right to Human Presence
+
+WPA adopts the following research proposition for development and testing:
+
+> No technological efficiency should completely extinguish the right of a human being to be heard by a human being where a consequential institutional process materially affects rights, safety, legal position, health, access to essential services or institutional status.
+
+The strength of this safeguard rises with consequence. Human review should be mandatory or presumptively available where there is irreversible impact, material rights effect, contested facts, uncertainty, vulnerability, opaque reasoning or a legal/institutional duty of accountable discretion.
+
+### WPA 2040 Test
+
+In addition to the existing seven-question institutional stress test, WPA will apply a compact rights-facing test:
+
+1. **Human dignity** — does the system preserve the dignity of the person affected?
+2. **Challenge** — can the person meaningfully contest the result?
+3. **Responsibility** — is it clear who remains accountable?
+4. **Traceability** — can the decision and source chain be reconstructed?
+5. **Future acceptability** — would we accept the same rule if it governed our own children or successors in 2040?
+
+A negative answer creates a presumption that the design requires additional safeguards, narrower scope or human review before consequential deployment.
+
+### Programme identity
+
+The public-facing initiative may be presented as:
+
+**WPA FUTURES 2030–2040 — Global Protocol, AI Governance & Human Dignity Programme**
+
+This is a research and educational programme identity inside the existing WPA FUTURES 2040 architecture; it does not create a separate legal entity, accreditation claim or autonomous institutional structure.
+
+### Updated strategic proposition
+
+> The protocol of the future will regulate not only relations between human beings and between states, but also relations between human and machine, institution and algorithm, and state and artificial intelligence.
+
+### Updated WIIE routing
+
+For high-consequence institutional proposals, WIIE should test:
+
+**evidence -> scenario horizon -> agentic-risk assessment -> provenance -> WPA 2040 Test -> AI PROTOCOL Gate -> Human Gate -> bounded implementation -> monitoring -> correction -> governed learning**
+
