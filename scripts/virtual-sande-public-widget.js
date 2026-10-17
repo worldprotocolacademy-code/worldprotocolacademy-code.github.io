@@ -115,10 +115,48 @@
       .trim();
   }
 
+  function ceremonialMilitaryEtiquetteComparison(lang) {
+    var mk = [
+      'Да, постои јасна разлика меѓу церемонијалот, воениот протокол и етикецијата, иако во практиката тие често се допираат.',
+      '',
+      'Церемонијал — практичното и видливо спроведување на протоколарните правила преку однапред утврдена свечена постапка. Тој го определува текот на дејствата, движењето, поздравите, почестите, симболичките елементи и времеследот на настанот.',
+      '',
+      'Воен протокол — специјализиран дел од протоколот применет во воени и одбранбени средини. Тој ги уредува воените почести, постројувањето, пречекот и испраќањето на високи личности, употребата на знамиња и симболи, военото обраќање, редот, церемониите и координацијата меѓу воени и цивилни структури.',
+      '',
+      'Етикеција — правила за пристојно, учтиво и соодветно лично однесување во општествени, професионални и официјални средини. Таа се однесува на поздравувањето, претставувањето, комуникацијата, облекувањето, однесувањето на маса и општата култура на однесување.',
+      '',
+      'Клучната разлика е во нивото на регулирање: церемонијалот го уредува текот на свечениот чин; воениот протокол го уредува официјалниот ред и постапување во воена средина; етикецијата го уредува личното однесување.',
+      '',
+      'Кратка WPA формулација: протоколот ја утврдува нормата, церемонијалот ја претвора нормата во видливо дејство, воениот протокол ја применува нормата во воена институционална средина, а етикецијата го уредува личното однесување.'
+    ].join('\n');
+
+    var en = [
+      'Yes, there is a clear distinction between ceremonial, military protocol and etiquette, although they often overlap in practice.',
+      '',
+      'Ceremonial — the practical and visible implementation of protocol rules through a pre-arranged formal sequence. It determines actions, movement, greetings, honours, symbolic elements and timing.',
+      '',
+      'Military protocol — a specialised branch of protocol applied in military and defence environments. It governs military honours, formations, reception and departure of senior officials, flags and symbols, military forms of address, ceremonial order and coordination between military and civilian structures.',
+      '',
+      'Etiquette — rules of courteous and appropriate personal conduct in social, professional and official settings. It covers greetings, introductions, communication, dress, table manners and general conduct.',
+      '',
+      'The key difference lies in the level being regulated: ceremonial governs the sequence of the formal act; military protocol governs official order and conduct in a military environment; etiquette governs personal behaviour.',
+      '',
+      'Concise WPA formulation: protocol establishes the norm, ceremonial turns the norm into visible action, military protocol applies the norm in a military institutional environment, and etiquette governs personal conduct.'
+    ].join('\n');
+    return lang === 'en' ? en : mk;
+  }
+
   function localCoreAnswer(question) {
     var q = normalizeQuestion(question);
     var lang = isEnglish() ? 'en' : 'mk';
     var key = '';
+
+    if ((/разлика|разликува|спореди|наспроти|или пак нема разлика|difference|compare|versus| vs /.test(q)) &&
+        /церемонијал|ceremonial/.test(q) &&
+        /воен протокол|military protocol/.test(q) &&
+        /етикеција|бон тон|бон-тон|etiquette|bon ton/.test(q)) {
+      return ceremonialMilitaryEtiquetteComparison(lang);
+    }
 
     if (/безбедност|безбедносни студии|security|security studies/.test(q)) key = 'security';
     else if (/комуникологија|communicology|communication science/.test(q)) key = 'communicology';
