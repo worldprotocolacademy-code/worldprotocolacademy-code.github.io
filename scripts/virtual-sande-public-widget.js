@@ -115,10 +115,43 @@
       .trim();
   }
 
+  function defenceMilitaryComparison(lang) {
+    var mk = [
+      'Одбранбената дипломатија и воената дипломатија се поврзани, но не се исти поим.',
+      '',
+      'Одбранбена дипломатија — поширока стратешка и институционална рамка преку која одбранбениот сектор во мирновременски услови придонесува кон надворешната политика, меѓународната соработка, градењето доверба, превенцијата на конфликти, партнерствата, обуките и мерките за транспарентност.',
+      '',
+      'Воена дипломатија — потесен оперативен и професионален инструмент што се реализира преку воени претставници, воени аташеа, директни контакти меѓу вооружени сили, професионални воени размени и воено-претставничка комуникација.',
+      '',
+      'Клучна разлика: одбранбената дипломатија е пошироката рамка; воената дипломатија е еден од нејзините инструменти.',
+      '',
+      'Кратка WPA формулација: одбранбената дипломатија ја определува стратешката рамка на меѓународното дејствување на одбранбениот сектор, а воената дипломатија ја спроведува преку воено-професионални канали.'
+    ].join('\n');
+
+    var en = [
+      'Defence diplomacy and military diplomacy are related, but they are not identical concepts.',
+      '',
+      'Defence diplomacy — the broader strategic and institutional framework through which the defence sector contributes in peacetime to foreign policy, international cooperation, confidence-building, conflict prevention, partnerships, training and transparency measures.',
+      '',
+      'Military diplomacy — the narrower operational and professional instrument conducted through military representatives, defence attachés, direct armed-forces contacts, professional military exchanges and military-representational communication.',
+      '',
+      'Key distinction: defence diplomacy is the broader framework; military diplomacy is one of its instruments.',
+      '',
+      'Concise WPA formulation: defence diplomacy defines the strategic framework for the defence sector’s international engagement, while military diplomacy implements it through military-professional channels.'
+    ].join('\n');
+    return lang === 'en' ? en : mk;
+  }
+
   function localCoreAnswer(question) {
     var q = normalizeQuestion(question);
     var lang = isEnglish() ? 'en' : 'mk';
     var key = '';
+
+    if ((/разлика|разликува|спореди|наспроти|difference|compare|versus| vs /.test(q)) &&
+        /одбранбена дипломатија|defence diplomacy|defense diplomacy/.test(q) &&
+        /воена дипломатија|military diplomacy/.test(q)) {
+      return defenceMilitaryComparison(lang);
+    }
 
     if (/безбедност|безбедносни студии|security|security studies/.test(q)) key = 'security';
     else if (/комуникологија|communicology|communication science/.test(q)) key = 'communicology';
