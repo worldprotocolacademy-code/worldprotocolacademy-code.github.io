@@ -5,6 +5,7 @@
   var PILOT_URL = '/data/global-institutions/pilot-20/v1.3.1/';
   var SUBLIMATE_URL = '/wpa-sublimate-engine.html';
   var JOURNAL_LIVE_URL = '/journal/live/';
+  var DAILY_PRODUCT_URL = '/institute/daily/';
   var PN003_DOI_URL = 'https://doi.org/10.5281/zenodo.21390763';
 
   function path() {
@@ -153,8 +154,10 @@
     var nav = document.querySelector('.nav-wrap nav .nav-links');
     if (nav) {
       var tools = nav.querySelector('a[href="#wpa-public-tools-hub"]');
-      var pilot = makeLink('wpaPilot20InstituteNav', 'wpa-pilot20-inline-link wpa-pilot20-institute-nav-link', PILOT_URL, 'Pilot 20', 'WPA Pilot 20');
-      if (tools) tools.insertAdjacentElement('afterend', pilot); else nav.appendChild(pilot);
+      var daily = makeLink('wpaInstituteDailyNav', 'wpa-journal-live-entry', DAILY_PRODUCT_URL, 'Daily Brief', 'WPA Institute Daily Brief');
+      if (tools) tools.insertAdjacentElement('afterend', daily); else nav.appendChild(daily);
+      var pilot = makeLink('wpaPilot20InstituteNav', 'wpa-pilot20-inline-link wpa-pilot20-institute-nav-link', PILOT_URL, 'Pilot 20 Evidence', 'WPA Pilot 20 Evidence Package');
+      if (daily) daily.insertAdjacentElement('afterend', pilot); else nav.appendChild(pilot);
 
       var journalAnchor = nav.querySelector('a[href="journal/index.html"]');
       var journal = makeLink('wpaLiveInstituteNavLink', 'wpa-journal-live-entry', JOURNAL_LIVE_URL, 'Journal Live', 'WPA Journal Live');
@@ -168,8 +171,10 @@
     var hero = document.querySelector('.hero .hero-cta');
     if (hero) {
       var protocolometry = hero.querySelector('a[href="/protocolometry-center.html"]');
-      var pilotHero = makeLink('wpaPilot20InstituteHero', 'btn btn-primary wpa-pilot20-hero-button', PILOT_URL, 'Pilot 20', 'WPA Pilot 20');
-      if (protocolometry) protocolometry.insertAdjacentElement('afterend', pilotHero); else hero.appendChild(pilotHero);
+      var dailyHero = makeLink('wpaInstituteDailyHero', 'btn btn-primary wpa-pilot20-hero-button', DAILY_PRODUCT_URL, 'Daily Brief', 'WPA Institute Daily Brief');
+      if (protocolometry) protocolometry.insertAdjacentElement('afterend', dailyHero); else hero.appendChild(dailyHero);
+      var pilotHero = makeLink('wpaPilot20InstituteHero', 'btn btn-primary wpa-pilot20-hero-button', PILOT_URL, 'Pilot 20 Evidence', 'WPA Pilot 20 Evidence Package');
+      if (dailyHero) dailyHero.insertAdjacentElement('afterend', pilotHero); else hero.appendChild(pilotHero);
 
       var briefings = hero.querySelector('a[href="wpa-briefings.html"]');
       var subHero = makeLink('wpaSublimateInstituteHero', 'btn btn-primary wpa-sublimate-hero-button', SUBLIMATE_URL, copy.openSublimate, 'WPA Sublimate Engine Preview');
