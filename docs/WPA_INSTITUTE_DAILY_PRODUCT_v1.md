@@ -22,13 +22,14 @@ The product is not an automatic scientific publication. It is a finished daily b
    - Public Relations
    - Security
    - Communicology
-7. deterministic ranking and deduplication
-8. daily package generation:
+7. deterministic ranking, deduplication and diversity limits (maximum 3 items per source family and per domain after domain seeding)
+8. executive snapshot + WPA working angle + recommended production route for every selected item
+9. daily package generation:
    - HTML
    - Markdown
    - provenance JSON
-9. dated archive and latest pointer
-10. Human Gate
+10. dated archive and latest pointer
+11. Human Gate
 
 ## Canonical outputs
 
@@ -73,6 +74,9 @@ A daily run passes only when:
 - every selected item passes minimum relevance and source-confidence thresholds;
 - at least 3 items are selected;
 - at least 2 WPA domains are represented;
+- at least 2 source families are represented;
+- every selected item contains a WPA working angle and recommended production route;
+- an executive snapshot with a lead item is generated;
 - HTML, Markdown and JSON are all generated;
 - the archive index is updated;
 - Human Gate remains PENDING;
