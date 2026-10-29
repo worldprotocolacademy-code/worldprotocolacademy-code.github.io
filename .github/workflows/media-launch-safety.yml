@@ -38,6 +38,7 @@ jobs:
           const language=read("media/data/language-audio-policy.json");
           const support=read("media/data/community-support-policy.json");
           const presenters=read("media/data/presenters.json");
+          const programmes=read("media/data/programmes.json");
 
           if(launch.timezone!=="Europe/Skopje") throw new Error("Morning launch timezone drift.");
           if(launch.launch_local_time!=="07:00") throw new Error("Morning pilot launch time drift.");
@@ -58,6 +59,18 @@ jobs:
           if(support.principles?.editorial_influence!==false) throw new Error("Support must not influence editorial coverage.");
           if(presenters.policy?.human_gate_required!==true) throw new Error("Presenter Human Gate missing.");
           if(presenters.policy?.automatic_publication!==false) throw new Error("Automatic publication must remain disabled.");
+          if(presenters.policy?.canonical_faces_locked!==true||presenters.policy?.identity_drift_forbidden!==true)
+            throw new Error("Canonical presenter identity lock missing.");
+          if(presenters.characters?.protokolka?.public_program_alias!=="Виралната дипломатка")
+            throw new Error("Viral Diplomatka alias drift.");
+          if(presenters.characters?.diplomat?.public_program_alias!=="Виралниот дипломат")
+            throw new Error("Viral Diplomat alias drift.");
+          if(programmes.boundaries?.automatic_external_publication!==false)
+            throw new Error("Programme auto-publication boundary drift.");
+          if(programmes.programmes?.wpa_news_daily?.human_gate!=="REQUIRED_BEFORE_EXTERNAL_PUBLICATION")
+            throw new Error("WPA NEWS Human Gate drift.");
+          if(programmes.programmes?.wpa_protocol_tv?.human_gate!=="REQUIRED_BEFORE_RECORDING_OR_EXTERNAL_PUBLICATION")
+            throw new Error("Protocol TV Human Gate drift.");
 
           console.log("Policy JSON gates: PASS");
           NODE
