@@ -1,6 +1,6 @@
 {
   "schema": "wpa-connected-vessels-system/1.0",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "updated": "2026-10-29",
   "name": "WPA System of Connected Vessels",
   "name_mk": "WPA Систем на сврзани садови",
@@ -216,16 +216,17 @@
   },
   "daily_product": {
     "route": "/institute/daily/",
-    "archive": "/data/institute-daily/index.json",
-    "status": "AUTOMATION_IMPLEMENTED_PENDING_FIRST_VERIFIED_SCHEDULED_RUN",
+    "archive": "GitHub Actions artifact · 90-day retention",
+    "status": "LIVE_DYNAMIC_DAILY__SCHEDULED_ARCHIVE",
     "canonical_input": "WPA Journal Live",
-    "cadence": "daily at 04:17 UTC",
+    "cadence": "live on page load/refresh + scheduled archive at 04:17 UTC",
     "output_formats": [
-      "HTML",
-      "Markdown",
-      "provenance JSON"
+      "live HTML",
+      "downloadable Markdown",
+      "downloadable provenance JSON",
+      "scheduled dated artifact"
     ],
-    "role": "produce a finished daily Institute briefing package ready for Human Gate",
+    "role": "produce a finished daily Institute briefing directly from the fresh Journal Live packet and retain a separately health-gated scheduled archive",
     "human_gate_required_for_consequential_release": true,
     "automatic_external_publishing": false,
     "automatic_scientific_publication": false,
