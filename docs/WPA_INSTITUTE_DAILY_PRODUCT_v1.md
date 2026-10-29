@@ -1,6 +1,6 @@
 # WPA Institute Daily Product v1
 
-Status: AUTOMATED DAILY · READY FOR HUMAN GATE  
+Status: AUTOMATED DAILY · READY FOR HUMAN GATE
 Date: 2026-10-29
 
 ## Purpose
