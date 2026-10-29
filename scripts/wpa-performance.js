@@ -344,7 +344,7 @@
   if (isHome()) addStylesheet('wpa-home-five-row-nav-css', '/styles/wpa-home-nav-five-rows.css?v=20260810-2');
   if (isPublicSquare()) addScript('wpa-public-square-runtime', '/scripts/wpa-public-square-runtime.js?v=20260827-1');
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
-  addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20260722');
+  addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20261029-1');
 
   boot();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
