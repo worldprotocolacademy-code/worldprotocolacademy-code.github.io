@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   translator-quality:
-    name: Validate translator system
+    name: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'automation/') && 'Automation PR · translator validation delegated to protected publisher' || 'Validate translator system' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
