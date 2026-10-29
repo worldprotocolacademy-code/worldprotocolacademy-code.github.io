@@ -1,6 +1,6 @@
 {
   "schema": "wpa-connected-vessels-system/1.0",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "updated": "2026-10-29",
   "name": "WPA System of Connected Vessels",
   "name_mk": "WPA Систем на сврзани садови",
@@ -101,6 +101,8 @@
       "id": "V07",
       "name": "Public Communication and Social Vessel",
       "systems": [
+        "WPA Protocol TV",
+        "WPA NEWS · Daily Brief",
         "WPA Media / Global Aggregator",
         "WPA website",
         "Facebook",
@@ -212,7 +214,32 @@
     "live_intake": "/journal/live/",
     "source_priority": "Official institutional source for the institution's own acts/statements -> wire/news agency -> editorial reporting -> specialist analysis -> expert audio -> discovery/context.",
     "human_gate_required": true,
-    "automatic_external_publishing": false
+    "automatic_external_publishing": false,
+    "broadcast_programmes": {
+      "daily_news": {
+        "route": "/media/news/",
+        "status": "LIMITED_PRODUCTION__PACK_AUTOMATION_ACTIVE__RENDER_ADAPTER_PENDING",
+        "presenters": [
+          "Виралната дипломатка",
+          "Виралниот дипломат"
+        ],
+        "canonical_input": "/institute/daily/ + /journal/live/",
+        "workflow": ".github/workflows/wpa-media-programmes-production.yml"
+      },
+      "protocol_tv": {
+        "route": "/media/protocol-tv/",
+        "status": "EPISODE_MASTER_AUTOMATION_ACTIVE__HUMAN_LONGFORM_GATE",
+        "presenters": [
+          "Виралната дипломатка",
+          "Виралниот дипломат"
+        ],
+        "target_runtime_minutes": [
+          24,
+          30
+        ],
+        "workflow": ".github/workflows/wpa-media-programmes-production.yml"
+      }
+    }
   },
   "daily_product": {
     "route": "/institute/daily/",
