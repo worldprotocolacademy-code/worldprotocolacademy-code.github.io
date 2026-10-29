@@ -1,0 +1,111 @@
+name: WPA Media Programmes Production
+
+on:
+  schedule:
+    - cron: '45 4 * * *'
+    - cron: '15 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Production pack to generate
+        required: true
+        default: all
+        type: choice
+        options:
+          - daily
+          - weekly
+          - all
+  pull_request:
+    paths:
+      - 'scripts/generate_wpa_media_programmes.py'
+      - 'media/**'
+      - '.github/workflows/wpa-media-programmes-production.yml'
+      - 'tools/data/daily-protocol-minute-30-days.json'
+      - 'scripts/generate_wpa_institute_daily.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpa-media-programmes-production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Compile and deterministic self-test
+        run: |
+          python -m py_compile scripts/generate_wpa_media_programmes.py
+          python scripts/generate_wpa_media_programmes.py --repo-root . --mode all --self-test
+
+  produce:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Choose production mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "value=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.schedule }}" = "15 5 * * 0" ]; then
+            echo "value=weekly" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=daily" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate production pack
+        run: |
+          python scripts/generate_wpa_media_programmes.py \
+            --repo-root . \
+            --output-dir .wpa-media-output \
+            --mode "${{ steps.mode.outputs.value }}"
+
+      - name: Validate production boundaries
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path(".wpa-media-output")
+          manifests=list(root.rglob("*.json"))
+          if not manifests:
+              raise SystemExit("No media production JSON was generated")
+          for p in manifests:
+              d=json.loads(p.read_text(encoding="utf-8"))
+              if "boundaries" in d and d["boundaries"].get("automatic_external_publication") is not False:
+                  raise SystemExit(f"Automatic publication boundary drift: {p}")
+              if "presenters" in d:
+                  aliases={v.get("public_alias") for v in d["presenters"].values()}
+                  if "Виралната дипломатка" not in aliases or "Виралниот дипломат" not in aliases:
+                      raise SystemExit(f"Canonical presenter aliases missing: {p}")
+          print("WPA MEDIA PRODUCTION BOUNDARY GATE PASS")
+          PY
+
+      - name: Archive ready-to-record / episode-master package
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-media-${{ steps.mode.outputs.value }}-${{ github.run_number }}
+          path: .wpa-media-output/**
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Release boundary
+        run: |
+          echo "Production pack generated and archived."
+          echo "No external social/video publication was attempted."
+          echo "Voice/avatar rendering remains dependent on approved canonical assets and production adapters."
+          echo "Human Gate remains required before recording/rendering release and platform delivery."
