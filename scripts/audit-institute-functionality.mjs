@@ -56,6 +56,7 @@ const requiredStrings=[
   '/aab-governance.html',
   '/protocolometry-center.html',
   '/tools/research-output-builder/',
+  '/institute/daily/',
   '/protocol-notes/',
   '/wpa-metrics-status.html'
 ];
