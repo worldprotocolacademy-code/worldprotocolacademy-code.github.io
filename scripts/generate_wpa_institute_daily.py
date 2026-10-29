@@ -93,7 +93,7 @@ def build(packet,a,now):
  for x in eligible:
   if len(chosen)>=a.max_items:break
   take(x)
- chosen=chosen[:a.max_items]; dc=len(set(x['domain'] for x in chosen)); sc=len(set(clean(x['source']).lower() for x in chosen))
+ chosen=sorted(chosen[:a.max_items],key=lambda x:(x['score'],x['source_confidence'],x['published_at']),reverse=True); dc=len(set(x['domain'] for x in chosen)); sc=len(set(clean(x['source']).lower() for x in chosen))
  if len(chosen)<a.min_items:raise RuntimeError('Health gate: only %d eligible items'%len(chosen))
  if dc<a.min_domains:raise RuntimeError('Health gate: only %d domains represented'%dc)
  if sc<2:raise RuntimeError('Health gate: source diversity below 2')
