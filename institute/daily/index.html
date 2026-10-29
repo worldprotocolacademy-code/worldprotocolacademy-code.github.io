@@ -3,24 +3,87 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>WPA Institute Daily Brief · Automation Activation</title>
-  <meta name="description" content="WPA Institute Daily Brief — automated public-source daily product with provenance and Human Gate.">
+  <title>WPA Institute Daily Brief | World Protocol Academy</title>
+  <meta name="description" content="Live deterministic WPA Institute Daily Brief generated from the current WPA Journal Live public-source packet and held at the Human Gate.">
+  <link rel="canonical" href="https://worldprotocolacademy.mk/institute/daily/">
   <style>
-    :root{--navy:#071526;--gold:#c9a84c;--paper:#fbf8ee;--ink:#182033;--muted:#647083;--line:#d8cdb8}
-    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,system-ui,Arial,sans-serif}
-    header{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold);padding:62px 20px}.wrap{max-width:980px;margin:auto}
-    h1,h2{font-family:Georgia,serif}h1{color:#ecd98f;font-size:clamp(36px,6vw,58px);margin:8px 0}.ey{color:#ecd98f;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
-    .status{display:inline-block;border:1px solid var(--gold);padding:8px 12px;color:#ecd98f;font-weight:800;margin-top:12px}
-    main{padding:34px 20px}.card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:22px;margin-bottom:18px}
-    a{color:#8a6b20;font-weight:800}.chain{font-weight:800;color:var(--navy)}.muted{color:var(--muted)}
+    :root{--navy:#071526;--navy2:#102844;--gold:#c9a84c;--gold2:#ecd98f;--paper:#fbf8ee;--ink:#182033;--muted:#647083;--line:#d8cdb8;--ok:#2f6a43;--bad:#8d2f31}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+    a{color:#81651d;font-weight:800}
+    header{background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;border-bottom:3px solid var(--gold);padding:58px 20px 44px}
+    .wrap{max-width:1120px;margin:auto}
+    .ey{color:var(--gold2);font-weight:900;letter-spacing:.13em;text-transform:uppercase;font-size:12px}
+    h1,h2{font-family:Georgia,"Times New Roman",serif}
+    h1{color:var(--gold2);font-size:clamp(38px,6vw,62px);line-height:1.08;margin:10px 0 14px}
+    .lead{max-width:860px;color:rgba(255,255,255,.82);font-size:17px}
+    .nav{display:flex;gap:14px;flex-wrap:wrap;margin-top:18px}.nav a{color:var(--gold2)}
+    .status{display:inline-block;margin-top:20px;border:1px solid var(--gold);padding:8px 12px;color:var(--gold2);font-weight:900;font-size:12px;letter-spacing:.04em}
+    .status.ok{border-color:#81bd91;color:#bfe3c8}.status.bad{border-color:#e29494;color:#ffd1d1}
+    main{padding:30px 20px 60px}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+    button{border:1px solid var(--navy);background:#fff;color:var(--navy);padding:9px 13px;font:inherit;font-weight:850;cursor:pointer}
+    button.primary{background:var(--navy);color:#fff}button:disabled{opacity:.45;cursor:not-allowed}
+    .health{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 18px}.health span{background:#fff;border:1px solid var(--line);padding:12px;font-size:13px}
+    .box{background:#fff;border:1px solid var(--line);border-left:5px solid var(--gold);padding:20px 22px;margin-bottom:18px}
+    .box h2{margin:0 0 8px;color:var(--navy2)}.lead-line{font-weight:850;color:var(--navy2)}
+    .error{border-left-color:var(--bad);color:var(--bad);font-weight:750}
+    .grid{display:grid;gap:16px}
+    .item-card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);padding:22px;box-shadow:0 8px 24px rgba(7,21,38,.06)}
+    .item-card h2{margin:6px 0 8px;font-size:25px;line-height:1.2;color:var(--navy2)}
+    .domain{font-size:11px;font-weight:950;color:#806215;letter-spacing:.08em;text-transform:uppercase}
+    .meta{color:var(--muted);font-size:13px}
+    .analysis{background:#f5f1e7;border-left:3px solid var(--gold);padding:12px 14px;margin:14px 0}.analysis p{margin:4px 0 0}
+    .route{font-size:14px}
+    .gate{margin-top:22px;border:2px solid var(--gold);background:#fff;padding:22px}.gate h2{margin-top:0;color:var(--navy2)}
+    footer{background:var(--navy);color:#b8c0cb;text-align:center;padding:24px 20px;font-size:12px}
+    @media(max-width:760px){.health{grid-template-columns:1fr}.toolbar button{width:100%}.item-card h2{font-size:21px}}
   </style>
+  <script defer src="/scripts/wpa-analytics.js?v=20260909-2"></script>
 </head>
 <body>
-<header><div class="wrap"><div class="ey">World Protocol Academy · Institute</div><h1>WPA Institute Daily Brief</h1><p>Автоматизиран дневен производ: свеж јавен сигнал → проверка на свежина и provenance → пет WPA домени → структуриран дневен бриф → Human Gate.</p><span class="status">AUTOMATION ARMED · FIRST GENERATED EDITION PENDING</span></div></header>
+<header>
+  <div class="wrap">
+    <div class="ey">World Protocol Academy · Institute · Daily Product v1.2</div>
+    <h1>WPA Institute Daily Brief</h1>
+    <p class="lead">Од свеж јавен сигнал до готов дневен Institute производ: Journal Live → freshness &amp; provenance gate → domain ranking → executive snapshot → WPA working angles → Human Gate.</p>
+    <div class="nav">
+      <a href="/institute.html">← WPA Institute</a>
+      <a href="/journal/live/">WPA Journal Live</a>
+      <a href="/protocolometry-center.html">Protocolometry Center</a>
+      <a href="/wpa-sublimate-engine.html">Sublimate</a>
+    </div>
+    <div id="status" class="status" role="status" aria-live="polite">INITIALISING DAILY PRODUCT</div>
+  </div>
+</header>
+
 <main class="wrap">
-  <section class="card"><h2>A → B production chain</h2><p class="chain">Journal Live → Integrity/Freshness Gate → Domain Ranking → Daily HTML + Markdown + JSON → Archive → Human Gate</p><p class="muted">Оваа activation страница автоматски се заменува со тековниот дневен производ кога scheduled workflow ќе ја заврши првата успешна production генерација.</p></section>
-  <section class="card"><h2>Human Authority</h2><p>Автоматизацијата подготвува готов дневен производ, но не објавува научен труд, не доделува DOI, не менува WPA doctrine и не објавува на надворешни платформи без Human Gate.</p></section>
-  <p><a href="/institute.html">← WPA Institute</a> · <a href="/journal/live/">WPA Journal Live</a> · <a href="/protocolometry-center.html">Protocolometry Center</a></p>
+  <div class="toolbar" aria-label="Daily product actions">
+    <button id="refresh" class="primary" type="button">Освежи Daily Brief</button>
+    <button id="downloadJson" type="button" disabled>Преземи provenance JSON</button>
+    <button id="downloadMd" type="button" disabled>Преземи Markdown</button>
+  </div>
+
+  <div id="health" class="health" aria-label="Daily product health"></div>
+  <div id="error" class="box error" hidden></div>
+
+  <section id="snapshot" class="box" hidden>
+    <h2>Executive snapshot</h2>
+    <p id="snapshotText"></p>
+    <p><strong>Lead:</strong> <span id="lead" class="lead-line"></span></p>
+  </section>
+
+  <section id="items" class="grid" aria-label="Selected daily developments"></section>
+
+  <section class="gate">
+    <h2>Human Gate</h2>
+    <p><strong>Автоматизацијата го подготвува готовиот дневен производ; Human Authority останува конечна.</strong></p>
+    <p>Овој brief не е peer-reviewed научна статија, официјална институционална позиција, правен/безбедносен/дипломатски совет или автоматска надворешна публикација. Оригиналните јавни извори остануваат авторитативни за сопствените факти и изјави.</p>
+    <p>Посебно човечко одобрување е потребно пред Journal / Working Paper / Protocol Note публикација, DOI, doctrinal/canonical промена, third-party visual reuse или external platform posting.</p>
+  </section>
 </main>
+
+<footer>World Protocol Academy · WPA Institute Daily Brief · Public-source only · Fail-closed freshness gate · Human Gate retained</footer>
+<script src="/institute/daily/app.js?v=20261029-1"></script>
 </body>
 </html>
