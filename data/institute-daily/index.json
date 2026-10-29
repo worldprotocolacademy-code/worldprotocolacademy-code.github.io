@@ -1,8 +1,21 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.2",
   "product": "WPA Institute Daily Brief",
-  "latest": null,
-  "status": "AUTOMATION_ARMED_FIRST_GENERATED_EDITION_PENDING",
+  "status": "LIVE_DYNAMIC_DAILY__SCHEDULED_ARTIFACT_ARCHIVE",
+  "public_route": "/institute/daily/",
   "canonical_input": "WPA Journal Live",
-  "entries": []
+  "live_generation": "browser-side deterministic engine with fail-closed freshness and quality gates",
+  "scheduled_archive": {
+    "workflow": ".github/workflows/wpa-institute-daily-product.yml",
+    "cadence": "04:17 UTC daily",
+    "storage": "GitHub Actions artifact",
+    "retention_days": 90,
+    "formats": [
+      "HTML",
+      "Markdown",
+      "provenance JSON"
+    ]
+  },
+  "human_gate": "PENDING_FOR_CONSEQUENTIAL_RELEASE",
+  "entries_note": "Daily public output is generated live. Dated server-side packages are retained as workflow artifacts rather than committed to protected main."
 }
