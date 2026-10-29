@@ -83,7 +83,7 @@ jobs:
         run: |
           python scripts/generate_wpa_media_programmes.py \
             --repo-root . \
-            --output-dir .wpa-media-output \
+            --output-dir wpa-media-output \
             --mode "${{ steps.mode.outputs.value }}"
 
       - name: Validate production boundaries
@@ -92,7 +92,7 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          root=Path(".wpa-media-output")
+          root=Path("wpa-media-output")
           manifests=list(root.rglob("*.json"))
           if not manifests:
               raise SystemExit("No media production JSON was generated")
@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wpa-media-${{ steps.mode.outputs.value }}-${{ github.run_number }}
-          path: .wpa-media-output/**
+          path: wpa-media-output/**
           if-no-files-found: error
           retention-days: 90
 
