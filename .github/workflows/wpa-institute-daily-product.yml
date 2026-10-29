@@ -1,0 +1,100 @@
+name: WPA Institute Daily Product
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/generate_wpa_institute_daily.py'
+      - '.github/workflows/wpa-institute-daily-product.yml'
+  pull_request:
+    paths:
+      - 'scripts/generate_wpa_institute_daily.py'
+      - '.github/workflows/wpa-institute-daily-product.yml'
+      - 'institute/daily/**'
+      - 'data/institute-daily/**'
+      - 'institute.html'
+      - 'wpa-sublimate-engine.html'
+      - 'data/global-institutions/pilot-20/v1.3.1/index.html'
+      - 'data/wpa-institute-functional-registry.json'
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: wpa-institute-daily-product
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Syntax and deterministic self-test
+        run: |
+          python -m py_compile scripts/generate_wpa_institute_daily.py
+          python scripts/generate_wpa_institute_daily.py --self-test
+
+  generate:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Generate current WPA Institute Daily Brief
+        run: python scripts/generate_wpa_institute_daily.py --repo-root .
+
+      - name: Product health gate
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+          p=Path('data/institute-daily/latest.json')
+          if not p.exists():
+              raise SystemExit('latest.json was not generated')
+          data=json.loads(p.read_text())
+          if data.get('status') != 'AUTO_GENERATED_READY_FOR_HUMAN_GATE':
+              raise SystemExit('unexpected daily product status')
+          if len(data.get('items', [])) < 3:
+              raise SystemExit('daily product has fewer than 3 selected items')
+          if int(data.get('automation', {}).get('domains_represented', 0)) < 2:
+              raise SystemExit('daily product has fewer than 2 represented WPA domains')
+          if data.get('human_gate', {}).get('state') != 'PENDING':
+              raise SystemExit('Human Gate must remain pending after automation')
+          if data.get('boundaries', {}).get('automatic_external_publication') is not False:
+              raise SystemExit('automatic external publishing boundary changed')
+          if not Path('institute/daily/index.html').exists():
+              raise SystemExit('daily HTML page missing')
+          if not Path('data/institute-daily/latest.md').exists():
+              raise SystemExit('daily Markdown missing')
+          print('DAILY PRODUCT HEALTH GATE PASS:', data['product_date'], len(data['items']), 'items')
+          PY
+
+      - name: Publish through protected main
+        env:
+          GH_TOKEN: ${{ secrets.WPA_AUTOMATION_TOKEN || github.token }}
+          PUBLISH_BRANCH_PREFIX: wpa-institute-daily
+          PUBLISH_TITLE: WPA Institute Daily Product automated refresh
+          PUBLISH_BODY: Automated WPA Institute Daily Brief generated from the current WPA Journal Live public-source packet. The product passed freshness, source-health, relevance/confidence, domain-coverage and Human-Gate boundary checks. It is a ready-for-human-review daily product, not an automatic scientific publication or external platform post.
+          PUBLISH_FILES: data/institute-daily institute/daily
+          PUBLISH_GIT_NAME: wpa-institute-daily-bot
+        run: bash scripts/publish_protected_main.sh
