@@ -4,6 +4,16 @@ on:
   schedule:
     - cron: '45 4 * * *'
     - cron: '15 5 * * 0'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/generate_wpa_media_programmes.py'
+      - 'media/data/programmes.json'
+      - 'media/data/presenters.json'
+      - '.github/workflows/wpa-media-programmes-production.yml'
+      - 'tools/data/daily-protocol-minute-30-days.json'
+      - 'scripts/generate_wpa_institute_daily.py'
   workflow_dispatch:
     inputs:
       mode:
@@ -63,6 +73,8 @@ jobs:
             echo "value=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event.schedule }}" = "15 5 * * 0" ]; then
             echo "value=weekly" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "value=all" >> "$GITHUB_OUTPUT"
           else
             echo "value=daily" >> "$GITHUB_OUTPUT"
           fi
