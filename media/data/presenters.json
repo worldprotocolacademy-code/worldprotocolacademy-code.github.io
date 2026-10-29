@@ -1,8 +1,8 @@
 {
   "schema": "wpa-virtual-presenters/1.0",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "status": "PILOT_HUMAN_GATED",
-  "updated": "2026-09-28",
+  "updated": "2026-10-29",
   "policy": {
     "fictional_characters_only": true,
     "real_person_likeness_targeted": false,
@@ -11,7 +11,10 @@
     "automatic_publication": false,
     "human_gate_required": true,
     "language_selection_controls_speech_and_captions": true,
-    "no_silent_language_fallback": true
+    "no_silent_language_fallback": true,
+    "canonical_faces_locked": true,
+    "identity_drift_forbidden": true,
+    "public_program_aliases_allowed": true
   },
   "characters": {
     "protokolka": {
@@ -32,7 +35,9 @@
         "policy_reference": "/media/data/language-audio-policy.json",
         "rule": "Selected broadcast language controls this presenter's speech together with captions and transcript.",
         "voice_lock_status": "PENDING_PROVIDER_AUDITION_AND_LANGUAGE_ADAPTERS"
-      }
+      },
+      "public_program_alias": "Виралната дипломатка",
+      "program_role": "co_host_protocol_and_public_image"
     },
     "diplomat": {
       "identity_id": "WPA-DIPLOMAT-ID-v1.0",
@@ -52,7 +57,20 @@
         "policy_reference": "/media/data/language-audio-policy.json",
         "rule": "Selected broadcast language controls this presenter's speech together with captions and transcript.",
         "voice_lock_status": "PENDING_PROVIDER_AUDITION_AND_LANGUAGE_ADAPTERS"
-      }
+      },
+      "public_program_alias": "Виралниот дипломат",
+      "program_role": "co_host_diplomacy_and_world_affairs"
     }
+  },
+  "public_pair": {
+    "pair_id": "WPA-VIRAL-DIPLOMATIC-DUO-v1.0",
+    "display_name_mk": "Виралниот дипломат + Виралната дипломатка",
+    "identity_rule": "These are public programme aliases for the two existing canonical fictional presenter identities. Faces, geometry, hairstyle, wardrobe grammar and identity continuity remain locked; aliases do not create new characters.",
+    "eligible_programmes": [
+      "WPA NEWS · Daily Brief",
+      "WPA Protocol TV"
+    ],
+    "automatic_publication": false,
+    "human_gate_required": true
   }
 }
