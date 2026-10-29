@@ -28,13 +28,20 @@ def canon(v):
   q=[(k,x) for k,x in parse_qsl(s.query,keep_blank_values=True) if not re.match(r'^(utm_|fbclid$|gclid$|mc_)',k,re.I)]
   return urlunsplit((s.scheme,s.netloc,s.path.rstrip('/') or '/',urlencode(q),''))
  except Exception:return ''
+def map_domain(s):
+ s=clean(s).lower().replace('_',' ')
+ if re.search(r'^protocol$|протокол',s):return 'protocol'
+ if re.search(r'^diplomacy$|diplomat|диплом',s):return 'diplomacy'
+ if re.search(r'public.?relations|^pr$|public.?communication|односи со јавност|јавна комуникација',s):return 'public_relations'
+ if re.search(r'^security$|безбед',s):return 'security'
+ if re.search(r'communicology|^communication$|комуниколог',s):return 'communicology'
+ return ''
 def domain(x):
- s=(clean(x.get('primary_category'))+' '+' '.join(map(str,x.get('signals') or []))).lower()
- if re.search(r'\bprotocol\b|протокол',s):return 'protocol'
- if re.search(r'\bdiplomacy\b|diplomat|диплом',s):return 'diplomacy'
- if re.search(r'public.?relations|\bpr\b|public.?communication|односи со јавност|јавна комуникација',s):return 'public_relations'
- if re.search(r'\bsecurity\b|безбед',s):return 'security'
- if re.search(r'communicology|комуниколог',s):return 'communicology'
+ primary=map_domain(x.get('primary_category'))
+ if primary:return primary
+ for signal in x.get('signals') or []:
+  d=map_domain(signal)
+  if d:return d
  return ''
 def sports(x):
  s=(clean(x.get('title'))+' '+clean(x.get('summary'))).lower()
@@ -43,6 +50,17 @@ def fetch(a):
  if a.fixture:return json.loads(Path(a.fixture).read_text(encoding='utf-8'))
  req=urllib.request.Request(a.api_root.rstrip('/')+'/api/v1/live?limit='+str(a.limit),headers={'Accept':'application/json','Origin':ORIGIN,'User-Agent':'WPA-Institute-Daily-Product/1.0'})
  with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
+def working_angle(d):
+ return {
+  'protocol':'Examine official representation, credentials, precedence, ceremonial procedure and visible institutional order. Verify the original source before any WPA conclusion.',
+  'diplomacy':'Assess diplomatic signalling, actors, format, commitments and bilateral or multilateral implications while keeping source-reported facts separate from WPA interpretation.',
+  'public_relations':'Assess public messaging, reputation, stakeholder communication, media framing and legitimacy; distinguish institutional statements from independent reporting.',
+  'security':'Assess publicly evidenced risk, institutional response, strategic implications and communication effects. This is not a threat assessment or operational advice.',
+  'communicology':'Assess framing, meaning-making, persuasion, intercultural context, information flow and the relationship between message, audience and institution.'
+ }[d]
+def route_for(d):
+ return {'protocol':'Protocol Note / Scenario Analysis candidate','diplomacy':'Research Brief / Journal Analysis candidate','public_relations':'Public Communication Brief candidate','security':'Policy / Research Brief candidate','communicology':'Journal Explainer / Research Note candidate'}[d]
+
 def build(packet,a,now):
  g=dt(packet.get('generated_at'));
  if not g:raise RuntimeError('API generated_at missing/invalid')
@@ -61,32 +79,39 @@ def build(packet,a,now):
   official=bool(re.search(r'single_official_source',clean(raw.get('verification_status')),re.I))
   fresh=max(0,100-(h/48)*70); score=min(100,round(.45*r+.35*c+.20*fresh+(3 if official else 0)))
   key=u or clean(raw.get('id')) or (clean(raw.get('source'))+'|'+clean(raw.get('title'))+'|'+clean(raw.get('published_at'))).lower()
-  x={'key':key,'id':clean(raw.get('id')) or None,'title':clean(raw.get('title')),'summary':clean(raw.get('summary')),'source':clean(raw.get('source')) or 'Unknown source','original_url':u,'published_at':p.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'fetched_at':dt(raw.get('fetched_at')).astimezone(timezone.utc).isoformat().replace('+00:00','Z') if dt(raw.get('fetched_at')) else None,'region':clean(raw.get('region')) or 'International','country':clean(raw.get('country')) or None,'source_type':clean(raw.get('source_type')) or None,'domain':d,'relevance_score':r,'source_confidence':c,'score':score,'verification_status':clean(raw.get('verification_status')) or 'candidate','source_health_status':health or 'unknown','official_source':official}
+  x={'key':key,'id':clean(raw.get('id')) or None,'title':clean(raw.get('title')),'summary':clean(raw.get('summary')),'source':clean(raw.get('source')) or 'Unknown source','original_url':u,'published_at':p.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'fetched_at':dt(raw.get('fetched_at')).astimezone(timezone.utc).isoformat().replace('+00:00','Z') if dt(raw.get('fetched_at')) else None,'region':clean(raw.get('region')) or 'International','country':clean(raw.get('country')) or None,'source_type':clean(raw.get('source_type')) or None,'domain':d,'relevance_score':r,'source_confidence':c,'score':score,'verification_status':clean(raw.get('verification_status')) or 'candidate','source_health_status':health or 'unknown','official_source':official,'wpa_working_angle':working_angle(d),'recommended_route':route_for(d)}
   if key not in by or score>by[key]['score']:by[key]=x
- eligible=sorted(by.values(),key=lambda x:(x['score'],x['published_at']),reverse=True); chosen=[]; seen=set()
+ eligible=sorted(by.values(),key=lambda x:(x['score'],x['published_at']),reverse=True); chosen=[]; seen=set(); src={}; dom={}
+ def take(x,force=False):
+  sk=clean(x['source']).lower(); dk=x['domain']
+  if x['key'] in seen:return False
+  if not force and (src.get(sk,0)>=3 or dom.get(dk,0)>=3):return False
+  chosen.append(x);seen.add(x['key']);src[sk]=src.get(sk,0)+1;dom[dk]=dom.get(dk,0)+1;return True
  for d in DOMAINS:
-  x=next((z for z in eligible if z['domain']==d and z['key'] not in seen),None)
-  if x:chosen.append(x);seen.add(x['key'])
+  x=next((z for z in eligible if z['domain']==d and z['key'] not in seen and src.get(clean(z['source']).lower(),0)<3),None)
+  if x:take(x,True)
  for x in eligible:
   if len(chosen)>=a.max_items:break
-  if x['key'] not in seen:chosen.append(x);seen.add(x['key'])
- chosen=chosen[:a.max_items]; dc=len(set(x['domain'] for x in chosen))
+  take(x)
+ chosen=chosen[:a.max_items]; dc=len(set(x['domain'] for x in chosen)); sc=len(set(clean(x['source']).lower() for x in chosen))
  if len(chosen)<a.min_items:raise RuntimeError('Health gate: only %d eligible items'%len(chosen))
  if dc<a.min_domains:raise RuntimeError('Health gate: only %d domains represented'%dc)
- return chosen,len(eligible),dc,g
+ if sc<2:raise RuntimeError('Health gate: source diversity below 2')
+ return chosen,len(eligible),dc,sc,g
 
 def product(packet,b,a,now):
- selected,eligible,dc,g=b; date=now.astimezone(ZoneInfo('Europe/Skopje')).date().isoformat(); counts={d:sum(x['domain']==d for x in selected) for d in DOMAINS}
- return {'schema_version':'1.0','product':'WPA Institute Daily Brief','product_date':date,'status':'AUTO_GENERATED_READY_FOR_HUMAN_GATE','generated_at':now.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'timezone':'Europe/Skopje','canonical_input':{'system':'WPA Journal Live','endpoint':a.api_root.rstrip('/')+'/api/v1/live','packet_generated_at':g.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'original_sources_authoritative':True},'automation':{'mode':'A_TO_B_DAILY','source_window_hours':a.max_age_hours,'min_relevance':a.min_relevance,'min_confidence':a.min_confidence,'selected_items':len(selected),'eligible_items':eligible,'domains_represented':dc,'domain_counts':counts},'boundaries':{'peer_reviewed':False,'official_institutional_position':False,'automatic_external_publication':False,'automatic_doi':False,'human_gate_required_for_consequential_release':True},'human_gate':{'state':'PENDING','required_for':['journal/working-paper/protocol-note publication','doctrine or canonical institutional claims','external platform posting','third-party visual reuse','presenting a candidate as an independently verified WPA finding']},'items':[{k:v for k,v in x.items() if k!='key'} for x in selected]}
+ selected,eligible,dc,sc,g=b; date=now.astimezone(ZoneInfo('Europe/Skopje')).date().isoformat(); counts={d:sum(x['domain']==d for x in selected) for d in DOMAINS}
+ return {'schema_version':'1.0','product':'WPA Institute Daily Brief','product_date':date,'status':'AUTO_GENERATED_READY_FOR_HUMAN_GATE','generated_at':now.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'timezone':'Europe/Skopje','canonical_input':{'system':'WPA Journal Live','endpoint':a.api_root.rstrip('/')+'/api/v1/live','packet_generated_at':g.astimezone(timezone.utc).isoformat().replace('+00:00','Z'),'original_sources_authoritative':True},'automation':{'mode':'A_TO_B_DAILY','source_window_hours':a.max_age_hours,'min_relevance':a.min_relevance,'min_confidence':a.min_confidence,'selected_items':len(selected),'eligible_items':eligible,'domains_represented':dc,'unique_sources':sc,'domain_counts':counts},'boundaries':{'peer_reviewed':False,'official_institutional_position':False,'automatic_external_publication':False,'automatic_doi':False,'human_gate_required_for_consequential_release':True},'human_gate':{'state':'PENDING','required_for':['journal/working-paper/protocol-note publication','doctrine or canonical institutional claims','external platform posting','third-party visual reuse','presenting a candidate as an independently verified WPA finding']},'executive_snapshot':{'lead_title':selected[0]['title'],'lead_domain':selected[0]['domain'],'lead_source':selected[0]['source'],'summary':'%d selected developments across %d WPA domains and %d source families. Items are ranked from a fresh Journal Live packet and remain source-attributed candidates until Human Gate review.'%(len(selected),dc,sc)},'items':[{k:v for k,v in x.items() if k!='key'} for x in selected]}
 def mktime(v):return datetime.fromisoformat(v.replace('Z','+00:00')).astimezone(ZoneInfo('Europe/Skopje')).strftime('%d.%m.%Y %H:%M')
 def md(p):
  out=['# WPA Institute Daily Brief — '+p['product_date'],'','**Status:** '+p['status'],'','Generated: '+mktime(p['generated_at'])+' · Europe/Skopje','Canonical input: WPA Journal Live · Original sources remain authoritative.','','## Daily selection','']
- for i,x in enumerate(p['items'],1):out += ['### %d. %s'%(i,x['title']),'','**%s** · %s · R %s · C %s · Product score %s'%(LABELS[x['domain']],x['source'],x['relevance_score'],x['source_confidence'],x['score']),'',x['summary'] or 'No summary available.','', 'Original source: '+x['original_url'],'']
+ out += ['## Executive snapshot','',p['executive_snapshot']['summary'],'','**Lead:** '+p['executive_snapshot']['lead_title']+' · '+LABELS[p['executive_snapshot']['lead_domain']]+' · '+p['executive_snapshot']['lead_source'],'']
+ for i,x in enumerate(p['items'],1):out += ['### %d. %s'%(i,x['title']),'','**%s** · %s · R %s · C %s · Product score %s'%(LABELS[x['domain']],x['source'],x['relevance_score'],x['source_confidence'],x['score']),'',x['summary'] or 'No summary available.','','**WPA working angle:** '+x['wpa_working_angle'],'','**Recommended route:** '+x['recommended_route'],'', 'Original source: '+x['original_url'],'']
  out += ['## Human Gate','','Automatically prepared and ready for human review. Not a peer-reviewed article, official institutional position, legal/security/diplomatic advice, or automatic external publication.','','Human approval is required before consequential release, doctrine changes, journal/working-paper/protocol-note publication, external platform posting, or third-party visual reuse.',''];return '\n'.join(out)
 def esc(s):return str(s).replace('&','&amp;').replace('<','&lt;').replace('>','&gt;').replace('"','&quot;').replace("'","&#39;")
 def page(p):
- cards=''.join('<article class="card"><div class="tag">%s</div><h2>%d. %s</h2><p class="meta">%s · %s · R %s · C %s · Score %s</p><p>%s</p><p><a href="%s" target="_blank" rel="noopener noreferrer">Original source →</a></p></article>'%(esc(LABELS[x['domain']]),i,esc(x['title']),esc(x['source']),esc(mktime(x['published_at'])),x['relevance_score'],x['source_confidence'],x['score'],esc(x['summary'] or 'No summary available.'),esc(x['original_url'])) for i,x in enumerate(p['items'],1))
- return '<!doctype html><html lang="mk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WPA Institute Daily Brief — %s</title><meta name="description" content="Automated daily public-source briefing prepared for WPA Institute and held at the Human Gate."><style>:root{--n:#071526;--g:#c9a84c;--p:#fbf8ee;--i:#182033;--m:#647083;--l:#d8cdb8}*{box-sizing:border-box}body{margin:0;background:var(--p);color:var(--i);font:16px/1.65 Inter,system-ui,Arial,sans-serif}header{background:var(--n);color:#fff;border-bottom:3px solid var(--g);padding:42px 20px}.wrap{max-width:1080px;margin:auto}h1,h2{font-family:Georgia,serif}h1{color:#ecd98f;margin:8px 0;font-size:clamp(34px,6vw,58px)}.ey{color:#ecd98f;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:12px}.status{display:inline-block;border:1px solid var(--g);padding:7px 10px;margin-top:12px;color:#ecd98f;font-weight:800}.nav{margin-top:16px}.nav a,.btn{color:#ecd98f;margin-right:14px}.grid{display:grid;gap:16px;padding:32px 0}.card{background:#fff;border:1px solid var(--l);border-top:4px solid var(--g);padding:20px}.card h2{margin:7px 0 8px;color:var(--n);font-size:24px}.tag{font-size:12px;font-weight:900;color:#8b6b20;text-transform:uppercase}.meta{color:var(--m);font-size:13px}.gate{border:2px solid var(--g);background:#fff;padding:22px;margin:0 0 40px}.gate li{margin:6px 0}footer{background:var(--n);color:#b9c2ce;padding:25px 20px;text-align:center;font-size:12px}</style></head><body><header><div class="wrap"><div class="ey">World Protocol Academy · Institute</div><h1>WPA Institute Daily Brief</h1><p>Автоматски дневен производ од свежи јавни извори: селекција, traceability, пет WPA домени и Human Gate.</p><span class="status">%s</span><div class="nav"><a href="/institute.html">← WPA Institute</a><a href="/journal/live/">Journal Live</a><a href="/protocolometry-center.html">Protocolometry</a></div></div></header><main class="wrap"><section class="grid">%s</section><section class="gate"><h2>Human Gate</h2><p><strong>State:</strong> PENDING. Овој дневен пакет е готов за човечка проверка, но не е peer-reviewed публикација или официјална институционална позиција.</p><ul><li>Original source remains authoritative.</li><li>Journal / Working Paper / Protocol Note publication requires separate editorial approval.</li><li>External posting, doctrine changes and third-party visual reuse require explicit Human Gate approval.</li></ul><p><a class="btn" href="/data/institute-daily/latest.json">Provenance JSON →</a> <a class="btn" href="/data/institute-daily/latest.md">Markdown →</a></p></section></main><footer>World Protocol Academy · %s · Automated preparation · Human Authority retained</footer></body></html>'%(esc(p['product_date']),esc(p['status']),cards,esc(p['product_date']))
+ cards=''.join('<article class="card"><div class="tag">%s</div><h2>%d. %s</h2><p class="meta">%s · %s · R %s · C %s · Score %s</p><p>%s</p><p><strong>WPA working angle:</strong> %s</p><p><strong>Recommended route:</strong> %s</p><p><a href="%s" target="_blank" rel="noopener noreferrer">Original source →</a></p></article>'%(esc(LABELS[x['domain']]),i,esc(x['title']),esc(x['source']),esc(mktime(x['published_at'])),x['relevance_score'],x['source_confidence'],x['score'],esc(x['summary'] or 'No summary available.'),esc(x['wpa_working_angle']),esc(x['recommended_route']),esc(x['original_url'])) for i,x in enumerate(p['items'],1))
+ return '<!doctype html><html lang="mk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WPA Institute Daily Brief — %s</title><meta name="description" content="Automated daily public-source briefing prepared for WPA Institute and held at the Human Gate."><style>:root{--n:#071526;--g:#c9a84c;--p:#fbf8ee;--i:#182033;--m:#647083;--l:#d8cdb8}*{box-sizing:border-box}body{margin:0;background:var(--p);color:var(--i);font:16px/1.65 Inter,system-ui,Arial,sans-serif}header{background:var(--n);color:#fff;border-bottom:3px solid var(--g);padding:42px 20px}.wrap{max-width:1080px;margin:auto}h1,h2{font-family:Georgia,serif}h1{color:#ecd98f;margin:8px 0;font-size:clamp(34px,6vw,58px)}.ey{color:#ecd98f;font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:12px}.status{display:inline-block;border:1px solid var(--g);padding:7px 10px;margin-top:12px;color:#ecd98f;font-weight:800}.nav{margin-top:16px}.nav a,.btn{color:#ecd98f;margin-right:14px}.grid{display:grid;gap:16px;padding:32px 0}.card{background:#fff;border:1px solid var(--l);border-top:4px solid var(--g);padding:20px}.card h2{margin:7px 0 8px;color:var(--n);font-size:24px}.tag{font-size:12px;font-weight:900;color:#8b6b20;text-transform:uppercase}.meta{color:var(--m);font-size:13px}.gate{border:2px solid var(--g);background:#fff;padding:22px;margin:0 0 40px}.gate li{margin:6px 0}footer{background:var(--n);color:#b9c2ce;padding:25px 20px;text-align:center;font-size:12px}</style></head><body><header><div class="wrap"><div class="ey">World Protocol Academy · Institute</div><h1>WPA Institute Daily Brief</h1><p>Автоматски дневен производ од свежи јавни извори: селекција, traceability, пет WPA домени и Human Gate.</p><span class="status">%s</span><div class="nav"><a href="/institute.html">← WPA Institute</a><a href="/journal/live/">Journal Live</a><a href="/protocolometry-center.html">Protocolometry</a></div></div></header><main class="wrap"><section class="gate"><h2>Executive snapshot</h2><p>%s</p><p><strong>Lead:</strong> %s</p></section><section class="grid">%s</section><section class="gate"><h2>Human Gate</h2><p><strong>State:</strong> PENDING. Овој дневен пакет е готов за човечка проверка, но не е peer-reviewed публикација или официјална институционална позиција.</p><ul><li>Original source remains authoritative.</li><li>Journal / Working Paper / Protocol Note publication requires separate editorial approval.</li><li>External posting, doctrine changes and third-party visual reuse require explicit Human Gate approval.</li></ul><p><a class="btn" href="/data/institute-daily/latest.json">Provenance JSON →</a> <a class="btn" href="/data/institute-daily/latest.md">Markdown →</a></p></section></main><footer>World Protocol Academy · %s · Automated preparation · Human Authority retained</footer></body></html>'%(esc(p['product_date']),esc(p['status']),esc(p['executive_snapshot']['summary']),esc(p['executive_snapshot']['lead_title']),cards,esc(p['product_date']))
 def write(p,root):
  data=Path(root)/'data/institute-daily'; web=Path(root)/'institute/daily'; data.mkdir(parents=True,exist_ok=True);web.mkdir(parents=True,exist_ok=True); date=p['product_date']; js=json.dumps(p,ensure_ascii=False,indent=2)+'\n'; text=md(p); html=page(p)
  for n in ('latest.json',date+'.json'):(data/n).write_text(js,encoding='utf-8')
@@ -98,9 +123,9 @@ def write(p,root):
  e={'date':date,'status':p['status'],'generated_at':p['generated_at'],'items':len(p['items']),'domains':p['automation']['domains_represented'],'html':'/institute/daily/'+date+'.html','json':'/data/institute-daily/'+date+'.json','markdown':'/data/institute-daily/'+date+'.md'};idx.update({'schema_version':'1.0','product':'WPA Institute Daily Brief','latest':date});idx['entries']=[e]+[x for x in idx.get('entries',[]) if x.get('date')!=date][:119];ip.write_text(json.dumps(idx,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 def selftest(a):
  now=datetime(2026,10,29,12,tzinfo=timezone.utc); items=[]
- for i,d in enumerate(DOMAINS,1):items.append({'id':str(i),'title':d+' item','summary':'Verified public-source candidate for '+d,'source':'Fixture Source','original_url':'https://example.org/'+d+'?utm_source=test','published_at':'2026-10-29T09:00:00Z','primary_category':'public relations' if d=='public_relations' else d,'relevance_score':90-i,'source_confidence':92,'source_health_status':'live','verification_status':'single_official_source' if i==1 else 'candidate'})
+ for i,d in enumerate(DOMAINS,1):items.append({'id':str(i),'title':d+' item','summary':'Verified public-source candidate for '+d,'source':'Fixture Source '+str(i),'original_url':'https://example.org/'+d+'?utm_source=test','published_at':'2026-10-29T09:00:00Z','primary_category':'public relations' if d=='public_relations' else d,'relevance_score':90-i,'source_confidence':92,'source_health_status':'live','verification_status':'single_official_source' if i==1 else 'candidate'})
  packet={'generated_at':'2026-10-29T11:55:00Z','items':items}; p=product(packet,build(packet,a,now),a,now); root=tempfile.mkdtemp(prefix='wpa-daily-');write(p,root)
- assert len(p['items'])==5 and p['automation']['domains_represented']==5 and not any('utm_' in x['original_url'] for x in p['items']) and 'Human Gate' in (Path(root)/'institute/daily/index.html').read_text(encoding='utf-8'); print('SELF-TEST PASS')
+ assert len(p['items'])==5 and p['automation']['domains_represented']==5 and p['automation']['unique_sources']==5 and not any('utm_' in x['original_url'] for x in p['items']) and 'Human Gate' in (Path(root)/'institute/daily/index.html').read_text(encoding='utf-8'); print('SELF-TEST PASS')
 def main():
  a=cli();
  if a.self_test:return selftest(a)

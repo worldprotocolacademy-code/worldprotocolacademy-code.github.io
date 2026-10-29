@@ -78,6 +78,12 @@ jobs:
               raise SystemExit('daily product has fewer than 3 selected items')
           if int(data.get('automation', {}).get('domains_represented', 0)) < 2:
               raise SystemExit('daily product has fewer than 2 represented WPA domains')
+          if int(data.get('automation', {}).get('unique_sources', 0)) < 2:
+              raise SystemExit('daily product has fewer than 2 source families')
+          if not data.get('executive_snapshot', {}).get('lead_title'):
+              raise SystemExit('daily product executive snapshot is missing')
+          if any(not item.get('wpa_working_angle') or not item.get('recommended_route') for item in data.get('items', [])):
+              raise SystemExit('daily product item enrichment is incomplete')
           if data.get('human_gate', {}).get('state') != 'PENDING':
               raise SystemExit('Human Gate must remain pending after automation')
           if data.get('boundaries', {}).get('automatic_external_publication') is not False:
