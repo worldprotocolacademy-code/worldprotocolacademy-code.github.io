@@ -137,7 +137,7 @@
     if (!element) return '';
     var previous = element.previousSibling;
     var label = previous ? String(previous.textContent || previous.nodeValue || '') : '';
-    if (JOURNAL_MEDIA_CONTEXT.test(label)) return ADDRESSES.journal;
+    if (JOURNAL_MEDIA_CONTEXT.test(label)) return ADDRESSES.info;
     if (JOURNAL_EDITOR_CONTEXT.test(label) || /(?:уредничк|editorial)/i.test(label)) return ADDRESSES.editor;
     return '';
   }
@@ -148,7 +148,7 @@
     var context = nearestJournalContext(element);
     if (JOURNAL_STANDARD_WORKFLOW_CONTEXT.test(context)) return ADDRESSES.journal;
     if (JOURNAL_EDITOR_CONTEXT.test(context)) return ADDRESSES.editor;
-    if (JOURNAL_MEDIA_CONTEXT.test(context)) return ADDRESSES.journal;
+    if (JOURNAL_MEDIA_CONTEXT.test(context)) return ADDRESSES.info;
     return ADDRESSES.journal;
   }
 
