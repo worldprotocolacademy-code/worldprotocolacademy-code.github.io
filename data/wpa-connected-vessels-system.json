@@ -1,7 +1,7 @@
 {
   "schema": "wpa-connected-vessels-system/1.0",
-  "version": "1.1.0",
-  "updated": "2026-09-27",
+  "version": "1.2.0",
+  "updated": "2026-10-29",
   "name": "WPA System of Connected Vessels",
   "name_mk": "WPA Систем на сврзани садови",
   "status": "ACTIVE_GOVERNED_ARCHITECTURE_24_7_READY",
@@ -62,6 +62,7 @@
       "id": "V04",
       "name": "Research and Editorial Vessel",
       "systems": [
+        "WPA Institute Daily Brief",
         "Working Papers",
         "Protocol Notes",
         "WPA Journal",
@@ -212,5 +213,22 @@
     "source_priority": "Official institutional source for the institution's own acts/statements -> wire/news agency -> editorial reporting -> specialist analysis -> expert audio -> discovery/context.",
     "human_gate_required": true,
     "automatic_external_publishing": false
+  },
+  "daily_product": {
+    "route": "/institute/daily/",
+    "archive": "/data/institute-daily/index.json",
+    "status": "AUTOMATION_IMPLEMENTED_PENDING_FIRST_VERIFIED_SCHEDULED_RUN",
+    "canonical_input": "WPA Journal Live",
+    "cadence": "daily at 04:17 UTC",
+    "output_formats": [
+      "HTML",
+      "Markdown",
+      "provenance JSON"
+    ],
+    "role": "produce a finished daily Institute briefing package ready for Human Gate",
+    "human_gate_required_for_consequential_release": true,
+    "automatic_external_publishing": false,
+    "automatic_scientific_publication": false,
+    "automatic_doi": false
   }
 }
