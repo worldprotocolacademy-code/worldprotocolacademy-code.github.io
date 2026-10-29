@@ -146,9 +146,9 @@
     var explicit = explicitJournalAddressFor(element);
     if (explicit) return explicit;
     var context = nearestJournalContext(element);
+    if (JOURNAL_EDITOR_CONTEXT.test(context) || /(?:интегритет|integrity|conflict\s+of\s+interest|\bcoi\b|корекц|correction|повлек|retraction|жалб|appeal)/i.test(context)) return ADDRESSES.editor;
+    if (JOURNAL_MEDIA_CONTEXT.test(context) || /(?:institutional|институционалн)/i.test(context)) return ADDRESSES.info;
     if (JOURNAL_STANDARD_WORKFLOW_CONTEXT.test(context)) return ADDRESSES.journal;
-    if (JOURNAL_EDITOR_CONTEXT.test(context)) return ADDRESSES.editor;
-    if (JOURNAL_MEDIA_CONTEXT.test(context)) return ADDRESSES.info;
     return ADDRESSES.journal;
   }
 
