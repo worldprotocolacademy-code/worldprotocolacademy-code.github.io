@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   quality:
-    name: Validate public site
+    name: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'automation/') && 'Automation PR · site quality delegated to protected publisher' || 'Validate public site' }}
     runs-on: ubuntu-latest
 
     steps:
