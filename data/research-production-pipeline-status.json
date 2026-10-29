@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "updated": "2026-10-29",
   "name": "WPA Research Production Pipeline",
   "status": "PRODUCTION_FRONTEND_WORKFLOW_HUMAN_REVIEW_REQUIRED",
@@ -48,19 +48,21 @@
     "human_review_required": true
   },
   "daily_product": {
-    "status": "AUTOMATED_DAILY_READY_FOR_HUMAN_GATE",
+    "status": "LIVE_DYNAMIC_DAILY__SCHEDULED_ARCHIVE",
     "canonical_input": "/journal/live/",
     "public_output": "/institute/daily/",
-    "provenance_index": "/data/institute-daily/index.json",
-    "schedule": "Daily at 04:17 UTC via GitHub Actions, plus manual dispatch and activation-on-main update.",
+    "provenance_index": "/docs/WPA_INSTITUTE_DAILY_PRODUCT_v1.md",
+    "schedule": "Public product is generated live from Journal Live on page load/refresh. Scheduled verifier runs daily at 04:17 UTC and archives the health-gated HTML/Markdown/JSON package as a 90-day GitHub Actions artifact.",
     "automation_chain": [
       "Journal Live public-source packet",
-      "freshness and API-age gate",
+      "API freshness and publication-age gate",
       "source health and URL provenance gate",
       "relevance/confidence thresholds",
-      "five-domain classification and ranking",
-      "HTML + Markdown + JSON generation",
-      "dated archive",
+      "primary-category-first five-domain classification",
+      "source/domain diversity and deterministic ranking",
+      "executive snapshot + WPA working angles + recommended production routes",
+      "live HTML rendering + local JSON/Markdown download",
+      "scheduled verified archive artifact",
       "Human Gate"
     ],
     "boundaries": [
