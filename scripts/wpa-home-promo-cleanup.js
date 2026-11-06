@@ -111,10 +111,55 @@ function ensureNavEntry(config){
   return link;
 }
 
+function reconcileAboutAndAuthorNavigation(){
+  var list=navList();
+  if(!list)return;
+
+  var aboutLinks=Array.from(list.querySelectorAll('a')).filter(function(a){
+    var href=hrefText(a);
+    var text=String(a.textContent||'').trim().toLowerCase();
+    return href==='#about'||href.endsWith('/#about')||href.indexOf('#wpa-about-live')!==-1||text==='за wpa'||text==='about wpa';
+  });
+
+  var canonicalAbout=aboutLinks.find(function(a){return hrefText(a)==='#about'||hrefText(a).endsWith('/#about');})||aboutLinks[0]||null;
+  if(canonicalAbout){
+    canonicalAbout.setAttribute('href','#about');
+    setCoreLinkIdentity(canonicalAbout,'За WPA','За WPA');
+    aboutLinks.forEach(function(a){
+      if(a===canonicalAbout)return;
+      var li=a.closest('li');
+      if(li)li.remove(); else a.remove();
+    });
+  }
+
+  var authorLinks=Array.from(list.querySelectorAll('a')).filter(function(a){
+    var href=hrefText(a);
+    return href==='#platform-creator'||href.endsWith('/#platform-creator');
+  });
+  var author=authorLinks[0]||null;
+  if(!author){
+    var item=document.createElement('li');
+    item.id='wpaAuthorHomeNav';
+    item.setAttribute('data-wpa-persistent-nav','author');
+    author=document.createElement('a');
+    author.href='#platform-creator';
+    item.appendChild(author);
+    var aboutItem=canonicalAbout&&canonicalAbout.closest('li');
+    if(aboutItem)insertAfter(aboutItem,item); else list.insertBefore(item,list.firstChild);
+  }
+  setCoreLinkIdentity(author,'✍️ За авторот','Доц. д-р Санде Смиљанов · Автор и основач на WPA');
+
+  authorLinks.slice(1).forEach(function(a){
+    var li=a.closest('li');
+    if(li)li.remove(); else a.remove();
+  });
+}
+
 function ensureCoreNavigation(){
   var list=navList();
   if(!list)return;
 
+  reconcileAboutAndAuthorNavigation();
   addInstituteNavLink();
 
   /* Core methodology: immediately after Institute. */
