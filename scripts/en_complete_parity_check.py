@@ -8,7 +8,7 @@ reg=json.loads((ROOT/'data/language-activation.json').read_text(encoding='utf-8'
 if reg.get('policy_mode')!='fail_closed': errors.append('registry must remain fail_closed')
 if reg.get('canonical_master')!='mk' or reg.get('canonical_mirror')!='en': errors.append('canonical language roles changed')
 surfaces=reg.get('public_surface_routes') or {}
-if len(surfaces)!=57: errors.append(f'expected 57 public surfaces, got {len(surfaces)}')
+if len(surfaces)!=58: errors.append(f'expected 58 public surfaces, got {len(surfaces)}')
 mk_routes=[]; en_routes=[]
 for sid,row in surfaces.items():
     mk=row.get('mk'); en=row.get('en'); fr=row.get('fr'); de=row.get('de')
@@ -42,7 +42,7 @@ canon=[]
 for x in locs:
     if x not in canon: canon.append(x)
 if set(canon)!=set(mk_routes): errors.append('canonical sitemap inventory does not exactly match registry MK public routes')
-if len(canon)!=57: errors.append(f'expected 57 canonical sitemap routes, got {len(canon)}')
+if len(canon)!=58: errors.append(f'expected 58 canonical sitemap routes, got {len(canon)}')
 js=(ROOT/'en/wpa-en-mirror.js').read_text(encoding='utf-8')
 if re.search(r'[\u0400-\u04FF]',js): errors.append('Cyrillic residue in English shared runtime')
 for needle in ("localStorage.setItem('wpa.language','en')","data-wpa-ui-language','en"):
@@ -55,4 +55,4 @@ if errors:
     print('English parity/purity check failed under current registry.')
     for e in errors: print('-',e)
     sys.exit(1)
-print('English public parity/purity OK: 57 registered surfaces; 57 canonical sitemap routes; zero Cyrillic in EN public HTML/runtime.')
+print('English public parity/purity OK: 58 registered surfaces; 58 canonical sitemap routes; zero Cyrillic in EN public HTML/runtime.')
