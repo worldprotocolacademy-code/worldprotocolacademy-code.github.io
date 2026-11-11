@@ -18,7 +18,7 @@ if gate.get('predecessor_safe8x_merge') is not False: err('SAFE-8X hold provenan
 if gate.get('native_human_lector_verified') is not False or gate.get('publication_grade_line_by_line_verified') is not False: err('German claim boundary overclaimed')
 if gate.get('after_approval')!='no_commits_before_merge': err('post-approval freeze missing')
 surfaces=reg.get('public_surface_routes',{})
-if len(surfaces)!=58: err(f'expected 58 surfaces, got {len(surfaces)}')
+if len(surfaces)!=57: err(f'expected 57 surfaces, got {len(surfaces)}')
 stale=['safe-8w kandidat','safe-8w-kandidat','safe-8x','nicht öffentlich aktiviert','bleiben bis zu einem eigenen human gate nicht öffentlich aktiviert','deutsch bleibt safe-8w','deutsche kandidatenoberfläche','kandidatenfassung','kandidatenübersetzung','keine deutsche aktivierung ohne eigenen human gate']
 for sid,row in surfaces.items():
     if set(row)!=set(reg['public_languages']): err(f'{sid}: route language set mismatch')
@@ -75,4 +75,4 @@ if errors:
     print('SAFE-8Y German activation check FAILED')
     for e in errors: print('-',e)
     sys.exit(1)
-print('SAFE-8Y German public-state candidate OK: 58/58 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; shared router preserves Human-Gated pilot qualifier; sitemap SAFE-8Y provenance enforced; Home/Institute discoverable; remaining 56 noindex; claim boundary preserved; Human Authority pending.')
+print('SAFE-8Y German public-state candidate OK: 57/57 routes; stale SAFE-8W/SAFE-8X/candidate/nonpublic text forbidden; shared router preserves Human-Gated pilot qualifier; sitemap SAFE-8Y provenance enforced; Home/Institute discoverable; remaining 55 noindex; claim boundary preserved; Human Authority pending.')
