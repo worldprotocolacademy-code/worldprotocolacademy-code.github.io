@@ -140,6 +140,7 @@ def run(task, evidence, dry_run=False):
     states = [x["state"] for x in result["agents"].values()]
     result["summary"] = {
         "completed":states.count("COMPLETED"),
+        "available":states.count("AVAILABLE"),
         "unavailable":states.count("UNAVAILABLE"),
         "errors":states.count("ERROR"),
         "consensus_claimed":False,
