@@ -14,7 +14,7 @@ if len(manifest_codes)!=50 or len(set(manifest_codes))!=50 or set(manifest_codes
 if public!=['mk','en','fr','de']: fail(f'public language order/set changed unexpectedly: {public}')
 if activation.get('canonical_master')!='mk' or activation.get('canonical_mirror')!='en': fail('canonical roles changed')
 if activation.get('public_routes',{}).get('de',{}).get('status')!='human_gated_public_pilot': fail('DE operational status mismatch')
-if len(surfaces)!=57: fail(f'expected 57 registered public surfaces, found {len(surfaces)}')
+if len(surfaces)!=58: fail(f'expected 58 registered public surfaces, found {len(surfaces)}')
 for sid,routes in surfaces.items():
     if set(routes)!=set(public): fail(f'surface {sid} must expose exactly MK/EN/FR/DE routes')
     for code,route in routes.items():
@@ -43,4 +43,4 @@ contract=readiness.get('activation_contract',{}); required=set(contract.get('req
 if required!=expected: fail('activation contract drifted')
 if contract.get('after_approval')!='no_commits_before_merge': fail('post-approval freeze missing')
 if 'independent_public_route_verification' not in contract.get('production_claim',''): fail('LIVE claim verification requirement missing')
-print('Global language governance OK: 50 canon; 4 public MK/EN/FR/DE; 46 fail-closed; 57 surfaces with exact four-language route parity; DE operational state human_gated_public_pilot.')
+print('Global language governance OK: 50 canon; 4 public MK/EN/FR/DE; 46 fail-closed; 58 surfaces with exact four-language route parity; DE operational state human_gated_public_pilot.')
