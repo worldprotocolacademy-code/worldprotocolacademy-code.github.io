@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT=process.cwd();
+const ROOT=process.cwd();\nconst AUDIT_VERSION="1.0.1";
 let failures=0, checks=0;
 const pass=m=>{checks++; console.log("PASS",m)};
 const fail=m=>{checks++; failures++; console.error("FAIL",m)};
