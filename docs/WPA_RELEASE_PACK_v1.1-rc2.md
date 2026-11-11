@@ -1,11 +1,11 @@
 # WPA Public Surface + Institute Hardening v1.1.0-rc2
 
-**Date:** 2026-11-11  
-**Owner / Human Release Authority:** Asst. Prof. Dr Sande Smiljanov  
-**Primary class:** website / portal / interactive institutional platform  
-**Status:** READY FOR HUMAN GATE — NOT YET MERGED / NOT YET VERIFIED LIVE  
-**Pull request:** #634  
-**Release branch:** `feat/wpa-proactive-agent-fabric-v1`  
+**Date:** 2026-11-11
+**Owner / Human Release Authority:** Asst. Prof. Dr Sande Smiljanov
+**Primary class:** website / portal / interactive institutional platform
+**Status:** READY FOR HUMAN GATE — NOT YET MERGED / NOT YET VERIFIED LIVE
+**Pull request:** #634
+**Release branch:** `feat/wpa-proactive-agent-fabric-v1`
 **Rollback baseline:** `b52cefa359c2dec41abcd2419e26d3e38d3e9428`
 
 ## 1. Release identity
