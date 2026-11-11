@@ -43,16 +43,16 @@
     const sec=document.createElement('section');
     sec.id='wpaInstituteCommandLayer';
     sec.innerHTML=`<div class="wic-wrap">
-      <div class="wic-eyebrow">WPA Institute Command Layer · v2.1</div>
+      <div class="wic-eyebrow">WPA Institute Command Layer · v2.2</div>
       <h2>Институтска контролна палуба · Institute control deck</h2>
       <p>Брз оперативен слој за главната WPA Institute страница: идентитет, инструменти, trust layer, services, briefings, journal, student desk и AI roadmap. Овој панел е локален, не собира податоци и не менува институционален статус.</p>
       <div class="wic-grid">
         <div class="wic-card"><b>Identity</b><span>Развојна, тест и пробна фаза — независна дигитална образовна, истражувачка и авторска платформа.</span></div>
         <div class="wic-card"><b>Protocolometry</b><span>Работен поим во настанување, не универзално воспоставена дисциплина.</span></div>
         <div class="wic-card"><b>Instruments</b><span>PSPI/ИПММ за настани + WPA Institute Index за институции, со право на исправка.</span></div>
-        <div class="wic-card"><b>REV2 Dataset</b><span>Master List REV2: 160 records · 159 external · 155 distinct · groups A-D, G-I, R.</span></div>
+        <div class="wic-card"><b>REV7 Dataset</b><span>Master List REV7: 250 records · 249 external · 241 distinct · groups A-D, G-I, R.</span></div>
         <div class="wic-card"><b>Services</b><span><a href="wpa-services.html">Institutional Services</a> · <a href="wpa-briefings.html">Premium Briefings</a></span></div>
-        <div class="wic-card"><b>Trust</b><span><a href="public-disclaimer.html">Public Disclaimer</a> · <a href="correction-request.html">Correction</a> · <a href="rights-takedown.html">Rights & Takedown</a></span></div>
+        <div class="wic-card"><b>Trust</b><span><a href="public-disclaimer.html">Public Disclaimer</a> · <a href="correction-request.html">Correction</a> · <a href="rights-takedown.html">Rights & Takedown</a></span></div><div class="wic-card"><b>Proactive Agent Fabric</b><span><a href="/data/wpa-proactive-agent-fabric.json">5 governed provider seats</a> · provider connectivity unverified · Human Gate retained.</span></div>
       </div>
       <div class="wic-notice"><strong>Boundary:</strong> WPA Institute is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services and briefings are separate from Journal decisions, certificates and index outcomes.</div>
       <div class="wic-tool" id="wicTool"><h3 style="margin:0;color:#e3c878">Institute brief builder</h3><p>Подготви краток текст за контакт, институционална соработка, correction request, OPC 2026 интерес или services/briefings inquiry.</p>
