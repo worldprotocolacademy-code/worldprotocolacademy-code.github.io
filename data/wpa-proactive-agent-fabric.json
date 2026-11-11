@@ -1,0 +1,91 @@
+{
+  "schema": "wpa-proactive-agent-fabric/1.0",
+  "version": "1.0.0-rc1",
+  "updated": "2026-11-11",
+  "status": "RELEASE_CANDIDATE_NOT_ACTIVE_ON_MAIN",
+  "name": "WPA Institute Proactive Agent Fabric",
+  "purpose": "Server-side, source-disciplined multi-agent orchestration for WPA Institute research, editorial preparation, institutional analysis and governed automation.",
+  "canonical_inputs": [
+    "/journal/live/",
+    "/institute/daily/",
+    "/data/wpa-connected-vessels-system.json",
+    "/data/wpa-human-gate-policy.json"
+  ],
+  "agents": [
+    {
+      "id": "grok",
+      "label": "Grok-Bot-Proactive Agent",
+      "role": "horizon_scan_and_counter_signal",
+      "mission": "Detect public signals, dissenting interpretations, emerging issues and counter-narratives for later verification.",
+      "required_env": ["WPA_GROK_API_KEY", "WPA_GROK_API_URL", "WPA_GROK_MODEL"],
+      "human_gate_ceiling": "HG1"
+    },
+    {
+      "id": "gpt",
+      "label": "GPT Orchestrator",
+      "role": "orchestration_synthesis_and_task_routing",
+      "mission": "Build task plans, route evidence, synthesize bounded outputs and maintain handoff records.",
+      "required_env": ["WPA_GPT_API_KEY", "WPA_GPT_API_URL", "WPA_GPT_MODEL"],
+      "human_gate_ceiling": "HG1"
+    },
+    {
+      "id": "claude",
+      "label": "Claude Red-Team Agent",
+      "role": "academic_red_team_and_consistency_review",
+      "mission": "Challenge assumptions, identify contradictions, test evidence sufficiency and review academic/institutional quality.",
+      "required_env": ["WPA_CLAUDE_API_KEY", "WPA_CLAUDE_API_URL", "WPA_CLAUDE_MODEL"],
+      "human_gate_ceiling": "HG1"
+    },
+    {
+      "id": "kimi",
+      "label": "Kimi Long-Context Agent",
+      "role": "long_context_and_multilingual_comparison",
+      "mission": "Compare larger source packets, preserve cross-document context and produce multilingual comparison notes.",
+      "required_env": ["WPA_KIMI_API_KEY", "WPA_KIMI_API_URL", "WPA_KIMI_MODEL"],
+      "human_gate_ceiling": "HG1"
+    },
+    {
+      "id": "harvey",
+      "label": "Harvey Legal-Compliance Agent",
+      "role": "legal_compliance_review",
+      "mission": "Provide bounded legal/compliance issue spotting when an authorised Harvey-compatible server adapter is configured.",
+      "required_env": ["WPA_HARVEY_API_KEY", "WPA_HARVEY_API_URL", "WPA_HARVEY_MODEL"],
+      "human_gate_ceiling": "HG1",
+      "boundary": "No claim of Harvey API availability, partnership or legal authority is made by this manifest."
+    }
+  ],
+  "execution_policy": {
+    "provider_calls": "SERVER_SIDE_ONLY",
+    "browser_api_keys": false,
+    "missing_provider": "MARK_UNAVAILABLE_AND_CONTINUE_WITH_AVAILABLE_AGENTS",
+    "source_provenance_required": true,
+    "automatic_doctrine_mutation": false,
+    "automatic_external_publication": false,
+    "automatic_payment_or_credential_action": false,
+    "automatic_social_posting": false,
+    "fail_closed_on_unclear_authority": true
+  },
+  "human_gate": {
+    "HG0": "Automatic informational and reversible tasks allowed.",
+    "HG1": "Automatic bounded research, routing, comparison, drafting and queue preparation allowed under mandate.",
+    "HG2": "Publication, official statements, material corrections and external deliverables must stop at READY_FOR_HUMAN_GATE.",
+    "HG3": "Legal/financial/privacy/credential-sensitive actions require secure private backend and human preapproval.",
+    "HG4": "Doctrine, mandate, new institutional authority and official commitments are human-only final decisions."
+  },
+  "default_pipeline": [
+    "ingest verified/public candidate packet",
+    "Grok horizon scan",
+    "GPT orchestration and synthesis",
+    "Kimi long-context comparison",
+    "Claude red-team review",
+    "Harvey legal/compliance issue spotting when configured",
+    "cross-agent reconciliation without forced consensus",
+    "Human Gate classification",
+    "emit provenance-rich review package"
+  ],
+  "non_claims": [
+    "This release candidate does not mean all five external providers are connected.",
+    "A configured seat does not imply partnership, endorsement or provider participation.",
+    "The system does not autonomously publish, bind WPA, change doctrine, issue credentials or make legal decisions."
+  ]
+}

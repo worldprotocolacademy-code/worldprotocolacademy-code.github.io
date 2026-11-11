@@ -1,0 +1,50 @@
+name: WPA Security Hardening CI
+
+on:
+  pull_request:
+    paths:
+      - "SECURITY.md"
+      - ".well-known/security.txt"
+      - ".github/CODEOWNERS"
+      - ".github/dependabot.yml"
+      - ".github/workflows/**"
+      - "scripts/**"
+      - "workers/**"
+      - "data/wpa-security-hardening-status.json"
+      - "identity-verification.html"
+      - "security.html"
+  push:
+    branches: [main]
+    paths:
+      - "SECURITY.md"
+      - ".well-known/security.txt"
+      - ".github/**"
+      - "scripts/**"
+      - "workers/**"
+      - "identity-verification.html"
+      - "security.html"
+  schedule:
+    - cron: "31 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Run WPA repository security gate
+        run: python scripts/wpa_security_hardening_check.py
+      - name: Verify security disclosure endpoints exist
+        run: |
+          test -s SECURITY.md
+          test -s .well-known/security.txt
+          test -s identity-verification.html

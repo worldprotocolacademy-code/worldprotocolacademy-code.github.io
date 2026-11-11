@@ -1,0 +1,88 @@
+name: WPA Proactive Agent Fabric
+
+on:
+  pull_request:
+    paths:
+      - "scripts/wpa_proactive_agent_fabric.py"
+      - "data/wpa-proactive-agent-fabric.json"
+      - ".github/workflows/wpa-proactive-agent-fabric.yml"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: "Bounded WPA Institute task"
+        required: false
+        default: "Prepare the WPA Institute daily research and editorial review packet."
+  schedule:
+    - cron: "23 5 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Self-test governance and provider fail-closed behaviour
+        run: python scripts/wpa_proactive_agent_fabric.py --self-test
+      - name: Dry-run provider availability
+        env:
+          WPA_GROK_API_KEY: ${{ secrets.WPA_GROK_API_KEY }}
+          WPA_GROK_API_URL: ${{ secrets.WPA_GROK_API_URL }}
+          WPA_GROK_MODEL: ${{ secrets.WPA_GROK_MODEL }}
+          WPA_GPT_API_KEY: ${{ secrets.WPA_GPT_API_KEY }}
+          WPA_GPT_API_URL: ${{ secrets.WPA_GPT_API_URL }}
+          WPA_GPT_MODEL: ${{ secrets.WPA_GPT_MODEL }}
+          WPA_CLAUDE_API_KEY: ${{ secrets.WPA_CLAUDE_API_KEY }}
+          WPA_CLAUDE_API_URL: ${{ secrets.WPA_CLAUDE_API_URL }}
+          WPA_CLAUDE_MODEL: ${{ secrets.WPA_CLAUDE_MODEL }}
+          WPA_KIMI_API_KEY: ${{ secrets.WPA_KIMI_API_KEY }}
+          WPA_KIMI_API_URL: ${{ secrets.WPA_KIMI_API_URL }}
+          WPA_KIMI_MODEL: ${{ secrets.WPA_KIMI_MODEL }}
+          WPA_HARVEY_API_KEY: ${{ secrets.WPA_HARVEY_API_KEY }}
+          WPA_HARVEY_API_URL: ${{ secrets.WPA_HARVEY_API_URL }}
+          WPA_HARVEY_MODEL: ${{ secrets.WPA_HARVEY_MODEL }}
+        run: python scripts/wpa_proactive_agent_fabric.py --dry-run --task "${{ github.event.inputs.task || 'Prepare the WPA Institute daily research and editorial review packet.' }}" --output proactive-agent-dryrun.json
+      - name: Report sanitized provider availability
+        run: python -c 'import json; d=json.load(open("proactive-agent-dryrun.json",encoding="utf-8")); print("PROVIDER_DRY_RUN", json.dumps(d["summary"], ensure_ascii=False)); print("HUMAN_GATE", json.dumps(d["human_gate"], ensure_ascii=False)); print("STATES", json.dumps({k:v["state"] for k,v in d["agents"].items()}, ensure_ascii=False))'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wpa-proactive-agent-dryrun
+          path: proactive-agent-dryrun.json
+          retention-days: 7
+
+  governed-run:
+    if: github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run configured provider seats
+        env:
+          WPA_GROK_API_KEY: ${{ secrets.WPA_GROK_API_KEY }}
+          WPA_GROK_API_URL: ${{ secrets.WPA_GROK_API_URL }}
+          WPA_GROK_MODEL: ${{ secrets.WPA_GROK_MODEL }}
+          WPA_GPT_API_KEY: ${{ secrets.WPA_GPT_API_KEY }}
+          WPA_GPT_API_URL: ${{ secrets.WPA_GPT_API_URL }}
+          WPA_GPT_MODEL: ${{ secrets.WPA_GPT_MODEL }}
+          WPA_CLAUDE_API_KEY: ${{ secrets.WPA_CLAUDE_API_KEY }}
+          WPA_CLAUDE_API_URL: ${{ secrets.WPA_CLAUDE_API_URL }}
+          WPA_CLAUDE_MODEL: ${{ secrets.WPA_CLAUDE_MODEL }}
+          WPA_KIMI_API_KEY: ${{ secrets.WPA_KIMI_API_KEY }}
+          WPA_KIMI_API_URL: ${{ secrets.WPA_KIMI_API_URL }}
+          WPA_KIMI_MODEL: ${{ secrets.WPA_KIMI_MODEL }}
+          WPA_HARVEY_API_KEY: ${{ secrets.WPA_HARVEY_API_KEY }}
+          WPA_HARVEY_API_URL: ${{ secrets.WPA_HARVEY_API_URL }}
+          WPA_HARVEY_MODEL: ${{ secrets.WPA_HARVEY_MODEL }}
+        run: python scripts/wpa_proactive_agent_fabric.py --task "${{ github.event.inputs.task }}" --output proactive-agent-run.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wpa-proactive-agent-human-gate-packet
+          path: proactive-agent-run.json
+          retention-days: 30
