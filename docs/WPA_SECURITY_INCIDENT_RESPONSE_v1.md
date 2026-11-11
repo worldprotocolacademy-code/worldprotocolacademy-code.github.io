@@ -1,6 +1,6 @@
 # WPA Security Incident Response v1.0
 
-Status: RELEASE CANDIDATE / HUMAN-GATED  
+Status: RELEASE CANDIDATE / HUMAN-GATED
 Updated: 2026-11-11
 
 ## Objective
