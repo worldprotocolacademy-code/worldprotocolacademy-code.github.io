@@ -5,7 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 activation=json.loads((ROOT/'data/language-activation.json').read_text(encoding='utf-8'))
 assert activation['policy_mode']=='fail_closed'
 surfaces=activation['public_surface_routes']
-assert len(surfaces)==57
+assert len(surfaces)==58
 is_public='de' in activation['public_languages']
 if is_public:
     status=activation['public_routes']['de']['status']
@@ -31,7 +31,7 @@ else:
         fr=row['fr']; assert fr.startswith('/languages/fr/')
         expected.append((key,fr.replace('/languages/fr/','/languages/de/',1)))
 expected_routes={route for _,route in expected}
-assert len(expected_routes)==57
+assert len(expected_routes)==58
 for key,route in expected:
     rel=route.lstrip('/')
     if route.endswith('/'): rel += 'index.html'
@@ -74,5 +74,5 @@ hub_hrefs=set(re.findall(r'href="([^"]+)"',hub))
 hub_surface_hrefs={h for h in hub_hrefs if h.startswith('/languages/de/') and not h.endswith(('wpa-de-mirror.css','wpa-de-mirror.js'))}
 assert not (expected_routes-hub_surface_hrefs), f'German surface index missing routes: {sorted(expected_routes-hub_surface_hrefs)}'
 assert not (hub_surface_hrefs-expected_routes), f'German surface index contains unregistered routes: {sorted(hub_surface_hrefs-expected_routes)}'
-assert len(hub_surface_hrefs)==57
-print(f'German current-state gate OK: 57/57 surfaces; namespace-contained; public={is_public}; indexing policy enforced.')
+assert len(hub_surface_hrefs)==58
+print(f'German current-state gate OK: 58/58 surfaces; namespace-contained; public={is_public}; indexing policy enforced.')
