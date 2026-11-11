@@ -35,7 +35,7 @@ for path in [
 # 5: remove stale bibliography fallback / hero contradiction.
 patch("bibliography/index.html", [
     ("◆ 15 WPA Zenodo DOI Records · 12 Working Papers + 3 Protocol Notes",
-     "◆ 23 WPA Zenodo Records · 13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan"),
+     "◆ 25 WPA Zenodo Records · 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan"),
 ])
 
 # 9: no absolute zero-hallucination wording on homepage.
@@ -105,7 +105,7 @@ assert "12 Working Papers + 3 Protocol Notes" not in (ROOT / "bibliography/index
 assert "Zero hallucination политика" not in (ROOT / "index.html").read_text(encoding="utf-8")
 assert "5/53 верифицирани записи" not in (ROOT / "protocol-symbols/index.html").read_text(encoding="utf-8")
 assert "WPA Protocol Soft Power Index" in (ROOT / "protocolometry-center.html").read_text(encoding="utf-8")
-assert "13 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan = 23" in (ROOT / "bibliography/index.html").read_text(encoding="utf-8")
+assert "15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan = 25" in (ROOT / "bibliography/index.html").read_text(encoding="utf-8")
 assert "Официјално издавање сè уште не е активно" in (ROOT / "certification.html").read_text(encoding="utf-8")
 assert "INACTIVE / FROZEN" in (ROOT / "wpa-services.html").read_text(encoding="utf-8")
 assert "Commercial preview</strong><span>currently inactive" in (ROOT / "wpaws/protocol-symbols/index.html").read_text(encoding="utf-8")

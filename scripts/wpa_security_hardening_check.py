@@ -83,5 +83,5 @@ if workflows.exists():
 
 print(f"WPA_SECURITY_HARDENING_CHECK errors={len(errors)} warnings={len(warnings)}")
 for w in warnings: print("WARN",w)
-for e in errors: print("FAIL",e)
+for i, _ in enumerate(errors, start=1): print(f"FAIL SECURITY_GATE_{i:02d}")
 raise SystemExit(1 if errors else 0)
