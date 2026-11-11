@@ -1,6 +1,6 @@
 # WPA Human-Gate Pre-Release Security Checklist v1.1
 
-**Applies to:** WPA Public Surface + Institute Hardening v1.1.0-rc2  
+**Applies to:** WPA Public Surface + Institute Hardening v1.1.0-rc2
 **Purpose:** manual controls that repository CI cannot prove.
 
 ## A. Google / Gmail identity
