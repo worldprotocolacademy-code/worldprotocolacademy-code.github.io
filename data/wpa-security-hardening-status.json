@@ -1,0 +1,52 @@
+{
+  "schema": "wpa-security-hardening/1.0",
+  "version": "1.0.0-rc1",
+  "updated": "2026-11-11",
+  "status": "READY_FOR_HUMAN_GATE_WITH_EXTERNAL_ACCOUNT_CONTROLS_PENDING",
+  "identity": {
+    "canonical_domain": "worldprotocolacademy.mk",
+    "canonical_security_contact": "sande@worldprotocolacademy.mk",
+    "platform_status": "independent digital educational, research and authorial platform"
+  },
+  "verified_repository_controls": {
+    "default_branch": "main",
+    "active_ruleset": true,
+    "blocks_branch_deletion": true,
+    "blocks_non_fast_forward": true,
+    "required_status_checks": 2,
+    "required_approving_reviews": 0,
+    "code_owner_review_required": false
+  },
+  "release_candidate_controls": {
+    "security_policy": "/SECURITY.md",
+    "security_txt": "/.well-known/security.txt",
+    "codeowners": "/.github/CODEOWNERS",
+    "dependabot_config": "/.github/dependabot.yml",
+    "incident_response": "/docs/WPA_SECURITY_INCIDENT_RESPONSE_v1.md",
+    "security_ci": "/.github/workflows/wpa-security-hardening-ci.yml"
+  },
+  "mail_observation": {
+    "inbound_route": "Cloudflare Email Routing to worldprotocolacademy@gmail.com observed in authenticated message headers",
+    "tls_observed": true,
+    "cloudflare_dkim_observed_for_forwarded_mail": true,
+    "outbound_spf_dkim_dmarc_status": "NOT_VERIFIED"
+  },
+  "external_account_controls": {
+    "google_primary_account_security": "HUMAN_VERIFICATION_REQUIRED",
+    "github_2fa_passkey_security": "HUMAN_VERIFICATION_REQUIRED",
+    "cloudflare_account_security": "HUMAN_VERIFICATION_REQUIRED",
+    "dns_spf_dkim_dmarc": "HUMAN_VERIFICATION_REQUIRED"
+  },
+  "human_gate": {
+    "required_for": [
+      "account recovery",
+      "password or passkey changes",
+      "2FA or recovery-method changes",
+      "DNS changes",
+      "email authentication changes",
+      "credential rotation",
+      "production deployment",
+      "public incident statements"
+    ]
+  }
+}
