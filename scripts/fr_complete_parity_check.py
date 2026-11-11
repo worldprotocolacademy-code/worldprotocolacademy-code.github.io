@@ -6,7 +6,7 @@ assert reg['policy_mode']=='fail_closed'
 assert reg['public_languages']==['mk','en','fr','de']
 assert reg['alignment']['required'] is True
 surfaces=reg['public_surface_routes']
-assert len(surfaces)==58, f'expected 58 registered public surfaces, got {len(surfaces)}'
+assert len(surfaces)==57, f'expected 57 registered public surfaces, got {len(surfaces)}'
 mk_to_fr={v['mk']:v['fr'] for v in surfaces.values() if 'mk' in v and 'fr' in v}
 xml=(ROOT/'sitemap.xml').read_text(encoding='utf-8')
 locs=re.findall(r'<loc>https://worldprotocolacademy\.mk([^<]*)</loc>',xml)
