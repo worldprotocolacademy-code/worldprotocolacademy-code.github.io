@@ -108,5 +108,5 @@ assert "WPA Protocol Soft Power Index" in (ROOT / "protocolometry-center.html").
 assert "15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan = 25" in (ROOT / "bibliography/index.html").read_text(encoding="utf-8")
 assert "Официјално издавање сè уште не е активно" in (ROOT / "certification.html").read_text(encoding="utf-8")
 assert "INACTIVE / FROZEN" in (ROOT / "wpa-services.html").read_text(encoding="utf-8")
-assert "Commercial preview</strong><span>currently inactive" in (ROOT / "wpaws/protocol-symbols/index.html").read_text(encoding="utf-8")
+assert "This card is for educational and protocol-reference purposes." in (ROOT / "wpaws/protocol-symbols/index.html").read_text(encoding="utf-8")
 print("WPA X10 FINAL PUBLIC LOCK: PASS")
