@@ -1,0 +1,51 @@
+name: WPA Public Surface Audit
+
+on:
+  pull_request:
+    paths:
+      - "index.html"
+      - "institute.html"
+      - "opc2026/**"
+      - "opc2027/**"
+      - "en/opc2027/**"
+      - "languages/fr/opc2027/**"
+      - "languages/de/opc2027/**"
+      - "wpa-translator.js"
+      - "data/**"
+      - "locales/**"
+      - "scripts/wpa_proactive_agent_fabric.py"
+      - "scripts/audit_wpa_public_surfaces.mjs"
+      - ".github/workflows/wpa-public-surface-audit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "institute.html"
+      - "data/**"
+      - "locales/**"
+      - "scripts/audit_wpa_public_surfaces.mjs"
+  schedule:
+    - cron: "11 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check JavaScript syntax
+        run: node --check wpa-translator.js
+      - name: Audit public surfaces, links, canonical facts and language routes
+        run: node scripts/audit_wpa_public_surfaces.mjs
+      - name: Self-test proactive Human-Gate orchestrator
+        run: python scripts/wpa_proactive_agent_fabric.py --self-test
