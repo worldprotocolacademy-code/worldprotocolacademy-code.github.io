@@ -47,10 +47,33 @@
       '#wpaBroadcastGateway .wpa-bcast-icon svg{width:52px;height:52px;fill:none;stroke:#e8d49a;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;}',
       '#wpaBroadcastGateway .wpa-bcast-status{display:flex;justify-content:space-between;gap:14px;align-items:center;padding-top:14px;border-top:1px solid rgba(232,212,154,.16);color:rgba(255,255,255,.55);font:700 9.5px/1.35 var(--fb,system-ui);letter-spacing:.5px;text-transform:uppercase;}',
       '#wpaBroadcastGateway .wpa-bcast-status strong{color:#e8d49a;font-weight:800;}',
+      '#wpaHomeNewsShortcut{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 11px;border:1px solid rgba(201,168,76,.48);border-radius:999px;background:linear-gradient(135deg,#0d1f3c,#162947);color:#f4e8c1!important;text-decoration:none;font:800 10.5px/1 var(--fb,system-ui);letter-spacing:.45px;box-shadow:0 6px 18px rgba(13,31,60,.12);white-space:nowrap;transition:transform .18s ease,box-shadow .18s ease;}',
+      '#wpaHomeNewsShortcut:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(13,31,60,.18);}',
+      '#wpaHomeNewsShortcut svg{width:16px;height:16px;fill:none;stroke:#e8d49a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}',
+      '#wpaHomeNewsShortcut .wpa-home-news-dot{width:6px;height:6px;border-radius:50%;background:#c9a84c;box-shadow:0 0 0 4px rgba(201,168,76,.10);}',
+      '@media(max-width:1180px){#wpaHomeNewsShortcut .wpa-home-news-label{display:none}#wpaHomeNewsShortcut{width:38px;padding:0;justify-content:center}}',
       '@media(max-width:900px){#wpaBroadcastGateway{padding:58px 0}#wpaBroadcastGateway .wpa-bcast-grid{grid-template-columns:1fr}#wpaBroadcastGateway .wpa-bcast-visual{min-height:330px}}',
       '@media(max-width:540px){#wpaBroadcastGateway .wpa-bcast-wrap{width:min(100% - 28px,1280px)}#wpaBroadcastGateway .wpa-bcast-stage{grid-template-columns:1fr 70px 1fr}#wpaBroadcastGateway .wpa-bcast-avatar{width:82px;height:82px;font-size:30px}#wpaBroadcastGateway .wpa-bcast-icon{width:68px;height:68px}#wpaBroadcastGateway .wpa-bcast-icon svg{width:40px;height:40px}#wpaBroadcastGateway .wpa-bcast-actions{display:grid;grid-template-columns:1fr}#wpaBroadcastGateway .wpa-bcast-btn{width:100%}}'
     ].join('');
     document.head.appendChild(style);
+  }
+
+  function renderNavShortcut() {
+    if (document.getElementById('wpaHomeNewsShortcut')) return true;
+    var host = document.querySelector('.nav-right');
+    if (!host) return false;
+    var a = document.createElement('a');
+    a.id = 'wpaHomeNewsShortcut';
+    a.href = NEWS_URL;
+    a.setAttribute('aria-label', 'WPA NEWS · Дневни вести');
+    a.setAttribute('title', 'WPA NEWS · Дипломатка + Дипломат');
+    a.setAttribute('data-no-i18n', 'true');
+    a.setAttribute('translate', 'no');
+    a.innerHTML = '<span class="wpa-home-news-dot" aria-hidden="true"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4z"></path><path d="M7 8h6M7 11h10M7 14h10M16 8h1"></path></svg><span class="wpa-home-news-label">WPA NEWS</span>';
+    var lang = host.querySelector('.lang-sw');
+    if (lang) host.insertBefore(a, lang);
+    else host.appendChild(a);
+    return true;
   }
 
   function render() {
@@ -59,6 +82,7 @@
     if (!anchor || !anchor.parentNode) return false;
 
     ensureStyles();
+    renderNavShortcut();
 
     var section = document.createElement('section');
     section.id = 'wpaBroadcastGateway';
@@ -100,8 +124,9 @@
   }
 
   render();
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', render, { once: true });
-  window.setTimeout(render, 250);
-  window.setTimeout(render, 1000);
-  window.setTimeout(render, 2500);
+  renderNavShortcut();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function(){ render(); renderNavShortcut(); }, { once: true });
+  window.setTimeout(function(){ render(); renderNavShortcut(); }, 250);
+  window.setTimeout(function(){ render(); renderNavShortcut(); }, 1000);
+  window.setTimeout(function(){ render(); renderNavShortcut(); }, 2500);
 })();
