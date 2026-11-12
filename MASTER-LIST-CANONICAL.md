@@ -21,7 +21,7 @@ A=87, B=35, C=25, D=34, G=25, H=38, I=5, R=1.
 
 ## Count method
 
-249 external records − 8 preserved methodological/entity adjustments = **241 distinct external institutions**.
+249 external records − 8 preserved methodological/entity adjustments = **241 distinct external institutions**. The eight-record difference reflects entity-resolution controls such as aliases, successor/predecessor naming and records retained for auditability but not counted as additional distinct institutions; the applicable revision logs govern the exact treatment of each case.
 
 ## REV7 normalization rule
 
@@ -30,3 +30,7 @@ A015 is normalized in place to Sushma Swaraj Institute of Foreign Service (SSIFS
 ## Watchlist
 
 W001–W017 are excluded from canonical counts pending or by design.
+
+## Public taxonomy rule
+
+Group names are descriptive mapping categories, not value judgements, accreditation classes or rankings. Group A is publicly described as **Protocol, diplomacy and foreign-service academies**. Group D is publicly described as **Academic, university and specialist education institutions**, allowing non-university specialist training bodies to be represented without implying university or degree-granting status.
