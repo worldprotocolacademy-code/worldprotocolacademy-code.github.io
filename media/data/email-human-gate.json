@@ -1,0 +1,69 @@
+{
+  "schema": "wpa-media-email-human-gate/1.0",
+  "version": "1.0.0",
+  "updated": "2026-11-12",
+  "status": "IMPLEMENTATION_CONTRACT__ENDPOINT_AND_MAIL_ADAPTER_REQUIRED",
+  "recipient_policy": {
+    "primary_approver_role": "WPA Founder / authorised Human Gate approver",
+    "single_click_approval": true,
+    "single_click_return_for_revision": true
+  },
+  "email_view": {
+    "subject_pattern": "WPA Media · READY FOR HUMAN GATE · {programme} · {release_id}",
+    "show_only": [
+      "programme",
+      "release_id",
+      "runtime",
+      "top_three_topics",
+      "qa_status",
+      "source_count",
+      "script_hash",
+      "approve_button",
+      "return_button"
+    ],
+    "approve_label_mk": "ОДОБРИ И ПУШТИ ВО ПРОДУКЦИЈА",
+    "return_label_mk": "ВРАТИ НА ДОРАБОТКА"
+  },
+  "approval_token": {
+    "one_time_use": true,
+    "time_limited": true,
+    "bound_to_release_id": true,
+    "bound_to_script_sha256": true,
+    "bound_to_manifest_sha256": true,
+    "invalid_after_content_change": true,
+    "invalid_after_first_use": true,
+    "must_not_contain_repository_credentials": true
+  },
+  "approve_action": [
+    "verify one-time token server-side",
+    "verify exact release_id",
+    "verify script SHA-256 unchanged",
+    "verify manifest SHA-256 unchanged",
+    "record attributable Human Gate decision",
+    "enqueue approved voice/avatar render job",
+    "run render QC",
+    "prepare authorised delivery queue"
+  ],
+  "return_action": [
+    "record attributable RETURN_FOR_REVISION decision",
+    "invalidate approval token",
+    "route package back to Editorial Architect and Script Producer",
+    "issue a new release_id and new hashes after substantive revision"
+  ],
+  "hard_boundaries": {
+    "email_link_is_not_publication_by_itself": true,
+    "automatic_external_publication": false,
+    "external_delivery_requires_authorised_adapter": true,
+    "commercial_commitment": false,
+    "identity_change": false,
+    "doctrine_change": false
+  },
+  "required_runtime_components": [
+    "secure approval endpoint",
+    "server-side token store or signed one-time token service",
+    "email delivery adapter",
+    "authorised production/render adapter",
+    "append-only approval audit log"
+  ],
+  "principle": "One click may authorise one exact release object; it may never authorise a changed or future object."
+}
