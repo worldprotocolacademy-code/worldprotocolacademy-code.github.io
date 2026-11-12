@@ -2,13 +2,17 @@ name: WPA Media Programmes Production
 
 on:
   schedule:
+    # Run both UTC candidates and keep only the one that lands at 06:45 Europe/Skopje.
+    # This preserves the 07:00 local target across CET/CEST.
     - cron: '45 4 * * *'
+    - cron: '45 5 * * *'
     - cron: '15 5 * * 0'
   push:
     branches:
       - main
     paths:
       - 'scripts/generate_wpa_media_programmes.py'
+      - 'scripts/materialize_wpa_news_web.py'
       - 'media/data/programmes.json'
       - 'media/data/presenters.json'
       - '.github/workflows/wpa-media-programmes-production.yml'
@@ -28,13 +32,17 @@ on:
   pull_request:
     paths:
       - 'scripts/generate_wpa_media_programmes.py'
+      - 'scripts/materialize_wpa_news_web.py'
       - 'media/**'
       - '.github/workflows/wpa-media-programmes-production.yml'
       - 'tools/data/daily-protocol-minute-30-days.json'
       - 'scripts/generate_wpa_institute_daily.py'
 
 permissions:
-  contents: read
+  actions: write
+  checks: write
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: wpa-media-programmes-production
@@ -51,8 +59,14 @@ jobs:
           python-version: '3.12'
       - name: Compile and deterministic self-test
         run: |
-          python -m py_compile scripts/generate_wpa_media_programmes.py
+          python -m py_compile scripts/generate_wpa_media_programmes.py scripts/materialize_wpa_news_web.py
           python scripts/generate_wpa_media_programmes.py --repo-root . --mode all --self-test
+          python scripts/materialize_wpa_news_web.py \
+            --repo-root . \
+            --input-dir .wpa-media-selftest/out \
+            --output-dir .wpa-media-selftest/web
+          test -s .wpa-media-selftest/web/status.json
+          test -s .wpa-media-selftest/web/teleprompter.md
 
   produce:
     if: ${{ github.event_name != 'pull_request' }}
@@ -61,6 +75,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
@@ -76,17 +93,32 @@ jobs:
           elif [ "${{ github.event_name }}" = "push" ]; then
             echo "value=all" >> "$GITHUB_OUTPUT"
           else
-            echo "value=daily" >> "$GITHUB_OUTPUT"
+            local_hour="$(TZ=Europe/Skopje date +%H)"
+            if [ "$local_hour" = "06" ]; then
+              echo "value=daily" >> "$GITHUB_OUTPUT"
+            else
+              echo "value=skip" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Generate production pack
+        if: ${{ steps.mode.outputs.value != 'skip' }}
         run: |
           python scripts/generate_wpa_media_programmes.py \
             --repo-root . \
             --output-dir wpa-media-output \
             --mode "${{ steps.mode.outputs.value }}"
 
+      - name: Materialize WPA NEWS web pack
+        if: ${{ steps.mode.outputs.value == 'daily' || steps.mode.outputs.value == 'all' }}
+        run: |
+          python scripts/materialize_wpa_news_web.py \
+            --repo-root . \
+            --input-dir wpa-media-output \
+            --output-dir media/news/production
+
       - name: Validate production boundaries
+        if: ${{ steps.mode.outputs.value != 'skip' }}
         shell: bash
         run: |
           python - <<'PY'
@@ -108,12 +140,26 @@ jobs:
           PY
 
       - name: Archive ready-to-record / episode-master package
+        if: ${{ steps.mode.outputs.value != 'skip' }}
         uses: actions/upload-artifact@v4
         with:
           name: wpa-media-${{ steps.mode.outputs.value }}-${{ github.run_number }}
-          path: wpa-media-output/**
+          path: |
+            wpa-media-output/**
+            media/news/production/**
           if-no-files-found: error
           retention-days: 90
+
+      - name: Publish WPA NEWS web pack through protected Human Gate
+        if: ${{ steps.mode.outputs.value == 'daily' || steps.mode.outputs.value == 'all' }}
+        env:
+          GH_TOKEN: ${{ secrets.WPA_AUTOMATION_TOKEN || github.token }}
+          PUBLISH_BRANCH_PREFIX: wpa-news-daily
+          PUBLISH_TITLE: WPA NEWS daily Human-Gate production pack
+          PUBLISH_BODY: Daily WPA NEWS production pack generated from fresh public-source inputs. The web bundle contains the teleprompter, transcript, captions, shorts, description, social copy and provenance manifest. No voice/avatar render or external social/video publication is claimed. Merge remains the Human Gate.
+          PUBLISH_FILES: media/news/production/latest.json media/news/production/status.json media/news/production/teleprompter.md media/news/production/transcript.md media/news/production/captions.vtt media/news/production/shorts.json media/news/production/video-description.md media/news/production/social-copy.md
+          PUBLISH_GIT_NAME: wpa-news-production-bot
+        run: bash scripts/publish_protected_main.sh
 
       - name: Release boundary
         run: |

@@ -1,20 +1,22 @@
 {
   "schema": "wpa-media-production-status/1.0",
-  "version": "1.0.0",
-  "updated": "2026-10-29",
+  "version": "1.1.0",
+  "updated": "2026-11-12",
   "daily_news": {
     "route": "/media/news/",
     "programme_id": "WPA-NEWS-DAILY-v1",
-    "automation": "IMPLEMENTED",
-    "schedule": "04:45 UTC daily production-pack generation",
-    "product_status": "READY_FOR_HUMAN_GATE__VOICE_VIDEO_RENDER_PENDING",
+    "automation": "ACTIVE_PROTECTED_DAILY_WEB_MATERIALISATION",
+    "schedule": "06:45 Europe/Skopje production-pack generation (DST-safe dual UTC schedule), target 07:00",
+    "product_status": "DAILY_PACK_ACTIVE__HUMAN_GATE_WEB_UPDATE__VOICE_VIDEO_RENDER_PENDING",
     "outputs": [
       "dual-host teleprompter",
-      "transcript",
+      "full transcript",
       "captions draft",
       "provenance manifest",
-      "3 short scripts",
-      "video description"
+      "3 vertical short scripts",
+      "video description",
+      "social copy",
+      "public Human-Gate latest-edition panel after approved merge"
     ],
     "blockers": [
       "production voice adapter not yet verified",
@@ -57,6 +59,7 @@
   "release_boundary": {
     "automatic_external_publication": false,
     "social_platform_delivery_verified": false,
-    "human_gate_required": true
+    "human_gate_required": true,
+    "daily_web_materialisation_requires_protected_merge": true
   }
 }
