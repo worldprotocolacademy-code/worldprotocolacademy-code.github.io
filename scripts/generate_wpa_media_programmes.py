@@ -126,14 +126,14 @@ def presenter_meta(presenters):
             "key": "protokolka",
             "identity_id": chars["protokolka"]["identity_id"],
             "canonical_display_name": chars["protokolka"]["display_name"],
-            "public_alias": chars["protokolka"].get("public_program_alias","Виралната дипломатка"),
+            "public_alias": chars["protokolka"].get("public_program_alias","Дипломатка"),
             "identity_continuity": chars["protokolka"]["identity_continuity"]
         },
         "male": {
             "key": "diplomat",
             "identity_id": chars["diplomat"]["identity_id"],
             "canonical_display_name": chars["diplomat"]["display_name"],
-            "public_alias": chars["diplomat"].get("public_program_alias","Виралниот дипломат"),
+            "public_alias": chars["diplomat"].get("public_program_alias","Дипломат"),
             "identity_continuity": chars["diplomat"]["identity_continuity"]
         }
     }
@@ -326,7 +326,7 @@ def build_weekly_pack(product, programmes, presenters, minutes, audio, now):
         "target_minutes":[1,2],
         "script":[
             line(female, "Добредојдовте во WPA Protocol TV — емисија за протокол, дипломатија, церемонија, јавна слика и институционална комуникација."),
-            line(male, "Јас сум Виралниот дипломат, а со мене е Виралната дипломатка. Денешната епизода ги поврзува актуелните јавни извори со практични протоколарни лекции."),
+            line(male, "Јас сум Дипломат, а со мене е Дипломатка. Денешната епизода ги поврзува актуелните јавни извори со практични протоколарни лекции."),
             line(female, "Кога зборуваме за конкретен настан, се повикуваме на оригинален јавен извор. Кога анализираме, тоа јасно го означуваме како WPA анализа.")
         ]
     })
@@ -502,8 +502,8 @@ def selftest(args):
         files = build_outputs(args, now)
         daily = read_json(tmp / "out/daily/2026-10-29/manifest.json")
         weekly = read_json(tmp / "out/weekly/2026-10-29/episode-master.json")
-        assert daily["presenters"]["female"]["public_alias"] == "Виралната дипломатка"
-        assert daily["presenters"]["male"]["public_alias"] == "Виралниот дипломат"
+        assert daily["presenters"]["female"]["public_alias"] == "Дипломатка"
+        assert daily["presenters"]["male"]["public_alias"] == "Дипломат"
         assert len(daily["shorts"]) == 3
         assert daily["boundaries"]["automatic_external_publication"] is False
         assert weekly["boundaries"]["final_24_30_minute_script_requires_human_editorial_expansion"] is True
