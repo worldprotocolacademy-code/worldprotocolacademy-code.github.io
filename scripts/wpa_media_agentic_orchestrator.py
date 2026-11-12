@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -131,6 +132,10 @@ def main():
         ], repo)
 
     production_dir = out / "production"
+    if production_dir.exists():
+        shutil.rmtree(production_dir)
+    production_dir.mkdir(parents=True, exist_ok=True)
+
     cmd = [
         sys.executable,
         "scripts/generate_wpa_media_programmes.py",
