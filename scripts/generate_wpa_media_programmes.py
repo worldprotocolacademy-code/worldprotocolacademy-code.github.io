@@ -59,7 +59,16 @@ BROADCAST_PATTERNS = {
 
 def broadcast_fit(item):
     d=clean(item.get("domain"))
-    text=(clean(item.get("title"))+" "+clean(item.get("summary"))).lower().replace("_"," ")
+    title=clean(item.get("title"))
+    text=(title+" "+clean(item.get("summary"))).lower().replace("_"," ")
+    url=clean(item.get("original_url")).lower()
+    source_type=clean(item.get("source_type")).lower()
+    if re.search(r"/(opinion|editorial|commentary)(/|$)", url, re.I):
+        return False
+    if re.search(r"\b(opinion|editorial|commentary)\b", source_type, re.I):
+        return False
+    if re.match(r"^\s*(opinion|editorial|commentary)\b", title, re.I):
+        return False
     pat=BROADCAST_PATTERNS.get(d)
     return bool(pat and re.search(pat, text, re.I))
 
@@ -553,6 +562,7 @@ def selftest(args):
         assert daily["boundaries"]["automatic_external_publication"] is False
         assert all("WPA анализа" in x["text"] for x in daily["script_lines"] if x.get("kind") == "wpa_analysis")
         assert all(x.get("domain") for x in daily["script_lines"] if x.get("kind") == "source_report")
+        assert not broadcast_fit({"domain":"security","title":"Opinion: war and politics","summary":"A commentary about war.","source_type":"opinion","original_url":"https://example.org/opinion/test"})
         assert weekly["boundaries"]["final_24_30_minute_script_requires_human_editorial_expansion"] is True
         assert weekly["title"] == "WPA Protocol TV"
         assert files
