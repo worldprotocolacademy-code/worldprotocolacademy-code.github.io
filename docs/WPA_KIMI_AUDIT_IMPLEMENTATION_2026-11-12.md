@@ -1,6 +1,6 @@
 # WPA Kimi Audit Implementation Register — 12 November 2026
 
-**Scope:** controlled implementation of the external Kimi content/institutional/methodological/UX audit into the WPA public repository.  
+**Scope:** controlled implementation of the external Kimi content/institutional/methodological/UX audit into the WPA public repository.
 **Release discipline:** implementation evidence is separated from external validation. This register does not claim legal approval, accreditation, independent methodological approval, AAB constitution or production activation where those events have not actually occurred.
 
 ## Status legend
