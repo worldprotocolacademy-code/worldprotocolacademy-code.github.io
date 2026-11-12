@@ -41,6 +41,40 @@ def jwrite(path, obj):
 def clean(v):
     return re.sub(r"\s+", " ", str(v or "")).strip()
 
+BROADCAST_LABELS_MK = {
+    "protocol":"протокол",
+    "diplomacy":"дипломатија",
+    "public_relations":"односи со јавност",
+    "security":"безбедност",
+    "communicology":"комуникологија"
+}
+
+BROADCAST_PATTERNS = {
+    "protocol": r"protocol|ceremon|precedence|credential|state visit|official visit|official reception|flag|anthem|honou?r guard|representation|vice[- ]president|parliament",
+    "diplomacy": r"diplomat|foreign minister|minister of foreign|foreign affairs|ambassador|embassy|bilateral|multilateral|g7|g20|summit|treaty|negotiat|consul|sovereignty|international relations|leaders? meet|president meets",
+    "public_relations": r"public relations|public communication|media relations|reputation|stakeholder|spokesperson|press briefing|public information|communications? campaign|institutional communication",
+    "security": r"security|military|defen[cs]e|cyber|attack|war|conflict|police|intelligence|nato|terror|crisis|risk|sanction|weapon|armed|ceasefire|peacekeep|crime|emergency",
+    "communicology": r"communicolog|disinformation|misinformation|communication|media|platform|social media|framing|narrative|information|propaganda|speech|journalis|press freedom|censorship|account suspend"
+}
+
+def broadcast_fit(item):
+    d=clean(item.get("domain"))
+    text=(clean(item.get("title"))+" "+clean(item.get("summary"))).lower().replace("_"," ")
+    pat=BROADCAST_PATTERNS.get(d)
+    return bool(pat and re.search(pat, text, re.I))
+
+def spoken_summary(item):
+    title=clean(item.get("title"))
+    summary=clean(item.get("summary"))
+    if title and summary.lower().startswith(title.lower()):
+        summary=summary[len(title):].lstrip(" .:-—")
+    summary=re.sub(r"\bSubmitted by\b.{0,140}?\b(on|off)\b", " ", summary, flags=re.I)
+    summary=re.sub(r"\s+Off\s+", " ", summary, flags=re.I)
+    summary=clean(summary)
+    if len(summary)>360:
+        summary=summary[:357].rstrip()+"..."
+    return summary
+
 def words(text):
     return len(re.findall(r"\S+", text or ""))
 
@@ -138,33 +172,34 @@ def presenter_meta(presenters):
         }
     }
 
-def line(speaker, text, kind="speech", source_url=None, source=None):
+def line(speaker, text, kind="speech", source_url=None, source=None, domain=None):
     x = {"speaker":speaker, "text":clean(text), "kind":kind}
     if source_url:
         x["source_url"] = source_url
     if source:
         x["source"] = source
+    if domain:
+        x["domain"] = domain
     return x
 
 def item_spoken(item):
     title = clean(item.get("title"))
-    summary = clean(item.get("summary"))
+    summary = spoken_summary(item)
     source = clean(item.get("source"))
-    if len(summary) > 520:
-        summary = summary[:517].rstrip() + "..."
-    return f"Според {source}, {title}. {summary}"
+    if summary:
+        return f"Според {source}, изворниот наслов е „{title}“. Во достапниот краток опис се наведува: {summary}"
+    return f"Според {source}, изворниот наслов е „{title}“. За деталите важи оригиналниот извор."
 
 def angle_spoken(item):
     domain = item.get("domain")
-    labels = {
-        "protocol":"протокол",
-        "diplomacy":"дипломатија",
-        "public_relations":"јавна комуникација",
-        "security":"безбедност",
-        "communicology":"комуникологија"
+    angles = {
+        "protocol":"WPA анализа — протокол: проверуваме официјално претставување, редослед, церемонијална постапка и видлив институционален поредок; заклучок се носи само по проверка на оригиналниот извор.",
+        "diplomacy":"WPA анализа — дипломатија: ги разграничуваме актерите, форматот, сигналите и евентуалните обврски, без изворното известување да се претвори во WPA институционална позиција.",
+        "public_relations":"WPA анализа — односи со јавност: го следиме институционалното порачање, репутацијата, засегнатите страни и медиумското врамување, со јасна разлика меѓу официјална изјава и независно известување.",
+        "security":"WPA анализа — безбедност: го разгледуваме само јавно потврдениот ризик, институционалниот одговор и комуникациските последици; ова не е оперативна или разузнавачка проценка.",
+        "communicology":"WPA анализа — комуникологија: ги разгледуваме врамувањето, значењето, информацискиот тек, публиката и институционалниот контекст, без да претпоставуваме намера што изворот не ја потврдува."
     }
-    angle = clean(item.get("wpa_working_angle"))
-    return f"WPA агол за {labels.get(domain, domain)}: {angle}"
+    return angles.get(domain, "WPA анализа: потребна е човечка редакциска проверка.")
 
 def build_daily_pack(product, programmes, presenters, minutes, audio, now):
     local = now.astimezone(SKOPJE)
@@ -173,7 +208,15 @@ def build_daily_pack(product, programmes, presenters, minutes, audio, now):
     female = pm["female"]["public_alias"]
     male = pm["male"]["public_alias"]
 
-    selected = list(product["items"])[:8]
+    candidates = [x for x in product["items"] if broadcast_fit(x)]
+    candidates = sorted(
+        candidates,
+        key=lambda x: (1 if x.get("official_source") else 0, float(x.get("score") or 0), float(x.get("source_confidence") or 0)),
+        reverse=True
+    )
+    selected = candidates[:8]
+    if not selected:
+        raise RuntimeError("No broadcast-fit WPA NEWS items passed the domain relevance gate.")
     lines = [
         line(female, "Добро утро. Ова е WPA NEWS — дневниот бриф на Светската академија за протокол."),
         line(male, "Ги следиме само петте WPA дисциплини: протокол, дипломатија, односи со јавност, безбедност и комуникологија."),
@@ -184,8 +227,8 @@ def build_daily_pack(product, programmes, presenters, minutes, audio, now):
         a = female if i % 2 == 0 else male
         b = male if a == female else female
         label = "Главна тема" if i == 0 else f"Тема {i+1}"
-        lines.append(line(a, f"{label}. {item_spoken(item)}", "source_report", item["original_url"], item["source"]))
-        lines.append(line(b, angle_spoken(item), "wpa_analysis", item["original_url"], item["source"]))
+        lines.append(line(a, f"{label}. {item_spoken(item)}", "source_report", item["original_url"], item["source"], item["domain"]))
+        lines.append(line(b, angle_spoken(item), "wpa_analysis", item["original_url"], item["source"], item["domain"]))
 
     pmn = minute_for_date(minutes, local.date())
     lines += [
@@ -206,7 +249,7 @@ def build_daily_pack(product, programmes, presenters, minutes, audio, now):
             "id": f"SHORT-{i:02d}",
             "target_seconds":[35,50],
             "host": female if i % 2 else male,
-            "hook": f"Што значи ова за {item['domain'].replace('_',' ')}?",
+            "hook": f"Што значи ова за {BROADCAST_LABELS_MK.get(item['domain'], item['domain'])}?",
             "script": f"{item_spoken(item)} {angle_spoken(item)} Оригиналниот извор е наведен во описот.",
             "source_url": item["original_url"],
             "source": item["source"],
@@ -244,7 +287,9 @@ def build_daily_pack(product, programmes, presenters, minutes, audio, now):
             "human_gate_required":True,
             "production_voice_adapter_required":True,
             "production_avatar_render_required":True,
-            "captions_must_match_approved_script":True
+            "captions_must_match_approved_script":True,
+            "source_language_preserved_in_automation_draft":True,
+            "macedonian_editorial_review_required_before_on_air":True
         }
     }
     return pack
@@ -506,6 +551,8 @@ def selftest(args):
         assert daily["presenters"]["male"]["public_alias"] == "Дипломат"
         assert len(daily["shorts"]) == 3
         assert daily["boundaries"]["automatic_external_publication"] is False
+        assert all("WPA анализа" in x["text"] for x in daily["script_lines"] if x.get("kind") == "wpa_analysis")
+        assert all(x.get("domain") for x in daily["script_lines"] if x.get("kind") == "source_report")
         assert weekly["boundaries"]["final_24_30_minute_script_requires_human_editorial_expansion"] is True
         assert weekly["title"] == "WPA Protocol TV"
         assert files
