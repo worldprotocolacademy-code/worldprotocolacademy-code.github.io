@@ -2,7 +2,7 @@
   "use strict";
   var root=document.getElementById("latestEdition");
   if(!root) return;
-  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;","'":"&#39;"}[c];});}
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){if(c==="&")return "&amp;";if(c==="<")return "&lt;";if(c===">")return "&gt;";if(c==='"')return "&quot;";return "&#39;";});}
   function fail(msg){root.innerHTML='<div class="live-state pending"><strong>Нема материјализирано дневно издание.</strong><br>'+esc(msg)+'</div>';}
   Promise.all([
     fetch("/media/news/production/status.json",{cache:"no-store"}).then(function(r){if(!r.ok) throw new Error("status "+r.status); return r.json();}),
