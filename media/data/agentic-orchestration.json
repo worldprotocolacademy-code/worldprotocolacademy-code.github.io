@@ -1,0 +1,101 @@
+{
+  "schema": "wpa-media-agentic-orchestration/1.0",
+  "version": "1.0.0",
+  "updated": "2026-11-12",
+  "status": "ACTIVE_AUTOMATION_DESIGN__HUMAN_GATED_RELEASE",
+  "purpose": "Continuously prepare evidence-disciplined WPA broadcast production packs for daily news and the weekly protocol programme.",
+  "canonical_presenter_pair": {
+    "female_public_name": "Дипломатка",
+    "male_public_name": "Дипломат",
+    "identity_rule": "Public programme names only. Existing canonical fictional presenter faces remain locked; no new likeness is created."
+  },
+  "agents": [
+    {
+      "id": "A01",
+      "name": "Signal Scout",
+      "mode": "AUTOMATED",
+      "inputs": ["WPA Journal Live", "WPA Institute Daily Brief"],
+      "outputs": ["fresh candidate set"],
+      "authority": "HG0"
+    },
+    {
+      "id": "A02",
+      "name": "Evidence Curator",
+      "mode": "AUTOMATED",
+      "inputs": ["fresh candidate set"],
+      "outputs": ["source map", "provenance checks", "fact-analysis separation"],
+      "authority": "HG0"
+    },
+    {
+      "id": "A03",
+      "name": "Editorial Architect",
+      "mode": "AUTOMATED",
+      "inputs": ["evidence-ready candidates", "programme architecture"],
+      "outputs": ["rundown", "segment allocation", "lead selection"],
+      "authority": "HG1"
+    },
+    {
+      "id": "A04",
+      "name": "Script Producer",
+      "mode": "AUTOMATED",
+      "inputs": ["rundown", "source map", "WPA working angles"],
+      "outputs": ["dual-host teleprompter", "transcript", "captions draft", "short scripts"],
+      "authority": "HG1"
+    },
+    {
+      "id": "A05",
+      "name": "Presenter Director",
+      "mode": "AUTOMATED",
+      "inputs": ["approved presenter identity lock", "script pack"],
+      "outputs": ["speaker allocation", "voice/render instructions", "camera-state plan"],
+      "authority": "HG1",
+      "boundary": "May prepare render instructions; may not invent a new face, clone a real person's voice, or release unapproved media."
+    },
+    {
+      "id": "A06",
+      "name": "QC Auditor",
+      "mode": "AUTOMATED_FAIL_CLOSED",
+      "inputs": ["production pack"],
+      "outputs": ["gate report", "blockers", "readiness state"],
+      "authority": "HG1"
+    },
+    {
+      "id": "A07",
+      "name": "Release Packager",
+      "mode": "AUTOMATED",
+      "inputs": ["QC-passed production pack"],
+      "outputs": ["ready-for-human-gate bundle", "release checklist", "distribution drafts"],
+      "authority": "HG1",
+      "boundary": "No external publication or partner delivery without Human Gate."
+    }
+  ],
+  "automation": {
+    "heartbeat_target": "hourly",
+    "daily_news_pack": "04:45 UTC daily",
+    "weekly_protocol_show_pack": "05:15 UTC Sunday",
+    "timezone_context": "Europe/Skopje",
+    "external_publication": false,
+    "voice_rendering": "ADAPTER_REQUIRED",
+    "avatar_lipsync_rendering": "ADAPTER_REQUIRED",
+    "distribution": "DRAFT_QUEUE_ONLY_UNTIL_AUTHORISED_ADAPTER"
+  },
+  "human_gate": {
+    "required_before": [
+      "voice/avatar production render release",
+      "external social/video publication",
+      "TV partner delivery",
+      "commercial offer or commitment",
+      "use of third-party visuals without verified rights",
+      "material changes to presenter identity or institutional doctrine"
+    ],
+    "principle": "AI may work continuously. It may never authorise itself."
+  },
+  "failure_policy": {
+    "insufficient_sources": "SHORTEN_OR_HOLD",
+    "stale_input": "FAIL_CLOSED",
+    "source_conflict": "FLAG_FOR_HUMAN_REVIEW",
+    "identity_drift": "HOLD",
+    "missing_consent": "HOLD",
+    "voice_or_lipsync_qc_failure": "PFP01_SAFE_MODE_OR_HOLD"
+  }
+}

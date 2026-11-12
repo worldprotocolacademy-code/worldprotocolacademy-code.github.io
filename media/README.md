@@ -8,7 +8,7 @@ Canonical route: `/media/`
 
 Two bounded production lines now sit on top of the aggregator:
 
-1. **WPA NEWS · Дневни вести** — daily dual-host production pack for **Виралната дипломатка + Виралниот дипломат**. The generator creates a source-attributed teleprompter, transcript, caption draft, provenance manifest, three short-form cut scripts and a video description from the fresh Journal Live / Daily Product chain.
+1. **WPA NEWS · Дневни вести** — daily dual-host production pack for **Дипломатка + Дипломат**. The generator creates a source-attributed teleprompter, transcript, caption draft, provenance manifest, three short-form cut scripts and a video description from the fresh Journal Live / Daily Product chain.
 2. **WPA Protocol TV** — weekly 24–30 minute programme architecture using the same canonical presenter identities. Automation creates the evidence-locked episode master, segment map, dual-host script skeleton, captions skeleton, chapters and short-cut plan. Human authorial expansion remains required before the final long-form script is locked.
 
 The two public names are programme aliases only. They do not create new presenter identities; the previously approved fictional faces remain canonically locked.
