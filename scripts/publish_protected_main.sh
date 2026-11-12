@@ -224,6 +224,13 @@ for cycle in 1 2; do
     exit 0
   fi
 
+  if grep -Fqi "required status check" <<<"${merge_response}" && grep -Fqi "expected" <<<"${merge_response}"; then
+    echo "::notice title=Human Gate pending::Protected refresh PR #${pr_number} passed generated-output health gates, required head checks and exact merge-tree validation, but GitHub still requires native PR status checks or human approval."
+    echo "Protected refresh PR #${pr_number} remains open for the repository Human Gate."
+    echo "This is an expected protected pending state, not a generation or validation failure."
+    exit 0
+  fi
+
   if (( cycle == 2 )); then
     echo "Protected refresh PR #${pr_number} did not merge after strict required checks." >&2
     echo "${merge_response}" >&2
