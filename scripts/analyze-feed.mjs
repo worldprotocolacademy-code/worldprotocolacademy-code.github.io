@@ -32,10 +32,10 @@ const FEED_PATH = join(ROOT, 'data', 'wpa-live-feed.json');
 
 // ── Canonical REV2 group labels (corrected) ──────────────────────────────────
 const GROUP_LABELS = {
-  A: 'Leading protocol, diplomacy and foreign-service academies',
+  A: 'Protocol, diplomacy and foreign-service academies',
   B: 'Think tanks and international-relations institutes',
   C: 'Training centres and institutional programmes linked to international organisations',
-  D: 'Universities, faculties, schools and academic departments',
+  D: 'Academic, university and specialist education institutions',
   G: 'UN agencies, UN-related bodies and convention secretariats',
   H: 'International NGOs, courts, tribunals and related global institutions',
   I: 'International financial institutions',
