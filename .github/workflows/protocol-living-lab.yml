@@ -5,6 +5,7 @@ on:
     paths:
       - 'protocol-living-lab/**'
       - 'scripts/verify_protocol_living_lab.py'
+      - 'scripts/living_lab_interaction_smoke.cjs'
       - '.github/workflows/protocol-living-lab.yml'
       - 'institute.html'
   push:
@@ -38,6 +39,10 @@ jobs:
       - name: Validate evidence, rubric and web app boundaries
         run: python scripts/verify_protocol_living_lab.py
       - name: JavaScript syntax verification
-        run: node --check protocol-living-lab/lab.js
+        run: |
+          node --check protocol-living-lab/lab.js
+          node --check scripts/living_lab_interaction_smoke.cjs
+      - name: Exercise scenario choices and local exports in a deterministic DOM harness
+        run: node scripts/living_lab_interaction_smoke.cjs
       - name: Compile Python validator
         run: python -m py_compile scripts/verify_protocol_living_lab.py
