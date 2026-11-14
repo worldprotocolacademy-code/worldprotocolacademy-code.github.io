@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import json
+import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
+from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = "https://worldprotocolacademy.mk"
@@ -138,7 +140,11 @@ for token in (
     if token not in atom:
         fail(f"research discovery Atom missing invariant: {token}")
 
-# No legacy GitHub Pages host in the new discovery layer
+# No legacy GitHub Pages hostname in URLs emitted by the new discovery layer.
+# Parse each URL structurally and compare the hostname exactly; do not use substring
+# matching for URL security/canonicalisation decisions.
+LEGACY_HOST = "worldprotocolacademy-code.github.io"
+URL_RE = re.compile(r"https?://[^\\s\\\"'<>]+")
 for name, text in (
     ("llms.txt", llms),
     ("entity manifest", json.dumps(entity, ensure_ascii=False)),
@@ -146,8 +152,10 @@ for name, text in (
     ("agent-discovery.html", discovery),
     ("wpa-research-discovery.atom", atom),
 ):
-    if "worldprotocolacademy-code.github.io" in text:
-        fail(f"{name}: legacy github.io canonical host detected")
+    for raw_url in URL_RE.findall(text):
+        candidate = raw_url.rstrip(".,);]")
+        if urlsplit(candidate).hostname == LEGACY_HOST:
+            fail(f"{name}: legacy github.io canonical host detected")
 
 # Search-vs-training crawler boundary remains explicit
 if "User-agent: OAI-SearchBot\nAllow: /" not in robots:
