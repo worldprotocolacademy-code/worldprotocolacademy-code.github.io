@@ -1,8 +1,8 @@
 # WPA Protocol Living Lab · v0.1 PILOT
 
-**Status:** repository pilot / candidate for human-reviewed release, NOT an independently validated scientific standard.  
-**Owner:** World Protocol Academy (WPA) independent digital educational, research and authorial platform.  
-**Authorial methodology:** Смиљанова синтеза and Protocolometry.  
+**Status:** repository pilot / candidate for human-reviewed release, NOT an independently validated scientific standard.
+**Owner:** World Protocol Academy (WPA) independent digital educational, research and authorial platform.
+**Authorial methodology:** Смиљанова синтеза and Protocolometry.
 **Date:** 2026-11-14.
 
 ## Purpose
