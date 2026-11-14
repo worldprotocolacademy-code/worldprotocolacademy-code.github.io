@@ -35,6 +35,7 @@ evidence = load_json("data/wpa-public-evidence-manifest.json")
 discovery = read("agent-discovery.html")
 atom = read("wpa-research-discovery.atom")
 institute = read("institute.html")
+home = read("index.html")
 robots = read("robots.txt")
 
 # llms discovery contract
@@ -110,6 +111,16 @@ for token in (
 ):
     if token not in institute:
         fail(f"institute.html missing discovery invariant: {token}")
+
+# Home-to-entity connection contract
+for token in (
+    'type="text/plain" href="/llms.txt"',
+    'href="/data/wpa-institute-entity.json"',
+    '"@id":"https://worldprotocolacademy.mk/#website"',
+    '"publisher":{"@id":"https://worldprotocolacademy.mk/institute.html#organization"}',
+):
+    if token not in home:
+        fail(f"index.html missing discovery invariant: {token}")
 
 # Atom feed validity and canonical-host contract
 if atom:
