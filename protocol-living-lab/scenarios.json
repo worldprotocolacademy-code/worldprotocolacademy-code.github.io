@@ -1,0 +1,484 @@
+{
+  "schema_version": "1.0.0",
+  "updated": "2026-11-14",
+  "status": "SYNTHETIC_PEDAGOGICAL_PILOT",
+  "scoring": {
+    "dimensions": [
+      "norms",
+      "evidence",
+      "coordination",
+      "human_gate"
+    ],
+    "max_per_dimension_per_question": 4,
+    "min_per_dimension_per_question": 0,
+    "weight_per_dimension": 0.25,
+    "interpretation": "Pedagogical feedback, not certification, accreditation, legal advice, ranking or a verified psychometric score."
+  },
+  "scenarios": [
+    {
+      "id": "state-visit",
+      "title_mk": "Државна посета",
+      "title_en": "State visit",
+      "summary_mk": "Илустративна билатерална посета со протоколарни измени.",
+      "summary_en": "Fictional bilateral visit with late programme changes.",
+      "source_ids": [
+        "ROYAL",
+        "VCDR"
+      ],
+      "case_ids": [
+        "WPA-CA-001",
+        "WPA-CA-011"
+      ],
+      "steps": [
+        {
+          "id": "sv-1",
+          "prompt_mk": "Две делегации предлагаат различен редослед на поздравување. Што прво правиш?",
+          "prompt_en": "Two delegations propose conflicting greeting orders. What do you do first?",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Самостојно решавам според впечаток.",
+              "en": "Decide alone based on intuition.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Интуицијата не е доказ за применлив протокол.",
+              "feedback_en": "Intuition is not evidence of the applicable protocol."
+            },
+            {
+              "id": "b",
+              "mk": "Ги проверувам функциите, релевантните правила и ставовите на надлежните протоколарни служби.",
+              "en": "Verify offices, applicable rules and both authorised protocol offices.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Проверка + надлежност + документирана координација.",
+              "feedback_en": "Verification, authority and documented coordination."
+            },
+            {
+              "id": "c",
+              "mk": "Избирам кој прв одговорил по е-пошта.",
+              "en": "Choose whoever answered by email first.",
+              "score": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "feedback_mk": "Времето на одговор не утврдува предимство.",
+              "feedback_en": "Response time does not establish precedence."
+            }
+          ]
+        },
+        {
+          "id": "sv-2",
+          "prompt_mk": "Се менува титулата на еден член на делегацијата пред печат на програмата.",
+          "prompt_en": "A delegation member's title changes before the printed programme is finalised.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Потврдувам преку овластен контакт, го верзионирам документот и барам одобрување.",
+              "en": "Confirm with the authorised contact, version the document and seek approval.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Точен запис и контрола на верзија.",
+              "feedback_en": "Accurate record and version control."
+            },
+            {
+              "id": "b",
+              "mk": "Го задржувам стариот запис заради рокови.",
+              "en": "Keep the old title to meet the deadline.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Рокот не оправдува позната неточност.",
+              "feedback_en": "Deadlines do not justify a known inaccuracy."
+            },
+            {
+              "id": "c",
+              "mk": "Менувам без да информирам никого.",
+              "en": "Make a silent unapproved edit.",
+              "score": [
+                2,
+                2,
+                0,
+                0
+              ],
+              "feedback_mk": "Без трага на одобрување ризикот останува.",
+              "feedback_en": "An unapproved change leaves responsibility unresolved."
+            }
+          ]
+        },
+        {
+          "id": "sv-3",
+          "prompt_mk": "Непредвидено доцнење го менува планот за пречек. Како постапуваш?",
+          "prompt_en": "An unexpected delay affects the welcome sequence. What is your next step?",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Продолжувам со првичниот распоред без известување.",
+              "en": "Continue the original sequence without notifying anyone.",
+              "score": [
+                1,
+                0,
+                0,
+                0
+              ],
+              "feedback_mk": "Недостига координација и одговорна одлука.",
+              "feedback_en": "Coordination and accountable approval are missing."
+            },
+            {
+              "id": "b",
+              "mk": "Јавно објавувам непроверени детали.",
+              "en": "Publish unverified details immediately.",
+              "score": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "feedback_mk": "Непроверено известување може да го зголеми ризикот.",
+              "feedback_en": "Unverified public statements increase risk."
+            },
+            {
+              "id": "c",
+              "mk": "Собирам потврдени факти, координирам со надлежните и барам одобрен нов план.",
+              "en": "Confirm facts, coordinate with authorised teams and approve a revised plan.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Промената останува контролирана и проверлива.",
+              "feedback_en": "Change remains controlled and auditable."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conference",
+      "title_mk": "Меѓународна конференција",
+      "title_en": "International conference",
+      "summary_mk": "Фиктивен мултилатерален настан со делегации, панел и симболи.",
+      "summary_en": "Fictional multilateral meeting with delegations, panels and symbols.",
+      "source_ids": [
+        "UNMANUAL",
+        "IOC"
+      ],
+      "case_ids": [
+        "WPA-CA-009",
+        "WPA-CA-012"
+      ],
+      "steps": [
+        {
+          "id": "co-1",
+          "prompt_mk": "Листата на учесници има различни титули во две верзии.",
+          "prompt_en": "Two versions of the delegate list contain conflicting titles.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Усвојувам најнова датотека без проверка.",
+              "en": "Use the newest file without validation.",
+              "score": [
+                1,
+                1,
+                1,
+                0
+              ],
+              "feedback_mk": "Најнова верзија не е секогаш авторитетна.",
+              "feedback_en": "Newest is not necessarily authoritative."
+            },
+            {
+              "id": "b",
+              "mk": "Го прашувам AI да одлучи кој има повисок чин.",
+              "en": "Let AI decide ranks and protocol alone.",
+              "score": [
+                0,
+                1,
+                1,
+                0
+              ],
+              "feedback_mk": "AI нема мандат да утврдува официјален ранг.",
+              "feedback_en": "AI cannot authoritatively determine official rank."
+            },
+            {
+              "id": "c",
+              "mk": "Барам потврда од одговорното лице на секоја делегација и заклучувам верзија.",
+              "en": "Confirm with designated delegation contacts and lock a reviewed list.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Потврдени податоци и човечка одговорност.",
+              "feedback_en": "Verified data and accountable human approval."
+            }
+          ]
+        },
+        {
+          "id": "co-2",
+          "prompt_mk": "Организаторот сака олимписки редослед да важи за дипломатска конференција.",
+          "prompt_en": "An organiser proposes applying Olympic parade order to a diplomatic conference.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Објаснувам дека контекстите се различни и ја проверувам применливата конференциска постапка.",
+              "en": "Explain the difference and consult the conference's applicable procedure.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Правилото важи во својот институционален контекст.",
+              "feedback_en": "Rules must be interpreted within their institutional scope."
+            },
+            {
+              "id": "b",
+              "mk": "Го применувам без дополнителна проверка.",
+              "en": "Apply the Olympic rule without checking.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Не се пренесуваат контекстуално специфични правила.",
+              "feedback_en": "Context-specific rules are not automatically transferable."
+            },
+            {
+              "id": "c",
+              "mk": "Го игнорирам редоследот целосно.",
+              "en": "Ignore order entirely.",
+              "score": [
+                1,
+                1,
+                0,
+                1
+              ],
+              "feedback_mk": "Потребна е применлива, проверена процедура.",
+              "feedback_en": "A defined and verified procedure is still needed."
+            }
+          ]
+        },
+        {
+          "id": "co-3",
+          "prompt_mk": "Еден учесник бара дополнителни приватни податоци за гостите.",
+          "prompt_en": "A participant asks for extra personal details about guests.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Ја споделувам целата листа за практичност.",
+              "en": "Share the complete list for convenience.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Непотребно откривање лични податоци.",
+              "feedback_en": "Unnecessary disclosure of personal information."
+            },
+            {
+              "id": "b",
+              "mk": "Ја проверувам потребата и овластувањето; доставувам само минимални дозволени податоци.",
+              "en": "Verify purpose and authority; share only minimally necessary permitted data.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Минимизација и проверка на овластување.",
+              "feedback_en": "Data minimisation and authority verification."
+            },
+            {
+              "id": "c",
+              "mk": "Испраќам анонимизиран но невалиден список.",
+              "en": "Send an anonymised but inaccurate list.",
+              "score": [
+                1,
+                0,
+                1,
+                1
+              ],
+              "feedback_mk": "Точноста е важна исто колку приватноста.",
+              "feedback_en": "Accuracy matters alongside privacy."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "protocol-crisis",
+      "title_mk": "Протоколарна криза",
+      "title_en": "Protocol incident",
+      "summary_mk": "Фиктивна грешка со знаменска ознака непосредно пред јавен настан.",
+      "summary_en": "Fictional incorrect flag display shortly before a public ceremony.",
+      "source_ids": [
+        "UNMANUAL",
+        "VCDR"
+      ],
+      "case_ids": [
+        "WPA-CA-010",
+        "WPA-CA-011"
+      ],
+      "steps": [
+        {
+          "id": "cr-1",
+          "prompt_mk": "Забележуваш можеби застарено државно знаме. Кој е првиот чекор?",
+          "prompt_en": "A national flag might be outdated. What is the first step?",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Го заменувам според неофицијална слика од интернет.",
+              "en": "Replace it based on an unofficial web image.",
+              "score": [
+                1,
+                0,
+                0,
+                0
+              ],
+              "feedback_mk": "Непотврден симбол може да создаде нова грешка.",
+              "feedback_en": "Unverified imagery may create another error."
+            },
+            {
+              "id": "b",
+              "mk": "Не преземам ништо до крајот на настанот.",
+              "en": "Ignore it until the event ends.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Потенцијалниот проблем останува нерешен.",
+              "feedback_en": "The possible issue remains unaddressed."
+            },
+            {
+              "id": "c",
+              "mk": "Проверувам актуелен официјален извор и контактирам надлежна протоколарна служба.",
+              "en": "Check an up-to-date official source and contact the authorised protocol office.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Изворната проверка претходи на интервенција.",
+              "feedback_en": "Evidence verification precedes intervention."
+            }
+          ]
+        },
+        {
+          "id": "cr-2",
+          "prompt_mk": "Извештајот за грешката е непотврден, а медиумите прашуваат.",
+          "prompt_en": "The incident remains unverified while journalists ask for details.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Издавам јавна процена без Human Gate.",
+              "en": "Publish an unapproved interpretation.",
+              "score": [
+                0,
+                0,
+                1,
+                0
+              ],
+              "feedback_mk": "Автоматски одговор не е институционална волја.",
+              "feedback_en": "Automated output is not institutional authority."
+            },
+            {
+              "id": "b",
+              "mk": "Ги евидентирам фактите, не шпекулирам и препраќам до овластен портпарол.",
+              "en": "Record known facts, avoid speculation and refer to an authorised spokesperson.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Точен и ограничен јавен одговор.",
+              "feedback_en": "Bounded and accountable public response."
+            },
+            {
+              "id": "c",
+              "mk": "Објавувам имиња на персоналот за да покажам одговорност.",
+              "en": "Publicly name staff to demonstrate accountability.",
+              "score": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "feedback_mk": "Неоправдано откривање и припишување вина.",
+              "feedback_en": "Unnecessary disclosure and premature attribution."
+            }
+          ]
+        },
+        {
+          "id": "cr-3",
+          "prompt_mk": "Официјално е потврдено дека приказот треба да се коригира.",
+          "prompt_en": "Official confirmation arrives that the display must be corrected.",
+          "choices": [
+            {
+              "id": "a",
+              "mk": "Го евидентирам изворот, ја одобрувам корекцијата, ги известувам релевантните тимови и ја чувам ревизиската трага.",
+              "en": "Record the source, approve the correction, coordinate relevant teams and preserve an audit trail.",
+              "score": [
+                4,
+                4,
+                4,
+                4
+              ],
+              "feedback_mk": "Координирана корекција со трага.",
+              "feedback_en": "Coordinated correction with a verifiable record."
+            },
+            {
+              "id": "b",
+              "mk": "Ја заменувам без да информирам никого.",
+              "en": "Replace it without informing responsible teams.",
+              "score": [
+                2,
+                2,
+                0,
+                0
+              ],
+              "feedback_mk": "Техничка исправка без одговорна координација.",
+              "feedback_en": "A technical fix without accountable coordination."
+            },
+            {
+              "id": "c",
+              "mk": "Ја оставам грешката бидејќи е веќе фотографирана.",
+              "en": "Leave the mistake since it was already photographed.",
+              "score": [
+                0,
+                0,
+                0,
+                0
+              ],
+              "feedback_mk": "Видливоста на грешката не ја елиминира обврската за исправка.",
+              "feedback_en": "Prior visibility does not remove the need to correct."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
