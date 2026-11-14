@@ -181,7 +181,7 @@ for filename in ("index.html", "methodology.html", "report-2026.html"):
     if filename == "report-2026.html":
         check("PRE-PUBLICATION" in txt and "not a global" in txt.lower(), "Report must explicitly avoid global verdict")
         check("6 + 6" in txt and ">12<" in txt, "Baseline must match 12 cases")
-    
+
 js_file = LAB / "lab.js"
 check(js_file.is_file(), "Missing lab.js")
 if js_file.is_file():
