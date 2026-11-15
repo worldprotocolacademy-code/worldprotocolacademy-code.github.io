@@ -40,8 +40,42 @@
 .scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
 .scenario{background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:12px;font-size:13px;min-width:0}
 @media(max-width:700px){.scenario-grid{grid-template-columns:1fr}}
+
+
+/* WPA EU Factory v9 - one-question-at-a-time easy mode */
+.easy-wizard{background:#fff;color:#182b45;border:2px solid #efd89b;border-radius:20px;padding:20px;box-shadow:0 15px 48px #020c1b49;margin:27px 0 15px;max-width:850px}
+.easy-wizard h2{font-size:clamp(23px,3vw,32px);line-height:1.27;color:#081a32;margin:8px 0 13px}
+.easy-wizard p{color:#40506a;font-size:15px;margin:5px 0 11px}
+.easy-wizard .easy-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.easy-wizard .easy-count{font-weight:800;color:#7d5911;background:#fff1d3;border-radius:999px;padding:5px 13px;font-size:12px}
+.easy-wizard .easy-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0 6px}
+.easy-wizard .easy-choice{border:2px solid #dce2e8;padding:17px 14px;background:#fff;border-radius:14px;display:flex;gap:9px;align-items:center;min-height:71px;color:#152a46;font-weight:800;font-size:16px;cursor:pointer}
+.easy-wizard .easy-choice input{width:21px;height:21px;accent-color:#9d791e;flex:none}
+.easy-wizard .easy-choice:has(input:checked){border-color:#9d791e;background:#fff7e0}
+.easy-wizard .easy-step[hidden],.easy-wizard[hidden],.easy-expert[hidden]{display:none!important}
+.easy-wizard .easy-textarea{display:block;width:100%;min-height:145px;font-size:19px;line-height:1.55;color:#111d32;border:2px solid #a6b1bf;border-radius:12px;padding:14px;resize:vertical}
+.easy-wizard .easy-help{font-size:13px;color:#536276}
+.easy-wizard .easy-field-label{display:block;color:#1b2e45;font-weight:800;margin:16px 0 6px}
+.easy-wizard .easy-number,.easy-wizard .easy-select{font-size:18px;border:2px solid #a6b1bf;border-radius:12px;min-height:52px;padding:10px 12px;max-width:100%;width:100%;color:#152941;background:white}
+.easy-wizard .easy-inline{display:grid;grid-template-columns:1fr 135px;gap:10px}
+.easy-wizard .easy-actions{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:20px 0 4px}
+.easy-wizard .easy-actions button,.easy-wizard .easy-downloads button,.easy-wizard .easy-save-actions button{min-height:52px;font-size:16px;padding:9px 17px}
+.easy-wizard .easy-warning{font-size:14px;color:#7a460d;background:#fff1d3;border-left:4px solid #bd8b32;border-radius:7px;padding:10px 12px}
+.easy-wizard .easy-notice{font-size:14px;line-height:1.6;color:#263e5d;background:#eff4fa;border-radius:9px;padding:12px}
+.easy-wizard .easy-output{border:1px solid #bfcbd9;border-radius:11px;padding:15px;background:#f8fbff;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}
+.easy-wizard .easy-downloads{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}
+.easy-wizard .easy-save-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.easy-wizard #easyError{color:#992d33;font-size:14px;font-weight:750;margin:10px 0}
+.easy-wizard .easy-step:focus{outline:0}
+.easy-expert{max-width:850px;margin:10px 0 0;border:1px solid #d1bb88;border-radius:13px;padding:12px 16px;background:#fff8e9;color:#26364d}
+.easy-expert>summary{cursor:pointer;font-weight:800;font-size:15px;line-height:1.5;color:#0e2a4c}
+.easy-expert .entry{margin-top:15px;box-shadow:none;border:1px solid #d9c398}
+@media(max-width:700px){.easy-wizard{padding:15px;margin:18px 0 12px}.easy-wizard .easy-choice-grid{grid-template-columns:1fr}.easy-wizard .easy-inline{grid-template-columns:1fr}.easy-wizard .easy-actions .btn{flex:1 1 120px}}
+@media print{.hero{color:#000;background:#fff}.easy-wizard .easy-actions,.easy-wizard .easy-save-actions,.easy-wizard .easy-downloads,.easy-expert,.top,.example-row{display:none!important}.easy-wizard .easy-output{max-height:none}}
+
 </style>
 <script src="/tools/assets/eu-factory-core-v5.js" defer></script>
+<script src="/tools/assets/eu-factory-easy-wizard-v9.js?v=20261115" defer></script>
 <script src="/tools/assets/eu-factory-ui-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-council-v6.js?v=20261115" defer></script>
 <script src="/tools/assets/eu-factory-wpaws-bridge-v1.js?v=20261115" defer></script>
@@ -49,12 +83,61 @@
 <script src="/tools/assets/eu-factory-monetization-v1.js?v=20261115" defer></script>
 </head>
 <body>
-<header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · развојна верзија 5.0</small></div></div><a href="/index.html">← WPA</a></div></header>
+<header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · лесен режим v9</small></div></div><a href="/index.html">← WPA</a></div></header>
 <main>
 <section class="hero"><div class="wrap">
 <div class="eyebrow">SIMPLE OUTSIDE · SERIOUS INSIDE</div>
 <h1>Внеси проект. Најди реална можност.</h1>
 <p>Опиши ја идејата со свои зборови. Добиваш конкретни патеки за финансирање, проверка на ограничувањата и апликациско досие за преземање — <strong>на истата страница</strong>.</p>
+<section class="easy-wizard" id="easyWizard" aria-label="Лесно пополнување на проект">
+  <div class="easy-head"><strong>За секого · без техничко знаење</strong><span class="easy-count" id="easyProgress" aria-live="polite">Чекор 1 од 3</span></div>
+  <div class="easy-step" data-easy-step="0" tabindex="-1">
+    <h2>Што сакаш да направиш?</h2><p>Избери што е најблиску до твојата идеја.</p>
+    <div class="easy-choice-grid" role="group" aria-label="Вид на проект">
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="farm">🌾 Земјоделство</label>
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="business">🏪 Мал бизнис</label>
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="education">📚 Обука или училиште</label>
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="media">📰 Медиуми и комуникација</label>
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="conference">🏛️ Конференција</label>
+      <label class="easy-choice"><input type="radio" name="easyCategory" value="other">💡 Друга идеја</label>
+    </div>
+  </div>
+  <div class="easy-step" data-easy-step="1" hidden tabindex="-1">
+    <h2>Кажи со свои зборови што ти треба.</h2>
+    <p>Не мора да знаеш што е „проектна апликација“. Кажи што сакаш да набавиш, направиш или подобриш.</p>
+    <label class="easy-field-label" for="easyIdea">Мојата идеја</label>
+    <textarea id="easyIdea" class="easy-textarea" placeholder="На пример: Одгледувам зеленчук и сакам систем за наводнување за да трошам помалку вода."></textarea>
+    <p class="easy-help">Можеш да диктираш преку микрофонот на тастатурата на телефонот. Не внесувај матичен број, адреса или други чувствителни податоци.</p>
+  </div>
+  <div class="easy-step" data-easy-step="2" hidden tabindex="-1">
+    <h2>Уште две работи — ако ги знаеш.</h2>
+    <label class="easy-field-label" for="easyApplicant">Како ќе аплицираш?</label>
+    <select class="easy-select" id="easyApplicant">
+      <option value="unknown">Не знам / уште немам документи</option>
+      <option value="farm">Имам регистрирано земјоделско стопанство (за проверка)</option>
+      <option value="individual">Како физичко лице (за проверка)</option>
+      <option value="company">Имам регистрирана фирма (за проверка)</option>
+      <option value="ngo">Преку здружение (за проверка)</option>
+      <option value="public_body">Преку јавна институција (за проверка)</option>
+    </select>
+    <label class="easy-field-label" for="easyBudget">Колку мислиш дека ќе чини? (може празно)</label>
+    <div class="easy-inline"><input id="easyBudget" class="easy-number" type="number" min="0" step="1" inputmode="decimal" placeholder="Не знам" aria-label="Приближна сума"><select id="easyCurrency" class="easy-select" aria-label="Валута"><option value="MKD">денари</option><option value="EUR">евра</option></select></div>
+    <p class="easy-help">Ова е само твоја проценка, не вистинска понуда или одобрено кофинансирање.</p>
+  </div>
+  <div class="easy-step" data-easy-step="3" hidden tabindex="-1">
+    <h2>Еве го твојот почетен план.</h2>
+    <p class="easy-warning"><strong>НАЦРТ · НЕ Е ПОДНЕСЕНА АПЛИКАЦИЈА.</strong> Помагаме да ги најдеш правилата и да подготвиш документи. Одобрувањето го решава надлежниот орган, не нашата алатка.</p>
+    <div id="easyOutcome" class="easy-output" aria-live="polite" role="status"></div>
+    <div id="easyOfficialRoutes" class="easy-notice" hidden></div>
+    <div class="easy-downloads"><button class="btn primary" type="button" id="easyDownload">Преземи го мојот план (.txt)</button><button class="btn light" type="button" id="easyFullAnalysis">Покажи ја деталната анализа ↓</button></div>
+    <p class="easy-help">За вистинска апликација се потребни точниот тековен јавен повик, формуларите, доказите и твојата конечна потврда.</p>
+  </div>
+  <p id="easyError" aria-live="assertive" role="alert"></p>
+  <div class="easy-actions"><button id="easyBack" class="btn light" type="button" hidden>← Назад</button><button id="easyNext" class="btn primary" type="button">Продолжи →</button></div>
+  <div class="easy-save-actions"><button id="easySave" class="btn light small" type="button">Зачувај за подоцна</button><button id="easyLoad" class="btn light small" type="button">Продолжи зачувано</button><button id="easyForget" class="btn light small" type="button">Избриши зачувано</button></div>
+  <p id="easySaveMessage" class="easy-help" role="status" aria-live="polite">Чувањето е само на овој уред, со твое одобрување. Се брише најдоцна по 30 дена.</p>
+</section>
+<details class="easy-expert" id="expertMode"><summary>Напредно: имам повик или сакам детално пополнување</summary>
 <div class="entry" id="entry">
 <label class="hidden" for="idea">Опис на проектот</label>
 <textarea id="idea" aria-label="Опиши го проектот" placeholder="На пример: Сакам европски проект за конференција во Охрид во пролет 2027, со обуки, меѓународни партнери и научни трудови..."></textarea>
@@ -62,7 +145,7 @@
 <div class="fileline"><label for="projectFile">Прикачи опис / MASTER:</label><input id="projectFile" type="file" accept=".txt,.md,.html,.htm,.json,.csv,text/plain,text/html,application/json" aria-describedby="fileStatus"><span id="fileStatus" aria-live="polite">TXT, MD, HTML, JSON · локално читање</span></div>
 <details class="details" id="moreOptions"><summary>Напредно · правен апликант, датуми, конзорциум, повик</summary><div class="advanced-grid">
 <div class="field"><label for="legalApplicant">Правно лице — кандидат (ако е потврдено)</label><input id="legalApplicant" placeholder="Не е потврдено" autocomplete="off"></div>
-<div class="field"><label for="legalType">Тип на апликант</label><select id="legalType"><option value="unknown">Непотврдено</option><option value="public_body">Јавна институција</option><option value="ngo">Здружение / непрофитна организација</option><option value="company">Компанија</option><option value="university">Универзитет</option></select></div>
+<div class="field"><label for="legalType">Тип на апликант</label><select id="legalType"><option value="unknown">Непотврдено</option><option value="public_body">Јавна институција</option><option value="ngo">Здружение / непрофитна организација</option><option value="company">Компанија</option><option value="farm">Регистрирано земјоделско стопанство (за проверка)</option><option value="individual">Физичко лице (за проверка)</option><option value="university">Универзитет</option></select></div>
 <div class="field"><label for="startDate">Планиран почеток (опционално)</label><input id="startDate" type="date"></div>
 <div class="field"><label for="endDate">Планиран крај (опционално)</label><input id="endDate" type="date"></div>
 <div class="field wide"><label for="consortiumCountries">Потврдени партнерски држави (ако постојат)</label><input id="consortiumCountries" placeholder="Само со потврдени партнери; пример за формат: MK, IT, GR"></div>
@@ -71,6 +154,7 @@
 </div><p class="hint">Не внесувај лозинки, лични податоци или доверливи договори. Формуларот работи локално и сам не поднесува апликации.</p></details>
 <p id="formMessage" class="secondary" aria-live="polite"></p>
 </div>
+</details>
 <div class="example-row"><span>Брз тест со вистински проект:</span><button class="example" type="button" data-demo="ohrid">Ohrid 2027</button><button class="example" type="button" data-demo="journal">WPA Journal</button><button class="example" id="civicSignalDemo" type="button">CIVIC SIGNAL / Media Literacy</button></div>
 <p class="truth">Официјалните извори се датирани снимки. Статичниот сајт не проверува во живо дали повиците се смениле; состојбата се покажува искрено.</p>
 </div></section>
@@ -132,6 +216,6 @@
 <details class="details"><summary>Техничка трага · извори и анализи</summary><pre id="trace" class="dossier-view">Нема започнато анализа.</pre></details>
 </section>
 </div></section></main>
-<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v5.3 · EU Council v6 · WPAWS Bridge v1 · Mistral 3 roles · Sustainability v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
+<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v9 Easy · EU Council v6 · WPAWS Bridge v1 · Mistral 3 roles · Sustainability v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
 </body>
 </html>
