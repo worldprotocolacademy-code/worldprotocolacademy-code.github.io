@@ -1,0 +1,44 @@
+{
+  "schema":"wpa-eu-application-factory-agent-contract-v1",
+  "version":"4.0.0-agentic",
+  "date":"2026-11-15",
+  "mission":"Turn a plain-language project idea or a supplied call into a verified EU funding route and a submission-ready application pack, stopping only at a true Human Gate.",
+  "publicUx":{
+    "primaryPrompt":"Што сакате да реализирате?",
+    "primaryActions":["НАЈДИ МИ ГРАНТ","ИМАМ ПОВИК / ДОКУМЕНТ"],
+    "principle":"Ask only what blocks progress.",
+    "advancedByDefault":false
+  },
+  "autonomyRule":"An agent must not return work to the user if it can safely discover, verify, compare, draft, calculate, repair or package it itself with available authorised tools.",
+  "pipeline":[
+    {"id":"radar","name":"Funding Radar","does":"Search current official EU and national funding sources; shortlist only plausible opportunities.","auto":true},
+    {"id":"eligibility","name":"Eligibility & Legal","does":"Check applicant, country, consortium, topic, geography and deadline before drafting.","auto":true,"fatalGate":true},
+    {"id":"match","name":"Strategic Match","does":"Rank eligible calls against the project, never reshape the project merely to fit a call.","auto":true},
+    {"id":"evidence","name":"Evidence","does":"Collect already-available project facts, source evidence and gaps; do not re-ask known information.","auto":true},
+    {"id":"consortium","name":"Consortium Architect","does":"Define missing partner capabilities, countries and roles; never invent commitments.","auto":true},
+    {"id":"design","name":"Project Designer","does":"Create problem tree, objectives, theory of change, activities, WPs, deliverables, milestones and KPIs.","auto":true},
+    {"id":"writer","name":"Application Writer","does":"Draft the call-specific narrative against published award criteria.","auto":true},
+    {"id":"budget","name":"Budget & Finance","does":"Build cost/resource logic and co-financing assumptions without fabricating commitments.","auto":true},
+    {"id":"impact","name":"Impact & Sustainability","does":"Build outcomes, dissemination, exploitation, uptake and post-grant sustainability.","auto":true},
+    {"id":"compliance","name":"Compliance","does":"Check relevant GDPR, AI, ethics, security, accessibility, equality, procurement and state-aid issues.","auto":true},
+    {"id":"redteam","name":"Red Team Evaluator","does":"Try to reject the proposal against published criteria; route weaknesses back for repair.","auto":true},
+    {"id":"repair","name":"Repair Loop","does":"Fix the smallest failing upstream element and retest until no material repair remains.","auto":true},
+    {"id":"packager","name":"Submission Packager","does":"Prepare narrative, matrices, annex manifest, portal fields, versions and Human Gate sheet.","auto":true},
+    {"id":"human","name":"Human Gate","does":"Authorise binding Submit/signature/declaration/financial or partner commitment.","auto":false}
+  ],
+  "humanGateTriggers":[
+    "unverifiable legal applicant identity",
+    "credentials / EU Login / authenticated portal access",
+    "binding partner commitment",
+    "co-financing or other financial commitment",
+    "signature or declaration",
+    "final binding Submit / grant acceptance"
+  ],
+  "statusLaw":[
+    "NO-GO on mandatory eligibility failure",
+    "UNVERIFIED never becomes VERIFIED by wording",
+    "NOT TESTED never becomes PASS",
+    "READY TO SUBMIT is not SUBMITTED",
+    "submission remains a Human Gate"
+  ]
+}
