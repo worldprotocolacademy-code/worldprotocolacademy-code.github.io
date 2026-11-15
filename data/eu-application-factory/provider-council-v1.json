@@ -1,0 +1,215 @@
+{
+  "schema": "wpa-eu-application-factory-multi-ai-council/v1",
+  "version": "6.0.0-candidate",
+  "updated": "2026-11-15",
+  "name": "WPA EU Multi-AI Grant Council",
+  "status": "SOURCE_READY_PROVIDER_CONNECTIONS_UNVERIFIED",
+  "sourceOfTruth": "OFFICIAL_EU_CALLS_AND_EXACT_DOCUMENTS",
+  "providerSeats": 13,
+  "activeModelClaim": false,
+  "coordinator": "GPT Conductor: route evidence and specialists when a verified backend connection exists; no fabricated multi-model consensus.",
+  "dataBoundary": "No user-provided private documents, identifiable grant applicants, credentials or financial details go to external providers without separate approval and processor assessment.",
+  "activation": {
+    "mode": "SERVER_ONLY",
+    "backend": "GitHub Actions protected server runner / future authorised Cloudflare Worker",
+    "requires": "At least an authorised provider API key and explicit model name plus WPA_EU_COUNCIL_LIVE_ENABLED=1 and --live",
+    "costGate": "Explicit live activation; no automatic charge by just visiting WPA public page",
+    "providerCallsPerRunMax": 3,
+    "publicStatus": "STATIC_REGISTRY_ONLY_NOT_LIVE_HEALTH",
+    "sourceToolsNotModelSeats": [
+      "google_search"
+    ],
+    "specialLicensingRequired": [
+      "harvey",
+      "copilot"
+    ]
+  },
+  "providers": [
+    {
+      "id": "gpt",
+      "label": "GPT · OpenAI",
+      "role": "Оркестрација, грант архитектура и структурирано досие",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_GPT_API_KEY",
+      "requiredServerModel": "WPA_EU_GPT_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "claude",
+      "label": "Claude · Anthropic",
+      "role": "Академски red team, противречности и јасност",
+      "adapter": "ANTHROPIC_MESSAGES",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_CLAUDE_API_KEY",
+      "requiredServerModel": "WPA_EU_CLAUDE_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "harvey",
+      "label": "Harvey",
+      "role": "Специјализирана правна ревизија со овластен договор",
+      "adapter": "LICENSED_INTEGRATION_REQUIRED",
+      "integrationStatus": "LICENSE_REQUIRED",
+      "runtimeState": "LICENSED_NOT_CONNECTED",
+      "requiredServerSecret": null,
+      "requiredServerModel": null,
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "kimi",
+      "label": "Kimi · Moonshot",
+      "role": "Обемни повици и повеќејазична компарација",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_KIMI_API_KEY",
+      "requiredServerModel": "WPA_EU_KIMI_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "grok",
+      "label": "Grok · xAI",
+      "role": "Независна критичка рецензија и контрааргументи",
+      "adapter": "XAI_RESPONSES",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_GROK_API_KEY",
+      "requiredServerModel": "WPA_EU_GROK_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "gemini",
+      "label": "Gemini · Google",
+      "role": "Повеќемоделско читање и проверка на долги повици",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_GEMINI_API_KEY",
+      "requiredServerModel": "WPA_EU_GEMINI_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "google_search",
+      "label": "Google Search · official sources",
+      "role": "Пребарување и проверка на авторитативни ЕУ-извори",
+      "adapter": "SOURCE_TOOL",
+      "integrationStatus": "SOURCE_ONLY",
+      "runtimeState": "SOURCE_CHANNEL_NOT_DIRECT_MODEL",
+      "requiredServerSecret": null,
+      "requiredServerModel": null,
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "perplexity",
+      "label": "Perplexity",
+      "role": "Откривање можности и истражувачка тријажа",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_PERPLEXITY_API_KEY",
+      "requiredServerModel": "WPA_EU_PERPLEXITY_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "copilot",
+      "label": "Microsoft 365 Copilot",
+      "role": "Работни документи и институционална Microsoft 365 интеграција",
+      "adapter": "LICENSED_INTEGRATION_REQUIRED",
+      "integrationStatus": "LICENSE_REQUIRED",
+      "runtimeState": "LICENSED_NOT_CONNECTED",
+      "requiredServerSecret": null,
+      "requiredServerModel": null,
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "qwen",
+      "label": "Qwen",
+      "role": "Дополнителна повеќејазична анализа и вкрстена проверка",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_QWEN_API_KEY",
+      "requiredServerModel": "WPA_EU_QWEN_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "deepseek",
+      "label": "DeepSeek",
+      "role": "Логика на работни пакети, буџет и оспорување",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_DEEPSEEK_API_KEY",
+      "requiredServerModel": "WPA_EU_DEEPSEEK_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "zai",
+      "label": "Z.ai · GLM",
+      "role": "Независна техничка и структурна рецензија",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_ZAI_API_KEY",
+      "requiredServerModel": "WPA_EU_ZAI_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    },
+    {
+      "id": "mistral",
+      "label": "Mistral AI",
+      "role": "Европска независна рецензија, синтеза и структурирани анализи",
+      "adapter": "OPENAI_CHAT",
+      "integrationStatus": "API_SUPPORTED",
+      "runtimeState": "NOT_VERIFIED",
+      "requiredServerSecret": "WPA_EU_MISTRAL_API_KEY",
+      "requiredServerModel": "WPA_EU_MISTRAL_MODEL",
+      "automaticUseAllowed": false,
+      "dataPolicy": "PUBLIC_OFFICIAL_SOURCES_ONLY_UNTIL_PRIVATE_CONSENT_AND_PROCESSOR_REVIEW",
+      "humanGate": "NO_BINDING_SUBMIT_OR_LEGAL_OR_FINANCIAL_COMMITMENT"
+    }
+  ],
+  "missionPriority": [
+    "WPA Journal",
+    "Ohrid Protocol Conference 2027"
+  ],
+  "outputs": [
+    "source ledger",
+    "eligibility and timing gate",
+    "call match",
+    "draft application dossier",
+    "specialist disagreement log",
+    "human gate"
+  ],
+  "nonClaims": [
+    "Names in this registry do not mean provider partnership or API access.",
+    "No backend or authenticated EU submission is active from this manifest alone.",
+    "MODEL_OUTPUT is not an official verified call."
+  ]
+}
