@@ -1,0 +1,91 @@
+name: WPA EU Multi-AI Council v6 QA
+on:
+  pull_request:
+    paths:
+      - 'scripts/wpa_eu_multi_agent_council.py'
+      - 'tests/test_wpa_eu_council_v6.py'
+      - 'data/eu-application-factory/provider-council-v1.json'
+      - 'data/eu-application-factory/priority0-evidence-2026-11-15.json'
+      - 'tools/assets/eu-factory-council-v6.js'
+      - 'tools/eu-application-factory.html'
+      - '.github/workflows/wpa-eu-multi-ai-council-v6.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wpa_eu_multi_agent_council.py'
+      - 'tests/test_wpa_eu_council_v6.py'
+      - 'data/eu-application-factory/provider-council-v1.json'
+      - 'data/eu-application-factory/priority0-evidence-2026-11-15.json'
+      - 'tools/assets/eu-factory-council-v6.js'
+      - 'tools/eu-application-factory.html'
+  workflow_dispatch:
+    inputs:
+      providers:
+        type: choice
+        description: Bounded public-source specialist seats (max three)
+        required: true
+        options:
+          - mistral,gpt,claude
+          - mistral,kimi,deepseek
+          - mistral,gemini,perplexity
+      execute:
+        type: boolean
+        description: Request live provider calls; requires WPA_EU_COUNCIL_LIVE_ENABLED secret
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: eu-council-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  governance-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify manifest, schemas, security and opt-in execution gate
+        run: |
+          python scripts/wpa_eu_multi_agent_council.py --self-test
+          python -m unittest discover -s tests -p 'test_wpa_eu_council_v6.py' -v
+          node --check tools/assets/eu-factory-council-v6.js
+          python scripts/wpa_eu_multi_agent_council.py --providers mistral,gpt,claude
+  consented-provider-run:
+    if: github.event_name == 'workflow_dispatch' && inputs.execute == true
+    needs: governance-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run selected eligible providers only, if authorised keys are configured
+        env:
+          WPA_EU_COUNCIL_LIVE_ENABLED: ${{ secrets.WPA_EU_COUNCIL_LIVE_ENABLED }}
+          WPA_EU_MISTRAL_API_KEY: ${{ secrets.WPA_EU_MISTRAL_API_KEY }}
+          WPA_EU_MISTRAL_MODEL: ${{ vars.WPA_EU_MISTRAL_MODEL }}
+          WPA_EU_GPT_API_KEY: ${{ secrets.WPA_EU_GPT_API_KEY }}
+          WPA_EU_GPT_MODEL: ${{ vars.WPA_EU_GPT_MODEL }}
+          WPA_EU_CLAUDE_API_KEY: ${{ secrets.WPA_EU_CLAUDE_API_KEY }}
+          WPA_EU_CLAUDE_MODEL: ${{ vars.WPA_EU_CLAUDE_MODEL }}
+          WPA_EU_KIMI_API_KEY: ${{ secrets.WPA_EU_KIMI_API_KEY }}
+          WPA_EU_KIMI_MODEL: ${{ vars.WPA_EU_KIMI_MODEL }}
+          WPA_EU_DEEPSEEK_API_KEY: ${{ secrets.WPA_EU_DEEPSEEK_API_KEY }}
+          WPA_EU_DEEPSEEK_MODEL: ${{ vars.WPA_EU_DEEPSEEK_MODEL }}
+          WPA_EU_GEMINI_API_KEY: ${{ secrets.WPA_EU_GEMINI_API_KEY }}
+          WPA_EU_GEMINI_MODEL: ${{ vars.WPA_EU_GEMINI_MODEL }}
+          WPA_EU_PERPLEXITY_API_KEY: ${{ secrets.WPA_EU_PERPLEXITY_API_KEY }}
+          WPA_EU_PERPLEXITY_MODEL: ${{ vars.WPA_EU_PERPLEXITY_MODEL }}
+        run: |
+          python scripts/wpa_eu_multi_agent_council.py --live --providers '${{ inputs.providers }}' --output council-private-run.json
+      - name: Keep full agent outputs as private Actions artifact only
+        uses: actions/upload-artifact@v4
+        with:
+          name: eu-council-private-review-packet
+          path: council-private-run.json
+          retention-days: 7
