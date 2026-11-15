@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const C=require('../tools/assets/eu-factory-core-v5.js');
+const registry=JSON.parse(fs.readFileSync(__dirname+'/../data/eu-application-factory/opportunities-v1.json','utf8'));
+let passed=0;
+function test(name,fn){try{fn();console.log('PASS',name);passed++}catch(e){console.error('FAIL',name,e.message);process.exitCode=1}}
+const ohridInput={idea:'Ohrid Protocol Conference 2027: меѓународна конференција за протокол и дипломатија во Охрид во март 2027, WPA Journal proceedings',country:'North Macedonia'};
+const ohrid=C.parseProject(ohridInput);
+const analysis=C.analyze(ohrid,registry,'2026-11-15');
+test('Ohrid recognized and budget from source snapshot kept',()=>{assert.equal(ohrid.id,'conference');assert.equal(ohrid.knownBudgetEUR,17604.8);assert.equal(ohrid.endDate,'2027-05-31')});
+test('Erasmus 2027 not misrepresented as a live call',()=>{let e=analysis.candidates.find(x=>x.opportunity.id==='erasmus-2027-cooperation-route');assert.equal(e.opportunity.callId,'NOT YET VERIFIED FOR 2027');assert.equal(e.gate.status,'NO_GO_TIMING')});
+test('CERV intermediary fails scope gate',()=>{let e=analysis.candidates.find(x=>x.opportunity.id==='cerv-2026-citizens-values');assert.ok(e.gate.blockers.some(x=>/посредници/.test(x)))});
+test('CERV Towns spring Ohrid time gate fails',()=>{let e=analysis.candidates.find(x=>x.opportunity.id==='cerv-2027-town-networks');assert.equal(e.gate.status,'NO_GO_TIMING')});
+test('TAIEX not private applicant funding',()=>{let e=analysis.candidates.find(x=>x.opportunity.id==='taiex-institutional-assistance');assert.equal(e.gate.status,'NO_GO');assert.ok(e.gate.blockers.some(x=>/јавен орган/.test(x)))});
+test('No legal applicant is never approved',()=>{assert.ok(analysis.candidates.every(x=>x.gate.status!=='PASS'))});
+test('Dossier contains real content and correct no-submit gate',()=>{let d=C.createDossier(analysis,'erasmus-2027-cooperation-route');assert.match(d.markdown,/## 6\. Work package architecture/);assert.match(d.markdown,/17,604\.80 EUR/);assert.match(d.markdown,/NOT READY FOR SUBMISSION/);assert.equal(d.manifest.status,'DRAFT_NOT_SUBMISSION_READY')});
+test('Journal sample builds specific dissemination WPs',()=>{let p=C.parseProject({idea:'WPA Journal: научен журнал за протокол, научна дисеминација, отворен пристап и peer review'});let x=C.analyze(p,registry,'2026-11-15');let d=C.createDossier(x,'erasmus-2027-cooperation-route');assert.equal(p.id,'journal');assert.match(d.markdown,/редакциска независност|независна рецензија/)});
+test('Generic projects are not fake Ohrid',()=>{let p=C.parseProject({idea:'Фарма за органско производство со 10 нови работни места'});let x=C.analyze(p,registry,'2026-11-15');assert.equal(p.id,'agriculture');assert.equal(p.knownBudgetEUR,null);assert.equal(x.candidates.length,6)});
+test('Custom call remains user-supplied and unverified',()=>{let p=C.parseProject({idea:'New digital education initiative',customCall:'EXAMPLE-2027-CALL',customCallUrl:'https://example.org/call'});let x=C.analyze(p,registry,'2026-11-15');assert.equal(x.candidates[0].opportunity.status,'USER_SUPPLIED_UNVERIFIED');assert.ok(x.candidates[0].gate.conditions.some(v=>v.includes('не се независимо верификувани')))});
+test('Dossier does not fabricate partner commitments and PIC',()=>{let d=C.createDossier(analysis,'erasmus-2027-cooperation-route');assert.match(d.markdown,/PARTNER ROLE UNCONFIRMED/);assert.match(d.markdown,/НЕПОТВРДЕН/);assert.doesNotMatch(d.markdown,/PIC: \d{9}/)});
+test('All official source URLs are HTTPS',()=>{assert.ok(registry.opportunities.every(o=>o.officialUrl.startsWith('https://')))});
+console.log('CORE TESTS:',passed,'/ 12');
