@@ -91,6 +91,12 @@
     if(analysis.error){message('formMessage',analysis.error,true);return;}
     message('formMessage','Анализата е завршена — резултатите и досието се подготвени подолу.');
     renderResults();
+    // Only bounded metadata is shared with same-page modules; never raw project text or uploads.
+    document.dispatchEvent(new CustomEvent('wpa-eu-analysis-ready',{detail:{
+      projectTitle:project.title,projectKind:project.id,tags:project.tags.slice(0,20),
+      callId:analysis.candidates[0]?.opportunity?.callId||'UNVERIFIED',
+      callUrl:analysis.candidates[0]?.opportunity?.officialUrl||''
+    }}));
     // Real, immediate deliverable: produce a draft dossier automatically, no handoff to a bot.
     build(analysis.candidates[0].opportunity.id,false);
     $('resultsPanel').scrollIntoView({behavior:'smooth',block:'start'});

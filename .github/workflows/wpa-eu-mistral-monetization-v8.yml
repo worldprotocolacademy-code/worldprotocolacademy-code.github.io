@@ -1,0 +1,109 @@
+name: WPA EU Mistral Specialists and Sustainability v8
+on:
+  pull_request:
+    paths:
+      - 'tools/eu-application-factory.html'
+      - 'tools/assets/eu-factory-ui-v5.js'
+      - 'tools/assets/eu-factory-mistral-v1.js'
+      - 'tools/assets/eu-factory-monetization-v1.js'
+      - 'scripts/wpa_eu_mistral_specialists.py'
+      - 'scripts/wpa_eu_monetization_agent.py'
+      - 'tests/test_wpa_eu_mistral_growth_v8.py'
+      - 'tests/eu-factory-monetization.test.cjs'
+      - 'data/eu-application-factory/mistral-specialists-v1.json'
+      - 'data/eu-application-factory/monetization-plan-v1.json'
+      - '.github/workflows/wpa-eu-mistral-monetization-v8.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/eu-application-factory.html'
+      - 'tools/assets/eu-factory-ui-v5.js'
+      - 'tools/assets/eu-factory-mistral-v1.js'
+      - 'tools/assets/eu-factory-monetization-v1.js'
+      - 'scripts/wpa_eu_mistral_specialists.py'
+      - 'scripts/wpa_eu_monetization_agent.py'
+      - 'tests/test_wpa_eu_mistral_growth_v8.py'
+      - 'tests/eu-factory-monetization.test.cjs'
+      - 'data/eu-application-factory/mistral-specialists-v1.json'
+      - 'data/eu-application-factory/monetization-plan-v1.json'
+  schedule:
+    - cron: '35 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      role:
+        description: Mistral specialist with approved official public-source packet
+        required: true
+        type: choice
+        options: [document_analyst, application_writer, privacy_compliance]
+      execute_mistral:
+        type: boolean
+        description: Explicitly allow an opt-in paid provider call (secrets and freshness gate still required)
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: wpa-eu-growth-v8-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static code, JSON and governable local agent tests
+        run: |
+          node --check tools/assets/eu-factory-ui-v5.js
+          node --check tools/assets/eu-factory-monetization-v1.js
+          node --check tools/assets/eu-factory-mistral-v1.js
+          node tests/eu-factory-monetization.test.cjs
+          python scripts/wpa_eu_mistral_specialists.py --self-test
+          python scripts/wpa_eu_monetization_agent.py --self-test
+          python -m unittest discover -s tests -p 'test_wpa_eu_mistral_growth_v8.py' -v
+  weekly-internal-sustainability-report:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Proactive bounded planning with zero payments and zero paid AI calls
+        run: |
+          python scripts/wpa_eu_monetization_agent.py --output wpa-eu-monetization-review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wpa-eu-monetization-review-only
+          path: wpa-eu-monetization-review.json
+          retention-days: 14
+  optional-mistral-specialist:
+    if: github.event_name == 'workflow_dispatch' && inputs.execute_mistral == true
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install official Mistral Agents SDK only on consented live run
+        run: python -m pip install 'mistralai-agents>=1.1.0,<2'
+      - name: Human-authorised role, bounded public evidence, provider secrets only in environment
+        env:
+          WPA_EU_COUNCIL_LIVE_ENABLED: ${{ secrets.WPA_EU_COUNCIL_LIVE_ENABLED }}
+          WPA_EU_MISTRAL_API_KEY: ${{ secrets.WPA_EU_MISTRAL_API_KEY }}
+          WPA_EU_MISTRAL_MODEL: ${{ vars.WPA_EU_MISTRAL_MODEL }}
+        run: |
+          python scripts/wpa_eu_mistral_specialists.py --role '${{ inputs.role }}' --live --output mistral-specialist-private-review.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wpa-eu-mistral-private-review-only
+          path: mistral-specialist-private-review.json
+          retention-days: 7

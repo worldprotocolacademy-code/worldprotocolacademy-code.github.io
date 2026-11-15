@@ -26,11 +26,27 @@
 #wpawsGrantBridge .wpaws-controls select{min-height:42px;border-radius:10px;border:1px solid var(--line);padding:8px;min-width:230px;max-width:100%}
 #wpawsGrantBridge .wpaws-cards p{background:var(--paper);border:1px solid var(--line);padding:10px 13px;border-radius:11px;margin:7px 0;font-size:13px}
 #wpawsGrantBridge .wpaws-cards h3{font-size:16px;color:var(--navy);margin:14px 0 8px}
+
+/* WPA EU Factory v8: bounded Mistral role missions and monetization preview */
+.mistral-roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px;margin:12px 0}
+.mistral-role{border:1px solid var(--line);border-radius:12px;background:#fffdfa;padding:13px;min-width:0}
+.mistral-role strong{color:var(--navy);font-size:14px}
+.mistral-role p{font-size:12px}
+.mistral-role small{display:block;color:#536476;line-height:1.5}
+.mistral-state{font-size:10px;color:#885c18;font-weight:800;margin-top:8px}
+.monetization-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin:13px 0}
+.monetization-form .field{min-width:0}
+.monetization-actions{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:11px}
+.scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.scenario{background:#f8fafc;border:1px solid var(--line);border-radius:11px;padding:12px;font-size:13px;min-width:0}
+@media(max-width:700px){.scenario-grid{grid-template-columns:1fr}}
 </style>
 <script src="/tools/assets/eu-factory-core-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-ui-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-council-v6.js?v=20261115" defer></script>
 <script src="/tools/assets/eu-factory-wpaws-bridge-v1.js?v=20261115" defer></script>
+<script src="/tools/assets/eu-factory-mistral-v1.js?v=20261115" defer></script>
+<script src="/tools/assets/eu-factory-monetization-v1.js?v=20261115" defer></script>
 </head>
 <body>
 <header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · развојна верзија 5.0</small></div></div><a href="/index.html">← WPA</a></div></header>
@@ -76,6 +92,14 @@
 <details class="details"><summary>Погледни ги ВИ-специјалистите и вистинскиот статус на поврзување</summary><div id="euCouncilProviders" class="eu-council-list" aria-live="polite"></div></details>
 <details class="details"><summary>Priority-0 · прв истражувачки циклус — WPA Journal и Охрид 2027</summary><div id="euCouncilEvidence" aria-live="polite"></div></details>
 </section>
+<section class="panel" id="mistralMissionPanel" aria-labelledby="mistralMissionHeading">
+<h2 id="mistralMissionHeading">Mistral AI · 3 &#1077;&#1074;&#1088;&#1086;&#1087;&#1089;&#1082;&#1080; &#1089;&#1087;&#1077;&#1094;&#1080;&#1112;&#1072;&#1083;&#1080;&#1089;&#1090;&#1080; &#1079;&#1072; &#1075;&#1088;&#1072;&#1085;&#1090;&#1086;&#1074;&#1080;</h2>
+<p class="secondary">Document Analyst · Application Writer · Privacy &amp; Compliance Reviewer. The roles prepare bounded tasks from official public-source metadata only. The page does not send project data to Mistral or claim a verified API connection.</p>
+<div class="mistral-roles" id="mistralMissionList" aria-live="polite"></div>
+<div class="monetization-actions"><button class="btn dark small" id="mistralMissionExport" type="button" disabled>&#1055;&#1088;&#1077;&#1079;&#1077;&#1084;&#1080; &#1087;&#1083;&#1072;&#1085; &#1079;&#1072; Mistral (.JSON)</button><a class="btn light small" href="/data/eu-application-factory/mistral-specialists-v1.json">Specialist rules</a></div>
+<p id="mistralMissionStatus" class="secondary" role="status" aria-live="polite">Loading three specialist roles; no API provider call initiated.</p>
+<details class="details"><summary>&#1050;&#1086;&#1085;&#1090;&#1088;&#1086;&#1083;&#1080;&#1088;&#1072;&#1085;&#1086; &#1089;&#1077;&#1088;&#1074;&#1077;&#1088;&#1089;&#1082;&#1086; &#1080;&#1079;&#1074;&#1088;&#1096;&#1091;&#1074;&#1072;&#1114;&#1077; / &#1063;&#1086;&#1074;&#1077;&#1095;&#1082;&#1072; &#1087;&#1086;&#1088;&#1090;&#1072;</summary><p class="secondary">Real Mistral Agents SDK execution requires an authorised server, verified model and secret, fresh official evidence and deliberate live approval. Outputs are advisory, not legal advice, an awarded grant or submitted application.</p></details>
+</section>
 <section class="panel" id="wpawsGrantBridge" aria-labelledby="wpawsBridgeTitle">
 <h2 id="wpawsBridgeTitle">WPAWS 17 + Council-80 · Grant Mission Router</h2>
 <p class="secondary">17-те извршни улоги во WPAWS и десетте области во Council-80 можат да подготват <strong>ограничен план со конкретни задачи</strong> за грант-апликација. Се користат канонските WPA регистри. Нема автоматско повикување модели, плаќања, испраќање документи или промена на мандати.</p>
@@ -89,10 +113,25 @@
 <div id="wpawsBridgeResults" class="wpaws-cards" aria-live="polite"></div>
 <details class="details"><summary>Управување и канонски извори</summary><p class="secondary"><a href="/agents.json">WPAWS 17 role registry</a> · <a href="/data/wpa-ai-council-80.json">Council-80 pillars and activation policy</a> · <a href="/data/wpa-human-gate-policy.json">Human Gate</a>. Council-80 = капацитет до 80 ограничени места, не 80 активни надворешни API-провајдери. За вистинско извршување е потребен овластен и проверен серверски адаптер.</p></details>
 </section>
+<section class="panel" id="monetizationPanel" aria-labelledby="monetizationHeading">
+<h2 id="monetizationHeading">WPA Agent &#1079;&#1072; &#1084;&#1086;&#1085;&#1077;&#1090;&#1080;&#1079;&#1072;&#1094;&#1080;&#1112;&#1072; &#1080; &#1086;&#1076;&#1088;&#1078;&#1083;&#1080;&#1074;&#1086;&#1089;&#1090;</h2>
+<p class="secondary">Proactive planning for CIVIC SIGNAL, WPA Journal and Ohrid 2027. All figures below are user assumptions; none represents actual sales. Grants are restricted financing, not recurring commercial revenue. WPA commercial services and payments are not activated.</p>
+<div class="monetization-form">
+<div class="field"><label for="revenueUnits">&#1045;&#1076;&#1080;&#1085;&#1080;&#1094;&#1080; / &#1082;&#1083;&#1080;&#1077;&#1085;&#1090;&#1080; &#1084;&#1077;&#1089;&#1077;&#1095;&#1085;&#1086;</label><input type="number" id="revenueUnits" min="0" max="1000000" step="1" value="0"></div>
+<div class="field"><label for="revenuePrice">&#1062;&#1077;&#1085;&#1072; &#1087;&#1086; &#1077;&#1076;&#1080;&#1085;&#1080;&#1094;&#1072; (&#1045;&#1059;&#1056;)</label><input type="number" id="revenuePrice" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="revenueVariable">&#1055;&#1088;&#1086;&#1084;&#1077;&#1085;&#1083;&#1080;&#1074; &#1090;&#1088;&#1086;&#1096;&#1086;&#1082; &#1087;&#1086; &#1077;&#1076;&#1080;&#1085;&#1080;&#1094;&#1072; (&#1045;&#1059;&#1056;)</label><input type="number" id="revenueVariable" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="revenueFixed">&#1060;&#1080;&#1082;&#1089;&#1085;&#1080; &#1084;&#1077;&#1089;&#1077;&#1095;&#1085;&#1080; &#1090;&#1088;&#1086;&#1096;&#1086;&#1094;&#1080; (&#1045;&#1059;&#1056;)</label><input type="number" id="revenueFixed" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="revenueSetup">&#1055;&#1086;&#1095;&#1077;&#1090;&#1077;&#1085; &#1077;&#1076;&#1085;&#1086;&#1082;&#1088;&#1072;&#1090;&#1077;&#1085; &#1090;&#1088;&#1086;&#1096;&#1086;&#1082; (&#1045;&#1059;&#1056;)</label><input type="number" id="revenueSetup" min="0" step="0.01" value="0"></div>
+</div>
+<div class="monetization-actions"><button id="monetizationEvaluate" class="btn primary small" type="button">&#1055;&#1088;&#1077;&#1089;&#1084;&#1077;&#1090;&#1072;&#1112; &#1084;&#1086;&#1076;&#1077;&#1083; &#1079;&#1072; 12 &#1084;&#1077;&#1089;&#1077;&#1094;&#1080;</button><button id="monetizationExample" class="btn light small" type="button">&#1042;&#1085;&#1077;&#1089;&#1080; &#1087;&#1088;&#1080;&#1084;&#1077;&#1088;&#1085;&#1080; &#1073;&#1088;&#1086;&#1112;&#1082;&#1080;</button><button id="monetizationDownload" class="btn light small" type="button" disabled>&#1055;&#1088;&#1077;&#1079;&#1077;&#1084;&#1080; .JSON</button><button id="monetizationMd" class="btn light small" type="button" disabled>&#1055;&#1088;&#1077;&#1079;&#1077;&#1084;&#1080; .MD</button></div>
+<p id="monetizationStatus" class="secondary" role="status" aria-live="polite">No assumptions supplied, no commercial activation.</p>
+<div id="monetizationResults" aria-live="polite"></div>
+<details class="details"><summary>&#1045;&#1090;&#1080;&#1095;&#1082;&#1072;, &#1076;&#1072;&#1085;&#1086;&#1095;&#1085;&#1072;, &#1092;&#1080;&#1085;&#1072;&#1085;&#1089;&#1080;&#1089;&#1082;&#1072; &#1080; &#1087;&#1088;&#1072;&#1074;&#1085;&#1072; &#1082;&#1086;&#1085;&#1090;&#1088;&#1086;&#1083;&#1072;</summary><p class="secondary">Forecasts exclude VAT, income taxes, payment fees, refunds and unverified demand. A legitimate registered entity, tax/payment rules, contracts, procurement and privacy review must precede any paid offer. Sponsors never control WPA Journal editorial or peer-review decisions. No double-funding of grant and commercial costs. Human Gate applies to every binding action.</p></details>
+</section>
 <section class="panel" aria-labelledby="projectPrivacy"><div class="nav-row"><h2 id="projectPrivacy">Локална работна сесија</h2><div class="exports"><button class="btn light small" id="saveLocal" type="button">Зачувај локално</button><button class="btn light small" id="restoreLocal" type="button">Вчитај зачувано</button><button class="btn light small" id="forgetLocal" type="button">Избриши локална копија</button></div></div><p class="secondary">Без регистрација и без автоматско испраќање на внесениот проект. Локално чување се активира само со твој клик, во овој прелистувач. При испраќање преку друг систем важат посебни правила на приватност.</p><div id="localStatus" class="toast" role="status"></div>
 <details class="details"><summary>Техничка трага · извори и анализи</summary><pre id="trace" class="dossier-view">Нема започнато анализа.</pre></details>
 </section>
 </div></section></main>
-<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v5.2 · EU Council v6 · WPAWS Bridge v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
+<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v5.3 · EU Council v6 · WPAWS Bridge v1 · Mistral 3 roles · Sustainability v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
 </body>
 </html>
