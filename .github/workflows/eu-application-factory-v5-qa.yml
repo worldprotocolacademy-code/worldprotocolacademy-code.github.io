@@ -1,0 +1,37 @@
+name: EU Application Factory v5 — regression tests
+on:
+  pull_request:
+    paths:
+      - tools/eu-application-factory.html
+      - tools/assets/eu-factory-core-v5.js
+      - tools/assets/eu-factory-ui-v5.js
+      - data/eu-application-factory/opportunities-v1.json
+      - tests/eu-factory-core.test.cjs
+      - .github/workflows/eu-application-factory-v5-qa.yml
+  push:
+    branches: [main]
+    paths:
+      - tools/eu-application-factory.html
+      - tools/assets/eu-factory-core-v5.js
+      - tools/assets/eu-factory-ui-v5.js
+      - data/eu-application-factory/opportunities-v1.json
+      - tests/eu-factory-core.test.cjs
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript and official-source JSON
+        run: |
+          node --check tools/assets/eu-factory-core-v5.js
+          node --check tools/assets/eu-factory-ui-v5.js
+          node -e "const f=require('fs'); JSON.parse(f.readFileSync('data/eu-application-factory/opportunities-v1.json','utf8'));"
+      - name: Run eligibility, timing, export and anti-fabrication tests
+        run: node tests/eu-factory-core.test.cjs
