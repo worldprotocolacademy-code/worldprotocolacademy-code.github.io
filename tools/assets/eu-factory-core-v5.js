@@ -12,6 +12,10 @@
   var TAG_RULES = {
     conference: [/конференц/i,/conference/i,/форум/i,/forum/i,/симпозиум/i,/symposium/i,/самит/i],
     journal: [/журнал/i,/journal/i,/списание/i,/publishing/i,/публикац/i,/peer.review/i,/open.access/i],
+    media_literacy: [/media literacy/i,/медиумск. писменост/i,/critical thinking/i,/критичк. размислува/i,/information integrity/i],
+    journalism: [/journalis/i,/новинар/i,/news media/i,/newsroom/i,/известувањ/i],
+    public_communication: [/public relations/i,/public communication/i,/односи со јавност/i,/јавна комуникац/i,/комуниколог/i,/communicolog/i,/PR campaign/i],
+    disinformation: [/disinformation/i,/misinformation/i,/дезинформац/i,/fact.check/i,/проверка на факти/i],
     education: [/образова/i,/education/i,/учењ/i,/learning/i,/обука/i,/training/i,/course/i,/курс/i,/youth/i,/млади/i,/student/i],
     research: [/истражува/i,/research/i,/наук/i,/science/i,/академ/i,/academic/i],
     diplomacy: [/дипломат/i,/diplomac/i,/протокол/i,/protocol/i,/foreign affairs/i],
@@ -79,6 +83,15 @@
     if(opp.status==='DISCOVERY_ONLY') conditions.push('Нема идентификуван конкретен повик, услови, рок и буџет.');
     if(opp.status==='ROLLING_ASSISTANCE') conditions.push('TAIEX е техничка помош, не грант.');
     if(opp.status==='USER_SUPPLIED_UNVERIFIED') conditions.push('Кориснички доставен повик: линкот и условите не се независимо верификувани; нема автоматски PASS.');
+    if(opp.countryEligibility==='EU_MEMBER_STATES_ONLY' && /north macedonia|macedonia|македони/i.test(project.country)) {
+      blockers.push('Повикот дозволува правни апликанти само од земји-членки на ЕУ; проект со македонски апликант нема директна подобност.');code='NO_GO';
+    }
+    if(opp.scopeGate==='media_literacy_crossborder' && !project.tags.includes('media_literacy') && !project.tags.includes('disinformation')) {
+      blockers.push('Потребна е вистинска прекугранична програма за медиумска писменост и/или отпорност на дезинформации; обична PR кампања или списание не е доволно.');code='NO_GO';
+    }
+    if(opp.scopeGate==='news_media_collaboration' && !project.tags.includes('journalism')) {
+      blockers.push('Потребно е реално партнерство во професионалниот news-media сектор, не само академска публикација или генеричка комуникациска кампања.');code='NO_GO';
+    }
     if(!project.legalApplicant) blockers.push('Не е потврдено правно лице-апликант.');
     else conditions.push('Правното лице е наведено од корисникот, но неговата правна и програмска подобност не е независно проверена.');
     if(opp.scopeGate==='intermediary_fstp' && !/(подгрантов|subgrant|financial support to third parties|intermediar)/i.test(project.idea)){

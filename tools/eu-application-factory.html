@@ -20,10 +20,17 @@
 .eu-council-note{font-size:12px;color:var(--sub);line-height:1.5;margin:7px 0}
 .eu-council-state{font-size:11px;color:#855c15;font-weight:700}
 .eu-council-link{display:inline-block;font-size:12px;font-weight:700;margin-top:4px}
+
+/* WPAWS & Council-80 delegated grant-planning bridge (role routing only) */
+#wpawsGrantBridge .wpaws-controls{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin:16px 0}
+#wpawsGrantBridge .wpaws-controls select{min-height:42px;border-radius:10px;border:1px solid var(--line);padding:8px;min-width:230px;max-width:100%}
+#wpawsGrantBridge .wpaws-cards p{background:var(--paper);border:1px solid var(--line);padding:10px 13px;border-radius:11px;margin:7px 0;font-size:13px}
+#wpawsGrantBridge .wpaws-cards h3{font-size:16px;color:var(--navy);margin:14px 0 8px}
 </style>
 <script src="/tools/assets/eu-factory-core-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-ui-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-council-v6.js?v=20261115" defer></script>
+<script src="/tools/assets/eu-factory-wpaws-bridge-v1.js?v=20261115" defer></script>
 </head>
 <body>
 <header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · развојна верзија 5.0</small></div></div><a href="/index.html">← WPA</a></div></header>
@@ -48,7 +55,7 @@
 </div><p class="hint">Не внесувај лозинки, лични податоци или доверливи договори. Формуларот работи локално и сам не поднесува апликации.</p></details>
 <p id="formMessage" class="secondary" aria-live="polite"></p>
 </div>
-<div class="example-row"><span>Брз тест со вистински проект:</span><button class="example" type="button" data-demo="ohrid">Ohrid 2027</button><button class="example" type="button" data-demo="journal">WPA Journal</button></div>
+<div class="example-row"><span>Брз тест со вистински проект:</span><button class="example" type="button" data-demo="ohrid">Ohrid 2027</button><button class="example" type="button" data-demo="journal">WPA Journal</button><button class="example" id="civicSignalDemo" type="button">CIVIC SIGNAL / Media Literacy</button></div>
 <p class="truth">Официјалните извори се датирани снимки. Статичниот сајт не проверува во живо дали повиците се смениле; состојбата се покажува искрено.</p>
 </div></section>
 <section class="body"><div class="wrap">
@@ -69,10 +76,23 @@
 <details class="details"><summary>Погледни ги ВИ-специјалистите и вистинскиот статус на поврзување</summary><div id="euCouncilProviders" class="eu-council-list" aria-live="polite"></div></details>
 <details class="details"><summary>Priority-0 · прв истражувачки циклус — WPA Journal и Охрид 2027</summary><div id="euCouncilEvidence" aria-live="polite"></div></details>
 </section>
+<section class="panel" id="wpawsGrantBridge" aria-labelledby="wpawsBridgeTitle">
+<h2 id="wpawsBridgeTitle">WPAWS 17 + Council-80 · Grant Mission Router</h2>
+<p class="secondary">17-те извршни улоги во WPAWS и десетте области во Council-80 можат да подготват <strong>ограничен план со конкретни задачи</strong> за грант-апликација. Се користат канонските WPA регистри. Нема автоматско повикување модели, плаќања, испраќање документи или промена на мандати.</p>
+<div class="wpaws-controls">
+<label for="wpawsBridgeMission">Мисија:</label>
+<select id="wpawsBridgeMission"><option value="media_literacy">CIVIC SIGNAL / media literacy</option><option value="journal">WPA Journal</option><option value="conference">Ohrid Protocol Conference 2027</option></select>
+<button class="btn dark small" id="wpawsBridgePlan" type="button" disabled>Изгради WPAWS план</button>
+<button class="btn light small" id="wpawsBridgeDownload" type="button" disabled>Преземи работен пакет (.JSON)</button>
+</div>
+<p id="wpawsBridgeStatus" class="secondary" role="status" aria-live="polite">Ги вчитувам канонските WPA регистри. Ниту еден AI агент не е автоматски повикан.</p>
+<div id="wpawsBridgeResults" class="wpaws-cards" aria-live="polite"></div>
+<details class="details"><summary>Управување и канонски извори</summary><p class="secondary"><a href="/agents.json">WPAWS 17 role registry</a> · <a href="/data/wpa-ai-council-80.json">Council-80 pillars and activation policy</a> · <a href="/data/wpa-human-gate-policy.json">Human Gate</a>. Council-80 = капацитет до 80 ограничени места, не 80 активни надворешни API-провајдери. За вистинско извршување е потребен овластен и проверен серверски адаптер.</p></details>
+</section>
 <section class="panel" aria-labelledby="projectPrivacy"><div class="nav-row"><h2 id="projectPrivacy">Локална работна сесија</h2><div class="exports"><button class="btn light small" id="saveLocal" type="button">Зачувај локално</button><button class="btn light small" id="restoreLocal" type="button">Вчитај зачувано</button><button class="btn light small" id="forgetLocal" type="button">Избриши локална копија</button></div></div><p class="secondary">Без регистрација и без автоматско испраќање на внесениот проект. Локално чување се активира само со твој клик, во овој прелистувач. При испраќање преку друг систем важат посебни правила на приватност.</p><div id="localStatus" class="toast" role="status"></div>
 <details class="details"><summary>Техничка трага · извори и анализи</summary><pre id="trace" class="dossier-view">Нема започнато анализа.</pre></details>
 </section>
 </div></section></main>
-<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v5.1 · EU Council v6 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
+<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v5.2 · EU Council v6 · WPAWS Bridge v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
 </body>
 </html>

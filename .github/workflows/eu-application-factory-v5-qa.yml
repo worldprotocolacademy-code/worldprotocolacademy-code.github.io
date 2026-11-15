@@ -7,6 +7,10 @@ on:
       - tools/assets/eu-factory-ui-v5.js
       - data/eu-application-factory/opportunities-v1.json
       - tests/eu-factory-core.test.cjs
+      - tests/eu-factory-media-agents.test.cjs
+      - tools/assets/eu-factory-wpaws-bridge-v1.js
+      - agents.json
+      - data/wpa-ai-council-80.json
       - .github/workflows/eu-application-factory-v5-qa.yml
   push:
     branches: [main]
@@ -16,6 +20,10 @@ on:
       - tools/assets/eu-factory-ui-v5.js
       - data/eu-application-factory/opportunities-v1.json
       - tests/eu-factory-core.test.cjs
+      - tests/eu-factory-media-agents.test.cjs
+      - tools/assets/eu-factory-wpaws-bridge-v1.js
+      - agents.json
+      - data/wpa-ai-council-80.json
   workflow_dispatch:
 permissions:
   contents: read
@@ -32,6 +40,9 @@ jobs:
         run: |
           node --check tools/assets/eu-factory-core-v5.js
           node --check tools/assets/eu-factory-ui-v5.js
+          node --check tools/assets/eu-factory-wpaws-bridge-v1.js
           node -e "const f=require('fs'); JSON.parse(f.readFileSync('data/eu-application-factory/opportunities-v1.json','utf8'));"
       - name: Run eligibility, timing, export and anti-fabrication tests
-        run: node tests/eu-factory-core.test.cjs
+        run: |
+          node tests/eu-factory-core.test.cjs
+          node tests/eu-factory-media-agents.test.cjs
