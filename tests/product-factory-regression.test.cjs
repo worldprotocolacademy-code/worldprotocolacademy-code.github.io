@@ -8,6 +8,8 @@ const root=path.join(__dirname,'..');
 const product=fs.readFileSync(path.join(root,'tools/product-factory.html'),'utf8');
 const guide=fs.readFileSync(path.join(root,'tools/product-factory-guide.html'),'utf8');
 const youth=fs.readFileSync(path.join(root,'tools/assets/wpa-product-factory-young-innovators-v1.js'),'utf8');
+const eu=fs.readFileSync(path.join(root,'tools/eu-application-factory.html'),'utf8');
+const engines=fs.readFileSync(path.join(root,'tools/wpa-five-engines.html'),'utf8');
 const sections=['guide','young-innovators','vessels','autopilot','magic','protocol','factory','outputs','radar','eu-application-factory','ai-grant-lab','services','toolfactory','eu-form-assistant'];
 
 for(const id of sections)test('Retains product section '+id,()=>assert.match(product,new RegExp('id="'+id+'"')));
@@ -55,4 +57,32 @@ test('Young module actually maps ideas to the v3.4 input fields',()=>{
  assert.match(youth,/document\.getElementById\(id\)/);
  assert.match(youth,/new Event\('input'/);
  assert.match(youth,/humanGate/);
+});
+
+
+// EU Commission direct-link invariant (no fake "live" feed, no broken intermediate route).
+const officialCalls='https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/calls-for-proposals?isExactMatch=true';
+const officialProjects='https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/projects-results?isExactMatch=true';
+for(const [label,html] of [['Product Factory',product],['EU Factory v9',eu],['Official Guide',guide],['Five Engines index',engines]]){
+ test(label+' has direct official Calls and EU-funded Projects links',()=>{
+  assert.ok(html.includes('href="'+officialCalls+'"'),label+' missing calls link');
+  assert.ok(html.includes('href="'+officialProjects+'"'),label+' missing project-results link');
+  assert.match(html,/target="_blank" rel="noopener noreferrer"/);
+ });
+}
+test('EU Factory keeps real v9 intake, not redirected to external portal',()=>{
+ assert.match(eu,/id="easyWizard"/);
+ assert.match(eu,/id="euOfficialSources"/);
+ assert.match(eu,/id="expertMode"/);
+ assert.match(eu,/id="findGrant"/);
+});
+test('Product Factory keeps PP-12, Young Innovators and dedicated grant entry',()=>{
+ for(const id of ['protocol','young-innovators','eu-application-factory','factory'])
+  assert.match(product,new RegExp('id="'+id+'"'));
+ assert.match(product,/eu-application-factory\.html\?v=9#easyWizard/);
+});
+test('Portal link descriptions do not equate completed projects with open grants',()=>{
+ assert.match(eu,/Финансирани проекти|ЕУ-финансирани проекти/i);
+ assert.match(eu,/Open for submission/);
+ assert.match(guide,/веќе финансирани проекти/);
 });
