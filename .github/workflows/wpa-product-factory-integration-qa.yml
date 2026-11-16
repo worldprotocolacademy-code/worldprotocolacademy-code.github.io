@@ -1,0 +1,34 @@
+name: WPA Product Factory Integration QA
+on:
+  pull_request:
+    paths:
+      - 'tools/product-factory.html'
+      - 'tools/product-factory-guide.html'
+      - 'tools/assets/wpa-product-factory-young-innovators-v1.js'
+      - 'tools/wpa-five-engines.html'
+      - 'tools/eu-application-factory.html'
+      - 'tests/product-factory-regression.test.cjs'
+      - '.github/workflows/wpa-product-factory-integration-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/product-factory.html'
+      - 'tools/product-factory-guide.html'
+      - 'tools/assets/wpa-product-factory-young-innovators-v1.js'
+      - 'tools/wpa-five-engines.html'
+      - 'tools/eu-application-factory.html'
+      - 'tests/product-factory-regression.test.cjs'
+      - '.github/workflows/wpa-product-factory-integration-qa.yml'
+permissions:
+  contents: read
+jobs:
+  verify-product-factory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify complete legacy + youth + guide + EU integration
+        run: node --test tests/product-factory-regression.test.cjs
