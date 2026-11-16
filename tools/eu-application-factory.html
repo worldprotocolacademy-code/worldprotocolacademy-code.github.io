@@ -78,6 +78,17 @@
 .pf-reciprocal-nav{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 .pf-reciprocal-nav a{font-size:12px;white-space:nowrap}
 @media(max-width:650px){.top .wrap{flex-wrap:wrap}.pf-reciprocal-nav{width:100%;justify-content:space-between;padding-bottom:7px}}
+
+/* EU official external routes: only navigation, never a simulated live search. */
+.eu-official-direct{margin:22px 0 24px;padding:15px 17px;border:1px solid rgba(201,168,76,.53);border-radius:13px;background:rgba(255,255,255,.07);display:grid;gap:10px}
+.eu-official-description{display:grid;gap:4px}
+.eu-official-description strong{font-size:15px;color:#fff}
+.eu-official-description small,.eu-official-caveat{font-size:12px;line-height:1.5;color:#d6dfec}
+.eu-official-actions{display:flex;gap:10px;flex-wrap:wrap}
+.eu-official-actions a{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#c9a84c;color:#0d1f3c;border:1px solid #e8d49a;font-weight:850;padding:10px 14px;border-radius:9px;min-height:44px;font-size:13px}
+.eu-official-actions a:nth-child(2){background:#fff;color:#0d1f3c;border-color:#fff}
+.eu-official-actions a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media(max-width:520px){.eu-official-actions{display:grid;grid-template-columns:1fr}.eu-official-actions a{width:100%;white-space:normal;text-align:center}}
 </style>
 <script src="/tools/assets/eu-factory-core-v5.js" defer></script>
 <script src="/tools/assets/eu-factory-easy-wizard-v9.js?v=20261115" defer></script>
@@ -94,6 +105,17 @@
 <div class="eyebrow">SIMPLE OUTSIDE · SERIOUS INSIDE</div>
 <h1>Внеси проект. Најди реална можност.</h1>
 <p>Опиши ја идејата со свои зборови. Добиваш конкретни патеки за финансирање, проверка на ограничувањата и апликациско досие за преземање — <strong>на истата страница</strong>.</p>
+<section class="eu-official-direct" id="euOfficialSources" aria-labelledby="euOfficialTitle">
+  <div class="eu-official-description">
+    <strong id="euOfficialTitle">🇪🇺 Директно до официјалните ЕУ-страници</strong>
+    <small>Без посреднички менија. Повици = можности за пријавување; финансирани проекти = примери и резултати, не нови повици.</small>
+  </div>
+  <div class="eu-official-actions">
+    <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/calls-for-proposals?isExactMatch=true" target="_blank" rel="noopener noreferrer" aria-label="Отвори ја официјалната листа на ЕУ-повици, филтрирај Open for submission">🟡 Тековни ЕУ-повици ↗</a>
+    <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/opportunities/projects-results?isExactMatch=true" target="_blank" rel="noopener noreferrer" aria-label="Отвори ги европските финансирани проекти и резултати">📁 ЕУ-финансирани проекти ↗</a>
+  </div>
+  <span class="eu-official-caveat">На страницата со повици избери „Open for submission“. WPA не прикажува непроверени рокови како живи.</span>
+</section>
 <section class="easy-wizard" id="easyWizard" aria-label="Лесно пополнување на проект">
   <div class="easy-head"><strong>За секого · без техничко знаење</strong><span class="easy-count" id="easyProgress" aria-live="polite">Чекор 1 од 3</span></div>
   <div class="easy-step" data-easy-step="0" tabindex="-1">
