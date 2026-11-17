@@ -222,7 +222,7 @@
     if (monitor.last_verified_at) status.textContent += ' · ' + copy().lastVerified + ' ' + monitor.last_verified_at.slice(0,19).replace('T',' ') + ' UTC';
   }
 
-  function addMessage(text, who, source) {
+  function addMessage(text, who, source, evidence) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
@@ -230,6 +230,12 @@
     if (who !== 'user') {
       var kind = source || 'unverified';
       row.dataset.answerSource = kind;
+      if (evidence && typeof evidence === 'object') {
+        row.dataset.wpaServedBy = String(evidence.servedBy || '').slice(0, 80);
+        row.dataset.wpaResponseMode = String(evidence.mode || '').slice(0, 80);
+        if (Array.isArray(evidence.sources)) row.dataset.wpaSourceCount = String(Math.min(999, evidence.sources.length));
+        if (typeof evidence.hasContext === 'boolean') row.dataset.wpaHasContext = String(evidence.hasContext);
+      }
       var label = document.createElement('span');
       label.className = 'wpa-public-vs-source';
       label.textContent = copy()[kind] || copy().unverified;
@@ -363,7 +369,7 @@
     try {
       var result = await requestAnswer(question);
       var source = result.local ? 'local' : result.verified ? 'live' : result.doctrine ? 'doctrine' : result.insufficient ? 'insufficient' : result.unavailable ? 'unavailable' : 'unverified';
-      addMessage(result.answer, 'bot', source);
+      addMessage(result.answer, 'bot', source, result.data);
       history.push({ role: 'assistant', content: result.answer });
       if (result.verified) monitor.last_verified_at = new Date().toISOString();
       setSourceStatus(result.local ? 'unavailable' : source);
@@ -375,6 +381,15 @@
       if (button) button.disabled = false;
       if (input) input.focus();
     }
+  }
+
+  function loadWorkspaceEnhancement() {
+    if (document.getElementById('wpa-vs-workspace-loader')) return;
+    var loader = document.createElement('script');
+    loader.id = 'wpa-vs-workspace-loader';
+    loader.src = '/scripts/wpa-virtual-sande-workspace.js?v=20261117-1';
+    loader.defer = true;
+    document.head.appendChild(loader);
   }
 
   function mount() {
@@ -404,6 +419,7 @@
 
     document.body.appendChild(panel);
     document.body.appendChild(fab);
+    loadWorkspaceEnhancement();
     protectAllInputs();
     addMessage(text.welcome, 'bot', 'local');
     setSourceStatus('unverified');
