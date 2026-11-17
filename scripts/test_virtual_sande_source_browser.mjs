@@ -18,6 +18,16 @@ const targets=[
 async function run(target,scenario){
  const ctx=await browser.newContext({viewport:{width:390,height:780},serviceWorkers:'block'});
  let requests=0;
+ let analyticsRequests=0;
+ // The local QA candidate must preserve the real consent UI, not click through it.
+ await ctx.route('**/config/analytics.json',route=>route.fulfill({
+  status:200,contentType:'application/json',
+  body:JSON.stringify({measurementId:'G-TEST123456',consentRequired:true})
+ }));
+ await ctx.route('**/www.googletagmanager.com/**',route=>{
+  analyticsRequests++;
+  return route.abort();
+ });
  await ctx.route(endpoint+'**',async route=>{
   const pathname=new URL(route.request().url()).pathname;
   if(pathname.includes('health'))return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(healthy)});
@@ -30,6 +40,16 @@ async function run(target,scenario){
  });
  const page=await ctx.newPage();
  await page.goto(ROOT+target.route,{waitUntil:'domcontentloaded',timeout:45000});
+ // Analytics consent is a foreground interaction. Reject it as a user would,
+ // then verify no GA4 request occurred. Do not force-click through the dialog.
+ const consent=page.locator('#wpaAnalyticsConsentBanner');
+ await consent.waitFor({state:'visible',timeout:12000});
+ check(target.id+' '+scenario+' GA4 blocked before consent',analyticsRequests===0,String(analyticsRequests));
+ await consent.locator('button.wpa-decline').click();
+ await consent.waitFor({state:'detached',timeout:6000});
+ const preference=await page.evaluate(()=>localStorage.getItem('wpa.analytics.consent.v1'));
+ check(target.id+' '+scenario+' explicit rejection recorded',preference==='denied',preference);
+ check(target.id+' '+scenario+' GA4 remains blocked after rejection',analyticsRequests===0,String(analyticsRequests));
  await page.locator(target.fab).waitFor({state:'visible',timeout:16000});
  const health=await page.evaluate(key=>window[key],target.monitor);
  check(target.id+' '+scenario+' initial not LIVE',health.state!=='live',JSON.stringify(health));
