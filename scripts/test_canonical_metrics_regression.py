@@ -47,4 +47,25 @@ assert "previousElementSibling.textContent='26'" not in reconcile
 router=(ROOT/"languages/wpa-language-menu-10.js").read_text(encoding="utf-8")
 assert '["25 публикации", "26 публикации"]' not in router
 
+# Historical script archives may retain explanatory 2026-era values, but the
+# browser entrypoint must NEVER call their numeric/metadata mutation functions.
+for archived, forbidden in (
+    ("scripts/wpa-corpus-20260729-v2.js", (
+        "      updateCorpusArithmetic();",
+        "      updateInstitute();",
+        "      updateWorkingIndex();",
+        "      updateBibliography();",
+    )),
+    ("scripts/wpa-pn007-pn008-sync-20260803.js", (
+        "    updateCountsAndIdentity();",
+        "    updateInstitute();",
+        "    updateWorkingIndex();",
+        "    updateBibliography();",
+    )),
+):
+    runtime=(ROOT/archived).read_text(encoding="utf-8")
+    for invocation in forbidden:
+        assert invocation not in runtime, archived+" re-enabled obsolete publication overwrite: "+invocation.strip()
+    assert "    updatePapers();" in runtime or "      updatePapers();" in runtime, archived+" dropped additive PN card generation"
+
 print("WPA audited metric regression PASS: 27=6+1+20, 25=15+9+1, public MK/EN markup; stale 26/19 browser overwrites blocked.")
