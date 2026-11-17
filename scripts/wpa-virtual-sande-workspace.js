@@ -239,9 +239,12 @@
     exportButton.addEventListener('click',function () { exportChat(spec,exportButton); });
     tools.insertBefore(exportButton,tools.firstChild);
     var scan = function () {
-      // Add controls only to user-facing answers, not the initial greeting.
-      if (!host.querySelector(spec.row + '.user')) return;
-      host.querySelectorAll(spec.row + '.assistant').forEach(addControls);
+      // The initial greeting does not receive an evidence passport.
+      var seenQuestion = false;
+      host.querySelectorAll(spec.row).forEach(function (row) {
+        if (row.classList.contains('user')) { seenQuestion = true; return; }
+        if (seenQuestion && row.classList.contains('assistant')) addControls(row);
+      });
     };
     new MutationObserver(scan).observe(host,{childList:true});
     scan();
