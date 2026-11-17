@@ -5,6 +5,7 @@ on:
       - 'scripts/virtual-sande-public-widget.js'
       - 'scripts/virtual-sande-institute-widget.js'
       - 'scripts/test_virtual_sande_source_browser.mjs'
+      - 'scripts/wpa-virtual-sande-workspace.js'
       - '.github/workflows/wpa-virtual-sande-source-qa.yml'
   workflow_dispatch:
 permissions:
@@ -23,6 +24,7 @@ jobs:
         run: |
           node --check scripts/virtual-sande-public-widget.js
           node --check scripts/virtual-sande-institute-widget.js
+          node --check scripts/wpa-virtual-sande-workspace.js
           node --check scripts/test_virtual_sande_source_browser.mjs
       - name: Install ephemeral browser test dependencies
         run: |

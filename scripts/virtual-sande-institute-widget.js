@@ -199,12 +199,18 @@
     if(monitor.last_verified_at)target.textContent+=' · '+copy().lastVerified+' '+monitor.last_verified_at.slice(0,19).replace('T',' ')+' UTC';
   }
 
-  function addMessage(text,who,source) {
+  function addMessage(text,who,source,evidence) {
     var msgs=document.getElementById('wpaInstVsMsgs');if(!msgs)return;
     var row=document.createElement('div');
     row.className='wpa-inst-vs-row'+(who==='user'?' user':' assistant');
     if(who!=='user'){
       var kind=source||'unverified';row.dataset.answerSource=kind;
+      if (evidence && typeof evidence === 'object') {
+        row.dataset.wpaServedBy=String(evidence.servedBy||'').slice(0,80);
+        row.dataset.wpaResponseMode=String(evidence.mode||'').slice(0,80);
+        if(Array.isArray(evidence.sources)) row.dataset.wpaSourceCount=String(Math.min(999,evidence.sources.length));
+        if(typeof evidence.hasContext==='boolean') row.dataset.wpaHasContext=String(evidence.hasContext);
+      }
       var badge=document.createElement('span');badge.className='wpa-inst-vs-source';
       badge.textContent=copy()[kind]||copy().unverified;row.appendChild(badge);
     }
@@ -277,7 +283,7 @@
       }
       if(!answer)throw lastError||new Error('No response');
       var kind=hasVerifiedLiveModel(data)?'live':hasWpaDoctrineSource(data)?'doctrine':hasInsufficientEvidenceSource(data)?'insufficient':/(unavailable|request_error|none)/i.test(String(data.mode||''))?'unavailable':'unverified';
-      addMessage(answer,'bot',kind);history.push({role:'assistant',content:answer});
+      addMessage(answer,'bot',kind,data);history.push({role:'assistant',content:answer});
       if(kind==='live')monitor.last_verified_at=new Date().toISOString();
       setStatus(kind);
     }catch(error){
@@ -293,6 +299,15 @@
     var script = document.createElement('script'); script.id = 'wpa-institute-campaign-runtime'; script.src = '/scripts/wpa-institute-campaign.js?v=20260905-1'; script.defer = true; document.head.appendChild(script);
   }
 
+  function loadWorkspaceEnhancement() {
+    if (document.getElementById('wpa-vs-workspace-loader')) return;
+    var loader=document.createElement('script');
+    loader.id='wpa-vs-workspace-loader';
+    loader.src='/scripts/wpa-virtual-sande-workspace.js?v=20261117-1';
+    loader.defer=true;
+    document.head.appendChild(loader);
+  }
+
   function mount() {
     style(); removePn003TopbarPromo(); normalizeInstituteHeader(); normalizePublicCouncilTerminology(); placeRelatedModules(); loadCampaignRuntime();
     window.setTimeout(function(){ normalizeInstituteHeader(); normalizePublicCouncilTerminology(); placeRelatedModules(); }, 250);
@@ -301,7 +316,7 @@
     var panel = document.createElement('section'); panel.id = 'wpaInstVsPanel'; panel.className = 'wpa-inst-vs-panel'; panel.setAttribute('aria-label', t.title);
     panel.innerHTML = '<div class="wpa-inst-vs-head"><span class="wpa-inst-vs-mark"><img src="/assets/img/logo.svg" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-inst-vs-copy"><div class="wpa-inst-vs-title">' + t.title + '</div><div class="wpa-inst-vs-sub">' + t.subtitle + '</div></div><button class="wpa-inst-vs-close" type="button" aria-label="' + t.close + '">×</button></div><div class="wpa-inst-vs-status" id="wpaInstVsStatus" role="status" aria-live="polite"></div><div class="wpa-inst-vs-msgs" id="wpaInstVsMsgs" role="log" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Virtual Sande conversation"></div><form class="wpa-inst-vs-form" id="wpaInstVsForm"><textarea class="wpa-inst-vs-input" id="wpaInstVsInput" placeholder="' + t.placeholder + '"></textarea><button class="wpa-inst-vs-send" id="wpaInstVsSend" type="submit">' + t.send + '</button></form><div class="wpa-inst-vs-tools"><button class="wpa-inst-vs-clear" id="wpaInstVsClear" type="button">' + t.clear + '</button></div>';
     var fab = document.createElement('button'); fab.id = 'wpaInstVsFab'; fab.className = 'wpa-inst-vs-fab'; fab.type = 'button'; fab.setAttribute('aria-label', t.label); fab.setAttribute('aria-expanded', 'false'); fab.setAttribute('aria-controls', 'wpaInstVsPanel'); fab.innerHTML = '<img src="/assets/img/logo.svg" alt="" width="64" height="64">';
-    document.body.appendChild(panel); document.body.appendChild(fab); addMessage(t.welcome, 'bot', 'local'); setStatus('unverified'); healthCheck();
+    document.body.appendChild(panel); document.body.appendChild(fab); loadWorkspaceEnhancement(); addMessage(t.welcome, 'bot', 'local'); setStatus('unverified'); healthCheck();
     fab.addEventListener('click', function () { var open = panel.classList.toggle('open'); fab.setAttribute('aria-expanded', open ? 'true' : 'false'); if (open) document.getElementById('wpaInstVsInput').focus(); });
     panel.querySelector('.wpa-inst-vs-close').addEventListener('click', function () { panel.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); fab.focus(); });
     document.getElementById('wpaInstVsForm').addEventListener('submit', function (event) { event.preventDefault(); send(); });

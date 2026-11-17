@@ -18,7 +18,7 @@ const targets=[
  {id:'institute',route:'/institute.html',fab:'#wpaInstVsFab',input:'#wpaInstVsInput',send:'#wpaInstVsSend',status:'#wpaInstVsStatus',row:'.wpa-inst-vs-row.assistant',log:'#wpaInstVsMsgs',monitor:'WPAInstituteVirtualSandeMonitor'}
 ];
 async function run(target,scenario){
- const ctx=await browser.newContext({viewport:{width:390,height:780},serviceWorkers:'block'});
+ const ctx=await browser.newContext({viewport:{width:390,height:780},serviceWorkers:'block',acceptDownloads:true,permissions:['clipboard-read','clipboard-write']});
  let requests=0;
  let analyticsRequests=0;
  // The local QA candidate must preserve the real consent UI, not click through it.
@@ -72,6 +72,37 @@ async function run(target,scenario){
  check(target.id+' '+scenario+' source badge',source===expected,'source='+source+', expected='+expected+', label='+label);
  check(target.id+' '+scenario+' last_verified_at truth',scenario==='model'?!!state.last_verified_at:!state.last_verified_at,JSON.stringify(state));
  check(target.id+' '+scenario+' number of API tries',scenario==='failure'?requests===2:requests===1,requests);
+ // P1 browser-only academic workspace: verify real UI actions and evidence boundaries.
+ await page.waitForFunction(()=>!!window.WPAVirtualSandeWorkspace,{timeout:10000});
+ const bubbleSelector='.wpa-public-vs-bubble,.wpa-inst-vs-bubble';
+ const last=page.locator(target.row).last();
+ await last.locator('.wpa-vs-passport').waitFor({state:'attached',timeout:10000});
+ const details=last.locator('.wpa-vs-passport');
+ check(target.id+' '+scenario+' passport attached',await details.count()===1);
+ await details.locator('summary').click();
+ const boundary=await details.locator('.wpa-vs-boundary').textContent();
+ check(target.id+' '+scenario+' passport truth warning',!!boundary&&boundary.length>40,boundary);
+ const reported=await details.locator('dl').textContent();
+ check(target.id+' '+scenario+' passport source route',reported.includes(expected==='live'?'llm':expected==='doctrine'?'v34.5-protected-doctrine':expected==='insufficient'?'procedural-insufficient-evidence':'')||expected==='unavailable'||expected==='local',reported);
+ const actions=last.locator('.wpa-vs-actions button');
+ check(target.id+' '+scenario+' copy and read controls',await actions.count()===2);
+ const exportButton=page.locator('.wpa-vs-export');
+ check(target.id+' '+scenario+' export available',await exportButton.count()===1);
+ const greeting=page.locator(target.row).first();
+ check(target.id+' '+scenario+' greeting has no actions',await greeting.locator('.wpa-vs-actions').count()===0);
+ if(scenario==='model'){
+   const answer=await last.locator(bubbleSelector).textContent();
+   await actions.first().click();
+   const clipboard=await page.evaluate(()=>navigator.clipboard.readText());
+   check(target.id+' clipboard returns answer',clipboard===answer,'clipboard match='+String(clipboard===answer));
+   const [download]=await Promise.all([page.waitForEvent('download',{timeout:10000}),exportButton.click()]);
+   const filename=download.suggestedFilename();
+   const saved=path.join(FOLDER,'workspace-'+target.id+'.md');
+   await download.saveAs(saved);
+   const exported=fs.readFileSync(saved,'utf8');
+   check(target.id+' Markdown export content',filename.endsWith('.md')&&exported.includes('Што е безбедност?')&&exported.includes(answer),filename);
+   check(target.id+' no fabricated evidence in export',exported.includes('factual accuracy')||exported.includes('точноста'),exported.slice(0,180));
+ }
  const status=await page.locator(target.status).textContent();
  check(target.id+' '+scenario+' status visible',!!status&&status.trim().length>0,status);
  await page.screenshot({path:path.join(FOLDER,target.id+'-'+scenario+'.png'),fullPage:false});
@@ -83,5 +114,5 @@ try{
  fs.writeFileSync(path.join(FOLDER,'report.json'),JSON.stringify({scope:'SYNTHETIC_LOCAL_TEST_NOT_PRODUCTION',tests},null,2)+'\n');
  await browser.close();
 }
-console.log('Virtual Sande source-provenance QA '+tests.length+' assertions; '+failures+' failures; 10 screenshots.');
+console.log('Virtual Sande source-provenance QA '+tests.length+' assertions; '+failures+' failures; 10 screenshots + P1 academic-workspace checks.');
 if(failures)process.exitCode=1;
