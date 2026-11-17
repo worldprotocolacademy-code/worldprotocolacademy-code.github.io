@@ -122,7 +122,7 @@
 
     if (/безбедност|безбедносни студии|security|security studies/.test(q)) key = 'security';
     else if (/комуникологија|communicology|communication science/.test(q)) key = 'communicology';
-    else if (/вештачка интелигенција|(^| )аи( |$)|artificial intelligence/.test(q)) key = 'artificial_intelligence';
+    else if (/вештачк[а-я]* интелигенц[а-я]*|вештачак интелигенц[а-я]*|artificial intelligence/.test(q) || /^(што е|што претставува|која е дефиницијата за|објасни).*(^| )аи( |$)/.test(q)) key = 'artificial_intelligence';
     else if (/односи со јавност|јавни односи|public relations|(^| )pr( |$)/.test(q)) key = 'public_relations';
     else if (/дипломатски протокол|diplomatic protocol/.test(q)) key = 'diplomatic_protocol';
     else if (/државен протокол|state protocol/.test(q)) key = 'state_protocol';
