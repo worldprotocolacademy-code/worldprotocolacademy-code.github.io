@@ -1,0 +1,36 @@
+name: WPA Broadcast Draft Preflight (non-billable)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/wpa_broadcast_build_draft.py'
+      - 'tests/test_wpa_broadcast_build_draft.py'
+      - 'media/news/production/broadcast-bridge-status.json'
+      - 'media/news/production/WPA_BROADCAST_CUTOVER_V04.md'
+      - '.github/workflows/wpa-broadcast-draft-preflight.yml'
+permissions:
+  contents: read
+jobs:
+  draft-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python compilation
+        run: python -m py_compile scripts/wpa_broadcast_build_draft.py
+      - name: Check draft-only guarantees
+        run: python -m unittest discover -s tests -p 'test_wpa_broadcast_build_draft.py' -v
+      - name: Never auto-publish
+        run: |
+          python - <<'PY'
+          import json
+          with open('media/news/production/broadcast-bridge-status.json',encoding='utf8') as f:
+            state=json.load(f)
+          assert state['public_publish']=='NOT_AUTHORIZED'
+          assert state['production_deployment']=='NOT_VERIFIED'
+          assert not state['private_archive_publicly_uploaded']
+          print('PASS: publisher remains disabled')
+          PY
