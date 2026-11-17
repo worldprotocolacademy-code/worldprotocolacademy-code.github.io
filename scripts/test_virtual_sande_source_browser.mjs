@@ -39,8 +39,7 @@ async function run(target,scenario){
  check(target.id+' '+scenario+' messages keyboard log',role==='log'&&tab==='0');
  await page.locator(target.input).fill('Што е безбедност?');
  await page.locator(target.send).click();
- await page.waitForFunction(({key})=>{const m=window[key];return m && m.state!=='unverified' && m.state!=='connecting'}, {key:target.monitor},{timeout:25000}).catch(()=>{});
- // In deterministic scenario "unverified" is the correct final status, await bubble text.
+ await page.waitForFunction(selector=>document.querySelectorAll(selector).length>=2,target.row,{timeout:25000});
  await page.locator(target.row).last().locator('.wpa-public-vs-bubble,.wpa-inst-vs-bubble').waitFor({state:'visible',timeout:25000});
  if(scenario==='deterministic')await page.waitForTimeout(350);
  if(scenario==='failure')await page.waitForTimeout(450);
