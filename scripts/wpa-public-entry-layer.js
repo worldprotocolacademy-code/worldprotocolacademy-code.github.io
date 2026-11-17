@@ -107,7 +107,7 @@
 
   function correctVisibleFacts(){
     var stats=document.querySelectorAll('.hero-stats .stat-num');
-    if(stats.length && String(stats[0].textContent||'').trim()==='25') stats[0].textContent='26';
+    // Retired: never rewrite academic totals from browser code.
     var labels=document.querySelectorAll('.hero-stats .stat-label');
     if(labels.length && /Публикации/i.test(String(labels[0].textContent||''))) labels[0].textContent='Публикации';
 

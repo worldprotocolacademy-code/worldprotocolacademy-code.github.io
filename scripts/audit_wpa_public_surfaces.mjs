@@ -110,8 +110,8 @@ check(metrics.master_list_current?.total_records === 250, "metrics current recor
 const home = read("index.html");
 const institute = read("institute.html");
 const layer = read("wpa-translator.js");
-check(home.includes('<div class="stat-num">27</div>'), "home hero shows 27 publications");
-check(home.includes('<div class="stat-num">20</div>'), "home hero shows 20 papers");
+check(home.includes('<div class="stat-num" data-wpa-metric="academic.total">27</div>'), "home hero uses build-time canonical 27 publications");
+check(home.includes('<div class="stat-num" data-wpa-metric="academic.papers">20</div>'), "home hero uses build-time canonical 20 papers");
 check(home.includes("OPC 2027 · Ohrid") && !home.includes("OPC 2026 · Ohrid"), "home current conference gateway = OPC 2027");
 check(home.includes("sande@worldprotocolacademy.mk"), "home contains canonical author contact");
 check(!home.includes("26 публикации = 6 монографии/прирачници + 1 докторска дисертација + 19 трудови/прилози"), "home has no stale 26/19 evidence equation");
