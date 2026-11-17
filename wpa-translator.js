@@ -92,7 +92,7 @@
       '',cp.context+':',context,
       '',cp.next+':',cp.step,
       '',cp.boundary+':',cp.limitation
-    ].join('\\n');
+    ].join('\n');
     return Object.freeze({locale:fields.locale,route:fields.route,languageLabel:fields.languageLabel,purpose:purpose,domain:domain,text:output});
   }
   window.WPAInstituteBriefCore = Object.freeze({render:renderInstituteBrief,describeLocale:describeInstituteBriefLocale});
