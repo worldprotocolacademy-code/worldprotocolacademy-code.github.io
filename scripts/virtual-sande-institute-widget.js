@@ -121,7 +121,8 @@
     var lang = documentLanguage();
     var t = copy();
     brand.classList.add('wpa-institute-brand');
-    brand.setAttribute('aria-label', t.instituteName);
+    // Visible MK/EN brand text supplies the accessible name; never override it with a shorter aria-label.
+    brand.removeAttribute('aria-label');
     var mark = brand.querySelector('.brand-mark');
     if (mark) {
       mark.textContent = '';
