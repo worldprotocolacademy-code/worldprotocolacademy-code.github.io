@@ -36,7 +36,7 @@
       insufficientLimit:'The service did not accept enough evidence for a grounded procedural answer.',
       localLimit:'This answer came from a local on-page reference, without a successful live-model proof.',
       unknownLimit:'The available metadata does not establish a live-model answer or verified citations.',
-      privacy:'The conversation stays in this tab unless you explicitly export it. Export may include your questions.',
+      privacy:'Questions and recent chat context are sent to the WPA Worker when you request a reply. This interface does not save your chat between visits; export is a separate local action.',
       saved:'File saved by your browser', failed:'Export unavailable',
       roleUser:'You', roleAssistant:'Virtual Sande AI',
       labels:{live:'Model-attributed answer',doctrine:'WPA protected doctrine',insufficient:'Insufficient evidence',local:'Local reference',unavailable:'Connection unavailable',unverified:'Unverified response'}
@@ -58,7 +58,7 @@
       insufficientLimit:'Сервисот не потврдил доволна изворна поткрепа за процедурален одговор.',
       localLimit:'Ова е локална референтна содржина, без потврден одговор од жив модел.',
       unknownLimit:'Достапните метаподатоци не потврдуваат моделски одговор или проверени цитати.',
-      privacy:'Разговорот останува во оваа картичка освен ако експлицитно не го извезете. Извозот може да ги содржи вашите прашања.',
+      privacy:'Кога барате одговор, прашањето и дел од тековниот разговор се испраќаат до WPA Worker. Овој интерфејс не ја зачувува историјата меѓу посети; извозот е посебна локална акција.',
       saved:'Прелистувачот го зачува фајлот', failed:'Извозот е недостапен',
       roleUser:'Вие', roleAssistant:'Virtual Sande AI',
       labels:{live:'Одговор со пријавен моделски извор',doctrine:'Заштитена WPA доктрина',insufficient:'Недоволна поткрепа',local:'Локална референца',unavailable:'Недостапна врска',unverified:'Непотврден одговор'}
