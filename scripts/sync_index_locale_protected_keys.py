@@ -2,6 +2,8 @@
 """Synchronise only protected WPA index-locale facts; do not flatten stylistic variants."""
 from pathlib import Path
 import re
+
+raise SystemExit("RETIRED LEGACY MUTATOR: Historical locale sync rewrites 25 to 26 and retains 19; it must not run on current canonical MK/EN locale content. Use scripts/render_canonical_public_metrics.py --write after evidenced canonical approval.")
 ROOT=Path(__file__).resolve().parents[1]
 FILES=["locales/index/mk.json","mk.json","index/mk.json","locales/locales/index/mk.json"]
 REPLACEMENTS=[("25 публикации (5 монографии, 1 дисертација, 19 трудови)","26 публикации (6 монографии и прирачници, 1 дисертација, 19 трудови и прилози)"),("5 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 25 публикации вкупно.","6 монографии и прирачници, 1 докторска дисертација, 19 научни трудови и прилози — 26 публикации вкупно."),("5 monographs and manuals","6 monographs and manuals"),("25 publications","26 publications")]
