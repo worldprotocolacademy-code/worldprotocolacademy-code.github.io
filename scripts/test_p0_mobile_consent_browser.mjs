@@ -116,7 +116,7 @@ async function publicationMetricsBrowserRegression(){
     const selector='[data-wpa-metric="'+key+'"]';
     const rows=p.locator(selector);
     const n=await rows.count();
-    const value=n===1?String(await rows.first().textContent()||'').trim().replace(/\\s+/g,' '):'';
+    const value=n===1?String(await rows.first().textContent()||'').trim().replace(/\s+/g,' '):'';
     result('metrics '+target.name+' '+(javascriptEnabled?'post-JS':'pre-JS')+' '+key,
       n===1&&value.includes(expected),JSON.stringify({expected,actual:value,count:n}));
    }
