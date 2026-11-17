@@ -1108,7 +1108,7 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
 </div>
 <div class="nav-wrap">
 <nav>
-<a class="brand wpa-institute-brand" href="index.html" aria-label="WPA Institute" translate="no" data-no-i18n="true">
+<a class="brand wpa-institute-brand" href="index.html" translate="no" data-no-i18n="true">
 <img class="wpa-institute-logo" src="/logo.webp" alt="World Protocol Academy logo" width="48" height="48" loading="eager" decoding="sync" fetchpriority="high">
 <div class="brand-text">
 <span class="wpa-institute-label">WPA Institute</span>
@@ -1755,7 +1755,7 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
 <div class="section-label" data-i18n="institute.methodology.label">Методолошки групи</div>
 <h2 class="section-title" data-i18n="institute.methodology.title">Категории за фер споредба</h2>
 <p class="section-lead" data-i18n="institute.methodology.lead">WPA нема да ги меша малите протоколарни академии со големи универзитети во една сурова табела. Споредбата се прави по категории, со јасни критериуми за припадност во секоја група.</p>
-<div class="method-table-wrap">
+<div class="method-table-wrap" tabindex="0" role="region" aria-label="Табела со институционални категории">
 <table class="method-table">
 <thead>
 <tr>
@@ -2358,26 +2358,7 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
      - GitHub Pages compatible (no backend)
      ============================================================ -->
 <script defer="" src="wpa-translator.js?v=3.0"></script>
-<script>
-  (function() {
-    document.addEventListener('DOMContentLoaded', () => {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-          }
-        });
-      }, { threshold: 0.1 });
-      document.querySelectorAll('section').forEach(s => {
-        s.style.opacity = '0.001';
-        s.style.transform = 'translateY(20px)';
-        s.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        observer.observe(s);
-      });
-    });
-  })();
-</script>
+<!-- Accessibility: historical section opacity-on-scroll mutation retired. Public content remains readable and keyboard-accessible without IntersectionObserver. -->
 <!-- =========================================================
      WPA Responsive Mobile Navigation + Bot Visibility Patch v1.0
      Works for mobile, tablet, laptop and PC
