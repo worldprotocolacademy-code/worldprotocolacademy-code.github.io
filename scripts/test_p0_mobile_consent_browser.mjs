@@ -44,6 +44,13 @@ async function pageRun(id,route,width){
    result(id+' '+width+' consent targets',controls.length===3&&controls.every(x=>x.w>=44&&x.h>=44),JSON.stringify(controls));
  }
  const overflow=await p.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth}));
+ if(id==='mk-institute' && overflow.scrollWidth>overflow.width+1 && (width===320||width===768)){
+  const offenders=await p.evaluate(()=>Array.from(document.querySelectorAll('*')).map(e=>{
+   const r=e.getBoundingClientRect(),s=getComputedStyle(e);
+   return {tag:e.tagName.toLowerCase(),id:e.id,classes:String(e.className||'').slice(0,72),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),position:s.position,whiteSpace:s.whiteSpace};
+  }).filter(x=>x.right>innerWidth+2&&x.left<innerWidth&&x.width>0).sort((a,b)=>b.right-a.right).slice(0,28));
+  console.log('QA_OVERFLOW_DIAGNOSTIC '+id+' '+width+' '+JSON.stringify(offenders));
+ }
  result(id+' '+width+' no horizontal overflow',overflow.scrollWidth<=overflow.width+1,JSON.stringify(overflow));
  await screenshot(p,id+'-'+width+'-banner.png');
  if(id==='mk-home'&&width<=768){
@@ -68,11 +75,14 @@ async function pageRun(id,route,width){
  // Run axe on every supported MK/EN Home and Institute viewport, not just MK Home at 390px.
  // Consent is dismissed as an explicit human browser action for the page-content scan.
  // All rule failures remain fatal; the complete report is uploaded by the existing CI job.
+ if(id==='mk-institute'&&width===1440){
+  console.log('QA_BRAND_DIAGNOSTIC '+JSON.stringify(await p.locator('.nav-wrap nav .brand').evaluate(e=>({ariaLabel:e.getAttribute('aria-label'),visible:e.innerText,alt:e.querySelector('img')?.alt}))));
+ }
  if(id!=='mk-home' || width>768){if(visible)await p.locator('.wpa-decline').click();}
  try {
    const a=await new AxeBuilder({page:p}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
    const defects=a.violations.map(v=>({route:id,width,rule:v.id,impact:v.impact,nodeCount:v.nodes.length,
-     nodes:v.nodes.slice(0,12).map(n=>({target:n.target,summary:String(n.failureSummary||'').slice(0,200),html:String(n.html||'').slice(0,130)}))}));
+     nodes:v.nodes.slice(0,id==='mk-institute'&&width===390?100:12).map(n=>({target:n.target,summary:String(n.failureSummary||'').slice(0,200),html:String(n.html||'').slice(0,130)}))}));
    report.violations.push(...defects);
    result(id+' '+width+' axe WCAG A/AA',defects.length===0,
      JSON.stringify(defects.map(v=>({rule:v.rule,impact:v.impact,nodeCount:v.nodeCount}))));
