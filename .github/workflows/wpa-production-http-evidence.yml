@@ -27,7 +27,7 @@ jobs:
       - name: Python syntax
         run: python -m py_compile scripts/audit_wpa_production_http.py
       - name: Public HTTPS and security-header survey (anonymous GET only)
-        run: python scripts/audit_wpa_production_http.py --critical-routes --timeout 8
+        run: python scripts/audit_wpa_production_http.py --critical-routes --require-worker-cors --timeout 8
       - name: Upload immutable HTTP evidence (even if a route fails)
         if: always()
         uses: actions/upload-artifact@v4
