@@ -22,7 +22,7 @@
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
       send: 'Испрати', clear: 'Исчисти', error: 'Во моментот не можам да одговорам. Обидете се повторно.',
       label: 'Отвори Virtual Sande AI', close: 'Затвори',
-      live:'Live AI',local:'Локален одговор',unverified:'Непотврдена врска',unavailable:'Live AI недостапен',lastVerified:'Последно потврдено:',connecting:'Се поврзувам...',
+      live:'Live AI',local:'Локален одговор',doctrine:'WPA доктринарен одговор',insufficient:'Недоволна изворна поткрепа',unverified:'Непотврдена врска',unavailable:'Live AI недостапен',lastVerified:'Последно потврдено:',connecting:'Се поврзувам...',
       instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
       relatedTitle: 'Поврзани WPA модули',
       relatedIntro: 'Брзи врски кон клучни јавни ресурси што ја дополнуваат Институтската страница.',
@@ -37,7 +37,7 @@
       placeholder: 'Ask about protocol, diplomacy, communication or security...',
       send: 'Send', clear: 'Clear', error: 'I cannot respond at the moment. Please try again.',
       label: 'Open Virtual Sande AI', close: 'Close',
-      live:'Live AI',local:'Local answer',unverified:'Connection unverified',unavailable:'Live AI unavailable',lastVerified:'Last verified:',connecting:'Connecting...',
+      live:'Live AI',local:'Local answer',doctrine:'WPA doctrine answer',insufficient:'Evidence insufficient',unverified:'Connection unverified',unavailable:'Live AI unavailable',lastVerified:'Last verified:',connecting:'Connecting...',
       instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
       relatedTitle: 'Related WPA Modules',
       relatedIntro: 'Quick links to key public resources that complement the Institute page.',
@@ -52,7 +52,7 @@
       placeholder: 'Posez une question sur le protocole, la diplomatie, la communication ou la sécurité...',
       send: 'Envoyer', clear: 'Effacer', error: 'Je ne peux pas répondre pour le moment. Veuillez réessayer.',
       label: 'Ouvrir Virtual Sande AI', close: 'Fermer',
-      live:'Live AI',local:'Réponse locale',unverified:'Connexion non vérifiée',unavailable:'Live AI indisponible',lastVerified:'Dernière vérification :',connecting:'Connexion...',
+      live:'Live AI',local:'Réponse locale',doctrine:'Réponse doctrinale WPA',insufficient:'Sources insuffisantes',unverified:'Connexion non vérifiée',unavailable:'Live AI indisponible',lastVerified:'Dernière vérification :',connecting:'Connexion...',
       instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
       relatedTitle: 'Modules WPA associés',
       relatedIntro: 'Liens rapides vers les principales ressources publiques qui complètent la page de l’Institut.',
@@ -223,6 +223,15 @@
     return /^(llm|procedural-anthropic-direct|anthropic-llm-rescue|anthropic-contamination-rescue|anthropic-no-context-fill)$/.test(String(data.servedBy||'').toLowerCase());
   }
 
+  function hasWpaDoctrineSource(data){
+    return Boolean(data&&data.ok===true&&data.contract==='wpa-virtual-sande-response-v1.1'&&
+      data.mode==='protected_doctrine_block'&&data.servedBy==='v34.5-protected-doctrine');
+  }
+  function hasInsufficientEvidenceSource(data){
+    return Boolean(data&&data.ok===true&&data.contract==='wpa-virtual-sande-response-v1.1'&&
+      data.servedBy==='procedural-insufficient-evidence');
+  }
+
   async function fetchBounded(url,opts,ms){
     var controller=typeof AbortController!=='undefined'?new AbortController():null;
     var timer=window.setTimeout(function(){if(controller)controller.abort();},ms);
@@ -267,7 +276,7 @@
         }
       }
       if(!answer)throw lastError||new Error('No response');
-      var kind=hasVerifiedLiveModel(data)?'live':/(unavailable|request_error|none)/i.test(String(data.mode||''))?'unavailable':'unverified';
+      var kind=hasVerifiedLiveModel(data)?'live':hasWpaDoctrineSource(data)?'doctrine':hasInsufficientEvidenceSource(data)?'insufficient':/(unavailable|request_error|none)/i.test(String(data.mode||''))?'unavailable':'unverified';
       addMessage(answer,'bot',kind);history.push({role:'assistant',content:answer});
       if(kind==='live')monitor.last_verified_at=new Date().toISOString();
       setStatus(kind);

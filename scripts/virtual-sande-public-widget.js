@@ -40,7 +40,7 @@
         send: 'Send',
         clear: 'Clear',
         connecting: 'Connecting...',
-        live: 'Live AI', local: 'Local answer', unavailable: 'Live AI unavailable', unverified: 'Connection unverified', lastVerified: 'Last verified:', offline: 'WPA academic core',
+        live: 'Live AI', local: 'Local answer', doctrine: 'WPA doctrine answer', insufficient: 'Evidence insufficient', unavailable: 'Live AI unavailable', unverified: 'Connection unverified', lastVerified: 'Last verified:', offline: 'WPA academic core',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
         label: 'Open Virtual Sande AI',
         close: 'Close'
@@ -54,7 +54,7 @@
       send: 'Испрати',
       clear: 'Исчисти',
       connecting: 'Се поврзувам...',
-      live: 'Live AI', local: 'Локален одговор', unavailable: 'Live AI недостапен', unverified: 'Непотврдена врска', lastVerified: 'Последно потврдено:', offline: 'WPA академско јадро',
+      live: 'Live AI', local: 'Локален одговор', doctrine: 'WPA доктринарен одговор', insufficient: 'Недоволна изворна поткрепа', unavailable: 'Live AI недостапен', unverified: 'Непотврдена врска', lastVerified: 'Последно потврдено:', offline: 'WPA академско јадро',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
       label: 'Отвори Virtual Sande AI',
       close: 'Затвори'
@@ -273,6 +273,16 @@
     return /^(llm|procedural-anthropic-direct|anthropic-llm-rescue|anthropic-contamination-rescue|anthropic-no-context-fill)$/.test(String(data.servedBy || '').toLowerCase());
   }
 
+  function hasWpaDoctrineSource(data) {
+    return Boolean(data && data.ok === true && data.contract === 'wpa-virtual-sande-response-v1.1' &&
+      data.mode === 'protected_doctrine_block' && data.servedBy === 'v34.5-protected-doctrine');
+  }
+
+  function hasInsufficientEvidenceSource(data) {
+    return Boolean(data && data.ok === true && data.contract === 'wpa-virtual-sande-response-v1.1' &&
+      data.servedBy === 'procedural-insufficient-evidence');
+  }
+
   async function healthCheck() {
     try {
       var endpoint = ENDPOINTS[0].replace('/ask', '/safe-entrypoint/health');
@@ -318,7 +328,7 @@
         try {
           var remote=await callEndpoint(ENDPOINTS[i],payload);
           if(!isNoContextAnswer(remote.answer)) {
-            return {answer:remote.answer,local:false,verified:remote.verified,unavailable:/(unavailable|request_error|none)/i.test(String(remote.data.mode || '')),data:remote.data};
+            return {answer:remote.answer,local:false,verified:remote.verified,doctrine:hasWpaDoctrineSource(remote.data),insufficient:hasInsufficientEvidenceSource(remote.data),unavailable:/(unavailable|request_error|none)/i.test(String(remote.data.mode || '')),data:remote.data};
           }
           lastError=new Error('No academic context');break;
         } catch(error) {
@@ -352,7 +362,7 @@
 
     try {
       var result = await requestAnswer(question);
-      var source = result.local ? 'local' : result.verified ? 'live' : result.unavailable ? 'unavailable' : 'unverified';
+      var source = result.local ? 'local' : result.verified ? 'live' : result.doctrine ? 'doctrine' : result.insufficient ? 'insufficient' : result.unavailable ? 'unavailable' : 'unverified';
       addMessage(result.answer, 'bot', source);
       history.push({ role: 'assistant', content: result.answer });
       if (result.verified) monitor.last_verified_at = new Date().toISOString();

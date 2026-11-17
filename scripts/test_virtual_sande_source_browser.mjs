@@ -11,6 +11,8 @@ const endpoint='https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.
 const healthy={ok:true,mode:'health',contract:'wpa-virtual-sande-response-v1.1',version:'v35.1.1'};
 const successful={ok:true,mode:'author',hasContext:true,contract:'wpa-virtual-sande-response-v1.1',version:'v35.1.1',servedBy:'llm',answer:'Симулација: проверлив одговор од модел.'};
 const deterministic={ok:true,mode:'greeting',hasContext:false,contract:'wpa-virtual-sande-response-v1.1',version:'v35.1.1',servedBy:'v35.1.1-greeting',answer:'Симулација: детерминистички поздрав.'};
+const doctrine={ok:true,mode:'protected_doctrine_block',hasContext:true,contract:'wpa-virtual-sande-response-v1.1',servedBy:'v34.5-protected-doctrine',answer:'Симулација: одговор од заштитеното WPA доктринарно јадро.'};
+const insufficient={ok:true,mode:'author',hasContext:false,contract:'wpa-virtual-sande-response-v1.1',servedBy:'procedural-insufficient-evidence',answer:'Симулација: нема независна поткрепа за конкретната процедура.'};
 const targets=[
  {id:'public',route:'/',fab:'#wpaPublicVsFab',input:'#wpaPublicVsInput',send:'#wpaPublicVsSend',status:'#wpaPublicVsStatus',row:'.wpa-public-vs-row.assistant',log:'#wpaPublicVsMsgs',monitor:'WPAVirtualSandeMonitor'},
  {id:'institute',route:'/institute.html',fab:'#wpaInstVsFab',input:'#wpaInstVsInput',send:'#wpaInstVsSend',status:'#wpaInstVsStatus',row:'.wpa-inst-vs-row.assistant',log:'#wpaInstVsMsgs',monitor:'WPAInstituteVirtualSandeMonitor'}
@@ -34,7 +36,7 @@ async function run(target,scenario){
   if(pathname==='/ask'){
     requests++;
     if(scenario==='failure')return route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({ok:false,error:'Simulated API unavailable'})});
-    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(scenario==='model'?successful:deterministic)});
+    return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(scenario==='model'?successful:scenario==='doctrine'?doctrine:scenario==='insufficient'?insufficient:deterministic)});
   }
   return route.abort();
  });
@@ -66,7 +68,7 @@ async function run(target,scenario){
  const state=await page.evaluate(key=>window[key],target.monitor);
  const source=await page.locator(target.row).last().getAttribute('data-answer-source');
  const label=await page.locator(target.row).last().locator('.wpa-public-vs-source,.wpa-inst-vs-source').textContent();
- const expected=scenario==='model'?'live':scenario==='deterministic'?'unverified':target.id==='public'?'local':'unavailable';
+ const expected=scenario==='model'?'live':scenario==='doctrine'?'doctrine':scenario==='insufficient'?'insufficient':scenario==='deterministic'?'unverified':target.id==='public'?'local':'unavailable';
  check(target.id+' '+scenario+' source badge',source===expected,'source='+source+', expected='+expected+', label='+label);
  check(target.id+' '+scenario+' last_verified_at truth',scenario==='model'?!!state.last_verified_at:!state.last_verified_at,JSON.stringify(state));
  check(target.id+' '+scenario+' number of API tries',scenario==='failure'?requests===2:requests===1,requests);
@@ -76,10 +78,10 @@ async function run(target,scenario){
  await ctx.close();
 }
 try{
- for(const t of targets)for(const sc of ['model','deterministic','failure'])await run(t,sc);
+ for(const t of targets)for(const sc of ['model','deterministic','doctrine','insufficient','failure'])await run(t,sc);
 }finally{
  fs.writeFileSync(path.join(FOLDER,'report.json'),JSON.stringify({scope:'SYNTHETIC_LOCAL_TEST_NOT_PRODUCTION',tests},null,2)+'\n');
  await browser.close();
 }
-console.log('Virtual Sande source-provenance QA '+tests.length+' assertions; '+failures+' failures; 6 screenshots.');
+console.log('Virtual Sande source-provenance QA '+tests.length+' assertions; '+failures+' failures; 10 screenshots.');
 if(failures)process.exitCode=1;
