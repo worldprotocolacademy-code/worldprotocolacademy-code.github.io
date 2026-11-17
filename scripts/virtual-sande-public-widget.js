@@ -7,7 +7,7 @@
 
   var currentPath = String(window.location.pathname || '/').toLowerCase();
   var excludedPrefixes = ['/wpaws/', '/student-desk/', '/diplomatic-analysis-lab/'];
-  var excludedExact = ['/virtual-sande-ai.html'];
+  var excludedExact = ['/virtual-sande-ai.html', '/institute.html', '/en/institute.html', '/languages/fr/institute.html', '/languages/de/institute.html'];
   // Canonical production endpoint. The retired legacy Worker is intentionally not
   // presented as failover because it does not accept the canonical production origin.
   var ENDPOINTS = [
