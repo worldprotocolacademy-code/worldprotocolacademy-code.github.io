@@ -1,0 +1,49 @@
+name: WPA Virtual Sande Source Truth QA
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'scripts/virtual-sande-institute-widget.js'
+      - 'scripts/test_virtual_sande_source_browser.mjs'
+      - '.github/workflows/wpa-virtual-sande-source-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-browser:
+    name: Verify LIVE proof, local fallback and API failure labels
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-institute-widget.js
+          node --check scripts/test_virtual_sande_source_browser.mjs
+      - name: Install ephemeral browser test dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Serve local candidate
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/wpa-sande-qa-http.log 2>&1 &
+          echo $! >/tmp/wpa-sande-qa-server.pid
+          sleep 2
+          curl --fail --silent http://127.0.0.1:8765/ >/dev/null
+      - name: Run fully simulated non-production source tests
+        run: node scripts/test_virtual_sande_source_browser.mjs
+      - name: Upload source evidence and screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: wpa-virtual-sande-source-truth-qa
+          path: qa-output/virtual-sande/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Whitespace hygiene
+        if: always()
+        run: git diff --check
