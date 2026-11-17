@@ -47,8 +47,8 @@ async function pageRun(id,route,width){
  if(id==='mk-institute' && overflow.scrollWidth>overflow.width+1 && (width===320||width===768)){
   const offenders=await p.evaluate(()=>Array.from(document.querySelectorAll('*')).map(e=>{
    const r=e.getBoundingClientRect(),s=getComputedStyle(e);
-   return {tag:e.tagName.toLowerCase(),id:e.id,classes:String(e.className||'').slice(0,72),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),position:s.position,whiteSpace:s.whiteSpace};
-  }).filter(x=>x.right>innerWidth+2&&x.left<innerWidth&&x.width>0).sort((a,b)=>b.right-a.right).slice(0,28));
+   return {tag:e.tagName.toLowerCase(),id:e.id,classes:String(e.className||'').slice(0,72),parent:String(e.parentElement?.className||'').slice(0,62),sample:String(e.innerText||'').slice(0,65),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width),position:s.position,whiteSpace:s.whiteSpace};
+  }).filter(x=>x.right>innerWidth+2&&x.width>0).sort((a,b)=>b.right-a.right).slice(0,28));
   console.log('QA_OVERFLOW_DIAGNOSTIC '+id+' '+width+' '+JSON.stringify(offenders));
  }
  result(id+' '+width+' no horizontal overflow',overflow.scrollWidth<=overflow.width+1,JSON.stringify(overflow));
@@ -84,6 +84,10 @@ async function pageRun(id,route,width){
    const defects=a.violations.map(v=>({route:id,width,rule:v.id,impact:v.impact,nodeCount:v.nodes.length,
      nodes:v.nodes.slice(0,id==='mk-institute'&&width===390?100:12).map(n=>({target:n.target,summary:String(n.failureSummary||'').slice(0,200),html:String(n.html||'').slice(0,130)}))}));
    report.violations.push(...defects);
+   if(id==='mk-institute'&&width===1440){
+    const brands=await p.locator('.brand').evaluateAll(es=>es.map(e=>({tag:e.tagName,ariaLabel:e.getAttribute('aria-label'),visible:e.innerText.slice(0,180)})));
+    console.log('QA_BRAND_AFTER_AXE '+JSON.stringify(brands));
+   }
    result(id+' '+width+' axe WCAG A/AA',defects.length===0,
      JSON.stringify(defects.map(v=>({rule:v.rule,impact:v.impact,nodeCount:v.nodeCount}))));
  } catch(e) {
