@@ -38,7 +38,10 @@
         send: 'Send',
         clear: 'Clear',
         connecting: 'Connecting...',
-        offline: 'WPA academic core',
+        live: 'Live AI',
+        local: 'Local answer',
+        unavailable: 'Live AI unavailable',
+        unverified: 'Connection unverified',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
         label: 'Open Virtual Sande AI',
         close: 'Close'
@@ -52,12 +55,29 @@
       send: 'Испрати',
       clear: 'Исчисти',
       connecting: 'Се поврзувам...',
-      offline: 'WPA академско јадро',
+      live: 'Live AI',
+      local: 'Локален одговор',
+      unavailable: 'Live AI недостапен',
+      unverified: 'Непотврдена врска',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
       label: 'Отвори Virtual Sande AI',
       close: 'Затвори'
     };
   }
+
+  /* Fail-closed provenance: a real network reply is not automatically model AI.
+     Production contract + affirmative AI execution mode must be present. */
+  function classifyProductionReply(data, answer) {
+    if (!data || data.ok !== true || data.contract !== 'wpa-virtual-sande-response-v1.1' ||
+        typeof data.answer !== 'string' || typeof answer !== 'string' ||
+        !data.answer.trim() || data.answer.trim() !== answer.trim()) return 'unverified';
+    var mode = String(data.mode || '').toLowerCase();
+    var served = String(data.servedBy || '').toLowerCase();
+    if (/fallback|no.?context|greeting|health|unavailable|request_error|local/i.test(mode+' '+served)) return 'unverified';
+    if (!/(?:^|[_-])(llm|rag|ai.search|model|inference)(?:$|[_-])/i.test(mode)) return 'unverified';
+    return 'live';
+  }
+  window.WPAVirtualSandeStatusClassifier = Object.freeze({classify:classifyProductionReply});
 
   var LOCAL_CORE = {
     security: {
@@ -149,8 +169,9 @@
       '.wpa-public-vs-mark{width:38px;height:38px;border-radius:50%;overflow:hidden;border:1px solid #c9a84c;flex:0 0 38px}',
       '.wpa-public-vs-mark img{width:100%;height:100%;object-fit:cover}',
       '.wpa-public-vs-copy{min-width:0;flex:1}.wpa-public-vs-title{font:700 16px/1.1 Georgia,serif;color:#e8d49a}.wpa-public-vs-sub{font-size:10.5px;color:rgba(255,255,255,.75);margin-top:3px}',
-      '.wpa-public-vs-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:2px 5px}',
-      '.wpa-public-vs-status{min-height:18px;padding:4px 12px 0;background:#fbf8ee;color:#6c5830;font-size:10.5px}',
+      '.wpa-public-vs-close{min-width:44px;min-height:44px;border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:8px 12px}',
+      '.wpa-public-vs-status{min-height:26px;padding:6px 12px;background:#fbf8ee;color:#51411d;font-size:12px;font-weight:700}',
+      '.wpa-public-vs-answer-source{display:block;max-width:max-content;margin:0 0 6px;padding:2px 7px;border:1px solid #a28c5b;border-radius:5px;color:#51411d;font-size:11px;font-weight:800;background:#fff7e5}',
       '.wpa-public-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
       '.wpa-public-vs-row{display:flex;margin:0 0 10px}.wpa-public-vs-row.user{justify-content:flex-end}',
       '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
@@ -159,10 +180,10 @@
       '.wpa-public-vs-input,#botInput.bot-inp,.bot-inp,.wpa-inst-vs-input{flex:1;min-height:46px;max-height:110px;resize:vertical;border:1px solid #d7c485!important;border-radius:9px;padding:10px;font:13px/1.4 Inter,system-ui,sans-serif;outline:none!important;background:#fff;color:#1a1a1a;box-shadow:none!important;text-decoration:none!important;text-decoration-color:transparent!important;caret-color:#7b5f1f!important}',
       '.wpa-public-vs-input:focus,.wpa-public-vs-input:focus-visible,#botInput.bot-inp:focus,.bot-inp:focus,.wpa-inst-vs-input:focus,.wpa-inst-vs-input:focus-visible{border-color:#c9a84c!important;outline:2px solid rgba(201,168,76,.22)!important;outline-offset:1px!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important;text-decoration:none!important;text-decoration-color:transparent!important}',
       '.wpa-public-vs-input:invalid,.wpa-public-vs-input:user-invalid,#botInput.bot-inp:invalid,.bot-inp:invalid,.wpa-inst-vs-input:invalid,.wpa-inst-vs-input:user-invalid{border-color:#d7c485!important;outline-color:rgba(201,168,76,.22)!important;box-shadow:none!important}',
-      '.wpa-public-vs-send{border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
+      '.wpa-public-vs-send{min-width:44px;min-height:44px;border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
-      '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
+      '.wpa-public-vs-clear{min-width:44px;min-height:44px;border:0;background:transparent;color:#5a4220;font-size:13px;font-weight:700;cursor:pointer}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -205,14 +226,25 @@
     });
   }
 
-  function addMessage(text, who) {
+  function addMessage(text, who, sourceKind) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
     row.className = 'wpa-public-vs-row' + (who === 'user' ? ' user' : '');
     var bubble = document.createElement('div');
     bubble.className = 'wpa-public-vs-bubble';
-    bubble.textContent = String(text || '');
+    if (who !== 'user') {
+      var label = document.createElement('span');
+      label.className = 'wpa-public-vs-answer-source';
+      label.textContent = sourceKind === 'live' ? copy().live :
+        sourceKind === 'local' ? copy().local :
+        sourceKind === 'unavailable' ? copy().unavailable : copy().unverified;
+      label.setAttribute('data-answer-origin', sourceKind || 'unverified');
+      bubble.appendChild(label);
+    }
+    var answerText = document.createElement('span');
+    answerText.textContent = String(text || '');
+    bubble.appendChild(answerText);
     row.appendChild(bubble);
     messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
