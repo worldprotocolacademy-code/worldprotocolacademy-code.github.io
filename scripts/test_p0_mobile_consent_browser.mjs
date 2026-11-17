@@ -68,7 +68,7 @@ async function pageRun(id,route,width){
  if(id==='mk-home'&&width===390){
    try {
     const a=await new AxeBuilder({page:p}).withTags(['wcag2a','wcag2aa','wcag21a','wcag21aa']).analyze();
-    report.violations=a.violations.map(v=>({rule:v.id,impact:v.impact,nodes:v.nodes.length}));
+    report.violations=a.violations.map(v=>({rule:v.id,impact:v.impact,nodes:v.nodes.slice(0,12).map(n=>({target:n.target,summary:String(n.failureSummary||'').slice(0,200),html:String(n.html||'').slice(0,130)}))}));
     result('MK home 390 axe A/AA',a.violations.length===0,JSON.stringify(report.violations));
    }catch(e){result('MK home 390 axe',false,String(e));}
  }
