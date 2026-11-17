@@ -7,6 +7,8 @@
   var API = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask';
   var busy = false;
   var history = [];
+  var monitor = {state:'unverified',health_reachable:false,last_checked_at:null,last_verified_at:null,last_http_status:null,retry_count:0,last_served_by:null};
+  window.WPAInstituteVirtualSandeMonitor = monitor;
 
   function documentLanguage() {
     var value = String(document.documentElement.lang || 'mk').trim().toLowerCase();
@@ -20,6 +22,7 @@
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
       send: 'Испрати', clear: 'Исчисти', error: 'Во моментот не можам да одговорам. Обидете се повторно.',
       label: 'Отвори Virtual Sande AI', close: 'Затвори',
+      live:'Live AI',local:'Локален одговор',unverified:'Непотврдена врска',unavailable:'Live AI недостапен',lastVerified:'Последно потврдено:',connecting:'Се поврзувам...',
       instituteName: 'Институт за протокол, дипломатија, јавна комуникација и безбедносни студии',
       relatedTitle: 'Поврзани WPA модули',
       relatedIntro: 'Брзи врски кон клучни јавни ресурси што ја дополнуваат Институтската страница.',
@@ -34,6 +37,7 @@
       placeholder: 'Ask about protocol, diplomacy, communication or security...',
       send: 'Send', clear: 'Clear', error: 'I cannot respond at the moment. Please try again.',
       label: 'Open Virtual Sande AI', close: 'Close',
+      live:'Live AI',local:'Local answer',unverified:'Connection unverified',unavailable:'Live AI unavailable',lastVerified:'Last verified:',connecting:'Connecting...',
       instituteName: 'Institute for Protocol, Diplomacy, Public Communication and Security Studies',
       relatedTitle: 'Related WPA Modules',
       relatedIntro: 'Quick links to key public resources that complement the Institute page.',
@@ -48,6 +52,7 @@
       placeholder: 'Posez une question sur le protocole, la diplomatie, la communication ou la sécurité...',
       send: 'Envoyer', clear: 'Effacer', error: 'Je ne peux pas répondre pour le moment. Veuillez réessayer.',
       label: 'Ouvrir Virtual Sande AI', close: 'Fermer',
+      live:'Live AI',local:'Réponse locale',unverified:'Connexion non vérifiée',unavailable:'Live AI indisponible',lastVerified:'Dernière vérification :',connecting:'Connexion...',
       instituteName: 'Institut pour le protocole, la diplomatie, la communication publique et les études de sécurité',
       relatedTitle: 'Modules WPA associés',
       relatedIntro: 'Liens rapides vers les principales ressources publiques qui complètent la page de l’Institut.',
@@ -76,7 +81,12 @@
       '.wpa-inst-vs-mark img{width:100%;height:100%;object-fit:cover}',
       '.wpa-inst-vs-copy{min-width:0;flex:1}.wpa-inst-vs-title{font:700 16px/1.1 Georgia,serif;color:#e8d49a}.wpa-inst-vs-sub{font-size:10.5px;color:rgba(255,255,255,.75);margin-top:3px}',
       '.wpa-inst-vs-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:2px 5px}',
+      '.wpa-inst-vs-status{min-height:24px;background:#fbf8ee;color:#51401c;padding:4px 12px;font-size:11px}',
       '.wpa-inst-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
+      '.wpa-inst-vs-msgs:focus-visible{outline:3px solid #ad8029;outline-offset:-3px}',
+      '.wpa-inst-vs-row.assistant{flex-direction:column;align-items:flex-start;gap:3px}',
+      '.wpa-inst-vs-source{font:700 11px/1.4 Inter,system-ui,sans-serif;color:#51401c;background:#f0e4c4;padding:3px 7px;border-radius:6px}',
+      '.wpa-inst-vs-close,.wpa-inst-vs-clear{min-width:44px;min-height:44px}',
       '.wpa-inst-vs-row{display:flex;margin:0 0 10px}.wpa-inst-vs-row.user{justify-content:flex-end}',
       '.wpa-inst-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
       '.wpa-inst-vs-row.user .wpa-inst-vs-bubble{background:#0d1f3c;color:#fff;border-color:#0d1f3c}',
@@ -177,36 +187,95 @@
     else document.body.appendChild(section);
   }
 
-  function addMessage(text, who) {
-    var msgs = document.getElementById('wpaInstVsMsgs');
-    if (!msgs) return;
-    var row = document.createElement('div');
-    row.className = 'wpa-inst-vs-row' + (who === 'user' ? ' user' : '');
-    var bubble = document.createElement('div');
-    bubble.className = 'wpa-inst-vs-bubble';
-    bubble.textContent = String(text || '');
-    row.appendChild(bubble); msgs.appendChild(row); msgs.scrollTop = msgs.scrollHeight;
+  function setStatus(kind) {
+    monitor.state=kind;
+    var target=document.getElementById('wpaInstVsStatus');
+    if(!target)return;
+    target.dataset.answerSource=kind;
+    target.dataset.lastVerifiedAt=monitor.last_verified_at||'';
+    target.dataset.lastCheckedAt=monitor.last_checked_at||'';
+    target.textContent=copy()[kind]||copy().unverified;
+    if(monitor.last_verified_at)target.textContent+=' · '+copy().lastVerified+' '+monitor.last_verified_at.slice(0,19).replace('T',' ')+' UTC';
+  }
+
+  function addMessage(text,who,source) {
+    var msgs=document.getElementById('wpaInstVsMsgs');if(!msgs)return;
+    var row=document.createElement('div');
+    row.className='wpa-inst-vs-row'+(who==='user'?' user':' assistant');
+    if(who!=='user'){
+      var kind=source||'unverified';row.dataset.answerSource=kind;
+      var badge=document.createElement('span');badge.className='wpa-inst-vs-source';
+      badge.textContent=copy()[kind]||copy().unverified;row.appendChild(badge);
+    }
+    var bubble=document.createElement('div');bubble.className='wpa-inst-vs-bubble';
+    bubble.textContent=String(text||'');row.appendChild(bubble);
+    msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;
   }
 
   function answerFrom(data) {
-    if (!data) return '';
-    return data.answer || data.response || data.message || data.text || (data.result && (data.result.answer || data.result.text)) || '';
+    if(!data)return '';
+    return data.answer||data.response||data.message||data.text||(data.result&&(data.result.answer||data.result.text))||'';
+  }
+
+  function hasVerifiedLiveModel(data){
+    if(!data||data.ok!==true||data.contract!=='wpa-virtual-sande-response-v1.1')return false;
+    return /^(llm|procedural-anthropic-direct|anthropic-llm-rescue|anthropic-contamination-rescue|anthropic-no-context-fill)$/.test(String(data.servedBy||'').toLowerCase());
+  }
+
+  async function fetchBounded(url,opts,ms){
+    var controller=typeof AbortController!=='undefined'?new AbortController():null;
+    var timer=window.setTimeout(function(){if(controller)controller.abort();},ms);
+    try{return await fetch(url,Object.assign({},opts,controller?{signal:controller.signal}:{}));}
+    finally{window.clearTimeout(timer);}
+  }
+
+  async function healthCheck(){
+    try{
+      var url=API.replace('/ask','/safe-entrypoint/health');
+      var response=await fetchBounded(url,{method:'GET',mode:'cors',cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}},6000);
+      var data=response.ok?await response.json():null;
+      monitor.health_reachable=Boolean(response.ok&&data&&data.ok===true&&data.mode==='health'&&data.contract==='wpa-virtual-sande-response-v1.1');
+      monitor.last_http_status=response.status;
+    }catch(e){monitor.health_reachable=false;} // Client failure, not global outage.
+    finally{monitor.last_checked_at=new Date().toISOString();if(monitor.state==='unverified')setStatus('unverified');}
   }
 
   async function send() {
-    if (busy) return;
-    var input = document.getElementById('wpaInstVsInput');
-    var q = input ? input.value.trim() : '';
-    if (!q) return;
-    busy = true; input.value = ''; addMessage(q, 'user'); history.push({ role: 'user', content: q });
-    var btn = document.getElementById('wpaInstVsSend'); if (btn) btn.disabled = true;
+    if(busy)return;
+    var input=document.getElementById('wpaInstVsInput'),q=input?input.value.trim():'';
+    if(!q)return;
+    busy=true;input.value='';addMessage(q,'user');history.push({role:'user',content:q});
+    var btn=document.getElementById('wpaInstVsSend');if(btn)btn.disabled=true;
+    var status=document.getElementById('wpaInstVsStatus');if(status)status.textContent=copy().connecting;
+    var payload={message:q,question:q,query:q,history:history.slice(-6),language:String(document.documentElement.lang||'mk')};
     try {
-      var response = await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q, question: q, query: q, history: history.slice(-6), language: String(document.documentElement.lang || 'mk') }) });
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      var data = await response.json(); var answer = answerFrom(data); if (!answer) throw new Error('Empty answer');
-      addMessage(answer, 'bot'); history.push({ role: 'assistant', content: answer });
-    } catch (error) { addMessage(copy().error, 'bot'); }
-    finally { busy = false; if (btn) btn.disabled = false; if (input) input.focus(); }
+      var answer='',data=null,lastError=null;
+      for(var attempt=0;attempt<2;attempt+=1){
+        try{
+          var response=await fetchBounded(API,{method:'POST',mode:'cors',cache:'no-store',credentials:'omit',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(payload)},12000);
+          monitor.last_http_status=response.status;monitor.last_checked_at=new Date().toISOString();
+          if(!response.ok)throw new Error('HTTP '+response.status);
+          data=await response.json();answer=answerFrom(data);
+          if(!data||data.ok===false||typeof answer!=='string'||!answer.trim())throw new Error('Invalid response');
+          monitor.last_served_by=String(data.servedBy||'').slice(0,64);
+          break;
+        }catch(error){
+          lastError=error;
+          if(/^HTTP 4[0-9]{2}/.test(String(error.message||'')))break;
+          if(attempt===0){monitor.retry_count+=1;await new Promise(function(resolve){window.setTimeout(resolve,250);});}
+        }
+      }
+      if(!answer)throw lastError||new Error('No response');
+      var kind=hasVerifiedLiveModel(data)?'live':/(unavailable|request_error|none)/i.test(String(data.mode||''))?'unavailable':'unverified';
+      addMessage(answer,'bot',kind);history.push({role:'assistant',content:answer});
+      if(kind==='live')monitor.last_verified_at=new Date().toISOString();
+      setStatus(kind);
+    }catch(error){
+      monitor.last_checked_at=new Date().toISOString();
+      addMessage(copy().error,'bot','unavailable');setStatus('unavailable');
+    }finally{
+      busy=false;if(btn)btn.disabled=false;if(input)input.focus();
+    }
   }
 
   function loadCampaignRuntime() {
