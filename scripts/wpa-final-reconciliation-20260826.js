@@ -44,7 +44,7 @@
     if(path!=='/'&&path!=='/index.html') return;
     var totalLabel=document.querySelector('[data-i18n="a_bibliography.6"]');
     var monoLabel=document.querySelector('[data-i18n="a_bibliography.7"]');
-    if(totalLabel&&totalLabel.previousElementSibling&&totalLabel.previousElementSibling.textContent!=='26') totalLabel.previousElementSibling.textContent='26';
+    // Retired: publication totals are rendered at build time from canonical data.
     if(monoLabel&&monoLabel.previousElementSibling&&monoLabel.previousElementSibling.textContent!=='6') monoLabel.previousElementSibling.textContent='6';
     setText('[data-i18n="a_bibliography.2"]','Доц. д-р Санде Смиљанов · Автор · Истражувач · Креатор на платформата','Sande Smiljanov, Ph.D. · Docent (Titular) · Author · Researcher · Platform Creator');
     var partner=document.querySelector('[data-i18n="a_platform.16"]');

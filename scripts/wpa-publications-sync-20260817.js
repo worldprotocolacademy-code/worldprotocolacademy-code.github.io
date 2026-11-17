@@ -60,35 +60,7 @@
     document.head.appendChild(s);
   }
 
-  function updateCounts() {
-    replaceTextNodes([
-      [/25 Academic Publications/g, '26 Academic Publications'],
-      [/25 академски публикации/g, '26 академски публикации'],
-      [/25-publication academic corpus/g, '26-publication academic corpus'],
-      [/25 публикации вкупно/g, '26 публикации вкупно'],
-      [/5 монографии и прирачници/g, '6 монографии и прирачници'],
-      [/5 Monographs and Handbooks/g, '6 Monographs and Handbooks'],
-      [/5 Monographs & Handbooks/g, '6 Monographs & Handbooks'],
-      [/8 ZENODO DOI RECORDS/g, '9 ZENODO DOI RECORDS'],
-      [/8 WPA Protocol Notes/g, '9 WPA Protocol Notes'],
-      [/eight WPA Protocol Notes/gi, 'nine WPA Protocol Notes'],
-      [/13 Working Papers \+ 8 Protocol Notes/g, '13 Working Papers + 9 Protocol Notes'],
-      [/13 Working Papers and 8 Protocol Notes/g, '13 Working Papers and 9 Protocol Notes'],
-      [/thirteen Working Papers and eight Protocol Notes/gi, 'thirteen Working Papers and nine Protocol Notes'],
-      [/21 WPA Series DOI Records/g, '22 WPA Series DOI Records'],
-      [/21 WPA series DOI records/g, '22 WPA series DOI records'],
-      [/twenty-one public DOI records/gi, 'twenty-two public DOI records'],
-      [/22 Total WPA Zenodo Records/g, '23 Total WPA Zenodo Records'],
-      [/twenty-two total WPA Zenodo records/gi, 'twenty-three total WPA Zenodo records'],
-      [/All twenty-two records/gi, 'All twenty-three records'],
-      [/WPA Protocol Notes 001[–-]008/g, 'WPA Protocol Notes 001–009'],
-      [/Protocol Notes 001[–-]008/g, 'Protocol Notes 001–009'],
-      [/PN-001[–-]PN-008/g, 'PN-001–PN-009'],
-      [/PN-001[–-]008/g, 'PN-001–009'],
-      [/Последно ажурирано: 3 август 2026/g, 'Последно ажурирано: 17 август 2026'],
-      [/Last updated: 3 August 2026/g, 'Last updated: 17 August 2026']
-    ]);
-  }
+  // COUNT_RECONCILIATION: historical DOM count rewriting retired; canonical values render at build time.
 
   function makeHomePn() {
     var node = document.createElement('article');
@@ -164,14 +136,12 @@
     var notes = document.getElementById('wpa-protocol-notes');
     if (notes) {
       setText(notes.querySelector('.section-header h3'), 'Nine applied and theoretical protocolometry records — open access via Zenodo.');
-      setHTML(notes.querySelector('.section-header p'), '<strong>Publication status:</strong> PN-001–PN-009 are published Zenodo DOI records. The WPA series corpus contains 22 public DOI records: 13 Working Papers and 9 Protocol Notes.');
       var grid = notes.querySelector('.grid-3,.grid');
       if (grid && !document.getElementById('wpaPn009PapersCard')) grid.appendChild(makeSimplePnCard());
       if (!document.getElementById('wpa-book-state-symbols-2026')) notes.parentNode.insertBefore(makeBookSection(), notes);
     }
     qsa('.stat-card').forEach(function (card) {
       var span = card.querySelector('span'); var strong = card.querySelector('strong'); var t = text(span);
-      if (/Total publications/i.test(t)) setText(strong, '26');
       if (/WPA Protocol Notes/i.test(t)) setText(strong, '9');
     });
   }
@@ -187,10 +157,7 @@
   function updateWorkingIndex() {
     var p = path();
     if (!(p === '/working-papers' || p === '/working-papers/index.html')) return;
-    setText(document.querySelector('.hero .subtitle'), 'Working Papers 001–013 · Protocol Notes 001–009');
-    setText(document.querySelector('.section-title span'), '13 Working Papers + 9 Protocol Notes + 1 Strategic Plan = 23 records');
     var intro = document.querySelector('.intro-box');
-    if (intro && intro.querySelector('p')) setHTML(intro.querySelector('p'), '<strong>Published Zenodo Records:</strong> The WPA corpus contains twenty-two public DOI records in its two publication series — thirteen Working Papers and nine Protocol Notes — plus one Global Strategic Plan report, for twenty-three total WPA Zenodo records. The Working Papers and Protocol Notes are author-approved public releases and are not presented as formal peer-reviewed journal articles.');
     var grid = document.getElementById('papersGrid');
     if (grid) {
       qsa('.paper-card.latest-record', grid).forEach(function (c) { c.classList.remove('latest-record'); });
@@ -254,16 +221,8 @@
       var card = makePnBibCard();
       if (pn008) insertAfter(pn008, card); else if (strategic && strategic.parentNode) strategic.parentNode.insertBefore(card, strategic);
     }
-    qsa('.counter').forEach(function (box) {
-      var label = text(box.querySelector('.counter-label')), num = box.querySelector('.counter-num');
-      if (/Total Publications|Вкупно публикации/i.test(label)) setText(num, '26');
-      if (/Monographs|Монографии/i.test(label)) setText(num, '6');
-    });
-    qsa('.bib-note').forEach(function (note) {
-      if (text(note).indexOf('WPA Research Metrics') === -1) return;
-      setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>• 26 Academic Publications / Академски публикации<br>• 13 WPA Working Papers (Zenodo DOI)<br>• 9 WPA Protocol Notes (Zenodo DOI)<br>• 22 WPA Series DOI Records<br>• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>• 23 Total WPA Zenodo Records<br>• 6 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty · Agentic AI · Multi-Agent Governance · Authorship · Provenance');
-    });
-    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 23 WPA Zenodo Records · 13 Working Papers + 9 Protocol Notes + 1 Strategic Plan');
+  // BIBLIOGRAPHY_METRIC_RECONCILIATION: historical DOM count rewriting retired; canonical values render at build time.
+
     var digital = findText('div,span', /^Digital Era \(2023\) · IMCSM26 \(2026\)/i);
     if (digital) setText(digital, 'Digital Era (2023) · IMCSM26 (2026) · PN-005 · PN-006 · PN-007 · PN-008 · PN-009');
     if (!document.documentElement.dataset.wpaPubSyncBibBound) {
@@ -275,7 +234,7 @@
 
   function apply() {
     if (!document.body) return;
-    ensureStyle(); updateCounts(); updateHome(); updateInstitute(); updatePapers(); updateWorkingIndex(); updateBibliography();
+    ensureStyle(); updateHome(); updateInstitute(); updatePapers(); updateWorkingIndex(); updateBibliography();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true }); else apply();
