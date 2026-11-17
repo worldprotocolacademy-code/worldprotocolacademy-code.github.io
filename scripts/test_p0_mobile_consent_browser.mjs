@@ -94,8 +94,39 @@ async function checkChoice(choice,allowed){
  result(choice+' GA4 gated request count',allowed?tags===1:tags===0,tags);
  await x.close();
 }
+async function publicationMetricsBrowserRegression(){
+ // Verify committed HTML *and* the rendered DOM after delayed existing scripts.
+ // The old 26/19 problem occurred AFTER initial HTML, so a static grep alone is insufficient.
+ const targets=[
+  {name:'MK Home',route:'/',fields:[['academic.total','27'],['academic.papers','20']]},
+  {name:'EN Home',route:'/en/index.html',fields:[['academic.total','27']]},
+  {name:'Papers',route:'/papers.html',fields:[['academic.total','27'],['academic.papers','20'],['zenodo.working_papers','15'],['zenodo.protocol_notes','9']]},
+  {name:'Bibliography',route:'/bibliography/',fields:[['academic.total','27'],['zenodo.summary.en','25 WPA Zenodo Records']]},
+  {name:'Institute',route:'/institute.html',fields:[['academic.summary.en','27 publications = 6 monographs/manuals + 1 doctoral dissertation + 20 papers/contributions']]},
+  {name:'Services',route:'/wpa-services.html',fields:[['academic.total','27'],['zenodo.total','25']]}
+ ];
+ for(const javascriptEnabled of [false,true]){
+  for(const target of targets){
+   const x=await ctx(390,javascriptEnabled);
+   const p=await x.newPage();
+   const response=await p.goto(ROOT+target.route,{waitUntil:'domcontentloaded',timeout:45000});
+   result('metrics '+target.name+' '+(javascriptEnabled?'post-JS':'pre-JS')+' HTTP',response?.status()===200,response?.status());
+   if(javascriptEnabled)await p.waitForTimeout(2400);
+   for(const [key,expected] of target.fields){
+    const selector='[data-wpa-metric="'+key+'"]';
+    const rows=p.locator(selector);
+    const n=await rows.count();
+    const value=n===1?String(await rows.first().textContent()||'').trim().replace(/\\s+/g,' '):'';
+    result('metrics '+target.name+' '+(javascriptEnabled?'post-JS':'pre-JS')+' '+key,
+      n===1&&value.includes(expected),JSON.stringify({expected,actual:value,count:n}));
+   }
+   await x.close();
+  }
+ }
+}
 try {
  for(const [id,route] of routes)for(const w of viewports)await pageRun(id,route,w);
+ await publicationMetricsBrowserRegression();
  for(const [id,route] of routes){
   const x=await ctx(390,false);const p=await x.newPage();
   const r=await p.goto(ROOT+route,{waitUntil:'domcontentloaded',timeout:40000});
