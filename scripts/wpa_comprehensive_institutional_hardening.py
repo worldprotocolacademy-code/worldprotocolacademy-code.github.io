@@ -1,6 +1,8 @@
 from pathlib import Path
 import json, re
 
+raise SystemExit("RETIRED LEGACY MUTATOR: August 2026 hardening mutator contains historical 26/19 totals and is no longer permitted to rewrite canonical public data. Use scripts/render_canonical_public_metrics.py --write after evidenced canonical approval.")
+
 changed = {}
 
 def read(path):

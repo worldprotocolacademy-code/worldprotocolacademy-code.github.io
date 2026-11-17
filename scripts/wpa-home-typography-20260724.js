@@ -25,7 +25,7 @@
     'html[data-wpa-page="index"] .card p,html[data-wpa-page="index"] .card-list li,html[data-wpa-page="index"] .platform-card p,html[data-wpa-page="index"] .hub p,html[data-wpa-page="index"] .price-text,html[data-wpa-page="index"] .price-list li,html[data-wpa-page="index"] .pub-body p,html[data-wpa-page="index"] .faq-a,html[data-wpa-page="index"] .bib-meta,html[data-wpa-page="index"] .platform-creator-content>p,html[data-wpa-page="index"] .ai-command-center-link p,html[data-wpa-page="index"] .wpa-core-doc-card span{color:var(--wpa-type-copy)!important;opacity:1!important;}',
     'html[data-wpa-page="index"] p[style*="color:var(--muted)"],html[data-wpa-page="index"] p[style*="color: var(--muted)"],html[data-wpa-page="index"] span[style*="color:var(--muted)"],html[data-wpa-page="index"] span[style*="color: var(--muted)"]{color:var(--wpa-type-copy)!important;opacity:1!important;}',
     'html[data-wpa-page="index"] #sources-policy p[style*="color:var(--muted)"],html[data-wpa-page="index"] #sources-policy p[style*="color: var(--muted)"]{color:#2f3d50!important;}',
-    'html[data-wpa-page="index"] .jump-menu-bar-label,html[data-wpa-page="index"] .platform-creator-title,html[data-wpa-page="index"] .doctrine small{color:var(--wpa-type-copy-soft)!important;opacity:1!important;}',
+    'html[data-wpa-page="index"] .platform-creator-title,html[data-wpa-page="index"] .doctrine small{color:var(--wpa-type-copy-soft)!important;opacity:1!important;}',
     'html[data-wpa-page="index"] .doctrine p{color:var(--wpa-type-navy)!important;}',
 
     /* Kicker, metadata and action hierarchy */

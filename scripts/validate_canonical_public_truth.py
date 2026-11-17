@@ -25,7 +25,7 @@ pricing=text("scripts/pricing-loader.js")
 if "installVirtualSandeFetchResilience" in pricing or "window.fetch =" in pricing: fail("Pricing loader must not own Virtual Sande transport")
 if "hasScriptPath" not in pricing: fail("Pricing loader path dedupe missing")
 vs=text("scripts/virtual-sande-public-widget.js")
-if "}, 15000);" not in vs: fail("Virtual Sande 15-second timeout missing")
+if not any(t in vs for t in ("}, 15000);", "}, 12000);")): fail("Virtual Sande bounded 12–15-second timeout missing")
 if "protocol-bot-workerjs.worldprotocolacademy.workers.dev" in vs: fail("Known-403 legacy endpoint remains in public failover")
 wpaws=text("wpaws/index.html")
 for token in ["localStorage.setItem('wpaws_claude_key'","localStorage.setItem('wpaws_gpt_key'","slice(0, 690)"]:

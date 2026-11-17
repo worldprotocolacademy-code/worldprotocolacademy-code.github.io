@@ -33,7 +33,11 @@
       return {
         text: 'World Protocol Academy uses Google Analytics 4 only after your explicit consent to understand aggregate visits and page usage. Advertising and personalised advertising remain disabled.',
         accept: 'Accept analytics',
-        decline: 'Decline',
+        decline: 'Reject',
+        settings: 'Settings',
+        save: 'Save preferences',
+        analyticsOptIn: 'Enable optional analytics',
+        consentTitle: 'Analytics preferences',
         policy: 'Cookie policy'
       };
     }
@@ -41,6 +45,10 @@
       text: 'World Protocol Academy користи Google Analytics 4 само по ваша изречна согласност, за агрегирано мерење на посети и користење на страниците. Рекламните и персонализираните рекламни сигнали остануваат исклучени.',
       accept: 'Прифати аналитика',
       decline: 'Одбиј',
+      settings: 'Поставки',
+      save: 'Зачувај избор',
+      analyticsOptIn: 'Дозволи изборна аналитика',
+      consentTitle: 'Поставки за аналитика',
       policy: 'Политика за колачиња'
     };
   }
@@ -84,15 +92,23 @@
       var style = document.createElement('style');
       style.id = STYLE_ID;
       style.textContent = [
-        '#'+BANNER_ID+'{position:fixed;left:16px;right:16px;bottom:16px;z-index:100000;background:#081328;color:#fbf8ee;border:1px solid #c9a84c;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:16px;font:14px/1.5 Inter,system-ui,sans-serif}',
-        '#'+BANNER_ID+' .wpa-analytics-inner{max-width:1120px;margin:auto;display:flex;align-items:center;gap:14px;justify-content:space-between}',
-        '#'+BANNER_ID+' p{margin:0;max-width:780px;color:rgba(251,248,238,.9)}',
-        '#'+BANNER_ID+' .wpa-analytics-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}',
-        '#'+BANNER_ID+' button,#'+BANNER_ID+' a{font:700 12px/1 Inter,system-ui,sans-serif;border-radius:999px;padding:10px 14px;text-decoration:none;cursor:pointer}',
+        '#'+BANNER_ID+'{box-sizing:border-box;position:fixed;left:12px;right:12px;bottom:12px;max-height:min(78dvh,620px);overflow-y:auto;z-index:100000;background:#081328;color:#fbf8ee;border:1px solid #c9a84c;border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:16px;font:14px/1.55 Inter,system-ui,sans-serif}',
+        '#'+BANNER_ID+' *,#'+BANNER_ID+' *::before,#'+BANNER_ID+' *::after{box-sizing:border-box}',
+        '#'+BANNER_ID+' .wpa-analytics-inner{max-width:1120px;margin:auto;display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap}',
+        '#'+BANNER_ID+' p{margin:0;max-width:780px;color:#f0ece2;overflow-wrap:break-word;flex:1 1 330px}',
+        '#'+BANNER_ID+' .wpa-analytics-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;flex:1 1 360px;justify-content:flex-end}',
+        '#'+BANNER_ID+' button,#'+BANNER_ID+' a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;font:700 13px/1.35 Inter,system-ui,sans-serif;border-radius:8px;padding:11px 14px;text-decoration:none;cursor:pointer;white-space:normal;overflow-wrap:break-word;text-align:center}',
         '#'+BANNER_ID+' .wpa-accept{border:1px solid #c9a84c;background:#c9a84c;color:#081328}',
-        '#'+BANNER_ID+' .wpa-decline{border:1px solid rgba(251,248,238,.4);background:transparent;color:#fbf8ee}',
-        '#'+BANNER_ID+' a{color:#e8d49a;border:1px solid transparent}',
-        '@media(max-width:760px){#'+BANNER_ID+' .wpa-analytics-inner{align-items:flex-start;flex-direction:column}#'+BANNER_ID+' .wpa-analytics-actions{width:100%}#'+BANNER_ID+' button{flex:1}}'
+        '#'+BANNER_ID+' .wpa-decline,#'+BANNER_ID+' .wpa-settings{border:1px solid rgba(251,248,238,.65);background:transparent;color:#fbf8ee}',
+        '#'+BANNER_ID+' .wpa-settings-panel{width:100%;max-width:1120px;margin:12px auto 0;padding:12px 0 0;border-top:1px solid rgba(201,168,76,.45);display:flex;align-items:center;flex-wrap:wrap;gap:12px}',
+        '#'+BANNER_ID+' .wpa-settings-panel[hidden]{display:none!important}',
+        '#'+BANNER_ID+' .wpa-settings-panel label{display:flex;align-items:center;gap:10px;min-height:44px;color:#fbf8ee;flex:1 1 220px}',
+        '#'+BANNER_ID+' .wpa-settings-panel input{width:22px;height:22px;accent-color:#c9a84c;flex:none}',
+        '#'+BANNER_ID+' .wpa-save{background:#c9a84c;color:#081328;border:1px solid #c9a84c}',
+        '#'+BANNER_ID+' a{color:#f0d388;border:1px solid rgba(201,168,76,.4);text-decoration:underline;text-underline-offset:3px}',
+        '#'+BANNER_ID+' :focus-visible{outline:3px solid #f7dc92;outline-offset:3px}',
+        '@media(max-width:760px){#'+BANNER_ID+'{left:8px;right:8px;bottom:8px;padding:12px;max-height:78dvh}#'+BANNER_ID+' .wpa-analytics-inner{align-items:stretch;flex-direction:column}#'+BANNER_ID+' .wpa-analytics-actions{justify-content:stretch;flex:initial;width:100%}#'+BANNER_ID+' .wpa-analytics-actions button{flex:1 1 calc(50% - 8px)}#'+BANNER_ID+' p{flex:initial}}',
+        '@media(max-width:360px){#'+BANNER_ID+' .wpa-analytics-actions button{flex:1 1 100%}}'
       ].join('');
       document.head.appendChild(style);
     }
@@ -100,12 +116,28 @@
     var banner = document.createElement('aside');
     banner.id = BANNER_ID;
     banner.setAttribute('role', 'dialog');
-    banner.setAttribute('aria-label', 'Analytics consent');
-    banner.innerHTML = '<div class="wpa-analytics-inner"><p></p><div class="wpa-analytics-actions"><button type="button" class="wpa-accept"></button><button type="button" class="wpa-decline"></button><a href="/cookies.html"></a></div></div>';
+    banner.setAttribute('aria-label', t.consentTitle);
+    banner.innerHTML = '<div class="wpa-analytics-inner"><p></p><div class="wpa-analytics-actions"><button type="button" class="wpa-accept"></button><button type="button" class="wpa-decline"></button><button type="button" class="wpa-settings" aria-expanded="false" aria-controls="wpaAnalyticsSettingsPanel"></button></div></div><div class="wpa-settings-panel" id="wpaAnalyticsSettingsPanel" hidden><label><input type="checkbox" class="wpa-analytics-optin"><span class="wpa-optin-label"></span></label><button type="button" class="wpa-save"></button><a href="/cookies.html"></a></div>';
     banner.querySelector('p').textContent = t.text;
     banner.querySelector('.wpa-accept').textContent = t.accept;
     banner.querySelector('.wpa-decline').textContent = t.decline;
+    banner.querySelector('.wpa-settings').textContent = t.settings;
+    banner.querySelector('.wpa-save').textContent = t.save;
+    banner.querySelector('.wpa-optin-label').textContent = t.analyticsOptIn;
     banner.querySelector('a').textContent = t.policy;
+    banner.querySelector('.wpa-settings').addEventListener('click', function () {
+      var panel = banner.querySelector('.wpa-settings-panel');
+      var opened = panel.hidden;
+      panel.hidden = !opened;
+      banner.querySelector('.wpa-settings').setAttribute('aria-expanded', opened ? 'true' : 'false');
+      if (opened) banner.querySelector('.wpa-analytics-optin').focus();
+    });
+    banner.querySelector('.wpa-save').addEventListener('click', function () {
+      var granted = banner.querySelector('.wpa-analytics-optin').checked;
+      writeConsent(granted ? 'granted' : 'denied');
+      removeBanner();
+      if (granted) initGtag(config.measurementId);
+    });
     banner.querySelector('.wpa-accept').addEventListener('click', function () {
       writeConsent('granted');
       removeBanner();
@@ -133,10 +165,8 @@
     }
     if (consent === 'denied') return;
 
-    if (config.consentRequired === false) {
-      initGtag(config.measurementId);
-      return;
-    }
+    // Consent is mandatory even if an older configuration disables the gate.
+    // Never load GA4 without a recorded explicit opt-in in this browser.
     showBanner(config);
   }
 

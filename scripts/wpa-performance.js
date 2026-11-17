@@ -123,7 +123,8 @@
     var copy = instituteRuntimeCopy();
     brand.removeAttribute('target');
     brand.classList.add('wpa-institute-brand');
-    brand.setAttribute('aria-label', 'WPA Institute');
+    // Accessible name derives from visible MK-first brand text.
+    brand.removeAttribute('aria-label');
     brand.setAttribute('translate', 'no');
     brand.setAttribute('data-no-i18n', 'true');
 

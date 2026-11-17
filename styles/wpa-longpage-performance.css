@@ -1,6 +1,11 @@
-/* WPA long-page performance containment · progressive enhancement */
-@supports (content-visibility:auto) {
-  html[data-wpa-page="index"] main > section:not(.hero),
-  html[data-wpa-page="institute"] main > section:not(.hero) { content-visibility:auto; contain-intrinsic-size:auto 760px; }
+/* WPA long-page performance stylesheet — source-owned accessibility baseline.
+ * content-visibility:auto on the two public landing pages previously caused
+ * skipped off-screen sections to be read with incorrect colour/background
+ * combinations by the accessibility engine. The pages should remain fully
+ * paintable and accessible; reintroduce selective containment only after a
+ * real-browser screen-reader, keyboard and performance evaluation.
+ * Retain this asset path to preserve existing references/cache stability.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior:auto !important; }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto !important; } }
