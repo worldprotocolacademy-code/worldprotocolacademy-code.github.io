@@ -102,7 +102,8 @@
     var brand = document.querySelector(".nav-wrap nav .brand");
     if (!brand || brand.classList.contains("wpa-institute-brand")) return;
     brand.classList.add("wpa-institute-brand");
-    brand.setAttribute("aria-label", "Институт за протокол, дипломатија, јавна комуникација и безбедносни студии — Institute for Protocol, Diplomacy, Public Communication and Security Studies");
+    // Do not replace visible text with a conflicting accessible name.
+    brand.removeAttribute("aria-label");
 
     var mark = brand.querySelector(".brand-mark");
     if (mark) {
