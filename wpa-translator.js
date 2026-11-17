@@ -14,6 +14,89 @@
   function loadProfessionalContacts(){if(document.querySelector('script[data-wpa-professional-contacts]'))return;const s=document.createElement('script');s.src='/scripts/wpa-professional-contacts.js?v=20260722';s.defer=true;s.setAttribute('data-wpa-professional-contacts','true');document.head.appendChild(s)}
   function loadPublicSquare(){if(PAGE!=='passive-revenue'||document.getElementById('wpa-public-square-runtime'))return;const s=document.createElement('script');s.id='wpa-public-square-runtime';s.src='/scripts/wpa-public-square-runtime.js?v=20260827-1';s.defer=true;document.head.appendChild(s)}
 
+  /* Institute Brief Builder v2 — pure, governed MK-first / EN-secondary renderer.
+     locale, route and languageLabel are distinct. No automatic external transmission. */
+  const WIC_COPY = Object.freeze({
+    mk: Object.freeze({
+      heading:'Бриф за WPA Институтот',
+      purpose:'Намена',domain:'Област',language:'Јазик',route:'Страница',
+      context:'Контекст',next:'Баран следен чекор',boundary:'Институционална граница',
+      step:'Ве молиме потврдете ја соодветната WPA постапка, опфатот, ограничувањата за јавните извори и дозволениот следен чекор.',
+      limitation:'WPA е независна дигитална образовна, истражувачка и авторска платформа во фаза на развој, тестирање и пилот-примена. Не е универзитет, државен орган, тело за акредитација или установа со овластување да доделува академски степени. Услугите, журналските одлуки, индексните исходи и сертификатите се одделни и под соодветна човечка контрола.',
+      missing:'Не е наведено',
+      purposes:{
+        institutional:'Институционално барање',
+        services:'Барање за услуги или обука',
+        briefing:'Барање за стручен брифинг',
+        correction:'Барање за исправка и доверба',
+        opc2027:'Изразување интерес за OPC 2027',
+        lecture:'Предлог за стручно предавање',
+        journal:'Прашање за журнал или публикација'
+      },
+      domains:{
+        protocol:'Протокол',
+        diplomacy:'Дипломатија',
+        communication:'Јавна комуникација и односи со јавност',
+        security:'Безбедносни студии',
+        research:'Истражување и индексна методологија',
+        education:'Студентско биро и образование'
+      }
+    }),
+    en: Object.freeze({
+      heading:'WPA Institute Brief',
+      purpose:'Purpose',domain:'Domain',language:'Language',route:'Page',
+      context:'Context',next:'Requested next step',boundary:'Institutional boundary',
+      step:'Please confirm the appropriate WPA route, scope, public-source boundaries and permitted follow-up procedure.',
+      limitation:'WPA is an independent digital educational, research and authorial platform in development, testing and pilot use. It is not a university, government body, accreditation body or degree-granting institution. Services, journal decisions, index outcomes and certificate issuance are separate and remain subject to appropriate human oversight.',
+      missing:'Not provided',
+      purposes:{
+        institutional:'Institutional inquiry',
+        services:'Services / training inquiry',
+        briefing:'Professional briefing inquiry',
+        correction:'Correction / trust request',
+        opc2027:'OPC 2027 expression of interest',
+        lecture:'Practitioner lecture proposal',
+        journal:'Journal / publication inquiry'
+      },
+      domains:{
+        protocol:'Protocol',
+        diplomacy:'Diplomacy',
+        communication:'Public communication / PR',
+        security:'Security studies',
+        research:'Research / index methodology',
+        education:'Student Desk / education'
+      }
+    })
+  });
+  function describeInstituteBriefLocale(input) {
+    const locale = input === 'en' ? 'en' : 'mk';
+    return Object.freeze({
+      locale:locale,
+      route:locale === 'mk' ? '/institute.html' : '/en/institute.html',
+      languageLabel:locale === 'mk' ? 'Македонски' : 'English'
+    });
+  }
+  function renderInstituteBrief(input) {
+    const data = input || {};
+    const fields = describeInstituteBriefLocale(data.locale);
+    const cp = WIC_COPY[fields.locale];
+    const purpose = cp.purposes[data.purpose] || cp.purposes.institutional;
+    const domain = cp.domains[data.domain] || cp.domains.protocol;
+    const context = String(data.context || '').trim() || cp.missing;
+    const output = [
+      cp.heading,'',
+      cp.purpose+': '+purpose,
+      cp.domain+': '+domain,
+      cp.language+': '+fields.languageLabel,
+      cp.route+': '+fields.route,
+      '',cp.context+':',context,
+      '',cp.next+':',cp.step,
+      '',cp.boundary+':',cp.limitation
+    ].join('\\n');
+    return Object.freeze({locale:fields.locale,route:fields.route,languageLabel:fields.languageLabel,purpose:purpose,domain:domain,text:output});
+  }
+  window.WPAInstituteBriefCore = Object.freeze({render:renderInstituteBrief,describeLocale:describeInstituteBriefLocale});
+
   /* ========================= INSTITUTE COMMAND LAYER ========================= */
   function installInstitute(){
     if(PAGE!=='institute'||$('wpaInstituteCommandLayer')) return;
@@ -55,21 +138,45 @@
         <div class="wic-card"><b>Trust</b><span><a href="public-disclaimer.html">Public Disclaimer</a> · <a href="correction-request.html">Correction</a> · <a href="rights-takedown.html">Rights & Takedown</a></span></div><div class="wic-card"><b>Proactive Agent Fabric</b><span><a href="/data/wpa-proactive-agent-fabric.json">5 governed provider seats</a> · provider connectivity unverified · Human Gate retained.</span></div>
       </div>
       <div class="wic-notice"><strong>Boundary:</strong> WPA Institute is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services and briefings are separate from Journal decisions, certificates and index outcomes.</div>
-      <div class="wic-tool" id="wicTool"><h3 style="margin:0;color:#e3c878">Institute brief builder</h3><p>Подготви краток текст за контакт, институционална соработка, correction request, OPC 2027 интерес или services/briefings inquiry.</p>
-        <div class="wic-form"><div class="wic-field"><label for="wicPurpose">Purpose</label><select id="wicPurpose"><option>Institutional inquiry</option><option>Services / training inquiry</option><option>Premium briefing inquiry</option><option>Correction / trust request</option><option>OPC 2027 expression of interest</option><option>Practitioner lecture proposal</option><option>Journal / publication inquiry</option></select></div><div class="wic-field"><label for="wicDomain">Domain</label><select id="wicDomain"><option>Protocol</option><option>Diplomacy</option><option>Public communication / PR</option><option>Security studies</option><option>Research / index methodology</option><option>Student Desk / education</option></select></div><div class="wic-field"><label for="wicLang">Language</label><select id="wicLang"><option>Macedonian</option><option>English</option><option>Both MK/EN</option></select></div></div>
-        <div class="wic-field"><label for="wicContext">Context</label><textarea id="wicContext" placeholder="Institution / person, purpose, topic, public-source context, desired next step..."></textarea></div>
-        <div class="wic-actions"><button class="wic-btn primary" id="wicBuild">Build brief</button><button class="wic-btn" id="wicCopy">Copy brief</button><a class="wic-btn" id="wicMail" href="mailto:institute@worldprotocolacademy.mk">Open email</a></div><div class="wic-out" id="wicOut"></div>
+      <div class="wic-tool" id="wicTool"><h3 style="margin:0;color:#e3c878" id="wicHeading">Подготви бриф за Институтот</h3><p id="wicIntro">Локална подготовка на барање или изразување интерес. Нема испраќање без ваша одлука.</p>
+        <div class="wic-form"><div class="wic-field"><label for="wicPurpose" id="wicPurposeLabel">Намена</label><select id="wicPurpose"><option value="institutional">Институционално барање</option><option value="services">Барање за услуги или обука</option><option value="briefing">Барање за стручен брифинг</option><option value="correction">Барање за исправка и доверба</option><option value="opc2027">Изразување интерес за OPC 2027</option><option value="lecture">Предлог за стручно предавање</option><option value="journal">Прашање за журнал или публикација</option></select></div><div class="wic-field"><label for="wicDomain" id="wicDomainLabel">Област</label><select id="wicDomain"><option value="protocol">Протокол</option><option value="diplomacy">Дипломатија</option><option value="communication">Јавна комуникација</option><option value="security">Безбедносни студии</option><option value="research">Истражување и индексна методологија</option><option value="education">Студентско биро и образование</option></select></div><div class="wic-field"><label for="wicBriefLocale" id="wicLocaleLabel">Јазик на брифот</label><select id="wicBriefLocale" aria-label="Јазик на брифот / Brief language"><option value="mk">Македонски</option><option value="en">English</option></select></div></div>
+        <div class="wic-field"><label for="wicContext" id="wicContextLabel">Контекст</label><textarea id="wicContext" placeholder="Институција, намена, тема, јавни извори и посакуван следен чекор..."></textarea></div>
+        <div class="wic-actions"><button class="wic-btn primary" id="wicBuild" type="button">Подготви бриф</button><button class="wic-btn" id="wicCopy" type="button">Копирај</button><a class="wic-btn" id="wicMail" href="mailto:info@worldprotocolacademy.mk">Отвори е-пошта</a></div><div class="wic-out" id="wicOut" role="status" aria-live="polite" tabindex="0"></div>
       </div>
     </div>`;
     const anchor=q('#identity')||q('.wpa-identity')||q('#wpa-public-tools-hub')||document.body.firstElementChild;
     if(anchor&&anchor.parentNode) anchor.parentNode.insertBefore(sec,anchor); else document.body.appendChild(sec);
-    function build(){
-      const text=`WPA Institute Brief\n\nPurpose: ${val('wicPurpose')}\nDomain: ${val('wicDomain')}\nLanguage: ${val('wicLang')}\n\nContext:\n${val('wicContext','—')}\n\nRequested next step:\nPlease confirm the appropriate WPA route, scope, public-source boundaries and follow-up procedure.\n\nBoundary:\nWPA is an independent digital educational, research and authorial platform in development/testing/pilot phase. It is not a university, governmental institution, accreditation body, registered academy or degree-granting institution. Services, briefings, journal decisions, index outcomes and certificates remain separate.`;
-      $('wicOut').textContent=text;
-      $('wicMail').href='mailto:institute@worldprotocolacademy.mk?subject='+encodeURIComponent('WPA Institute — '+val('wicPurpose'))+'&body='+encodeURIComponent(text);
-      return text;
+    function refreshBriefUI() {
+      const meta = describeInstituteBriefLocale(val('wicBriefLocale','mk'));
+      const cp = WIC_COPY[meta.locale];
+      $('wicHeading').textContent = meta.locale==='mk' ? 'Подготви бриф за Институтот' : 'Prepare an Institute brief';
+      $('wicIntro').textContent = meta.locale==='mk' ? 'Локална подготовка на барање или изразување интерес. Нема испраќање без ваша одлука.' : 'Create a local inquiry or expression of interest. Nothing is sent without your action.';
+      $('wicPurposeLabel').textContent=cp.purpose;
+      $('wicDomainLabel').textContent=cp.domain;
+      $('wicLocaleLabel').textContent=meta.locale==='mk' ? 'Јазик на брифот' : 'Brief language';
+      $('wicContextLabel').textContent=cp.context;
+      $('wicContext').placeholder=meta.locale==='mk' ? 'Институција, намена, тема, јавни извори и посакуван следен чекор...' : 'Organisation, purpose, public sources, topic and requested follow-up...';
+      $('wicBuild').textContent=meta.locale==='mk'?'Подготви бриф':'Build brief';
+      $('wicCopy').textContent=meta.locale==='mk'?'Копирај':'Copy brief';
+      $('wicMail').textContent=meta.locale==='mk'?'Отвори е-пошта':'Open email';
+      for (const option of $('wicPurpose').options) option.textContent=cp.purposes[option.value]||option.value;
+      for (const option of $('wicDomain').options) option.textContent=cp.domains[option.value]||option.value;
+      $('wicBriefLocale').setAttribute('aria-label',meta.locale==='mk'?'Јазик на брифот':'Brief language');
     }
-    ['wicPurpose','wicDomain','wicLang','wicContext'].forEach(id=>$(id).addEventListener('input',build));
+    function build(){
+      const result = renderInstituteBrief({
+        locale:val('wicBriefLocale','mk'),
+        purpose:val('wicPurpose','institutional'),
+        domain:val('wicDomain','protocol'),
+        context:val('wicContext','')
+      });
+      $('wicOut').textContent=result.text;
+      $('wicMail').href='mailto:info@worldprotocolacademy.mk?subject='+encodeURIComponent((result.locale==='mk'?'WPA Институт — ':'WPA Institute — ')+result.purpose)+'&body='+encodeURIComponent(result.text);
+      return result.text;
+    }
+    $('wicBriefLocale').addEventListener('change',function(){refreshBriefUI();build();});
+    ['wicPurpose','wicDomain','wicContext'].forEach(id=>$(id).addEventListener('input',build));
+    refreshBriefUI();
     $('wicBuild').onclick=build;$('wicCopy').onclick=()=>copy($('wicOut').textContent);build();
   }
 
