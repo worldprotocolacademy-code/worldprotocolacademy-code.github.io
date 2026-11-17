@@ -280,7 +280,7 @@
   }
 
   function latestHomeCard(record, latest) {
-    return '<div class="wpa-latest-pn-grid"><div><div class="wpa-latest-pn-kicker">' + (latest ? 'Најнова Zenodo публикација · Latest Zenodo publication' : 'Нова Zenodo публикација · New Zenodo publication') + ' · ' + record.code + '</div>' +
+    return '<div class="wpa-latest-pn-grid"><div><div class="wpa-latest-pn-kicker">' + (latest ? 'WPA Zenodo запис · WPA Zenodo record' : 'WPA Zenodo запис · WPA Zenodo record') + ' · ' + record.code + '</div>' +
       '<h4 id="wpa-' + record.key + '-title">' + record.mk + '</h4><div class="wpa-latest-pn-en">' + record.en + '</div><p>' + record.desc + '</p>' +
       '<div class="wpa-latest-pn-meta"><span>Version ' + record.version + '</span><span>' + record.date + '</span><span>DOI ' + record.doi + '</span><span>CC BY-NC-ND 4.0</span></div></div>' +
       '<div class="wpa-latest-pn-actions"><a class="btn btn-gold" href="' + doiUrl(record) + '" target="_blank" rel="noopener">Отвори на Zenodo →</a><a class="btn btn-ghost" href="/bibliography/#' + (record.kind === 'report' ? 'wpaBibStrategicPlan' : 'pn-' + record.key.slice(-3)) + '">Библиографски запис →</a></div></div>';
@@ -332,8 +332,6 @@
     }
     var notes = document.getElementById('wpa-protocol-notes');
     if (notes) {
-      setText(notes.querySelector('.section-header h3'), 'Six applied protocolometry records — open access via Zenodo.');
-      setHTML(notes.querySelector('.section-header p'), '<strong>Publication status:</strong> PN-001–PN-006 are published Zenodo DOI records. The WPA series corpus contains 19 public DOI records: 13 Working Papers and 6 Protocol Notes.');
       var grid = notes.querySelector('.grid-3,.grid');
       [['wpaPn004PapersCard', RECORDS.pn004], ['wpaPn005PapersCard', RECORDS.pn005], ['wpaPn006PapersCard', RECORDS.pn006]].forEach(function (pair) {
         if (grid && !document.getElementById(pair[0])) grid.appendChild(simpleCard(pair[1], pair[0]));
@@ -385,13 +383,12 @@
     if (applying || !document.body) return;
     applying = true;
     try {
-      updateCorpusArithmetic();
+      // P0 canonical guard: numerical and institutional counts live in static,
+      // build-time rendered HTML. Historic DOM mutators remain in Git history.
+      // Keep only additive research cards and verified strategic DOI references.
       updateStrategicReferences();
       updateHome();
-      updateInstitute();
       updatePapers();
-      updateWorkingIndex();
-      updateBibliography();
       updateStrategicReferences();
     } finally {
       applying = false;
