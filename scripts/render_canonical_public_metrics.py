@@ -25,7 +25,7 @@ HTML_TARGETS = (
 )
 LOCALE_TARGETS = ("index/mk.json", "index/en.json", "mk.json", "en.json")
 MARKED = re.compile(
-    r'(?P<open><(?P<tag>div|span|strong|b)\\b[^>]*?\\sdata-wpa-metric="(?P<key>[^"]+)"[^>]*>)'
+    r'(?P<open><(?P<tag>div|span|strong|b)\b[^>]*?\sdata-wpa-metric="(?P<key>[^"]+)"[^>]*>)'
     r'(?P<value>[^<]*)'
     r'(?P<close></(?P=tag)>)',
     re.MULTILINE
@@ -145,7 +145,7 @@ def main() -> int:
         expected = locale_values.get(code) or {}
         target = source
         for key, value in expected.items():
-            pattern = re.compile(r'("' + re.escape(key) + r'"\\s*:\\s*)("(?:\\\\.|[^"\\\\])*")')
+            pattern = re.compile(r'("' + re.escape(key) + r'"\s*:\s*)("(?:\\.|[^"\\])*")')
             match = pattern.search(target)
             if not match:
                 fail(f"{path}: missing canonical locale key {key}")
