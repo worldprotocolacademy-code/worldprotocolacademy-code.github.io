@@ -2027,7 +2027,7 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
 <article><h3>Council-54 · Candidate Registry</h3><p>External-AI candidate seats. A listed seat does not imply API availability, partnership, endorsement or provider participation.</p></article>
 <article><h3>Evidence Pipeline</h3><p>Public or authorised sources → WPA Watch → Academic Search Hub → Protocolometry → WPAWS / Virtual Sande → evidence review → human-reviewed output.</p></article>
 <article><h3>Proactive Academy Lifecycle</h3><p>Ten governed stages from application through completion and certificate authorisation. Real enrolment, payment and official certificate issuance remain disabled until approved backend and reviews exist.</p></article>
-<article><h3>Academic Evidence & Correction</h3><p>27 publications = 6 monographs/manuals + 1 doctoral dissertation + 20 papers/contributions, plus DOI/COBISS evidence, provenance and correction rights.</p></article>
+<article><h3>Academic Evidence & Correction</h3><p><span data-wpa-metric="academic.summary.en">27 publications = 6 monographs/manuals + 1 doctoral dissertation + 20 papers/contributions</span>, plus DOI/COBISS evidence, provenance and correction rights.</p></article>
 </div>
 <p style="margin-top:20px;padding:15px;background:#fffdf5;border-left:4px solid #9c8336"><strong>Release discipline:</strong> Preventive Source Compliance → authorised/public sources → evidence mapping → safety review → human approval. Unknown source rights fail closed. No intelligence, surveillance, investigative or autonomous operational authority is claimed.</p>
 <p style="margin-top:20px;">
@@ -2754,27 +2754,8 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
         document.body.appendChild(home);
       }
 
-      if (!document.getElementById("wpaMobileBot")) {
-        var bot = document.createElement("a");
-        bot.id = "wpaMobileBot";
-        bot.className = "wpa-mobile-floating-bot";
-        bot.href = "#ai-innovation-roadmap";
-        bot.textContent = "🤖 Bot";
-        bot.addEventListener("click", function () {
-          var target =
-            document.getElementById("ai-innovation-roadmap") ||
-            document.getElementById("virtual-sande") ||
-            document.getElementById("virtualSande") ||
-            document.getElementById("wpa-bot") ||
-            document.getElementById("wpaBot") ||
-            document.querySelector('[id*="bot" i], [class*="bot" i], [id*="chat" i], [class*="chat" i]');
+      // Retired duplicate mobile Bot launcher: the accessible Institute Virtual Sande widget owns this action.
 
-          if (target && target.scrollIntoView) {
-            target.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        });
-        document.body.appendChild(bot);
-      }
     }
 
     function ensureTopAnchor() {

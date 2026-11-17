@@ -7,7 +7,7 @@
 
   var currentPath = String(window.location.pathname || '/').toLowerCase();
   var excludedPrefixes = ['/wpaws/', '/student-desk/', '/diplomatic-analysis-lab/'];
-  var excludedExact = ['/virtual-sande-ai.html'];
+  var excludedExact = ['/virtual-sande-ai.html', '/institute.html', '/en/institute.html', '/languages/fr/institute.html', '/languages/de/institute.html'];
   // Canonical production endpoint. The retired legacy Worker is intentionally not
   // presented as failover because it does not accept the canonical production origin.
   var ENDPOINTS = [
@@ -15,6 +15,8 @@
   ];
   var busy = false;
   var history = [];
+  var monitor = {state:'unverified', health_reachable:false, last_checked_at:null, last_verified_at:null, last_http_status:null, retry_count:0, last_served_by:null};
+  window.WPAVirtualSandeMonitor = monitor;
 
   function isExcluded() {
     if (excludedExact.indexOf(currentPath) !== -1) return true;
@@ -38,7 +40,7 @@
         send: 'Send',
         clear: 'Clear',
         connecting: 'Connecting...',
-        offline: 'WPA academic core',
+        live: 'Live AI', local: 'Local answer', unavailable: 'Live AI unavailable', unverified: 'Connection unverified', lastVerified: 'Last verified:', offline: 'WPA academic core',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
         label: 'Open Virtual Sande AI',
         close: 'Close'
@@ -52,7 +54,7 @@
       send: 'Испрати',
       clear: 'Исчисти',
       connecting: 'Се поврзувам...',
-      offline: 'WPA академско јадро',
+      live: 'Live AI', local: 'Локален одговор', unavailable: 'Live AI недостапен', unverified: 'Непотврдена врска', lastVerified: 'Последно потврдено:', offline: 'WPA академско јадро',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
       label: 'Отвори Virtual Sande AI',
       close: 'Затвори'
@@ -153,6 +155,10 @@
       '.wpa-public-vs-status{min-height:18px;padding:4px 12px 0;background:#fbf8ee;color:#6c5830;font-size:10.5px}',
       '.wpa-public-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
       '.wpa-public-vs-row{display:flex;margin:0 0 10px}.wpa-public-vs-row.user{justify-content:flex-end}',
+      '.wpa-public-vs-row.assistant{flex-direction:column;align-items:flex-start;gap:3px}',
+      '.wpa-public-vs-source{font:700 11px/1.4 Inter,system-ui,sans-serif;color:#51401c;background:#f0e4c4;padding:3px 7px;border-radius:6px}',
+      '.wpa-public-vs-msgs:focus-visible{outline:3px solid #ad8029;outline-offset:-4px}',
+      '.wpa-public-vs-close,.wpa-public-vs-clear{min-height:44px;min-width:44px}',
       '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
       '.wpa-public-vs-row.user .wpa-public-vs-bubble{background:#0d1f3c;color:#fff;border-color:#0d1f3c}',
       '.wpa-public-vs-form{display:flex;gap:8px;padding:10px;border-top:1px solid #d8d2bc;background:#f5f0e0}',
@@ -205,11 +211,30 @@
     });
   }
 
-  function addMessage(text, who) {
+  function setSourceStatus(kind) {
+    monitor.state = kind;
+    var status = document.getElementById('wpaPublicVsStatus');
+    if (!status) return;
+    status.dataset.answerSource = kind;
+    status.dataset.lastVerifiedAt = monitor.last_verified_at || '';
+    status.dataset.lastCheckedAt = monitor.last_checked_at || '';
+    status.textContent = copy()[kind] || copy().unverified;
+    if (monitor.last_verified_at) status.textContent += ' · ' + copy().lastVerified + ' ' + monitor.last_verified_at.slice(0,19).replace('T',' ') + ' UTC';
+  }
+
+  function addMessage(text, who, source) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
-    row.className = 'wpa-public-vs-row' + (who === 'user' ? ' user' : '');
+    row.className = 'wpa-public-vs-row' + (who === 'user' ? ' user' : ' assistant');
+    if (who !== 'user') {
+      var kind = source || 'unverified';
+      row.dataset.answerSource = kind;
+      var label = document.createElement('span');
+      label.className = 'wpa-public-vs-source';
+      label.textContent = copy()[kind] || copy().unverified;
+      row.appendChild(label);
+    }
     var bubble = document.createElement('div');
     bubble.className = 'wpa-public-vs-bubble';
     bubble.textContent = String(text || '');
@@ -243,53 +268,70 @@
       q.indexOf('does not contain sufficient information') !== -1;
   }
 
+  function hasVerifiedLiveModel(data) {
+    if (!data || data.ok !== true || data.contract !== 'wpa-virtual-sande-response-v1.1') return false;
+    return /^(llm|procedural-anthropic-direct|anthropic-llm-rescue|anthropic-contamination-rescue|anthropic-no-context-fill)$/.test(String(data.servedBy || '').toLowerCase());
+  }
+
+  async function healthCheck() {
+    try {
+      var endpoint = ENDPOINTS[0].replace('/ask', '/safe-entrypoint/health');
+      var response = await fetchWithTimeout(endpoint, {method:'GET',mode:'cors',cache:'no-store',credentials:'omit',headers:{Accept:'application/json'}}, 6000);
+      var data = response.ok ? await response.json() : null;
+      monitor.health_reachable = Boolean(response.ok && data && data.ok === true && data.mode === 'health' && data.contract === 'wpa-virtual-sande-response-v1.1');
+      monitor.last_http_status = response.status;
+    } catch (error) {
+      monitor.health_reachable = false; // One client probe does not demonstrate a global outage.
+    } finally {
+      monitor.last_checked_at = new Date().toISOString();
+      if (monitor.state === 'unverified') setSourceStatus('unverified');
+    }
+  }
+
   async function callEndpoint(endpoint, payload) {
     var response = await fetchWithTimeout(endpoint, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-store',
-      credentials: 'omit',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    }, 15000);
+      method:'POST',mode:'cors',cache:'no-store',credentials:'omit',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(payload)
+    }, 12000);
+    monitor.last_http_status = response.status;
+    monitor.last_checked_at = new Date().toISOString();
     if (!response.ok) throw new Error('HTTP ' + response.status);
     var data = await response.json();
     var answer = answerFrom(data);
-    if (!answer) throw new Error('Empty answer');
-    return { answer: answer, data: data };
+    if (!data || data.ok === false || typeof answer !== 'string' || !answer.trim()) throw new Error('Invalid production response');
+    monitor.last_served_by = String(data.servedBy || '').slice(0,64);
+    return {answer:answer,data:data,verified:hasVerifiedLiveModel(data)};
   }
 
   async function requestAnswer(question) {
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
-      message: question,
-      question: question,
-      query: question,
-      lang: lang,
-      language: lang,
-      history: history.slice(-6),
-      quality: '3layer_academic',
-      source_priority: 'sande_author_corpus_first',
-      proactive_fallback: true,
-      context: 'World Protocol Academy public page: ' + currentPath
+      message:question,question:question,query:question,lang:lang,language:lang,
+      history:history.slice(-6),quality:'3layer_academic',
+      source_priority:'sande_author_corpus_first',proactive_fallback:true,
+      context:'World Protocol Academy public page: '+currentPath
     };
-    var lastError = null;
-    for (var i = 0; i < ENDPOINTS.length; i += 1) {
-      try {
-        var remote = await callEndpoint(ENDPOINTS[i], payload);
-        if (!isNoContextAnswer(remote.answer)) {
-          return { answer: remote.answer, local: false, data: remote.data };
+    var lastError=null;
+    for(var i=0;i<ENDPOINTS.length;i+=1) {
+      for(var attempt=0;attempt<2;attempt+=1) {
+        try {
+          var remote=await callEndpoint(ENDPOINTS[i],payload);
+          if(!isNoContextAnswer(remote.answer)) {
+            return {answer:remote.answer,local:false,verified:remote.verified,unavailable:/(unavailable|request_error|none)/i.test(String(remote.data.mode || '')),data:remote.data};
+          }
+          lastError=new Error('No academic context');break;
+        } catch(error) {
+          lastError=error;
+          monitor.last_checked_at=new Date().toISOString();
+          if(/^HTTP 4[0-9]{2}/.test(String(error.message||'')))break;
+          if(attempt===0){monitor.retry_count+=1;await new Promise(function(resolve){window.setTimeout(resolve,250);});}
         }
-        lastError = new Error('Academic backend returned no-context after retrieval/proactive path');
-      } catch (error) {
-        lastError = error;
       }
     }
-
-    // Last-resort fail-safe only. It must never pre-empt the author corpus or proactive agent.
-    var local = localCoreAnswer(question);
-    if (local) return { answer: local, local: true };
-    throw lastError || new Error('All endpoints unavailable');
+    var local=localCoreAnswer(question);
+    if(local)return {answer:local,local:true,verified:false,unavailable:true};
+    throw lastError || new Error('No verified endpoint response');
   }
 
   async function send() {
@@ -310,13 +352,14 @@
 
     try {
       var result = await requestAnswer(question);
-      addMessage(result.answer, 'bot');
+      var source = result.local ? 'local' : result.verified ? 'live' : result.unavailable ? 'unavailable' : 'unverified';
+      addMessage(result.answer, 'bot', source);
       history.push({ role: 'assistant', content: result.answer });
-      if (status) status.textContent = result.local ? copy().offline : '';
-      if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
+      if (result.verified) monitor.last_verified_at = new Date().toISOString();
+      setSourceStatus(result.local ? 'unavailable' : source);
     } catch (error) {
-      addMessage(copy().error, 'bot');
-      if (status) status.textContent = '';
+      addMessage(copy().error, 'bot', 'unavailable');
+      setSourceStatus('unavailable');
     } finally {
       busy = false;
       if (button) button.disabled = false;
@@ -337,7 +380,7 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
-    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" role="status" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs" role="log" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Virtual Sande conversation"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
@@ -345,13 +388,16 @@
     fab.type = 'button';
     fab.setAttribute('aria-label', text.label);
     fab.setAttribute('aria-expanded', 'false');
+    fab.setAttribute('aria-controls', 'wpaPublicVsPanel');
     fab.setAttribute('data-virtual-sande-widget', 'launcher-recovery');
     fab.innerHTML = '<img src="/logo.webp" alt="" width="64" height="64">';
 
     document.body.appendChild(panel);
     document.body.appendChild(fab);
     protectAllInputs();
-    addMessage(text.welcome, 'bot');
+    addMessage(text.welcome, 'bot', 'local');
+    setSourceStatus('unverified');
+    healthCheck();
 
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
@@ -362,6 +408,7 @@
     panel.querySelector('.wpa-public-vs-close').addEventListener('click', function () {
       panel.classList.remove('open');
       fab.setAttribute('aria-expanded', 'false');
+      fab.focus();
     });
 
     document.getElementById('wpaPublicVsForm').addEventListener('submit', function (event) {
@@ -379,13 +426,15 @@
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
-      addMessage(copy().welcome, 'bot');
+      addMessage(copy().welcome, 'bot', 'local');
+      setSourceStatus('unverified');
     });
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && panel.classList.contains('open')) {
         panel.classList.remove('open');
         fab.setAttribute('aria-expanded', 'false');
+        fab.focus();
       }
     });
   }

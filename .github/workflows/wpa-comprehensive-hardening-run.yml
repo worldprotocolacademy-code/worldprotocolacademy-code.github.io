@@ -1,40 +1,37 @@
 name: WPA Comprehensive Hardening Run
 
+# Archived historical mutator — replaced by read-only canonical consistency audit.
+# Do not run the 2026-08-22 source overwriter: it contained 26/19 historical totals.
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - '.github/workflows/wpa-comprehensive-hardening-run.yml'
+      - 'data/wpa-canonical-metrics-status.json'
+      - 'data/wpa-canonical-public-facts.json'
+      - 'scripts/render_canonical_public_metrics.py'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   run-hardening:
-    if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    name: Read-only canonical audit (historical mutator retired)
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+      - name: Configure Python
+        uses: actions/setup-python@v7
         with:
-          fetch-depth: 0
-      - name: Apply comprehensive institutional hardening
-        run: python3 scripts/wpa_comprehensive_institutional_hardening.py
-      - name: Validate
+          python-version: '3.12'
+      - name: Verify current canonical publication facts
         run: |
-          python3 -m json.tool data/wpa-comprehensive-institutional-audit-2026-08-22.json >/dev/null
-          node --check tools/virtual-sande/wpa-protocol-bot-v35.2-connected-vessels.mjs
-          node --check languages/wpa-language-menu-10.js
+          python scripts/render_canonical_public_metrics.py --check
+          python scripts/test_canonical_metrics_regression.py
+          python scripts/validate_canonical_public_truth.py
+      - name: Confirm this workflow has no writeback
+        run: |
           git diff --check
-      - name: Commit
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No changes required."
-          else
-            git commit -m "Implement comprehensive WPA institutional architecture hardening"
-            git push origin HEAD:main
-          fi
+          echo 'Read-only audit. Historical 26/19 mutation and git push to main are retired.'

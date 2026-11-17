@@ -155,7 +155,7 @@
       var id = 'wpa-' + record.key;
       var node = document.getElementById(id);
       if (!node) { node = document.createElement('article'); node.className = 'wpa-latest-pn'; node.id = id; insertAfter(anchor, node); }
-      node.innerHTML = '<div class="wpa-latest-pn-grid"><div><div class="wpa-latest-pn-kicker">' + (index === 0 ? 'Најнова Zenodo публикација · Latest Zenodo publication' : 'Нова Zenodo публикација · New Zenodo publication') + ' · ' + record.code + '</div>' +
+      node.innerHTML = '<div class="wpa-latest-pn-grid"><div><div class="wpa-latest-pn-kicker">' + (index === 0 ? 'WPA Zenodo запис · WPA Zenodo record' : 'WPA Zenodo запис · WPA Zenodo record') + ' · ' + record.code + '</div>' +
         '<h4>' + record.mk + '</h4><div class="wpa-latest-pn-en">' + record.en + '</div><p>' + record.desc + '</p>' +
         '<div class="wpa-latest-pn-meta"><span>Version ' + record.version + '</span><span>' + record.date + '</span><span>DOI ' + record.doi + '</span><span>CC BY-NC-ND 4.0</span></div></div>' +
         '<div class="wpa-latest-pn-actions"><a class="btn btn-gold" href="' + doiUrl(record) + '" target="_blank" rel="noopener">Отвори на Zenodo →</a><a class="btn btn-ghost" href="/bibliography/#pn-' + record.key.slice(-3) + '">Библиографски запис →</a></div></div>';
@@ -181,8 +181,6 @@
     if (path() !== '/papers.html') return;
     var notes = document.getElementById('wpa-protocol-notes');
     if (!notes) return;
-    setText(notes.querySelector('.section-header h3'), 'Eight applied and theoretical protocolometry records — open access via Zenodo.');
-    setHTML(notes.querySelector('.section-header p'), '<strong>Publication status:</strong> PN-001–PN-008 are published Zenodo DOI records. The WPA series corpus contains 21 public DOI records: 13 Working Papers and 8 Protocol Notes.');
     var grid = notes.querySelector('.grid-3,.grid');
     if (grid && !document.getElementById('wpaPn007PapersCard')) grid.appendChild(simpleCard(RECORDS.pn007, 'wpaPn007PapersCard'));
     if (grid && !document.getElementById('wpaPn008PapersCard')) grid.appendChild(simpleCard(RECORDS.pn008, 'wpaPn008PapersCard'));
@@ -236,12 +234,11 @@
 
   function apply() {
     if (!document.body) return;
-    updateCountsAndIdentity();
+    // P0 canonical guard: do not run old 13/8/22 publication counters,
+    // and do not replace Institute or Bibliography summary metadata.
+    // PN-007/008 public cards remain available where absent in HTML.
     updateHome();
-    updateInstitute();
     updatePapers();
-    updateWorkingIndex();
-    updateBibliography();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, { once: true });
