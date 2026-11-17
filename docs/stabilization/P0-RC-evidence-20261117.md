@@ -1,10 +1,10 @@
 # WPA & WPA Institute — P0 Integration Release Candidate Evidence
 
-**Evidence date:** 17 November 2026 (Europe/Skopje)  
-**Product mode:** PP-12 RESCUE · staged release candidate, **NOT LIVE/RELEASED**  
-**Draft PR:** https://github.com/worldprotocolacademy-code/worldprotocolacademy-code.github.io/pull/706  
-**Exact audited PR head (before this documentation-only commit):** `2237bf9adc541808e62e666d7b036ceabdab9d85`  
-**Protected baseline/main:** `1e172c53539f787edb7185f9ceffaaf6feb3a7f9`  
+**Evidence date:** 17 November 2026 (Europe/Skopje)
+**Product mode:** PP-12 RESCUE · staged release candidate, **NOT LIVE/RELEASED**
+**Draft PR:** https://github.com/worldprotocolacademy-code/worldprotocolacademy-code.github.io/pull/706
+**Exact audited PR head (before this documentation-only commit):** `2237bf9adc541808e62e666d7b036ceabdab9d85`
+**Protected baseline/main:** `1e172c53539f787edb7185f9ceffaaf6feb3a7f9`
 **Rollback reference:** `backup/wpa-pre-stabilization-20261117`
 
 This is a factual evidence inventory, not an assertion of production readiness or external legal/academic approval. Subsequent commits require fresh exact-head CI before release.
@@ -74,8 +74,8 @@ The academic corpus equation is **27 = 6 + 1 + 20**. The separate Zenodo corpus 
 | Phase 1D | `wpa-translator.js`, Brief Builder test + CI | Separate `locale`, `route`, `languageLabel`; fully localised result; no auto-send |
 | Separate Phase 3 candidate | PR #707: `favicon.ico`, `index.html`, `institute.html`, favicon integrity CI | Root favicon and PWA icon links; **not** part of the combined P0 change |
 
-**Deleted pages/routes:** NONE.  
-**Uncontrolled new runtime patches:** NONE introduced in this P0 integration.  
+**Deleted pages/routes:** NONE.
+**Uncontrolled new runtime patches:** NONE introduced in this P0 integration.
 **Secrets/credentials committed:** Not indicated by the inspected PR file list; CI security-gate PASS, but secrets inventory is a separate audit.
 
 ## 5. Unresolved verification and risks
