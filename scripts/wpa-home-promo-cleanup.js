@@ -44,7 +44,8 @@ function setCoreLinkIdentity(link,label,title){
   link.setAttribute('translate','no');
   link.setAttribute('data-no-i18n','true');
   link.setAttribute('title',title||label);
-  link.setAttribute('aria-label',title||label);
+  // Use the visible text as the accessible name; keep title for optional hover context.
+  link.removeAttribute('aria-label');
 }
 
 function placeInstituteSecond(list,item){

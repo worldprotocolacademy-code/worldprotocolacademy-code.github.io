@@ -1,0 +1,34 @@
+name: WPA Institute Brief Builder Locale Regression
+on:
+  pull_request:
+    paths:
+      - 'wpa-translator.js'
+      - 'scripts/test_institute_brief_locale.cjs'
+      - '.github/workflows/wpa-institute-brief-locale.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'wpa-translator.js'
+      - 'scripts/test_institute_brief_locale.cjs'
+      - '.github/workflows/wpa-institute-brief-locale.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-brief:
+    name: Verify MK/EN Institute brief and route isolation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check wpa-translator.js
+          node --check scripts/test_institute_brief_locale.cjs
+      - name: Run 84 MK/EN case combinations
+        run: node scripts/test_institute_brief_locale.cjs
+      - name: Whitespace hygiene
+        run: git diff --check
