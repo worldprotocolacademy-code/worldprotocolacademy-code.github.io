@@ -11,7 +11,7 @@ const routes=[['mk-home','/'],['mk-institute','/institute.html'],['en-home','/en
 const report={scope:'LOCAL_CANDIDATE_ONLY',time:new Date().toISOString(),results:[],violations:[],screenshots:[],console:[],failed_requests:[]};
 let failures=0;
 const browser=await chromium.launch({headless:true});
-function result(name,passed,evidence){report.results.push({name,passed:!!passed,evidence:String(evidence??'')});if(!passed)failures++;}
+function result(name,passed,evidence){report.results.push({name,passed:!!passed,evidence:String(evidence??'')});if(!passed){failures++;console.error('QA_FAIL '+name+' :: '+String(evidence??''));}}
 async function ctx(width,javascriptEnabled=true){
  const x=await browser.newContext({viewport:{width,height:850},javascriptEnabled,serviceWorkers:'block'});
  await x.addInitScript(()=>{
