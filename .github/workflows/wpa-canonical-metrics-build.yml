@@ -1,0 +1,59 @@
+name: WPA Canonical Metrics Build Regression
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'papers.html'
+      - 'bibliography/**'
+      - 'en/index.html'
+      - 'wpa-services.html'
+      - 'index/*.json'
+      - 'mk.json'
+      - 'en.json'
+      - 'data/wpa-canonical-*.json'
+      - 'scripts/render_canonical_public_metrics.py'
+      - 'scripts/test_canonical_metrics_regression.py'
+      - 'scripts/wpa-publications-sync-20260817.js'
+      - 'scripts/wpa-performance-core.js'
+      - 'scripts/wpa-final-reconciliation-20260826.js'
+      - 'scripts/wpa-public-entry-layer.js'
+      - 'languages/wpa-language-menu-10.js'
+      - '.github/workflows/wpa-canonical-metrics-build.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'papers.html'
+      - 'bibliography/**'
+      - 'en/index.html'
+      - 'wpa-services.html'
+      - 'index/*.json'
+      - 'data/wpa-canonical-*.json'
+      - 'scripts/render_canonical_public_metrics.py'
+      - 'scripts/test_canonical_metrics_regression.py'
+      - '.github/workflows/wpa-canonical-metrics-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: Canonical publication build and anti-regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Verify build-time canonical metrics rendering
+        run: python scripts/render_canonical_public_metrics.py --check
+      - name: Pin audited metric figures and prevent 26/19 regressions
+        run: python scripts/test_canonical_metrics_regression.py
+      - name: Verify existing canonical truth
+        run: python scripts/validate_canonical_public_truth.py
+      - name: Diff hygiene
+        run: git diff --check
