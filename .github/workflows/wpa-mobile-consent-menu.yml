@@ -1,0 +1,41 @@
+name: WPA Mobile Consent and Menu Regression
+on:
+  pull_request:
+    paths:
+      - 'scripts/wpa-analytics.js'
+      - 'scripts/wpa-performance-core.js'
+      - 'index.html'
+      - 'institute.html'
+      - 'scripts/test_mobile_consent_menu.cjs'
+      - '.github/workflows/wpa-mobile-consent-menu.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/wpa-analytics.js'
+      - 'scripts/wpa-performance-core.js'
+      - 'index.html'
+      - 'institute.html'
+      - 'scripts/test_mobile_consent_menu.cjs'
+      - '.github/workflows/wpa-mobile-consent-menu.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-consent:
+    name: Validate consent gate, menu ownership and keyboard contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Syntax
+        run: |
+          node --check scripts/wpa-analytics.js
+          node --check scripts/wpa-performance-core.js
+          node --check scripts/test_mobile_consent_menu.cjs
+      - name: Test consent before and after explicit consent, and mobile menu invariants
+        run: node scripts/test_mobile_consent_menu.cjs
+      - name: Diff hygiene
+        run: git diff --check
