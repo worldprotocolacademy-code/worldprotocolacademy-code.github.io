@@ -1,0 +1,102 @@
+name: WPA Live AI Response Provenance Gate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/wpa-live-ai-response-provenance.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  one-benign-public-response:
+    name: One bounded public AI answer (no private data)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: One synthetic public question, metadata-only evidence
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import datetime, json, os, time, urllib.error, urllib.parse, urllib.request
+          ORIGIN = 'https://worldprotocolacademy.mk'
+          ENDPOINT = 'https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask'
+          CONTRACT = 'wpa-virtual-sande-response-v1.1'
+          MODEL_SOURCES = {'llm','procedural-anthropic-direct','anthropic-llm-rescue','anthropic-contamination-rescue','anthropic-no-context-fill'}
+          QUESTION = 'In one sentence, explain in Macedonian the distinction between diplomacy and diplomatic protocol.'
+          report = {
+            'checked_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'test_type': 'ONE_PUBLIC_NONPERSONAL_RESPONSE_NOT_MODEL_INTERNAL_PROOF',
+            'origin': ORIGIN, 'endpoint_path': '/ask',
+            'http_status': None, 'cors_match': False, 'contract_valid': False,
+            'answer_present': False, 'source_kind': 'UNVERIFIED',
+            'inference_evidence': 'UNVERIFIED', 'error_kind': None,
+            'limitations': [
+              'Worker servedBy is provider-attributed response metadata, not independent model execution evidence.',
+              'One synthetic query does not prove production availability or uptime.',
+              'Health endpoint status alone is never an AI inference success.'
+            ]
+          }
+          q = {'message':QUESTION,'question':QUESTION,'query':QUESTION,'lang':'mk','language':'mk',
+               'history':[],'quality':'3layer_academic','source_priority':'sande_author_corpus_first',
+               'proactive_fallback':True,'context':'World Protocol Academy public page: /'}
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  raise urllib.error.URLError('redirect_denied')
+          started = time.monotonic()
+          try:
+              req = urllib.request.Request(
+                  ENDPOINT, data=json.dumps(q).encode('utf-8'), method='POST',
+                  headers={'Origin':ORIGIN,'Accept':'application/json','Content-Type':'application/json',
+                           'Cache-Control':'no-store','User-Agent':'WPA-ReleaseGate-OneQuestion/1.0'})
+              opener = urllib.request.build_opener(NoRedirect())
+              with opener.open(req, timeout=20) as response:
+                  report['http_status'] = response.status
+                  parsed = urllib.parse.urlparse(response.geturl())
+                  if parsed.scheme != 'https' or parsed.hostname != urllib.parse.urlparse(ENDPOINT).hostname:
+                      raise ValueError('unexpected_destination')
+                  report['cors_match'] = response.headers.get('Access-Control-Allow-Origin') == ORIGIN
+                  payload = response.read(65537)
+                  if len(payload) > 65536:
+                      raise ValueError('oversize_response')
+                  data = json.loads(payload)
+                  if not isinstance(data, dict):
+                      raise ValueError('unexpected_response_shape')
+                  report['contract_valid'] = data.get('ok') is True and data.get('contract') == CONTRACT
+                  source = data.get('servedBy')
+                  report['source_kind'] = str(source)[:64] if source is not None else 'UNSPECIFIED'
+                  answer = next((data[k] for k in ('answer','response','reply','message','output','text') if isinstance(data.get(k),str) and data[k].strip()), '')
+                  if not answer and isinstance(data.get('result'),dict):
+                      nested = data['result']
+                      answer = next((nested[k] for k in ('answer','response','text') if isinstance(nested.get(k),str) and nested[k].strip()), '')
+                  report['answer_present'] = bool(answer)
+                  if (report['http_status'] == 200 and report['cors_match'] and report['contract_valid']
+                      and report['answer_present'] and str(source or '').lower() in MODEL_SOURCES):
+                      report['inference_evidence'] = 'MODEL_SOURCE_REPORTED_BY_WORKER'
+                  else:
+                      report['inference_evidence'] = 'UNVERIFIED_NONMODEL_OR_FAILED_CONTRACT'
+          except urllib.error.HTTPError as error:
+              report['http_status'] = error.code
+              report['error_kind'] = 'http_error'
+          except (urllib.error.URLError, TimeoutError):
+              report['error_kind'] = 'network_or_timeout'
+          except (ValueError, UnicodeError, TypeError):
+              report['error_kind'] = 'invalid_response_or_destination'
+          finally:
+              report['elapsed_ms'] = round((time.monotonic() - started)*1000)
+              os.makedirs('qa-output/virtual-sande-live', exist_ok=True)
+              with open('qa-output/virtual-sande-live/report.json','w',encoding='utf-8') as f:
+                  json.dump(report,f,indent=2,ensure_ascii=False)
+              print('One-question provenance outcome (answer body never logged):',json.dumps({
+                key:report[key] for key in ('http_status','cors_match','contract_valid',
+                  'answer_present','source_kind','inference_evidence','error_kind','elapsed_ms')
+              }))
+          if report['inference_evidence'] != 'MODEL_SOURCE_REPORTED_BY_WORKER':
+              raise SystemExit('RELEASE BLOCKER: live model provenance not established')
+          PY
+      - name: Archive metadata-only response evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-one-question-live-ai-provenance
+          path: qa-output/virtual-sande-live/report.json
+          retention-days: 30
+          if-no-files-found: warn
