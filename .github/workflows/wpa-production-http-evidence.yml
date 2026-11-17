@@ -1,0 +1,40 @@
+name: WPA Production HTTP and Security Header Evidence
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_wpa_production_http.py'
+      - '.github/workflows/wpa-production-http-evidence.yml'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_wpa_production_http.py'
+      - '.github/workflows/wpa-production-http-evidence.yml'
+permissions:
+  contents: read
+jobs:
+  audit-production-http:
+    name: Read-only production HTTP security audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Python 3.12
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Python syntax
+        run: python -m py_compile scripts/audit_wpa_production_http.py
+      - name: Public HTTPS and security-header survey (anonymous GET only)
+        run: python scripts/audit_wpa_production_http.py --critical-routes --timeout 8
+      - name: Upload immutable HTTP evidence (even if a route fails)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wpa-production-http-security-evidence
+          path: qa-output/production-http/report.json
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Diff integrity
+        run: git diff --check
