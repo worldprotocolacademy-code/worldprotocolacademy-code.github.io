@@ -1,0 +1,54 @@
+name: WPA P0 Mobile Consent and Navigation Browser QA
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'institute.html'
+      - 'scripts/wpa-analytics.js'
+      - 'scripts/wpa-performance-core.js'
+      - 'scripts/test_p0_mobile_consent_browser.mjs'
+      - '.github/workflows/wpa-p0-mobile-consent-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    name: Browser mobile menu, consent and axe evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Validate script syntax
+        run: |
+          node --check scripts/wpa-analytics.js
+          node --check scripts/wpa-performance-core.js
+          node --check scripts/test_p0_mobile_consent_browser.mjs
+      - name: Install ephemeral browser QA dependencies (do not commit)
+        run: |
+          npm install --no-save --no-package-lock playwright @axe-core/playwright
+          npx playwright install --with-deps chromium
+      - name: Serve read-only local candidate
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/wpa-browser-qa-http.log 2>&1 &
+          echo $! >/tmp/wpa-browser-qa-http.pid
+          sleep 2
+          curl --fail --silent http://127.0.0.1:8765/ >/dev/null
+      - name: Browser mobile and consent matrix
+        run: node scripts/test_p0_mobile_consent_browser.mjs
+      - name: Upload screenshots, network and axe evidence even on failure
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: wpa-p0-mobile-consent-browser-evidence
+          path: qa-output/mobile-consent/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Diff hygiene
+        if: always()
+        run: git diff --check
