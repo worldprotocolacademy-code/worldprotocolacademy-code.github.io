@@ -8,7 +8,11 @@ const DIR='qa-output/mobile-consent';
 fs.mkdirSync(DIR,{recursive:true});
 const viewports=[320,360,390,768,1440];
 const routes=[['mk-home','/'],['mk-institute','/institute.html'],['en-home','/en/index.html'],['en-institute','/en/institute.html']];
-const report={scope:'LOCAL_CANDIDATE_ONLY',time:new Date().toISOString(),results:[],violations:[],screenshots:[],console:[],failed_requests:[]};
+const AI_HEALTH_URL='https://wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/safe-entrypoint/health';
+const LOCAL_HEALTH_CONTRACT={ok:true,mode:'health',contract:'wpa-virtual-sande-response-v1.1',hasContext:false,servedBy:'qa-health-stub-only'};
+const report={scope:'LOCAL_CANDIDATE_ONLY',time:new Date().toISOString(),results:[],violations:[],screenshots:[],console:[],failed_requests:[],
+ ai_health_qa:{kind:'DETERMINISTIC_LOCAL_STUB_NOT_LIVE',url:AI_HEALTH_URL,intercepted_count:0,production_model_verified:false,
+ notes:'The local QA origin is not on the production Worker CORS allowlist. A stub is used only here; real-origin CORS is checked separately.'}};
 let failures=0;
 const browser=await chromium.launch({headless:true});
 function result(name,passed,evidence){report.results.push({name,passed:!!passed,evidence:String(evidence??'')});if(!passed){failures++;console.error('QA_FAIL '+name+' :: '+String(evidence??''));}}
@@ -19,6 +23,14 @@ async function ctx(width,javascriptEnabled=true){
    Object.defineProperty(navigator,'globalPrivacyControl',{configurable:true,get:()=>false});
  });
  await x.route('**/config/analytics.json',r=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({measurementId:'G-TEST123456',consentRequired:true})}));
+ // Local-only health simulation. DO NOT allow localhost through the production
+ // Worker CORS policy and DO NOT describe this as evidence of live AI inference.
+ await x.route(AI_HEALTH_URL,r=>{
+  report.ai_health_qa.intercepted_count++;
+  return r.fulfill({status:200,headers:{'content-type':'application/json; charset=utf-8',
+    'cache-control':'no-store','access-control-allow-origin':new URL(ROOT).origin},
+   body:JSON.stringify(LOCAL_HEALTH_CONTRACT)});
+ });
  return x;
 }
 async function screenshot(page,name){
@@ -34,6 +46,15 @@ async function pageRun(id,route,width){
  p.on('requestfailed',r=>{if(report.failed_requests.length<60)report.failed_requests.push({id,width,url:r.url().slice(0,170),failure:r.failure()?.errorText});});
  const response=await p.goto(ROOT+route,{waitUntil:'domcontentloaded',timeout:45000});
  result(id+' '+width+' http 200',response?.status()===200,response?.status());
+ if(id==='mk-home'||id==='mk-institute'){
+  const monitorName=id==='mk-home'?'WPAVirtualSandeMonitor':'WPAInstituteVirtualSandeMonitor';
+  await p.waitForFunction(key=>Boolean(window[key]?.last_checked_at),monitorName,{timeout:9000}).catch(()=>{});
+  const monitor=await p.evaluate(key=>window[key]||null,monitorName);
+  result(id+' '+width+' mocked health contract (NOT live AI)',monitor?.health_reachable===true&&
+   monitor?.state!=='live'&&Boolean(monitor?.last_checked_at),
+   JSON.stringify({mode:report.ai_health_qa.kind,health_reachable:monitor?.health_reachable,
+    state:monitor?.state,last_checked_at:monitor?.last_checked_at}));
+ }
  const banner=p.locator('#wpaAnalyticsConsentBanner');
  await banner.waitFor({state:'visible',timeout:12000}).catch(()=>{});
  const visible=await banner.isVisible();
@@ -170,6 +191,11 @@ try {
  await checkChoice('accept',true);
  await checkChoice('settings-deny',false);
  await checkChoice('settings-allow',true);
+ result('local health test exercised all 10 MK viewport routes (mocked, not live)',
+  report.ai_health_qa.intercepted_count>=10,
+  JSON.stringify({intercepted:report.ai_health_qa.intercepted_count,kind:report.ai_health_qa.kind}));
+ result('no failed browser requests after isolating local-only health calls',
+  report.failed_requests.length===0,JSON.stringify(report.failed_requests.slice(0,10)));
 }finally {
  fs.writeFileSync(path.join(DIR,'report.json'),JSON.stringify(report,null,2)+'\n');
  await browser.close();
