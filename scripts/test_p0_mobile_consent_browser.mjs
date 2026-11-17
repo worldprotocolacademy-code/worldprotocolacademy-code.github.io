@@ -117,8 +117,20 @@ async function publicationMetricsBrowserRegression(){
     const rows=p.locator(selector);
     const n=await rows.count();
     const value=n===1?String(await rows.first().textContent()||'').trim().replace(/\s+/g,' '):'';
+    const matches=n===1&&value.includes(expected);
+    if(!matches&&target.name==='Bibliography'){
+      const responseBody=await p.request.get(ROOT+target.route);
+      const raw=await responseBody.text();
+      const canonicalRaw=fs.readFileSync('bibliography/index.html','utf8');
+      const needle='data-wpa-metric="'+key+'"';
+      const snippet=(s)=>{const offset=s.indexOf(needle);return offset<0?'MISSING':s.slice(offset,offset+230);};
+      console.error('QA_DIAGNOSTIC Bibliography '+
+        JSON.stringify({browserUrl:p.url(),httpUrl:responseBody.url(),status:responseBody.status(),
+          rawHTML:snippet(raw),repoHTML:snippet(canonicalRaw),javascriptEnabled,
+          domValue:value}));
+    }
     result('metrics '+target.name+' '+(javascriptEnabled?'post-JS':'pre-JS')+' '+key,
-      n===1&&value.includes(expected),JSON.stringify({expected,actual:value,count:n}));
+      matches,JSON.stringify({expected,actual:value,count:n}));
    }
    await x.close();
   }
