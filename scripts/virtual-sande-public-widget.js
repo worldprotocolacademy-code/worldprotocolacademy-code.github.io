@@ -380,7 +380,7 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
-    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" role="status" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs" role="log" tabindex="0" aria-live="polite" aria-relevant="additions" aria-label="Virtual Sande conversation"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
@@ -388,13 +388,16 @@
     fab.type = 'button';
     fab.setAttribute('aria-label', text.label);
     fab.setAttribute('aria-expanded', 'false');
+    fab.setAttribute('aria-controls', 'wpaPublicVsPanel');
     fab.setAttribute('data-virtual-sande-widget', 'launcher-recovery');
     fab.innerHTML = '<img src="/logo.webp" alt="" width="64" height="64">';
 
     document.body.appendChild(panel);
     document.body.appendChild(fab);
     protectAllInputs();
-    addMessage(text.welcome, 'bot');
+    addMessage(text.welcome, 'bot', 'local');
+    setSourceStatus('unverified');
+    healthCheck();
 
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
@@ -405,6 +408,7 @@
     panel.querySelector('.wpa-public-vs-close').addEventListener('click', function () {
       panel.classList.remove('open');
       fab.setAttribute('aria-expanded', 'false');
+      fab.focus();
     });
 
     document.getElementById('wpaPublicVsForm').addEventListener('submit', function (event) {
@@ -422,13 +426,15 @@
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
-      addMessage(copy().welcome, 'bot');
+      addMessage(copy().welcome, 'bot', 'local');
+      setSourceStatus('unverified');
     });
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && panel.classList.contains('open')) {
         panel.classList.remove('open');
         fab.setAttribute('aria-expanded', 'false');
+        fab.focus();
       }
     });
   }
