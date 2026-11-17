@@ -4406,14 +4406,7 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
 <script>
 /* index.html — language handled solely by wpa-translator.js (v3.0). Old inline engine removed. */
 document.addEventListener('DOMContentLoaded', function(){
-  var mt = document.getElementById('mToggle');
-  var sn = document.getElementById('siteNav');
-  if(mt && sn){
-    mt.addEventListener('click', function(){
-      var o = sn.classList.toggle('open');
-      mt.setAttribute('aria-expanded', o);
-    });
-  }
+  // Mobile navigation has one owner: the existing WPA drawer controller below.
   var yr = document.getElementById('year');
   if(yr) yr.textContent = new Date().getFullYear();
 });
@@ -5258,12 +5251,12 @@ if(document.readyState==='loading'){
 
     function boot() {
       ensureTopAnchor();
-      installMobileMenu();
+      // Retired duplicate floating-menu init; #mToggle owns the canonical drawer.
       markBotCandidates();
       installFloatingMobileButtons();
 
       setTimeout(function () {
-        installMobileMenu();
+        // Retired duplicate floating-menu init; #mToggle owns the canonical drawer.
         markBotCandidates();
       }, 800);
     }
@@ -5336,14 +5329,8 @@ if(document.readyState==='loading'){
       overflow-x: hidden !important;
     }
 
-    h1,
-    h2,
-    h3,
-    p,
-    li,
-    a,
-    button {
-      overflow-wrap: anywhere !important;
+    h1, h2, h3, p, li {
+      overflow-wrap: break-word !important;
     }
   }
 
@@ -5370,7 +5357,11 @@ if(document.readyState==='loading'){
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      min-height: 40px !important;
+      min-height: 44px !important;
+      min-width: 44px !important;
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: normal !important;
       padding: 8px 13px !important;
       border-radius: 10px !important;
       border: 1px solid rgba(201, 168, 76, 0.55) !important;
@@ -5410,7 +5401,7 @@ if(document.readyState==='loading'){
     right: 10px !important;
     z-index: 2147483646 !important;
     display: none;
-    max-height: calc(100vh - 104px) !important;
+    max-height: min(calc(100dvh - 104px), 70dvh) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     padding: 14px !important;
@@ -5443,7 +5434,7 @@ if(document.readyState==='loading'){
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-height: 36px !important;
+    min-height: 44px !important;
     padding: 7px 11px !important;
     border-radius: 999px !important;
     border: 1px solid rgba(200, 168, 75, 0.45) !important;
@@ -5459,7 +5450,8 @@ if(document.readyState==='loading'){
   #wpaMobileDrawerV14 .wpa-mobile-drawer-close:hover,
   #wpaMobileDrawerV14 .wpa-mobile-drawer-close:focus {
     background: rgba(200, 168, 75, 0.20) !important;
-    outline: none !important;
+    outline: 2px solid #e3c878 !important;
+    outline-offset: 2px !important;
   }
 
   #wpaMobileDrawerV14 .wpa-mobile-drawer-links {
@@ -5471,6 +5463,7 @@ if(document.readyState==='loading'){
   #wpaMobileDrawerV14 a {
     display: block !important;
     width: 100% !important;
+    min-height: 44px !important;
     padding: 12px 13px !important;
     border-radius: 13px !important;
     color: #dde4f4 !important;
@@ -5521,6 +5514,15 @@ if(document.readyState==='loading'){
     }
   }
 
+  @media (max-width: 860px) {
+    .nav-right, .lang-sw { min-width: 0 !important; max-width: 100% !important; }
+    .nav-right { display: flex !important; align-items: center !important; flex-wrap: wrap !important; gap: 6px !important; }
+    .lang-sw select { max-width: min(46vw, 190px) !important; min-height: 44px !important; overflow-wrap: normal !important; }
+    .lang-sw label { white-space: nowrap !important; }
+    #wpaMobileDrawerV14 a { overflow-wrap: break-word !important; word-break: normal !important; }
+    #mToggle:focus-visible, #wpaMobileDrawerV14 :focus-visible { outline: 2px solid #f2ce72 !important; outline-offset: 2px !important; }
+  }
+
   @media (min-width: 861px) {
     #wpaMobileOverlayV14,
     #wpaMobileDrawerV14 {
@@ -5537,7 +5539,6 @@ if(document.readyState==='loading'){
   (function () {
     "use strict";
 
-    var lastTouch = 0;
 
     function qsa(selector, root) {
       return Array.prototype.slice.call((root || document).querySelectorAll(selector));
@@ -5574,16 +5575,9 @@ if(document.readyState==='loading'){
     }
 
     function collectMenuLinks() {
-      var selectors = [
-        "header a[href]",
-        "nav a[href]",
-        ".navbar a[href]",
-        ".site-nav a[href]",
-        ".main-nav a[href]",
-        ".top-nav a[href]",
-        ".menu a[href]",
-        ".links a[href]"
-      ];
+      // The canonical MK Home navigation provides the five public pathways.
+      // Do not sweep the entire header and silently promote legacy draft routes.
+      var selectors = ["#siteNav .site-nav a[href]"];
 
       var links = [];
       var seen = {};
@@ -5608,20 +5602,15 @@ if(document.readyState==='loading'){
 
       if (links.length < 3) {
         links = [
-          { href: "./", label: "Home" },
-          { href: "#about", label: "About WPA" },
-          { href: "#programmes", label: "Programmes" },
-          { href: "certification.html", label: "Certification" },
-          { href: "wpa-card.html", label: "WPA Card" },
-          { href: "passive-revenue.html", label: "Партнерства и членски придобивки" },
-          { href: "#ai", label: "AI" },
-          { href: "#publications", label: "Publications" },
-          { href: "#platform-creator", label: "Креатор" },
-          { href: "#contact", label: "Contact" }
+          { href: "#about", label: "За WPA" },
+          { href: "programmes.html", label: "Програми" },
+          { href: "bibliography/", label: "Истражување" },
+          { href: "institute.html", label: "Институт и алатки" },
+          { href: "governance-and-status.html", label: "Доверба и контакт" }
         ];
       }
 
-      return links.slice(0, 20);
+      return links.slice(0, 8);
     }
 
     function buildDrawer() {
@@ -5631,7 +5620,9 @@ if(document.readyState==='loading'){
 
       if (!btn) return null;
 
-      btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-expanded", document.body.classList.contains("wpa-mobile-drawer-open") ? "true" : "false");
+      btn.setAttribute("aria-controls", "wpaMobileDrawerV14");
+      btn.setAttribute("aria-label", wpaUILang() === "en" ? "Open navigation menu" : "Отвори мени");
       btn.setAttribute("type", "button");
 
       if (!overlay) {
@@ -5646,11 +5637,13 @@ if(document.readyState==='loading'){
         drawer.id = "wpaMobileDrawerV14";
         drawer.setAttribute("aria-label", "Mobile navigation");
         drawer.setAttribute("role", "navigation");
+        drawer.setAttribute("tabindex", "-1");
         document.body.appendChild(drawer);
       }
 
       var links = collectMenuLinks();
 
+      drawer.setAttribute("aria-hidden", document.body.classList.contains("wpa-mobile-drawer-open") ? "false" : "true");
       drawer.replaceChildren();
 
       var drawerHead = document.createElement("div");
@@ -5683,23 +5676,27 @@ if(document.readyState==='loading'){
       return { btn: btn, overlay: overlay, drawer: drawer };
     }
 
-    function setOpen(open, parts) {
+    function setOpen(open, parts, returnFocus) {
       if (!parts || !parts.btn) return;
-
       document.body.classList.toggle("wpa-mobile-drawer-open", open);
       parts.btn.setAttribute("aria-expanded", open ? "true" : "false");
+      parts.btn.setAttribute("aria-label", open ? (wpaUILang()==="en"?"Close navigation menu":"Затвори мени") : (wpaUILang()==="en"?"Open navigation menu":"Отвори мени"));
       parts.btn.textContent = open ? (wpaUILang()==="en"?"Close":"Затвори") : (wpaUILang()==="en"?"Menu":"Мени");
-
+      parts.drawer.setAttribute("aria-hidden", open ? "false" : "true");
+      document.body.style.overflow = open ? "hidden" : "";
       if (open) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
+        var close = parts.drawer.querySelector(".wpa-mobile-drawer-close");
+        if (close) close.focus();
+      } else if (returnFocus) {
+        parts.btn.focus();
       }
     }
 
     function fixOverflow() {
-      document.documentElement.style.overflowX = "hidden";
-      document.body.style.overflowX = "hidden";
+      // Horizontal clipping is a layout defect: apply intrinsic sizing, not
+      // global overflow:hidden, so off-screen content remains detectable.
+      document.documentElement.style.overflowX = "";
+      document.body.style.overflowX = "";
     }
 
     function wpaUILang(){ try{ return localStorage.getItem('wpa.language')||'mk'; }catch(e){ return 'mk'; } }
@@ -5712,22 +5709,14 @@ if(document.readyState==='loading'){
 
       parts.btn.onclick = null;
 
-      parts.btn.addEventListener("touchend", function (e) {
-        lastTouch = Date.now();
-        e.preventDefault();
-        e.stopPropagation();
-        setOpen(!document.body.classList.contains("wpa-mobile-drawer-open"), parts);
-      }, { passive: false });
-
+      // One click event handles mouse, touch and keyboard activation.
       parts.btn.addEventListener("click", function (e) {
-        if (Date.now() - lastTouch < 450) return;
         e.preventDefault();
-        e.stopPropagation();
         setOpen(!document.body.classList.contains("wpa-mobile-drawer-open"), parts);
       });
 
       parts.overlay.addEventListener("click", function () {
-        setOpen(false, parts);
+        setOpen(false, parts, true);
       });
 
       parts.drawer.addEventListener("click", function (e) {
@@ -5735,7 +5724,7 @@ if(document.readyState==='loading'){
 
         if (closeBtn) {
           e.preventDefault();
-          setOpen(false, parts);
+          setOpen(false, parts, true);
           return;
         }
 
@@ -5744,7 +5733,7 @@ if(document.readyState==='loading'){
       });
 
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") setOpen(false, parts);
+        if (e.key === "Escape" && document.body.classList.contains("wpa-mobile-drawer-open")) setOpen(false, parts, true);
       });
 
       window.addEventListener("resize", function () {
@@ -5765,7 +5754,13 @@ if(document.readyState==='loading'){
       bootMobileDrawer();
     }
     // rebuild the drawer when the interface language changes (re-reads translated nav labels)
-    document.addEventListener("wpa:lang-changed", function () { try { buildDrawer(); } catch (e) {} });
+    document.addEventListener("wpa:lang-changed", function () {
+      try {
+        document.body.classList.remove("wpa-mobile-drawer-open");
+        document.body.style.overflow = "";
+        buildDrawer();
+      } catch (e) {}
+    });
   })();
 </script>
 </body>
