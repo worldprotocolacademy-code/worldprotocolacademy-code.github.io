@@ -1,0 +1,181 @@
+name: Sync WPA External Publication Metadata to R2 AI Search
+
+on:
+  pull_request:
+    paths:
+      - 'data/ai-search-ready/p21-security-2026.json'
+      - '.github/workflows/sync-external-publication-metadata-r2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'data/ai-search-ready/p21-security-2026.json'
+      - '.github/workflows/sync-external-publication-metadata-r2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-wpa-external-publication-metadata-r2
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate rights-safe publication metadata
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('data/ai-search-ready/p21-security-2026.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          required=['record_id','title','author','year','journal','pages','issn','canonical_url','wpa_paraphrase','rights_mode']
+          missing=[k for k in required if not d.get(k)]
+          if missing:
+              raise SystemExit(f'Missing required metadata: {missing}')
+          if d.get('record_id') != 'P21':
+              raise SystemExit('Unexpected record_id')
+          if d.get('source_pdf_publication_status') != 'NOT_REPUBLISHED_BY_WPA':
+              raise SystemExit('Source PDF rights boundary drift')
+          if 'abstract' in d or 'full_text' in d or d.get('pdf_url'):
+              raise SystemExit('Rights-safe metadata lane must not contain abstract/full text/PDF URL')
+          print('EXTERNAL PUBLICATION METADATA VALIDATION PASS')
+          PY
+
+  sync:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN_PRIMARY: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_AI_SEARCH_TOKEN: ${{ secrets.CLOUDFLARE_AI_SEARCH_TOKEN }}
+      R2_BUCKET: protocol-kb
+      TARGET_PREFIX: world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready
+      AI_SEARCH_INSTANCE: protocol-ai
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Cloudflare account configuration
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "${CLOUDFLARE_API_TOKEN_PRIMARY:-}${CLOUDFLARE_AI_SEARCH_TOKEN:-}"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Wrangler
+        run: |
+          npm install --global wrangler@4
+          wrangler --version
+
+      - name: Select a working R2 credential
+        run: |
+          set -euo pipefail
+          key='world-protocol-academy/UPLOAD_TO_WORLD_PROTOCOL_ACADEMY/99_ai_search_ready/README.md'
+          test_token() {
+            local token="$1"
+            local label="$2"
+            [ -n "$token" ] || return 1
+            rm -f /tmp/wpa-r2-preflight
+            if CLOUDFLARE_API_TOKEN="$token" wrangler r2 object get "${R2_BUCKET}/${key}" --remote --file /tmp/wpa-r2-preflight >/tmp/wpa-r2-preflight.log 2>&1; then
+              test -s /tmp/wpa-r2-preflight
+              echo "R2 credential preflight succeeded with ${label}."
+              echo "CLOUDFLARE_API_TOKEN=${token}" >> "$GITHUB_ENV"
+              return 0
+            fi
+            echo "R2 credential preflight failed with ${label}; trying next configured credential."
+            return 1
+          }
+          if test_token "${CLOUDFLARE_API_TOKEN_PRIMARY:-}" 'CLOUDFLARE_API_TOKEN'; then exit 0; fi
+          if test_token "${CLOUDFLARE_AI_SEARCH_TOKEN:-}" 'CLOUDFLARE_AI_SEARCH_TOKEN'; then exit 0; fi
+          echo 'No configured GitHub secret currently authenticates to Cloudflare R2.' >&2
+          exit 41
+
+      - name: Build rights-safe AI-ready record
+        run: |
+          python - <<'PY'
+          import json, hashlib
+          from pathlib import Path
+          d=json.loads(Path('data/ai-search-ready/p21-security-2026.json').read_text(encoding='utf-8'))
+          lines=[
+              '---',
+              'wpa_schema: "external-publication-metadata-v1"',
+              'source: "WPA verified bibliographic metadata from author-supplied published issue"',
+              f'record_id: "{d["record_id"]}"',
+              f'year: "{d["year"]}"',
+              f'journal: {json.dumps(d["journal"], ensure_ascii=False)}',
+              f'issn: "{d["issn"]}"',
+              f'canonical_url: "{d["canonical_url"]}"',
+              f'rights_mode: "{d["rights_mode"]}"',
+              '---','',
+              '# '+d['title'],'',
+              '**Descriptive English translation (not asserted as published title):** '+d['descriptive_english_title'],'',
+              '**Citation metadata:** '+d['journal']+', '+d['volume']+'('+d['issue']+'), pp. '+d['pages']+', ISSN '+d['issn']+'.','',
+              '**WPA paraphrase:** '+d['wpa_paraphrase'],'',
+              '**Keywords:** '+', '.join(d['keywords'])+'.','',
+              '**Rights boundary:** '+d['source_pdf_rights_note']+' WPA does not republish the supplied source PDF in this AI-search lane.',''
+          ]
+          body='\n'.join(lines)
+          Path('p21-ai-ready.md').write_text(body, encoding='utf-8')
+          evidence={
+              'record_id':d['record_id'],
+              'source_json_sha256':hashlib.sha256(Path('data/ai-search-ready/p21-security-2026.json').read_bytes()).hexdigest(),
+              'ai_ready_sha256':hashlib.sha256(body.encode('utf-8')).hexdigest(),
+              'rights_mode':d['rights_mode']
+          }
+          Path('p21-sync-evidence.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+          print('AI-ready metadata built')
+          PY
+
+      - name: Upload metadata record to R2
+        run: |
+          set -euo pipefail
+          key="${TARGET_PREFIX}/02_smiljanov_papers_chunks/external/p21-security-2026/metadata.md"
+          marker="${TARGET_PREFIX}/_metadata/external/p21-security-2026.json"
+          wrangler r2 object put "${R2_BUCKET}/${key}" --remote --force --file p21-ai-ready.md --content-type "text/markdown; charset=utf-8"
+          wrangler r2 object put "${R2_BUCKET}/${marker}" --remote --force --file p21-sync-evidence.json --content-type "application/json; charset=utf-8"
+          printf '%s\n%s\n' "$key" "$marker" > r2-uploaded-keys.txt
+
+      - name: Trigger AI Search resync
+        id: ai_search_resync
+        run: |
+          set -euo pipefail
+          if [ -z "${CLOUDFLARE_AI_SEARCH_TOKEN:-}" ]; then
+            echo 'AI Search token is not configured; R2 upload verified, resync skipped.'
+            echo 'resync=skipped-no-token' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai-search/instances/${AI_SEARCH_INSTANCE}"
+          out="$(curl -fsS -X POST "$api/jobs"             -H "Authorization: Bearer ${CLOUDFLARE_AI_SEARCH_TOKEN}"             -H 'Content-Type: application/json'             -d '{"description":"WPA P21 external publication metadata sync"}')"
+          printf '%s\n' "$out" > ai-search-resync.json
+          python - <<'PY'
+          import json
+          p=json.load(open('ai-search-resync.json', encoding='utf-8'))
+          if p.get('success') is not True:
+              raise SystemExit(f'AI Search resync request failed: {p}')
+          job=(p.get('result') or {}).get('id')
+          if not job:
+              raise SystemExit(f'AI Search resync returned no job id: {p}')
+          open('ai-search-job-id.txt','w',encoding='utf-8').write(str(job)+'\n')
+          print(job)
+          PY
+
+      - name: Upload sync evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p21-external-publication-r2-sync-evidence
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            p21-sync-evidence.json
+            r2-uploaded-keys.txt
+            ai-search-resync.json
+            ai-search-job-id.txt
