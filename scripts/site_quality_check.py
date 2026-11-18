@@ -295,7 +295,7 @@ def check_latest_publication_20261118(errors):
             for key,token in expected.items():
                 if token not in str(loc.get(key,"")):
                     add_error(errors,f"{rel}: {key} not reconciled to P21 canonical metrics")
-            if "open PDF access" in str(loc.get("a_publications.8","")).lower():
+            if "open pdf access" in str(loc.get("a_publications.8","")).lower():
                 add_error(errors,f"{rel}: a_publications.8 must not imply full-PDF access for all 21 papers")
         except Exception as exc:
             add_error(errors,f"Cannot validate active locale corpus {rel}: {exc}")
