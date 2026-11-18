@@ -91,8 +91,8 @@ for (const page of auditedPages) {
 }
 
 const facts = json("data/wpa-canonical-public-facts.json");
-check(facts.academic_corpus?.total_publications === 27, "canonical publications = 27");
-check(facts.academic_corpus?.papers_and_contributions === 20, "canonical papers/contributions = 20");
+check(facts.academic_corpus?.total_publications === 28, "canonical publications = 28");
+check(facts.academic_corpus?.papers_and_contributions === 21, "canonical papers/contributions = 21");
 check(facts.master_list?.canonical_version === "v1.0-CORRECTED-4F-REV7", "canonical Master List = REV7");
 check(
   facts.master_list?.total_records === 250 &&
@@ -102,16 +102,17 @@ check(
 );
 
 const metrics = json("data/wpa-canonical-metrics-status.json");
-check(metrics.academic_publications?.total === 27, "metrics status publications = 27");
-check(metrics.academic_publications?.scientific_papers_and_contributions === 20, "metrics status papers = 20");
+check(metrics.academic_publications?.total === 28, "metrics status publications = 28");
+check(metrics.academic_publications?.scientific_papers_and_contributions === 21, "metrics status papers = 21");
 check(metrics.master_list_current?.canonical_version === "v1.0-CORRECTED-4F-REV7", "metrics current pointer = REV7");
 check(metrics.master_list_current?.total_records === 250, "metrics current records = 250");
+check(exists("scholar/p21.html") && metrics.academic_publications?.latest_addition?.scholar_record === "/scholar/p21.html", "P21 Scholar evidence exists for 28-publication update");
 
 const home = read("index.html");
 const institute = read("institute.html");
 const layer = read("wpa-translator.js");
-check(home.includes('<div class="stat-num">27</div>'), "home hero shows 27 publications");
-check(home.includes('<div class="stat-num">20</div>'), "home hero shows 20 papers");
+check(home.includes('<div class="stat-num">28</div>'), "home hero shows 28 publications");
+check(home.includes('<div class="stat-num">21</div>'), "home hero shows 21 papers");
 check(home.includes("OPC 2027 · Ohrid") && !home.includes("OPC 2026 · Ohrid"), "home current conference gateway = OPC 2027");
 check(home.includes("sande@worldprotocolacademy.mk"), "home contains canonical author contact");
 check(!home.includes("26 публикации = 6 монографии/прирачници + 1 докторска дисертација + 19 трудови/прилози"), "home has no stale 26/19 evidence equation");
