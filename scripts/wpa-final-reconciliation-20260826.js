@@ -1,6 +1,6 @@
 /* WPA final public reconciliation layer · 26 August 2026
    Purpose: close verified legacy drift without rewriting large public HTML files in-browser.
-   Current canonical boundaries (reconciled 2 October 2026): 27 academic publications; 24 Zenodo records = 14 WP + 9 PN + 1 plan;
+   Current canonical boundaries (reconciled 2 October 2026): 28 academic publications; 24 Zenodo records = 14 WP + 9 PN + 1 plan;
    Sande Smiljanov, Ph.D. / Доц. д-р · Насловен доцент author identity; vendor-neutral public AI wording; OPC date/venue unconfirmed;
    WP-009 latest-facing reference uses the concept DOI until its v1.1 version-specific DOI is captured.
 */
