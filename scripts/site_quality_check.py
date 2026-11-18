@@ -267,6 +267,38 @@ def check_latest_publication_20261118(errors):
         for token in tokens:
             if token not in tx:
                 add_error(errors,f"{rel}: canonical runtime metric token missing: {token}")
+    locale_expectations={
+        "en.json":{
+            "about1P":"21 scientific papers and contributions",
+            "a_platform.19":"21 scientific papers and contributions (28 in total)",
+            "a_publications.2":"21 scientific papers and contributions — 28 publications in total",
+            "a_publications.5":"21 scientific papers and contributions",
+            "a_publications.9":"21 papers",
+            "a_founder.5":"28 publications",
+        },
+        "mk.json":{
+            "about1P":"21 научен труд и прилог",
+            "a_platform.19":"21 научен труд и прилог (28 вкупно)",
+            "a_publications.2":"21 научен труд и прилог — 28 публикации вкупно",
+            "a_publications.5":"21 научен труд и прилог",
+            "a_publications.9":"21 труд",
+            "a_founder.5":"28 публикации",
+        },
+    }
+    for rel,expected in locale_expectations.items():
+        p=ROOT/rel
+        if not p.exists():
+            add_error(errors,f"Missing active locale corpus: {rel}")
+            continue
+        try:
+            loc=json.loads(read_text(p))
+            for key,token in expected.items():
+                if token not in str(loc.get(key,"")):
+                    add_error(errors,f"{rel}: {key} not reconciled to P21 canonical metrics")
+            if "open pdf access" in str(loc.get("a_publications.8","")).lower():
+                add_error(errors,f"{rel}: a_publications.8 must not imply full-PDF access for all 21 papers")
+        except Exception as exc:
+            add_error(errors,f"Cannot validate active locale corpus {rel}: {exc}")
 
 def check_final_reconciliation_layer(errors):
     core=ROOT/"scripts"/"wpa-performance-core.js";layer=ROOT/"scripts"/"wpa-final-reconciliation-20260826.js";note=ROOT/"docs"/"WPA_CANONICAL_REFERENCE_STATE_2026-08-26.md"
