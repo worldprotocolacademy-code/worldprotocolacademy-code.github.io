@@ -24,20 +24,20 @@
     document.querySelectorAll('.hero-stats > div').forEach(function (block) {
       var label = txt(block.querySelector('.stat-label'));
       var num = block.querySelector('.stat-num');
-      if (/^Публикации$|^Publications$/i.test(label)) setTxt(num, '26');
+      if (/^Публикации$|^Publications$/i.test(label)) setTxt(num, '28');
     });
 
     document.querySelectorAll('.matrix-item').forEach(function (item) {
       var label = txt(item.querySelector('strong'));
       var value = item.querySelector('span');
       if (/^Публикации$|^Publications$/i.test(label)) {
-        setTxt(value, '6 монографии · 1 дисертација · 19 трудови · 26 вкупно');
+        setTxt(value, '6 монографии · 1 дисертација · 21 труд и прилог · 28 вкупно');
       }
     });
 
     var description = document.querySelector('meta[name="description"]');
     if (description) {
-      description.setAttribute('content', 'World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies. Академски корпус: 26 публикации. Најнова WPA Protocol Note: WPA-PN-009, AI Transparency and the Protocol of Authorship, DOI 10.5281/zenodo.21933739. Нова книга 2026: Protocol of State Symbols, Anthems and National Days, ISBN 978-608-66168-5-4.');
+      description.setAttribute('content', 'World Protocol Academy — Institute for Protocol, Diplomacy, Public Communication & Security Studies. Академски корпус: 28 публикации. Најнова WPA Protocol Note: WPA-PN-009, AI Transparency and the Protocol of Authorship, DOI 10.5281/zenodo.21933739. Нова книга 2026: Protocol of State Symbols, Anthems and National Days, ISBN 978-608-66168-5-4.');
     }
 
     var keywords = document.querySelector('meta[name="keywords"]');
