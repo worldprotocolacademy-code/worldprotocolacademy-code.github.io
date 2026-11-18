@@ -4406,14 +4406,7 @@ body.wpa-menu-open .wpa-mobile-nav-target button:hover{
 <script>
 /* index.html — language handled solely by wpa-translator.js (v3.0). Old inline engine removed. */
 document.addEventListener('DOMContentLoaded', function(){
-  var mt = document.getElementById('mToggle');
-  var sn = document.getElementById('siteNav');
-  if(mt && sn){
-    mt.addEventListener('click', function(){
-      var o = sn.classList.toggle('open');
-      mt.setAttribute('aria-expanded', o);
-    });
-  }
+  // Mobile navigation is owned by the existing V14 drawer controller below.
   var yr = document.getElementById('year');
   if(yr) yr.textContent = new Date().getFullYear();
 });
@@ -5258,12 +5251,10 @@ if(document.readyState==='loading'){
 
     function boot() {
       ensureTopAnchor();
-      installMobileMenu();
+      // Retired duplicate mobile menu/floating controls; the V14 drawer is canonical.
       markBotCandidates();
-      installFloatingMobileButtons();
 
       setTimeout(function () {
-        installMobileMenu();
         markBotCandidates();
       }, 800);
     }
@@ -5370,8 +5361,12 @@ if(document.readyState==='loading'){
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
-      min-height: 40px !important;
-      padding: 8px 13px !important;
+      min-height: 44px !important;
+      min-width: 44px !important;
+      padding: 10px 13px !important;
+      white-space: nowrap !important;
+      overflow-wrap: normal !important;
+      word-break: normal !important;
       border-radius: 10px !important;
       border: 1px solid rgba(201, 168, 76, 0.55) !important;
       background: rgba(13, 31, 60, 0.92) !important;
@@ -5410,7 +5405,7 @@ if(document.readyState==='loading'){
     right: 10px !important;
     z-index: 2147483646 !important;
     display: none;
-    max-height: calc(100vh - 104px) !important;
+    max-height: min(75dvh, calc(100dvh - 100px)) !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     padding: 14px !important;
@@ -5443,8 +5438,11 @@ if(document.readyState==='loading'){
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    min-height: 36px !important;
-    padding: 7px 11px !important;
+    min-height: 44px !important;
+    min-width: 44px !important;
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    padding: 10px 13px !important;
     border-radius: 999px !important;
     border: 1px solid rgba(200, 168, 75, 0.45) !important;
     background: rgba(200, 168, 75, 0.12) !important;
@@ -5469,7 +5467,9 @@ if(document.readyState==='loading'){
   }
 
   #wpaMobileDrawerV14 a {
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    min-height: 44px !important;
     width: 100% !important;
     padding: 12px 13px !important;
     border-radius: 13px !important;
@@ -5481,6 +5481,8 @@ if(document.readyState==='loading'){
     font-weight: 800 !important;
     line-height: 1.25 !important;
     white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
   }
 
   #wpaMobileDrawerV14 a:hover,
@@ -5632,6 +5634,7 @@ if(document.readyState==='loading'){
       if (!btn) return null;
 
       btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-controls", "wpaMobileDrawerV14");
       btn.setAttribute("type", "button");
 
       if (!overlay) {
@@ -5649,6 +5652,7 @@ if(document.readyState==='loading'){
         document.body.appendChild(drawer);
       }
 
+      drawer.setAttribute("aria-hidden", "true");
       var links = collectMenuLinks();
 
       drawer.replaceChildren();
@@ -5685,15 +5689,20 @@ if(document.readyState==='loading'){
 
     function setOpen(open, parts) {
       if (!parts || !parts.btn) return;
-
+      var wasOpen = document.body.classList.contains("wpa-mobile-drawer-open");
       document.body.classList.toggle("wpa-mobile-drawer-open", open);
       parts.btn.setAttribute("aria-expanded", open ? "true" : "false");
       parts.btn.textContent = open ? (wpaUILang()==="en"?"Close":"Затвори") : (wpaUILang()==="en"?"Menu":"Мени");
-
+      parts.drawer.setAttribute("aria-hidden", open ? "false" : "true");
       if (open) {
         document.body.style.overflow = "hidden";
+        if (!wasOpen) {
+          var close = parts.drawer.querySelector(".wpa-mobile-drawer-close");
+          if (close) close.focus();
+        }
       } else {
         document.body.style.overflow = "";
+        if (wasOpen) parts.btn.focus();
       }
     }
 
@@ -5744,7 +5753,18 @@ if(document.readyState==='loading'){
       });
 
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") setOpen(false, parts);
+        if (!document.body.classList.contains("wpa-mobile-drawer-open")) return;
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setOpen(false, parts);
+          return;
+        }
+        if (e.key !== "Tab") return;
+        var focusables = Array.prototype.slice.call(parts.drawer.querySelectorAll("a[href],button:not([disabled])"));
+        if (!focusables.length) return;
+        var first = focusables[0], last = focusables[focusables.length-1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
       });
 
       window.addEventListener("resize", function () {
