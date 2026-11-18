@@ -19,7 +19,7 @@ Smiljanov, S. (2026). Институционалниот протокол и д�
 Record: `/scholar/p21.html`  
 APA export: `/scholar/p21.apa.txt`
 
-There is no duplicate PDF for this paper in `/papers/` because the supplied journal issue contains a rights notice requiring permission for reproduction/transformation. The public WPA record therefore exposes metadata and citation exports only.
+The author-supplied publication extract is staged in PR #717 as `/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf`. The supplied issue also contains a rights notice requiring written permission from the publisher and authors for reproduction/transformation. Therefore the canonical WPA Scholar and Cloudflare AI-search lanes remain metadata/citation-only until the publisher-republication basis is evidenced at the Human Gate.
 
 ## Historical filenames
 
