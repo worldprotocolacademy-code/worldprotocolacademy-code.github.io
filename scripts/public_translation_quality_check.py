@@ -18,7 +18,7 @@ CONFIG = {
         "required": [
             "independent digital educational, research and authorial platform",
             "development, testing and pilot phase",
-            "27 academic publications",
+            "28 academic publications",
             "Doc. Dr Sande Smiljanov",
         ],
         "required_href": "/en/institute.html",
