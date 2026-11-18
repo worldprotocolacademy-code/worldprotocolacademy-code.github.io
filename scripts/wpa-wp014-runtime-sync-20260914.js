@@ -68,9 +68,9 @@ function bibliography(){
 function metrics(){
   if(path()!=='/wpa-metrics-status.html')return;
   var z=document.getElementById('zenodoTotal'),w=document.getElementById('wpTotal'),f=document.getElementById('zenodoFormula');
-  if(z)z.textContent='24';
-  if(w)w.textContent='14';
-  if(f)f.textContent='24 = 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.';
+  if(z)z.textContent='25';
+  if(w)w.textContent='15';
+  if(f)f.textContent='25 = 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan.';
 }
 function boot(){textFix(document.body);workingPapers();bibliography();metrics();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
