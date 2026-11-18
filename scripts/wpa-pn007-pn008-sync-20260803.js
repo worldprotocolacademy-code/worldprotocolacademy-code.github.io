@@ -217,16 +217,16 @@
     qsa('.bib-note').forEach(function (note) {
       if (text(note).indexOf('WPA Research Metrics') === -1) return;
       setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>' +
-        '• 25 Academic Publications / Академски публикации<br>' +
-        '• 13 WPA Working Papers (Zenodo DOI)<br>' +
-        '• 8 WPA Protocol Notes (Zenodo DOI)<br>' +
-        '• 21 WPA Series DOI Records<br>' +
+        '• 28 Academic Publications / Академски публикации<br>' +
+        '• 15 WPA Working Papers (Zenodo DOI)<br>' +
+        '• 9 WPA Protocol Notes (Zenodo DOI)<br>' +
+        '• 24 WPA Series DOI Records<br>' +
         '• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>' +
-        '• 22 Total WPA Zenodo Records<br>' +
-        '• 5 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>' +
+        '• 25 Total WPA Zenodo Records<br>' +
+        '• 6 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>' +
         '• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty · Agentic AI · Multi-Agent Governance');
     });
-    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 22 WPA Zenodo Records · 13 Working Papers + 8 Protocol Notes + 1 Strategic Plan');
+    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 25 WPA Zenodo Records · 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan');
     var resultCount = document.getElementById('bibResultCount') || document.getElementById('resultCount');
     if (resultCount) {
       var total = qsa('.bib-entry[data-search]').filter(function (entry) { return entry.id !== 'record'; }).length;

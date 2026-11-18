@@ -209,6 +209,65 @@ def check_governance_invariants(errors):
         for stale in ("25 Academic Publications","9 WPA Working Papers"):
             if stale in text:add_error(errors,f"One-page service profile contains stale publication claim: {stale}")
     else:add_error(errors,"Missing one-page service profile")
+def check_latest_publication_20261118(errors):
+    """Guard the 18 Nov 2026 publication update and prevent active runtime count rollback."""
+    status=ROOT/"data"/"wpa-canonical-metrics-status.json"
+    bibliography=ROOT/"bibliography"/"index.html"
+    scholar=ROOT/"scholar"/"p21.html"
+    records=ROOT/"wpa-scholar-records-2026.json"
+    if not status.exists():
+        add_error(errors,"Missing canonical metrics JSON for latest publication update")
+    else:
+        try:
+            d=json.loads(read_text(status))
+            a=d.get("academic_publications") or {}
+            if a.get("total") != 28 or a.get("scientific_papers_and_contributions") != 21:
+                add_error(errors,"Canonical academic metrics must be 28 total / 21 papers after P21")
+            latest=a.get("latest_addition") or {}
+            if latest.get("scholar_record") != "/scholar/p21.html":
+                add_error(errors,"Canonical metrics latest_addition does not point to Scholar P21")
+        except Exception as exc:
+            add_error(errors,f"Cannot validate canonical metrics JSON: {exc}")
+    if not bibliography.exists() or 'id="pub-28"' not in read_text(bibliography):
+        add_error(errors,"Official bibliography is missing pub-28")
+    if not scholar.exists():
+        add_error(errors,"Scholar P21 record is missing")
+    else:
+        st=read_text(scholar)
+        official="Институционалниот протокол и дипломатската симболика: од СФРЈ до постмодерната македонска дипломатска практика"
+        if f'name="citation_title" content="{official}"' not in st:
+            add_error(errors,"Scholar P21 must preserve the official Macedonian published title")
+        if 'name="citation_pdf_url"' in st:
+            add_error(errors,"Scholar P21 must not expose a local PDF before publisher permission is verified")
+        if "WPA bibliographic summary" not in st or "not a reproduction of the journal abstract" not in st:
+            add_error(errors,"Scholar P21 rights-safe paraphrase boundary is missing")
+    if records.exists():
+        try:
+            rs=json.loads(read_text(records))
+            p21=next((x for x in rs if x.get("id")=="P21"),None)
+            if not p21:
+                add_error(errors,"Structured Scholar records JSON is missing P21")
+            elif p21.get("pdf_url") is not None:
+                add_error(errors,"Structured P21 must keep pdf_url null until republication permission exists")
+        except Exception as exc:
+            add_error(errors,f"Cannot validate structured Scholar records: {exc}")
+    runtime_expectations={
+        "scripts/wpa-home-metrics-sync-20260817.js":("setTxt(num, '28')","21 труд и прилог · 28 вкупно"),
+        "scripts/wpa-corpus-20260729-v2.js":("• 28 Academic Publications / Академски публикации","• 25 Total WPA Zenodo Records"),
+        "scripts/wpa-pn007-pn008-sync-20260803.js":("• 28 Academic Publications / Академски публикации","• 25 Total WPA Zenodo Records"),
+        "scripts/wpa-publications-sync-20260817.js":("• 28 Academic Publications / Академски публикации","• 25 Total WPA Zenodo Records"),
+        "scripts/wpa-wp014-runtime-sync-20260914.js":("if(z)z.textContent='25';","if(w)w.textContent='15';"),
+    }
+    for rel,tokens in runtime_expectations.items():
+        p=ROOT/rel
+        if not p.exists():
+            add_error(errors,f"Missing active runtime metrics layer: {rel}")
+            continue
+        tx=read_text(p)
+        for token in tokens:
+            if token not in tx:
+                add_error(errors,f"{rel}: canonical runtime metric token missing: {token}")
+
 def check_final_reconciliation_layer(errors):
     core=ROOT/"scripts"/"wpa-performance-core.js";layer=ROOT/"scripts"/"wpa-final-reconciliation-20260826.js";note=ROOT/"docs"/"WPA_CANONICAL_REFERENCE_STATE_2026-08-26.md"
     if not core.exists() or "/scripts/wpa-final-reconciliation-20260826.js" not in read_text(core):add_error(errors,"Performance core does not load final reconciliation layer")
@@ -258,7 +317,7 @@ def check_commerce_fail_closed(errors):
         if secret.search(t):add_error(errors,f"{p.relative_to(ROOT)}: possible provider secret found in public file")
 
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0

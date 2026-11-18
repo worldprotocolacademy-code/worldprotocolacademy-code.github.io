@@ -62,10 +62,10 @@
 
   function updateCounts() {
     replaceTextNodes([
-      [/25 Academic Publications/g, '26 Academic Publications'],
-      [/25 академски публикации/g, '26 академски публикации'],
-      [/25-publication academic corpus/g, '26-publication academic corpus'],
-      [/25 публикации вкупно/g, '26 публикации вкупно'],
+      [/25 Academic Publications/g, '28 Academic Publications'],
+      [/25 академски публикации/g, '28 академски публикации'],
+      [/25-publication academic corpus/g, '28-publication academic corpus'],
+      [/25 публикации вкупно/g, '28 публикации вкупно'],
       [/5 монографии и прирачници/g, '6 монографии и прирачници'],
       [/5 Monographs and Handbooks/g, '6 Monographs and Handbooks'],
       [/5 Monographs & Handbooks/g, '6 Monographs & Handbooks'],
@@ -261,9 +261,9 @@
     });
     qsa('.bib-note').forEach(function (note) {
       if (text(note).indexOf('WPA Research Metrics') === -1) return;
-      setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>• 26 Academic Publications / Академски публикации<br>• 13 WPA Working Papers (Zenodo DOI)<br>• 9 WPA Protocol Notes (Zenodo DOI)<br>• 22 WPA Series DOI Records<br>• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>• 23 Total WPA Zenodo Records<br>• 6 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty · Agentic AI · Multi-Agent Governance · Authorship · Provenance');
+      setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>• 28 Academic Publications / Академски публикации<br>• 15 WPA Working Papers (Zenodo DOI)<br>• 9 WPA Protocol Notes (Zenodo DOI)<br>• 24 WPA Series DOI Records<br>• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>• 25 Total WPA Zenodo Records<br>• 6 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty · Agentic AI · Multi-Agent Governance · Authorship · Provenance');
     });
-    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 23 WPA Zenodo Records · 13 Working Papers + 9 Protocol Notes + 1 Strategic Plan');
+    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 25 WPA Zenodo Records · 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan');
     var digital = findText('div,span', /^Digital Era \(2023\) · IMCSM26 \(2026\)/i);
     if (digital) setText(digital, 'Digital Era (2023) · IMCSM26 (2026) · PN-005 · PN-006 · PN-007 · PN-008 · PN-009');
     if (!document.documentElement.dataset.wpaPubSyncBibBound) {

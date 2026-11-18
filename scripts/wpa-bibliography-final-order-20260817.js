@@ -64,7 +64,7 @@
     }
 
     /* Academic publication sequence after inserting the sixth book:
-       01-06 books, 07 dissertation, 08-26 papers. */
+       01-06 books, 07 dissertation, 08-28 papers. */
     if (dissertationHeading) renumberBetween(dissertationHeading, papersHeading, 7);
     if (papersHeading) renumberBetween(papersHeading, workingPapersHeading, 8);
 

@@ -255,21 +255,21 @@
     qsa('.bib-note').forEach(function (note) {
       if (txt(note).indexOf('WPA Research Metrics') === -1) return;
       setHTML(note, '<strong>WPA Research Metrics · WPA Истражувачки показатели</strong><br><br>' +
-        '• 25 Academic Publications / Академски публикации<br>' +
-        '• 13 WPA Working Papers (Zenodo DOI)<br>' +
-        '• 6 WPA Protocol Notes (Zenodo DOI)<br>' +
-        '• 19 WPA Series DOI Records<br>' +
+        '• 28 Academic Publications / Академски публикации<br>' +
+        '• 15 WPA Working Papers (Zenodo DOI)<br>' +
+        '• 9 WPA Protocol Notes (Zenodo DOI)<br>' +
+        '• 24 WPA Series DOI Records<br>' +
         '• 1 Global Strategic Plan report — Version 1.1 (Zenodo DOI)<br>' +
-        '• 20 Total WPA Zenodo Records<br>' +
-        '• 5 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>' +
+        '• 25 Total WPA Zenodo Records<br>' +
+        '• 6 Monographs and Handbooks<br>• 1 Doctoral Dissertation<br>' +
         '• Research Areas: Protocol Studies · Protocolometry · Diplomatic Protocol · Ceremonial Diplomacy · Visual Statecraft · Sacred Diplomacy · Security Studies · Digital Protocol · AI Governance · Cognitive Sovereignty');
     });
 
-    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 20 WPA Zenodo Records · 13 Working Papers + 6 Protocol Notes + 1 Strategic Plan');
+    setText(document.querySelector('.zenodo-hero-badge strong'), '◆ 25 WPA Zenodo Records · 15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan');
     var stats = qsa('.zenodo-stat strong');
-    setText(stats[0], '13');
-    setText(stats[1], '001–013');
-    setText(stats[2], '13/13');
+    setText(stats[0], '15');
+    setText(stats[1], '001–015');
+    setText(stats[2], '15/15');
     setText(document.querySelector('.zenodo-doi-line strong'), 'DOI coverage: 13 Zenodo records');
 
     var resultCount = document.getElementById('bibResultCount') || document.getElementById('resultCount');
