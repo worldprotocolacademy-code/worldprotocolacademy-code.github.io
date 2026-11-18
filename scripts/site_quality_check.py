@@ -237,18 +237,22 @@ def check_latest_publication_20261118(errors):
         official="Институционалниот протокол и дипломатската симболика: од СФРЈ до постмодерната македонска дипломатска практика"
         if f'name="citation_title" content="{official}"' not in st:
             add_error(errors,"Scholar P21 must preserve the official Macedonian published title")
-        if 'name="citation_pdf_url"' in st:
-            add_error(errors,"Scholar P21 must not expose a local PDF before publisher permission is verified")
+        if 'name="citation_pdf_url" content="https://worldprotocolacademy.mk/scholar/p21.pdf"' not in st:
+            add_error(errors,"Scholar P21 must expose the authorised local PDF after written republication permission")
+        if not (ROOT/"scholar"/"p21.pdf").exists():
+            add_error(errors,"Scholar P21 authorised PDF file is missing")
         if "WPA bibliographic summary" not in st or "not a reproduction of the journal abstract" not in st:
-            add_error(errors,"Scholar P21 rights-safe paraphrase boundary is missing")
+            add_error(errors,"Scholar P21 discovery paraphrase boundary is missing")
     if records.exists():
         try:
             rs=json.loads(read_text(records))
             p21=next((x for x in rs if x.get("id")=="P21"),None)
             if not p21:
                 add_error(errors,"Structured Scholar records JSON is missing P21")
-            elif p21.get("pdf_url") is not None:
-                add_error(errors,"Structured P21 must keep pdf_url null until republication permission exists")
+            elif p21.get("pdf_url") != "https://worldprotocolacademy.mk/scholar/p21.pdf":
+                add_error(errors,"Structured P21 must expose the authorised Scholar PDF URL")
+            elif p21.get("pdf_republication_status") != "PUBLIC_REPUBLICATION_AUTHORISED_BY_PUBLISHER_REPRESENTATIVE_AND_AUTHOR":
+                add_error(errors,"Structured P21 must record the written republication permission status")
         except Exception as exc:
             add_error(errors,f"Cannot validate structured Scholar records: {exc}")
     runtime_expectations={

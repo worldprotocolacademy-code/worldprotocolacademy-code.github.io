@@ -38,10 +38,14 @@ jobs:
               raise SystemExit(f'Missing required metadata: {missing}')
           if d.get('record_id') != 'P21':
               raise SystemExit('Unexpected record_id')
-          if d.get('source_pdf_publication_status') != 'NOT_REPUBLISHED_BY_WPA':
-              raise SystemExit('Source PDF rights boundary drift')
+          if d.get('source_pdf_publication_status') != 'PUBLIC_PDF_REPUBLICATION_AUTHORISED':
+              raise SystemExit('Unexpected public PDF permission status')
+          if not d.get('public_pdf_url'):
+              raise SystemExit('Authorised public PDF URL is required')
+          if d.get('permission_evidence_status') != 'USER_PROVIDED_WRITTEN_PERMISSION':
+              raise SystemExit('Written permission evidence status is required')
           if 'abstract' in d or 'full_text' in d or d.get('pdf_url'):
-              raise SystemExit('Rights-safe metadata lane must not contain abstract/full text/PDF URL')
+              raise SystemExit('AI-search metadata lane must not contain abstract/full text/embedded PDF content')
           print('EXTERNAL PUBLICATION METADATA VALIDATION PASS')
           PY
 
@@ -114,13 +118,15 @@ jobs:
               f'issn: "{d["issn"]}"',
               f'canonical_url: "{d["canonical_url"]}"',
               f'rights_mode: "{d["rights_mode"]}"',
+              f'public_pdf_url: "{d["public_pdf_url"]}"',
               '---','',
               '# '+d['title'],'',
               '**Descriptive English translation (not asserted as published title):** '+d['descriptive_english_title'],'',
               '**Citation metadata:** '+d['journal']+', '+d['volume']+'('+d['issue']+'), pp. '+d['pages']+', ISSN '+d['issn']+'.','',
               '**WPA paraphrase:** '+d['wpa_paraphrase'],'',
               '**Keywords:** '+', '.join(d['keywords'])+'.','',
-              '**Rights boundary:** '+d['source_pdf_rights_note']+' WPA does not republish the supplied source PDF in this AI-search lane.',''
+              '**Public PDF:** '+d['public_pdf_url'],'',
+              '**Rights boundary:** '+d['source_pdf_rights_note'],'',
           ]
           body='\n'.join(lines)
           Path('p21-ai-ready.md').write_text(body, encoding='utf-8')
@@ -128,7 +134,9 @@ jobs:
               'record_id':d['record_id'],
               'source_json_sha256':hashlib.sha256(Path('data/ai-search-ready/p21-security-2026.json').read_bytes()).hexdigest(),
               'ai_ready_sha256':hashlib.sha256(body.encode('utf-8')).hexdigest(),
-              'rights_mode':d['rights_mode']
+              'rights_mode':d['rights_mode'],
+              'public_pdf_url':d['public_pdf_url'],
+              'permission_evidence_status':d.get('permission_evidence_status')
           }
           Path('p21-sync-evidence.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
           print('AI-ready metadata built')
