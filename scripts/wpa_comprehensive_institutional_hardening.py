@@ -73,7 +73,7 @@ architecture = {
         {'id': 'student_desk', 'status': 'BETA_GOVERNED_PUBLIC_PREVIEW', 'backend_required_before_live_operations': True}
     ],
     'evidence_and_governance': ['/data/wpa-academic-quality-standard.json', '/data/wpa-canonical-version-manifest.json', '/data/wpa-public-evidence-index.json', '/data/wpa-preventive-source-compliance-gate.json', '/data/wpa-student-operations-backend-schema.json'],
-    'current_publication_metric': {'total': 26, 'monographs_and_manuals': 6, 'doctoral_dissertations': 1, 'scientific_papers_and_contributions': 19},
+    'current_publication_metric': {'total': 28, 'monographs_and_manuals': 6, 'doctoral_dissertations': 1, 'scientific_papers_and_contributions': 21, 'canonical_source': '/data/wpa-canonical-metrics-status.json'},
     'external_delivery_boundary': 'No external-customer AI delivery is claimed unless separately evidenced.'
 }
 jwrite('data/wpa-institutional-operating-architecture.json', architecture)
@@ -90,7 +90,16 @@ c['virtual_sande_v35_2_candidate'] = {'version': 'v35.2-connected-vessels-phase4
 jwrite('data/wpa-canonical-version-manifest.json', manifest)
 
 evidence = jload('data/wpa-public-evidence-index.json')
-evidence['version'] = '1.1.0'; evidence['updated'] = '2026-08-22'
+evidence['version'] = '1.2.2'; evidence['updated'] = '2026-11-18'
+evidence['institutional_metrics'] = {
+    'publications_total': 28,
+    'monographs_and_manuals': 6,
+    'doctoral_dissertations': 1,
+    'scientific_papers_and_contributions': 21,
+    'metric_status': 'current_WPA_public_metric',
+    'canonical_source': '/data/wpa-canonical-metrics-status.json',
+    'counting_rule': '6 + 1 + 21 = 28 academic publications'
+}
 ev = evidence.setdefault('evidence', []); ids = {x.get('id') for x in ev if isinstance(x, dict)}
 for x in [
     {'id': 'EVIDENCE-HGAIM-001', 'type': 'institutional_model', 'title': 'WPA Human-Governed Agentic Institution Model', 'path': '/data/wpa-human-governed-agentic-institution-model.json', 'version': '1.0.0', 'status': 'WPA_WORKING_INSTITUTIONAL_MODEL', 'boundary': 'Internal WPA framework; not an external standard and not a world-first claim.'},
