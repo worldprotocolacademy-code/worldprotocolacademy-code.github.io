@@ -1,0 +1,47 @@
+name: WPA Agent Discovery CI
+
+on:
+  pull_request:
+    paths:
+      - 'llms.txt'
+      - 'agent-discovery.html'
+      - 'wpa-research-discovery.atom'
+      - 'data/wpa-institute-entity.json'
+      - 'data/wpa-public-evidence-manifest.json'
+      - 'institute.html'
+      - 'index.html'
+      - 'robots.txt'
+      - 'scripts/agent_discovery_check.py'
+      - '.github/workflows/agent-discovery.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'llms.txt'
+      - 'agent-discovery.html'
+      - 'wpa-research-discovery.atom'
+      - 'data/wpa-institute-entity.json'
+      - 'data/wpa-public-evidence-manifest.json'
+      - 'institute.html'
+      - 'index.html'
+      - 'robots.txt'
+      - 'scripts/agent_discovery_check.py'
+      - '.github/workflows/agent-discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  agent-discovery:
+    name: Validate agent discovery layer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Validate discovery artifacts and crawler boundaries
+        run: python scripts/agent_discovery_check.py
