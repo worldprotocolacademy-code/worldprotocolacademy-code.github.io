@@ -48,7 +48,7 @@ jobs:
         run: python scripts/wpa_proactive_agent_fabric.py --dry-run --task "${{ github.event.inputs.task || 'Prepare the WPA Institute daily research and editorial review packet.' }}" --output proactive-agent-dryrun.json
       - name: Report sanitized provider availability
         run: python -c 'import json; d=json.load(open("proactive-agent-dryrun.json",encoding="utf-8")); print("PROVIDER_DRY_RUN", json.dumps(d["summary"], ensure_ascii=False)); print("HUMAN_GATE", json.dumps(d["human_gate"], ensure_ascii=False)); print("STATES", json.dumps({k:v["state"] for k,v in d["agents"].items()}, ensure_ascii=False))'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wpa-proactive-agent-dryrun
           path: proactive-agent-dryrun.json
@@ -81,7 +81,7 @@ jobs:
           WPA_HARVEY_API_URL: ${{ secrets.WPA_HARVEY_API_URL }}
           WPA_HARVEY_MODEL: ${{ secrets.WPA_HARVEY_MODEL }}
         run: python scripts/wpa_proactive_agent_fabric.py --task "${{ github.event.inputs.task }}" --output proactive-agent-run.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wpa-proactive-agent-human-gate-packet
           path: proactive-agent-run.json
