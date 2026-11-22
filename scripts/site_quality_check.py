@@ -389,7 +389,7 @@ def check_papers_archive_discovery(errors):
     readme=read_text(archive)
     for token in ('28 academic publications','16 WPA Working Papers','9 Protocol Notes','26 separate Zenodo records','id="academic-p21"','id="wpa-wp-016"','/scholar/p21.txt','/scholar/wpa-wp-016.bib','/scholar/wpa-wp-016.ris','https://zenodo.org/records/24446404/files/'):
         if token not in html:add_error(errors,f"Papers portal missing current record/route: {token}")
-    for token in ('P20','P21','publisher and author written permission','28 academic publications','26 WPA Zenodo records','WPA Working Papers'):
+    for token in ('P20','P21','written permission from the publisher and authors','28 academic publications','26 WPA Zenodo records','WPA Working Papers'):
         if token not in readme:add_error(errors,f"GitHub PDF-folder documentation missing: {token}")
     if not (ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md").is_file():
         add_error(errors,"Academic publication No. 28 requires a dedicated P21 catalogue entry in /papers/")
