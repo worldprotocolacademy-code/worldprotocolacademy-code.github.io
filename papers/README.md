@@ -1,15 +1,25 @@
-# WPA `/papers/` — physical PDF archive and publication routes
+# Scientific papers — WPA GitHub `/papers/`
 
-**Snapshot: 22 November 2026.** This GitHub directory holds **locally hosted PDFs only**. It is **not** the complete academic or Zenodo inventory. The [WPA Scientific Papers portal](https://worldprotocolacademy.mk/papers.html), [official bibliography](https://worldprotocolacademy.mk/bibliography/) and [Scholar index](https://worldprotocolacademy.mk/scholar/) are the discovery routes.
+**Academic papers and contributions only.** This folder stores the **authorised, locally hosted academic-paper PDFs**, plus the academic-publication catalogue entry for the most recent item. It is not the WPA Zenodo Working Papers repository.
 
-| Publication | Full-text PDF | APA 7 and metadata |
-| --- | --- | --- |
-| **P20: The Flag Is Not Decoration** — *Security Horizons* (2026) | [Local PDF `p21-the-flag-is-not-decoration-security-horizons-2026.pdf`](p21-the-flag-is-not-decoration-security-horizons-2026.pdf). **Historical filename:** `p21` does *not* mean P21 | [P20 Scholar](https://worldprotocolacademy.mk/scholar/p20.html) |
-| **P21 / academic publication No. 28:** *Институционалниот протокол и дипломатската симболика* — *Безбедност / Security*, LXVII(11), 170–178 (2026) | **Not stored or authorised for republication**; publisher and author written permission required. Never substitute the P20 PDF | [P21 Scholar / APA 7](https://worldprotocolacademy.mk/scholar/p21.html#apa7) · [TXT](https://worldprotocolacademy.mk/scholar/p21.txt) · [BibTeX](https://worldprotocolacademy.mk/scholar/p21.bib) · [RIS](https://worldprotocolacademy.mk/scholar/p21.ris) |
-| **WPA Working Paper No. 016:** *The Visible Mandate* — R27, 22 pages, published 22 November 2026; *not peer-reviewed* | [Authoritative Zenodo PDF](https://zenodo.org/records/24446404/files/WPA_WP016_R27_INTERIM_EVIDENCE_SNAPSHOT_O12_MUSK_PROVENANCE_ALIGNED_2026-11-22.pdf?download=1) (external; no duplicate GitHub PDF) | [DOI 10.5281/zenodo.24446404](https://doi.org/10.5281/zenodo.24446404) · [Scholar / APA 7](https://worldprotocolacademy.mk/scholar/wpa-wp-016.html) · [TXT](https://worldprotocolacademy.mk/scholar/wpa-wp-016.txt) · [BibTeX](https://worldprotocolacademy.mk/scholar/wpa-wp-016.bib) · [RIS](https://worldprotocolacademy.mk/scholar/wpa-wp-016.ris) |
+## Academic publication No. 28 — P21
 
-**Citation boundary:** WP-016 is a bilingual interim working paper, not a peer-reviewed journal paper. Its DOI and deposited files remain authoritative on Zenodo. The P21 article from *Безбедност / Security* is a separate academic publication, not a Zenodo Working Paper.
+**Институционалниот протокол и дипломатската симболика: од СФРЈ до постмодерната македонска дипломатска практика**  
+Sande Smiljanov · *Безбедност / Security*, LXVII(11), pp. 170–178 (2026) · ISSN 2671-3764
 
-**Separate current counts (22 November 2026):** 28 academic publications (6 monographs/handbooks, 1 doctoral dissertation and 21 scientific papers/contributions) and 26 Zenodo records (16 Working Papers, 9 Protocol Notes, 1 Global Strategic Plan). Do not add these two totals together.
+- **[P21 academic catalogue record in this folder](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md)** — APA 7, ISSN, UDK, publisher, rights and verification status
+- **[P21 Scholar / APA 7](https://worldprotocolacademy.mk/scholar/p21.html#apa7)** · [TXT](https://worldprotocolacademy.mk/scholar/p21.txt) · [BibTeX](https://worldprotocolacademy.mk/scholar/p21.bib) · [RIS](https://worldprotocolacademy.mk/scholar/p21.ris)
+- **Full article PDF:** **NOT YET HOSTED IN THIS FOLDER.** A publisher-issued article/issue PDF has not been verified here as authorised for re-hosting; the journal's rights notice requires written permission from the publisher and authors. Do not substitute another PDF
+- **Publisher journal listing** (general page, not an article-specific download): https://mvr.gov.mk/mk-MK/odnosi-so-javnost/spisanie
 
-For missing or newly authorised full-text journal PDFs, follow the publisher permission and provenance gates before adding bytes to this directory. Never rename or overwrite a historical file just to make its number match the current catalogue.
+## Historic filename: P20, not P21
+
+**[Local PDF: `p21-the-flag-is-not-decoration-security-horizons-2026.pdf`](p21-the-flag-is-not-decoration-security-horizons-2026.pdf)** is the distinct academic article **P20**, *The Flag Is Not Decoration* (*Security Horizons*, 2026). The legacy filename begins with `p21`, but its canonical academic ID is **P20**. Preserve the original bytes and filename; do not label it as publication No. 28.
+
+## Series boundary
+
+This `/papers/` folder belongs to the **academic papers** collection. **WPA Working Papers are a different authorial Zenodo corpus** and belong in the independent [WPA Working Papers DOI index](https://worldprotocolacademy.mk/working-papers/), not in the academic P21 entry or in an invented local PDF.
+
+Current independently counted totals, as of 22 November 2026: **28 academic publications** (6 monographs/handbooks + 1 doctoral dissertation + 21 scientific papers/contributions) and **26 WPA Zenodo records** (16 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan).
+
+For the full academic collection use [WPA Scientific Papers](https://worldprotocolacademy.mk/papers.html), [Official Bibliography](https://worldprotocolacademy.mk/bibliography/#pub-28), or [WPA Scholar](https://worldprotocolacademy.mk/scholar/). Never treat a catalogue file as the actual published article PDF.
