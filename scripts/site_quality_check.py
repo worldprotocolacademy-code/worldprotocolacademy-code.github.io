@@ -183,7 +183,7 @@ def check_governance_invariants(errors):
     metrics=ROOT/"data"/"wpa-canonical-metrics-status.json"
     if metrics.exists():
         text=read_text(metrics)
-        for token in ['"total_records": 25','"working_papers": 15','"protocol_notes": 9','"global_strategic_plans": 1']:
+        for token in ['"total_records": 26','"working_papers": 16','"protocol_notes": 9','"global_strategic_plans": 1']:
             if token not in text:add_error(errors,f"Canonical metrics missing publication invariant: {token}")
         if '"status": "FORMATION_PHASE"' not in text:add_error(errors,"Canonical metrics missing AAB formation boundary")
     else:add_error(errors,"Missing canonical metrics JSON")
