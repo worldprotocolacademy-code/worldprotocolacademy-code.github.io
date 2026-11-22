@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -105,7 +106,16 @@ assert "12 Working Papers + 3 Protocol Notes" not in (ROOT / "bibliography/index
 assert "Zero hallucination политика" not in (ROOT / "index.html").read_text(encoding="utf-8")
 assert "5/53 верифицирани записи" not in (ROOT / "protocol-symbols/index.html").read_text(encoding="utf-8")
 assert "WPA Protocol Soft Power Index" in (ROOT / "protocolometry-center.html").read_text(encoding="utf-8")
-assert "15 Working Papers + 9 Protocol Notes + 1 Global Strategic Plan = 25" in (ROOT / "bibliography/index.html").read_text(encoding="utf-8")
+# Validate the CURRENT canonical corpus dynamically. The 2026 X10 baseline was 25 records,
+# but the later author-approved WP-016 publication raised the distinct Zenodo corpus to 26.
+# The X10 safety lock must not incorrectly reject new legitimately published records.
+zenodo = json.loads((ROOT / "data/wpa-canonical-public-facts.json").read_text(encoding="utf-8"))["zenodo_corpus"]
+wp, pn, plan, total = (zenodo["working_papers"], zenodo["protocol_notes"],
+                       zenodo["global_strategic_plans"], zenodo["total_records"])
+assert wp + pn + plan == total, "Zenodo corpus total must equal component counts"
+bibliography = (ROOT / "bibliography/index.html").read_text(encoding="utf-8")
+assert f"{total} WPA Zenodo Records" in bibliography, "Bibliography Zenodo corpus total not reconciled"
+assert f"{wp} Working Papers + {pn} Protocol Notes + {plan} Global Strategic Plan" in bibliography, "Bibliography WPA corpus counts drift"
 assert "Официјално издавање сè уште не е активно" in (ROOT / "certification.html").read_text(encoding="utf-8")
 assert "INACTIVE / FROZEN" in (ROOT / "wpa-services.html").read_text(encoding="utf-8")
 assert "This card is for educational and protocol-reference purposes." in (ROOT / "wpaws/protocol-symbols/index.html").read_text(encoding="utf-8")
