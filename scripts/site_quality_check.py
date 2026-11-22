@@ -369,7 +369,7 @@ def check_p21_wp016_export_contract(errors):
             if token not in html:add_error(errors,f"{label} Scholar missing {token}")
     for token in ("wpa-wp-016.bib","wpa-wp-016.ris","wpa-wp-016.txt"):
         if token not in idx:add_error(errors,f"WP-016 Working Papers entry missing {token}")
-    # Scope this guard to the P21 entry; the P20 bibliography entry legitimately links to a differently numbered historical PDF filename.
+    # Scope this guard to P21; P20 now uses its own correctly numbered PDF.
     p21card=bib.split('id="pub-28"',1)[-1].split('<h2 class="part-heading"',1)[0]
     p21_pdf=ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
     expected_sha="740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781"
@@ -401,12 +401,12 @@ def check_papers_archive_discovery(errors):
     readme=read_text(archive)
     for token in ('28 academic publications','16 WPA Working Papers','9 Protocol Notes','26 separate Zenodo records','id="academic-p21"','id="wpa-wp-016"','/scholar/p21.txt','/scholar/wpa-wp-016.bib','/scholar/wpa-wp-016.ris','https://zenodo.org/records/24446404/files/'):
         if token not in html:add_error(errors,f"Papers portal missing current record/route: {token}")
-    for token in ('P20','P21','written permission from the publisher and authors','28 academic publications','26 WPA Zenodo records','WPA Working Papers'):
+    for token in ('P20','P21','Publisher rights','28 academic publications','26 public Zenodo records','WPA WP-016'):
         if token not in readme:add_error(errors,f"GitHub PDF-folder documentation missing: {token}")
-    if not (ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md").is_file():
-        add_error(errors,"Academic publication No. 28 requires a dedicated P21 catalogue entry in /papers/")
+    if not (ROOT/"docs/publications/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md").is_file():
+        add_error(errors,"Academic publication No. 28 requires its provenance note outside the PDF folder")
     else:
-        entry=read_text(ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md")
+        entry=read_text(ROOT/"docs/publications/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md")
         for token in ('LXVII','170–178','2671-3764','APA 7','AUTHORISATION VERIFIED','Scientific journal article'):
             if token not in entry:add_error(errors,f"P21 academic catalogue entry incomplete: {token}")
     if '/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in html or 'p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in readme:
@@ -419,13 +419,70 @@ def check_papers_archive_discovery(errors):
     p21=cards.split('id="academic-p21"',1)[-1].split("</article>",1)[0]
     if 'href="/papers/p21-the-flag' in p21:
         add_error(errors,"P21 must not link to the P20 historical PDF filename")
-    if 'papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md' not in p21:
-        add_error(errors,"P21 academic card must link to its dedicated GitHub /papers/ catalogue record")
+    if 'docs/publications/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md' not in p21:
+        add_error(errors,"P21 academic card must link to the separate provenance note outside the PDF folder")
     if 'PDF is hosted at the published Zenodo record' not in html:
         add_error(errors,"WP016 PDF provenance statement missing")
 
+def check_canonical_academic_pdf_archive(errors):
+    """Each academic paper has one canonical PDF ID; original bytes and corpus boundaries are protected."""
+    import re
+    folder=ROOT/"papers"
+    pdfs=list(folder.glob("p[0-9][0-9]-*.pdf"))
+    by_number={}
+    for pdf in pdfs:
+        m=re.match(r"p(\d{2})-",pdf.name)
+        if m:
+            by_number.setdefault(int(m.group(1)),[]).append(pdf.name)
+    if len(pdfs)!=21 or set(by_number)!=set(range(1,22)):
+        add_error(errors,f"Expected 21 canonical academic PDFs P01-P21, found {len(pdfs)}: {sorted(by_number)}")
+    for k,v in by_number.items():
+        if len(v)!=1:add_error(errors,f"Duplicate academic PDF P{k:02d}: {v}")
+    if list(folder.glob("p[0-9][0-9]-*.md")):
+        add_error(errors,"Academic PDF folder contains a duplicate numbered Markdown record")
+    retired=("p16-leadership-protocol-case-mk.pdf","p17-protokol-liderski-karakteristiki.pdf",
+             "p18-protocol-public-relations.pdf","p19-digital-protocol-ai-public-sector.pdf",
+             "p20-military-protocol-defence-diplomacy-military-diplomacy.pdf",
+             "p21-the-flag-is-not-decoration-security-horizons-2026.pdf")
+    for name in retired:
+        if (folder/name).exists():add_error(errors,f"Legacy duplicate/wrong paper number remains: {name}")
+    manifest=ROOT/"data"/"wpa-academic-pdf-id-map.json"
+    if not manifest.is_file():
+        add_error(errors,"Academic paper ID reconciliation manifest missing")
+        return
+    mapping=json.loads(read_text(manifest))
+    for rec in mapping["paper_files"]:
+        pdf=ROOT/rec["canonical_path"]
+        if not pdf.is_file():
+            add_error(errors,f"Academic {rec['id']} PDF missing: {rec['canonical_path']}")
+            continue
+        payload=pdf.read_bytes()
+        header=("blob "+str(len(payload))+"\0").encode("ascii")
+        actual_sha=hashlib.sha1(header+payload).hexdigest()
+        if actual_sha!=rec["git_blob_sha1"]:
+            add_error(errors,f"Academic {rec['id']} PDF bytes differ from pre-reconciliation Git object")
+        if len(payload)!=rec["bytes"]:
+            add_error(errors,f"Academic {rec['id']} PDF size mismatch")
+    page=read_text(ROOT/"papers.html")
+    academic=page.split('id="papers-list"',1)[-1].split('id="wpa-working-papers"',1)[0]
+    cards=re.findall(r'<span class="small-kicker">P(\d{2})',academic)
+    expected=[f"{n:02d}" for n in range(1,22)]
+    if sorted(cards)!=sorted(expected):
+        add_error(errors,f"Academic visible cards are duplicated/missing: {cards}")
+    if page.count('id="academic-p21"')!=1 or page.count('id="wpa-wp-016"')!=1:
+        add_error(errors,"P21 academic and WP-016 Zenodo must have distinct single cards")
+    bib=read_text(ROOT/"bibliography"/"index.html")
+    if bib.count('id="pub-28"')!=1 or bib.count('id="wp-016"')!=1:
+        add_error(errors,"Bibliography P21 publication 28 and separate WP016 must be unique")
+    records=json.loads(read_text(ROOT/"wpa-scholar-records-2026.json"))
+    for ident in ("P16","P17","P18","P19","P20","P21","WP-016"):
+        if sum(x.get("id")==ident for x in records)!=1:
+            add_error(errors,f"Duplicate/missing Scholar record: {ident}")
+    if next(x for x in records if x.get("id")=="WP-016").get("doi")!="10.5281/zenodo.24446404":
+        add_error(errors,"WP016 Zenodo DOI changed")
+
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_p21_wp016_export_contract(errors);check_papers_archive_discovery(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_p21_wp016_export_contract(errors);check_papers_archive_discovery(errors);check_canonical_academic_pdf_archive(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
