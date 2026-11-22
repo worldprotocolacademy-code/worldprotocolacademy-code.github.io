@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """WPA public-site quality and canonical-drift check."""
 from __future__ import annotations
+import hashlib
 import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -237,8 +238,9 @@ def check_latest_publication_20261118(errors):
         official="Институционалниот протокол и дипломатската симболика: од СФРЈ до постмодерната македонска дипломатска практика"
         if f'name="citation_title" content="{official}"' not in st:
             add_error(errors,"Scholar P21 must preserve the official Macedonian published title")
-        if 'name="citation_pdf_url"' in st:
-            add_error(errors,"Scholar P21 must not expose a local PDF before publisher permission is verified")
+        expected_pdf_url="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
+        if f'name="citation_pdf_url" content="{expected_pdf_url}"' not in st:
+            add_error(errors,"Scholar P21 must link the exact journal-authorised PDF after documented editorial permission")
         if "WPA bibliographic summary" not in st or "not a reproduction of the journal abstract" not in st:
             add_error(errors,"Scholar P21 rights-safe paraphrase boundary is missing")
     if records.exists():
@@ -247,8 +249,10 @@ def check_latest_publication_20261118(errors):
             p21=next((x for x in rs if x.get("id")=="P21"),None)
             if not p21:
                 add_error(errors,"Structured Scholar records JSON is missing P21")
-            elif p21.get("pdf_url") is not None:
-                add_error(errors,"Structured P21 must keep pdf_url null until republication permission exists")
+            elif (p21.get("pdf_url") != "https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
+                  or p21.get("pdf_republication_status") != "SPECIFIC_EDITORIAL_WRITTEN_PERMISSION_2026_11_18"
+                  or p21.get("pdf_sha256") != "740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781"):
+                add_error(errors,"Structured Scholar P21 must retain its exact authorised PDF, permission status and SHA-256")
         except Exception as exc:
             add_error(errors,f"Cannot validate structured Scholar records: {exc}")
     runtime_expectations={
@@ -356,7 +360,7 @@ def check_p21_wp016_export_contract(errors):
     p21=read_text(ROOT/"scholar"/"p21.html")
     wp16=read_text(ROOT/"scholar"/"wpa-wp-016.html")
     idx=read_text(ROOT/"working-papers"/"index.html")
-    for token in ('id="pub-28"','id="wp-016"','data-apa="Smiljanov, S. (2026).','📄 PDF · Zenodo','🔒 PDF · дозвола','📚 BibTeX','🗂 RIS','📋 Copy APA 7'):
+    for token in ('id="pub-28"','id="wp-016"','data-apa="Smiljanov, S. (2026).','📄 PDF · Zenodo','📄 PDF · целосен труд','📚 BibTeX','🗂 RIS','📋 Copy APA 7'):
         if token not in bib:add_error(errors,f"Missing bibliography action: {token}")
     if "https://zenodo.org/records/24446404/files/" not in bib or "https://zenodo.org/records/24446404/files/" not in wp16:
         add_error(errors,"WP-016 PDF must refer to its published Zenodo deposit.")
@@ -367,13 +371,21 @@ def check_p21_wp016_export_contract(errors):
         if token not in idx:add_error(errors,f"WP-016 Working Papers entry missing {token}")
     # Scope this guard to the P21 entry; the P20 bibliography entry legitimately links to a differently numbered historical PDF filename.
     p21card=bib.split('id="pub-28"',1)[-1].split('<h2 class="part-heading"',1)[0]
-    if "citation_pdf_url" in p21 or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in p21card:
-        add_error(errors,"P21 must not point to another article's PDF.")
+    p21_pdf=ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
+    expected_sha="740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781"
+    expected_url="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
+    if not p21_pdf.is_file():
+        add_error(errors,"P21 authorised PDF absent; refuse publication of broken PDF links.")
+    else:
+        if p21_pdf.stat().st_size!=1315825:add_error(errors,"P21 PDF size mismatch.")
+        if hashlib.sha256(p21_pdf.read_bytes()).hexdigest()!=expected_sha:add_error(errors,"P21 PDF SHA-256 mismatch.")
+    if expected_url not in p21 or '/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in p21card or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in p21card:
+        add_error(errors,"P21 PDF metadata/links must point only to its authorised journal article.")
     try:
         records=json.loads(read_text(ROOT/"wpa-scholar-records-2026.json"))
         p21r=next(x for x in records if x.get("id")=="P21")
         w16=next(x for x in records if x.get("id")=="WP-016")
-        if p21r.get("pdf_url") is not None:add_error(errors,"P21 publisher permission gate remains closed.")
+        if p21r.get("pdf_url")!="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf" or p21r.get("pdf_sha256")!="740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781" or p21r.get("pdf_pages")!=14:add_error(errors,"P21 authorised 14-page PDF metadata drift.")
         if w16.get("doi")!="10.5281/zenodo.24446404":add_error(errors,"WP-016 DOI drift.")
     except (StopIteration,json.JSONDecodeError,OSError) as exc:
         add_error(errors,f"Cannot verify academic export records: {exc}")
@@ -395,8 +407,10 @@ def check_papers_archive_discovery(errors):
         add_error(errors,"Academic publication No. 28 requires a dedicated P21 catalogue entry in /papers/")
     else:
         entry=read_text(ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md")
-        for token in ('LXVII','170–178','2671-3764','APA 7','NOT HOSTED','Scientific journal article'):
+        for token in ('LXVII','170–178','2671-3764','APA 7','AUTHORISATION VERIFIED','Scientific journal article'):
             if token not in entry:add_error(errors,f"P21 academic catalogue entry incomplete: {token}")
+    if '/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in html or 'p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in readme:
+        add_error(errors,"Academic P21 full-text PDF link missing from /papers/ archive.")
     if '| **WPA Working Paper No. 016:**' in readme:
         add_error(errors,"Do not mix the distinct WPA Zenodo WP-016 as an academic publication in /papers/ table")
     cards=html.split('id="papers-list"',1)[-1].split('id="wpa-working-papers"',1)[0]
