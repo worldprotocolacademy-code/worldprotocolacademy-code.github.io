@@ -369,12 +369,12 @@ def check_p21_wp016_export_contract(errors):
     # Scope this guard to the P21 entry; the P20 bibliography entry legitimately links to a differently numbered historical PDF filename.
     p21card=bib.split('id="pub-28"',1)[-1].split('<h2 class="part-heading"',1)[0]
     p21_pdf=ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
-    expected_sha="05182aa4272a889f71bca82e3bf07b26b1f50f53d161611eda4dbcbd80fa72eb"
+    expected_sha="740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781"
     expected_url="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf"
     if not p21_pdf.is_file():
         add_error(errors,"P21 authorised PDF absent; refuse publication of broken PDF links.")
     else:
-        if p21_pdf.stat().st_size!=260892:add_error(errors,"P21 PDF size mismatch.")
+        if p21_pdf.stat().st_size!=1315825:add_error(errors,"P21 PDF size mismatch.")
         if hashlib.sha256(p21_pdf.read_bytes()).hexdigest()!=expected_sha:add_error(errors,"P21 PDF SHA-256 mismatch.")
     if expected_url not in p21 or '/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf' not in p21card or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in p21card:
         add_error(errors,"P21 PDF metadata/links must point only to its authorised journal article.")
@@ -382,7 +382,7 @@ def check_p21_wp016_export_contract(errors):
         records=json.loads(read_text(ROOT/"wpa-scholar-records-2026.json"))
         p21r=next(x for x in records if x.get("id")=="P21")
         w16=next(x for x in records if x.get("id")=="WP-016")
-        if p21r.get("pdf_url")!="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf" or p21r.get("pdf_sha256")!="05182aa4272a889f71bca82e3bf07b26b1f50f53d161611eda4dbcbd80fa72eb":add_error(errors,"P21 authorised PDF metadata drift.")
+        if p21r.get("pdf_url")!="https://worldprotocolacademy.mk/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf" or p21r.get("pdf_sha256")!="740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781" or p21r.get("pdf_pages")!=14:add_error(errors,"P21 authorised 14-page PDF metadata drift.")
         if w16.get("doi")!="10.5281/zenodo.24446404":add_error(errors,"WP-016 DOI drift.")
     except (StopIteration,json.JSONDecodeError,OSError) as exc:
         add_error(errors,f"Cannot verify academic export records: {exc}")

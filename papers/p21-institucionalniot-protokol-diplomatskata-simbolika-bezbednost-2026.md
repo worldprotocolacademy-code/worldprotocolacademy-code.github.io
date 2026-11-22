@@ -32,13 +32,13 @@ In-text citation: (Smiljanov, 2026).
 
 ## Full-text PDF and provenance
 
-**AUTHORISATION VERIFIED — AUTHORISED PUBLIC COPY.** [**PDF: p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf**](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf) — nine pages with the original journal layout and printed page numbers 170–178. This Markdown file remains a separate metadata catalogue record, not the full-text article.
+**AUTHORISATION VERIFIED — AUTHORISED PUBLIC COPY.** [**PDF: p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf**](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf) — a 14-page excerpt containing the original journal front cover (p.1), inner title/editorial and copyright details (pp.2–3), contents (p.4), the author’s complete article (pp.5–13, original print pagination 170–178), and back cover (p.14). No other articles are reproduced. This Markdown file remains a separate metadata catalogue record, not the PDF.
 
-**Verified SHA-256:** `05182aa4272a889f71bca82e3bf07b26b1f50f53d161611eda4dbcbd80fa72eb` · **260892 bytes** · nine A4 pages.
+**Verified SHA-256:** `740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781` · **1315825 bytes** · fourteen A4 pages. Source 14-page PDF SHA-256: `2acb13e2e8071a18b1b940a573f6b0723402b1388b7cfccda1749d8673297fca`.
 
 **Permission evidence:** the author supplied a written email from the journal secretary dated **18 November 2026, 15:47**, expressly allowing the author to share and publish their article in *Безбедност* publicly. The author explicitly authorised this publication on WPA/GitHub on 22 November 2026. The email screenshot is archived privately and not included in the public repository. The journal's general notice asks for publisher and author permission; the specific editorial permission for public sharing is recorded here. No broader licence, rights transfer, permission to modify, or permission concerning third-party content is implied.
 
-**Source provenance:** nine original-layout article pages extracted from pages 5–13 of the author's supplied 14-page issue excerpt (`Безбедност`, issue 11/2026). Publication title, author, original pagination and article text checked against the supplied PDF. GitHub CI enforces the exact binary SHA-256 above.
+**Source provenance:** original 14-page author-supplied issue excerpt (`Безбедност`, issue 11/2026), preserved in full page order. The article is entirely on pp.5–13, corresponding to the journal's print pagination 170–178. The web-optimised copy preserves vector text, academic pagination and original layout; only the front/back cover raster images were resized/recompressed for digital download. Publisher title, rights and contents pages are retained; no other articles appear. All page text matches the source. The author confirmed the editorial permission extends to the cover, contents and back-cover context. GitHub CI checks the exact web-copy SHA-256 above.
 
 The existing GitHub file `papers/p21-the-flag-is-not-decoration-security-horizons-2026.pdf` belongs to another academic article (**P20, *The Flag Is Not Decoration***). Its name is historic and it must never be used as the P21 PDF.
 
