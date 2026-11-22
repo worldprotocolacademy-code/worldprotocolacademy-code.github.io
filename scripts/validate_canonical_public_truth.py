@@ -6,7 +6,12 @@ def fail(m): errors.append(m)
 def text(r): return (ROOT/r).read_text(encoding="utf-8",errors="replace")
 metrics=json.loads(text("data/wpa-canonical-metrics-status.json")); ap=metrics.get("academic_publications",{}); zen=metrics.get("zenodo_doi_corpus",{})
 if (ap.get("total"),ap.get("monographs_and_handbooks"),ap.get("doctoral_dissertations"),ap.get("scientific_papers_and_contributions")) != (28,6,1,21): fail("Academic metrics must remain 28 = 6 + 1 + 21 unless canonically updated.")
-if (zen.get("total_records"),zen.get("working_papers"),zen.get("protocol_notes"),zen.get("global_strategic_plans")) != (25,15,9,1): fail("Zenodo metrics must remain 25 = 15 + 9 + 1 unless canonically updated.")
+if (zen.get("total_records"),zen.get("working_papers"),zen.get("protocol_notes"),zen.get("global_strategic_plans")) != (26,16,9,1): fail("Zenodo metrics must reflect the author-approved WP-016 publication: 26 = 16 + 9 + 1.")
+if zen.get("latest_addition",{}).get("id") != "WP-016":
+    # WP-016 is documented in the canonical public-facts corpus, not the metrics corpus.
+    facts=json.loads(text("data/wpa-canonical-public-facts.json"))
+    if facts.get("zenodo_corpus",{}).get("latest_addition",{}).get("doi") != "10.5281/zenodo.24446404": fail("Published WP-016 must retain its exact Zenodo version DOI.")
+if not (ROOT/"scholar/wpa-wp-016.html").exists() or not (ROOT/"scholar/wpa-wp-016.txt").exists(): fail("Published WP-016 requires both Scholar HTML and TXT records.")
 latest=ap.get("latest_addition") or {}
 if latest.get("scholar_record") != "/scholar/p21.html" or not (ROOT/"scholar/p21.html").exists(): fail("28-publication canonical update requires P21 Scholar evidence.")
 active=["index.html","institute.html","mk.json","index/mk.json","locales/index/mk.json","locales/locales/index/mk.json","scripts/wpa-about-interactive.js"]
