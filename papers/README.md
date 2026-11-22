@@ -9,7 +9,7 @@ Sande Smiljanov · *Безбедност / Security*, LXVII(11), pp. 170–178 (
 
 - **[P21 academic catalogue record in this folder](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md)** — APA 7, ISSN, UDK, publisher, rights and verification status
 - **[P21 Scholar / APA 7](https://worldprotocolacademy.mk/scholar/p21.html#apa7)** · [TXT](https://worldprotocolacademy.mk/scholar/p21.txt) · [BibTeX](https://worldprotocolacademy.mk/scholar/p21.bib) · [RIS](https://worldprotocolacademy.mk/scholar/p21.ris)
-- **Full article PDF:** **NOT YET HOSTED IN THIS FOLDER.** A publisher-issued article/issue PDF has not been verified here as authorised for re-hosting; the journal's rights notice requires written permission from the publisher and authors. Do not substitute another PDF
+- **Full article PDF:** [**Read the full nine-page original-layout article (journal pp. 170–178)**](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf). Verified SHA-256: `05182aa4272a889f71bca82e3bf07b26b1f50f53d161611eda4dbcbd80fa72eb`. The journal's general notice requires written permission from the publisher and authors. A specific author-facing email of **18 November 2026** from the journal secretary expressly grants public sharing/publication of this author's article, and the author explicitly requested its publication here. This is a permission to make this article available, not a Creative Commons licence or general transfer of publisher rights. The email screenshot remains private.
 - **Publisher journal listing** (general page, not an article-specific download): https://mvr.gov.mk/mk-MK/odnosi-so-javnost/spisanie
 
 ## Historic filename: P20, not P21
