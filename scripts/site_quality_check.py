@@ -378,8 +378,30 @@ def check_p21_wp016_export_contract(errors):
     except (StopIteration,json.JSONDecodeError,OSError) as exc:
         add_error(errors,f"Cannot verify academic export records: {exc}")
 
+def check_papers_archive_discovery(errors):
+    """Ensure the paper PDF folder and current bibliography do not conflate P20, P21 or WP-016."""
+    page=ROOT/"papers.html"
+    archive=ROOT/"papers"/"README.md"
+    if not page.exists() or not archive.exists():
+        add_error(errors,"Papers archive page or explanatory PDF-folder README missing")
+        return
+    html=read_text(page)
+    readme=read_text(archive)
+    for token in ('28 academic publications','16 WPA Working Papers','9 Protocol Notes','26 separate Zenodo records','id="academic-p21"','id="wpa-wp-016"','/scholar/p21.txt','/scholar/wpa-wp-016.bib','/scholar/wpa-wp-016.ris','https://zenodo.org/records/24446404/files/'):
+        if token not in html:add_error(errors,f"Papers portal missing current record/route: {token}")
+    for token in ('P20','P21','WP-016','publisher and author written permission','10.5281/zenodo.24446404'):
+        if token not in readme:add_error(errors,f"GitHub PDF-folder documentation missing: {token}")
+    cards=html.split('id="papers-list"',1)[-1].split('id="wpa-working-papers"',1)[0]
+    if cards.count('class="small-kicker">P21')!=1:
+        add_error(errors,"P21 academic record must appear once, inside the academic papers collection")
+    p21=cards.split('id="academic-p21"',1)[-1].split("</article>",1)[0]
+    if 'href="/papers/p21-the-flag' in p21:
+        add_error(errors,"P21 must not link to the P20 historical PDF filename")
+    if 'PDF is hosted at the published Zenodo record' not in html:
+        add_error(errors,"WP016 PDF provenance statement missing")
+
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_p21_wp016_export_contract(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_p21_wp016_export_contract(errors);check_papers_archive_discovery(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
