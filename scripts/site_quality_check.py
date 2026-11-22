@@ -348,8 +348,38 @@ def check_commerce_fail_closed(errors):
         if iban.search(t):add_error(errors,f"{p.relative_to(ROOT)}: IBAN-like bank-account string found in public file")
         if secret.search(t):add_error(errors,f"{p.relative_to(ROOT)}: possible provider secret found in public file")
 
+def check_p21_wp016_export_contract(errors):
+    """Protect APA 7 and user-visible formats without breaching publisher PDF rights."""
+    for rel in ("scholar/p21.html","scholar/p21.bib","scholar/p21.ris","scholar/p21.txt","scholar/wpa-wp-016.html","scholar/wpa-wp-016.txt","scholar/wpa-wp-016.bib","scholar/wpa-wp-016.ris"):
+        if not (ROOT/rel).is_file(): add_error(errors,f"Publication export missing: {rel}")
+    bib=read_text(ROOT/"bibliography"/"index.html")
+    p21=read_text(ROOT/"scholar"/"p21.html")
+    wp16=read_text(ROOT/"scholar"/"wpa-wp-016.html")
+    idx=read_text(ROOT/"working-papers"/"index.html")
+    for token in ('id="pub-28"','id="wp-016"','data-apa="Smiljanov, S. (2026).','📄 PDF · Zenodo','🔒 PDF · дозвола','📚 BibTeX','🗂 RIS','📋 Copy APA 7'):
+        if token not in bib:add_error(errors,f"Missing bibliography action: {token}")
+    if "https://zenodo.org/records/24446404/files/" not in bib or "https://zenodo.org/records/24446404/files/" not in wp16:
+        add_error(errors,"WP-016 PDF must refer to its published Zenodo deposit.")
+    for label,html in (("P21",p21),("WP016",wp16)):
+        for token in ('data-copy-apa=','📚 BibTeX','🗂 RIS','📝 TXT'):
+            if token not in html:add_error(errors,f"{label} Scholar missing {token}")
+    for token in ("wpa-wp-016.bib","wpa-wp-016.ris","wpa-wp-016.txt"):
+        if token not in idx:add_error(errors,f"WP-016 Working Papers entry missing {token}")
+    # Scope this guard to the P21 entry; the P20 bibliography entry legitimately links to a differently numbered historical PDF filename.
+    p21card=bib.split('id="pub-28"',1)[-1].split('<h2 class="part-heading"',1)[0]
+    if "citation_pdf_url" in p21 or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in p21card:
+        add_error(errors,"P21 must not point to another article's PDF.")
+    try:
+        records=json.loads(read_text(ROOT/"wpa-scholar-records-2026.json"))
+        p21r=next(x for x in records if x.get("id")=="P21")
+        w16=next(x for x in records if x.get("id")=="WP-016")
+        if p21r.get("pdf_url") is not None:add_error(errors,"P21 publisher permission gate remains closed.")
+        if w16.get("doi")!="10.5281/zenodo.24446404":add_error(errors,"WP-016 DOI drift.")
+    except (StopIteration,json.JSONDecodeError,OSError) as exc:
+        add_error(errors,f"Cannot verify academic export records: {exc}")
+
 def main():
-    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
+    errors=[];allowed=allowed_sitemap_paths(errors);check_sitemap(errors,allowed);check_robots(errors);check_privacy_hotfixes(errors);check_basic_public_html(errors,allowed);check_publication_route_contract(errors);check_scholar_metadata_integrity(errors);check_governance_invariants(errors);check_latest_publication_20261118(errors);check_p21_wp016_export_contract(errors);check_final_reconciliation_layer(errors);check_commerce_fail_closed(errors)
     if errors:
         print("\nWPA Site Quality CI failed:\n");[print(f"{i}. {e}") for i,e in enumerate(errors,1)];return 1
     print("WPA Site Quality CI passed.");return 0
