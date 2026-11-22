@@ -365,7 +365,9 @@ def check_p21_wp016_export_contract(errors):
             if token not in html:add_error(errors,f"{label} Scholar missing {token}")
     for token in ("wpa-wp-016.bib","wpa-wp-016.ris","wpa-wp-016.txt"):
         if token not in idx:add_error(errors,f"WP-016 Working Papers entry missing {token}")
-    if "citation_pdf_url" in p21 or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in bib:
+    # Scope this guard to the P21 entry; the P20 bibliography entry legitimately links to a differently numbered historical PDF filename.
+    p21card=bib.split('id="pub-28"',1)[-1].split('<h2 class="part-heading"',1)[0]
+    if "citation_pdf_url" in p21 or 'href="/papers/p21-the-flag' in p21 or 'href="/papers/p21-the-flag' in p21card:
         add_error(errors,"P21 must not point to another article's PDF.")
     try:
         records=json.loads(read_text(ROOT/"wpa-scholar-records-2026.json"))
