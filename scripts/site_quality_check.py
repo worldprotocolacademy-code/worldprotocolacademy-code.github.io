@@ -389,14 +389,24 @@ def check_papers_archive_discovery(errors):
     readme=read_text(archive)
     for token in ('28 academic publications','16 WPA Working Papers','9 Protocol Notes','26 separate Zenodo records','id="academic-p21"','id="wpa-wp-016"','/scholar/p21.txt','/scholar/wpa-wp-016.bib','/scholar/wpa-wp-016.ris','https://zenodo.org/records/24446404/files/'):
         if token not in html:add_error(errors,f"Papers portal missing current record/route: {token}")
-    for token in ('P20','P21','WP-016','publisher and author written permission','10.5281/zenodo.24446404'):
+    for token in ('P20','P21','publisher and authors','28 academic publications','26 WPA Zenodo records','WPA Working Papers'):
         if token not in readme:add_error(errors,f"GitHub PDF-folder documentation missing: {token}")
+    if not (ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md").is_file():
+        add_error(errors,"Academic publication No. 28 requires a dedicated P21 catalogue entry in /papers/")
+    else:
+        entry=read_text(ROOT/"papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md")
+        for token in ('LXVII','170–178','2671-3764','APA 7','NOT HOSTED','Scientific journal article'):
+            if token not in entry:add_error(errors,f"P21 academic catalogue entry incomplete: {token}")
+    if '| **WPA Working Paper No. 016:**' in readme:
+        add_error(errors,"Do not mix the distinct WPA Zenodo WP-016 as an academic publication in /papers/ table")
     cards=html.split('id="papers-list"',1)[-1].split('id="wpa-working-papers"',1)[0]
     if cards.count('class="small-kicker">P21')!=1:
         add_error(errors,"P21 academic record must appear once, inside the academic papers collection")
     p21=cards.split('id="academic-p21"',1)[-1].split("</article>",1)[0]
     if 'href="/papers/p21-the-flag' in p21:
         add_error(errors,"P21 must not link to the P20 historical PDF filename")
+    if 'papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.md' not in p21:
+        add_error(errors,"P21 academic card must link to its dedicated GitHub /papers/ catalogue record")
     if 'PDF is hosted at the published Zenodo record' not in html:
         add_error(errors,"WP016 PDF provenance statement missing")
 
