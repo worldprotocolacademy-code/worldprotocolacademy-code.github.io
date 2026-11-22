@@ -1,6 +1,6 @@
 # PDF copy list for /scholar/ folder
 
-For the strongest Google Scholar signal, upload/copy these PDF files into the **same `/scholar/` folder** as the landing pages, using these exact names. The public `/papers/` files can remain; these are Scholar-facing copies.
+These are **Scholar-facing mirror PDFs**, not additional scholarly publications. Canonical academic IDs and the corrected primary PDF filenames are P01–P21 under `/papers/`. Existing `/scholar/` mirrors retain historical filenames for backward compatibility; do not count them as separate papers or copy new misnumbered files.
 
 ## Academic papers
 - existing `/papers/p01-unintentional-mistakes-protocol.pdf` -> copy as `/scholar/p01-p01-unintentional-mistakes-protocol.pdf`
@@ -18,10 +18,10 @@ For the strongest Google Scholar signal, upload/copy these PDF files into the **
 - existing `/papers/p13-drzaven-protokol-mk.pdf` -> copy as `/scholar/p13-p13-drzaven-protokol-mk.pdf`
 - existing `/papers/p14-corona-namaste-full.pdf` -> copy as `/scholar/p14-p14-corona-namaste-full.pdf`
 - existing `/papers/p15-edinstven-drzaven-protokol.pdf` -> copy as `/scholar/p15-p15-edinstven-drzaven-protokol.pdf`
-- existing `/papers/p17-protokol-liderski-karakteristiki.pdf` -> copy as `/scholar/p16-p17-protokol-liderski-karakteristiki.pdf`
-- existing `/papers/p18-protocol-public-relations.pdf` -> copy as `/scholar/p17-p18-protocol-public-relations.pdf`
-- existing `/papers/p19-digital-protocol-ai-public-sector.pdf` -> copy as `/scholar/p18-p19-digital-protocol-ai-public-sector.pdf`
-- existing `/papers/p20-military-protocol-defence-diplomacy-military-diplomacy.pdf` -> copy as `/scholar/p19-p20-military-protocol-defence-diplomacy-military-diplomacy.pdf`
+- existing `/papers/p16-protokol-liderski-karakteristiki.pdf` -> copy as `/scholar/p16-p17-protokol-liderski-karakteristiki.pdf`
+- existing `/papers/p17-protocol-public-relations.pdf` -> copy as `/scholar/p17-p18-protocol-public-relations.pdf`
+- existing `/papers/p18-digital-protocol-ai-public-sector.pdf` -> copy as `/scholar/p18-p19-digital-protocol-ai-public-sector.pdf`
+- existing `/papers/p19-military-protocol-defence-diplomacy-military-diplomacy.pdf` -> copy as `/scholar/p19-p20-military-protocol-defence-diplomacy-military-diplomacy.pdf`
 
 ## WPA Working Papers
 Upload final DOI PDFs as:

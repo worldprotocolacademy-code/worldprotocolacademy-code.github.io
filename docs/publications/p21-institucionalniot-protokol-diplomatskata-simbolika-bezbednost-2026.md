@@ -32,7 +32,7 @@ In-text citation: (Smiljanov, 2026).
 
 ## Full-text PDF and provenance
 
-**AUTHORISATION VERIFIED — AUTHORISED PUBLIC COPY.** [**PDF: p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf**](p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf) — a 14-page excerpt containing the original journal front cover (p.1), inner title/editorial and copyright details (pp.2–3), contents (p.4), the author’s complete article (pp.5–13, original print pagination 170–178), and back cover (p.14). No other articles are reproduced. This Markdown file remains a separate metadata catalogue record, not the PDF.
+**AUTHORISATION VERIFIED — AUTHORISED PUBLIC COPY.** [**PDF: p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf**](/papers/p21-institucionalniot-protokol-diplomatskata-simbolika-bezbednost-2026.pdf) — a 14-page excerpt containing the original journal front cover (p.1), inner title/editorial and copyright details (pp.2–3), contents (p.4), the author’s complete article (pp.5–13, original print pagination 170–178), and back cover (p.14). No other articles are reproduced. This Markdown provenance record lives outside the academic PDF folder and does not count as a second P21 publication.
 
 **Verified SHA-256:** `740c5d15b2e0918992016d120717abd8315be89105301b92ace96da508158781` · **1315825 bytes** · fourteen A4 pages. Source 14-page PDF SHA-256: `2acb13e2e8071a18b1b940a573f6b0723402b1388b7cfccda1749d8673297fca`.
 
@@ -40,7 +40,7 @@ In-text citation: (Smiljanov, 2026).
 
 **Source provenance:** original 14-page author-supplied issue excerpt (`Безбедност`, issue 11/2026), preserved in full page order. The article is entirely on pp.5–13, corresponding to the journal's print pagination 170–178. The web-optimised copy preserves vector text, academic pagination and original layout; only the front/back cover raster images were resized/recompressed for digital download. Publisher title, rights and contents pages are retained; no other articles appear. All page text matches the source. The author confirmed the editorial permission extends to the cover, contents and back-cover context. GitHub CI checks the exact web-copy SHA-256 above.
 
-The existing GitHub file `papers/p21-the-flag-is-not-decoration-security-horizons-2026.pdf` belongs to another academic article (**P20, *The Flag Is Not Decoration***). Its name is historic and it must never be used as the P21 PDF.
+The separate academic P20 paper, *The Flag Is Not Decoration*, now uses the correct PDF path `papers/p20-the-flag-is-not-decoration-security-horizons-2026.pdf`. The historical wrongly numbered path is no longer part of the current `/papers/` folder. This P21 catalogue metadata was relocated to `docs/publications/` so the GitHub PDF folder contains only one P21 entry.
 
 ## Classification
 
