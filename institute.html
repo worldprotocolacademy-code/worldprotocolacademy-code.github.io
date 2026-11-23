@@ -2490,6 +2490,11 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
     color: #071224;
     font-weight: 900;
     font-size: 15px;
+    min-width: 44px;
+    min-height: 44px;
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
     padding: 10px 14px;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
     cursor: pointer;
@@ -2696,6 +2701,7 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
       if (!nav) return;
 
       nav.classList.add("wpa-mobile-nav-target");
+      if (!nav.id) nav.id = "wpaInstituteMobileNavigation";
       document.body.classList.add("wpa-mobile-ready");
 
       function wpaIL(){ try{ return localStorage.getItem('wpa.language')||'mk'; }catch(e){ return 'mk'; } }
@@ -2705,12 +2711,18 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
       btn.className = "wpa-mobile-menu-button";
       btn.type = "button";
       btn.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-controls", nav.id);
+      btn.setAttribute("aria-label", "Мобилна навигација / Mobile navigation");
       btn.innerHTML = menuTxt(false);
 
       btn.addEventListener("click", function () {
         var open = document.body.classList.toggle("wpa-menu-open");
         btn.setAttribute("aria-expanded", open ? "true" : "false");
         btn.innerHTML = menuTxt(open);
+        if (open) {
+          var first = nav.querySelector("a[href]");
+          if (first) first.focus();
+        }
       });
 
       document.body.appendChild(btn);
@@ -2725,10 +2737,12 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
       });
 
       document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape") {
+        if (e.key === "Escape" && document.body.classList.contains("wpa-menu-open")) {
+          e.preventDefault();
           document.body.classList.remove("wpa-menu-open");
           btn.setAttribute("aria-expanded", "false");
           btn.innerHTML = menuTxt(false);
+          btn.focus();
         }
       });
     }
