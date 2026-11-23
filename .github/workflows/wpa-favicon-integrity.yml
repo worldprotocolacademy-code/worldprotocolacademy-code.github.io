@@ -1,0 +1,50 @@
+name: WPA Favicon and Icon Integrity
+on:
+  pull_request:
+    paths:
+      - 'favicon.ico'
+      - 'assets/img/favicon-16.png'
+      - 'assets/img/favicon-32.png'
+      - 'index.html'
+      - 'institute.html'
+      - '.github/workflows/wpa-favicon-integrity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'favicon.ico'
+      - 'assets/img/favicon-16.png'
+      - 'assets/img/favicon-32.png'
+      - 'index.html'
+      - 'institute.html'
+      - '.github/workflows/wpa-favicon-integrity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    name: Verify icon bytes and local routes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Validate icon signatures and HTML references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          ico=Path('favicon.ico').read_bytes()
+          assert len(ico)>128 and ico[:4]==b'\x00\x00\x01\x00', 'Root favicon is not valid ICO data'
+          assert ico==Path('assets/img/favicon.ico').read_bytes(), 'Root favicon drift from existing brand asset'
+          for p in ('assets/img/favicon-16.png','assets/img/favicon-32.png'):
+              data=Path(p).read_bytes()
+              assert data[:8]==b'\x89PNG\r\n\x1a\n', p+' PNG signature mismatch'
+          for p in ('index.html','institute.html'):
+              txt=Path(p).read_text(encoding='utf-8')
+              for needle in ('href="/favicon.ico"','href="/assets/img/favicon-16.png"','href="/assets/img/favicon-32.png"'):
+                  assert needle in txt, p+' missing '+needle
+          print('WPA icon integrity PASS: verified root ICO, source parity, 16/32 PNG and both document heads')
+          PY
+      - name: Test local favicon retrieval
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/wpa-icon-http.log 2>&1 &
+          for i in 1 2 3 4 5 6 7 8 9 10; do curl --fail --silent http://127.0.0.1:8765/favicon.ico -o /tmp/wpa-favicon-http.ico && break || sleep 1; done
+          cmp favicon.ico /tmp/wpa-favicon-http.ico
