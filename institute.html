@@ -2754,27 +2754,8 @@ html[data-wpa-page="institute"] .hero-cta a[href="/journal/index.html"]:hover{
         document.body.appendChild(home);
       }
 
-      if (!document.getElementById("wpaMobileBot")) {
-        var bot = document.createElement("a");
-        bot.id = "wpaMobileBot";
-        bot.className = "wpa-mobile-floating-bot";
-        bot.href = "#ai-innovation-roadmap";
-        bot.textContent = "🤖 Bot";
-        bot.addEventListener("click", function () {
-          var target =
-            document.getElementById("ai-innovation-roadmap") ||
-            document.getElementById("virtual-sande") ||
-            document.getElementById("virtualSande") ||
-            document.getElementById("wpa-bot") ||
-            document.getElementById("wpaBot") ||
-            document.querySelector('[id*="bot" i], [class*="bot" i], [id*="chat" i], [class*="chat" i]');
+      // Retired duplicate mobile Bot launcher: the accessible Institute Virtual Sande widget owns this action.
 
-          if (target && target.scrollIntoView) {
-            target.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        });
-        document.body.appendChild(bot);
-      }
     }
 
     function ensureTopAnchor() {
