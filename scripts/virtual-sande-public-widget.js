@@ -15,6 +15,12 @@
   ];
   var busy = false;
   var history = [];
+  var pendingImage = null;  // Memory-only; never stored in localStorage or history.
+  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false };
+  var challengeToken = '';
+  var challengeId = null;
+  var challengeLoading = false;
+  var MAX_FILE_BYTES = 8000000;
 
   function isExcluded() {
     if (excludedExact.indexOf(currentPath) !== -1) return true;
@@ -37,6 +43,16 @@
         placeholder: 'Ask about protocol, diplomacy, communication or security...',
         send: 'Send',
         clear: 'Clear',
+        attach: 'Attach an image',
+        imageReady: 'Selected image',
+        imageUnavailable: 'Image analysis is not connected yet. The academic text chat still works.',
+        imageRejected: 'Please select a JPEG, PNG or WebP image (up to 8 MB).',
+        consent: 'I agree to send this message and any selected image to the configured AI provider for analysis. Do not upload sensitive information.',
+        consentRequired: 'Please confirm your consent for the AI provider.',
+        captchaRequired: 'Complete the security check before continuing.',
+        generalMode: 'General conversation (AI)',
+        removeImage: 'Remove image',
+        followups: 'Suggested next questions',
         connecting: 'Connecting...',
         offline: 'WPA academic core',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
@@ -51,6 +67,16 @@
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
       send: 'Испрати',
       clear: 'Исчисти',
+      attach: 'Додај слика',
+      imageReady: 'Избрана слика',
+      imageUnavailable: 'Анализата на слики сè уште не е поврзана. Академскиот текстуален разговор работи.',
+      imageRejected: 'Изберете JPG, PNG или WebP слика до 8 MB.',
+      consent: 'Се согласувам оваа порака и избраната слика да се обработат кај поврзаниот AI провајдер. Не испраќајте чувствителни податоци.',
+      consentRequired: 'Потврдете ја согласноста за надворешната AI обработка.',
+      captchaRequired: 'Завршете ја безбедносната проверка пред испраќање.',
+      generalMode: 'Општ разговор (AI)',
+      removeImage: 'Отстрани слика',
+      followups: 'Предложени следни прашања',
       connecting: 'Се поврзувам...',
       offline: 'WPA академско јадро',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
@@ -163,6 +189,16 @@
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
+      '.wpa-public-vs-extra{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 10px 3px;background:#f5f0e0;font-size:11px;color:#1a304b}',
+      '.wpa-public-vs-attach,.wpa-public-vs-remove-image{border:1px solid #b7a05e;border-radius:7px;padding:6px 9px;background:#fff;color:#18304d;cursor:pointer;font-weight:600}',
+      '.wpa-public-vs-attach:disabled{opacity:.55;cursor:not-allowed}',
+      '.wpa-public-vs-mode{display:inline-flex;align-items:center;gap:5px}',
+      '.wpa-public-vs-image-preview{font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.wpa-public-vs-consent{padding:5px 11px;background:#f5f0e0;color:#22344a;font-size:11px;line-height:1.4}',
+      '.wpa-public-vs-challenge{padding:4px 11px;background:#f5f0e0;min-height:25px}',
+      '.wpa-public-vs-followups{display:flex;gap:6px;flex-wrap:wrap;padding:4px 11px;background:#f5f0e0}',
+      '.wpa-public-vs-followups button{border:1px solid #c9a84c;background:#fff;color:#0d1f3c;border-radius:10px;padding:5px 7px;font-size:11px;cursor:pointer}',
+      '#wpaPublicVsPanel [hidden]{display:none!important}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
