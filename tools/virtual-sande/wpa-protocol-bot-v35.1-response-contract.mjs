@@ -1,3 +1,5 @@
+import { isIncompleteAnswer } from "../../scripts/virtual-sande-answer-integrity.mjs";
+
 export const API_VERSION = 'v35.1.1';
 export const ORCHESTRATOR_VERSION = 'v35.1.1-multisystem-orchestrator';
 export const SAFE_ENTRYPOINT_VERSION = 'v35.1.1-safe-entrypoint';
@@ -63,6 +65,7 @@ export function normalizePayload(input = {}) {
   const explicitNoContext = NO_CONTEXT_SERVED_BY.has(servedBy) || data.mode === 'none';
   const evidencePresent = sources.length > 0 || sourceDetails.length > 0 || (results && results.length > 0);
   const hasContext = explicitNoContext ? false : Boolean(data.hasContext || evidencePresent);
+  if (isIncompleteAnswer(data.answer, data)) data.answerCompleteness = "incomplete";
 
   return {
     ...data,
