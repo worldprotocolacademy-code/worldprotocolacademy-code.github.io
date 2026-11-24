@@ -1,11 +1,10 @@
-name: Virtual Sande Multimodal Pilot CI (no deployment)
+name: Virtual Sande Independent Multimodal Pilot CI (no deployment)
 on:
   pull_request:
     paths:
       - 'scripts/virtual-sande-public-widget.js'
-      - 'workers/virtual-sande-v35.1-production/src/agent-gateway.mjs'
+      - 'workers/virtual-sande-multimodal-pilot/**'
       - 'workers/virtual-sande-v35.1-production/src/index.mjs'
-      - 'workers/virtual-sande-v35.1-production/wrangler.toml'
       - 'tests/virtual-sande-multimodal-*.test.mjs'
       - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
       - 'docs/virtual-sande-multimodal-pilot-v0.1.md'
@@ -21,18 +20,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Syntax and static boundaries
+      - name: Syntax and certified runtime isolation
         run: |
           node --check scripts/virtual-sande-public-widget.js
-          node --check workers/virtual-sande-v35.1-production/src/agent-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
           node --check tests/virtual-sande-multimodal-agent.test.mjs
           node --check tests/virtual-sande-multimodal-ui.test.mjs
-      - name: Real isolated request/response contract tests (mocked provider)
+      - name: Isolated contract and UI regression tests (mocked providers)
         run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs
-      - name: Preserve canonical production locks
+      - name: No silent enablement, secret leak or production deployment
         run: |
           grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
           test "$(grep -c '^\[ai\]' workers/virtual-sande-v35.1-production/wrangler.toml)" -eq 1
-          ! grep -Eq 'WPA_AGENT_ENABLED\s*=\s*"true"|OPENAI_API_KEY\s*=' workers/virtual-sande-v35.1-production/wrangler.toml
-          echo "PASS: no production credentials, deployment or provider connection made"
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          ! grep -Eq '^OPENAI_API_KEY\s*=|^WPA_AGENT_TURNSTILE_SECRET\s*=' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          echo "PASS: certified WPA /ask untouched; new agent isolated, inactive, unbilled"
