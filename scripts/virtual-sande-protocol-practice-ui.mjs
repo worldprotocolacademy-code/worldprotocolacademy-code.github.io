@@ -36,7 +36,7 @@ const copy={
  table:'TABLE',stage:'STAGE',audience:'AUDIENCE',sourceNotVerified:'Current applicability of referenced sources is not verified.'
  }};
 const CSS=[
- '.wpa-practice{padding:8px 10px;background:#f9f6ed;color:#132844;border-top:1px solid #baa875;font:12px/1.5 system-ui,Arial,sans-serif}',
+ '.wpa-practice{padding:8px 10px;background:#f9f6ed;color:#132844;border-top:1px solid #baa875;font:12px/1.5 system-ui,Arial,sans-serif;max-height:44vh;overflow-y:auto;flex-shrink:0}',
  '.wpa-practice summary{font-weight:800;cursor:pointer;color:#0d2a50}',
  '.wpa-practice p{margin:5px 0 8px}',
  '.wpa-practice label{display:block;font-weight:600;margin:7px 0 3px}',
