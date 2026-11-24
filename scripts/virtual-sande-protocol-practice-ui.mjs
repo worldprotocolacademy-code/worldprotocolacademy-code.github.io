@@ -108,6 +108,7 @@ export function createProtocolPracticeStudio(panel,{onCompose=()=>{},maxQuestion
  const form=panel.querySelector('.wpa-public-vs-form');
  if(!form?.parentNode)throw new Error('PROTOCOL_PRACTICE_CHAT_NOT_FOUND');
  const root=el('details',undefined,'wpa-practice');
+ root.setAttribute('data-wpa-protocol-planner','mounted-rc1');
  root.append(el('summary','🧭 '+t.title),el('p',t.intro));
  const grid=el('div',undefined,'wpa-practice-grid');
  const scenario=createField(t.scenario,'select');
