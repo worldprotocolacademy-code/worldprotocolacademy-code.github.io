@@ -19,11 +19,12 @@ const config=()=>({
  PILOT_ENABLED:'true',PILOT_ORIGIN:origin,SYNTHESIS_MODEL:'TEST_ONLY',
  AI:{run:async(_model,args)=>({response:args.messages[0].content.startsWith('Suggest')?'["Which sources?","Which limits?","What next?"]':'Synthetic document analysis: all inputs were test fixtures.'})},
 });
-function fixture(privateMode){
+function fixture(privateMode,privateOnly=false){
  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
   (privateMode?'<meta name="wpa-private-workspace-api" content="/private-api">':'')+
+  (privateOnly?'<meta name="wpa-private-workspace-only" content="true">':'')+
   '<title>TEST ONLY - Virtual Sande browser suite</title><script>('+installMocks.toString()+')();</script>'+
-  '<script defer src="/scripts/virtual-sande-public-widget.js"></script></head><body><p>TEST ONLY</p><pre id="wpa-browser-test-result">RUNNING</pre><script>('+browserSuite.toString()+')('+JSON.stringify(privateMode)+');</script></body></html>';
+  '<script defer src="/scripts/virtual-sande-public-widget.js"></script></head><body><p>TEST ONLY</p><pre id="wpa-browser-test-result">RUNNING</pre><script>('+browserSuite.toString()+')('+JSON.stringify(privateMode)+','+JSON.stringify(privateOnly)+');</script></body></html>';
 }
 function installMocks(){
  const originalFetch=window.fetch.bind(window);
@@ -52,7 +53,7 @@ function installMocks(){
  Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{getVoices:()=>[{lang:'en-GB'}],speak:u=>window.speechLog.push(u.text),cancel:()=>{}}});
  Object.defineProperty(window,'SpeechSynthesisUtterance',{configurable:true,value:class{constructor(text){this.text=text;}}});
 }
-async function browserSuite(privateMode){
+async function browserSuite(privateMode,privateOnly){
  const output=document.getElementById('wpa-browser-test-result');
  const checks=[];
  const ok=(condition,label)=>{if(!condition)throw Error(label);checks.push(label);};
@@ -99,7 +100,16 @@ async function browserSuite(privateMode){
   window.mockRecognition.onresult({results:[[{transcript:'Dictated fixture'}]]});
   ok(byId('wpaPublicVsInput').value==='Dictated fixture'&&window.testRequests.length===0,'dictation fills draft only');
   clear();
-  if(!privateMode){
+  if(privateOnly){
+   type('Private question without consent');send();await pause();
+   ok(window.testRequests.length===0,'private-only mode blocks all chat before consent');
+   const consent=q('[data-wpa-document-tray] input[type=checkbox]');consent.click();
+   type('Private question without documents');send();
+   await wait(()=>messages().some(x=>x.includes('Synthetic document analysis')),'private model response without attachments');
+   ok(window.testRequests.length===1&&window.testRequests[0].path==='/private-api/analyze','private-only question uses isolated API without attachments');
+   clear();type('Private after reset');send();await pause();
+   ok(window.testRequests.length===1&&!consent.checked,'private-only reset does not fall back to public');
+  }else if(!privateMode){
    ok(byId('wpaPublicVsModelSuggestions').hidden,'unconfigured model control hidden');
    type('Original question');send();
    await wait(()=>window.publicPending.length===1,'first public request');
@@ -127,6 +137,8 @@ async function browserSuite(privateMode){
    type('Read my documents');const before=window.testRequests.length;send();await pause();
    ok(window.testRequests.length===before,'unconfigured document question blocked, no public upload');
    ok(action('process-documents').hidden,'private processing disabled on public surface');
+   action('remove-all-documents').click();type('Do not leak this private draft');send();await pause();
+   ok(window.testRequests.length===before,'removing files cannot silently turn private draft into public request');
    clear();ok(count().includes('0/20'),'clear removes attachments');
   }else{
    const formats=['txt','md','csv','json'];
@@ -204,8 +216,8 @@ try{
  server=createServer({key:await readFile(key),cert:await readFile(cert)},async(req,res)=>{
   try{
    const url=new URL(req.url,origin||'https://127.0.0.1');
-   if(url.pathname==='/public-fixture'||url.pathname==='/private-fixture'){
-    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end(fixture(url.pathname==='/private-fixture'));
+   if(['/public-fixture','/private-fixture','/private-only-fixture'].includes(url.pathname)){
+    res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});return res.end(fixture(url.pathname!=='/public-fixture',url.pathname==='/private-only-fixture'));
    }
    if(url.pathname.startsWith('/private-api/')){
     const r=await worker.fetch(new Request(origin+req.url,{method:req.method,headers:req.headers,body:Readable.toWeb(req),duplex:'half'}),config());
@@ -222,5 +234,6 @@ try{
  await runCase('public-desktop','/public-fixture',1000,850);
  await runCase('public-mobile','/public-fixture',390,740);
  await runCase('private-desktop','/private-fixture',1000,850);
+ await runCase('private-only','/private-only-fixture',1000,850);
  console.log('PASS: real Chromium interaction; synthetic files, mocked AI and voice; no deployment.');
 }finally{if(server)await new Promise(r=>server.close(r));await rm(temp,{recursive:true,force:true});}
