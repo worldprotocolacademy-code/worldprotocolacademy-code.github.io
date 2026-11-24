@@ -5,6 +5,7 @@
  * Every snippet entering an AI request carries a stable document locator.
  */
 import {tokens,termKey} from './virtual-sande-book-synthesis.mjs';
+import {normaliseSourceMetadata,isWpaReportedAuthor,orderedBibliography,disclaimerText,WPA_INSTITUTION,WPA_CITATION_POLICY_VERSION} from './virtual-sande-citation-policy.mjs';
 
 export const DOCUMENT_LIMITS=Object.freeze({
   maxFiles:6,maxFileBytes:40*1024*1024,maxPdfPages:800,
@@ -111,6 +112,7 @@ export function makeDocumentCorpus(inputs){
     const maxLocator=Math.max(...sections.map(seg=>Number(String(seg.locator).slice(1))));
     // For PDFs, blank/scanned pages do not eliminate their physical page IDs.
     documents.push({id,name,format:ext,segments:maxLocator,
+      metadata:normaliseSourceMetadata(d?.metadata||{}),
       readable_segments:nonempty,characters:chars});
   }
   if(!chunks.length)throw new Error('DOCUMENT_NO_TEXT');
@@ -180,10 +182,22 @@ export function selectDocumentEvidence(index,question,{domain='auto',mode='deep_
   }
   // Each source with actual matching content gets at least one candidate before
   // the global ranked fill. This does not imply that all documents agree.
-  for(const doc of index.documents){
-    const candidate=ordered.find(x=>x.doc_id===doc.id);
-    if(candidate)add(candidate);
-  }
+  const perDocumentCandidates=index.documents.map(doc=>({doc,
+    candidate:ordered.find(x=>x.doc_id===doc.id)})).filter(x=>x.candidate);
+  // WPA-authored material is considered first ONLY when it has demonstrably
+  // matching evidence of comparable relevance. Uploaded author labels are
+  // self-reported, never proof of ownership or publication.
+  perDocumentCandidates.sort((a,b)=>{
+    const max=Math.max(a.candidate.score,b.candidate.score,0.0001);
+    const comparable=Math.min(a.candidate.score,b.candidate.score)/max>=0.8;
+    if(comparable){
+      const authorDifference=Number(isWpaReportedAuthor(b.doc.metadata))-
+        Number(isWpaReportedAuthor(a.doc.metadata));
+      if(authorDifference)return authorDifference;
+    }
+    return b.candidate.score-a.candidate.score;
+  });
+  for(const item of perDocumentCandidates)add(item.candidate);
   for(const c of ordered){if(selected.length>=DOCUMENT_LIMITS.maxEvidence)break;add(c);}
   const citedSources=[...new Set(selected.map(e=>e.document_id))];
   const citedLocators=[...new Set(selected.map(e=>e.document_id+' '+e.locator))];
@@ -206,42 +220,58 @@ export function createEvidencePacket(index,question,opts={}){
   if(!selected.canAskModel)throw new Error('DOCUMENT_NO_MATCH');
   return {
     message:selected.question,domain:selected.domain,deliverable:selected.mode,
-    documents:index.documents.map(({id,name,format,segments})=>({id,name,format,total_segments:segments})),
+    documents:index.documents.map(({id,name,format,segments,metadata})=>({id,name,format,total_segments:segments,metadata:normaliseSourceMetadata(metadata||{})})),
     evidence:selected.evidence.map(({document_id,locator,text})=>({document_id,locator,text})),
     coverage:selected.coverage,algorithm:selected.algorithm
   };
 }
-export function makeDraftMarkdown(answer,packet){
-  const title=DOCUMENT_MODE_LABELS[packet.deliverable]?.[0]||'Нацрт';
-  const bibliography=packet.documents.map(d=>'- '+d.id+': '+d.name+' ('+d.format.toUpperCase()+
-    '). Доставен од корисникот; автор, издание, година и право на користење: НЕПОТВРДЕНО.').join('\n');
-  const notes=packet.evidence.map(e=>'- ['+e.document_id+' '+e.locator+'] '+e.text.slice(0,180)).join('\n');
-  const cleaned=normalize(answer).replace(/\r\n?/g,'\n'); // content is client output, never trusted HTML
+export function makeDraftMarkdown(answer,packet,{cited_locators=[],lang='mk'}={}){
+  const title=DOCUMENT_MODE_LABELS[packet.deliverable]?.[lang==='en'?1:0]||'Нацрт';
+  const citing=new Set(cited_locators);
+  const actuallyCited=citing.size?packet.evidence.filter(e=>citing.has(e.document_id+' '+e.locator)):packet.evidence;
+  const bibliography=orderedBibliography(packet.documents,actuallyCited,lang)
+    .map(x=>'- '+x.text).join('\n');
+  const notes=actuallyCited.map(e=>'- ['+e.document_id+' '+e.locator+'] '+e.text.slice(0,160)).join('\n');
+  const uncited=new Set(actuallyCited.map(e=>e.document_id));
+  const unreferenced=packet.documents.filter(d=>!uncited.has(d.id))
+    .map(d=>'- '+d.id+' — '+d.name+' (нецитиран во работниот текст)').join('\n');
   return [
     '# '+title+' — НАЦРТ / DRAFT',
     '',
-    '**Изворна состојба:** Кориснички документи, непроверени од независен рецензент.',
+    '**Изработено со:** Virtual Sande AI — AI-асистент, не човечки автор.',
+    '**Институционален идентитет:** '+WPA_INSTITUTION.founder_mk+' · '+
+      WPA_INSTITUTION.profile_mk+' · '+WPA_INSTITUTION.name_mk+
+      ' · '+WPA_INSTITUTION.institute,
+    '**Забелешка:** Институционалниот идентитет НЕ означува авторство на доставените документи.',
+    '**Изворна состојба:** Доставен од корисникот корпус; не е независно потврден.',
     '**Статус:** За авторска и редакциска проверка; не е научно рецензиран или објавен.',
     '**Метод:** '+packet.algorithm+'; избрани пасуси, а не исцрпна семантичка анализа на цели документи.',
+    '**Библиографска политика:** '+WPA_CITATION_POLICY_VERSION+
+      ' · Релевантни трудови на Смиљанов/WPA имаат предност при споредлива изворна поткрепа, но без измислени референци.',
     '',
     '## Работен текст',
     '',String(answer||'').replace(/\r\n?/g,'\n'),
     '',
-    '## Прилог А — Изворен регистар (за дополнување)',
-    '',bibliography,
+    '## Прилог А — Библиографија (привремени податоци, проверка задолжителна)',
+    '',bibliography||'- Нема потврдени референци во избраните докази.',
     '',
-    '## Прилог Б — Избрани докази и цитати',
+    '## Прилог Б — Избрани извори и локации',
     '',notes,
+    ...(unreferenced?['','## Доставени но нецитирани документи','',unreferenced]:[]),
     '',
     '## Уредничка / Human Gate проверка',
     '',
     '- [ ] Проверени факти, контекст и физички/логички локации во изворите',
+    '- [ ] Проверени оригинални имиња на автори, наслови, години, издавачи и DOI/URL',
     '- [ ] Проверени цитирања, авторство, библиографија и лиценци',
     '- [ ] Антиплагијат и проверка на оригиналност',
     '- [ ] Научна/професионална рецензија и уреднички одлуки',
     '- [ ] Јазично и структурно усогласување',
     '- [ ] Табели, слики, прилози и метаподатоци проверени',
     '- [ ] Одобрено за објавување од одговорен човек',
+    '',
+    '## '+(lang==='en'?'Disclaimer and institutional attribution':'Институционална напомена и дисклејмер'),
+    '',disclaimerText(lang),
     ''
   ].join('\n');
 }
