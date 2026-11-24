@@ -3,9 +3,12 @@ on:
   pull_request:
     paths:
       - 'scripts/virtual-sande-public-widget.js'
+      - 'scripts/virtual-sande-pdf-tool.mjs'
+      - 'scripts/virtual-sande-book-synthesis.mjs'
       - 'workers/virtual-sande-multimodal-pilot/**'
       - 'workers/virtual-sande-v35.1-production/src/index.mjs'
       - 'tests/virtual-sande-multimodal-*.test.mjs'
+      - 'tests/virtual-sande-pdf-*.test.mjs'
       - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
       - 'docs/virtual-sande-multimodal-pilot-v0.1.md'
   workflow_dispatch:
@@ -23,14 +26,18 @@ jobs:
       - name: Syntax and certified runtime isolation
         run: |
           node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-book-synthesis.mjs
+          node --check scripts/virtual-sande-pdf-tool.mjs
           node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
           node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
           cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
           node --check tests/virtual-sande-multimodal-agent.test.mjs
           node --check tests/virtual-sande-multimodal-ui.test.mjs
+          node --check tests/virtual-sande-pdf-synthesis.test.mjs
+          node --check tests/virtual-sande-pdf-gateway.test.mjs
       - name: Isolated contract and UI regression tests (mocked providers)
-        run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs
+        run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs tests/virtual-sande-pdf-synthesis.test.mjs tests/virtual-sande-pdf-gateway.test.mjs
       - name: No silent enablement, secret leak or production deployment
         run: |
           grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
