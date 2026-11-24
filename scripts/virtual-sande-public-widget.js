@@ -15,6 +15,13 @@
   ];
   var busy = false;
   var history = [];
+  var pendingImage = null;  // Memory-only; never stored in localStorage or history.
+  var bookTool = null; // Optional PDF tool in a separate module, never intercepts /ask.
+  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false };
+  var challengeToken = '';
+  var challengeId = null;
+  var challengeLoading = false;
+  var MAX_FILE_BYTES = 8000000;
 
   function isExcluded() {
     if (excludedExact.indexOf(currentPath) !== -1) return true;
@@ -37,6 +44,16 @@
         placeholder: 'Ask about protocol, diplomacy, communication or security...',
         send: 'Send',
         clear: 'Clear',
+        attach: 'Attach an image',
+        imageReady: 'Selected image',
+        imageUnavailable: 'Image analysis is not connected yet. The academic text chat still works.',
+        imageRejected: 'Please select a JPEG, PNG or WebP image (up to 8 MB).',
+        consent: 'I agree to send my message and any selected image or excerpts from my PDF to the configured AI provider for analysis. The complete PDF is not sent. Do not upload confidential material.',
+        consentRequired: 'Please confirm your consent for the AI provider.',
+        captchaRequired: 'Complete the security check before continuing.',
+        generalMode: 'General conversation (AI)',
+        removeImage: 'Remove image',
+        followups: 'Suggested next questions',
         connecting: 'Connecting...',
         offline: 'WPA academic core',
         error: 'Virtual Sande is temporarily unable to reach the academic service. Please try again shortly.',
@@ -51,6 +68,16 @@
       placeholder: 'Поставете прашање за протокол, дипломатија, комуникација или безбедност...',
       send: 'Испрати',
       clear: 'Исчисти',
+      attach: 'Додај слика',
+      imageReady: 'Избрана слика',
+      imageUnavailable: 'Анализата на слики сè уште не е поврзана. Академскиот текстуален разговор работи.',
+      imageRejected: 'Изберете JPG, PNG или WebP слика до 8 MB.',
+      consent: 'Се согласувам моето прашање и избраната слика или извадоци од PDF-книгата да се обработат кај AI провајдерот. Целиот PDF не се испраќа. Не прикачувајте доверливи материјали.',
+      consentRequired: 'Потврдете ја согласноста за надворешната AI обработка.',
+      captchaRequired: 'Завршете ја безбедносната проверка пред испраќање.',
+      generalMode: 'Општ разговор (AI)',
+      removeImage: 'Отстрани слика',
+      followups: 'Предложени следни прашања',
       connecting: 'Се поврзувам...',
       offline: 'WPA академско јадро',
       error: 'Virtual Sande привремено не може да се поврзе со академскиот сервис. Обидете се повторно за кратко.',
@@ -151,6 +178,13 @@
       '.wpa-public-vs-copy{min-width:0;flex:1}.wpa-public-vs-title{font:700 16px/1.1 Georgia,serif;color:#e8d49a}.wpa-public-vs-sub{font-size:10.5px;color:rgba(255,255,255,.75);margin-top:3px}',
       '.wpa-public-vs-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:2px 5px}',
       '.wpa-public-vs-status{min-height:18px;padding:4px 12px 0;background:#fbf8ee;color:#6c5830;font-size:10.5px}',
+      '.wpa-vs-capabilities{padding:5px 12px;background:#f1eddc;border-bottom:1px solid #dbcfa5;color:#12294a;font-size:11px;flex-shrink:0}',
+      '.wpa-vs-capabilities>summary{font-weight:750;cursor:pointer;list-style-position:inside;line-height:1.5}',
+      '.wpa-vs-capabilities-list{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:7px 0 2px}',
+      '.wpa-vs-capability{padding:6px 7px;border:1px solid #d9c99e;background:#fff;border-radius:7px;min-width:0}',
+      '.wpa-vs-capability-title{font-weight:700;font-size:10.5px;display:block;color:#163459}',
+      '.wpa-vs-capability-detail{display:block;color:#5b4b2b;font-size:10px;word-break:break-word}',
+      '@media(max-width:320px){.wpa-vs-capabilities-list{grid-template-columns:1fr}}',
       '.wpa-public-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
       '.wpa-public-vs-row{display:flex;margin:0 0 10px}.wpa-public-vs-row.user{justify-content:flex-end}',
       '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
@@ -163,6 +197,16 @@
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
+      '.wpa-public-vs-extra{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 10px 3px;background:#f5f0e0;font-size:11px;color:#1a304b}',
+      '.wpa-public-vs-attach,.wpa-public-vs-remove-image{border:1px solid #b7a05e;border-radius:7px;padding:6px 9px;background:#fff;color:#18304d;cursor:pointer;font-weight:600}',
+      '.wpa-public-vs-attach:disabled{opacity:.55;cursor:not-allowed}',
+      '.wpa-public-vs-mode{display:inline-flex;align-items:center;gap:5px}',
+      '.wpa-public-vs-image-preview{font-size:11px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.wpa-public-vs-consent{padding:5px 11px;background:#f5f0e0;color:#22344a;font-size:11px;line-height:1.4}',
+      '.wpa-public-vs-challenge{padding:4px 11px;background:#f5f0e0;min-height:25px}',
+      '.wpa-public-vs-followups{display:flex;gap:6px;flex-wrap:wrap;padding:4px 11px;background:#f5f0e0}',
+      '.wpa-public-vs-followups button{border:1px solid #c9a84c;background:#fff;color:#0d1f3c;border-radius:10px;padding:5px 7px;font-size:11px;cursor:pointer}',
+      '#wpaPublicVsPanel [hidden]{display:none!important}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -231,6 +275,232 @@
     return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
   }
 
+  // Separate, opt-in model-only pilot. Never route images through canonical /ask.
+  var AGENT_PILOT_ROOT = 'https://wpa-virtual-sande-agent-pilot.worldprotocolacademy.workers.dev';
+  function agentUrl(route) {
+    return AGENT_PILOT_ROOT + route;
+  }
+
+  function usingAgent() {
+    var mode = document.getElementById('wpaPublicVsAgentMode');
+    return !!pendingImage || !!(bookTool && bookTool.isActive()) || !!(mode && mode.checked);
+  }
+
+  function resetChallenge() {
+    challengeToken = '';
+    if (challengeId !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
+      try { window.turnstile.reset(challengeId); } catch (_) {}
+    }
+  }
+
+  function ensureChallenge() {
+    if (!agentCapabilities.enabled || !usingAgent()) return;
+    var host = document.getElementById('wpaPublicVsChallenge');
+    if (!host) return;
+    host.hidden = false;
+    if (challengeId !== null) return;
+    if (!window.turnstile) {
+      if (challengeLoading) return;
+      challengeLoading = true;
+      var script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = function () { challengeLoading = false; ensureChallenge(); };
+      script.onerror = function () {
+        challengeLoading = false;
+        var status = document.getElementById('wpaPublicVsStatus');
+        if (status) status.textContent = copy().captchaRequired;
+      };
+      document.head.appendChild(script);
+      return;
+    }
+    try {
+      challengeId = window.turnstile.render(host, {
+        sitekey: agentCapabilities.turnstile_site_key,
+        action: 'wpa-agent',
+        size: 'compact',
+        callback: function (token) {
+          challengeToken = String(token || '');
+          var status = document.getElementById('wpaPublicVsStatus');
+          if (status && status.textContent === copy().captchaRequired) status.textContent = '';
+        },
+        'expired-callback': function () { challengeToken = ''; },
+        'error-callback': function () { challengeToken = ''; }
+      });
+    } catch (_) {
+      challengeId = null;
+      var status = document.getElementById('wpaPublicVsStatus');
+      if (status) status.textContent = copy().captchaRequired;
+    }
+  }
+
+  function updateAgentInterface() {
+    var active = usingAgent() && agentCapabilities.enabled;
+    var consentWrap = document.getElementById('wpaPublicVsConsentWrap');
+    var challenge = document.getElementById('wpaPublicVsChallenge');
+    if (consentWrap) consentWrap.hidden = !active;
+    if (challenge) challenge.hidden = !active;
+    if (active) ensureChallenge();
+  }
+
+  function clearImage() {
+    pendingImage = null;
+    var file = document.getElementById('wpaPublicVsImageFile');
+    var preview = document.getElementById('wpaPublicVsImagePreview');
+    var remove = document.getElementById('wpaPublicVsRemoveImage');
+    if (file) file.value = '';
+    if (preview) preview.textContent = '';
+    if (remove) remove.hidden = true;
+    updateAgentInterface();
+  }
+
+  function prepareImage(file) {
+    if (!file || MAX_FILE_BYTES < file.size ||
+        ['image/png', 'image/jpeg', 'image/webp'].indexOf(file.type) < 0) {
+      return Promise.reject(new Error('BAD_IMAGE'));
+    }
+    return new Promise(function (resolve, reject) {
+      var blobURL = URL.createObjectURL(file);
+      var image = new Image();
+      image.onerror = function () {
+        URL.revokeObjectURL(blobURL);
+        reject(new Error('BAD_IMAGE'));
+      };
+      image.onload = function () {
+        URL.revokeObjectURL(blobURL);
+        if (!image.naturalWidth || !image.naturalHeight) {
+          reject(new Error('BAD_IMAGE'));
+          return;
+        }
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('BAD_IMAGE')); return; }
+        var settings = [{ size: 1200, quality: 0.82 }, { size: 920, quality: 0.67 }, { size: 720, quality: 0.60 }];
+        for (var i = 0; i < settings.length; i += 1) {
+          var scale = Math.min(1, settings[i].size / Math.max(image.naturalWidth, image.naturalHeight));
+          canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+          // Re-encoding locally strips most metadata, including EXIF/GPS.
+          var dataUrl = canvas.toDataURL('image/jpeg', settings[i].quality);
+          if (dataUrl.length * 0.75 <= 1500000) {
+            resolve({ dataUrl: dataUrl, name: String(file.name || 'image.jpg').slice(0, 110) });
+            return;
+          }
+        }
+        reject(new Error('BAD_IMAGE'));
+      };
+      image.src = blobURL;
+    });
+  }
+
+  // Visible truth-in-capabilities: make an offline/disabled model impossible to confuse
+  // with a verified GPT backend. This panel reports status; it grants no tools.
+  function renderCapabilityPanel() {
+    var region=document.getElementById('wpaPublicVsCapabilityList');
+    var summary=document.getElementById('wpaPublicVsCapabilitySummary');
+    if (!region || !summary) return;
+    var en=isEnglish();
+    var configured=agentCapabilities.enabled===true;
+    var model=agentCapabilities.model_id||'gpt-6.1-terra';
+    summary.textContent=en?'Tools & AI connections · actual status':'Алатки и AI-поврзувања · реален статус';
+    var items=[
+      {title:en?'Academic conversation':'Академски разговор',
+        detail:en?'Source-based WPA route; verified when answering':'Изворен WPA режим; се проверува при одговарање'},
+      {title:'GPT-6.1 Terra',
+        detail:configured?(en?'Configured: '+model+' · live quality not verified':'Конфигуриран: '+model+' · потребен вистински тест'):
+          (en?'Candidate model · NOT connected':'Кандидат-модел · НЕ Е ПОВРЗАН')},
+      {title:en?'Photo analysis':'Анализа на слики',
+        detail:configured?(en?'Configured · confirm with test image':'Конфигурирано · потребна пробна слика'):
+          (en?'Not enabled':'Не е активирана')},
+      {title:en?'PDF Book Lab':'PDF анализа на книги',
+        detail:configured&&agentCapabilities.pdf_synthesis===true?
+          (en?'Configured · test citations':'Конфигурирано · провери цитати'):
+          (en?'Local PDF indexing; model not connected':'Локален PDF индекс; AI не е поврзана')}
+    ];
+    region.replaceChildren();
+    items.forEach(function(item){
+      var box=document.createElement('div');
+      box.className='wpa-vs-capability';
+      var title=document.createElement('span');title.className='wpa-vs-capability-title';
+      title.textContent=item.title;
+      var detail=document.createElement('span');detail.className='wpa-vs-capability-detail';
+      detail.textContent=item.detail;
+      box.append(title,detail);region.appendChild(box);
+    });
+  }
+
+  async function loadAgentCapabilities() {
+    try {
+      var response = await fetchWithTimeout(agentUrl('/agent/capabilities'),
+        { method: 'GET', mode: 'cors', cache: 'no-store', credentials: 'omit' }, 5500);
+      if (!response.ok) return;
+      var caps = await response.json();
+      if (!caps || caps.ok !== true) return;
+      // An explicit model ID can be displayed even while disabled; it is never
+      // described as connected until all configured capability gates pass.
+      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false},caps);
+      renderCapabilityPanel();
+      if (caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
+          !caps.turnstile_site_key) return;
+      var attach = document.getElementById('wpaPublicVsAttach');
+      var mode = document.getElementById('wpaPublicVsAgentMode');
+      if (attach) {
+        attach.disabled = false;
+        attach.title = copy().attach;
+      }
+      if (mode) mode.disabled = false;
+      updateAgentInterface();
+    } catch (_) {
+      // Fail closed when the feature-flagged Worker is not configured.
+      renderCapabilityPanel();
+    }
+  }
+
+  async function requestAgent(question) {
+    var payload = {
+      message: question,
+      lang: String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk',
+      history: history.slice(-6),
+      image_data_url: pendingImage ? pendingImage.dataUrl : null,
+      turnstile_token: challengeToken,
+      consent: true
+    };
+    var response = await fetchWithTimeout(agentUrl('/agent/ask'), {
+      method: 'POST', mode: 'cors', cache: 'no-store', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }, 34000);
+    if (!response.ok) throw new Error('AGENT_HTTP_' + response.status);
+    var data = await response.json();
+    var answer = answerFrom(data);
+    if (!answer) throw new Error('EMPTY_AGENT_ANSWER');
+    return { answer: answer, data: data, local: false, agent: true };
+  }
+
+  function showFollowups(data, question) {
+    var area = document.getElementById('wpaPublicVsFollowups');
+    if (!area) return;
+    area.replaceChildren();
+    var suggestions = data && Array.isArray(data.followups) ? data.followups.slice(0, 2) :
+      (/знам|flag|симбол|symbol/i.test(question) ?
+        ['Кои се најчестите грешки со знамињата?', 'Подготви чек-листа за проверка.'] :
+        ['Дај ми практичен пример.', 'Што треба да проверам пред да постапам?']);
+    suggestions.forEach(function (value) {
+      if (typeof value !== 'string' || !value.trim() || value.length > 150) return;
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = value;
+      button.addEventListener('click', function () {
+        var input = document.getElementById('wpaPublicVsInput');
+        if (input) { input.value = value; input.focus(); }
+      });
+      area.appendChild(button);
+    });
+  }
+
   function isNoContextAnswer(answer) {
     var q = normalizeQuestion(answer);
     return !q ||
@@ -296,27 +566,94 @@
     if (busy) return;
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
-    if (!question) return;
+    var pdfActive = !!(bookTool && bookTool.isActive());
+    var status = document.getElementById('wpaPublicVsStatus');
+    if (bookTool && bookTool.isBusy()) {
+      if (status) status.textContent = isEnglish() ?
+        'Reading the PDF locally; finish indexing first.' :
+        'Сè уште се чита PDF локално. Довршете го индексирањето.';
+      return;
+    }
+    if (pdfActive && pendingImage) {
+      if (status) status.textContent = bookTool.messageFor('PDF_IMAGE_CONFLICT');
+      return;
+    }
+    if (!question && !pendingImage && !pdfActive) return;
+    if (!question && pdfActive) question = isEnglish() ?
+      'Make an evidence-grounded synthesis of the main themes in the selected PDF excerpts.' :
+      'Направи изворно поткрепена синтеза на главните теми во избраните PDF-извадоци.';
+    if (!question && pendingImage) question = isEnglish() ?
+      'Please describe the image carefully and identify details that require verification.' :
+      'Опиши ја фотографијата внимателно и разграничи што е видливо од тоа што треба да се провери.';
+
+    var useAgent = usingAgent();
+    if (useAgent && !agentCapabilities.enabled) {
+      if (status) status.textContent = pdfActive ? bookTool.messageFor('PDF_AGENT_DISABLED') : copy().imageUnavailable;
+      return;
+    }
+    if (pdfActive && agentCapabilities.pdf_synthesis !== true) {
+      if (status) status.textContent = bookTool.messageFor('PDF_AGENT_DISABLED');
+      return;
+    }
+    if (useAgent && !document.getElementById('wpaPublicVsConsent').checked) {
+      if (status) status.textContent = copy().consentRequired;
+      return;
+    }
+    if (useAgent && !challengeToken) {
+      if (status) status.textContent = copy().captchaRequired;
+      ensureChallenge();
+      return;
+    }
 
     busy = true;
-    input.value = '';
-    addMessage(question, 'user');
-    history.push({ role: 'user', content: question });
+    var pdfSummary = pdfActive ? bookTool.getSummary() : null;
+    var userLabel = (pdfSummary ? '📚 ' + pdfSummary.name + '\n' : '') +
+      (pendingImage ? '📷 ' + pendingImage.name + '\n' : '') + question;
+    addMessage(userLabel, 'user');
 
     var button = document.getElementById('wpaPublicVsSend');
-    var status = document.getElementById('wpaPublicVsStatus');
     if (button) button.disabled = true;
     if (status) status.textContent = copy().connecting;
-
     try {
-      var result = await requestAnswer(question);
+      // Source-based academic chat is preserved; independent PDF & photo modes are explicit.
+      var result = pdfActive ? await bookTool.ask(question,{
+        endpoint:agentUrl('/agent/pdf-analysis'),token:challengeToken,consent:true
+      }) : useAgent ? await requestAgent(question) : await requestAnswer(question);
       addMessage(result.answer, 'bot');
-      history.push({ role: 'assistant', content: result.answer });
-      if (status) status.textContent = result.local ? copy().offline : '';
-      if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
+      // Book-derived responses stay in this visible session only: never relay them
+      // to the separate canonical /ask service as implicit conversation history.
+      if (!pdfActive) {
+        history.push({ role: 'user', content: question });
+        history.push({ role: 'assistant', content: result.answer });
+        if (history.length > 12) history = history.slice(-12);
+      }
+      if (input) input.value = '';
+      showFollowups(result.data, question);
+      if (useAgent) {
+        resetChallenge();
+        document.getElementById('wpaPublicVsConsent').checked = false;
+        if (!pdfActive) clearImage();
+        if (status) status.textContent = pdfActive ?
+          (isEnglish() ? 'The response is based on selected PDF excerpts, not a verified full-book review.' :
+            'Одговорот се темели на избрани PDF-извадоци, не на потврдена анализа на целата книга.') :
+          (isEnglish() ? 'AI-assisted pilot. This answer is not independently source-verified.' :
+            'AI пилот: одговорот не е независно изворно проверен.');
+      } else if (status) {
+        status.textContent = result.local ? copy().offline : '';
+      }
     } catch (error) {
-      addMessage(copy().error, 'bot');
+      if (useAgent) resetChallenge();
+      var message = pdfActive ? bookTool.messageFor(error?.message) : copy().error;
+      if (useAgent && error && /(?:PDF_HTTP_|AGENT_HTTP_)429/.test(error.message)) {
+        message = isEnglish() ? 'Request limit reached. Please try later.' :
+          'Достигнато е ограничувањето на барања. Обидете се подоцна.';
+      } else if (!pdfActive && useAgent && error &&
+        (error.message === 'AGENT_HTTP_403' || error.message === 'AGENT_HTTP_503')) {
+        message = copy().captchaRequired + ' ' + copy().imageUnavailable;
+      }
+      addMessage(message, 'bot');
       if (status) status.textContent = '';
+      // Keep the draft text and local attachments on an error so user can retry.
     } finally {
       busy = false;
       if (button) button.disabled = false;
@@ -337,7 +674,20 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
-    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="1600" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-extra"><input type="file" id="wpaPublicVsImageFile" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="wpa-public-vs-attach" id="wpaPublicVsAttach" disabled title="' + text.imageUnavailable + '">📷 ' + text.attach + '</button><label class="wpa-public-vs-mode"><input type="checkbox" id="wpaPublicVsAgentMode" disabled> ' + text.generalMode + '</label><span class="wpa-public-vs-image-preview" id="wpaPublicVsImagePreview" aria-live="polite"></span><button type="button" class="wpa-public-vs-remove-image" id="wpaPublicVsRemoveImage" hidden aria-label="' + text.removeImage + '">×</button></div><div class="wpa-public-vs-consent" id="wpaPublicVsConsentWrap" hidden><label><input type="checkbox" id="wpaPublicVsConsent"> ' + text.consent + '</label></div><div class="wpa-public-vs-challenge" id="wpaPublicVsChallenge" hidden></div><div class="wpa-public-vs-followups" id="wpaPublicVsFollowups" aria-label="' + text.followups + '"></div><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+
+    var capPanel=document.createElement('details');
+    capPanel.id='wpaPublicVsCapabilities';
+    capPanel.className='wpa-vs-capabilities';
+    capPanel.open=true; // Let visitors see real statuses, not just an unlabelled Send button.
+    var capSummary=document.createElement('summary');
+    capSummary.id='wpaPublicVsCapabilitySummary';
+    capPanel.appendChild(capSummary);
+    var capList=document.createElement('div');
+    capList.id='wpaPublicVsCapabilityList';
+    capList.className='wpa-vs-capabilities-list';
+    capPanel.appendChild(capList);
+    panel.querySelector('.wpa-public-vs-status').before(capPanel);
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
@@ -352,11 +702,56 @@
     document.body.appendChild(fab);
     protectAllInputs();
     addMessage(text.welcome, 'bot');
+    renderCapabilityPanel();
+    // Discover optional multimodal capability. No automatic paid calls are made here.
+    loadAgentCapabilities();
+    // The book module is sandboxed in the browser and does not change the academic /ask path.
+    import('/scripts/virtual-sande-pdf-tool.mjs').then(function (mod) {
+      if (!document.getElementById('wpaPublicVsPanel')) return;
+      bookTool = mod.createBookTool(panel, {
+        isEnabled: function () { return agentCapabilities.enabled === true && agentCapabilities.pdf_synthesis === true; },
+        onChange: function () { updateAgentInterface(); },
+        onStatus: function () {}
+      });
+    }).catch(function () {
+      var status = document.getElementById('wpaPublicVsStatus');
+      if (status) status.textContent = isEnglish() ?
+        'The PDF book tool is unavailable.' : 'Алатката за PDF-книги моментално е недостапна.';
+    });
+
+    var imagePicker = document.getElementById('wpaPublicVsImageFile');
+    document.getElementById('wpaPublicVsAttach').addEventListener('click', function () {
+      if (!agentCapabilities.enabled) {
+        document.getElementById('wpaPublicVsStatus').textContent = copy().imageUnavailable;
+        return;
+      }
+      imagePicker.click();
+    });
+    imagePicker.addEventListener('change', async function () {
+      if (!imagePicker.files || !imagePicker.files[0]) return;
+      var status = document.getElementById('wpaPublicVsStatus');
+      try {
+        var image = await prepareImage(imagePicker.files[0]);
+        pendingImage = image;
+        document.getElementById('wpaPublicVsImagePreview').textContent = '📷 ' + image.name;
+        document.getElementById('wpaPublicVsRemoveImage').hidden = false;
+        if (status) status.textContent = '';
+        updateAgentInterface();
+      } catch (_) {
+        clearImage();
+        if (status) status.textContent = copy().imageRejected;
+      }
+    });
+    document.getElementById('wpaPublicVsRemoveImage').addEventListener('click', clearImage);
+    document.getElementById('wpaPublicVsAgentMode').addEventListener('change', updateAgentInterface);
 
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) document.getElementById('wpaPublicVsInput').focus();
+      if (open) {
+        document.getElementById('wpaPublicVsInput').focus();
+        ensureChallenge();
+      }
     });
 
     panel.querySelector('.wpa-public-vs-close').addEventListener('click', function () {
@@ -378,7 +773,16 @@
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
-      document.getElementById('wpaPublicVsMsgs').innerHTML = '';
+      clearImage();
+      if (bookTool) bookTool.reset();
+      document.getElementById('wpaPublicVsAgentMode').checked = false;
+      document.getElementById('wpaPublicVsConsent').checked = false;
+      document.getElementById('wpaPublicVsInput').value = '';
+      document.getElementById('wpaPublicVsStatus').textContent = '';
+      document.getElementById('wpaPublicVsFollowups').replaceChildren();
+      resetChallenge();
+      updateAgentInterface();
+      document.getElementById('wpaPublicVsMsgs').replaceChildren();
       addMessage(copy().welcome, 'bot');
     });
 
