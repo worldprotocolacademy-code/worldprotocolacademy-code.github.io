@@ -10,6 +10,7 @@ on:
       - 'tools/virtual-sande/wpa-private-workspace-pilot.mjs'
       - 'tests/virtual-sande-private-workspace-pilot.test.mjs'
       - 'tests/virtual-sande-workspace-browser.mjs'
+      - 'scripts/build-virtual-sande-private-pilot.mjs'
       - 'workers/virtual-sande-private-pilot/**'
       - '.github/workflows/virtual-sande-proactive-intent-ci.yml'
   workflow_dispatch:
@@ -32,6 +33,10 @@ jobs:
           node --check scripts/virtual-sande-private-workspace-client.mjs
           node --check tools/virtual-sande/wpa-private-workspace-pilot.mjs
           node --check tests/virtual-sande-private-workspace-pilot.test.mjs
+          node --check workers/virtual-sande-private-pilot/src/index.mjs
+          node --check scripts/build-virtual-sande-private-pilot.mjs
+      - name: Build allowlisted staging assets (source only, no deploy)
+        run: node scripts/build-virtual-sande-private-pilot.mjs
       - name: Test contextual inference and private pilot with mocked services
         run: node --test tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-private-workspace-pilot.test.mjs
   browser-acceptance:
