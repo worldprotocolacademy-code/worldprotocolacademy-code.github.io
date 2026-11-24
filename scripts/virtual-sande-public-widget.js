@@ -267,6 +267,189 @@
     return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
   }
 
+  function agentUrl(route) {
+    return ENDPOINTS[0].replace(/\/ask$/, route);
+  }
+
+  function usingAgent() {
+    var mode = document.getElementById('wpaPublicVsAgentMode');
+    return !!pendingImage || !!(mode && mode.checked);
+  }
+
+  function resetChallenge() {
+    challengeToken = '';
+    if (challengeId !== null && window.turnstile && typeof window.turnstile.reset === 'function') {
+      try { window.turnstile.reset(challengeId); } catch (_) {}
+    }
+  }
+
+  function ensureChallenge() {
+    if (!agentCapabilities.enabled || !usingAgent()) return;
+    var host = document.getElementById('wpaPublicVsChallenge');
+    if (!host) return;
+    host.hidden = false;
+    if (challengeId !== null) return;
+    if (!window.turnstile) {
+      if (challengeLoading) return;
+      challengeLoading = true;
+      var script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = function () { challengeLoading = false; ensureChallenge(); };
+      script.onerror = function () {
+        challengeLoading = false;
+        var status = document.getElementById('wpaPublicVsStatus');
+        if (status) status.textContent = copy().captchaRequired;
+      };
+      document.head.appendChild(script);
+      return;
+    }
+    try {
+      challengeId = window.turnstile.render(host, {
+        sitekey: agentCapabilities.turnstile_site_key,
+        action: 'wpa-agent',
+        size: 'compact',
+        callback: function (token) {
+          challengeToken = String(token || '');
+          var status = document.getElementById('wpaPublicVsStatus');
+          if (status && status.textContent === copy().captchaRequired) status.textContent = '';
+        },
+        'expired-callback': function () { challengeToken = ''; },
+        'error-callback': function () { challengeToken = ''; }
+      });
+    } catch (_) {
+      challengeId = null;
+      var status = document.getElementById('wpaPublicVsStatus');
+      if (status) status.textContent = copy().captchaRequired;
+    }
+  }
+
+  function updateAgentInterface() {
+    var active = usingAgent() && agentCapabilities.enabled;
+    var consentWrap = document.getElementById('wpaPublicVsConsentWrap');
+    var challenge = document.getElementById('wpaPublicVsChallenge');
+    if (consentWrap) consentWrap.hidden = !active;
+    if (challenge) challenge.hidden = !active;
+    if (active) ensureChallenge();
+  }
+
+  function clearImage() {
+    pendingImage = null;
+    var file = document.getElementById('wpaPublicVsImageFile');
+    var preview = document.getElementById('wpaPublicVsImagePreview');
+    var remove = document.getElementById('wpaPublicVsRemoveImage');
+    if (file) file.value = '';
+    if (preview) preview.textContent = '';
+    if (remove) remove.hidden = true;
+    updateAgentInterface();
+  }
+
+  function prepareImage(file) {
+    if (!file || MAX_FILE_BYTES < file.size ||
+        ['image/png', 'image/jpeg', 'image/webp'].indexOf(file.type) < 0) {
+      return Promise.reject(new Error('BAD_IMAGE'));
+    }
+    return new Promise(function (resolve, reject) {
+      var blobURL = URL.createObjectURL(file);
+      var image = new Image();
+      image.onerror = function () {
+        URL.revokeObjectURL(blobURL);
+        reject(new Error('BAD_IMAGE'));
+      };
+      image.onload = function () {
+        URL.revokeObjectURL(blobURL);
+        if (!image.naturalWidth || !image.naturalHeight) {
+          reject(new Error('BAD_IMAGE'));
+          return;
+        }
+        var canvas = document.createElement('canvas');
+        var ctx = canvas.getContext('2d');
+        if (!ctx) { reject(new Error('BAD_IMAGE')); return; }
+        var settings = [{ size: 1200, quality: 0.82 }, { size: 920, quality: 0.67 }, { size: 720, quality: 0.60 }];
+        for (var i = 0; i < settings.length; i += 1) {
+          var scale = Math.min(1, settings[i].size / Math.max(image.naturalWidth, image.naturalHeight));
+          canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+          // Re-encoding locally strips most metadata, including EXIF/GPS.
+          var dataUrl = canvas.toDataURL('image/jpeg', settings[i].quality);
+          if (dataUrl.length * 0.75 <= 1500000) {
+            resolve({ dataUrl: dataUrl, name: String(file.name || 'image.jpg').slice(0, 110) });
+            return;
+          }
+        }
+        reject(new Error('BAD_IMAGE'));
+      };
+      image.src = blobURL;
+    });
+  }
+
+  async function loadAgentCapabilities() {
+    try {
+      var response = await fetchWithTimeout(agentUrl('/agent/capabilities'),
+        { method: 'GET', mode: 'cors', cache: 'no-store', credentials: 'omit' }, 5500);
+      if (!response.ok) return;
+      var caps = await response.json();
+      if (!caps || caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
+          !caps.turnstile_site_key) return;
+      agentCapabilities = caps;
+      var attach = document.getElementById('wpaPublicVsAttach');
+      var mode = document.getElementById('wpaPublicVsAgentMode');
+      if (attach) {
+        attach.disabled = false;
+        attach.title = copy().attach;
+      }
+      if (mode) mode.disabled = false;
+      updateAgentInterface();
+    } catch (_) {
+      // Fail-closed when the feature-flagged Worker is not configured.
+    }
+  }
+
+  async function requestAgent(question) {
+    var payload = {
+      message: question,
+      lang: String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk',
+      history: history.slice(-6),
+      image_data_url: pendingImage ? pendingImage.dataUrl : null,
+      turnstile_token: challengeToken,
+      consent: true
+    };
+    var response = await fetchWithTimeout(agentUrl('/agent/ask'), {
+      method: 'POST', mode: 'cors', cache: 'no-store', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }, 34000);
+    if (!response.ok) throw new Error('AGENT_HTTP_' + response.status);
+    var data = await response.json();
+    var answer = answerFrom(data);
+    if (!answer) throw new Error('EMPTY_AGENT_ANSWER');
+    return { answer: answer, data: data, local: false, agent: true };
+  }
+
+  function showFollowups(data, question) {
+    var area = document.getElementById('wpaPublicVsFollowups');
+    if (!area) return;
+    area.replaceChildren();
+    var suggestions = data && Array.isArray(data.followups) ? data.followups.slice(0, 2) :
+      (/знам|flag|симбол|symbol/i.test(question) ?
+        ['Кои се најчестите грешки со знамињата?', 'Подготви чек-листа за проверка.'] :
+        ['Дај ми практичен пример.', 'Што треба да проверам пред да постапам?']);
+    suggestions.forEach(function (value) {
+      if (typeof value !== 'string' || !value.trim() || value.length > 150) return;
+      var button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = value;
+      button.addEventListener('click', function () {
+        var input = document.getElementById('wpaPublicVsInput');
+        if (input) { input.value = value; input.focus(); }
+      });
+      area.appendChild(button);
+    });
+  }
+
   function isNoContextAnswer(answer) {
     var q = normalizeQuestion(answer);
     return !q ||
