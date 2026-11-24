@@ -1,0 +1,27 @@
+name: Virtual Sande Proactive Intent CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-proactive-intent.mjs'
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'tests/virtual-sande-proactive-intent.test.mjs'
+      - '.github/workflows/virtual-sande-proactive-intent-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  intent-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax validation
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-voice-documents.mjs
+          node --check scripts/virtual-sande-proactive-intent.mjs
+      - name: Test contextual inference
+        run: node --test tests/virtual-sande-proactive-intent.test.mjs
