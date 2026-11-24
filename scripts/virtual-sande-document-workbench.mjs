@@ -7,6 +7,7 @@ import {DOCUMENT_LIMITS,SUPPORTED_DOCUMENT_EXTENSIONS,DOCUMENT_DOMAINS,
  DOCUMENT_MODES,DOCUMENT_MODE_LABELS,makeDocumentCorpus,createEvidencePacket,
  makeDraftMarkdown} from './virtual-sande-document-intelligence.mjs';
 import {readLocalDocument} from './virtual-sande-document-parser.mjs';
+import {WPA_CITATION_POLICY_VERSION,WPA_INSTITUTION,WPA_NOTICES,SOURCE_TYPES} from './virtual-sande-citation-policy.mjs';
 
 const I18N={
  mk:{
@@ -16,6 +17,12 @@ const I18N={
   area:'Област',product:'Побаран производ',
   clear:'Отстрани документи',md:'Преземи Markdown-нацрт',json:'Преземи изворен регистар',
   revise:'Продолжи од претходниот нацрт (се испраќа краток дел од AI-текстот како непроверен контекст)',
+  catalogue:'Официјална WPA библиографија',
+  sourceMeta:'Библиографски податоци (внесени од корисникот; независно непроверени)',
+  sourceFields:['Автор(и)','Точен наслов','Година','Издавач','Вид извор','Списание','Годиште','Број','Страници','Издание','DOI','Официјална врска'],
+  attestRights:'Потврдувам дека имам права и правна основа за обработка на документите и избраните извадоци.',
+  attestSecurity:'Не доставувам класифицирани ниту недозволено доверливи/лични податоци.',
+  policyRequired:'Потребна е потврда за правата и заштитата на документите.',
   empty:'Нема избрани документи. Прикачи ги и потоа прашај во разговорот.',
   progress:'Локално читам',indexed:'Локално индексирани',
   tooBig:'Датотеката/корпусот ги надминува ограничувањата на пилотот.',
@@ -33,6 +40,12 @@ const I18N={
   area:'Discipline',product:'Requested deliverable',
   clear:'Remove documents',md:'Download Markdown draft',json:'Download source register',
   revise:'Continue from previous draft (a short AI text excerpt will be sent as unverified editing context)',
+  catalogue:'Official WPA bibliography',
+  sourceMeta:'Bibliographic metadata (visitor supplied; independently unverified)',
+  sourceFields:['Author(s)','Exact title','Year','Publisher','Source type','Journal','Volume','Issue','Pages','Edition','DOI','Official URL'],
+  attestRights:'I have rights and a lawful basis to process the documents and send selected excerpts.',
+  attestSecurity:'No classified or improperly disclosed confidential/personal material is submitted.',
+  policyRequired:'Confirm source rights and data-security conditions.',
   empty:'No documents selected. Attach documents, then ask in the chat.',
   progress:'Reading locally',indexed:'Indexed locally',
   tooBig:'File/corpus exceeds pilot limits.',
@@ -54,7 +67,15 @@ const CSS=[
  '.wpa-vs-doclab button{margin:3px;border:1px solid #b8a36c;border-radius:6px;background:white;color:#17304d;padding:5px 7px;cursor:pointer}',
  '.wpa-vs-doclab button:disabled{opacity:.5;cursor:not-allowed}',
  '.wpa-vs-doclab .status{overflow-wrap:anywhere;white-space:pre-wrap;font-weight:600}',
- '.wpa-vs-doclab progress{width:100%}'
+ '.wpa-vs-doclab progress{width:100%}',
+ '.wpa-vs-doclab .wpa-doclab-sources{max-height:200px;overflow:auto}',
+ '.wpa-vs-doclab .wpa-doclab-source{margin:4px 0;border:1px solid #dbcba6;padding:5px}',
+ '.wpa-vs-doclab .wpa-doclab-metadata{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}',
+ '.wpa-vs-doclab .wpa-doclab-metadata label{display:flex;flex-direction:column;align-items:start;font-size:10px}',
+ '.wpa-vs-doclab .wpa-doclab-metadata input,.wpa-vs-doclab .wpa-doclab-metadata select{box-sizing:border-box;width:100%;max-width:100%;font-size:11px}',
+ '.wpa-vs-doclab .wpa-doclab-disclaimer{max-height:160px;overflow:auto;white-space:pre-wrap;background:#fff;padding:6px;border:1px solid #d9c69a}',
+ '.wpa-vs-doclab .wpa-doclab-ack label{display:flex;margin:6px 0;gap:8px}',
+ '@media(max-width:390px){.wpa-vs-doclab .wpa-doclab-metadata{grid-template-columns:1fr}}'
 ].join('\n');
 function en(){return document.documentElement.lang?.startsWith('en');}
 function node(tag,className,txt){
@@ -98,22 +119,40 @@ export function createDocumentWorkbench(panel,config={}){
  const progress=node('progress');progress.value=0;progress.max=1;progress.hidden=true;
  const revise=node('input');revise.type='checkbox';revise.checked=false;revise.disabled=true;
  const reviseLabel=node('label',null,t.revise);reviseLabel.prepend(revise);
+ const metadataHost=node('div','wpa-doclab-sources');
+ const metaInfo=node('p',null,t.sourceMeta);
+ const bibliographyLink=node('a',null,t.catalogue);
+ bibliographyLink.href=WPA_INSTITUTION.bibliography_url;
+ bibliographyLink.target='_blank';bibliographyLink.rel='noopener noreferrer';
+ const legalDetails=node('details');
+ const legalSummary=node('summary',null,WPA_NOTICES[lang].heading);
+ legalDetails.append(legalSummary,node('p','wpa-doclab-disclaimer',
+   Object.values(WPA_NOTICES[lang]).join('\n\n')));
+ const policyAcknowledgements=node('div','wpa-doclab-ack');
+ const attestationRights=node('input');attestationRights.type='checkbox';
+ const attestationSecurity=node('input');attestationSecurity.type='checkbox';
+ const rightsLabel=node('label',null,t.attestRights);
+ const securityLabel=node('label',null,t.attestSecurity);
+ rightsLabel.prepend(attestationRights);securityLabel.prepend(attestationSecurity);
+ policyAcknowledgements.append(rightsLabel,securityLabel);
  const clear=node('button',null,t.clear);clear.type='button';
  const md=node('button',null,t.md);md.type='button';md.disabled=true;
  const json=node('button',null,t.json);json.type='button';json.disabled=true;
- wrap.append(desc,label,modeLabel,areaLabel,status,progress,reviseLabel,node('p',null,t.info),clear,md,json);
+ wrap.append(desc,label,modeLabel,areaLabel,status,progress,metaInfo,bibliographyLink,metadataHost,reviseLabel,legalDetails,policyAcknowledgements,node('p',null,t.info),clear,md,json);
  form.parentNode.insertBefore(wrap,form);
  let index=null,working=false,last=null,generation=0;
  function notify(){if(typeof config.onChange==='function')config.onChange();}
  function reset(){
    generation++;index=null;last=null;working=false;
    input.value='';status.textContent=t.empty;progress.hidden=true;
-   md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;notify();
+   md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;
+   metadataHost.replaceChildren();attestationRights.checked=false;attestationSecurity.checked=false;notify();
  }
  clear.addEventListener('click',reset);
  input.addEventListener('change',async()=>{
    const files=[...(input.files||[])],run=++generation;
-   index=null;last=null;md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;notify();
+   index=null;last=null;md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;
+   metadataHost.replaceChildren();attestationRights.checked=false;attestationSecurity.checked=false;notify();
    if(!files.length)return;
    if(files.length>DOCUMENT_LIMITS.maxFiles ||
      files.some(file=>file.size>DOCUMENT_LIMITS.maxFileBytes)){
