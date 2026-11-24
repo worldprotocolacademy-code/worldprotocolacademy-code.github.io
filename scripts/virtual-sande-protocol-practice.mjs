@@ -148,18 +148,18 @@ export const PRACTICAL_CASES=Object.freeze([
  */
 export function inferPracticalCase(question){
  const q=String(question||'').normalize('NFKC').toLowerCase().slice(0,2000);
- if(/кортеж|моторкејд|моторкад|motorcade|convoy|motorcade|службен.*возил/.test(q))return 'motorcade';
+ if(/кортеж|моторкејд|моторкад|motorcade|convoy|motorkejd|kortez|службен.*возил/.test(q))return 'motorcade';
  if/прес-конференц|пресс-конференц|press conference|spokesperson|портпарол/.test(q)return 'public_relations';
- if(/знам(е|иња)|flags?|flagpole|јарбол|државн.*симбол/.test(q))return 'flags';
- if(/химн|anthem|national song/.test(q))return 'anthems';
- if(/свечен.*(?:ручек|вечер)|ручек|вечера|банкет|банкетн|dinner|luncheon|banquet|формалн.*маса/.test(q))return 'formal_dining';
- if(/конференц|самит|потпишува|conference|summit|signing ceremony/.test(q))return 'conferences';
- if(/пресеанс|претседавањ|распоред.*седењ|сит(е|а)њ|precedence|seating plan|seat of hono[u]?r/.test(q))return 'precedence';
+ if(/знам(е|иња)|znaminj|zname|flags?|flagpole|јарбол|државн.*симбол/.test(q))return 'flags';
+ if(/химн|himn|anthem|national song/.test(q))return 'anthems';
+ if(/свечен.*(?:ручек|вечер)|ручек|вечера|банкет|банкетн|ruchek|rucek|vechera|vecera|dinner|luncheon|banquet|формалн.*маса/.test(q))return 'formal_dining';
+ if(/конференц|konferenc|самит|потпишува|conference|summit|signing ceremony/.test(q))return 'conferences';
+ if(/пресеанс|претседавањ|распоред.*седењ|седењ|sedenje|precedence|seating plan|seat of hono[u]?r/.test(q))return 'precedence';
  if(/дипломатск.*покан|нота вербал|кореспонденц|official invitation|note verbale|diplomatic correspondence/.test(q))return 'correspondence';
  if(/односи со јавност|медиум|изјава|редакциск|media relations|public relations|press release/.test(q))return 'public_relations';
- if(/обезбедувањ|безбедност|евакуац|security|safety|emergency plan/.test(q))return 'security';
+ if(/обезбедувањ|безбедност|bezbednost|евакуац|security|safety|emergency plan/.test(q))return 'security';
  if(/комуниколог|толкувач|невербалн|communicolog|interpretation|public speaking/.test(q))return 'communicology';
- if(/(?:^|[^\p{L}])(ai|ar)(?:$|[^\p{L}])|вештачка интелигенц|проширена реалност|augmented reality/.test(q))return 'ai_ar';
+ if(/(?:^|[^\p{L}])(?:ai|ar)(?:$|[^\p{L}])|вештачка интелигенц|проширена реалност|augmented reality/u.test(q))return 'ai_ar';
  return 'other';
 }
 
