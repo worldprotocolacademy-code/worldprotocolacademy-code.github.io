@@ -52,6 +52,15 @@ fi
 pr_number="${pr_url##*/}"
 echo "Opened protected refresh PR #${pr_number} for ${head_sha}."
 
+# WPA NEWS editorials are generated as public-repository draft PRs only.
+# This explicit flag prevents any automated merge or site publication.
+# Other existing callers preserve their current behaviour unless they opt in.
+if [[ "${PUBLISH_HUMAN_GATE_ONLY:-false}" == "true" ]]; then
+  echo "::notice title=Human Gate required::Draft PR #${pr_number} is open. Automated merging and publication were not attempted."
+  echo "Release decision remains with a human editor."
+  exit 0
+fi
+
 run_required_head_checks() {
   local ref="$1"
   gh workflow run site-quality.yml --repo "${GITHUB_REPOSITORY}" --ref "${ref}"
