@@ -572,6 +572,14 @@
     expand.setAttribute('aria-label',isEnglish()?'Expand conversation':'Прошири разговор');expand.setAttribute('aria-pressed','false');
     panel.querySelector('.wpa-public-vs-close').before(expand);
     expand.onclick=function(){var enabled=panel.classList.toggle('wpa-vs-expanded');expand.setAttribute('aria-pressed',String(enabled));};
+    // Changing the document set or revoking consent invalidates in-flight output.
+    panel.addEventListener('wpa-documents-changed',function(){
+      if(busy||activeSuggestion){invalidateRequest();var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Document set changed. Review and send a new question.':'Документите се изменети. Проверете и испратете ново прашање.';}
+    });
+    panel.addEventListener('wpa-private-consent-revoked',function(){
+      invalidateRequest();voiceDocuments?.stopVoice();
+      var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Consent withdrawn. Private requests stopped; start a new conversation to return to public chat.':'Согласноста е повлечена. Приватните барања се запрени; започнете нов разговор за јавен режим.';
+    });
     var chatTools=panel.querySelector('.wpa-public-vs-tools');
     function tool(label,fn,id){
       var b=document.createElement('button');b.type='button';b.className='wpa-public-vs-clear';b.textContent=label;if(id)b.id=id;b.onclick=fn;chatTools.prepend(b);return b;
