@@ -113,7 +113,10 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   if (origin && !allowed(env).includes(origin)) {
     return reply(request,env,403,{ok:false,error:'ORIGIN_NOT_ALLOWED'});
   }
-  if (request.method==='OPTIONS') return reply(request,env,204,{});
+  if (request.method==='OPTIONS') {
+    const r=reply(request,env,200,{});
+    return new Response(null,{status:204,headers:r.headers});
+  }
   if (pathname==='/agent/capabilities') {
     if (request.method!=='GET') return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
     const enabled=ready(env);
