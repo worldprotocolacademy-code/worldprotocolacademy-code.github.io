@@ -18,6 +18,7 @@
   var pendingImage = null;  // Memory-only; never stored in localStorage or history.
   var bookTool = null; // Optional PDF tool in a separate module, never intercepts /ask.
   var documentLab = null; // Optional multi-document authoring tool; never intercepts /ask.
+  var protocolPractice = null; // Local guided preparation; never sends a question automatically.
   var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false,document_lab:false,open_research:false,institutional_sources:false };
   var challengeToken = '';
   var challengeId = null;
@@ -801,6 +802,25 @@
         'Документната лабораторија не е достапна во оваа верзија.';
     });
 
+    // Local 12-case practical protocol preparation: functions even when agent APIs
+    // are disabled. No auto-submit, legal certification or detailed security routing.
+    import('/scripts/virtual-sande-protocol-practice-ui.mjs').then(function(mod){
+      if(!document.getElementById('wpaPublicVsPanel'))return;
+      protocolPractice=mod.createProtocolPracticeStudio(panel,{
+        onCompose:function(draft){
+          var input=document.getElementById('wpaPublicVsInput');
+          if(!input)return;
+          input.value=String(draft||'').slice(0,1600);
+          input.focus();
+        }
+      });
+    }).catch(function(){
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(status)status.textContent=isEnglish()?
+        'Practical Protocol Planner is unavailable in this build.':
+        'Практичниот протоколарен планер моментално не е достапен.';
+    });
+
     var imagePicker = document.getElementById('wpaPublicVsImageFile');
     document.getElementById('wpaPublicVsAttach').addEventListener('click', function () {
       if (!agentCapabilities.enabled) {
@@ -858,6 +878,7 @@
       clearImage();
       if (bookTool) bookTool.reset();
       if (documentLab) documentLab.reset();
+      if (protocolPractice) protocolPractice.reset();
       document.getElementById('wpaPublicVsAgentMode').checked = false;
       document.getElementById('wpaPublicVsConsent').checked = false;
       document.getElementById('wpaPublicVsInput').value = '';
