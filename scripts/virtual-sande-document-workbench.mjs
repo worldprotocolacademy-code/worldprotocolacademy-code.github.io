@@ -172,10 +172,33 @@ export function createDocumentWorkbench(panel,config={}){
        docs.push(extracted);progress.value=i+1;
      }
      index=makeDocumentCorpus(docs);
+     const fields=['author','title','year','publisher','type','journal','volume','issue','pages','edition','doi','url'];
+     index.documents.forEach(doc=>{
+       const entry=node('details','wpa-doclab-source');
+       const head=node('summary',null,doc.id+' — '+doc.name);
+       const body=node('div','wpa-doclab-metadata');
+       fields.forEach((key,i)=>{
+         const label=node('label',null,t.sourceFields[i]);
+         const control=key==='type'?node('select'):node('input');
+         if(key==='type'){
+           const unknown=node('option',null,lang==='en'?'Unspecified':'Неодредено');
+           unknown.value='';control.append(unknown);
+           SOURCE_TYPES.forEach(v=>{const opt=node('option',null,v);opt.value=v;control.append(opt);});
+         }else{
+           control.type='text';control.maxLength=key==='url'?380:key==='doi'?120:key==='title'?250:180;
+           control.autocomplete='off';control.spellcheck=false;
+         }
+         control.value=doc.metadata[key]||'';
+         control.addEventListener('input',()=>{doc.metadata[key]=control.value.trim();});
+         control.addEventListener('change',()=>{doc.metadata[key]=control.value.trim();});
+         label.append(control);body.append(label);
+       });
+       entry.append(head,body);metadataHost.append(entry);
+     });
      status.textContent=t.indexed+': '+index.documents.map(d=>d.name).join(' · ')+
        '\n'+index.chunks.length+' segments · '+index.documents.length+' sources';
    }catch(err){
-     index=null;input.value='';
+     index=null;input.value='';metadataHost.replaceChildren();
      status.textContent=/LIMIT|COUNT|BOMB/.test(String(err?.message))?t.tooBig:t.bad;
    }finally{
      if(run===generation){working=false;progress.hidden=true;notify();}
@@ -184,7 +207,7 @@ export function createDocumentWorkbench(panel,config={}){
  md.addEventListener('click',()=>{
    if(!last)return;
    download('virtual-sande-'+last.packet.deliverable+'-draft.md',
-     makeDraftMarkdown(last.answer,last.packet),'text/markdown;charset=utf-8');
+     makeDraftMarkdown(last.answer,last.packet,{cited_locators:last.citations,lang}),'text/markdown;charset=utf-8');
  });
  json.addEventListener('click',()=>{
    if(!last)return;
@@ -192,6 +215,8 @@ export function createDocumentWorkbench(panel,config={}){
      status:'DRAFT_NOT_PUBLISHED',documents:last.packet.documents,
      selected_evidence:last.packet.evidence,coverage:last.packet.coverage,
      algorithm:last.packet.algorithm,citations:last.citations,
+     institutional_attribution:WPA_NOTICES[lang].identity,disclaimer:WPA_NOTICES[lang],
+     citation_policy_version:WPA_CITATION_POLICY_VERSION,
      analysis_exhaustive:false,rights_and_metadata_verified:false
    },null,2),'application/json;charset=utf-8');
  });
@@ -200,6 +225,8 @@ export function createDocumentWorkbench(panel,config={}){
    if(!index)throw new Error('DOCUMENT_NOT_READY');
    if(!config.isEnabled?.())throw new Error('DOCUMENT_MODEL_DISABLED');
    if(consent!==true||!token)throw new Error('DOCUMENT_CONSENT_REQUIRED');
+   if(!attestationRights.checked||!attestationSecurity.checked)
+     throw new Error('DOCUMENT_POLICY_ACK_REQUIRED');
    const packet=createEvidencePacket(index,question,{mode:mode.value,domain:domain.value});
    const revisionContext=revise.checked&&last?last.answer.slice(0,2200):undefined;
    const controller=new AbortController();
@@ -208,7 +235,11 @@ export function createDocumentWorkbench(panel,config={}){
    try{
      response=await fetch(endpoint,{method:'POST',credentials:'omit',mode:'cors',
        cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},
-       body:JSON.stringify({...packet,revision_context:revisionContext,consent:true,turnstile_token:token,lang}),
+       body:JSON.stringify({...packet,revision_context:revisionContext,
+         rights_attestation:attestationRights.checked,
+         sensitive_data_attestation:attestationSecurity.checked,
+         notice_version:WPA_CITATION_POLICY_VERSION,
+         consent:true,turnstile_token:token,lang}),
        signal:controller.signal});
      if(!response.ok)throw new Error('DOCUMENT_HTTP_'+response.status);
      data=await response.json();
@@ -228,5 +259,6 @@ export function createDocumentWorkbench(panel,config={}){
    getSummary:()=>index?{names:index.documents.map(x=>x.name),chunks:index.chunks.length}:null,
    messageFor:code=>code==='DOCUMENT_NO_MATCH'?t.nomatch:
      code==='DOCUMENT_CONFLICT'?t.conflict:
-     code==='DOCUMENT_MODEL_DISABLED'?t.off:t.failure};
+     code==='DOCUMENT_MODEL_DISABLED'?t.off:
+     code==='DOCUMENT_POLICY_ACK_REQUIRED'?t.policyRequired:t.failure};
 }
