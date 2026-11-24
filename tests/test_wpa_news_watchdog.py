@@ -28,6 +28,6 @@ class WatchdogTests(unittest.TestCase):
     def test_dst_summer_local_09(self):
         got=inspect({"product_date":"2026-07-01"},[],datetime(2026,7,2,9,0,tzinfo=TZ))
         self.assertTrue(got["alert"])
-        
+
 if __name__=="__main__":
     unittest.main()
