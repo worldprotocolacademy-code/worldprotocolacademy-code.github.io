@@ -15,7 +15,7 @@ test('certified v35.1.1 stays byte-identical and the pilot routes separately',()
   assert.match(ui,/AGENT_PILOT_ROOT/);
   assert.match(ui,/wpa-virtual-sande-agent-pilot\.worldprotocolacademy\.workers\.dev/);
   assert.match(ui,/useAgent \? await requestAgent\(question\) : await requestAnswer\(question\)/);
-  assert.match(pilot,/if \(response\) return response;/);
+  assert.match(pilot,/if\s*\(response\)\s*return response;/);
   assert.match(entry,/return routed\.fetch\(request, env, ctx\);/);
 });
 test('photo processing is client-side reencoded and opt-in only',()=>{
