@@ -3,6 +3,7 @@
  * Never logs or persists visitor prompts/images in this module.
  */
 import {DOCUMENT_LAB_INSTRUCTIONS,validateDocumentSubmission,documentLabPrompt,verifyDocumentCitations,documentLabNotice,documentLabReferences} from './document-lab-gateway.mjs';
+import {discoverOpenResearch} from './open-research-gateway.mjs';
 export const VERSION = 'virtual-sande-agent-v0.3-doc-intelligence-20261124';
 const PROVIDER_URL = 'https://api.openai.com/v1/responses';
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
@@ -184,7 +185,8 @@ function followups(hasImage,lang) {
 export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   const pathname=new URL(request.url).pathname;
   if (pathname!=='/agent/capabilities' && pathname!=='/agent/ask' &&
-      pathname!=='/agent/pdf-analysis' && pathname!=='/agent/document-lab') return null;
+      pathname!=='/agent/pdf-analysis' && pathname!=='/agent/document-lab' &&
+      pathname!=='/agent/open-research') return null;
   const origin=request.headers.get('Origin')||'';
   if (origin && !allowed(env).includes(origin)) {
     return reply(request,env,403,{ok:false,error:'ORIGIN_NOT_ALLOWED'});
@@ -199,6 +201,7 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
     return reply(request,env,200,{
       ok:true,version:VERSION,enabled,
       text_chat:enabled,image_analysis:enabled,pdf_synthesis:enabled,document_lab:enabled,
+       open_research:env.WPA_OPEN_RESEARCH_ENABLED==='true'&&!!env.WPA_AGENT_RATE_LIMIT,
       model_id:typeof env.WPA_AGENT_MODEL==='string'?env.WPA_AGENT_MODEL:null,
       model_connection_status:enabled?'CONFIGURED_NEEDS_LIVE_TEST':'NOT_CONNECTED',
       turnstile_site_key:enabled?env.WPA_AGENT_TURNSTILE_SITE_KEY:null,
@@ -206,6 +209,24 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
       status:enabled?'CONFIGURED_NOT_A_CERTIFICATION':'NOT_CONFIGURED',
       note:'The standard WPA /ask source-based academic path remains separate. This optional route has no autonomous external actions.'
     });
+  }
+  if(pathname==='/agent/open-research'){
+    if(request.method!=='GET')return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    if(env.WPA_OPEN_RESEARCH_ENABLED!=='true')return reply(request,env,503,{ok:false,error:'OA_NOT_ENABLED'});
+    if(!origin||!allowed(env).includes(origin))return reply(request,env,403,{ok:false,error:'ORIGIN_REQUIRED'});
+    const ip=request.headers.get('CF-Connecting-IP');
+    if(!ip||ip.length>100)return reply(request,env,403,{ok:false,error:'CLIENT_CONTEXT_MISSING'});
+    if(!env.WPA_AGENT_RATE_LIMIT?.limit)return reply(request,env,503,{ok:false,error:'OA_RATE_LIMIT_UNAVAILABLE'});
+    let limited;
+    try{limited=await env.WPA_AGENT_RATE_LIMIT.limit({key:'wpa-open-research:'+ip});}
+    catch{return reply(request,env,503,{ok:false,error:'OA_RATE_LIMIT_UNAVAILABLE'});}
+    if(!limited?.success)return reply(request,env,429,{ok:false,error:'OA_RATE_LIMITED'});
+    const url=new URL(request.url);
+    const result=await discoverOpenResearch({
+      query:url.searchParams.get('q')||'',type:url.searchParams.get('type')||'all',env,fetchFn
+    });
+    const httpStatus=Number.isInteger(result.http_status)?result.http_status:result.status;
+    return reply(request,env,httpStatus,httpStatus===200?result:{ok:false,error:result.error});
   }
   if (request.method!=='POST') return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   if (!ready(env)) return reply(request,env,503,{ok:false,error:'AGENT_NOT_CONFIGURED'});

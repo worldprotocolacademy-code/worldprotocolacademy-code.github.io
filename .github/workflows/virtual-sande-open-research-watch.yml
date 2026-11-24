@@ -1,0 +1,55 @@
+name: Virtual Sande Open Research Watch — candidates only
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 5 * * 1"
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: wpa-open-research-watch
+  cancel-in-progress: false
+jobs:
+  oa-candidate-watch:
+    if: github.repository == 'worldprotocolacademy-code/worldprotocolacademy-code.github.io'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate source and tests, no paid model
+        run: |
+          set -euo pipefail
+          node --check scripts/virtual-sande-open-research.mjs
+          node --check scripts/wpa-open-research-snapshot.mjs
+          node --test tests/virtual-sande-open-research.test.mjs
+      - name: Discover OA metadata only; fail closed if provider unavailable
+        env:
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}
+        run: node scripts/wpa-open-research-snapshot.mjs --write
+      - name: Open review-only pull request (never auto publish)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add -- data/open-research/candidates-latest.json
+          if git diff --cached --quiet -- data/open-research/candidates-latest.json; then
+            echo "No metadata changes: no PR required."
+            exit 0
+          fi
+          RUN_BRANCH="automation/wpa-oa-candidates-$GITHUB_RUN_ID"
+          git switch -c "$RUN_BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/open-research/candidates-latest.json
+          git commit -m "data(open-research): candidate OA snapshot for editorial review"
+          git push origin "$RUN_BRANCH"
+          gh pr create --base main --head "$RUN_BRANCH" \
+            --title "WPA Open Research: metadata candidates for editorial review" \
+            --body "Automated OpenAlex metadata discovery only. No PDFs or books were downloaded, no AI inference or publication occurred. Check licences, dates, source links and accuracy. **Human Gate: leave unmerged until editorial approval.**"
