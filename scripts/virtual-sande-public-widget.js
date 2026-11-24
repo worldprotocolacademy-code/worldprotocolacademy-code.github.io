@@ -15,6 +15,7 @@
   ];
   var busy = false;
   var history = [];
+  var protocolPractice = null; // WPA_PROTOCOL_PLANNER_RC1; locally computed and opt-in.
 
   function isExcluded() {
     if (excludedExact.indexOf(currentPath) !== -1) return true;
@@ -353,6 +354,30 @@
     protectAllInputs();
     addMessage(text.welcome, 'bot');
 
+    // Self-contained local Protocol Planner; no OpenAI, files, browser sensors,
+    // automatic sending or changes to the canonical production /ask endpoint.
+    import('/scripts/virtual-sande-protocol-practice-ui.mjs?v=20261124-rc1')
+      .then(function(mod){
+        if(!document.getElementById('wpaPublicVsPanel'))return;
+        protocolPractice=mod.createProtocolPracticeStudio(panel,{
+          maxQuestionChars:680,
+          onCompose:function(question){
+            var input=document.getElementById('wpaPublicVsInput');
+            if(!input)return;
+            input.value=String(question||'').slice(0,690);
+            if(!panel.classList.contains('open')){
+              panel.classList.add('open');
+              fab.setAttribute('aria-expanded','true');
+            }
+            input.focus();
+          }
+        });
+      })
+      .catch(function(){
+        // The original academic chat stays operational if planner assets fail.
+        protocolPractice=null;
+      });
+
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -378,6 +403,7 @@
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
+      if(protocolPractice)protocolPractice.reset();
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
       addMessage(copy().welcome, 'bot');
     });

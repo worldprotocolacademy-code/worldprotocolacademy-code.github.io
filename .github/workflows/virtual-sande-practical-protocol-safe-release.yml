@@ -1,0 +1,89 @@
+name: Virtual Sande Practical Protocol SAFE Release CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-protocol-practice*.mjs'
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'virtual-sande-ai.html'
+      - 'scripts/wpa-performance.js'
+      - 'scripts/pricing-loader.js'
+      - 'index.html'
+      - 'tests/virtual-sande-practical-protocol.test.mjs'
+      - 'scripts/verify-virtual-sande-practical-live.mjs'
+      - '.github/workflows/virtual-sande-practical-protocol-safe-release.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/virtual-sande-protocol-practice*.mjs'
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'virtual-sande-ai.html'
+      - 'scripts/wpa-performance.js'
+      - 'scripts/pricing-loader.js'
+      - 'index.html'
+      - 'tests/virtual-sande-practical-protocol.test.mjs'
+      - 'scripts/verify-virtual-sande-practical-live.mjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks (no paid services)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/virtual-sande-protocol-practice.mjs
+          node --check scripts/virtual-sande-protocol-practice-ui.mjs
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/wpa-performance.js
+          node --check scripts/pricing-loader.js
+          node --check tests/virtual-sande-practical-protocol.test.mjs
+          node --check scripts/verify-virtual-sande-practical-live.mjs
+      - name: Practical protocol deterministic functional tests
+        run: node --test tests/virtual-sande-practical-protocol.test.mjs
+      - name: Real Chrome DOM smoke for homepage and dedicated Virtual Sande Lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8131 --bind 127.0.0.1 >/tmp/wpa-practice-server.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:8131/ >/dev/null && break
+            sleep 0.5
+          done
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          "$chrome" --headless --no-sandbox --disable-dev-shm-usage --virtual-time-budget=9000 --dump-dom http://127.0.0.1:8131/ > /tmp/wpa-practice-home-dom.html
+          grep -Fq 'data-wpa-protocol-planner="mounted-rc1"' /tmp/wpa-practice-home-dom.html
+          "$chrome" --headless --no-sandbox --disable-dev-shm-usage --virtual-time-budget=9000 --dump-dom http://127.0.0.1:8131/virtual-sande-ai.html > /tmp/wpa-practice-lab-dom.html
+          grep -Fq 'data-wpa-protocol-planner="mounted-rc1"' /tmp/wpa-practice-lab-dom.html
+          echo "PASS: planner rendered in real headless Chrome on both entry points"
+      - name: Verify isolated local-only release and unchanged approved backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F "WPA_PROTOCOL_PLANNER_RC1" scripts/virtual-sande-public-widget.js
+          grep -F "WPA_PROTOCOL_PLANNER_RC1" virtual-sande-ai.html
+          grep -F "20261124-practical-v1" scripts/wpa-performance.js
+          ! grep -E 'OPENAI_API_KEY|CLOUDFLARE_API_TOKEN' scripts/virtual-sande-protocol-practice*.mjs
+          ! grep -E 'navigator\.geolocation|navigator\.mediaDevices|eval\(' scripts/virtual-sande-protocol-practice*.mjs
+          grep -F "wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask" scripts/virtual-sande-public-widget.js
+          echo 'PASS: source only; canonical /ask unchanged, no new backend, no billed model calls'
+  live-assets:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: source-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact live static content (read-only)
+        run: node scripts/verify-virtual-sande-practical-live.mjs
