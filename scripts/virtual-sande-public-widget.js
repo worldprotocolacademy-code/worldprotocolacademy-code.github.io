@@ -378,6 +378,11 @@
         protocolPractice=null;
       });
 
+    // Progressive enhancement; existing chat and protocol planner are untouched.
+    import('/scripts/virtual-sande-voice-documents.mjs?v=20261124-rc1')
+      .then(function(mod){mod.mountVoiceDocuments(panel);})
+      .catch(function(){/* Keep baseline chat available if asset loading fails. */});
+
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
