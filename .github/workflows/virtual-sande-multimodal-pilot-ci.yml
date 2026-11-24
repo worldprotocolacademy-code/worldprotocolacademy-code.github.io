@@ -1,0 +1,38 @@
+name: Virtual Sande Multimodal Pilot CI (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'workers/virtual-sande-v35.1-production/src/agent-gateway.mjs'
+      - 'workers/virtual-sande-v35.1-production/src/index.mjs'
+      - 'workers/virtual-sande-v35.1-production/wrangler.toml'
+      - 'tests/virtual-sande-multimodal-*.test.mjs'
+      - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
+      - 'docs/virtual-sande-multimodal-pilot-v0.1.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  multimodal-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and static boundaries
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check workers/virtual-sande-v35.1-production/src/agent-gateway.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          node --check tests/virtual-sande-multimodal-agent.test.mjs
+          node --check tests/virtual-sande-multimodal-ui.test.mjs
+      - name: Real isolated request/response contract tests (mocked provider)
+        run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs
+      - name: Preserve canonical production locks
+        run: |
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          test "$(grep -c '^\[ai\]' workers/virtual-sande-v35.1-production/wrangler.toml)" -eq 1
+          ! grep -Eq 'WPA_AGENT_ENABLED\s*=\s*"true"|OPENAI_API_KEY\s*=' workers/virtual-sande-v35.1-production/wrangler.toml
+          echo "PASS: no production credentials, deployment or provider connection made"
