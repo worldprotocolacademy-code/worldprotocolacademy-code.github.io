@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from wpa_news_schedule_gate import production_decision, skopje_date, open_daily_prs
+from wpa_news_schedule_gate import production_decision, skopje_date, open_daily_prs, effective_mode
 
 
 class EditionDateGateTests(unittest.TestCase):
@@ -37,6 +37,19 @@ class EditionDateGateTests(unittest.TestCase):
     def test_truncated_gh_pr_list_fails_closed(self):
         with self.assertRaises(ValueError):
             open_daily_prs([{"title": "other", "headRefName": "feature/test"}] * 100, self.DATE)
+
+    def test_cloudflare_workflow_dispatch_daily_skips_if_open_pr(self):
+        base, _ = production_decision(
+            {"product_date": "2026-11-12"},
+            [{"title": "WPA NEWS daily 2026-11-24 Human-Gate production pack",
+              "headRefName": "automation/wpa-news-daily-456-1"}],
+            self.DATE
+        )
+        self.assertEqual(effective_mode(base, "daily", "skip"), "skip")
+
+    def test_push_all_only_generates_weekly_if_today_exists(self):
+        base, _ = production_decision({"product_date": self.DATE}, [], self.DATE)
+        self.assertEqual(effective_mode(base, "all", "weekly"), "weekly")
 
     def test_timezone_dst_spring_transition(self):
         self.assertEqual(skopje_date(datetime(2026, 3, 28, 23, 30, tzinfo=timezone.utc)),
