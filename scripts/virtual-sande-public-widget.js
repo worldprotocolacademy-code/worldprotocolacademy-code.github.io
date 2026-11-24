@@ -352,17 +352,23 @@
       (data.result && (data.result.answer || data.result.response || data.result.text)) || '';
   }
 
-  function fetchWithTimeout(url, options, timeoutMs, signal) {
-    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var abort=function(){if(controller)controller.abort();};
-    if(signal?.aborted)abort();
-    signal?.addEventListener('abort',abort,{once:true});
+  async function fetchWithTimeout(url, options, timeoutMs) {
+    var signal = options.signal;
+    var controller = new AbortController();
+    var abort = function () { controller.abort(); };
+    if (signal?.aborted) abort();
+    signal?.addEventListener('abort', abort, { once: true });
     var timer = window.setTimeout(abort, timeoutMs);
-    var requestOptions = Object.assign({}, options, controller ? { signal: controller.signal } : {});
-    return fetch(url, requestOptions).finally(function () {
+    try {
+      var requestOptions = Object.assign({}, options, { signal: controller.signal });
+      var response = await fetch(url, requestOptions);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      // Retain the timeout until the JSON body has finished, not just headers.
+      return await response.json();
+    } finally {
       window.clearTimeout(timer);
-      signal?.removeEventListener('abort',abort);
-    });
+      signal?.removeEventListener('abort', abort);
+    }
   }
 
   function isNoContextAnswer(answer) {
@@ -378,16 +384,15 @@
   }
 
   async function callEndpoint(endpoint, payload, signal) {
-    var response = await fetchWithTimeout(endpoint, {
+    var data = await fetchWithTimeout(endpoint, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-store',
       credentials: 'omit',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    }, 15000, signal);
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    var data = await response.json();
+      body: JSON.stringify(payload),
+      signal: signal
+    }, 15000);
     var answer = answerFrom(data);
     if (!answer) throw new Error('Empty answer');
     return { answer: answer, data: data };
