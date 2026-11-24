@@ -18,7 +18,7 @@
   var pendingImage = null;  // Memory-only; never stored in localStorage or history.
   var bookTool = null; // Optional PDF tool in a separate module, never intercepts /ask.
   var documentLab = null; // Optional multi-document authoring tool; never intercepts /ask.
-  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false,document_lab:false };
+  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false,document_lab:false,open_research:false };
   var challengeToken = '';
   var challengeId = null;
   var challengeLoading = false;
@@ -427,7 +427,11 @@
       {title:en?'Document Intelligence Lab':'Документна и авторска лабораторија',
         detail:configured&&agentCapabilities.document_lab===true?
           (en?'Configured · requires real source/citation QA':'Конфигурирано · потребна изворна проверка'):
-          (en?'Local multi-document indexing; AI not connected':'Локален индекс на документи; AI не е поврзана')}
+          (en?'Local multi-document indexing; AI not connected':'Локален индекс на документи; AI не е поврзана')},
+      {title:en?'Open Research Foraging':'Отворени научни извори',
+        detail:agentCapabilities.open_research===true?
+          (en?'OA discovery configured · provider not independently verified':'OA-пребарување конфигурирано · изворите треба да се проверат'):
+          (en?'Public research API not connected':'Истражувачкиот API не е поврзан')}
     ];
     region.replaceChildren();
     items.forEach(function(item){
@@ -450,7 +454,7 @@
       if (!caps || caps.ok !== true) return;
       // An explicit model ID can be displayed even while disabled; it is never
       // described as connected until all configured capability gates pass.
-      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false,document_lab:false},caps);
+      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false,document_lab:false,open_research:false},caps);
       renderCapabilityPanel();
       if (caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
           !caps.turnstile_site_key) return;
@@ -779,6 +783,8 @@
         isEnabled:function() {
           return agentCapabilities.enabled===true && agentCapabilities.document_lab===true;
         },
+        isResearchAvailable:function(){return agentCapabilities.open_research===true;},
+        researchEndpoint:agentUrl('/agent/open-research'),
         onChange:function(){updateAgentInterface();}
       });
     }).catch(function(){
