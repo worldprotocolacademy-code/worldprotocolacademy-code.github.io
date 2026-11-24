@@ -12,6 +12,8 @@
 // — Precedence block verified clean
 // — Version strings updated throughout
 
+import { CORE_OUTPUT_TOKEN_BUDGET, isIncompleteAnswer } from "../../scripts/virtual-sande-answer-integrity.mjs";
+
 const VERSION = "v35.0-protocolometry-connector";
 
 // ============================================================
@@ -1991,10 +1993,12 @@ async function generateCoreAnswer(message, answerLang, selectedItems, env, mode,
       { role: "system", content: buildSystemPrompt(answerLang, mode, message, followUpUsed) + "\n\n" + WPA_PHASE2_BOT_SANDE_CORE_PROMPT },
       { role: "user", content: userContent }
     ],
-    max_tokens: 180,
+    max_tokens: CORE_OUTPUT_TOKEN_BUDGET,
     temperature: 0.02
   });
-  return String(out?.response || "").trim();
+  const answer = String(out?.response || "").trim();
+  // Let the existing evidence-grounded rescue/fallback handle a clipped generation.
+  return isIncompleteAnswer(answer, out) ? "" : answer;
 }
 
 function detectSemanticMode(message = "") {
@@ -2036,6 +2040,7 @@ SYMBOLS, FLAGS AND ANTHEMS — STRICT DISCIPLINE:
 5. If the system has no verified source for a specific claim, say: "The current WPA retrieval does not verify that exact claim."
 6. Do NOT produce lists of countries with eagles on flags or instrumental anthems unless explicitly sourced.
 7. False confidence on symbols is worse than a short constrained answer.
+8. For a concrete flag arrangement, distinguish observed facts from protocol interpretation. Do not imply you saw an attachment unless it is actually present in the supplied evidence. Do not generalise one host/organisation/precedence rule to every jurisdiction or event. Ask for missing view, host, flag identities and applicable rules; distinguish observer left/right from the position of honour. Cite only supported claims.
 ` : "";
 
   const symbolsBlockMk = symbolsQuestion ? `
@@ -2047,6 +2052,7 @@ SYMBOLS, FLAGS AND ANTHEMS — STRICT DISCIPLINE:
 5. Ако системот нема верификуван извор за конкретно тврдење, кажи: "Во тековната WPA база не се потврдува тоа тврдење."
 6. НЕ прави листи на земји со орли на знамињата или инструментални химни освен ако нема директен извор.
 7. Лажната самодоверба за симболи е полоша од краток констраинуван одговор.
+8. При конкретен распоред на знамиња, разграничи видливи факти од протоколарно толкување. Не тврди дека си видел прилог ако не е во доставените докази. Не претставувај правило за домаќин, организација или пресеанс како универзално. Побарај го потребниот контекст: гледна точка, домаќин, идентитет на знамињата, применливи правила; разграничи лево/десно на набљудувачот од почесната позиција. Наведи само поткрепени тврдења.
 ` : "";
 
   if (lang === "en") {
@@ -2079,7 +2085,7 @@ MANDATORY RULES:
 8. If support is insufficient, return exactly: "${NO_CONTEXT_MESSAGE.en}"
 9. Never produce mixed-language output, broken syntax, OCR garbage, or awkward phrasing.
 10. Do not add a source line inside the body; the system handles source formatting.
-11. Prefer clarity, discipline, and accuracy over length. Target: 80–180 words.
+11. Prefer clarity, discipline, and accuracy over length. Target: 80–180 words. Conclude with a complete sentence. If space is limited, shorten the explanation rather than ending mid-sentence. Do not attribute a specific assertion to an author unless the excerpts support it.
 12. NEVER cite page numbers (p. X, pp. X-Y) unless they appear verbatim in the provided excerpts.
 13. NEVER mention book or source titles not present in the provided excerpts.
 14. If evidence is insufficient, say clearly: "${NO_CONTEXT_MESSAGE.en}" — do not improvise claims.
@@ -2130,7 +2136,7 @@ ${symbolsBlockMk}
 7. Доц. д-р Санде Смиљанов е машко лице; не користи женски форми за него.
 8. Ако нема доволно чиста поткрепа, врати точно: "${NO_CONTEXT_MESSAGE.mk}"
 9. Никогаш не мешај македонски со бугарски, српски, англиски или друг јазик.
-10. Прецизноста и јасноста имаат предност пред должината. Целна должина: 80–180 зборови.
+10. Прецизноста и јасноста имаат предност пред должината. Целна должина: 80–180 зборови. Заврши со целосна реченица; при ограничен простор скрати го објаснувањето наместо да прекинеш среде реченица. Не припишувај конкретно тврдење на авторот ако исечоците не го потврдуваат.
 11. НИКОГАШ не наведувај броеви на страни (стр. X, стр. X-Y) освен ако се присутни дословно во доставените исечоци.
 12. НИКОГАШ не споменувај наслови на книги или извори кои не се во доставените исечоци.
 13. Ако доказите се недоволни, кажи јасно: "${NO_CONTEXT_MESSAGE.mk}" — не измислувај тврдења.
@@ -2277,7 +2283,7 @@ function answerFailsPersona(answer = "", lang = "mk") {
 
 function v29LooksLikeBadAnswer(answer = "", lang = "mk") {
   const t = String(answer || "");
-  if (!t.trim()) return true;
+  if (!t.trim() || isIncompleteAnswer(t)) return true;
   if (lang === "mk" && looksContaminatedMk(t)) return true;
   if (lang === "en" && looksContaminatedEn(t)) return true;
   if (answerFailsPersona(t, lang)) return true;
@@ -2668,7 +2674,7 @@ async function callAnthropicAPI(message, history, baseAnswerLang, env, retrieved
 
     const data = await response.json();
     const answer = data?.content?.[0]?.text?.trim();
-    if (!answer) return null;
+    if (!answer || isIncompleteAnswer(answer, data)) return null;
 
     // Strip any gate/freemium noise the model might produce
     return answer
