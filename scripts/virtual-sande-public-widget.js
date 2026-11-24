@@ -164,6 +164,11 @@
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
+      '.wpa-public-vs-working{display:flex;align-items:center;gap:9px;padding:9px 12px;color:#153050;font-size:12px}',
+      '.wpa-public-vs-working img{width:30px;height:30px;object-fit:contain;animation:wpa-vs-rotate 1.8s linear infinite}',
+      '.wpa-public-vs-duration{margin-top:7px;font-size:11px;opacity:.72;font-weight:400}',
+      '@keyframes wpa-vs-rotate{to{transform:rotate(360deg)}}',
+      '@media(prefers-reduced-motion:reduce){.wpa-public-vs-working img{animation:none}}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -206,7 +211,31 @@
     });
   }
 
-  function addMessage(text, who) {
+  function elapsedSeconds(start) {
+    var elapsed = Math.max(0, (performance.now() - start) / 1000);
+    return elapsed.toLocaleString(document.documentElement.lang?.startsWith('en') ? 'en-GB' : 'mk-MK',
+      {minimumFractionDigits:1,maximumFractionDigits:1});
+  }
+
+  function showWorking() {
+    var messages = document.getElementById('wpaPublicVsMsgs');
+    if (!messages) return null;
+    var item = document.createElement('div');
+    item.className = 'wpa-public-vs-working';
+    item.setAttribute('role','status');
+    item.setAttribute('aria-label',document.documentElement.lang?.startsWith('en') ? 'Preparing an answer' : 'Се подготвува одговор');
+    var logo = document.createElement('img');
+    logo.src = '/logo.webp';
+    logo.alt = '';
+    var label = document.createElement('span');
+    label.textContent = document.documentElement.lang?.startsWith('en') ? 'Preparing an answer…' : 'Се подготвува одговор…';
+    item.append(logo,label);
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    return item;
+  }
+
+  function addMessage(text, who, seconds) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
@@ -214,6 +243,13 @@
     var bubble = document.createElement('div');
     bubble.className = 'wpa-public-vs-bubble';
     bubble.textContent = String(text || '');
+    if (seconds !== undefined) {
+      var duration = document.createElement('div');
+      duration.className = 'wpa-public-vs-duration';
+      duration.textContent = (document.documentElement.lang?.startsWith('en') ?
+        'Response time: ' : 'Време на одговор: ') + seconds + ' s';
+      bubble.appendChild(duration);
+    }
     row.appendChild(bubble);
     messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
@@ -300,8 +336,10 @@
     if (!question) return;
 
     busy = true;
+    var startedAt = performance.now();
     input.value = '';
     addMessage(question, 'user');
+    var working = showWorking();
     history.push({ role: 'user', content: question });
 
     var button = document.getElementById('wpaPublicVsSend');
@@ -311,14 +349,17 @@
 
     try {
       var result = await requestAnswer(question);
-      addMessage(result.answer, 'bot');
+      if (working) working.remove();
+      addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
       history.push({ role: 'assistant', content: result.answer });
       if (status) status.textContent = result.local ? copy().offline : '';
       if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
-      addMessage(copy().error, 'bot');
+      if (working) working.remove();
+      addMessage(copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
+      if (working) working.remove();
       busy = false;
       if (button) button.disabled = false;
       if (input) input.focus();
