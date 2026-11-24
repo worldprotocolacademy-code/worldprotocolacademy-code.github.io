@@ -12,9 +12,19 @@ if(!base || !/^https:\/\/[^/]+\.workers\.dev\/?$/.test(base) ||
   process.exit(2);
 }
 const url=base.replace(/\/$/,'')+'/agent/capabilities';
-const denied=await fetch(url,{headers:{Origin:'https://worldprotocolacademy.mk'},redirect:'error'});
-if(denied.status!==403){
-  console.error('STAGING_AUTH_BYPASS_CHECK_FAILED: '+denied.status);
+let unauthStatus=null;
+// Fresh workers.dev deployment may take a moment to propagate. Retry only
+// the read-only unauthenticated capability check; never run paid requests.
+for(let attempt=0;attempt<6;attempt++){
+  try{
+    const denied=await fetch(url,{headers:{Origin:'https://worldprotocolacademy.mk'},redirect:'error'});
+    unauthStatus=denied.status;
+    if(unauthStatus===403)break;
+  }catch{}
+  await new Promise(resolve=>setTimeout(resolve,2000));
+}
+if(unauthStatus!==403){
+  console.error('STAGING_AUTH_BYPASS_CHECK_FAILED: '+unauthStatus);
   process.exit(1);
 }
 let result;
