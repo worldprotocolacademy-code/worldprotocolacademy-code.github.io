@@ -48,7 +48,7 @@
         imageReady: 'Selected image',
         imageUnavailable: 'Image analysis is not connected yet. The academic text chat still works.',
         imageRejected: 'Please select a JPEG, PNG or WebP image (up to 8 MB).',
-        consent: 'I agree to send this message and any selected image to the configured AI provider for analysis. Do not upload sensitive information.',
+        consent: 'I agree to send my message and any selected image or excerpts from my PDF to the configured AI provider for analysis. The complete PDF is not sent. Do not upload confidential material.',
         consentRequired: 'Please confirm your consent for the AI provider.',
         captchaRequired: 'Complete the security check before continuing.',
         generalMode: 'General conversation (AI)',
@@ -72,7 +72,7 @@
       imageReady: 'Избрана слика',
       imageUnavailable: 'Анализата на слики сè уште не е поврзана. Академскиот текстуален разговор работи.',
       imageRejected: 'Изберете JPG, PNG или WebP слика до 8 MB.',
-      consent: 'Се согласувам оваа порака и избраната слика да се обработат кај поврзаниот AI провајдер. Не испраќајте чувствителни податоци.',
+      consent: 'Се согласувам моето прашање и избраната слика или извадоци од PDF-книгата да се обработат кај AI провајдерот. Целиот PDF не се испраќа. Не прикачувајте доверливи материјали.',
       consentRequired: 'Потврдете ја согласноста за надворешната AI обработка.',
       captchaRequired: 'Завршете ја безбедносната проверка пред испраќање.',
       generalMode: 'Општ разговор (AI)',
@@ -572,9 +572,13 @@
         endpoint:agentUrl('/agent/pdf-analysis'),token:challengeToken,consent:true
       }) : useAgent ? await requestAgent(question) : await requestAnswer(question);
       addMessage(result.answer, 'bot');
-      history.push({ role: 'user', content: question });
-      history.push({ role: 'assistant', content: result.answer });
-      if (history.length > 12) history = history.slice(-12);
+      // Book-derived responses stay in this visible session only: never relay them
+      // to the separate canonical /ask service as implicit conversation history.
+      if (!pdfActive) {
+        history.push({ role: 'user', content: question });
+        history.push({ role: 'assistant', content: result.answer });
+        if (history.length > 12) history = history.slice(-12);
+      }
       if (input) input.value = '';
       showFollowups(result.data, question);
       if (useAgent) {
