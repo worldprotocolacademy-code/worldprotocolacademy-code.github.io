@@ -53,18 +53,69 @@ def institution_name(institution_id):
     return None
 
 def build_queue():
+    """Map every external REV7 record without presenting audit children as sources.
+
+    This is a *discovery queue*, not an authorisation to fetch, mirror or publish.
+    Only entries explicitly approved in source-registry.json may be harvested.
+    """
+    dataset=load_master()
+    resolution=dataset.get("metadata",{}).get("entity_resolution",{})
     q=[]
-    for r in records(load_master()):
-        if r.get("id")=="R001":
+    for r in records(dataset):
+        iid=r.get("id")
+        if iid=="R001":
             continue
+        name=r.get("name","")
+        website=r.get("website") or None
+        verification=r.get("verification_status") or "Verification pending"
+        relevance=r.get("protocol_relevance_level") or "C"
+        relation=resolution.get(iid,{})
+        is_child=r.get("counted_as_distinct_external_institution") is False or relation.get("counted_as_distinct_external_institution") is False
+        observation=(iid in ("A005","B008") or "reported cooperation model" in str(r.get("institution_type","")).lower())
+        historical=("historical" in str(r.get("institution_type","")).lower() or "inactive" in verification.lower())
+        verified=verification.upper().startswith("VERIFIED")
+        if is_child:
+            status="AUDIT_CHILD_NOT_DISTINCT_SOURCE"
+        elif observation:
+            status="OBSERVATION_NOT_INSTITUTION"
+        elif historical:
+            status="HISTORICAL_REVIEW_ONLY"
+        elif not website:
+            status="NO_RESOLVED_WEBSITE"
+        elif verified:
+            status="SOURCE_CANDIDATE_IDENTITY_REVIEW_REQUIRED"
+        else:
+            status="INSTITUTION_SOURCE_VERIFICATION_PENDING"
+        eligible=status in ("SOURCE_CANDIDATE_IDENTITY_REVIEW_REQUIRED","INSTITUTION_SOURCE_VERIFICATION_PENDING")
+        priority=(1 if verified and relevance=="A" else
+                  2 if verified else
+                  3 if relevance=="A" else 4) if eligible else 9
         q.append({
-          "institution_id":r.get("id"),"name":r.get("name"),"country":r.get("country"),
-          "group":r.get("group"),"relevance":r.get("relevance"),"verification":r.get("verification"),
-          "website":r.get("website"),"status":"DOCUMENT_DISCOVERY_PENDING" if r.get("website") else "NO_RESOLVED_WEBSITE",
-          "priority":1 if r.get("relevance")=="A" else 2 if r.get("group")=="A" else 3
+            "institution_id":iid,"name":name,"country":r.get("country"),
+            "group":r.get("group"),"relevance":relevance,
+            "verification":verification,"website":website,
+            "entity_parent_id":r.get("parent_id") or
+                ("D001" if iid=="A010" else None),
+            "status":status,"eligible_for_direct_source_discovery":eligible,
+            "priority":priority,
+            "harvest_permission":"EXPLICIT_SOURCE_REGISTRY_RIGHTS_GATE_ONLY",
+            "human_review_required":True
         })
     q.sort(key=lambda x:(x["priority"],x["institution_id"] or ""))
-    return {"schema":"wpa-institution-document-queue/1.1","generated":now(),"count":len(q),"items":q}
+    counts={
+       "external_records":len(q),
+       "with_website":sum(bool(x["website"]) for x in q),
+       "eligible_source_candidates":sum(x["eligible_for_direct_source_discovery"] for x in q),
+       "audit_or_historical_or_unresolved":sum(not x["eligible_for_direct_source_discovery"] for x in q),
+       "verification_pending":sum(x["status"]=="INSTITUTION_SOURCE_VERIFICATION_PENDING" for x in q)
+    }
+    assert counts["external_records"]==dataset["metadata"]["external_records"]
+    assert counts["with_website"]<=dataset["metadata"]["records_with_website"]
+    return {
+      "schema":"wpa-institution-document-queue/1.2","master_version":dataset["metadata"]["version"],
+      "master_scope":"PRE_PUBLICATION_INTERNAL_CANDIDATES_NOT_PUBLISHABLE",
+      "generated":now(),"count":len(q),"counts":counts,"items":q
+    }
 
 def active_right(permission_id):
     if not permission_id or not RIGHTS_REGISTRY.exists():

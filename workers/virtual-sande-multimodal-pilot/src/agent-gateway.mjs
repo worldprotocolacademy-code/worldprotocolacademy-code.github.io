@@ -4,6 +4,7 @@
  */
 import {DOCUMENT_LAB_INSTRUCTIONS,validateDocumentSubmission,documentLabPrompt,verifyDocumentCitations,documentLabNotice,documentLabReferences} from './document-lab-gateway.mjs';
 import {discoverOpenResearch} from './open-research-gateway.mjs';
+import {institutionLookup,institutionWorks} from './institutional-research-gateway.mjs';
 export const VERSION = 'virtual-sande-agent-v0.3-doc-intelligence-20261124';
 const PROVIDER_URL = 'https://api.openai.com/v1/responses';
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
@@ -186,7 +187,8 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   const pathname=new URL(request.url).pathname;
   if (pathname!=='/agent/capabilities' && pathname!=='/agent/ask' &&
       pathname!=='/agent/pdf-analysis' && pathname!=='/agent/document-lab' &&
-      pathname!=='/agent/open-research') return null;
+      pathname!=='/agent/open-research' && pathname!=='/agent/institution-lookup' &&
+      pathname!=='/agent/institution-works') return null;
   const origin=request.headers.get('Origin')||'';
   if (origin && !allowed(env).includes(origin)) {
     return reply(request,env,403,{ok:false,error:'ORIGIN_NOT_ALLOWED'});
@@ -202,6 +204,8 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
       ok:true,version:VERSION,enabled,
       text_chat:enabled,image_analysis:enabled,pdf_synthesis:enabled,document_lab:enabled,
        open_research:env.WPA_OPEN_RESEARCH_ENABLED==='true'&&!!env.WPA_AGENT_RATE_LIMIT,
+       institutional_sources:env.WPA_OPEN_RESEARCH_ENABLED==='true'&&
+         env.WPA_INSTITUTION_RESEARCH_ENABLED==='true'&&!!env.WPA_AGENT_RATE_LIMIT,
       model_id:typeof env.WPA_AGENT_MODEL==='string'?env.WPA_AGENT_MODEL:null,
       model_connection_status:enabled?'CONFIGURED_NEEDS_LIVE_TEST':'NOT_CONNECTED',
       turnstile_site_key:enabled?env.WPA_AGENT_TURNSTILE_SITE_KEY:null,
@@ -209,6 +213,28 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
       status:enabled?'CONFIGURED_NOT_A_CERTIFICATION':'NOT_CONFIGURED',
       note:'The standard WPA /ask source-based academic path remains separate. This optional route has no autonomous external actions.'
     });
+  }
+  if(pathname==='/agent/institution-lookup'||pathname==='/agent/institution-works'){
+    if(request.method!=='GET')return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
+    if(env.WPA_OPEN_RESEARCH_ENABLED!=='true'||env.WPA_INSTITUTION_RESEARCH_ENABLED!=='true')
+      return reply(request,env,503,{ok:false,error:'INSTITUTION_RESEARCH_NOT_ENABLED'});
+    if(!origin||!allowed(env).includes(origin))return reply(request,env,403,{ok:false,error:'ORIGIN_REQUIRED'});
+    const ip=request.headers.get('CF-Connecting-IP');
+    if(!ip||ip.length>100)return reply(request,env,403,{ok:false,error:'CLIENT_CONTEXT_MISSING'});
+    if(!env.WPA_AGENT_RATE_LIMIT?.limit)return reply(request,env,503,{ok:false,error:'OA_RATE_LIMIT_UNAVAILABLE'});
+    let limited;
+    try{limited=await env.WPA_AGENT_RATE_LIMIT.limit({key:'wpa-institutional-research:'+ip});}
+    catch{return reply(request,env,503,{ok:false,error:'OA_RATE_LIMIT_UNAVAILABLE'});}
+    if(!limited?.success)return reply(request,env,429,{ok:false,error:'OA_RATE_LIMITED'});
+    const url=new URL(request.url);
+    const institutionId=url.searchParams.get('institution_id')||'';
+    const result=pathname==='/agent/institution-lookup'?
+      await institutionLookup({id:institutionId,env,fetchFn}):
+      await institutionWorks({id:institutionId,openalexId:url.searchParams.get('openalex_id'),
+        question:url.searchParams.get('q'),type:url.searchParams.get('type')||'all',env,fetchFn});
+    const status=Number.isInteger(result.http_status)?result.http_status:503;
+    return reply(request,env,status,status===200?result:{ok:false,error:result.error,
+      source_status:'NO_INSTITUTIONAL_RESEARCH_DELIVERED'});
   }
   if(pathname==='/agent/open-research'){
     if(request.method!=='GET')return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});

@@ -51,7 +51,8 @@ test('untrusted claims of verification or invalid identifiers never grant schola
  assert.throws(()=>normaliseSourceMetadata({year:'20AB'}),/CITATION_YEAR_INVALID/);
  assert.throws(()=>normaliseSourceMetadata({doi:'invented-123'}),/CITATION_DOI_INVALID/);
  assert.throws(()=>normaliseSourceMetadata({url:'http://untrusted.example'}),/CITATION_URL_INVALID/);
- assert.throws(()=>normaliseSourceMetadata({type:'fictional_verified_article'}),/CITATION_TYPE_INVALID/);
+ assert.throws(()=>normaliseSourceMetadata({type:'fictional'}),/CITATION_TYPE_INVALID/);
+ assert.throws(()=>normaliseSourceMetadata({type:'fictional_verified_article'}),/CITATION_METADATA_TOO_LONG/);
 });
 test('source priority is authorship-specific: mentioning WPA in title or publisher does not make an author Sande',()=>{
  assert.equal(isWpaReportedAuthor({author:'Doc. d-r Sande Smiljanov'}),true);

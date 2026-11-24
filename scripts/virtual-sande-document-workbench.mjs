@@ -9,6 +9,7 @@ import {DOCUMENT_LIMITS,SUPPORTED_DOCUMENT_EXTENSIONS,DOCUMENT_DOMAINS,
 import {readLocalDocument} from './virtual-sande-document-parser.mjs';
 import {candidateToDocument} from './virtual-sande-open-research.mjs';
 import {createOpenResearchUI} from './virtual-sande-open-research-ui.mjs';
+import {createInstitutionalResearchUI} from './virtual-sande-institutional-research-ui.mjs';
 import {WPA_CITATION_POLICY_VERSION,WPA_INSTITUTION,WPA_NOTICES,SOURCE_TYPES} from './virtual-sande-citation-policy.mjs';
 
 const I18N={
@@ -16,7 +17,8 @@ const I18N={
   title:'Документна и авторска лабораторија',
   desc:'За амбасадори, протоколисти, ПР, безбедност, комуникологија и ВИ. Прикачете повеќе документи, побарајте анализа или авторски нацрт. Само избрани извадоци се испраќаат по согласност.',
   attach:'Избери до 6 документи: PDF · DOCX · TXT · MD · CSV · HTML',
-  area:'Област',product:'Побаран производ',
+  area:'Област',product:'Побаран производ',audience:'За кого е материјалот',
+   audiences:['Професионален корисник','WPA-Институт · изворно поткрепена суштина'],
   clear:'Отстрани документи',md:'Преземи Markdown-нацрт',json:'Преземи изворен регистар',
   revise:'Продолжи од претходниот нацрт (се испраќа краток дел од AI-текстот како непроверен контекст)',
   catalogue:'Официјална WPA библиографија',
@@ -39,7 +41,8 @@ const I18N={
   title:'Document Intelligence & Authoring Lab',
   desc:'For diplomats, protocol, PR, security, communications and AI specialists. Attach several documents and request analysis or an authored draft. Only selected excerpts are transmitted with consent.',
   attach:'Choose up to 6 documents: PDF · DOCX · TXT · MD · CSV · HTML',
-  area:'Discipline',product:'Requested deliverable',
+  area:'Discipline',product:'Requested deliverable',audience:'Intended audience',
+   audiences:['Professional client','WPA Institute · source-grounded core essence'],
   clear:'Remove documents',md:'Download Markdown draft',json:'Download source register',
   revise:'Continue from previous draft (a short AI text excerpt will be sent as unverified editing context)',
   catalogue:'Official WPA bibliography',
@@ -104,11 +107,15 @@ export function createDocumentWorkbench(panel,config={}){
  wrap.append(node('summary',null,'📚 '+t.title));
  const desc=node('p',null,t.desc);
  const openResearchHost=node('div');
+ const institutionHost=node('div');
  const input=node('input');input.type='file';input.multiple=true;
  input.accept=SUPPORTED_DOCUMENT_EXTENSIONS.map(ext=>'.'+ext).join(',');
  input.setAttribute('aria-label',t.attach);
  const label=node('label',null,t.attach);label.append(input);
- const mode=node('select'),domain=node('select');
+ const mode=node('select'),domain=node('select'),audience=node('select');
+ ['professional_user','wpa_institute'].forEach((value,i)=>{
+   const o=node('option',null,t.audiences[i]);o.value=value;audience.append(o);
+ });
  for(const value of DOCUMENT_MODES){
    const opt=node('option',null,DOCUMENT_MODE_LABELS[value][lang==='en'?1:0]);
    opt.value=value;mode.append(opt);
@@ -118,6 +125,7 @@ export function createDocumentWorkbench(panel,config={}){
  });
  const modeLabel=node('label',null,t.product+': ');modeLabel.append(mode);
  const areaLabel=node('label',null,t.area+': ');areaLabel.append(domain);
+ const audienceLabel=node('label',null,t.audience+': ');audienceLabel.append(audience);
  const status=node('p','status',t.empty);status.setAttribute('aria-live','polite');
  const progress=node('progress');progress.value=0;progress.max=1;progress.hidden=true;
  const revise=node('input');revise.type='checkbox';revise.checked=false;revise.disabled=true;
@@ -141,36 +149,43 @@ export function createDocumentWorkbench(panel,config={}){
  const clear=node('button',null,t.clear);clear.type='button';
  const md=node('button',null,t.md);md.type='button';md.disabled=true;
  const json=node('button',null,t.json);json.type='button';json.disabled=true;
- wrap.append(desc,openResearchHost,label,modeLabel,areaLabel,status,progress,metaInfo,bibliographyLink,metadataHost,reviseLabel,legalDetails,policyAcknowledgements,node('p',null,t.info),clear,md,json);
+ wrap.append(desc,openResearchHost,institutionHost,label,modeLabel,areaLabel,audienceLabel,status,progress,metaInfo,bibliographyLink,metadataHost,reviseLabel,legalDetails,policyAcknowledgements,node('p',null,t.info),clear,md,json);
  form.parentNode.insertBefore(wrap,form);
  let index=null,working=false,last=null,generation=0;
+ function importResearchCandidates(items){
+   if(working)return;
+   try{
+     const records=items.slice(0,DOCUMENT_LIMITS.maxFiles).map(candidateToDocument);
+     const corpus=makeDocumentCorpus(records);
+     generation++;index=corpus;last=null;
+     input.value='';revise.disabled=true;revise.checked=false;
+     md.disabled=true;json.disabled=true;
+     attestationRights.checked=false;attestationSecurity.checked=false;
+     metadataHost.replaceChildren();
+     for(const d of corpus.documents){
+       const entry=node('p','wpa-doclab-source',d.id+' · '+d.name+
+         ' | '+(d.metadata?.doi||'DOI UNVERIFIED')+' | '+(d.metadata?.url||'SOURCE UNVERIFIED'));
+       metadataHost.append(entry);
+     }
+     status.textContent=(lang==='en'?'Imported abstract excerpts only, NOT full text: ':
+       'Внесени само апстракти, НЕ целосни трудови: ')+corpus.documents.length+
+       '. Bibliographic and institutional verification required.';
+     notify();
+   }catch(err){
+     status.textContent=(lang==='en'?'Research import failed: ':'Не успеа увозот: ')+
+       String(err?.message||'unknown error').slice(0,100);
+   }
+ }
  const researchTool=createOpenResearchUI(openResearchHost,{
    isAvailable:()=>config.isResearchAvailable?.()===true,
    endpoint:config.researchEndpoint||'',
-   onImport:items=>{
-     if(working)return;
-     try{
-       const records=items.slice(0,DOCUMENT_LIMITS.maxFiles).map(candidateToDocument);
-       const corpus=makeDocumentCorpus(records);
-       generation++;index=corpus;last=null;
-       input.value='';revise.disabled=true;revise.checked=false;
-       md.disabled=true;json.disabled=true;
-       attestationRights.checked=false;attestationSecurity.checked=false;
-       metadataHost.replaceChildren();
-       for(const d of corpus.documents){
-         const entry=node('p','wpa-doclab-source',d.id+' · '+d.name+
-           ' | '+(d.metadata?.doi||'DOI UNVERIFIED')+' | '+(d.metadata?.url||'SOURCE UNVERIFIED'));
-         metadataHost.append(entry);
-       }
-       status.textContent=(lang==='en'?'Imported abstract excerpts (NOT full text): ':
-         'Внесени апстракти (НЕ цели трудови): ')+corpus.documents.length+
-         '. Human source verification required.';
-       notify();
-     }catch(err){
-       status.textContent=(lang==='en'?'Open research import failed: ':'Не успеа увозот: ')+
-         String(err?.message||'unknown error').slice(0,100);
-     }
-   }
+   onImport:importResearchCandidates
+ });
+ const institutionalTool=createInstitutionalResearchUI(institutionHost,{
+   isAvailable:()=>config.isInstitutionAvailable?.()===true,
+   lookupEndpoint:config.institutionLookupEndpoint||'',
+   worksEndpoint:config.institutionWorksEndpoint||'',
+   onImport:importResearchCandidates
  });
  function notify(){if(typeof config.onChange==='function')config.onChange();}
  function reset(){
@@ -178,7 +193,7 @@ export function createDocumentWorkbench(panel,config={}){
    input.value='';status.textContent=t.empty;progress.hidden=true;
    md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;
    metadataHost.replaceChildren();attestationRights.checked=false;attestationSecurity.checked=false;
-   researchTool.reset();notify();
+   researchTool.reset();institutionalTool.reset();notify();
  }
  clear.addEventListener('click',reset);
  input.addEventListener('change',async()=>{
@@ -244,7 +259,8 @@ export function createDocumentWorkbench(panel,config={}){
  json.addEventListener('click',()=>{
    if(!last)return;
    download('virtual-sande-evidence-register.json',JSON.stringify({
-     status:'DRAFT_NOT_PUBLISHED',documents:last.packet.documents,
+     status:'DRAFT_NOT_PUBLISHED',target_audience:last.packet.target_audience,
+     documents:last.packet.documents,
      selected_evidence:last.packet.evidence,coverage:last.packet.coverage,
      algorithm:last.packet.algorithm,citations:last.citations,
      institutional_attribution:WPA_NOTICES[lang].identity,disclaimer:WPA_NOTICES[lang],
@@ -260,6 +276,7 @@ export function createDocumentWorkbench(panel,config={}){
    if(!attestationRights.checked||!attestationSecurity.checked)
      throw new Error('DOCUMENT_POLICY_ACK_REQUIRED');
    const packet=createEvidencePacket(index,question,{mode:mode.value,domain:domain.value});
+   packet.target_audience=audience.value;
    const revisionContext=revise.checked&&last?last.answer.slice(0,2200):undefined;
    const controller=new AbortController();
    const timer=setTimeout(()=>controller.abort(),38000);
