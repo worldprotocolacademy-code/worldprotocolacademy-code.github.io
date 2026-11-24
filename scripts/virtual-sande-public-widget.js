@@ -18,6 +18,7 @@
   var requestVersion = 0; // Reject stale responses after edit or clear.
   var proactiveIntent = null;
   var voiceDocuments = null;
+  function privateWorkspaceOnly(){return document.querySelector('meta[name="wpa-private-workspace-only"]')?.content==='true';}
   var activeRequest = null;
   var activeWorking = null;
   var activeSuggestion = null;
@@ -410,7 +411,10 @@
   async function requestAnswer(question, signal) {
     // Once a conversation has entered the private document pilot, never send
     // its question or history to the public academic endpoint, even on failure.
-    if(voiceDocuments?.isPrivate())return voiceDocuments.analyze({question,history:history.slice(0,-1),signal});
+    if(privateWorkspaceOnly()||voiceDocuments?.isPrivate()){
+      if(!voiceDocuments?.canAnalyze())throw new Error('PRIVATE_WORKSPACE_NOT_READY');
+      return voiceDocuments.analyze({question,history:history.slice(0,-1),signal});
+    }
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -450,9 +454,9 @@
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     if (!question) return;
-    if(voiceDocuments?.isPrivate()&&!voiceDocuments.canAnalyze()){
+    if((privateWorkspaceOnly()||voiceDocuments?.isPrivate())&&!voiceDocuments?.canAnalyze()){
       var blocked=document.getElementById('wpaPublicVsStatus');
-      if(blocked)blocked.textContent=voiceDocuments.blockedMessage();
+      if(blocked)blocked.textContent=voiceDocuments?.blockedMessage()||(isEnglish()?'Private workspace is not available.':'Приватниот работен простор не е достапен.');
       return;
     }
 
@@ -490,7 +494,7 @@
     } catch (error) {
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
-      var privateError=voiceDocuments?.isPrivate();
+      var privateError=privateWorkspaceOnly()||voiceDocuments?.isPrivate();
       addMessage(privateError?(isEnglish()?'Private document analysis failed. No public fallback was used.':'Приватната анализа не успеа. Не е користен јавниот сервис.'):copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
