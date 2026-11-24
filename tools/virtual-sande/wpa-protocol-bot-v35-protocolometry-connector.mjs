@@ -1972,8 +1972,8 @@ async function semanticSearch(message, env, history = []) {
 
 function leadPrefix(lang, mode) {
   return lang === "en"
-    ? (mode === "author" ? "According to Sande Smiljanov, Ph.D., " : "According to the available sources, ")
-    : (mode === "author" ? "Според авторот Доц. д-р Санде Смиљанов, " : "Според достапните извори, ");
+    ? (mode === "author" ? "AI synthesis based on retrieved WPA author-corpus excerpts: " : "AI synthesis based on the available sources: ")
+    : (mode === "author" ? "ВИ-синтеза врз основа на достапните исечоци од авторскиот корпус на WPA: " : "ВИ-синтеза врз основа на достапните извори: ");
 }
 
 async function generateCoreAnswer(message, answerLang, selectedItems, env, mode, followUpUsed = false, history = []) {
