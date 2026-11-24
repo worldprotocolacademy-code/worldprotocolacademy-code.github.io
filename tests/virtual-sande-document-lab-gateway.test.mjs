@@ -7,6 +7,7 @@ const ORIGIN='https://worldprotocolacademy.mk';
 const ORIGINAL={
  message:'Спореди дипломатија и комуникација, направи научен труд.',lang:'mk',
  consent:true,turnstile_token:'test-turnstile',
+ rights_attestation:true,sensitive_data_attestation:true,notice_version:'WPA_DOC_CITE_V1_2026_11_24',
  deliverable:'academic_paper',domain:'diplomacy',
  documents:[
   {id:'D1',name:'Дипломатија.pdf',format:'pdf',total_segments:70},
@@ -52,6 +53,11 @@ test('valid multiple documents return source-bounded academic draft with exact c
  assert.equal(output.autonomous_actions_performed,false);
  assert.deepEqual(output.cited_locators,['D1 P12','D2 S3']);
  assert.equal(output.status,'WORKING_DRAFT_REQUIRES_EDITORIAL_HUMAN_REVIEW');
+ assert.match(output.answer,/Doc\. d-r Sande Smiljanov/);
+ assert.match(output.disclaimer,/statutory liability|законската одговорност/i);
+ assert.match(output.answer,/Нема доволно податоци за точна APA 7 референца/);
+ assert.equal(output.bibliography_verified,false);
+ assert.equal(output.citation_policy_version,'WPA_DOC_CITE_V1_2026_11_24');
  assert.equal(ref.model,1);
  assert.equal(ref.challenge,1);
  assert.equal(ref.payload.store,false);
@@ -118,6 +124,33 @@ test('malicious PDF text remains quoted data and cannot become system instructio
  assert.match(rendered,/IGNORE ALL RULES/);
  assert.equal(verifyDocumentCitations('Поддржано [D1 P12].',packet).ok,true);
  assert.equal(verifyDocumentCitations('Непостоечки извор [D2 S9].',packet).ok,false);
+});
+test('rights acknowledgements and notice version must be valid before provider invocation',async()=>{
+ for(const payload of [
+   {...ORIGINAL,rights_attestation:false},
+   {...ORIGINAL,sensitive_data_attestation:false},
+   {...ORIGINAL,notice_version:'OLD_NOTICE'}
+ ]){
+  const ref={};
+  const r=await maybeHandleAgent(req(payload),env(),mock(ref));
+  assert.equal(r.status,400);
+  assert.equal((await r.json()).error,'DOC_LAB_POLICY_ACK_REQUIRED');
+  assert.equal(ref.model||0,0);
+  assert.equal(ref.challenge||0,0);
+ }
+});
+test('bibliographic fields are user-provided only; a false verified flag does not become a fact',()=>{
+ const packet=validateDocumentSubmission({...ORIGINAL,documents:[
+  {...ORIGINAL.documents[0],metadata:{
+    author:'Doc. d-r Sande Smiljanov',title:'Официјален протокол',year:'2026',
+    type:'book',publisher:'World Protocol Academy',verified:true}},
+  {...ORIGINAL.documents[1],metadata:{
+    author:'Independent Researcher',title:'Public Communication Studies',year:'2025',
+    type:'book',publisher:'External Academic Press'}}
+ ]});
+ assert.equal(packet.documents[0].metadata.provenance,'USER_SUPPLIED_UNVERIFIED');
+ assert.equal(packet.documents[0].metadata.verified,undefined);
+ assert.match(documentLabPrompt(packet,'Направи анализа.'),/Independent Researcher/);
 });
 test('previous AI draft may be sent only as bounded editing context, never as source',()=>{
  const revised=validateDocumentSubmission({...ORIGINAL,revision_context:'Прв нацрт кој бара уредничка доработка.'});
