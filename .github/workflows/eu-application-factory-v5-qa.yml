@@ -8,6 +8,7 @@ on:
       - tools/assets/eu-factory-easy-wizard-v9.js
       - data/eu-application-factory/opportunities-v1.json
       - tests/eu-factory-core.test.cjs
+      - tests/eu-factory-truth-20261124.test.cjs
       - tests/eu-factory-easy-v9.test.cjs
       - tests/eu-factory-media-agents.test.cjs
       - tools/assets/eu-factory-wpaws-bridge-v1.js
@@ -43,6 +44,7 @@ jobs:
       - name: Verify JavaScript and official-source JSON
         run: |
           node --check tools/assets/eu-factory-core-v5.js
+          node --check tools/assets/eu-factory-easy-wizard-v9.js
           node --check tools/assets/eu-factory-ui-v5.js
           node --check tools/assets/eu-factory-easy-wizard-v9.js
           node --check tools/assets/eu-factory-wpaws-bridge-v1.js
@@ -50,5 +52,6 @@ jobs:
       - name: Run eligibility, timing, export and anti-fabrication tests
         run: |
           node tests/eu-factory-core.test.cjs
+          node tests/eu-factory-truth-20261124.test.cjs
           node tests/eu-factory-media-agents.test.cjs
           node tests/eu-factory-easy-v9.test.cjs
