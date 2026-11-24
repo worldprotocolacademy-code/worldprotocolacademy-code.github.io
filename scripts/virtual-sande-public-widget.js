@@ -17,7 +17,8 @@
   var history = [];
   var pendingImage = null;  // Memory-only; never stored in localStorage or history.
   var bookTool = null; // Optional PDF tool in a separate module, never intercepts /ask.
-  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false };
+  var documentLab = null; // Optional multi-document authoring tool; never intercepts /ask.
+  var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false,document_lab:false };
   var challengeToken = '';
   var challengeId = null;
   var challengeLoading = false;
@@ -196,6 +197,9 @@
       '.wpa-public-vs-send{border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
+      '.wpa-vs-global-notice{background:#f5f0e0;padding:3px 11px 7px;font-size:10px;color:#574a2f;border-top:1px solid #e1d5b4}',
+      '.wpa-vs-global-notice summary{font-weight:700;cursor:pointer}',
+      '.wpa-vs-global-notice-text{white-space:pre-wrap;max-height:140px;overflow:auto;font-size:10px}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
       '.wpa-public-vs-extra{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 10px 3px;background:#f5f0e0;font-size:11px;color:#1a304b}',
       '.wpa-public-vs-attach,.wpa-public-vs-remove-image{border:1px solid #b7a05e;border-radius:7px;padding:6px 9px;background:#fff;color:#18304d;cursor:pointer;font-weight:600}',
@@ -283,7 +287,8 @@
 
   function usingAgent() {
     var mode = document.getElementById('wpaPublicVsAgentMode');
-    return !!pendingImage || !!(bookTool && bookTool.isActive()) || !!(mode && mode.checked);
+    return !!pendingImage || !!(bookTool && bookTool.isActive()) ||
+      !!(documentLab && documentLab.isActive()) || !!(mode && mode.checked);
   }
 
   function resetChallenge() {
@@ -418,7 +423,11 @@
       {title:en?'PDF Book Lab':'PDF анализа на книги',
         detail:configured&&agentCapabilities.pdf_synthesis===true?
           (en?'Configured · test citations':'Конфигурирано · провери цитати'):
-          (en?'Local PDF indexing; model not connected':'Локален PDF индекс; AI не е поврзана')}
+          (en?'Local PDF indexing; model not connected':'Локален PDF индекс; AI не е поврзана')},
+      {title:en?'Document Intelligence Lab':'Документна и авторска лабораторија',
+        detail:configured&&agentCapabilities.document_lab===true?
+          (en?'Configured · requires real source/citation QA':'Конфигурирано · потребна изворна проверка'):
+          (en?'Local multi-document indexing; AI not connected':'Локален индекс на документи; AI не е поврзана')}
     ];
     region.replaceChildren();
     items.forEach(function(item){
@@ -441,7 +450,7 @@
       if (!caps || caps.ok !== true) return;
       // An explicit model ID can be displayed even while disabled; it is never
       // described as connected until all configured capability gates pass.
-      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false},caps);
+      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false,document_lab:false},caps);
       renderCapabilityPanel();
       if (caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
           !caps.turnstile_site_key) return;
@@ -567,18 +576,29 @@
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     var pdfActive = !!(bookTool && bookTool.isActive());
+    var docActive = !!(documentLab && documentLab.isActive());
     var status = document.getElementById('wpaPublicVsStatus');
+    if (documentLab && documentLab.isBusy()) {
+      if (status) status.textContent = isEnglish() ?
+        'Indexing documents locally; finish extraction first.' :
+        'Се читаат документите локално. Довршете го индексирањето.';
+      return;
+    }
     if (bookTool && bookTool.isBusy()) {
       if (status) status.textContent = isEnglish() ?
         'Reading the PDF locally; finish indexing first.' :
         'Сè уште се чита PDF локално. Довршете го индексирањето.';
       return;
     }
-    if (pdfActive && pendingImage) {
-      if (status) status.textContent = bookTool.messageFor('PDF_IMAGE_CONFLICT');
+    if ((pdfActive && pendingImage) || (docActive && (pendingImage || pdfActive))) {
+      if (status) status.textContent = docActive ?
+        documentLab.messageFor('DOCUMENT_CONFLICT') : bookTool.messageFor('PDF_IMAGE_CONFLICT');
       return;
     }
-    if (!question && !pendingImage && !pdfActive) return;
+    if (!question && !pendingImage && !pdfActive && !docActive) return;
+    if (!question && docActive) question = isEnglish() ?
+      'Create a source-grounded deep analysis of the relevant excerpts with limitations and a verification plan.' :
+      'Изработи длабинска анализа на релевантните извадоци, со синтеза, ограничувања и план за проверка.';
     if (!question && pdfActive) question = isEnglish() ?
       'Make an evidence-grounded synthesis of the main themes in the selected PDF excerpts.' :
       'Направи изворно поткрепена синтеза на главните теми во избраните PDF-извадоци.';
@@ -588,7 +608,12 @@
 
     var useAgent = usingAgent();
     if (useAgent && !agentCapabilities.enabled) {
-      if (status) status.textContent = pdfActive ? bookTool.messageFor('PDF_AGENT_DISABLED') : copy().imageUnavailable;
+      if (status) status.textContent = docActive ? documentLab.messageFor('DOCUMENT_MODEL_DISABLED') :
+        pdfActive ? bookTool.messageFor('PDF_AGENT_DISABLED') : copy().imageUnavailable;
+      return;
+    }
+    if (docActive && agentCapabilities.document_lab !== true) {
+      if (status) status.textContent = documentLab.messageFor('DOCUMENT_MODEL_DISABLED');
       return;
     }
     if (pdfActive && agentCapabilities.pdf_synthesis !== true) {
@@ -607,7 +632,9 @@
 
     busy = true;
     var pdfSummary = pdfActive ? bookTool.getSummary() : null;
-    var userLabel = (pdfSummary ? '📚 ' + pdfSummary.name + '\n' : '') +
+    var docsSummary = docActive ? documentLab.getSummary() : null;
+    var userLabel = (docsSummary ? '📂 ' + docsSummary.names.join(', ') + '\n' : '') +
+      (pdfSummary ? '📚 ' + pdfSummary.name + '\n' : '') +
       (pendingImage ? '📷 ' + pendingImage.name + '\n' : '') + question;
     addMessage(userLabel, 'user');
 
@@ -616,13 +643,15 @@
     if (status) status.textContent = copy().connecting;
     try {
       // Source-based academic chat is preserved; independent PDF & photo modes are explicit.
-      var result = pdfActive ? await bookTool.ask(question,{
+      var result = docActive ? await documentLab.ask(question,{
+        endpoint:agentUrl('/agent/document-lab'),token:challengeToken,consent:true
+      }) : pdfActive ? await bookTool.ask(question,{
         endpoint:agentUrl('/agent/pdf-analysis'),token:challengeToken,consent:true
       }) : useAgent ? await requestAgent(question) : await requestAnswer(question);
       addMessage(result.answer, 'bot');
       // Book-derived responses stay in this visible session only: never relay them
       // to the separate canonical /ask service as implicit conversation history.
-      if (!pdfActive) {
+      if (!pdfActive && !docActive) {
         history.push({ role: 'user', content: question });
         history.push({ role: 'assistant', content: result.answer });
         if (history.length > 12) history = history.slice(-12);
@@ -633,7 +662,10 @@
         resetChallenge();
         document.getElementById('wpaPublicVsConsent').checked = false;
         if (!pdfActive) clearImage();
-        if (status) status.textContent = pdfActive ?
+        if (status) status.textContent = docActive ?
+          (isEnglish() ? 'Working draft based on selected document excerpts. Editorial verification is required.' :
+            'Работен нацрт од избрани извадоци. Потребна е авторска и редакциска проверка.') :
+          pdfActive ?
           (isEnglish() ? 'The response is based on selected PDF excerpts, not a verified full-book review.' :
             'Одговорот се темели на избрани PDF-извадоци, не на потврдена анализа на целата книга.') :
           (isEnglish() ? 'AI-assisted pilot. This answer is not independently source-verified.' :
@@ -643,8 +675,9 @@
       }
     } catch (error) {
       if (useAgent) resetChallenge();
-      var message = pdfActive ? bookTool.messageFor(error?.message) : copy().error;
-      if (useAgent && error && /(?:PDF_HTTP_|AGENT_HTTP_)429/.test(error.message)) {
+      var message = docActive ? documentLab.messageFor(error?.message) :
+        pdfActive ? bookTool.messageFor(error?.message) : copy().error;
+      if (useAgent && error && /(?:PDF_HTTP_|AGENT_HTTP_|DOCUMENT_HTTP_)429/.test(error.message)) {
         message = isEnglish() ? 'Request limit reached. Please try later.' :
           'Достигнато е ограничувањето на барања. Обидете се подоцна.';
       } else if (!pdfActive && useAgent && error &&
@@ -689,6 +722,25 @@
     capPanel.appendChild(capList);
     panel.querySelector('.wpa-public-vs-status').before(capPanel);
 
+    var globalDisclaimer=document.createElement('details');
+    globalDisclaimer.id='wpaPublicVsGlobalNotice';
+    globalDisclaimer.className='wpa-vs-global-notice';
+    var globalSummary=document.createElement('summary');
+    globalSummary.textContent=isEnglish()?
+      'Attribution · AI limitations · Privacy · Rights · Human review':
+      'Авторство · AI ограничувања · Приватност · Права · Човечка проверка';
+    var globalNoticeText=document.createElement('div');
+    globalNoticeText.className='wpa-vs-global-notice-text';
+    globalNoticeText.textContent=isEnglish()?
+      'Virtual Sande AI is an automated tool. Answers need verification and are not official or professional advice.':
+      'Virtual Sande AI е автоматска алатка. Одговорите бараат проверка и не се официјален или професионален совет.';
+    globalDisclaimer.append(globalSummary,globalNoticeText);
+    panel.appendChild(globalDisclaimer);
+    import('/scripts/virtual-sande-citation-policy.mjs').then(function(m){
+      if (!document.getElementById('wpaPublicVsGlobalNotice')) return;
+      globalNoticeText.textContent=m.disclaimerText(isEnglish()?'en':'mk');
+    }).catch(function(){/* fallback notice remains visible, never suppress it */});
+
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
     fab.className = 'wpa-public-vs-fab';
@@ -717,6 +769,23 @@
       var status = document.getElementById('wpaPublicVsStatus');
       if (status) status.textContent = isEnglish() ?
         'The PDF book tool is unavailable.' : 'Алатката за PDF-книги моментално е недостапна.';
+    });
+
+    // Multi-document authoring is a distinct source mode. It cannot silently
+    // forward private documents or their draft answers into the canonical /ask history.
+    import('/scripts/virtual-sande-document-workbench.mjs').then(function(mod) {
+      if (!document.getElementById('wpaPublicVsPanel')) return;
+      documentLab=mod.createDocumentWorkbench(panel,{
+        isEnabled:function() {
+          return agentCapabilities.enabled===true && agentCapabilities.document_lab===true;
+        },
+        onChange:function(){updateAgentInterface();}
+      });
+    }).catch(function(){
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(status)status.textContent=isEnglish() ?
+        'Document Lab is unavailable in this build.' :
+        'Документната лабораторија не е достапна во оваа верзија.';
     });
 
     var imagePicker = document.getElementById('wpaPublicVsImageFile');
@@ -775,6 +844,7 @@
       history = [];
       clearImage();
       if (bookTool) bookTool.reset();
+      if (documentLab) documentLab.reset();
       document.getElementById('wpaPublicVsAgentMode').checked = false;
       document.getElementById('wpaPublicVsConsent').checked = false;
       document.getElementById('wpaPublicVsInput').value = '';
