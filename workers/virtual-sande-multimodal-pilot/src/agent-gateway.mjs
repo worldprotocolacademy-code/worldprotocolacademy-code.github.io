@@ -2,7 +2,7 @@
  * Text /ask and canonical WPA retrieval remain unchanged. Read-only model inference only.
  * Never logs or persists visitor prompts/images in this module.
  */
-import {DOCUMENT_LAB_INSTRUCTIONS,validateDocumentSubmission,documentLabPrompt,verifyDocumentCitations} from './document-lab-gateway.mjs';
+import {DOCUMENT_LAB_INSTRUCTIONS,validateDocumentSubmission,documentLabPrompt,verifyDocumentCitations,documentLabNotice,documentLabReferences} from './document-lab-gateway.mjs';
 export const VERSION = 'virtual-sande-agent-v0.3-doc-intelligence-20261124';
 const PROVIDER_URL = 'https://api.openai.com/v1/responses';
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
@@ -282,12 +282,29 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   if(docLabMode){
     const citations=verifyDocumentCitations(answer,documentPacket);
     if(!citations.ok)return reply(request,env,502,{ok:false,error:citations.error});
+    const notice=documentLabNotice(lang);
+    const references=documentLabReferences(documentPacket,citations.citations,lang);
+    const bibliography=references.map(r=>r.text);
+    // Server-generated provenance and disclaimers are not optional model prose.
+    // The model cannot remove or rewrite this institutional responsibility notice.
+    const statement=notice.heading+'\n'+notice.identity+'\n'+
+      notice.ai+'\n'+notice.scope+'\n'+notice.citations+'\n'+
+      notice.use+'\n'+notice.rights+'\n'+notice.privacy+'\n'+
+      notice.release+'\n'+notice.legal;
     return reply(request,env,200,{
-      ok:true,answer:answer.slice(0,18000),version:VERSION,
+      ok:true,answer:answer.slice(0,14000)+'\n\n'+
+        (lang==='en'?'Provisional source register — verify author/publisher details:':
+         'Привремен изворен регистар — проверете ги авторите и издавачите:')+
+        '\n'+bibliography.join('\n')+'\n\n'+statement,
+      version:VERSION,
       mode:'document_lab_pilot',
       source_mode:documentPacket.source_status,
-      documents:documentPacket.documents.map(d=>({id:d.id,name:d.name,format:d.format})),
+      documents:documentPacket.documents.map(d=>({id:d.id,name:d.name,format:d.format,metadata_status:d.metadata.provenance})),
       cited_locators:citations.citations,
+      bibliography,
+      citation_policy_version:documentPacket.policy_version,
+      attribution:notice.identity,disclaimer:statement,
+      bibliography_verified:false,
       status:'WORKING_DRAFT_REQUIRES_EDITORIAL_HUMAN_REVIEW',
       human_review_required:true,autonomous_actions_performed:false,
       followups:lang==='en'?
