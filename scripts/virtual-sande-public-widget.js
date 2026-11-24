@@ -16,6 +16,7 @@
   var busy = false;
   var history = [];
   var pendingImage = null;  // Memory-only; never stored in localStorage or history.
+  var bookTool = null; // Optional PDF tool in a separate module, never intercepts /ask.
   var agentCapabilities = { enabled:false, image_analysis:false, text_chat:false };
   var challengeToken = '';
   var challengeId = null;
@@ -275,7 +276,7 @@
 
   function usingAgent() {
     var mode = document.getElementById('wpaPublicVsAgentMode');
-    return !!pendingImage || !!(mode && mode.checked);
+    return !!pendingImage || !!(bookTool && bookTool.isActive()) || !!(mode && mode.checked);
   }
 
   function resetChallenge() {
@@ -517,15 +518,33 @@
     if (busy) return;
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
-    if (!question && !pendingImage) return;
+    var pdfActive = !!(bookTool && bookTool.isActive());
+    var status = document.getElementById('wpaPublicVsStatus');
+    if (bookTool && bookTool.isBusy()) {
+      if (status) status.textContent = isEnglish() ?
+        'Reading the PDF locally; finish indexing first.' :
+        'Сè уште се чита PDF локално. Довршете го индексирањето.';
+      return;
+    }
+    if (pdfActive && pendingImage) {
+      if (status) status.textContent = bookTool.messageFor('PDF_IMAGE_CONFLICT');
+      return;
+    }
+    if (!question && !pendingImage && !pdfActive) return;
+    if (!question && pdfActive) question = isEnglish() ?
+      'Make an evidence-grounded synthesis of the main themes in the selected PDF excerpts.' :
+      'Направи изворно поткрепена синтеза на главните теми во избраните PDF-извадоци.';
     if (!question && pendingImage) question = isEnglish() ?
       'Please describe the image carefully and identify details that require verification.' :
       'Опиши ја фотографијата внимателно и разграничи што е видливо од тоа што треба да се провери.';
 
     var useAgent = usingAgent();
-    var status = document.getElementById('wpaPublicVsStatus');
     if (useAgent && !agentCapabilities.enabled) {
-      if (status) status.textContent = copy().imageUnavailable;
+      if (status) status.textContent = pdfActive ? bookTool.messageFor('PDF_AGENT_DISABLED') : copy().imageUnavailable;
+      return;
+    }
+    if (pdfActive && agentCapabilities.pdf_synthesis !== true) {
+      if (status) status.textContent = bookTool.messageFor('PDF_AGENT_DISABLED');
       return;
     }
     if (useAgent && !document.getElementById('wpaPublicVsConsent').checked) {
@@ -539,15 +558,19 @@
     }
 
     busy = true;
-    var userLabel = (pendingImage ? '📷 ' + pendingImage.name + '\n' : '') + question;
+    var pdfSummary = pdfActive ? bookTool.getSummary() : null;
+    var userLabel = (pdfSummary ? '📚 ' + pdfSummary.name + '\n' : '') +
+      (pendingImage ? '📷 ' + pendingImage.name + '\n' : '') + question;
     addMessage(userLabel, 'user');
 
     var button = document.getElementById('wpaPublicVsSend');
     if (button) button.disabled = true;
     if (status) status.textContent = copy().connecting;
     try {
-      // Academic source retrieval is retained for the standard path; image/general mode is separate.
-      var result = useAgent ? await requestAgent(question) : await requestAnswer(question);
+      // Source-based academic chat is preserved; independent PDF & photo modes are explicit.
+      var result = pdfActive ? await bookTool.ask(question,{
+        endpoint:agentUrl('/agent/pdf-analysis'),token:challengeToken,consent:true
+      }) : useAgent ? await requestAgent(question) : await requestAnswer(question);
       addMessage(result.answer, 'bot');
       history.push({ role: 'user', content: question });
       history.push({ role: 'assistant', content: result.answer });
@@ -557,25 +580,28 @@
       if (useAgent) {
         resetChallenge();
         document.getElementById('wpaPublicVsConsent').checked = false;
-        clearImage();
-        if (status) status.textContent = isEnglish() ?
-          'AI-assisted pilot. This answer is not independently source-verified.' :
-          'AI пилот: одговорот не е независно изворно проверен.';
+        if (!pdfActive) clearImage();
+        if (status) status.textContent = pdfActive ?
+          (isEnglish() ? 'The response is based on selected PDF excerpts, not a verified full-book review.' :
+            'Одговорот се темели на избрани PDF-извадоци, не на потврдена анализа на целата книга.') :
+          (isEnglish() ? 'AI-assisted pilot. This answer is not independently source-verified.' :
+            'AI пилот: одговорот не е независно изворно проверен.');
       } else if (status) {
         status.textContent = result.local ? copy().offline : '';
       }
     } catch (error) {
       if (useAgent) resetChallenge();
-      var message = copy().error;
-      if (useAgent && error && error.message === 'AGENT_HTTP_429') {
+      var message = pdfActive ? bookTool.messageFor(error?.message) : copy().error;
+      if (useAgent && error && /(?:PDF_HTTP_|AGENT_HTTP_)429/.test(error.message)) {
         message = isEnglish() ? 'Request limit reached. Please try later.' :
           'Достигнато е ограничувањето на барања. Обидете се подоцна.';
-      } else if (useAgent && error && (error.message === 'AGENT_HTTP_403' || error.message === 'AGENT_HTTP_503')) {
+      } else if (!pdfActive && useAgent && error &&
+        (error.message === 'AGENT_HTTP_403' || error.message === 'AGENT_HTTP_503')) {
         message = copy().captchaRequired + ' ' + copy().imageUnavailable;
       }
       addMessage(message, 'bot');
       if (status) status.textContent = '';
-      // Keep the draft text / attached image in the browser so the user can retry.
+      // Keep the draft text and local attachments on an error so user can retry.
     } finally {
       busy = false;
       if (button) button.disabled = false;
@@ -613,6 +639,19 @@
     addMessage(text.welcome, 'bot');
     // Discover optional multimodal capability. No automatic paid calls are made here.
     loadAgentCapabilities();
+    // The book module is sandboxed in the browser and does not change the academic /ask path.
+    import('/scripts/virtual-sande-pdf-tool.mjs').then(function (mod) {
+      if (!document.getElementById('wpaPublicVsPanel')) return;
+      bookTool = mod.createBookTool(panel, {
+        isEnabled: function () { return agentCapabilities.enabled === true && agentCapabilities.pdf_synthesis === true; },
+        onChange: function () { updateAgentInterface(); },
+        onStatus: function () {}
+      });
+    }).catch(function () {
+      var status = document.getElementById('wpaPublicVsStatus');
+      if (status) status.textContent = isEnglish() ?
+        'The PDF book tool is unavailable.' : 'Алатката за PDF-книги моментално е недостапна.';
+    });
 
     var imagePicker = document.getElementById('wpaPublicVsImageFile');
     document.getElementById('wpaPublicVsAttach').addEventListener('click', function () {
@@ -669,6 +708,7 @@
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
       clearImage();
+      if (bookTool) bookTool.reset();
       document.getElementById('wpaPublicVsAgentMode').checked = false;
       document.getElementById('wpaPublicVsConsent').checked = false;
       document.getElementById('wpaPublicVsInput').value = '';
