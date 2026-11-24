@@ -594,7 +594,7 @@
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
-    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-extra"><input type="file" id="wpaPublicVsImageFile" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="wpa-public-vs-attach" id="wpaPublicVsAttach" disabled title="' + text.imageUnavailable + '">📷 ' + text.attach + '</button><label class="wpa-public-vs-mode"><input type="checkbox" id="wpaPublicVsAgentMode" disabled> ' + text.generalMode + '</label><span class="wpa-public-vs-image-preview" id="wpaPublicVsImagePreview" aria-live="polite"></span><button type="button" class="wpa-public-vs-remove-image" id="wpaPublicVsRemoveImage" hidden aria-label="' + text.removeImage + '">×</button></div><div class="wpa-public-vs-consent" id="wpaPublicVsConsentWrap" hidden><label><input type="checkbox" id="wpaPublicVsConsent"> ' + text.consent + '</label></div><div class="wpa-public-vs-challenge" id="wpaPublicVsChallenge" hidden></div><div class="wpa-public-vs-followups" id="wpaPublicVsFollowups" aria-label="' + text.followups + '"></div><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
+    panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="1600" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-extra"><input type="file" id="wpaPublicVsImageFile" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="wpa-public-vs-attach" id="wpaPublicVsAttach" disabled title="' + text.imageUnavailable + '">📷 ' + text.attach + '</button><label class="wpa-public-vs-mode"><input type="checkbox" id="wpaPublicVsAgentMode" disabled> ' + text.generalMode + '</label><span class="wpa-public-vs-image-preview" id="wpaPublicVsImagePreview" aria-live="polite"></span><button type="button" class="wpa-public-vs-remove-image" id="wpaPublicVsRemoveImage" hidden aria-label="' + text.removeImage + '">×</button></div><div class="wpa-public-vs-consent" id="wpaPublicVsConsentWrap" hidden><label><input type="checkbox" id="wpaPublicVsConsent"> ' + text.consent + '</label></div><div class="wpa-public-vs-challenge" id="wpaPublicVsChallenge" hidden></div><div class="wpa-public-vs-followups" id="wpaPublicVsFollowups" aria-label="' + text.followups + '"></div><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
@@ -609,11 +609,42 @@
     document.body.appendChild(fab);
     protectAllInputs();
     addMessage(text.welcome, 'bot');
+    // Discover optional multimodal capability. No automatic paid calls are made here.
+    loadAgentCapabilities();
+
+    var imagePicker = document.getElementById('wpaPublicVsImageFile');
+    document.getElementById('wpaPublicVsAttach').addEventListener('click', function () {
+      if (!agentCapabilities.enabled) {
+        document.getElementById('wpaPublicVsStatus').textContent = copy().imageUnavailable;
+        return;
+      }
+      imagePicker.click();
+    });
+    imagePicker.addEventListener('change', async function () {
+      if (!imagePicker.files || !imagePicker.files[0]) return;
+      var status = document.getElementById('wpaPublicVsStatus');
+      try {
+        var image = await prepareImage(imagePicker.files[0]);
+        pendingImage = image;
+        document.getElementById('wpaPublicVsImagePreview').textContent = '📷 ' + image.name;
+        document.getElementById('wpaPublicVsRemoveImage').hidden = false;
+        if (status) status.textContent = '';
+        updateAgentInterface();
+      } catch (_) {
+        clearImage();
+        if (status) status.textContent = copy().imageRejected;
+      }
+    });
+    document.getElementById('wpaPublicVsRemoveImage').addEventListener('click', clearImage);
+    document.getElementById('wpaPublicVsAgentMode').addEventListener('change', updateAgentInterface);
 
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
-      if (open) document.getElementById('wpaPublicVsInput').focus();
+      if (open) {
+        document.getElementById('wpaPublicVsInput').focus();
+        ensureChallenge();
+      }
     });
 
     panel.querySelector('.wpa-public-vs-close').addEventListener('click', function () {
@@ -635,7 +666,15 @@
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
       history = [];
-      document.getElementById('wpaPublicVsMsgs').innerHTML = '';
+      clearImage();
+      document.getElementById('wpaPublicVsAgentMode').checked = false;
+      document.getElementById('wpaPublicVsConsent').checked = false;
+      document.getElementById('wpaPublicVsInput').value = '';
+      document.getElementById('wpaPublicVsStatus').textContent = '';
+      document.getElementById('wpaPublicVsFollowups').replaceChildren();
+      resetChallenge();
+      updateAgentInterface();
+      document.getElementById('wpaPublicVsMsgs').replaceChildren();
       addMessage(copy().welcome, 'bot');
     });
 
