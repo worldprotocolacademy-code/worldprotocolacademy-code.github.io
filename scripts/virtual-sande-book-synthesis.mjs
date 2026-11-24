@@ -30,8 +30,21 @@ const SPACE=/\s+/g;
 export const normalize=s=>String(s||'').normalize('NFKC').toLocaleLowerCase('mk')
   .replace(/[\u0000-\u001f\u007f]+/g,' ').replace(SPACE,' ').trim();
 export function tokens(text){
-  return (normalize(text).match(/[\p{L}\p{N}]{3,}/gu)||[])
-    .filter(t=>!STOP.has(t)).slice(0,10000);
+  return (normalize(text).match(/[\p{L}\p{N}]{2,}/gu)||[])
+    .filter(t=>(t.length>=3||t==='ai'||t==='pr')&&!STOP.has(t)).slice(0,10000);
+}
+// Conservative bilingual suffix normalisation for searching inflected MK phrases.
+// This is a retrieval heuristic, NOT a morphological/linguistic claim.
+export function termKey(t){
+  if(t.length<6)return t;
+  if(/[а-шѓќѕџјљњ]/u.test(t)){
+    if(t.endsWith('носта'))return t.slice(0,-1);
+    for(const suffix of ['овите','евите','ските','ската','скиот','овата','евата',
+      'ањето','ењето','цијата','њето','ниoт','ата','ото','ите','ови','еви','от','та','то']){
+      if(t.endsWith(suffix)&&t.length-suffix.length>=5)return t.slice(0,-suffix.length);
+    }
+  }else if(t.endsWith('s')&&!t.endsWith('ss'))return t.slice(0,-1);
+  return t;
 }
 function uniqueWords(text){return [...new Set(tokens(text))];}
 function plain(text){return String(text||'').normalize('NFC')
@@ -52,7 +65,13 @@ export function makeBookIndex(sourcePages,{name='Uploaded PDF'}={}){
     while(start<text.length){
       const end=Math.min(text.length,start+BOOK_LIMITS.chunkChars);
       const excerpt=text.slice(start,end);
-      chunks.push({id:'P'+page+'-C'+(++n),page,text:excerpt,len:tokens(excerpt).length});
+      const extracted=tokens(excerpt);
+      const freq=new Map();
+      for(const token of extracted){
+        const key=termKey(token);freq.set(key,(freq.get(key)||0)+1);
+      }
+      chunks.push({id:'P'+page+'-C'+(++n),page,text:excerpt,
+        len:extracted.length,freq,terms:new Set(freq.keys())});
       if(end===text.length)break;
       start=end-BOOK_LIMITS.overlapChars;
     }
@@ -61,13 +80,13 @@ export function makeBookIndex(sourcePages,{name='Uploaded PDF'}={}){
   const docFreq=new Map();
   let totalWords=0;
   for(const chunk of chunks){
-    chunk.terms=new Set(tokens(chunk.text)); totalWords+=chunk.len;
+    totalWords+=chunk.len;
     for(const term of chunk.terms)docFreq.set(term,(docFreq.get(term)||0)+1);
   }
   return {
     name:plain(name).slice(0,140),totalPages:sourcePages.length,readablePages:sourcePages.length-unreadable.length,
     unreadablePages:unreadable, truncatedPages:truncated,chunks,docFreq,avgWords:totalWords/chunks.length,
-    algorithm:'WPA Evidence Retrieval & Synthesis v0.1 (local BM25 + page diversity)'
+    algorithm:'WPA Evidence Retrieval & Synthesis v0.2 (bilingual term keys, BM25, physical-page stratification and cross-domain diversity)'
   };
 }
 function queryTerms(question,domain){
@@ -79,16 +98,14 @@ function queryTerms(question,domain){
   return phrase.slice(0,30);
 }
 export function scoreChunks(index,question,domain='auto'){
-  const terms=queryTerms(question,domain);
+  const terms=[...new Set(queryTerms(question,domain).map(termKey))];
   if(!terms.length)return [];
   const total=index.chunks.length;
   const scores=[];
   for(const chunk of index.chunks){
     let score=0,matchCount=0;
-    const wordFreq=new Map();
-    for(const term of tokens(chunk.text))wordFreq.set(term,(wordFreq.get(term)||0)+1);
     for(const term of terms){
-      const tf=wordFreq.get(term)||0;
+      const tf=chunk.freq.get(term)||0;
       if(!tf)continue;
       matchCount++;
       const df=index.docFreq.get(term)||0;
@@ -111,11 +128,27 @@ function selectDiverse(ranked,cap){
   return selected;
 }
 function stratifiedChunks(index,cap){
-  if(index.chunks.length<=cap)return index.chunks.map(chunk=>({chunk,score:0,matchCount:0}));
-  const sorted=index.chunks;
-  const positions=new Set([0,sorted.length-1]);
-  for(let i=1;i<cap-1;i++)positions.add(Math.floor(i*(sorted.length-1)/(cap-1)));
-  return [...positions].slice(0,cap).map(pos=>({chunk:sorted[pos],score:0,matchCount:0}));
+  // Sample physical pages, not chunk positions: very long chapters must not dominate.
+  const firstByPage=new Map();
+  for(const chunk of index.chunks)if(!firstByPage.has(chunk.page))firstByPage.set(chunk.page,chunk);
+  const pages=[...firstByPage.keys()].sort((a,b)=>a-b);
+  if(pages.length<=cap)return pages.map(page=>({chunk:firstByPage.get(page),score:0,matchCount:0}));
+  const indices=new Set([0,pages.length-1]);
+  for(let i=1;i<cap-1;i++)indices.add(Math.floor(i*(pages.length-1)/(cap-1)));
+  return [...indices].slice(0,cap).map(i=>({chunk:firstByPage.get(pages[i]),score:0,matchCount:0}));
+}
+function crossDisciplineEvidence(index,question,domain,ranked){
+  const focus=selectDiverse(ranked,3);
+  const chosen=new Set(focus.map(x=>x.chunk.id));
+  const cross=[];
+  for(const discipline of DOMAIN_OPTIONS.filter(d=>d!=='auto')){
+    const keys=new Set(EXPANSIONS[discipline].map(termKey));
+    const best=scoreChunks(index,question,discipline).find(row=>
+      !chosen.has(row.chunk.id)&&[...keys].some(key=>row.chunk.terms.has(key)));
+    if(best){cross.push(best);chosen.add(best.chunk.id);}
+  }
+  const rest=ranked.filter(x=>!chosen.has(x.chunk.id));
+  return selectDiverse([...focus,...cross,...rest],BOOK_LIMITS.maxEvidence);
 }
 export function selectBookEvidence(index,question,{domain='auto',mode='focused'}={}){
   if(!DOMAIN_OPTIONS.includes(domain))throw new Error('BAD_DOMAIN');
@@ -131,6 +164,8 @@ export function selectBookEvidence(index,question,{domain='auto',mode='focused'}
     const focused=selectDiverse(ranked,3);
     const seen=new Set(wide.map(v=>v.chunk.id));
     candidates=[...wide,...focused.filter(v=>!seen.has(v.chunk.id))];
+  }else if(mode==='cross_domain'){
+    candidates=crossDisciplineEvidence(index,q,domain,ranked);
   }else{
     candidates=selectDiverse(ranked,BOOK_LIMITS.maxEvidence);
   }
