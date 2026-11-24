@@ -108,7 +108,9 @@ export function makeDocumentCorpus(inputs){
       }
     }
     if(!nonempty)throw new Error('DOCUMENT_NO_TEXT');
-    documents.push({id,name,format:ext,segments:sections.length,
+    const maxLocator=Math.max(...sections.map(seg=>Number(String(seg.locator).slice(1))));
+    // For PDFs, blank/scanned pages do not eliminate their physical page IDs.
+    documents.push({id,name,format:ext,segments:maxLocator,
       readable_segments:nonempty,characters:chars});
   }
   if(!chunks.length)throw new Error('DOCUMENT_NO_TEXT');
