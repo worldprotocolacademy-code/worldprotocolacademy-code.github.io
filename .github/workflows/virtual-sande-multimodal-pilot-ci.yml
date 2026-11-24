@@ -6,9 +6,12 @@ on:
       - 'scripts/virtual-sande-pdf-tool.mjs'
       - 'scripts/virtual-sande-book-synthesis.mjs'
       - 'workers/virtual-sande-multimodal-pilot/**'
+      - 'scripts/verify-virtual-sande-disabled-staging.mjs'
+      - '.github/workflows/virtual-sande-private-staging-manual.yml'
       - 'workers/virtual-sande-v35.1-production/src/index.mjs'
       - 'tests/virtual-sande-multimodal-*.test.mjs'
       - 'tests/virtual-sande-pdf-*.test.mjs'
+      - 'tests/virtual-sande-private-staging.test.mjs'
       - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
       - 'docs/virtual-sande-multimodal-pilot-v0.1.md'
   workflow_dispatch:
@@ -30,18 +33,24 @@ jobs:
           node --check scripts/virtual-sande-pdf-tool.mjs
           node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
           node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
+          node --check scripts/verify-virtual-sande-disabled-staging.mjs
           node --check workers/virtual-sande-v35.1-production/src/index.mjs
           cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
           node --check tests/virtual-sande-multimodal-agent.test.mjs
           node --check tests/virtual-sande-multimodal-ui.test.mjs
           node --check tests/virtual-sande-pdf-synthesis.test.mjs
-          node --check tests/virtual-sande-pdf-gateway.test.mjs
+          node --check tests/virtual-sande-pdf-gateway.test.mjs tests/virtual-sande-private-staging.test.mjs
+          node --check tests/virtual-sande-private-staging.test.mjs
       - name: Isolated contract and UI regression tests (mocked providers)
         run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs tests/virtual-sande-pdf-synthesis.test.mjs tests/virtual-sande-pdf-gateway.test.mjs
+      - name: Bundle disabled private staging Worker (dry-run, no Cloudflare changes)
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
       - name: No silent enablement, secret leak or production deployment
         run: |
           grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
           test "$(grep -c '^\[ai\]' workers/virtual-sande-v35.1-production/wrangler.toml)" -eq 1
           grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          grep -F 'WPA_AGENT_STAGING_ONLY = "true"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
           ! grep -Eq '^OPENAI_API_KEY\s*=|^WPA_AGENT_TURNSTILE_SECRET\s*=' workers/virtual-sande-multimodal-pilot/wrangler.toml
           echo "PASS: certified WPA /ask untouched; new agent isolated, inactive, unbilled"
