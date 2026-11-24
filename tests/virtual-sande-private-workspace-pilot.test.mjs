@@ -148,3 +148,42 @@ for(const mode of ['deadline','user-abort']){
   assert.equal([...transport.timers.values()].some(t=>t.ms===15000),false);
  });
 }
+
+
+// Protected site adapter: authentication and same-origin apply to HTML, assets
+// and the actual private API. The production authorizer is not bypassed.
+test('protected staging is disabled by default, denies unauthorized HTML and assets',async()=>{
+ const {createPrivateSite}=await import('../workers/virtual-sande-private-pilot/src/index.mjs');
+ const fakeAssets={fetch:async()=>{throw Error('unapproved asset must never be read');}};
+ const noAuth=createPrivateSite({authorize:async()=>false});
+ const req=path=>new Request(origin+path);
+ assert.equal((await noAuth.fetch(req('/'),{...env,PILOT_ENABLED:'false',ASSETS:fakeAssets})).status,503);
+ assert.equal((await noAuth.fetch(req('/'),{...env,ASSETS:fakeAssets})).status,401);
+ assert.equal((await noAuth.fetch(req('/scripts/virtual-sande-public-widget.js'),{...env,ASSETS:fakeAssets})).status,401);
+ assert.equal((await createPrivateSite().fetch(req('/'),{...env,ASSETS:fakeAssets})).status,401);
+});
+test('protected staging serves allowlisted assets without forwarding credentials',async()=>{
+ const {createPrivateSite}=await import('../workers/virtual-sande-private-pilot/src/index.mjs');
+ const site=createPrivateSite({authorize:async()=>true});
+ const assets={fetch:async req=>{
+  assert.equal(req.headers.has('Cf-Access-Jwt-Assertion'),false);
+  assert.equal(req.headers.has('Cookie'),false);
+  return new Response('synthetic HTML',{headers:{'Content-Type':'text/html'}});
+ }};
+ const cfg={...env,ASSETS:assets};
+ const res=await site.fetch(new Request(origin+'/',{headers:{'Cf-Access-Jwt-Assertion':'fixture','Cookie':'fixture=yes'}}),cfg);
+ assert.equal(res.status,200);
+ assert.match(res.headers.get('Cache-Control'),/no-store/);
+ assert.match(res.headers.get('Content-Security-Policy'),/connect-src 'self'/);
+ assert.equal(res.headers.get('X-Robots-Tag'),'noindex, nofollow, noarchive');
+ assert.equal((await site.fetch(new Request(origin+'/workers/secret.js'),cfg)).status,404);
+ assert.equal((await site.fetch(new Request('https://wrong.example/'),cfg)).status,403);
+});
+test('protected site only accepts exact private API paths and keeps the consent gate',async()=>{
+ const {createPrivateSite}=await import('../workers/virtual-sande-private-pilot/src/index.mjs');
+ const site=createPrivateSite({authorize:async()=>true});
+ const req=new Request(origin+'/private-api/analyze',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({question:'test'})});
+ assert.equal((await site.fetch(req,env)).status,403);
+ const badPath=new Request(origin+'/other/analyze',{method:'POST'});
+ assert.equal((await site.fetch(badPath,env)).status,405);
+});
