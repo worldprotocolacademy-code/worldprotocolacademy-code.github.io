@@ -180,6 +180,9 @@ export function createDocumentWorkbench(panel,config={}){
       data.cited_locators.some(x=>!allowed.has(x)))throw new Error('DOCUMENT_BAD_RESPONSE');
    last={answer:data.answer,packet,citations:data.cited_locators};
    md.disabled=false;json.disabled=false;revise.disabled=false;revise.checked=false;
+   status.textContent=t.indexed+': '+packet.coverage.documents_represented+'/'+
+     packet.coverage.documents_indexed+' sources; '+packet.coverage.excerpts_selected+
+     ' selected extracts. '+t.info;
    return {answer:data.answer,data,agent:true,local:false};
  }
  return {isActive:()=>!!index,isBusy:()=>working,reset,ask,
