@@ -5,7 +5,7 @@
  * PDF page indices are physical PDF page numbers, NOT printed book pagination.
  */
 export const BOOK_LIMITS=Object.freeze({
-  maxPdfBytes:24*1024*1024,maxPages:450,maxCharsPerPage:24000,
+  maxPdfBytes:40*1024*1024,maxPages:800,maxCharsPerPage:24000,
   chunkChars:1350,overlapChars:190,maxEvidence:9,maxExcerptChars:1100,
   maxPayloadChars:10400
 });
