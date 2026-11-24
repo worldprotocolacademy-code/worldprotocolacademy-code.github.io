@@ -117,7 +117,10 @@
     }
     function generate(){
       var input=current();var reason=validate(2,input);if(reason){error(reason);return;}
-      el('idea').value=makeIdea(input);
+      // Keep the actual user's need as the dossier narrative, not UI wrapper metadata.
+      el('idea').value=input.idea.trim();
+      el('idea').dispatchEvent(new Event('input',{bubbles:true}));
+      el('idea').dataset.wpaCategory=input.category;
       var map={farm:'farm',individual:'individual',company:'company',ngo:'ngo',public_body:'public_body',unknown:'unknown'};
       el('legalType').value=map[input.applicant]||'unknown';
       el('easyNext').disabled=true;el('easyNext').textContent='Се проверува…';pending=true;
