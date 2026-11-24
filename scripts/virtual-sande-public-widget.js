@@ -15,6 +15,7 @@
   ];
   var busy = false;
   var history = [];
+  var requestVersion = 0; // Reject stale responses after edit or clear.
   var protocolPractice = null; // WPA_PROTOCOL_PLANNER_RC1; locally computed and opt-in.
 
   function isExcluded() {
@@ -167,6 +168,9 @@
       '.wpa-public-vs-working{display:flex;align-items:center;gap:9px;padding:9px 12px;color:#153050;font-size:12px}',
       '.wpa-public-vs-working img{width:30px;height:30px;object-fit:contain;animation:wpa-vs-rotate 1.8s linear infinite}',
       '.wpa-public-vs-duration{margin-top:7px;font-size:11px;opacity:.72;font-weight:400}',
+      '.wpa-public-vs-edit-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:5px}',
+      '.wpa-public-vs-edit-tools button{font:11px system-ui,sans-serif;border:1px solid #907536;border-radius:6px;background:#fff9e8;color:#1a2f4c;padding:3px 8px;cursor:pointer}',
+      '.wpa-public-vs-edit-field{display:block;width:100%;min-height:72px;max-height:180px;resize:vertical;border:1px solid #806820;border-radius:6px;padding:8px;font:13px/1.4 system-ui,sans-serif}',
       '@keyframes wpa-vs-rotate{to{transform:rotate(360deg)}}',
       '@media(prefers-reduced-motion:reduce){.wpa-public-vs-working img{animation:none}}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
@@ -235,7 +239,7 @@
     return item;
   }
 
-  function addMessage(text, who, seconds) {
+  function addMessage(text, who, seconds, historyIndex) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
@@ -243,6 +247,57 @@
     var bubble = document.createElement('div');
     bubble.className = 'wpa-public-vs-bubble';
     bubble.textContent = String(text || '');
+    if (who === 'user' && Number.isInteger(historyIndex)) {
+      row.dataset.historyIndex = String(historyIndex);
+      var buttons = document.createElement('div');
+      buttons.className = 'wpa-public-vs-edit-tools';
+      var edit = document.createElement('button');
+      edit.type = 'button';
+      edit.textContent = isEnglish() ? '✎ Edit' : '✎ Уреди';
+      edit.setAttribute('aria-label',isEnglish() ? 'Edit your message' : 'Уреди ја пораката');
+      edit.addEventListener('click', function () {
+        if (row.querySelector('.wpa-public-vs-edit-field')) return;
+        var original = history[historyIndex]?.content || text;
+        var area = document.createElement('textarea');
+        area.className = 'wpa-public-vs-edit-field';
+        area.maxLength = 700;
+        area.value = original;
+        var controls = document.createElement('div');
+        controls.className = 'wpa-public-vs-edit-tools';
+        var save = document.createElement('button');
+        save.type = 'button'; save.textContent = isEnglish() ? 'Save and regenerate' : 'Зачувај и обнови';
+        var cancel = document.createElement('button');
+        cancel.type = 'button'; cancel.textContent = isEnglish() ? 'Cancel' : 'Откажи';
+        controls.append(save,cancel);
+        bubble.hidden = true;
+        buttons.hidden = true;
+        row.append(area,controls);
+        area.focus();
+        cancel.addEventListener('click',function () {
+          area.remove(); controls.remove(); bubble.hidden = false; buttons.hidden = false;
+        });
+        save.addEventListener('click',function () {
+          var revised = area.value.trim();
+          if (!revised) { area.focus(); return; }
+          // Invalidate the in-flight response. An older response must not alter
+          // the revised conversation, even if the server finishes later.
+          requestVersion += 1;
+          busy = false;
+          var input = document.getElementById('wpaPublicVsInput');
+          var all = document.getElementById('wpaPublicVsMsgs');
+          var siblings = Array.from(all.children);
+          var position = siblings.indexOf(row);
+          siblings.slice(position).forEach(function (el) { el.remove(); });
+          history = history.slice(0,historyIndex);
+          if (input) {
+            input.value = revised;
+            send();
+          }
+        });
+      });
+      buttons.append(edit);
+      row.append(buttons);
+    }
     if (seconds !== undefined) {
       var duration = document.createElement('div');
       duration.className = 'wpa-public-vs-duration';
@@ -336,9 +391,10 @@
     if (!question) return;
 
     busy = true;
+    var myVersion = ++requestVersion;
     var startedAt = performance.now();
     input.value = '';
-    addMessage(question, 'user');
+    addMessage(question, 'user', undefined, history.length);
     var working = showWorking();
     history.push({ role: 'user', content: question });
 
@@ -349,16 +405,19 @@
 
     try {
       var result = await requestAnswer(question);
+      if (myVersion !== requestVersion) return;
       if (working) working.remove();
       addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
       history.push({ role: 'assistant', content: result.answer });
       if (status) status.textContent = result.local ? copy().offline : '';
       if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
+      if (myVersion !== requestVersion) return;
       if (working) working.remove();
       addMessage(copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
+      if (myVersion !== requestVersion) return;
       if (working) working.remove();
       busy = false;
       if (button) button.disabled = false;
@@ -448,6 +507,8 @@
     });
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
+      requestVersion += 1;
+      busy = false;
       history = [];
       if(protocolPractice)protocolPractice.reset();
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
