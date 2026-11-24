@@ -98,20 +98,28 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_MODE: ${{ inputs.mode }}
+          SCHEDULE_CRON: ${{ github.event.schedule }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "value=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "15 5 * * 0" ]; then
+          if [[ "$SCHEDULE_CRON" == "15 5 * * 0" ]] || \
+             [[ "$EVENT_NAME" == "workflow_dispatch" && "$DISPATCH_MODE" == "weekly" ]]; then
             echo "value=weekly" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            echo "value=all" >> "$GITHUB_OUTPUT"
           else
-            # Fail closed if GitHub cannot list pending PRs. Never convert API errors into "no PR".
+            # Scheduled AND external workflow_dispatch runs share the same date/PR guard.
+            needed="daily"
+            existing="skip"
+            if [[ "$EVENT_NAME" == "push" ]] || [[ "$DISPATCH_MODE" == "all" ]]; then
+              needed="all"
+              existing="weekly"
+            fi
+            # Fail closed if GitHub cannot list pending PRs.
             gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
               --json number,title,headRefName > "$RUNNER_TEMP/wpa-news-open-prs.json"
             python scripts/wpa_news_schedule_gate.py \
               --status media/news/production/status.json \
               --open-prs-json "$RUNNER_TEMP/wpa-news-open-prs.json" \
+              --when-needed "$needed" --when-existing "$existing" \
               --github-output "$GITHUB_OUTPUT" \
               --github-summary "$GITHUB_STEP_SUMMARY"
           fi
