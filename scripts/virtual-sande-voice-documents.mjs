@@ -27,17 +27,18 @@ export function mountVoiceDocuments(panel) {
   const staged = [];
   const processed = new Map();
   const client = createPrivateWorkspaceClient({configuredPath:document.querySelector('meta[name="wpa-private-workspace-api"]')?.content||''});
-  let consented=false, privateMode=false, processing=false, generation=0, conversionController=null;
+  const privateOnly=document.querySelector('meta[name="wpa-private-workspace-only"]')?.content==='true';
+  let consented=false, privateMode=privateOnly, processing=false, generation=0, conversionController=null;
   const local=english?{
     process:'Process documents', consent:'Private pilot: I authorize transfer of selected files and submitted conversation context to the configured Cloudflare AI processing service. Do not submit confidential or sensitive documents until institutional approval.',
     processing:'Processing documents', done:'Extracted text ready', failed:'Processing failed', unavailable:'Private document service is not configured. No document has been uploaded.',
-    need:'Process all selected documents before asking about them.', mode:'Private pilot: no public /ask fallback. New conversation resets this mode.', empty:'Empty file.',
+    need:'Give consent and process selected documents before asking about them.', mode:'Private pilot: no public /ask fallback. New conversation resets this mode.', empty:'Empty file.',
     ready:'extracted', select:'selected', invalid:'Unable to process documents; inspect the file status.', coverage:'Document evidence coverage (extracted text, not verified page numbers)',
     voice:'Voice recognition may use your browser provider; check browser microphone privacy. Macedonian voice availability varies.'
   }:{
     process:'Обработи документи', consent:'Приватен пилот: дозволувам избраните датотеки и испратениот контекст да се обработат во конфигурираниот Cloudflare AI сервис. Не испраќајте доверливи или чувствителни документи пред институционално одобрување.',
     processing:'Се обработуваат документи', done:'Извлечениот текст е подготвен', failed:'Обработката не успеа', unavailable:'Приватниот документарен сервис не е конфигуриран. Ниту еден документ не е испратен.',
-    need:'Обработете ги сите избрани документи пред да поставите прашање за нив.', mode:'Приватен пилот: нема пренасочување кон јавниот /ask. Нов разговор го ресетира режимот.', empty:'Празна датотека.',
+    need:'Дајте согласност и обработете ги избраните документи пред да поставите прашање.', mode:'Приватен пилот: нема пренасочување кон јавниот /ask. Нов разговор го ресетира режимот.', empty:'Празна датотека.',
     ready:'извлечен текст', select:'избран', invalid:'Документите не може да се обработат; проверете го статусот.', coverage:'Документарна покриеност (извлечен текст, не потврдени страници)',
     voice:'Гласовното препознавање може да го користи сервисот на прелистувачот. Достапноста на македонски глас варира.'
   };
@@ -221,7 +222,7 @@ export function mountVoiceDocuments(panel) {
   const clear=panel.querySelector('#wpaPublicVsClear');
   clear?.addEventListener('click',()=>{
     generation++;conversionController?.abort();conversionController=null;processing=false;
-    staged.length=0;processed.clear();consented=false;consent.checked=false;privateMode=false;
+    staged.length=0;processed.clear();consented=false;consent.checked=false;privateMode=privateOnly;
     stopVoice();
     render();docDrawer.open=false;status.textContent=client.configured?local.need:local.unavailable;
   });
