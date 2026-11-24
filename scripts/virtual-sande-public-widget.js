@@ -178,6 +178,13 @@
       '.wpa-public-vs-copy{min-width:0;flex:1}.wpa-public-vs-title{font:700 16px/1.1 Georgia,serif;color:#e8d49a}.wpa-public-vs-sub{font-size:10.5px;color:rgba(255,255,255,.75);margin-top:3px}',
       '.wpa-public-vs-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:2px 5px}',
       '.wpa-public-vs-status{min-height:18px;padding:4px 12px 0;background:#fbf8ee;color:#6c5830;font-size:10.5px}',
+      '.wpa-vs-capabilities{padding:5px 12px;background:#f1eddc;border-bottom:1px solid #dbcfa5;color:#12294a;font-size:11px;flex-shrink:0}',
+      '.wpa-vs-capabilities>summary{font-weight:750;cursor:pointer;list-style-position:inside;line-height:1.5}',
+      '.wpa-vs-capabilities-list{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:7px 0 2px}',
+      '.wpa-vs-capability{padding:6px 7px;border:1px solid #d9c99e;background:#fff;border-radius:7px;min-width:0}',
+      '.wpa-vs-capability-title{font-weight:700;font-size:10.5px;display:block;color:#163459}',
+      '.wpa-vs-capability-detail{display:block;color:#5b4b2b;font-size:10px;word-break:break-word}',
+      '@media(max-width:320px){.wpa-vs-capabilities-list{grid-template-columns:1fr}}',
       '.wpa-public-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
       '.wpa-public-vs-row{display:flex;margin:0 0 10px}.wpa-public-vs-row.user{justify-content:flex-end}',
       '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
@@ -389,15 +396,55 @@
     });
   }
 
+  // Visible truth-in-capabilities: make an offline/disabled model impossible to confuse
+  // with a verified GPT backend. This panel reports status; it grants no tools.
+  function renderCapabilityPanel() {
+    var region=document.getElementById('wpaPublicVsCapabilityList');
+    var summary=document.getElementById('wpaPublicVsCapabilitySummary');
+    if (!region || !summary) return;
+    var en=isEnglish();
+    var configured=agentCapabilities.enabled===true;
+    var model=agentCapabilities.model_id||'gpt-6.1-terra';
+    summary.textContent=en?'Tools & AI connections · actual status':'Алатки и AI-поврзувања · реален статус';
+    var items=[
+      {title:en?'Academic conversation':'Академски разговор',
+        detail:en?'Source-based WPA route; verified when answering':'Изворен WPA режим; се проверува при одговарање'},
+      {title:'GPT-6.1 Terra',
+        detail:configured?(en?'Configured: '+model+' · live quality not verified':'Конфигуриран: '+model+' · потребен вистински тест'):
+          (en?'Candidate model · NOT connected':'Кандидат-модел · НЕ Е ПОВРЗАН')},
+      {title:en?'Photo analysis':'Анализа на слики',
+        detail:configured?(en?'Configured · confirm with test image':'Конфигурирано · потребна пробна слика'):
+          (en?'Not enabled':'Не е активирана')},
+      {title:en?'PDF Book Lab':'PDF анализа на книги',
+        detail:configured&&agentCapabilities.pdf_synthesis===true?
+          (en?'Configured · test citations':'Конфигурирано · провери цитати'):
+          (en?'Local PDF indexing; model not connected':'Локален PDF индекс; AI не е поврзана')}
+    ];
+    region.replaceChildren();
+    items.forEach(function(item){
+      var box=document.createElement('div');
+      box.className='wpa-vs-capability';
+      var title=document.createElement('span');title.className='wpa-vs-capability-title';
+      title.textContent=item.title;
+      var detail=document.createElement('span');detail.className='wpa-vs-capability-detail';
+      detail.textContent=item.detail;
+      box.append(title,detail);region.appendChild(box);
+    });
+  }
+
   async function loadAgentCapabilities() {
     try {
       var response = await fetchWithTimeout(agentUrl('/agent/capabilities'),
         { method: 'GET', mode: 'cors', cache: 'no-store', credentials: 'omit' }, 5500);
       if (!response.ok) return;
       var caps = await response.json();
-      if (!caps || caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
+      if (!caps || caps.ok !== true) return;
+      // An explicit model ID can be displayed even while disabled; it is never
+      // described as connected until all configured capability gates pass.
+      agentCapabilities = Object.assign({enabled:false,image_analysis:false,text_chat:false,pdf_synthesis:false},caps);
+      renderCapabilityPanel();
+      if (caps.enabled !== true || caps.image_analysis !== true || caps.text_chat !== true ||
           !caps.turnstile_site_key) return;
-      agentCapabilities = caps;
       var attach = document.getElementById('wpaPublicVsAttach');
       var mode = document.getElementById('wpaPublicVsAgentMode');
       if (attach) {
@@ -407,7 +454,8 @@
       if (mode) mode.disabled = false;
       updateAgentInterface();
     } catch (_) {
-      // Fail-closed when the feature-flagged Worker is not configured.
+      // Fail closed when the feature-flagged Worker is not configured.
+      renderCapabilityPanel();
     }
   }
 
@@ -628,6 +676,19 @@
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
     panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="1600" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-extra"><input type="file" id="wpaPublicVsImageFile" accept="image/jpeg,image/png,image/webp" hidden><button type="button" class="wpa-public-vs-attach" id="wpaPublicVsAttach" disabled title="' + text.imageUnavailable + '">📷 ' + text.attach + '</button><label class="wpa-public-vs-mode"><input type="checkbox" id="wpaPublicVsAgentMode" disabled> ' + text.generalMode + '</label><span class="wpa-public-vs-image-preview" id="wpaPublicVsImagePreview" aria-live="polite"></span><button type="button" class="wpa-public-vs-remove-image" id="wpaPublicVsRemoveImage" hidden aria-label="' + text.removeImage + '">×</button></div><div class="wpa-public-vs-consent" id="wpaPublicVsConsentWrap" hidden><label><input type="checkbox" id="wpaPublicVsConsent"> ' + text.consent + '</label></div><div class="wpa-public-vs-challenge" id="wpaPublicVsChallenge" hidden></div><div class="wpa-public-vs-followups" id="wpaPublicVsFollowups" aria-label="' + text.followups + '"></div><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
+    var capPanel=document.createElement('details');
+    capPanel.id='wpaPublicVsCapabilities';
+    capPanel.className='wpa-vs-capabilities';
+    capPanel.open=true; // Let visitors see real statuses, not just an unlabelled Send button.
+    var capSummary=document.createElement('summary');
+    capSummary.id='wpaPublicVsCapabilitySummary';
+    capPanel.appendChild(capSummary);
+    var capList=document.createElement('div');
+    capList.id='wpaPublicVsCapabilityList';
+    capList.className='wpa-vs-capabilities-list';
+    capPanel.appendChild(capList);
+    panel.querySelector('.wpa-public-vs-status').before(capPanel);
+
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
     fab.className = 'wpa-public-vs-fab';
@@ -641,6 +702,7 @@
     document.body.appendChild(fab);
     protectAllInputs();
     addMessage(text.welcome, 'bot');
+    renderCapabilityPanel();
     // Discover optional multimodal capability. No automatic paid calls are made here.
     loadAgentCapabilities();
     // The book module is sandboxed in the browser and does not change the academic /ask path.
