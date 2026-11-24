@@ -87,7 +87,7 @@ async function browserSuite(){
    put(e,0,0x06054b50);put(e,8,1,2);put(e,10,1,2);put(e,12,c.length+name.length);put(e,16,l.length+name.length+raw.length);
    return new File([l,name,raw,c,name,e],'sample.docx',{lastModified:1});
   };
-  const png=Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1sAAAAASUVORK5CYII='),x=>x.charCodeAt(0));
+  const png=Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGMQ0fYCAADgAIoJue1gAAAAAElFTkSuQmCC'),x=>x.charCodeAt(0));
   dropFiles([fixtureFile('sample.pdf','%PDF-1.7'),docx(),fixtureFile('sample.json','{"fixture":true}'),fixtureFile('sample.csv','name,value\nfixture,1'),fixtureFile('sample.md','<b>literal text</b>'),fixtureFile('sample.png',png)]);
   ok(tray.open&&tray.querySelector('summary').textContent.includes('6/20'),'six mixed files visible in tray');
   const openPreview=async(index,selector)=>{
