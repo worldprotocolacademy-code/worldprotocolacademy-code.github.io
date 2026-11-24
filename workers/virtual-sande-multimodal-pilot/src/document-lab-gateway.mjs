@@ -55,6 +55,8 @@ export function validateDocumentSubmission(body){
     !Array.isArray(parts)||!parts.length||parts.length>LAB_LIMITS.maxExcerpts)
    throw new Error('DOC_LAB_INPUT_REQUIRED');
  const mode=String(body.deliverable||''), domain=String(body.domain||'auto');
+ const audience=String(body.target_audience||'professional_user');
+ if(!['professional_user','wpa_institute'].includes(audience))throw new Error('DOC_LAB_AUDIENCE_INVALID');
  if(body.notice_version!==WPA_CITATION_POLICY_VERSION||
     body.rights_attestation!==true||body.sensitive_data_attestation!==true)
    throw new Error('DOC_LAB_POLICY_ACK_REQUIRED');
@@ -93,7 +95,7 @@ export function validateDocumentSubmission(body){
    evidence.push({key,text:snippet});
    locators.set(key,true);
  }
- return {documents,evidence,locators,deliverable:mode,domain,
+ return {documents,evidence,locators,deliverable:mode,domain,target_audience:audience,
   revisionContext:text(body.revision_context,2200),
   source_status:'CLIENT_SELECTED_UNVERIFIED_EXCERPTS',
   guide:OUTPUT_SHAPES[mode],
@@ -105,6 +107,12 @@ export function documentLabPrompt(packet,question){
   'REQUESTED OUTPUT:',packet.deliverable,
   'OUTPUT STRUCTURE:',packet.guide,
   'DISCIPLINE:',packet.domain,
+  'AUDIENCE:',packet.target_audience||'professional_user',
+  ...(packet.target_audience==='wpa_institute'?[
+   'WPA INSTITUTE EVIDENCE MODE: distinguish SOURCE CLAIM, ANALYSIS, INTERPRETATION, SYNTHESIS, LIMITATION and HUMAN VERIFICATION.',
+   'Extract the relevant core essence with traceable citations, methodological significance, contradictions, teaching/research applicability and actionable recommendations for human approval.',
+   'Do not adopt external curricula, accreditation, authority, rankings or authorship as WPA practice without a Human Gate.'
+  ]:[]),
   'SOURCE STATUS:',packet.source_status,
   ...(packet.revisionContext?['PREVIOUS AI WORKING DRAFT (UNVERIFIED EDITING CONTEXT, NOT AN INDEPENDENT SOURCE):',packet.revisionContext]:[]),
   'WPA INSTITUTIONAL PROFILE (NOT AUTHORSHIP OF THE VISITOR DOCUMENTS):',
