@@ -344,7 +344,7 @@
     addStylesheet('wpa-institute-compact-brand-css', '/styles/wpa-institute-compact-brand.css?v=20260714-identity2');
     addScript('wpa-institute-virtual-sande-widget', '/scripts/virtual-sande-institute-widget.js?v=20260716-1');
   } else {
-    addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20260716-1');
+    addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20261124-practical-v1');
   }
   if (isHome()) addStylesheet('wpa-home-five-row-nav-css', '/styles/wpa-home-nav-five-rows.css?v=20260810-2');
   if (isHome()) addScript('wpa-eu-factory-header-cta-runtime', '/scripts/wpa-eu-factory-header-cta.js?v=20261115-1');
