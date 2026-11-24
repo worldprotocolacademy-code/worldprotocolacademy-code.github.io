@@ -1,0 +1,10 @@
+# Example only, NOT DEPLOYED.
+# Copy to wrangler.toml in a dedicated, controlled Cloudflare Worker project.
+name = "wpa-news-daily-dispatcher"
+main = "cron-worker.mjs"
+compatibility_date = "2026-11-24"
+
+[triggers]
+# UTC 04:10/04:30/04:45 and 05:10/05:30/05:45;
+# Worker checks Europe/Skopje local hour to handle CET/CEST automatically.
+crons = ["10,30,45 4,5 * * *"]
