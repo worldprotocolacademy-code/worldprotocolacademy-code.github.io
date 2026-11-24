@@ -103,7 +103,7 @@ export async function readPreview(file){
  if(ext==='json'&&file.size===bytes.length){try{text=JSON.stringify(JSON.parse(text),null,2);}catch{fail('json');}}
  return {kind:'text',text:text.slice(0,TEXT_LIMIT),partial:file.size>bytes.length||text.length>TEXT_LIMIT};
 }
-export function mountLocalPreview(panel){
+export function mountLocalPreview(panel,{privateMode=false}={}){
  if(!panel||panel.querySelector('[data-wpa-local-preview]'))return null;
  const form=panel.querySelector('#wpaPublicVsForm');if(!form)return null;
  const en=document.documentElement.lang?.toLowerCase().startsWith('en');
@@ -127,7 +127,8 @@ export function mountLocalPreview(panel){
  const summary=el('summary');summary.style.cssText='font-weight:700;cursor:pointer;padding:3px 0';
  const attach=button('📎 '+t.attach,'attach'),drop=button(t.drop,'drop');drop.style.cssText+=';display:block;width:100%;border-style:dashed;padding:9px;margin:6px 0';
  const input=el('input');input.type='file';input.multiple=true;input.accept=Object.keys(FORMATS).map(x=>'.'+x).join(',');input.hidden=true;
- const disclosure=el('p',t.local);disclosure.style.cssText='margin:5px 0;color:#665b43;font-size:11px';
+ const changed=()=>{if(privateMode)panel.dispatchEvent(new Event('wpa-private-input-changed'));};
+ const disclosure=el('p',privateMode?(en?'Local previews until you explicitly consent and send a question. The protected pilot then processes selected files.':'Локален преглед до изречна согласност и испраќање прашање. Потоа заштитениот пилот ги обработува избраните датотеки.'):t.local);disclosure.style.cssText='margin:5px 0;color:#665b43;font-size:11px';
  const note=el('p',t.note);note.style.cssText='margin:3px 0;font-size:11px';
  const status=el('div');status.setAttribute('role','status');status.style.cssText='overflow-wrap:anywhere;color:#665b43';
  const list=el('ul');list.style.cssText='margin:5px 0;padding:0;list-style:none;max-height:120px;overflow:auto';
@@ -147,7 +148,7 @@ export function mountLocalPreview(panel){
    info.append(name,el('small',FORMATS[extension(f.name)]+' · '+(f.size/1048576).toFixed(2)+' MiB'));
    const open=button(t.preview,'open'),del=button('×','remove');
    open.setAttribute('aria-label',t.preview+' '+f.name);del.setAttribute('aria-label',t.remove+' '+f.name);
-   open.onclick=()=>show(f);del.onclick=()=>{if(selected===f)dispose();files=files.filter(x=>x!==f);status.textContent='';render();};
+   open.onclick=()=>show(f);del.onclick=()=>{if(selected===f)dispose();files=files.filter(x=>x!==f);status.textContent='';render();changed();};
    row.append(info,open,del);list.append(row);
   }
  }
@@ -178,16 +179,16 @@ export function mountLocalPreview(panel){
  }
  function add(incoming){
   if(!incoming.length)return;
-  root.open=true;const result=appendFiles(files,incoming);files=result.files;render();
+  root.open=true;const result=appendFiles(files,incoming);files=result.files;render();changed();
   status.textContent=result.issues.map(i=>t.rejected+': '+i.name+' — '+(i.reason==='empty'?t.emptyFile:t[i.reason])).join(' · ');
  }
  attach.onclick=drop.onclick=()=>input.click();input.onchange=()=>{add(Array.from(input.files||[]));input.value='';};
  function isFileDrag(e){return Array.from(e.dataTransfer?.types||[]).includes('Files')||Boolean(e.dataTransfer?.files?.length);}
  panel.addEventListener('dragover',e=>{if(isFileDrag(e)){e.preventDefault();if(e.dataTransfer)e.dataTransfer.dropEffect='copy';}});
  panel.addEventListener('drop',e=>{if(isFileDrag(e)){e.preventDefault();e.stopPropagation();add(Array.from(e.dataTransfer?.files||[]));}});
- function reset(){dispose();files=[];status.textContent='';render();root.open=false;}
+ function reset(){dispose();files=[];status.textContent='';render();root.open=false;changed();}
  clear.onclick=reset;
  panel.querySelector('#wpaPublicVsClear')?.addEventListener('click',reset);
  root.addEventListener('toggle',()=>{if(!root.open)dispose();});
- render();return {reset,getCount:()=>files.length};
+ render();return {reset,getCount:()=>files.length,getFiles:()=>files.slice()};
 }
