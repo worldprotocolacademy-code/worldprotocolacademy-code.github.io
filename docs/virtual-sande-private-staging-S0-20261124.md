@@ -1,6 +1,6 @@
 # Virtual Sande AI — Phase S0: Private staging, NO PAID AI
 **Date:** 24 November 2026  
-**PR:** #743 — source branch `feat/virtual-sande-multimodal-pilot-20261124`  
+**PR:** independent S0 staging PR — source branch `feat/virtual-sande-private-staging-s0-20261124`; the separate public feature work remains Draft PR #743.  
 **Mode:** WPA Product Factory FINISH / guarded STAGING  
 **Status:** staged configuration and tests in PR; **NO PUBLIC DEPLOYMENT, NO MODEL CONNECTED**.
 
@@ -18,7 +18,7 @@ The user wants Virtual Sande to become a real, natural-language, proactive *assi
 
 ## Exactly how to proceed through Human Gate
 
-1. Review PR #743 and check all GitHub Action results. **Do not merge it just to make a green badge**; review changes to the homepage, scripts and the new Worker independently.
+1. Review the **independent S0 private-staging PR** and check its GitHub Action results. It contains no homepage or public-widget changes; leave feature PR #743 in Draft until a separate Human Gate.
 2. In GitHub repository **Settings → Environments**, create `virtual-sande-private-staging`; require a human reviewer/approval. If unavailable on the repository plan, treat this as an outstanding release blocker and control who can dispatch the workflow.
 3. Add scoped environment secrets, through GitHub Settings (never through chat, files or commits):
    - `CLOUDFLARE_API_TOKEN`: scoped Cloudflare token with permission to deploy Workers only to the intended account.
