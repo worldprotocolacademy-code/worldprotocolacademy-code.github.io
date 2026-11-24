@@ -42,6 +42,31 @@ export function buildInstitutionSearchUrl(record,{apiKey}={}){
  if(typeof apiKey==='string'&&apiKey.length>10&&apiKey.length<250)u.searchParams.set('api_key',apiKey);
  return u;
 }
+const COUNTRY_ALIASES=Object.freeze({
+ 'united states':'US','united kingdom':'GB','south korea':'KR',
+ 'north korea':'KP','north macedonia':'MK','ivory coast':'CI',
+ 'russia':'RU','turkiye':'TR','turkey':'TR','kosovo':'XK',
+ 'taiwan':'TW','bolivia':'BO','vietnam':'VN','venezuela':'VE',
+ 'czech republic':'CZ','syria':'SY','moldova':'MD',
+ 'palestine':'PS','cape verde':'CV','laos':'LA'
+});
+let regions=null;
+export function expectedCountryCode(country){
+ const raw=String(country||'');
+ if(!raw||raw.includes('/')||raw.includes(' / ')||raw.includes(',')||
+    /\band\b/i.test(raw))return null;
+ const clean=normaliseInstitutionName(raw);
+ if(COUNTRY_ALIASES[clean])return COUNTRY_ALIASES[clean];
+ if(!regions){
+  const dn=new Intl.DisplayNames(['en'],{type:'region'});
+  regions=new Map();
+  for(let a=65;a<=90;a++)for(let b=65;b<=90;b++){
+   const code=String.fromCharCode(a,b),label=dn.of(code);
+   if(label&&label!==code)regions.set(normaliseInstitutionName(label),code);
+  }
+ }
+ return regions.get(clean)||null;
+}
 export function resolveInstitutionCandidates(record,raw){
  const src=requireCanonicalInstitution(record?.id);
  if(!raw||!Array.isArray(raw.results))throw new Error('OA_BAD_INSTITUTIONS');
@@ -56,14 +81,17 @@ export function resolveInstitutionCandidates(record,raw){
   const homepage=legalHttpsUrl(entry.homepage_url);
   const exact=normaliseInstitutionName(display)===name;
   const sameHomepage=sameHost(website,host(homepage));
+  const expected=expectedCountryCode(src.country);
+  const providerCountry=/^[A-Z]{2}$/.test(entry.country_code)?entry.country_code:null;
+  const countrySignal=expected&&providerCountry?expected===providerCountry:null;
   matches.push({
     openalex_id:id,
     name:display,country_code:/^[A-Z]{2}$/.test(entry.country_code)?entry.country_code:null,
     ror:typeof entry.ror==='string'&&/^https:\/\/ror\.org\/[a-z0-9]{9}$/.test(entry.ror)?entry.ror:null,
     homepage_url:homepage,
     works_count:Number.isInteger(entry.works_count)?entry.works_count:null,
-    signals:{exact_name:exact,matching_homepage:sameHomepage},
-    selectable_for_provisional_research:exact||sameHomepage,
+    signals:{exact_name:exact,matching_homepage:sameHomepage,country_match:countrySignal},
+    selectable_for_provisional_research:(exact||sameHomepage)&&countrySignal!==false,
     identity_status:'OPENALEX_INSTITUTION_CANDIDATE_HUMAN_CONFIRMATION_PENDING'
   });
  }
