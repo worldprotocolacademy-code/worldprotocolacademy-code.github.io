@@ -17,6 +17,21 @@
   var history = [];
   var requestVersion = 0; // Reject stale responses after edit or clear.
   var proactiveIntent = null;
+  var voiceDocuments = null;
+  var activeRequest = null;
+  var activeWorking = null;
+  function invalidateRequest(){
+    requestVersion++;
+    if(activeRequest)activeRequest.abort();
+    activeRequest=null;
+    if(activeWorking)activeWorking.remove();
+    activeWorking=null;
+    busy=false;
+    var button=document.getElementById('wpaPublicVsSend');
+    if(button)button.disabled=false;
+    var stop=document.getElementById('wpaPublicVsStop');
+    if(stop)stop.hidden=true;
+  }
   function refreshProactive() { try { proactiveIntent?.refresh(); } catch (_) { /* Keep the core chat available. */ } }
   var protocolPractice = null; // WPA_PROTOCOL_PLANNER_RC1; locally computed and opt-in.
 
@@ -170,6 +185,7 @@
       '.wpa-public-vs-working{display:flex;align-items:center;gap:9px;padding:9px 12px;color:#153050;font-size:12px}',
       '.wpa-public-vs-working img{width:30px;height:30px;object-fit:contain;animation:wpa-vs-rotate 1.8s linear infinite}',
       '.wpa-public-vs-duration{margin-top:7px;font-size:11px;opacity:.72;font-weight:400}',
+      '.wpa-public-vs-row.user{flex-direction:column;align-items:flex-end}',
       '.wpa-public-vs-edit-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:5px}',
       '.wpa-public-vs-edit-tools button{font:11px system-ui,sans-serif;border:1px solid #907536;border-radius:6px;background:#fff9e8;color:#1a2f4c;padding:3px 8px;cursor:pointer}',
       '.wpa-public-vs-edit-field{display:block;width:100%;min-height:72px;max-height:180px;resize:vertical;border:1px solid #806820;border-radius:6px;padding:8px;font:13px/1.4 system-ui,sans-serif}',
@@ -280,11 +296,16 @@
         });
         save.addEventListener('click',function () {
           var revised = area.value.trim();
+          if (voiceDocuments?.isPrivate()&&!voiceDocuments.canAnalyze()) {
+            var status=document.getElementById('wpaPublicVsStatus');
+            if(status)status.textContent=voiceDocuments.blockedMessage();
+            return;
+          }
           if (!revised) { area.focus(); return; }
           // Invalidate the in-flight response. An older response must not alter
           // the revised conversation, even if the server finishes later.
-          requestVersion += 1;
-          busy = false;
+          invalidateRequest();
+          if(window.speechSynthesis)window.speechSynthesis.cancel();
           var input = document.getElementById('wpaPublicVsInput');
           var all = document.getElementById('wpaPublicVsMsgs');
           var siblings = Array.from(all.children);
@@ -299,6 +320,17 @@
       });
       buttons.append(edit);
       row.append(buttons);
+    }
+    if (who === 'bot' && seconds !== undefined) {
+      var actions=document.createElement('div');
+      actions.className='wpa-public-vs-edit-tools';
+      var cp=document.createElement('button');cp.type='button';cp.textContent=isEnglish()?'Copy answer':'Копирај одговор';
+      cp.onclick=async function(){
+        try{await navigator.clipboard.writeText(String(text||''));cp.textContent=isEnglish()?'Copied':'Копирано';}
+        catch{cp.textContent=isEnglish()?'Copy unavailable':'Копирањето не е достапно';}
+      };
+      actions.append(cp);
+      bubble.appendChild(actions);
     }
     if (seconds !== undefined) {
       var duration = document.createElement('div');
@@ -318,11 +350,17 @@
       (data.result && (data.result.answer || data.result.response || data.result.text)) || '';
   }
 
-  function fetchWithTimeout(url, options, timeoutMs) {
+  function fetchWithTimeout(url, options, timeoutMs, signal) {
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = window.setTimeout(function () { if (controller) controller.abort(); }, timeoutMs);
+    var abort=function(){if(controller)controller.abort();};
+    if(signal?.aborted)abort();
+    signal?.addEventListener('abort',abort,{once:true});
+    var timer = window.setTimeout(abort, timeoutMs);
     var requestOptions = Object.assign({}, options, controller ? { signal: controller.signal } : {});
-    return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
+    return fetch(url, requestOptions).finally(function () {
+      window.clearTimeout(timer);
+      signal?.removeEventListener('abort',abort);
+    });
   }
 
   function isNoContextAnswer(answer) {
@@ -337,7 +375,7 @@
       q.indexOf('does not contain sufficient information') !== -1;
   }
 
-  async function callEndpoint(endpoint, payload) {
+  async function callEndpoint(endpoint, payload, signal) {
     var response = await fetchWithTimeout(endpoint, {
       method: 'POST',
       mode: 'cors',
@@ -345,7 +383,7 @@
       credentials: 'omit',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(payload)
-    }, 15000);
+    }, 15000, signal);
     if (!response.ok) throw new Error('HTTP ' + response.status);
     var data = await response.json();
     var answer = answerFrom(data);
@@ -353,7 +391,10 @@
     return { answer: answer, data: data };
   }
 
-  async function requestAnswer(question) {
+  async function requestAnswer(question, signal) {
+    // Once a conversation has entered the private document pilot, never send
+    // its question or history to the public academic endpoint, even on failure.
+    if(voiceDocuments?.isPrivate())return voiceDocuments.analyze({question,history:history.slice(0,-1),signal});
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -370,7 +411,8 @@
     var lastError = null;
     for (var i = 0; i < ENDPOINTS.length; i += 1) {
       try {
-        var remote = await callEndpoint(ENDPOINTS[i], payload);
+        if(signal?.aborted)throw new DOMException('Aborted','AbortError');
+        var remote = await callEndpoint(ENDPOINTS[i], payload, signal);
         if (!isNoContextAnswer(remote.answer)) {
           return { answer: remote.answer, local: false, data: remote.data };
         }
@@ -381,6 +423,7 @@
     }
 
     // Last-resort fail-safe only. It must never pre-empt the author corpus or proactive agent.
+    if(signal?.aborted)throw new DOMException('Aborted','AbortError');
     var local = localCoreAnswer(question);
     if (local) return { answer: local, local: true };
     throw lastError || new Error('All endpoints unavailable');
@@ -391,23 +434,33 @@
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     if (!question) return;
+    if(voiceDocuments?.isPrivate()&&!voiceDocuments.canAnalyze()){
+      var blocked=document.getElementById('wpaPublicVsStatus');
+      if(blocked)blocked.textContent=voiceDocuments.blockedMessage();
+      return;
+    }
 
     busy = true;
+    var controller=new AbortController();
+    activeRequest=controller;
     var myVersion = ++requestVersion;
     var startedAt = performance.now();
     input.value = '';
     addMessage(question, 'user', undefined, history.length);
     var working = showWorking();
+    activeWorking=working;
     history.push({ role: 'user', content: question });
     refreshProactive();
 
     var button = document.getElementById('wpaPublicVsSend');
     var status = document.getElementById('wpaPublicVsStatus');
     if (button) button.disabled = true;
+    var stopButton=document.getElementById('wpaPublicVsStop');
+    if(stopButton)stopButton.hidden=false;
     if (status) status.textContent = copy().connecting;
 
     try {
-      var result = await requestAnswer(question);
+      var result = await requestAnswer(question, controller.signal);
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
       addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
@@ -418,12 +471,15 @@
     } catch (error) {
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
-      addMessage(copy().error, 'bot', elapsedSeconds(startedAt));
+      var privateError=voiceDocuments?.isPrivate();
+      addMessage(privateError?(isEnglish()?'Private document analysis failed. No public fallback was used.':'Приватната анализа не успеа. Не е користен јавниот сервис.'):copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
       busy = false;
+      activeRequest=null;activeWorking=null;
+      if(stopButton)stopButton.hidden=true;
       if (button) button.disabled = false;
       if (input) input.focus();
     }
@@ -490,9 +546,53 @@
 
     // Progressive enhancement; existing chat and protocol planner are untouched.
     import('/scripts/virtual-sande-voice-documents.mjs?v=20261124-rc1')
-      .then(function(mod){mod.mountVoiceDocuments(panel);})
+      .then(function(mod){voiceDocuments=mod.mountVoiceDocuments(panel);})
       .catch(function(){/* Keep baseline chat available if asset loading fails. */});
 
+    var chatTools=panel.querySelector('.wpa-public-vs-tools');
+    function tool(label,fn,id){
+      var b=document.createElement('button');b.type='button';b.className='wpa-public-vs-clear';b.textContent=label;if(id)b.id=id;b.onclick=fn;chatTools.prepend(b);return b;
+    }
+    var stop=tool(isEnglish()?'■ Stop':'■ Стоп',function(){
+      invalidateRequest();
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(status)status.textContent=isEnglish()?'Stopped displaying this response.':'Прикажувањето на одговорот е запрено.';
+      if(window.speechSynthesis)window.speechSynthesis.cancel();
+    },'wpaPublicVsStop');
+    stop.hidden=true;
+    tool(isEnglish()?'Export chat':'Извези разговор',function(){
+      var content=history.map(function(x){return (x.role==='user'?'USER':'VIRTUAL SANDE')+'\n'+x.content;}).join('\n\n---\n\n');
+      if(!content)return;
+      if(voiceDocuments?.isPrivate()&&!window.confirm(isEnglish()?'Export private conversation to a local file?':'Да се извезе приватниот разговор во локална датотека?'))return;
+      var url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'}));
+      var a=document.createElement('a');a.href=url;a.download='virtual-sande-conversation.md';document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    });
+    tool(isEnglish()?'Model suggestions (pilot)':'Моделски предлози (пилот)',async function(){
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(busy||!voiceDocuments?.isPrivate()||!voiceDocuments.canAnalyze()){
+        if(status)status.textContent=isEnglish()?'Available only in the configured private pilot after consent.':'Достапно само во конфигуриран приватен пилот по согласност.';
+        return;
+      }
+      var last=history.filter(function(x){return x.role==='user';}).at(-1);
+      if(!last)return;
+      var version=requestVersion;
+      var input=document.getElementById('wpaPublicVsInput');
+      var original=input.value;
+      try{
+        if(status)status.textContent=isEnglish()?'Preparing optional model suggestions…':'Се подготвуваат моделски предлози…';
+        var suggestions=await voiceDocuments.suggest({question:last.content,history:history.slice(-6)});
+        if(version!==requestVersion)return;
+        var old=panel.querySelector('[data-wpa-model-suggestions]');if(old)old.remove();
+        var section=document.createElement('div');section.dataset.wpaModelSuggestions='candidate';section.style.cssText='padding:6px 10px;display:flex;gap:4px;flex-wrap:wrap;background:#f5f0e0';
+        suggestions.forEach(function(s){
+          var b=document.createElement('button');b.type='button';b.className='wpa-public-vs-clear';b.textContent=s;
+          b.onclick=function(){if(input.value===original||!input.value)input.value=s;else input.value=(input.value+'\n'+s).slice(0,input.maxLength);input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();section.remove();};
+          section.appendChild(b);
+        });
+        panel.querySelector('#wpaPublicVsForm').before(section);
+        if(status)status.textContent=isEnglish()?'Suggestions only; choose what to send.':'Само предлози; вие избирате што да испратите.';
+      }catch(e){if(version===requestVersion&&status)status.textContent=isEnglish()?'Model suggestions unavailable.':'Моделските предлози не се достапни.';}
+    });
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -517,8 +617,8 @@
     });
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
-      requestVersion += 1;
-      busy = false;
+      invalidateRequest();
+      panel.querySelector('[data-wpa-model-suggestions]')?.remove();
       history = [];
       if(protocolPractice)protocolPractice.reset();
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
