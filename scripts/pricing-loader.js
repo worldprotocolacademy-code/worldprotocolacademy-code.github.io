@@ -72,7 +72,7 @@
   window.WPA_PRICING_READY = Promise.resolve(window.WPA_PRICING);
 
   loadScript('/scripts/wpa-commerce-config.js?v=20261002-1', 'data-wpa-commerce-config');
-  loadScript('/scripts/wpa-performance.js?v=20261124-practical-v1-phase1', 'data-wpa-performance');
+  loadScript('/scripts/wpa-performance.js?v=20261124-practical-v1-phase1-preview1', 'data-wpa-performance');
   loadScript('/scripts/wpa-public-safety-layer.js?v=20260719-2', 'data-wpa-public-safety');
 
   var path = String(window.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
