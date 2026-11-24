@@ -123,8 +123,8 @@ export function mountVoiceDocuments(panel) {
       if(staged.some(f=>f.name===file.name&&f.size===file.size&&f.lastModified===file.lastModified))continue;
       staged.push(file);
     }
-    render();status.textContent=(issue?issue+' ':'')+(client.configured?local.need:local.unavailable);
-    if(staged.length)panel.dispatchEvent(new Event('wpa-documents-changed'));
+    render();status.textContent=(issue?issue+' ':'')+(client.configured?local.need:local.unavailable)+(staged.length?' '+local.mode:'');
+    if(staged.length){privateMode=true;panel.dispatchEvent(new Event('wpa-documents-changed'));}
   }
   attach.onclick=()=>{docDrawer.open=true;choose.click();};choose.onchange=()=>{addFiles(Array.from(choose.files||[]));choose.value='';};
   zone.onclick=()=>choose.click();
