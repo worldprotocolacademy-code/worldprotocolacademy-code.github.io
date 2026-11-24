@@ -7,6 +7,8 @@ import {DOCUMENT_LIMITS,SUPPORTED_DOCUMENT_EXTENSIONS,DOCUMENT_DOMAINS,
  DOCUMENT_MODES,DOCUMENT_MODE_LABELS,makeDocumentCorpus,createEvidencePacket,
  makeDraftMarkdown} from './virtual-sande-document-intelligence.mjs';
 import {readLocalDocument} from './virtual-sande-document-parser.mjs';
+import {candidateToDocument} from './virtual-sande-open-research.mjs';
+import {createOpenResearchUI} from './virtual-sande-open-research-ui.mjs';
 import {WPA_CITATION_POLICY_VERSION,WPA_INSTITUTION,WPA_NOTICES,SOURCE_TYPES} from './virtual-sande-citation-policy.mjs';
 
 const I18N={
@@ -101,6 +103,7 @@ export function createDocumentWorkbench(panel,config={}){
  const wrap=node('details','wpa-vs-doclab');
  wrap.append(node('summary',null,'📚 '+t.title));
  const desc=node('p',null,t.desc);
+ const openResearchHost=node('div');
  const input=node('input');input.type='file';input.multiple=true;
  input.accept=SUPPORTED_DOCUMENT_EXTENSIONS.map(ext=>'.'+ext).join(',');
  input.setAttribute('aria-label',t.attach);
@@ -138,15 +141,44 @@ export function createDocumentWorkbench(panel,config={}){
  const clear=node('button',null,t.clear);clear.type='button';
  const md=node('button',null,t.md);md.type='button';md.disabled=true;
  const json=node('button',null,t.json);json.type='button';json.disabled=true;
- wrap.append(desc,label,modeLabel,areaLabel,status,progress,metaInfo,bibliographyLink,metadataHost,reviseLabel,legalDetails,policyAcknowledgements,node('p',null,t.info),clear,md,json);
+ wrap.append(desc,openResearchHost,label,modeLabel,areaLabel,status,progress,metaInfo,bibliographyLink,metadataHost,reviseLabel,legalDetails,policyAcknowledgements,node('p',null,t.info),clear,md,json);
  form.parentNode.insertBefore(wrap,form);
  let index=null,working=false,last=null,generation=0;
+ const researchTool=createOpenResearchUI(openResearchHost,{
+   isAvailable:()=>config.isResearchAvailable?.()===true,
+   endpoint:config.researchEndpoint||'',
+   onImport:items=>{
+     if(working)return;
+     try{
+       const records=items.slice(0,DOCUMENT_LIMITS.maxFiles).map(candidateToDocument);
+       const corpus=makeDocumentCorpus(records);
+       generation++;index=corpus;last=null;
+       input.value='';revise.disabled=true;revise.checked=false;
+       md.disabled=true;json.disabled=true;
+       attestationRights.checked=false;attestationSecurity.checked=false;
+       metadataHost.replaceChildren();
+       for(const d of corpus.documents){
+         const entry=node('p','wpa-doclab-source',d.id+' · '+d.name+
+           ' | '+(d.metadata?.doi||'DOI UNVERIFIED')+' | '+(d.metadata?.url||'SOURCE UNVERIFIED'));
+         metadataHost.append(entry);
+       }
+       status.textContent=(lang==='en'?'Imported abstract excerpts (NOT full text): ':
+         'Внесени апстракти (НЕ цели трудови): ')+corpus.documents.length+
+         '. Human source verification required.';
+       notify();
+     }catch(err){
+       status.textContent=(lang==='en'?'Open research import failed: ':'Не успеа увозот: ')+
+         String(err?.message||'unknown error').slice(0,100);
+     }
+   }
+ });
  function notify(){if(typeof config.onChange==='function')config.onChange();}
  function reset(){
    generation++;index=null;last=null;working=false;
    input.value='';status.textContent=t.empty;progress.hidden=true;
    md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;
-   metadataHost.replaceChildren();attestationRights.checked=false;attestationSecurity.checked=false;notify();
+   metadataHost.replaceChildren();attestationRights.checked=false;attestationSecurity.checked=false;
+   researchTool.reset();notify();
  }
  clear.addEventListener('click',reset);
  input.addEventListener('change',async()=>{
