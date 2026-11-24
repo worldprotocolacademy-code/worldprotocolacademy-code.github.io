@@ -187,14 +187,18 @@
       '.wpa-public-vs-tools{display:flex;flex-wrap:wrap;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
       '.wpa-public-vs-working{display:flex;align-items:center;gap:9px;padding:9px 12px;color:#153050;font-size:12px}',
-      '.wpa-public-vs-working img{width:30px;height:30px;object-fit:contain;animation:wpa-vs-rotate 1.8s linear infinite}',
+      '.wpa-public-vs-orbits{width:58px;height:58px;flex:0 0 58px;position:relative;display:grid;place-items:center;isolation:isolate}',
+      '.wpa-public-vs-orbits img{width:34px;height:34px;border-radius:50%;object-fit:contain;display:block;background:#0d1f3c}',
+      '.wpa-public-vs-ring{position:absolute;box-sizing:border-box;border-radius:50%;pointer-events:none;border:2px solid transparent;border-top-color:#b68c36;border-bottom-color:#b68c36;animation:wpa-vs-rotate 2.4s linear infinite}',
+      '.wpa-public-vs-ring.outer{inset:0;border-left-color:#e8d49a;border-right-color:#e8d49a}',
+      '.wpa-public-vs-ring.inner{inset:6px;border-top-color:#142b4a;border-bottom-color:#142b4a;border-left-color:#d8d2bc;border-right-color:#d8d2bc;animation-duration:1.8s;animation-direction:reverse}',
       '.wpa-public-vs-duration{margin-top:7px;font-size:11px;opacity:.72;font-weight:400}',
       '.wpa-public-vs-row.user{flex-direction:column;align-items:flex-end}',
       '.wpa-public-vs-edit-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:5px}',
       '.wpa-public-vs-edit-tools button{font:11px system-ui,sans-serif;border:1px solid #907536;border-radius:6px;background:#fff9e8;color:#1a2f4c;padding:3px 8px;cursor:pointer}',
       '.wpa-public-vs-edit-field{display:block;width:100%;min-height:72px;max-height:180px;resize:vertical;border:1px solid #806820;border-radius:6px;padding:8px;font:13px/1.4 system-ui,sans-serif}',
       '@keyframes wpa-vs-rotate{to{transform:rotate(360deg)}}',
-      '@media(prefers-reduced-motion:reduce){.wpa-public-vs-working img{animation:none}}',
+      '@media(prefers-reduced-motion:reduce){.wpa-public-vs-ring{animation:none}}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -255,7 +259,15 @@
     logo.alt = '';
     var label = document.createElement('span');
     label.textContent = document.documentElement.lang?.startsWith('en') ? 'Preparing an answer…' : 'Се подготвува одговор…';
-    item.append(logo,label);
+    var orbits=document.createElement('span');
+    orbits.className='wpa-public-vs-orbits';
+    orbits.setAttribute('aria-hidden','true');
+    var outer=document.createElement('span');
+    outer.className='wpa-public-vs-ring outer';
+    var inner=document.createElement('span');
+    inner.className='wpa-public-vs-ring inner';
+    orbits.append(outer,inner,logo);
+    item.append(orbits,label);
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
     return item;
@@ -496,6 +508,7 @@
     panel.setAttribute('aria-label', text.title);
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
     panel.setAttribute('data-wpa-public-release', 'phase1-20261124');
+    panel.setAttribute('data-wpa-public-enhancement','local-preview-rings-v1');
     panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
@@ -546,6 +559,12 @@
     import('/scripts/virtual-sande-public-voice.mjs?v=20261124-phase1')
       .then(function(mod){publicVoice=mod.mountPublicVoice(panel);})
       .catch(function(){/* Keep baseline chat available if asset loading fails. */});
+
+    // Local preview stays separate from the public AI transport. No file data
+    // is passed to requestAnswer; users explicitly choose chat text themselves.
+    import('/scripts/virtual-sande-local-preview.mjs?v=20261124-preview-v1')
+      .then(function(mod){mod.mountLocalPreview(panel);})
+      .catch(function(){/* Existing public chat remains available. */});
 
     var expand=document.createElement('button');expand.type='button';expand.className='wpa-public-vs-expand';expand.textContent='⛶';
     expand.setAttribute('aria-label',isEnglish()?'Expand conversation':'Прошири разговор');expand.setAttribute('aria-pressed','false');
