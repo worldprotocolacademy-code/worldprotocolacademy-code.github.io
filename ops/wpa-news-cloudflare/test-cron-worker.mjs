@@ -38,6 +38,25 @@ test("06:30 dispatch requires secret and accepts GitHub HTTP 204 only", async ()
   } finally { globalThis.fetch=old; }
 });
 
+test("09:00 watchdog dispatch works in CET and CEST", async () => {
+  const old = globalThis.fetch;
+  let seen = [];
+  globalThis.fetch = async (url, opts) => {
+    seen.push({url, payload:JSON.parse(opts.body)});
+    return {status:204};
+  };
+  try {
+    const env={GITHUB_WORKFLOW_DISPATCH_TOKEN:"test-only"};
+    assert.equal(await worker.scheduled({scheduledTime:Date.parse("2026-11-24T08:00:00Z")},env,{}), true);
+    assert.equal(await worker.scheduled({scheduledTime:Date.parse("2026-07-01T07:00:00Z")},env,{}), true);
+    assert.equal(seen.length,2);
+    for (const call of seen) {
+      assert.match(call.url,/wpa-news-watchdog.yml\/dispatches$/);
+      assert.deepEqual(call.payload,{ref:"main"});
+    }
+  } finally {globalThis.fetch=old;}
+});
+
 test("rejected GitHub call fails closed", async () => {
   const old = globalThis.fetch;
   globalThis.fetch = async () => ({status:403});
