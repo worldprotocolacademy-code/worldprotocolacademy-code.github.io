@@ -18,6 +18,21 @@
   var requestVersion = 0; // Reject stale responses after edit or clear.
   var proactiveIntent = null;
   var publicVoice = null;
+  var localPreview = null;
+  var answerIntegrityPromise = null;
+  function allowGeneralQuestion(){
+    if(!localPreview?.getCount())return true;
+    var accepted=window.confirm(isEnglish()?'The AI cannot read the selected files yet. Send this question WITHOUT the attachments as a general question?':'ВИ сè уште не може да ги прочита избраните датотеки. Да се испрати ова прашање БЕЗ прилозите, како општо прашање?');
+    if(!accepted){var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Question not sent. Your draft and local files are preserved.':'Прашањето не е испратено. Текстот и локалните датотеки се зачувани.';}
+    return accepted;
+  }
+  async function incompleteRemote(answer,data){
+    if(!answerIntegrityPromise)answerIntegrityPromise=import('/scripts/virtual-sande-answer-integrity.mjs?v=20261124-integrity-v1').catch(function(){return null;});
+    var mod=await answerIntegrityPromise;
+    if(mod)return mod.isIncompleteAnswer(answer,data);
+    // If an optional asset fails, still detect an explicit length stop or the observed dangling connective.
+    return data?.answerCompleteness==='incomplete'||['length','max_tokens','max_output_tokens'].includes(String(data?.finish_reason||data?.stop_reason||'').toLowerCase())||/(?:^|\s)(?:кога|ако|бидејќи|доколку|дека|when|because|although)\s*$/iu.test(String(answer||''));
+  }
   var activeRequest = null;
   var activeWorking = null;
   function invalidateRequest(){
@@ -316,6 +331,7 @@
         save.addEventListener('click',function () {
           var revised = area.value.trim();
           if (!revised) { area.focus(); return; }
+          if (!allowGeneralQuestion()) return;
           // Invalidate the in-flight response. An older response must not alter
           // the revised conversation, even if the server finishes later.
           invalidateRequest();
@@ -328,7 +344,7 @@
           history = history.slice(0,historyIndex);
           if (input) {
             input.value = revised;
-            send();
+            send(true);
           }
         });
       });
@@ -430,7 +446,9 @@
         if(signal?.aborted)throw new DOMException('Aborted','AbortError');
         var remote = await callEndpoint(ENDPOINTS[i], payload, signal);
         if (!isNoContextAnswer(remote.answer)) {
-          return { answer: remote.answer, local: false, data: remote.data };
+          var incomplete=await incompleteRemote(remote.answer,remote.data);
+          if(signal?.aborted)throw new DOMException('Aborted','AbortError');
+          return { answer: remote.answer, local: false, data: remote.data, incomplete:incomplete };
         }
         lastError = new Error('Academic backend returned no-context after retrieval/proactive path');
       } catch (error) {
@@ -445,11 +463,13 @@
     throw lastError || new Error('All endpoints unavailable');
   }
 
-  async function send() {
+  async function send(confirmedGeneral) {
     if (busy) return;
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     if (!question) return;
+    var localOnly=Boolean(localPreview?.getCount());
+    if(confirmedGeneral!==true&&!allowGeneralQuestion())return;
     busy = true;
     var controller=new AbortController();
     activeRequest=controller;
@@ -473,10 +493,16 @@
       var result = await requestAnswer(question, controller.signal);
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
-      addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
-      history.push({ role: 'assistant', content: result.answer });
+      var renderedAnswer=result.answer;
+      if(localOnly)renderedAnswer=(isEnglish()?'General answer — no attachments were analysed.':'Општ одговор — прилозите не се анализирани.')+'\n\n'+renderedAnswer;
+      if(result.incomplete)renderedAnswer=(isEnglish()?'Incomplete answer — the service appears to have stopped mid-sentence. Edit or repeat the question. Do not treat this as a completed analysis.':'Недовршен одговор — сервисот изгледа прекинал среде реченица. Уредете или повторете го прашањето. Ова не е завршена анализа.')+'\n\n'+renderedAnswer;
+      var reportedSources=Array.isArray(result.data?.sources)?result.data.sources.filter(function(x){return typeof x==='string'&&x.trim();}).slice(0,6):[];
+      if(reportedSources.length)renderedAnswer+='\n\n'+(isEnglish()?'Sources reported by the service (not independently checked):':'Извори наведени од сервисот (без независна проверка):')+'\n'+reportedSources.map(function(x){return '• '+x.slice(0,240);}).join('\n');
+      addMessage(renderedAnswer, 'bot', elapsedSeconds(startedAt));
+      // A visibly incomplete answer must not become evidence for later turns.
+      if(!result.incomplete)history.push({ role: 'assistant', content: result.answer });
       refreshProactive();
-      if (status) status.textContent = result.local ? copy().offline : '';
+      if (status) status.textContent = result.incomplete?(isEnglish()?'Incomplete response.':'Недовршен одговор.'):result.local ? copy().offline : '';
       if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
       if (myVersion !== requestVersion) return;
@@ -509,6 +535,7 @@
     panel.setAttribute('data-virtual-sande-widget', 'public-recovery');
     panel.setAttribute('data-wpa-public-release', 'phase1-20261124');
     panel.setAttribute('data-wpa-public-enhancement','local-preview-rings-v1');
+    panel.setAttribute('data-wpa-answer-integrity','v1');
     panel.innerHTML = '<div class="wpa-public-vs-head"><span class="wpa-public-vs-mark"><img src="/logo.webp" alt="World Protocol Academy logo" width="38" height="38"></span><div class="wpa-public-vs-copy"><div class="wpa-public-vs-title">' + text.title + '</div><div class="wpa-public-vs-sub">' + text.subtitle + '</div></div><button class="wpa-public-vs-close" type="button" aria-label="' + text.close + '">×</button></div><div class="wpa-public-vs-status" id="wpaPublicVsStatus" aria-live="polite"></div><div class="wpa-public-vs-msgs" id="wpaPublicVsMsgs"></div><form class="wpa-public-vs-form" id="wpaPublicVsForm" novalidate><textarea class="wpa-public-vs-input" id="wpaPublicVsInput" maxlength="700" spellcheck="false" autocorrect="off" autocomplete="off" placeholder="' + text.placeholder + '"></textarea><button class="wpa-public-vs-send" id="wpaPublicVsSend" type="submit">' + text.send + '</button></form><div class="wpa-public-vs-tools"><button class="wpa-public-vs-clear" id="wpaPublicVsClear" type="button">' + text.clear + '</button></div>';
 
     var fab = document.createElement('button');
@@ -563,7 +590,7 @@
     // Local preview stays separate from the public AI transport. No file data
     // is passed to requestAnswer; users explicitly choose chat text themselves.
     import('/scripts/virtual-sande-local-preview.mjs?v=20261124-preview-v1')
-      .then(function(mod){mod.mountLocalPreview(panel);})
+      .then(function(mod){localPreview=mod.mountLocalPreview(panel);})
       .catch(function(){/* Existing public chat remains available. */});
 
     var expand=document.createElement('button');expand.type='button';expand.className='wpa-public-vs-expand';expand.textContent='⛶';
