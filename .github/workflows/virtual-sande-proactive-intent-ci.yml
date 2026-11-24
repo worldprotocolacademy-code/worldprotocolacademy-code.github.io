@@ -9,6 +9,7 @@ on:
       - 'scripts/virtual-sande-private-workspace-client.mjs'
       - 'tools/virtual-sande/wpa-private-workspace-pilot.mjs'
       - 'tests/virtual-sande-private-workspace-pilot.test.mjs'
+      - 'tests/virtual-sande-workspace-browser.mjs'
       - 'workers/virtual-sande-private-pilot/**'
       - '.github/workflows/virtual-sande-proactive-intent-ci.yml'
   workflow_dispatch:
@@ -33,3 +34,18 @@ jobs:
           node --check tests/virtual-sande-private-workspace-pilot.test.mjs
       - name: Test contextual inference and private pilot with mocked services
         run: node --test tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-private-workspace-pilot.test.mjs
+  browser-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Real Chrome public and private workspace fixture acceptance (no live AI)
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          CHROME_BIN="$chrome" node tests/virtual-sande-workspace-browser.mjs
