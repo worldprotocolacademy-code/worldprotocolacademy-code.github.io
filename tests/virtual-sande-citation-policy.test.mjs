@@ -119,4 +119,13 @@ test('canonical WPA P21 seed has publisher attribution and explicitly disables a
  assert.match(x.apa7,/Smiljanov, S\. \(2026\)/);
  assert.match(manifest.note,/not evidence/);
 });
+test('the common Virtual Sande widget exposes its disclaimer for all modes',()=>{
+ const widget=readFileSync('scripts/virtual-sande-public-widget.js','utf8');
+ const lab=readFileSync('scripts/virtual-sande-document-workbench.mjs','utf8');
+ assert.match(widget,/wpaPublicVsGlobalNotice/);
+ assert.match(widget,/virtual-sande-citation-policy\.mjs/);
+ assert.match(lab,/attestationRights\.checked/);
+ assert.match(lab,/attestationSecurity\.checked/);
+ assert.match(lab,/notice_version:WPA_CITATION_POLICY_VERSION/);
+});
 console.log('WPA bibliography preference, attribution, legal notice and provenance contract tests registered');
