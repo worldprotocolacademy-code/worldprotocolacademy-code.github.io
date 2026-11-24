@@ -1,0 +1,39 @@
+name: Virtual Sande Public Phase 1 CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'scripts/virtual-sande-public-voice.mjs'
+      - 'scripts/virtual-sande-proactive-intent.mjs'
+      - 'scripts/virtual-sande-protocol-practice*.mjs'
+      - 'scripts/wpa-performance.js'
+      - 'scripts/pricing-loader.js'
+      - 'index.html'
+      - 'tests/virtual-sande-public-*.mjs'
+      - 'tests/virtual-sande-proactive-intent.test.mjs'
+      - '.github/workflows/virtual-sande-public-phase1-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate public source and canonical transport
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-public-voice.mjs
+          node --check scripts/virtual-sande-proactive-intent.mjs
+          node --test tests/virtual-sande-public-transport.test.mjs tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-practical-protocol.test.mjs
+      - name: Desktop and mobile Chrome fixture acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          CHROME_BIN="$chrome" node tests/virtual-sande-public-phase1-browser.mjs
