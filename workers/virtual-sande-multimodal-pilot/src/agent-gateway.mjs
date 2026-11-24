@@ -2,7 +2,8 @@
  * Text /ask and canonical WPA retrieval remain unchanged. Read-only model inference only.
  * Never logs or persists visitor prompts/images in this module.
  */
-export const VERSION = 'virtual-sande-agent-v0.2-pdf-synthesis-20261124';
+import {DOCUMENT_LAB_INSTRUCTIONS,validateDocumentSubmission,documentLabPrompt,verifyDocumentCitations} from './document-lab-gateway.mjs';
+export const VERSION = 'virtual-sande-agent-v0.3-doc-intelligence-20261124';
 const PROVIDER_URL = 'https://api.openai.com/v1/responses';
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 const MAX_BODY = 2600000;
@@ -182,7 +183,8 @@ function followups(hasImage,lang) {
 }
 export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   const pathname=new URL(request.url).pathname;
-  if (pathname!=='/agent/capabilities' && pathname!=='/agent/ask' && pathname!=='/agent/pdf-analysis') return null;
+  if (pathname!=='/agent/capabilities' && pathname!=='/agent/ask' &&
+      pathname!=='/agent/pdf-analysis' && pathname!=='/agent/document-lab') return null;
   const origin=request.headers.get('Origin')||'';
   if (origin && !allowed(env).includes(origin)) {
     return reply(request,env,403,{ok:false,error:'ORIGIN_NOT_ALLOWED'});
@@ -196,7 +198,7 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
     const enabled=ready(env);
     return reply(request,env,200,{
       ok:true,version:VERSION,enabled,
-      text_chat:enabled,image_analysis:enabled,pdf_synthesis:enabled,
+      text_chat:enabled,image_analysis:enabled,pdf_synthesis:enabled,document_lab:enabled,
       model_id:typeof env.WPA_AGENT_MODEL==='string'?env.WPA_AGENT_MODEL:null,
       model_connection_status:enabled?'CONFIGURED_NEEDS_LIVE_TEST':'NOT_CONNECTED',
       turnstile_site_key:enabled?env.WPA_AGENT_TURNSTILE_SITE_KEY:null,
@@ -229,6 +231,13 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   const message=String(body.message||'').trim();
   if (!message || message.length>MAX_QUESTION) return reply(request,env,400,{ok:false,error:'MESSAGE_SIZE'});
   const pdfMode=pathname==='/agent/pdf-analysis';
+  const docLabMode=pathname==='/agent/document-lab';
+  let documentPacket=null;
+  if(docLabMode){
+    if(body.image_data_url) return reply(request,env,400,{ok:false,error:'ONE_MEDIA_TYPE_ONLY'});
+    try { documentPacket=validateDocumentSubmission(body); }
+    catch(e) { return reply(request,env,400,{ok:false,error:e.message}); }
+  }
   let book=null;
   if(pdfMode) {
     if (body.image_data_url) return reply(request,env,400,{ok:false,error:'ONE_MEDIA_TYPE_ONLY'});
@@ -236,7 +245,7 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
     catch(e) { return reply(request,env,400,{ok:false,error:e.message}); }
   }
   let image=null;
-  if(!pdfMode) {
+  if(!pdfMode&&!docLabMode) {
     try{image=imageFromDataUrl(body.image_data_url||null);}
     catch(e){return reply(request,env,400,{ok:false,error:e.message});}
   }
@@ -246,15 +255,17 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   if (!verified) return reply(request,env,403,{ok:false,error:'BOT_CHECK_FAILED'});
   const lang=body.lang==='en'?'en':'mk';
   const history=cleanHistory(body.history);
-  const content=pdfMode?bookPrompt(book,message):image?[
+  const content=docLabMode?documentLabPrompt(documentPacket,message):
+    pdfMode?bookPrompt(book,message):image?[
     {type:'input_text',text:message},
     {type:'input_image',image_url:image,detail:'low'}
   ]:message;
   // PDF analysis takes only the current question and cited excerpts.
   // Prior model-generated claims must not be laundered into new document evidence.
-  const input=pdfMode?[{role:'user',content}]:[...history,{role:'user',content}];
-  const payload={model:env.WPA_AGENT_MODEL,store:false,max_output_tokens:pdfMode?1400:700,
-    instructions:pdfMode?PDF_SYSTEM:SYSTEM,input};
+  const input=(pdfMode||docLabMode)?[{role:'user',content}]:[...history,{role:'user',content}];
+  const payload={model:env.WPA_AGENT_MODEL,store:false,
+    max_output_tokens:docLabMode?1900:pdfMode?1400:700,
+    instructions:docLabMode?DOCUMENT_LAB_INSTRUCTIONS:pdfMode?PDF_SYSTEM:SYSTEM,input};
   let upstream;
   try{
     upstream=await fetchFn(PROVIDER_URL,{
@@ -268,6 +279,23 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
   try{modelResponse=await upstream.json();}catch{return reply(request,env,502,{ok:false,error:'MODEL_BAD_RESPONSE'});}
   const answer=contentFromProvider(modelResponse);
   if (!answer) return reply(request,env,502,{ok:false,error:'MODEL_EMPTY'});
+  if(docLabMode){
+    const citations=verifyDocumentCitations(answer,documentPacket);
+    if(!citations.ok)return reply(request,env,502,{ok:false,error:citations.error});
+    return reply(request,env,200,{
+      ok:true,answer:answer.slice(0,18000),version:VERSION,
+      mode:'document_lab_pilot',
+      source_mode:documentPacket.source_status,
+      documents:documentPacket.documents.map(d=>({id:d.id,name:d.name,format:d.format})),
+      cited_locators:citations.citations,
+      status:'WORKING_DRAFT_REQUIRES_EDITORIAL_HUMAN_REVIEW',
+      human_review_required:true,autonomous_actions_performed:false,
+      followups:lang==='en'?
+        ['Which excerpts support each finding?','Create an editorial verification checklist.']:
+        ['Кои извадоци го поткрепуваат секој наод?','Подготви уредничка контролна листа.'],
+      privacy:'Only selected excerpts, source file labels and the question leave the browser after consent. No raw documents are uploaded through this route. The AI provider may apply its own security retention.'
+    });
+  }
   if(pdfMode){
     // Fail closed when the model invents an explicitly formatted PDF page reference.
     const cited=[...answer.matchAll(/PDF\s+(?:стр\.?|p\.?)\s*(\d{1,4})/gi)]
