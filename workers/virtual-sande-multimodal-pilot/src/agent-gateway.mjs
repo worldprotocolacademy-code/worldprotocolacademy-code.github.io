@@ -54,7 +54,7 @@ function bookEvidence(body) {
       evidence.length<1 || evidence.length>MAX_PDF_EXCERPTS) throw new Error('PDF_EVIDENCE_REQUIRED');
   const totalPages=Number(doc.total_pdf_pages);
   const extractedPages=Number(doc.readable_pages);
-  if (!Number.isInteger(totalPages)||totalPages<1||totalPages>450 ||
+  if (!Number.isInteger(totalPages)||totalPages<1||totalPages>800 ||
       !Number.isInteger(extractedPages)||extractedPages<1||extractedPages>totalPages) {
     throw new Error('PDF_PAGE_COUNT_INVALID');
   }
