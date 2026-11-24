@@ -63,7 +63,7 @@ async function browserSuite(){
   save.click();
  };
  try{
-  await wait(()=>q('[data-wpa-public-voice]')&&q('[data-wpa-proactive]')&&q('[data-wpa-protocol-planner]'),'modules mounted');
+  await wait(()=>q('[data-wpa-public-voice]')&&q('[data-wpa-proactive]')&&q('[data-wpa-protocol-planner]')&&q('[data-wpa-local-preview]'),'modules mounted');
   byId('wpaPublicVsFab').click();
   ok(byId('wpaPublicVsPanel').classList.contains('open'),'chat opens');
   ok(byId('wpaPublicVsPanel').dataset.wpaPublicRelease==='phase1-20261124','phase 1 release marker');
@@ -71,7 +71,41 @@ async function browserSuite(){
   ok(planner.tagName==='DETAILS'&&!planner.open,'planner is collapsed by default');
   planner.querySelector('summary').click();ok(planner.open,'existing planner opens on demand');
   planner.querySelector('summary').click();ok(!planner.open,'existing planner closes');
-  ok(!q('[data-wpa-multidoc]')&&!q('input[type=file]')&&!byId('wpaPublicVsModelSuggestions'),'private tools and attachments are absent from public phase 1');
+  ok(!q('[data-wpa-multidoc]')&&!byId('wpaPublicVsModelSuggestions'),'private AI tools remain absent');
+  const tray=q('[data-wpa-local-preview]');
+  ok(tray.querySelector('input[type=file]').multiple,'local file picker supports multiple files');
+  ok(tray.textContent.includes('files are not uploaded or read by AI'),'local-only disclosure');
+  const fixtureFile=(name,body)=>new File([body],name,{lastModified:1});
+  const dropFiles=files=>{const d=new DataTransfer();files.forEach(f=>d.items.add(f));byId('wpaPublicVsPanel').dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:d}));};
+  const docx=()=>{
+   const name=new TextEncoder().encode('word/document.xml');
+   const raw=new TextEncoder().encode('<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Word fixture</w:t></w:r></w:p></w:body></w:document>');
+   const l=new Uint8Array(30),c=new Uint8Array(46),e=new Uint8Array(22);
+   const put=(b,p,x,n=4)=>{const v=new DataView(b.buffer);n===2?v.setUint16(p,x,true):v.setUint32(p,x,true);};
+   put(l,0,0x04034b50);put(l,18,raw.length);put(l,22,raw.length);put(l,26,name.length,2);
+   put(c,0,0x02014b50);put(c,20,raw.length);put(c,24,raw.length);put(c,28,name.length,2);
+   put(e,0,0x06054b50);put(e,8,1,2);put(e,10,1,2);put(e,12,c.length+name.length);put(e,16,l.length+name.length+raw.length);
+   return new File([l,name,raw,c,name,e],'sample.docx',{lastModified:1});
+  };
+  const png=Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aZ1sAAAAASUVORK5CYII='),x=>x.charCodeAt(0));
+  dropFiles([fixtureFile('sample.pdf','%PDF-1.7'),docx(),fixtureFile('sample.json','{"fixture":true}'),fixtureFile('sample.csv','name,value\nfixture,1'),fixtureFile('sample.md','<b>literal text</b>'),fixtureFile('sample.png',png)]);
+  ok(tray.open&&tray.querySelector('summary').textContent.includes('6/20'),'six mixed files visible in tray');
+  const openPreview=async(index,selector)=>{
+   tray.querySelectorAll('[data-wpa-preview-action=open]')[index].click();
+   return wait(()=>tray.querySelector('[data-wpa-preview-content] '+selector),'local preview '+index);
+  };
+  let p=await openPreview(0,'a[href^="blob:"]');ok(p.target==='_blank'&&p.rel.includes('noopener'),'PDF local browser viewer link');
+  p=await openPreview(1,'pre');ok(p.textContent.includes('Word fixture'),'DOCX text preview');
+  p=await openPreview(2,'pre');ok(p.textContent.includes('"fixture": true'),'JSON preview');
+  p=await openPreview(3,'pre');ok(p.textContent.includes('fixture,1'),'CSV preview');
+  p=await openPreview(4,'pre');ok(p.textContent==='<b>literal text</b>'&&!p.querySelector('b'),'Markdown rendered as safe literal text');
+  p=await openPreview(5,'img[src^="blob:"]');await wait(()=>p.complete&&p.naturalWidth>0,'image decoded');ok(p.naturalWidth===1,'PNG preview decoded');
+  dropFiles(Array.from({length:15},(_,i)=>fixtureFile('extra-'+i+'.txt','fixture')));
+  ok(tray.querySelector('summary').textContent.includes('20/20')&&tray.querySelectorAll('[data-wpa-preview-action=open]').length===20,'twenty-file session limit');
+  tray.querySelectorAll('[data-wpa-preview-action=remove]')[0].click();
+  ok(tray.querySelector('summary').textContent.includes('19/20'),'remove individual file');
+  ok(window.testRequests.length===0,'local preview does not call AI');
+  clear();ok(tray.querySelector('summary').textContent.includes('0/20')&&tray.querySelector('[data-wpa-preview-content]').hidden,'clear releases all local previews');
   ok(q('[data-wpa-public-voice]').textContent.includes('Document analysis is not yet available'),'document limitation disclosed');
   q('.wpa-public-vs-expand').click();
   ok(byId('wpaPublicVsPanel').classList.contains('wpa-vs-expanded'),'expand workspace');
@@ -92,6 +126,10 @@ async function browserSuite(){
    type('Original question');send();
    await wait(()=>window.publicPending.length===1,'first public request');
    ok(!!q('.wpa-public-vs-working img'),'waiting logo visible');
+   const outer=q('.wpa-public-vs-ring.outer'),inner=q('.wpa-public-vs-ring.inner');
+   ok(!!outer&&!!inner&&getComputedStyle(outer).animationName==='wpa-vs-rotate'&&getComputedStyle(inner).animationDirection==='reverse','two counter-rotating symmetric rings');
+   const a=outer.getBoundingClientRect(),b=inner.getBoundingClientRect();
+   ok(Math.abs((a.left+a.right)-(b.left+b.right))<2&&Math.abs((a.top+a.bottom)-(b.top+b.bottom))<2,'rings share one centre');
    await edit('Corrected question');
    await wait(()=>window.publicPending.length===2,'revised public request');
    ok(window.publicPending[0].signal.aborted,'edit aborts previous transport');
