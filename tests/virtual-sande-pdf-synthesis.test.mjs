@@ -22,7 +22,7 @@ test('all PDF pages become indexed chunks with real physical page provenance',()
   assert.equal(idx.chunks.at(-1).page,8);
 });
 test('Cyrillic and English search terms are tokenised and normalised',()=>{
-  assert.deepEqual(tokens('Протокол, дипломатски и ВЕШТАЧКА AI!'),['протокол','дипломатски','вештачка']);
+  assert.deepEqual(tokens('Протокол, дипломатски и ВЕШТАЧКА AI!'),['протокол','дипломатски','вештачка','ai']);
 });
 test('focused retrieval targets the requested page and exposes chosen pages',()=>{
   const idx=makeBookIndex(pages);
@@ -32,6 +32,13 @@ test('focused retrieval targets the requested page and exposes chosen pages',()=
   assert.ok(result.coverage.selectedPages.includes(5));
   assert.equal(result.coverage.totalPdfPages,8);
   assert.ok(result.coverage.selectedPageFraction<1.01);
+});
+test('Macedonian inflections and English plurals map to book evidence',()=>{
+  const idx=makeBookIndex(pages);
+  const selected=selectBookEvidence(idx,'Како протоколот и безбедноста ги уредуваат настаните?');
+  assert.equal(selected.canAskModel,true);
+  assert.ok(selected.coverage.selectedPages.includes(1));
+  assert.ok(selected.coverage.selectedPages.includes(5));
 });
 test('cross-domain analysis can target public relations and diplomacy',()=>{
   const idx=makeBookIndex(pages);
