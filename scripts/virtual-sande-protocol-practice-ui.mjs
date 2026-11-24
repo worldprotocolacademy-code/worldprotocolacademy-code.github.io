@@ -3,7 +3,7 @@
  * Works without a model, network, visitor file upload or AR permissions.
  */
 import {PRACTICAL_CASES,EVENT_TYPES,JURISDICTIONS,
- buildProtocolBrief,protocolBriefMarkdown,protocolQuestionForChat}
+ buildProtocolBrief,protocolBriefMarkdown,protocolQuestionForChat,inferPracticalCase}
  from './virtual-sande-protocol-practice.mjs';
 const copy={
  mk:{
@@ -13,6 +13,7 @@ const copy={
  country:'Друга држава или организација',host:'Домаќин / институција',guest:'Гостин или делегација',
  venue:'Место и гледна точка',participants:'Земји, функции и вклучени симболи',
  question:'Што точно треба да се реши?',people:'Број на учесници (по избор)',
+ fromChat:'Од моето прашање',emptyChat:'Прво напишете прашање во разговорот.',
  plan:'Изработи подготвителен план',send:'Постави прашање во разговорот',download:'Преземи план (.md)',
  status:'Оваа алатка не утврдува правни правила ниту реален безбедносен распоред.',
  current:'Подготвителен план: проверете ги важечките правила и надлежното одобрување.',
@@ -26,6 +27,7 @@ const copy={
  country:'Other country or organisation',host:'Host / institution',guest:'Guest or delegation',
  venue:'Venue and viewing perspective',participants:'Countries, roles and symbols',
  question:'What exactly do you want to resolve?',people:'Participants (optional)',
+ fromChat:'Use my chat question',emptyChat:'Write a question in the chat first.',
  plan:'Prepare a provisional plan',send:'Ask Virtual Sande in the chat',download:'Download plan (.md)',
  status:'This tool cannot certify legal protocol or generate operational security arrangements.',
  current:'Preparatory plan: verify current rules and competent approval.',
@@ -52,7 +54,8 @@ const CSS=[
  '.wpa-practice .wpa-practice-diagram[data-kind=conference]{grid-template-columns:repeat(4,1fr)}',
  '.wpa-practice .wpa-practice-diagram[data-kind=conference] .wpa-practice-stage{grid-column:1/-1}',
  '.wpa-practice .wpa-practice-stage{padding:5px;border-radius:4px;background:#1e3657;color:#fff}',
- '.wpa-practice .wpa-practice-small{font-size:11px;color:#555}'
+ '.wpa-practice .wpa-practice-small{font-size:11px;color:#555}',
+ '@media(max-width:460px){.wpa-practice .wpa-practice-grid{grid-template-columns:1fr}}'
 ].join('\n');
 function el(tag,txt,cls){
  const n=document.createElement(tag);
@@ -122,10 +125,10 @@ export function createProtocolPracticeStudio(panel,{onCompose=()=>{}}={}){
  grid.append(scenario.wrap,event.wrap,jurisdiction.wrap,country.wrap,host.wrap,guest.wrap,venue.wrap,people.wrap);
  root.append(grid,participants.wrap,question.wrap);
  const controls=el('div',undefined,'wpa-practice-buttons');
- const planButton=el('button',t.plan),chatButton=el('button',t.send),download=el('button',t.download);
- for(const b of [planButton,chatButton,download])b.type='button';
+ const planButton=el('button',t.plan),fromChat=el('button',t.fromChat),chatButton=el('button',t.send),download=el('button',t.download);
+ for(const b of [fromChat,planButton,chatButton,download])b.type='button';
  chatButton.disabled=true;download.disabled=true;
- controls.append(planButton,chatButton,download);
+ controls.append(fromChat,planButton,chatButton,download);
  const status=el('p',t.status);status.setAttribute('aria-live','polite');
  const out=el('div',undefined,'wpa-practice-out');out.hidden=true;
  root.append(controls,status,out);
@@ -159,6 +162,15 @@ export function createProtocolPracticeStudio(panel,{onCompose=()=>{}}={}){
    out.hidden=false;status.textContent=t.current;
    chatButton.disabled=false;download.disabled=false;
   }catch(e){invalidate();status.textContent=String(e?.message||'PROTOCOL_PRACTICE_ERROR');}
+ });
+ fromChat.addEventListener('click',()=>{
+  const q=panel.querySelector('#wpaPublicVsInput')?.value?.trim()||'';
+  if(!q){status.textContent=t.emptyChat;return;}
+  scenario.control.value=inferPracticalCase(q);
+  question.control.value=q.slice(0,300);
+  invalidate();
+  root.open=true;
+  planButton.click();
  });
  chatButton.addEventListener('click',()=>{
   if(!current)return;
