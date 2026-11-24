@@ -72,7 +72,14 @@ export function mountVoiceDocuments(panel) {
   mic.title=local.voice;
   const voiceNotice=document.createElement('span');voiceNotice.textContent=local.voice;voiceNotice.style.cssText='display:block;font-size:10px;color:#665b43;margin-top:3px';
   const heading=document.createElement('div');heading.textContent=t.files;heading.style.fontWeight='700';
-  root.append(toolbar,voiceNotice,choose,zone,heading,list,removeAll,consentWrap,processButton,status);
+  const docDrawer=document.createElement('details');
+  docDrawer.style.cssText='max-height:170px;overflow:auto;margin-top:4px';
+  const summary=document.createElement('summary');
+  summary.style.cssText='cursor:pointer;font-weight:700';
+  summary.textContent=t.files+' — 0/20';
+  docDrawer.append(summary,zone,heading,list,removeAll,consentWrap,processButton,status);
+  root.style.flexShrink='0';
+  root.append(toolbar,voiceNotice,choose,docDrawer);
   root.dataset.wpaMultidoc=client.configured?'private-pilot-configured':'preview';
   status.textContent=client.configured?local.need:local.unavailable;
   form.parentNode.insertBefore(root,form);
@@ -88,12 +95,14 @@ export function mountVoiceDocuments(panel) {
       li.append(label,del);list.append(li);
     });
     heading.textContent=t.files+' — '+staged.length+'/20 · '+processed.size+' '+local.ready;
+    summary.textContent=heading.textContent;
     removeAll.disabled=processing;
     attach.disabled=processing;
     updateState();
   }
   function addFiles(files) {
     if(processing)return;
+    docDrawer.open=true;
     let issue='';
     for(const file of files) {
       if(staged.length>=20){issue=t.limit;break;}
@@ -105,12 +114,14 @@ export function mountVoiceDocuments(panel) {
     }
     render();status.textContent=(issue?issue+' ':'')+(client.configured?local.need:local.unavailable);
   }
-  attach.onclick=()=>choose.click();choose.onchange=()=>{addFiles(Array.from(choose.files||[]));choose.value='';};
+  attach.onclick=()=>{docDrawer.open=true;choose.click();};choose.onchange=()=>{addFiles(Array.from(choose.files||[]));choose.value='';};
   zone.onclick=()=>choose.click();
   zone.onkeydown=(e)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();choose.click();}};
   for(const kind of ['dragenter','dragover'])zone.addEventListener(kind,(e)=>{e.preventDefault();zone.style.background='#eee2bf';});
   for(const kind of ['dragleave','drop'])zone.addEventListener(kind,(e)=>{e.preventDefault();zone.style.background='';});
-  zone.addEventListener('drop',(e)=>{addFiles(Array.from(e.dataTransfer?.files||[]));});
+  zone.addEventListener('drop',(e)=>{e.stopPropagation();addFiles(Array.from(e.dataTransfer?.files||[]));});
+  panel.addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types||[]).includes('Files'))e.preventDefault();});
+  panel.addEventListener('drop',e=>{const files=Array.from(e.dataTransfer?.files||[]);if(files.length){e.preventDefault();addFiles(files);}});
   removeAll.onclick=()=>{staged.length=0;processed.clear();render();status.textContent=privateMode?local.mode:(client.configured?local.need:local.unavailable);};
   processButton.onclick=async()=>{
     if(!client.configured||!consent.checked||processing)return;
@@ -175,7 +186,7 @@ export function mountVoiceDocuments(panel) {
     generation++;conversionController?.abort();conversionController=null;processing=false;
     staged.length=0;processed.clear();consented=false;consent.checked=false;privateMode=false;
     try{recogniser?.abort();}catch{}synth?.cancel();reading=false;speech.style.background='#fff';
-    render();status.textContent=client.configured?local.need:local.unavailable;
+    render();docDrawer.open=false;status.textContent=client.configured?local.need:local.unavailable;
   });
   render();
   return {
