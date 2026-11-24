@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {VERSION,PRACTICAL_CASES,EVENT_TYPES,JURISDICTIONS,
- PROTOCOL_REFERENCES,normaliseProtocolContext,buildProtocolBrief,
+ PROTOCOL_REFERENCES,inferPracticalCase,normaliseProtocolContext,buildProtocolBrief,
  protocolBriefMarkdown,protocolQuestionForChat}
  from '../scripts/virtual-sande-protocol-practice.mjs';
 const byId=new Map(PRACTICAL_CASES.map(x=>[x.id,x]));
@@ -21,6 +21,22 @@ test('twelve cases span flags, anthems, motorcades, dining, conferences, PR, com
  assert.ok(PROTOCOL_REFERENCES.some(x=>x.id==='WPA-12'));
 });
 
+test('visitors can write ordinary Macedonian, English or transliterated questions without choosing a scenario first',()=>{
+ assert.equal(inferPracticalCase('Како се поставуваат две национални знамиња?'),'flags');
+ assert.equal(inferPracticalCase('znaminja na sredba'),'flags');
+ assert.equal(inferPracticalCase('Кој е редоследот на химните?'),'anthems');
+ assert.equal(inferPracticalCase('himna na pokana'),'anthems');
+ assert.equal(inferPracticalCase('motorcade flags for official arrival'),'motorcade');
+ assert.equal(inferPracticalCase('кортеж на дипломат со знамиња'),'motorcade');
+ assert.equal(inferPracticalCase('Правилен распоред за свечена вечера'),'formal_dining');
+ assert.equal(inferPracticalCase('konferencija vo Ohrid'),'conferences');
+ assert.equal(inferPracticalCase('press conference statement'),'public_relations');
+ assert.equal(inferPracticalCase('пресеанс и седење'),'precedence');
+ assert.equal(inferPracticalCase('безбедност на настан'),'security');
+ assert.equal(inferPracticalCase('комуникологија и толкување'),'communicology');
+ assert.equal(inferPracticalCase('AR и просторна реалност'),'ai_ar');
+ assert.equal(inferPracticalCase('Здраво другар!'),'other');
+});
 test('context validation rejects fake jurisdiction, format, count and unknown agenda',()=>{
  assert.throws(()=>normaliseProtocolContext([]),/PROTOCOL_BAD_CONTEXT/);
  assert.throws(()=>normaliseProtocolContext({scenario:'tactical_protective_layout'}),/PROTOCOL_BAD_SCENARIO/);
@@ -148,6 +164,8 @@ test('client wiring offers an opt-in draft and never calls send() automatically'
  const ui=readFileSync('scripts/virtual-sande-protocol-practice-ui.mjs','utf8');
  assert.match(ui,/function createProtocolPracticeStudio/);
  assert.match(ui,/onCompose\(protocolQuestionForChat\(current\)\)/);
+ assert.match(ui,/fromChat.addEventListener\('click'/);
+ assert.match(ui,/scenario.control.value=inferPracticalCase\(q\)/);
  assert.match(ui,/2D/);
  assert.doesNotMatch(ui,/navigator\.geolocation|navigator\.mediaDevices|eval\(/);
 });
