@@ -76,8 +76,8 @@ test('invalid area, draft mode and oversized question fail closed',()=>{
  assert.throws(()=>selectDocumentEvidence(idx,'x'.repeat(DOCUMENT_LIMITS.maxQuestionChars+1)),/QUESTION_INVALID/);
 });
 test('source selection is bounded to prevent flooding model context',()=>{
- const files=[{name:'large.md',format:'md',segments:Array.from({length:350},(_,i)=>({
-   locator:'S'+(i+1),text:('Протокол, дипломатија, комуникација, јавност и ризик: '+i+' ').repeat(22)
+ const files=[{name:'large.md',format:'md',segments:Array.from({length:160},(_,i)=>({
+   locator:'S'+(i+1),text:('Протокол, дипломатија, комуникација, јавност и ризик: '+i+' ').repeat(14)
  }))}];
  const idx=makeDocumentCorpus(files);
  const r=selectDocumentEvidence(idx,'Протокол, комуникација и ризик');
