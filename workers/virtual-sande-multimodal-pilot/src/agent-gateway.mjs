@@ -197,6 +197,8 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
     return reply(request,env,200,{
       ok:true,version:VERSION,enabled,
       text_chat:enabled,image_analysis:enabled,pdf_synthesis:enabled,
+      model_id:typeof env.WPA_AGENT_MODEL==='string'?env.WPA_AGENT_MODEL:null,
+      model_connection_status:enabled?'CONFIGURED_NEEDS_LIVE_TEST':'NOT_CONNECTED',
       turnstile_site_key:enabled?env.WPA_AGENT_TURNSTILE_SITE_KEY:null,
       max_image_bytes:MAX_IMAGE,consent_required:true,
       status:enabled?'CONFIGURED_NOT_A_CERTIFICATION':'NOT_CONFIGURED',
