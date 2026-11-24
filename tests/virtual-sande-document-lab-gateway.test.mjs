@@ -53,7 +53,7 @@ test('valid multiple documents return source-bounded academic draft with exact c
  assert.equal(output.autonomous_actions_performed,false);
  assert.deepEqual(output.cited_locators,['D1 P12','D2 S3']);
  assert.equal(output.status,'WORKING_DRAFT_REQUIRES_EDITORIAL_HUMAN_REVIEW');
- assert.match(output.answer,/Doc\. d-r Sande Smiljanov/);
+ assert.match(output.answer,/Доц\. д-р Санде Смиљанов/);
  assert.match(output.disclaimer,/statutory liability|законската одговорност/i);
  assert.match(output.answer,/Нема доволно податоци за точна APA 7 референца/);
  assert.equal(output.bibliography_verified,false);
