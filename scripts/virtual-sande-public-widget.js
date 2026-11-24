@@ -15,6 +15,29 @@
   ];
   var busy = false;
   var history = [];
+  var requestVersion = 0; // Reject stale responses after edit or clear.
+  var proactiveIntent = null;
+  var voiceDocuments = null;
+  function privateWorkspaceOnly(){return document.querySelector('meta[name="wpa-private-workspace-only"]')?.content==='true';}
+  var activeRequest = null;
+  var activeWorking = null;
+  var activeSuggestion = null;
+  function invalidateRequest(){
+    requestVersion++;
+    if(activeRequest)activeRequest.abort();
+    if(activeSuggestion)activeSuggestion.abort();
+    activeSuggestion=null;
+    document.getElementById('wpaPublicVsPanel')?.querySelector('[data-wpa-model-suggestions]')?.remove();
+    activeRequest=null;
+    if(activeWorking)activeWorking.remove();
+    activeWorking=null;
+    busy=false;
+    var button=document.getElementById('wpaPublicVsSend');
+    if(button)button.disabled=false;
+    var stop=document.getElementById('wpaPublicVsStop');
+    if(stop)stop.hidden=true;
+  }
+  function refreshProactive() { try { proactiveIntent?.refresh(); } catch (_) { /* Keep the core chat available. */ } }
   var protocolPractice = null; // WPA_PROTOCOL_PLANNER_RC1; locally computed and opt-in.
 
   function isExcluded() {
@@ -144,26 +167,39 @@
       '.bot-wrap[data-wpa-legacy-bot="hidden"],.wpa2-bot-wrap[data-wpa-legacy-bot="hidden"]{display:none!important;visibility:hidden!important;pointer-events:none!important}',
       '.wpa-public-vs-fab{position:fixed!important;right:22px!important;bottom:22px!important;z-index:2147483600!important;width:64px!important;height:64px!important;border-radius:50%!important;border:2px solid #c9a84c!important;background:#0d1f3c!important;padding:0!important;overflow:hidden!important;cursor:pointer!important;box-shadow:0 12px 34px rgba(8,19,40,.36)!important;display:grid!important;place-items:center!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}',
       '.wpa-public-vs-fab img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}',
-      '.wpa-public-vs-panel{position:fixed!important;right:22px!important;bottom:98px!important;z-index:2147483599!important;width:min(390px,calc(100vw - 28px))!important;height:min(570px,calc(100vh - 130px))!important;background:#fbf8ee!important;border:1px solid rgba(201,168,76,.7)!important;border-radius:14px!important;box-shadow:0 22px 60px rgba(8,19,40,.32)!important;display:none!important;overflow:hidden!important;font-family:Inter,system-ui,sans-serif!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}',
-      '.wpa-public-vs-panel.open{display:flex!important;flex-direction:column!important}',
+      '.wpa-public-vs-panel{position:fixed!important;right:22px!important;bottom:98px!important;z-index:2147483599!important;width:min(520px,calc(100vw - 28px))!important;height:min(720px,calc(100vh - 130px))!important;background:#fbf8ee!important;border:1px solid rgba(201,168,76,.7)!important;border-radius:14px!important;box-shadow:0 22px 60px rgba(8,19,40,.32)!important;display:none!important;overflow:hidden!important;font-family:Inter,system-ui,sans-serif!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}',
+      '.wpa-public-vs-panel.open{display:flex!important;flex-direction:column!important;overflow-y:auto!important}',
+      '.wpa-public-vs-panel [hidden]{display:none!important}',
+      '.wpa-public-vs-panel>*,.wpa-public-vs-form,.wpa-public-vs-tools{flex-shrink:0}',
       '.wpa-public-vs-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0d1f3c;color:#fff;border-bottom:1px solid #c9a84c}',
       '.wpa-public-vs-mark{width:38px;height:38px;border-radius:50%;overflow:hidden;border:1px solid #c9a84c;flex:0 0 38px}',
       '.wpa-public-vs-mark img{width:100%;height:100%;object-fit:cover}',
       '.wpa-public-vs-copy{min-width:0;flex:1}.wpa-public-vs-title{font:700 16px/1.1 Georgia,serif;color:#e8d49a}.wpa-public-vs-sub{font-size:10.5px;color:rgba(255,255,255,.75);margin-top:3px}',
       '.wpa-public-vs-close{border:0;background:transparent;color:#fff;font-size:22px;cursor:pointer;padding:2px 5px}',
       '.wpa-public-vs-status{min-height:18px;padding:4px 12px 0;background:#fbf8ee;color:#6c5830;font-size:10.5px}',
-      '.wpa-public-vs-msgs{flex:1;overflow:auto;padding:14px;background:#fbf8ee}',
+      '.wpa-public-vs-msgs{flex:1 1 90px;min-height:90px;overflow:auto;padding:14px;background:#fbf8ee}',
+      '.wpa-public-vs-panel.wpa-vs-expanded{width:min(1100px,calc(100vw - 28px))!important;height:calc(100vh - 110px)!important}',
+      '.wpa-public-vs-expand{border:1px solid #c9a84c;border-radius:6px;background:transparent;color:#fff;padding:4px 8px;cursor:pointer}',
       '.wpa-public-vs-row{display:flex;margin:0 0 10px}.wpa-public-vs-row.user{justify-content:flex-end}',
-      '.wpa-public-vs-bubble{max-width:88%;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
+      '.wpa-public-vs-bubble{max-width:88%;overflow-wrap:anywhere;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid #d8d2bc;color:#1a1a1a;font-size:13.5px;line-height:1.55;white-space:pre-wrap}',
       '.wpa-public-vs-row.user .wpa-public-vs-bubble{background:#0d1f3c;color:#fff;border-color:#0d1f3c}',
       '.wpa-public-vs-form{display:flex;gap:8px;padding:10px;border-top:1px solid #d8d2bc;background:#f5f0e0}',
-      '.wpa-public-vs-input,#botInput.bot-inp,.bot-inp,.wpa-inst-vs-input{flex:1;min-height:46px;max-height:110px;resize:vertical;border:1px solid #d7c485!important;border-radius:9px;padding:10px;font:13px/1.4 Inter,system-ui,sans-serif;outline:none!important;background:#fff;color:#1a1a1a;box-shadow:none!important;text-decoration:none!important;text-decoration-color:transparent!important;caret-color:#7b5f1f!important}',
+      '.wpa-public-vs-input,#botInput.bot-inp,.bot-inp,.wpa-inst-vs-input{flex:1;min-width:0;min-height:46px;max-height:110px;resize:vertical;border:1px solid #d7c485!important;border-radius:9px;padding:10px;font:13px/1.4 Inter,system-ui,sans-serif;outline:none!important;background:#fff;color:#1a1a1a;box-shadow:none!important;text-decoration:none!important;text-decoration-color:transparent!important;caret-color:#7b5f1f!important}',
       '.wpa-public-vs-input:focus,.wpa-public-vs-input:focus-visible,#botInput.bot-inp:focus,.bot-inp:focus,.wpa-inst-vs-input:focus,.wpa-inst-vs-input:focus-visible{border-color:#c9a84c!important;outline:2px solid rgba(201,168,76,.22)!important;outline-offset:1px!important;box-shadow:0 0 0 3px rgba(201,168,76,.12)!important;text-decoration:none!important;text-decoration-color:transparent!important}',
       '.wpa-public-vs-input:invalid,.wpa-public-vs-input:user-invalid,#botInput.bot-inp:invalid,.bot-inp:invalid,.wpa-inst-vs-input:invalid,.wpa-inst-vs-input:user-invalid{border-color:#d7c485!important;outline-color:rgba(201,168,76,.22)!important;box-shadow:none!important}',
       '.wpa-public-vs-send{border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
-      '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
+      '.wpa-public-vs-tools{display:flex;flex-wrap:wrap;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
+      '.wpa-public-vs-working{display:flex;align-items:center;gap:9px;padding:9px 12px;color:#153050;font-size:12px}',
+      '.wpa-public-vs-working img{width:30px;height:30px;object-fit:contain;animation:wpa-vs-rotate 1.8s linear infinite}',
+      '.wpa-public-vs-duration{margin-top:7px;font-size:11px;opacity:.72;font-weight:400}',
+      '.wpa-public-vs-row.user{flex-direction:column;align-items:flex-end}',
+      '.wpa-public-vs-edit-tools{display:flex;gap:6px;justify-content:flex-end;margin-top:5px}',
+      '.wpa-public-vs-edit-tools button{font:11px system-ui,sans-serif;border:1px solid #907536;border-radius:6px;background:#fff9e8;color:#1a2f4c;padding:3px 8px;cursor:pointer}',
+      '.wpa-public-vs-edit-field{display:block;width:100%;min-height:72px;max-height:180px;resize:vertical;border:1px solid #806820;border-radius:6px;padding:8px;font:13px/1.4 system-ui,sans-serif}',
+      '@keyframes wpa-vs-rotate{to{transform:rotate(360deg)}}',
+      '@media(prefers-reduced-motion:reduce){.wpa-public-vs-working img{animation:none}}',
       '@media(max-width:520px){.wpa-public-vs-fab{right:14px!important;bottom:14px!important;width:58px!important;height:58px!important}.wpa-public-vs-panel{right:14px!important;bottom:82px!important;height:calc(100vh - 104px)!important}}'
     ].join('');
     document.head.appendChild(style);
@@ -206,14 +242,115 @@
     });
   }
 
-  function addMessage(text, who) {
+  function elapsedSeconds(start) {
+    var elapsed = Math.max(0, (performance.now() - start) / 1000);
+    return elapsed.toLocaleString(document.documentElement.lang?.startsWith('en') ? 'en-GB' : 'mk-MK',
+      {minimumFractionDigits:1,maximumFractionDigits:1});
+  }
+
+  function showWorking() {
+    var messages = document.getElementById('wpaPublicVsMsgs');
+    if (!messages) return null;
+    var item = document.createElement('div');
+    item.className = 'wpa-public-vs-working';
+    item.setAttribute('role','status');
+    item.setAttribute('aria-label',document.documentElement.lang?.startsWith('en') ? 'Preparing an answer' : 'Се подготвува одговор');
+    var logo = document.createElement('img');
+    logo.src = '/logo.webp';
+    logo.alt = '';
+    var label = document.createElement('span');
+    label.textContent = document.documentElement.lang?.startsWith('en') ? 'Preparing an answer…' : 'Се подготвува одговор…';
+    item.append(logo,label);
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    return item;
+  }
+
+  function addMessage(text, who, seconds, historyIndex) {
     var messages = document.getElementById('wpaPublicVsMsgs');
     if (!messages) return;
     var row = document.createElement('div');
     row.className = 'wpa-public-vs-row' + (who === 'user' ? ' user' : '');
     var bubble = document.createElement('div');
     bubble.className = 'wpa-public-vs-bubble';
-    bubble.textContent = String(text || '');
+    var messageText=document.createElement('span');
+    messageText.className='wpa-public-vs-message-text';
+    messageText.textContent=String(text||'');
+    bubble.appendChild(messageText);
+    if (who === 'user' && Number.isInteger(historyIndex)) {
+      row.dataset.historyIndex = String(historyIndex);
+      var buttons = document.createElement('div');
+      buttons.className = 'wpa-public-vs-edit-tools';
+      var edit = document.createElement('button');
+      edit.type = 'button';
+      edit.textContent = isEnglish() ? '✎ Edit' : '✎ Уреди';
+      edit.setAttribute('aria-label',isEnglish() ? 'Edit your message' : 'Уреди ја пораката');
+      edit.addEventListener('click', function () {
+        if (row.querySelector('.wpa-public-vs-edit-field')) return;
+        var original = history[historyIndex]?.content || text;
+        var area = document.createElement('textarea');
+        area.className = 'wpa-public-vs-edit-field';
+        area.maxLength = 700;
+        area.value = original;
+        var controls = document.createElement('div');
+        controls.className = 'wpa-public-vs-edit-tools';
+        var save = document.createElement('button');
+        save.type = 'button'; save.textContent = isEnglish() ? 'Save and regenerate' : 'Зачувај и обнови';
+        var cancel = document.createElement('button');
+        cancel.type = 'button'; cancel.textContent = isEnglish() ? 'Cancel' : 'Откажи';
+        controls.append(save,cancel);
+        bubble.hidden = true;
+        buttons.hidden = true;
+        row.append(area,controls);
+        area.focus();
+        cancel.addEventListener('click',function () {
+          area.remove(); controls.remove(); bubble.hidden = false; buttons.hidden = false;
+        });
+        save.addEventListener('click',function () {
+          var revised = area.value.trim();
+          if (voiceDocuments?.isPrivate()&&!voiceDocuments.canAnalyze()) {
+            var status=document.getElementById('wpaPublicVsStatus');
+            if(status)status.textContent=voiceDocuments.blockedMessage();
+            return;
+          }
+          if (!revised) { area.focus(); return; }
+          // Invalidate the in-flight response. An older response must not alter
+          // the revised conversation, even if the server finishes later.
+          invalidateRequest();
+          if(window.speechSynthesis)window.speechSynthesis.cancel();
+          var input = document.getElementById('wpaPublicVsInput');
+          var all = document.getElementById('wpaPublicVsMsgs');
+          var siblings = Array.from(all.children);
+          var position = siblings.indexOf(row);
+          siblings.slice(position).forEach(function (el) { el.remove(); });
+          history = history.slice(0,historyIndex);
+          if (input) {
+            input.value = revised;
+            send();
+          }
+        });
+      });
+      buttons.append(edit);
+      row.append(buttons);
+    }
+    if (who === 'bot' && seconds !== undefined) {
+      var actions=document.createElement('div');
+      actions.className='wpa-public-vs-edit-tools';
+      var cp=document.createElement('button');cp.type='button';cp.textContent=isEnglish()?'Copy answer':'Копирај одговор';
+      cp.onclick=async function(){
+        try{await navigator.clipboard.writeText(String(text||''));cp.textContent=isEnglish()?'Copied':'Копирано';}
+        catch{cp.textContent=isEnglish()?'Copy unavailable':'Копирањето не е достапно';}
+      };
+      actions.append(cp);
+      bubble.appendChild(actions);
+    }
+    if (seconds !== undefined) {
+      var duration = document.createElement('div');
+      duration.className = 'wpa-public-vs-duration';
+      duration.textContent = (document.documentElement.lang?.startsWith('en') ?
+        'Response time: ' : 'Време на одговор: ') + seconds + ' s';
+      bubble.appendChild(duration);
+    }
     row.appendChild(bubble);
     messages.appendChild(row);
     messages.scrollTop = messages.scrollHeight;
@@ -225,11 +362,23 @@
       (data.result && (data.result.answer || data.result.response || data.result.text)) || '';
   }
 
-  function fetchWithTimeout(url, options, timeoutMs) {
-    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = window.setTimeout(function () { if (controller) controller.abort(); }, timeoutMs);
-    var requestOptions = Object.assign({}, options, controller ? { signal: controller.signal } : {});
-    return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
+  async function fetchWithTimeout(url, options, timeoutMs) {
+    var signal = options.signal;
+    var controller = new AbortController();
+    var abort = function () { controller.abort(); };
+    if (signal?.aborted) abort();
+    signal?.addEventListener('abort', abort, { once: true });
+    var timer = window.setTimeout(abort, timeoutMs);
+    try {
+      var requestOptions = Object.assign({}, options, { signal: controller.signal });
+      var response = await fetch(url, requestOptions);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      // Retain the timeout until the JSON body has finished, not just headers.
+      return await response.json();
+    } finally {
+      window.clearTimeout(timer);
+      signal?.removeEventListener('abort', abort);
+    }
   }
 
   function isNoContextAnswer(answer) {
@@ -244,23 +393,28 @@
       q.indexOf('does not contain sufficient information') !== -1;
   }
 
-  async function callEndpoint(endpoint, payload) {
-    var response = await fetchWithTimeout(endpoint, {
+  async function callEndpoint(endpoint, payload, signal) {
+    var data = await fetchWithTimeout(endpoint, {
       method: 'POST',
       mode: 'cors',
       cache: 'no-store',
       credentials: 'omit',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
+      signal: signal
     }, 15000);
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    var data = await response.json();
     var answer = answerFrom(data);
     if (!answer) throw new Error('Empty answer');
     return { answer: answer, data: data };
   }
 
-  async function requestAnswer(question) {
+  async function requestAnswer(question, signal) {
+    // Once a conversation has entered the private document pilot, never send
+    // its question or history to the public academic endpoint, even on failure.
+    if(privateWorkspaceOnly()||voiceDocuments?.isPrivate()){
+      if(!voiceDocuments?.canAnalyze())throw new Error('PRIVATE_WORKSPACE_NOT_READY');
+      return voiceDocuments.analyze({question,history:history.slice(0,-1),signal});
+    }
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -277,7 +431,8 @@
     var lastError = null;
     for (var i = 0; i < ENDPOINTS.length; i += 1) {
       try {
-        var remote = await callEndpoint(ENDPOINTS[i], payload);
+        if(signal?.aborted)throw new DOMException('Aborted','AbortError');
+        var remote = await callEndpoint(ENDPOINTS[i], payload, signal);
         if (!isNoContextAnswer(remote.answer)) {
           return { answer: remote.answer, local: false, data: remote.data };
         }
@@ -288,6 +443,7 @@
     }
 
     // Last-resort fail-safe only. It must never pre-empt the author corpus or proactive agent.
+    if(signal?.aborted)throw new DOMException('Aborted','AbortError');
     var local = localCoreAnswer(question);
     if (local) return { answer: local, local: true };
     throw lastError || new Error('All endpoints unavailable');
@@ -298,28 +454,55 @@
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     if (!question) return;
+    if((privateWorkspaceOnly()||voiceDocuments?.isPrivate())&&!voiceDocuments?.canAnalyze()){
+      var blocked=document.getElementById('wpaPublicVsStatus');
+      if(blocked)blocked.textContent=voiceDocuments?.blockedMessage()||(isEnglish()?'Private workspace is not available.':'Приватниот работен простор не е достапен.');
+      return;
+    }
 
+    if(activeSuggestion)activeSuggestion.abort();
+    activeSuggestion=null;
+    document.getElementById('wpaPublicVsPanel')?.querySelector('[data-wpa-model-suggestions]')?.remove();
     busy = true;
+    var controller=new AbortController();
+    activeRequest=controller;
+    var myVersion = ++requestVersion;
+    var startedAt = performance.now();
     input.value = '';
-    addMessage(question, 'user');
+    addMessage(question, 'user', undefined, history.length);
+    var working = showWorking();
+    activeWorking=working;
     history.push({ role: 'user', content: question });
+    refreshProactive();
 
     var button = document.getElementById('wpaPublicVsSend');
     var status = document.getElementById('wpaPublicVsStatus');
     if (button) button.disabled = true;
+    var stopButton=document.getElementById('wpaPublicVsStop');
+    if(stopButton)stopButton.hidden=false;
     if (status) status.textContent = copy().connecting;
 
     try {
-      var result = await requestAnswer(question);
-      addMessage(result.answer, 'bot');
+      var result = await requestAnswer(question, controller.signal);
+      if (myVersion !== requestVersion) return;
+      if (working) working.remove();
+      addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
       history.push({ role: 'assistant', content: result.answer });
+      refreshProactive();
       if (status) status.textContent = result.local ? copy().offline : '';
       if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
-      addMessage(copy().error, 'bot');
+      if (myVersion !== requestVersion) return;
+      if (working) working.remove();
+      var privateError=privateWorkspaceOnly()||voiceDocuments?.isPrivate();
+      addMessage(privateError?(isEnglish()?'Private document analysis failed. No public fallback was used.':'Приватната анализа не успеа. Не е користен јавниот сервис.'):copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
+      if (myVersion !== requestVersion) return;
+      if (working) working.remove();
       busy = false;
+      activeRequest=null;activeWorking=null;
+      if(stopButton)stopButton.hidden=true;
       if (button) button.disabled = false;
       if (input) input.focus();
     }
@@ -365,6 +548,7 @@
             var input=document.getElementById('wpaPublicVsInput');
             if(!input)return;
             input.value=String(question||'').slice(0,690);
+            refreshProactive();
             if(!panel.classList.contains('open')){
               panel.classList.add('open');
               fab.setAttribute('aria-expanded','true');
@@ -378,15 +562,89 @@
         protocolPractice=null;
       });
 
+    // Local suggestions only; typing never sends a background request.
+    import('/scripts/virtual-sande-proactive-intent.mjs?v=20261124-rc1')
+      .then(function(mod){ proactiveIntent=mod.mountProactiveIntent(panel,{getHistory:function(){return history.slice();}}); })
+      .catch(function(){ proactiveIntent=null; });
+
+    // Progressive enhancement; existing chat and protocol planner are untouched.
+    import('/scripts/virtual-sande-voice-documents.mjs?v=20261124-rc1')
+      .then(function(mod){voiceDocuments=mod.mountVoiceDocuments(panel);var modelButton=document.getElementById('wpaPublicVsModelSuggestions');if(modelButton)modelButton.hidden=!voiceDocuments?.isServerConnected;})
+      .catch(function(){/* Keep baseline chat available if asset loading fails. */});
+
+    var expand=document.createElement('button');expand.type='button';expand.className='wpa-public-vs-expand';expand.textContent='⛶';
+    expand.setAttribute('aria-label',isEnglish()?'Expand conversation':'Прошири разговор');expand.setAttribute('aria-pressed','false');
+    panel.querySelector('.wpa-public-vs-close').before(expand);
+    expand.onclick=function(){var enabled=panel.classList.toggle('wpa-vs-expanded');expand.setAttribute('aria-pressed',String(enabled));};
+    // Changing the document set or revoking consent invalidates in-flight output.
+    panel.addEventListener('wpa-documents-changed',function(){
+      if(busy||activeSuggestion){invalidateRequest();var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Document set changed. Review and send a new question.':'Документите се изменети. Проверете и испратете ново прашање.';}
+    });
+    panel.addEventListener('wpa-private-consent-revoked',function(){
+      invalidateRequest();voiceDocuments?.stopVoice();
+      var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Consent withdrawn. Private requests stopped; start a new conversation to return to public chat.':'Согласноста е повлечена. Приватните барања се запрени; започнете нов разговор за јавен режим.';
+    });
+    var chatTools=panel.querySelector('.wpa-public-vs-tools');
+    function tool(label,fn,id){
+      var b=document.createElement('button');b.type='button';b.className='wpa-public-vs-clear';b.textContent=label;if(id)b.id=id;b.onclick=fn;chatTools.prepend(b);return b;
+    }
+    var stop=tool(isEnglish()?'■ Stop':'■ Стоп',function(){
+      invalidateRequest();
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(status)status.textContent=isEnglish()?'Stopped displaying this response.':'Прикажувањето на одговорот е запрено.';
+      if(window.speechSynthesis)window.speechSynthesis.cancel();
+    },'wpaPublicVsStop');
+    stop.hidden=true;
+    tool(isEnglish()?'Export chat':'Извези разговор',function(){
+      var content=history.map(function(x){return (x.role==='user'?'USER':'VIRTUAL SANDE')+'\n'+x.content;}).join('\n\n---\n\n');
+      if(!content)return;
+      if(voiceDocuments?.isPrivate()&&!window.confirm(isEnglish()?'Export private conversation to a local file?':'Да се извезе приватниот разговор во локална датотека?'))return;
+      var url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'}));
+      var a=document.createElement('a');a.href=url;a.download='virtual-sande-conversation.md';document.body.append(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    });
+    var modelButton=tool(isEnglish()?'Model suggestions (pilot)':'Моделски предлози (пилот)',async function(){
+      var status=document.getElementById('wpaPublicVsStatus');
+      if(busy||activeSuggestion||!voiceDocuments?.isPrivate()||!voiceDocuments.canAnalyze()){
+        if(status)status.textContent=isEnglish()?'Available only in the configured private pilot after consent.':'Достапно само во конфигуриран приватен пилот по согласност.';
+        return;
+      }
+      var last=history.filter(function(x){return x.role==='user';}).at(-1);
+      if(!last)return;
+      var version=requestVersion;
+      var input=document.getElementById('wpaPublicVsInput');
+      var suggestionController=new AbortController();activeSuggestion=suggestionController;
+      try{
+        if(status)status.textContent=isEnglish()?'Preparing optional model suggestions…':'Се подготвуваат моделски предлози…';
+        var suggestions=await voiceDocuments.suggest({question:last.content,history:history.slice(-6),signal:suggestionController.signal});
+        if(version!==requestVersion||suggestionController.signal.aborted||!voiceDocuments.canAnalyze())return;
+        var old=panel.querySelector('[data-wpa-model-suggestions]');if(old)old.remove();
+        var section=document.createElement('div');section.dataset.wpaModelSuggestions='candidate';section.style.cssText='padding:6px 10px;display:flex;gap:4px;flex-wrap:wrap;background:#f5f0e0';
+        suggestions.forEach(function(s){
+          var b=document.createElement('button');b.type='button';b.className='wpa-public-vs-clear';b.textContent=s;
+          b.onclick=function(){
+            var proposed=input.value.trim()?input.value+'\n'+s:s;
+            if(proposed.length>input.maxLength){if(status)status.textContent=isEnglish()?'Shorten your draft before adding this suggestion.':'Скратете го текстот пред да го додадете предлогот.';return;}
+            input.value=proposed;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();section.remove();
+          };
+          section.appendChild(b);
+        });
+        panel.querySelector('#wpaPublicVsForm').before(section);
+        if(status)status.textContent=isEnglish()?'Suggestions only; choose what to send.':'Само предлози; вие избирате што да испратите.';
+      }catch(e){if(version===requestVersion&&!suggestionController.signal.aborted&&status)status.textContent=isEnglish()?'Model suggestions unavailable.':'Моделските предлози не се достапни.';}
+      finally{if(activeSuggestion===suggestionController)activeSuggestion=null;}
+    },'wpaPublicVsModelSuggestions');
+    modelButton.hidden=true;
     fab.addEventListener('click', function () {
       var open = panel.classList.toggle('open');
       fab.setAttribute('aria-expanded', open ? 'true' : 'false');
       if (open) document.getElementById('wpaPublicVsInput').focus();
+      else voiceDocuments?.stopVoice();
     });
 
     panel.querySelector('.wpa-public-vs-close').addEventListener('click', function () {
       panel.classList.remove('open');
       fab.setAttribute('aria-expanded', 'false');
+      voiceDocuments?.stopVoice();
     });
 
     document.getElementById('wpaPublicVsForm').addEventListener('submit', function (event) {
@@ -402,16 +660,26 @@
     });
 
     document.getElementById('wpaPublicVsClear').addEventListener('click', function () {
+      invalidateRequest();
+      panel.querySelector('[data-wpa-model-suggestions]')?.remove();
       history = [];
       if(protocolPractice)protocolPractice.reset();
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
+      var clearInput = document.getElementById('wpaPublicVsInput');
+      var clearSend = document.getElementById('wpaPublicVsSend');
+      var clearStatus = document.getElementById('wpaPublicVsStatus');
+      if (clearInput) clearInput.value = '';
+      if (clearSend) clearSend.disabled = false;
+      if (clearStatus) clearStatus.textContent = '';
       addMessage(copy().welcome, 'bot');
+      refreshProactive();
     });
 
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && panel.classList.contains('open')) {
         panel.classList.remove('open');
         fab.setAttribute('aria-expanded', 'false');
+        voiceDocuments?.stopVoice();
       }
     });
   }
