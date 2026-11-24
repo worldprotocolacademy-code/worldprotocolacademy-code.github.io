@@ -1,0 +1,92 @@
+name: Virtual Sande PRIVATE staging — manual disabled-only deployment
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Dry run only or deploy an AI-DISABLED private staging Worker?"
+        type: choice
+        options:
+          - dry_run_only
+          - deploy_disabled
+        required: true
+        default: dry_run_only
+      human_ack:
+        description: "For deploy_disabled, type exactly: PRIVATE STAGING ONLY"
+        type: string
+        required: false
+permissions:
+  contents: read
+concurrency:
+  group: virtual-sande-private-stage
+  cancel-in-progress: false
+jobs:
+  private-stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment: virtual-sande-private-staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact source and non-billable staging lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
+          node --test tests/virtual-sande-private-staging.test.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+          grep -F 'name = "wpa-virtual-sande-agent-private-staging"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_STAGING_ONLY = "true"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          ! grep -Eq '^OPENAI_API_KEY\s*=|^WPA_AGENT_STAGING_TOKEN\s*=' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+      - name: Cloudflare bundle dry run (no deploy, no API charge)
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+      - name: Check manual acknowledgement before deployment
+        if: ${{ inputs.operation == 'deploy_disabled' }}
+        env:
+          WPA_HUMAN_ACK: ${{ inputs.human_ack }}
+        run: |
+          if [ "$WPA_HUMAN_ACK" != "PRIVATE STAGING ONLY" ]; then
+            echo "Blocked: private staging acknowledgement missing"
+            exit 1
+          fi
+      - name: Deploy AI-DISABLED, PRIVATE staging Worker only
+        if: ${{ inputs.operation == 'deploy_disabled' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WPA_AGENT_STAGING_TOKEN: ${{ secrets.WPA_AGENT_STAGING_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ] ||
+             [ ${#WPA_AGENT_STAGING_TOKEN} -lt 24 ]; then
+            echo "Blocked: Cloudflare credentials or private staging token are missing"
+            exit 1
+          fi
+          umask 077
+          SECRET_FILE="$(mktemp)"
+          trap 'rm -f "$SECRET_FILE"' EXIT
+          node -e 'require("node:fs").writeFileSync(process.argv[1],JSON.stringify({WPA_AGENT_STAGING_TOKEN:process.env.WPA_AGENT_STAGING_TOKEN}))' "$SECRET_FILE"
+          npx --yes wrangler@4 deploy \
+            --config workers/virtual-sande-multimodal-pilot/wrangler.staging.toml \
+            --secrets-file "$SECRET_FILE" 2>&1 | tee /tmp/virtual-sande-private-stage-deploy.log
+          STAGE_URL="$(grep -Eo 'https://[^[:space:]]+\.workers\.dev/?' /tmp/virtual-sande-private-stage-deploy.log | tail -n 1 | sed 's:/$::')"
+          if [ -z "$STAGE_URL" ]; then
+            echo "Blocked: staging deployment URL not found; no LIVE claim"
+            exit 1
+          fi
+          echo "WPA_STAGE_URL=$STAGE_URL" >> "$GITHUB_ENV"
+      - name: Verify private auth + disabled model over HTTPS
+        if: ${{ inputs.operation == 'deploy_disabled' }}
+        env:
+          WPA_AGENT_STAGING_TOKEN: ${{ secrets.WPA_AGENT_STAGING_TOKEN }}
+        run: node scripts/verify-virtual-sande-disabled-staging.mjs
+      - name: Release boundary (informational only)
+        if: ${{ success() }}
+        run: |
+          echo "Private disabled staging is not a GPT provider test."
+          echo "No main branch merge, no public site update, no OpenAI credentials, no inference."
+          echo "A separate reviewed Human Gate is needed before any billable or public activation."
