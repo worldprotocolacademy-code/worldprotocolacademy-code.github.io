@@ -1,0 +1,98 @@
+name: Virtual Sande Independent Multimodal Pilot CI (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'scripts/virtual-sande-pdf-tool.mjs'
+      - 'scripts/virtual-sande-book-synthesis.mjs'
+      - 'scripts/virtual-sande-document-*.mjs'
+      - 'scripts/virtual-sande-open-research*.mjs'
+      - 'scripts/virtual-sande-institutional-*.mjs'
+      - 'scripts/virtual-sande-protocol-practice*.mjs'
+      - 'data/global-institutions/v1.0-corrected-4f-rev7/WPA_Global_Institutions_Master_v1.0-CORRECTED-4F-REV7.json'
+      - 'scripts/wpa-open-research-snapshot.mjs'
+      - '.github/workflows/virtual-sande-open-research-watch.yml'
+      - 'scripts/virtual-sande-citation-policy.mjs'
+      - 'data/virtual-sande/wpa-verified-bibliography-seed-v0.1.json'
+      - 'workers/virtual-sande-multimodal-pilot/**'
+      - 'scripts/verify-virtual-sande-disabled-staging.mjs'
+      - '.github/workflows/virtual-sande-private-staging-manual.yml'
+      - 'workers/virtual-sande-v35.1-production/src/index.mjs'
+      - 'tests/virtual-sande-multimodal-*.test.mjs'
+      - 'tests/virtual-sande-pdf-*.test.mjs'
+      - 'tests/virtual-sande-document-*.test.mjs'
+      - 'tests/virtual-sande-open-research*.test.mjs'
+      - 'tests/virtual-sande-institutional*.test.mjs'
+      - 'tests/virtual-sande-practical-protocol.test.mjs'
+      - 'tests/virtual-sande-citation-policy.test.mjs'
+      - 'tests/virtual-sande-private-staging.test.mjs'
+      - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
+      - 'docs/virtual-sande-multimodal-pilot-v0.1.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  multimodal-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and certified runtime isolation
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-book-synthesis.mjs
+          node --check scripts/virtual-sande-pdf-tool.mjs
+          node --check scripts/virtual-sande-document-intelligence.mjs
+          node --check scripts/virtual-sande-document-parser.mjs
+          node --check scripts/virtual-sande-document-workbench.mjs
+          node --check scripts/virtual-sande-open-research.mjs
+          node --check scripts/virtual-sande-open-research-ui.mjs
+          node --check scripts/virtual-sande-institutional-directory.mjs
+          node --check scripts/virtual-sande-institutional-openalex.mjs
+          node --check scripts/virtual-sande-institutional-research-ui.mjs
+          node --check scripts/virtual-sande-protocol-practice.mjs
+          node --check scripts/virtual-sande-protocol-practice-ui.mjs
+          node --check scripts/wpa-open-research-snapshot.mjs
+          node --check scripts/virtual-sande-citation-policy.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/document-lab-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/open-research-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/institutional-research-gateway.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
+          node --check scripts/verify-virtual-sande-disabled-staging.mjs
+          node --check workers/virtual-sande-v35.1-production/src/index.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+          node --check tests/virtual-sande-multimodal-agent.test.mjs
+          node --check tests/virtual-sande-multimodal-ui.test.mjs
+          node --check tests/virtual-sande-pdf-synthesis.test.mjs
+          node --check tests/virtual-sande-pdf-gateway.test.mjs
+          node --check tests/virtual-sande-private-staging.test.mjs
+          node --check tests/virtual-sande-document-intelligence.test.mjs
+          node --check tests/virtual-sande-document-lab-gateway.test.mjs
+          node --check tests/virtual-sande-document-parser.test.mjs
+          node --check tests/virtual-sande-open-research.test.mjs
+          node --check tests/virtual-sande-open-research-gateway.test.mjs
+          node --check tests/virtual-sande-institutional-research.test.mjs
+          node --check tests/virtual-sande-institutional-gateway.test.mjs
+          node --check tests/virtual-sande-practical-protocol.test.mjs
+          node --check tests/virtual-sande-citation-policy.test.mjs
+      - name: Isolated contract and UI regression tests (mocked providers)
+        run: node --test tests/virtual-sande-multimodal-agent.test.mjs tests/virtual-sande-multimodal-ui.test.mjs tests/virtual-sande-pdf-synthesis.test.mjs tests/virtual-sande-pdf-gateway.test.mjs tests/virtual-sande-private-staging.test.mjs tests/virtual-sande-document-intelligence.test.mjs tests/virtual-sande-document-lab-gateway.test.mjs tests/virtual-sande-document-parser.test.mjs tests/virtual-sande-citation-policy.test.mjs tests/virtual-sande-open-research.test.mjs tests/virtual-sande-open-research-gateway.test.mjs tests/virtual-sande-institutional-research.test.mjs tests/virtual-sande-institutional-gateway.test.mjs tests/virtual-sande-practical-protocol.test.mjs
+      - name: Bundle disabled private staging Worker (dry-run, no Cloudflare changes)
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+      - name: No silent enablement, secret leak or production deployment
+        run: |
+          grep -F 'name = "wpa-virtual-sande-v35-1-production"' workers/virtual-sande-v35.1-production/wrangler.toml
+          test "$(grep -c '^\[ai\]' workers/virtual-sande-v35.1-production/wrangler.toml)" -eq 1
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          grep -F 'WPA_OPEN_RESEARCH_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          grep -F 'WPA_INSTITUTION_RESEARCH_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          grep -F 'WPA_AGENT_STAGING_ONLY = "true"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_OPEN_RESEARCH_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_INSTITUTION_RESEARCH_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          ! grep -Eq '^OPENAI_API_KEY\s*=|^WPA_AGENT_TURNSTILE_SECRET\s*=' workers/virtual-sande-multimodal-pilot/wrangler.toml
+          echo "PASS: certified WPA /ask untouched; new agent isolated, inactive, unbilled"
