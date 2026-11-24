@@ -163,14 +163,14 @@ async function browserSuite(privateMode){
 
 async function runCase(name,path,width,height){
  const profile=join(temp,'chrome-'+name);
- const child=spawn(browser,['--headless','--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--ignore-certificate-errors','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'--window-size='+width+','+height,origin+path],{stdio:['ignore','ignore','ignore']});
+ const child=spawn(browser,['--headless','--no-sandbox','--disable-dev-shm-usage','--disable-background-networking','--ignore-certificate-errors','--no-first-run','--no-default-browser-check','--remote-debugging-port=0','--user-data-dir='+profile,'--window-size='+width+','+height,'about:blank'],{stdio:['ignore','ignore','ignore']});
  let ws;
  try{
   let port;
   for(let i=0;i<100;i++){try{port=(await readFile(join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0];if(port)break;}catch{}await delay(100);}
   if(!port)throw Error('Chrome debugging port not available: '+name);
   let target;
-  for(let i=0;i<100;i++){try{const list=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();target=list.find(x=>x.type==='page'&&x.url.startsWith(origin+path));if(target)break;}catch{}await delay(100);}
+  for(let i=0;i<100;i++){try{const list=await(await fetch('http://127.0.0.1:'+port+'/json/list')).json();target=list.find(x=>x.type==='page'&&x.url==='about:blank');if(target)break;}catch{}await delay(100);}
   if(!target)throw Error('Chrome fixture target missing: '+name);
   ws=new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((res,rej)=>{ws.addEventListener('open',res,{once:true});ws.addEventListener('error',rej,{once:true});});
@@ -185,6 +185,7 @@ async function runCase(name,path,width,height){
   }
   // Real viewport emulation, including narrow mobile layout.
   await cdp('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width<500});
+  await cdp('Page.navigate',{url:origin+path});
   for(let i=0;i<240;i++){
    const r=await cdp('Runtime.evaluate',{expression:"document.querySelector('#wpa-browser-test-result')?.textContent",returnByValue:true});
    const raw=r?.result?.value;
