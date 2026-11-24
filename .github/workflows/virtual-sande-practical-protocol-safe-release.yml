@@ -76,7 +76,7 @@ jobs:
           grep -F "wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev/ask" scripts/virtual-sande-public-widget.js
           echo 'PASS: source only; canonical /ask unchanged, no new backend, no billed model calls'
   live-assets:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'pull_request' && github.head_ref == 'verify/virtual-sande-public-postrelease-20261124')
     needs: source-validation
     runs-on: ubuntu-latest
     timeout-minutes: 7
