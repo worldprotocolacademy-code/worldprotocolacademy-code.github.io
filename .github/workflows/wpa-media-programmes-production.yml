@@ -193,9 +193,15 @@ jobs:
         run: bash scripts/publish_protected_main.sh
 
       - name: Release boundary
+        env:
+          PROD_MODE: ${{ steps.mode.outputs.value }}
+          PROD_REASON: ${{ steps.mode.outputs.reason }}
         run: |
-          echo "Production draft is archived and awaits an actual human sign-off; a green run is not publication."
-          echo "Production pack generated and archived."
+          if [[ "$PROD_MODE" == "skip" ]]; then
+            echo "::notice title=WPA NEWS no new edition::Skipped generation; reason=${PROD_REASON:-already exists}."
+          else
+            echo "Production draft generated and archived. Mode: $PROD_MODE."
+          fi
           echo "No external social/video publication was attempted."
-          echo "Voice/avatar rendering remains dependent on approved canonical assets and production adapters."
-          echo "Human Gate remains required before recording/rendering release and platform delivery."
+          echo "Green workflow status is not proof of publication; Human Gate remains mandatory."
+          echo "Voice/avatar rendering requires approved canonical assets and separate adapters."
