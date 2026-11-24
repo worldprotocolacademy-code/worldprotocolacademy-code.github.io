@@ -66,7 +66,8 @@ test('Macedonian flags require law and viewing orientation, no invented automati
  assert.equal(b.precedence_verified,false);
  assert.equal(b.live_search_performed,false);
  assert.equal(b.model_invoked,false);
- assert.equal(b.references.length,2);
+ assert.equal(b.references.length,3);
+ assert.ok(b.references.some(x=>x.id==='MK-LEGAL-REGISTER'&&x.status.includes('2008_AMENDMENT_CONSOLIDATED_ARTICLES_NOT_VERIFIED')));
  assert.ok(b.references.some(x=>x.id==='MK-1997'&&x.status.includes('UNVERIFIED')));
  assert.equal(b.visual.kind,'flags');
  assert.deepEqual(b.visual.slots,['A','B','C']);
