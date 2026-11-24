@@ -1,0 +1,20 @@
+# Source-only candidate. No public route, preview or automatic deployment.
+name = "wpa-virtual-sande-private-pilot"
+main = "src/index.mjs"
+compatibility_date = "2026-11-24"
+workers_dev = false
+preview_urls = false
+
+[ai]
+binding = "AI"
+
+[vars]
+PILOT_ENABLED = "false"
+# Required during protected staging setup:
+# PILOT_ORIGIN = exact HTTPS origin of the protected staging site
+# ACCESS_ISSUER = verified Cloudflare Access issuer
+# ACCESS_AUD = exact Access application audience
+# SYNTHESIS_MODEL = approved Workers AI model id
+# FILE_SAFETY = reviewed service binding for scanning, MIME checks and archive limits.
+# Set explicit provider budget, Access policy, rate limits, and data-retention
+# conditions before enabling. Do not add a public route.
