@@ -137,7 +137,8 @@ export function buildOpenAlexURL({query,type='all',perPage=10,key=null}={}){
  return u;
 }
 export function candidateToDocument(item){
- const work=normaliseOpenAlexWork(item);
+ const work=item&&item.status==='DISCOVERED_OPEN_ACCESS_CANDIDATE_NOT_VERIFIED'?
+  item:normaliseOpenAlexWork(item);
  if(!work)throw new Error('OA_NOT_APPROVED_SOURCE');
  if(!work.abstract_excerpt||work.abstract_excerpt.length<25)
    throw new Error('OA_NO_ABSTRACT_TO_ANALYSE');
