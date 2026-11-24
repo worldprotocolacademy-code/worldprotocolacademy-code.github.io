@@ -197,6 +197,9 @@
       '.wpa-public-vs-send{border:0;border-radius:9px;background:#c9a84c;color:#081328;font-weight:800;padding:0 14px;cursor:pointer}',
       '.wpa-public-vs-send:disabled{opacity:.6;cursor:wait}',
       '.wpa-public-vs-tools{display:flex;justify-content:flex-end;padding:0 10px 9px;background:#f5f0e0}',
+      '.wpa-vs-global-notice{background:#f5f0e0;padding:3px 11px 7px;font-size:10px;color:#574a2f;border-top:1px solid #e1d5b4}',
+      '.wpa-vs-global-notice summary{font-weight:700;cursor:pointer}',
+      '.wpa-vs-global-notice-text{white-space:pre-wrap;max-height:140px;overflow:auto;font-size:10px}',
       '.wpa-public-vs-clear{border:0;background:transparent;color:#5a4220;font-size:11px;cursor:pointer}',
       '.wpa-public-vs-extra{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px 10px 3px;background:#f5f0e0;font-size:11px;color:#1a304b}',
       '.wpa-public-vs-attach,.wpa-public-vs-remove-image{border:1px solid #b7a05e;border-radius:7px;padding:6px 9px;background:#fff;color:#18304d;cursor:pointer;font-weight:600}',
@@ -718,6 +721,25 @@
     capList.className='wpa-vs-capabilities-list';
     capPanel.appendChild(capList);
     panel.querySelector('.wpa-public-vs-status').before(capPanel);
+
+    var globalDisclaimer=document.createElement('details');
+    globalDisclaimer.id='wpaPublicVsGlobalNotice';
+    globalDisclaimer.className='wpa-vs-global-notice';
+    var globalSummary=document.createElement('summary');
+    globalSummary.textContent=isEnglish()?
+      'Attribution · AI limitations · Privacy · Rights · Human review':
+      'Авторство · AI ограничувања · Приватност · Права · Човечка проверка';
+    var globalNoticeText=document.createElement('div');
+    globalNoticeText.className='wpa-vs-global-notice-text';
+    globalNoticeText.textContent=isEnglish()?
+      'Virtual Sande AI is an automated tool. Answers need verification and are not official or professional advice.':
+      'Virtual Sande AI е автоматска алатка. Одговорите бараат проверка и не се официјален или професионален совет.';
+    globalDisclaimer.append(globalSummary,globalNoticeText);
+    panel.appendChild(globalDisclaimer);
+    import('/scripts/virtual-sande-citation-policy.mjs').then(function(m){
+      if (!document.getElementById('wpaPublicVsGlobalNotice')) return;
+      globalNoticeText.textContent=m.disclaimerText(isEnglish()?'en':'mk');
+    }).catch(function(){/* fallback notice remains visible, never suppress it */});
 
     var fab = document.createElement('button');
     fab.id = 'wpaPublicVsFab';
