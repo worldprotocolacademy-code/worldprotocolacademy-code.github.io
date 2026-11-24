@@ -18,6 +18,7 @@ The canonical WPA historical source materials and Symbols & Protocol Lab are lef
 ## Functional client experience
 1. Open Virtual Sande's built-in Practical Protocol Planner (works locally even when optional GPT features are off).
 2. Select one of 12 scenarios: flags, anthems, precedence, motorcade, formal dining, conferences, correspondence, PR/media, safety, communicology, AI/AR, or other.
+   Alternatively, type the question in normal conversational Macedonian, English or Latin transliteration and click **Use my chat question**. This merely suggests a scenario; it does not infer legal jurisdiction or send the prompt.
 3. Select country / governing regime (unknown / North Macedonia / UN Headquarters / US / other), event type, host, guest, venue, states and role details and the concrete question.
 4. Click "Prepare a provisional plan". The result displays a four-point authority/context check, four domain-specific actions, unresolved missing details, source leads and an illustrative 2D sketch for flags, banquet seating or stage panel.
 5. Click "Ask Virtual Sande" to put a bounded and source-responsible question in the existing conversation input **without automatically sending it**. The user chooses whether to send and which existing source mode applies.
