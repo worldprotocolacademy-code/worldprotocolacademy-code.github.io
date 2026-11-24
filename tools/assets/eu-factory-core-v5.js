@@ -8,7 +8,20 @@
 })(typeof window !== 'undefined' ? window : null, function() {
   'use strict';
   var VERSION = '5.0.0';
-  var TODAY = '2026-11-15'; // snapshot date, NOT the dynamic user clock
+  // The snapshot date belongs in registry. Assessment time must advance with Skopje's calendar.
+  function localToday(now){
+    var date = now instanceof Date ? now : (now ? new Date(now) : new Date());
+    if(!Number.isFinite(date.getTime())) throw new Error('Invalid assessment date');
+    var parts = new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Skopje',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
+    var get = function(key){return parts.find(function(p){return p.type===key;}).value;};
+    return get('year')+'-'+get('month')+'-'+get('day');
+  }
+  function snapshotAgeDays(verifiedAsOf,today){
+    var asOf=toDate(verifiedAsOf),current=toDate(today)||localToday();
+    if(!asOf) return null;
+    var days=Math.floor((Date.parse(current+'T00:00:00Z')-Date.parse(asOf+'T00:00:00Z'))/86400000);
+    return Number.isFinite(days)?days:null;
+  }
   var TAG_RULES = {
     conference: [/конференц/i,/conference/i,/форум/i,/forum/i,/симпозиум/i,/symposium/i,/самит/i],
     journal: [/журнал/i,/journal/i,/списание/i,/publishing/i,/публикац/i,/peer.review/i,/open.access/i],
@@ -40,40 +53,64 @@
   function tagsFor(s) {
     return Object.keys(TAG_RULES).filter(function(k){return TAG_RULES[k].some(function(regex){return regex.test(text(s));});});
   }
-  function isOhrid(s){return /охрид|ohrid|инекс олгица|inex olgica/i.test(s)&&/конференц|conference|протокол|protocol|дипломат|diploma/i.test(s);}
-  function isJournal(s){return /wpa journal|wpa журнал|журнал|journal/i.test(s)&&/protocol|протокол|дипломат|diploma|wpa/i.test(s);}
-  function extractTitle(raw,kind){
-    if(kind==='conference')return 'Ohrid Protocol Conference 2027';
-    if(kind==='journal')return 'WPA Journal — European knowledge and dissemination project';
-    var words = text(raw).replace(/\s+/g,' ').replace(/^(сакам|sakam|i want|we want|ми треба|имам проект)\s*/i,'');
-    return (words.slice(0,90) + (words.length>90?'…':'')) || 'Нов проект';
+  function cleanIdea(raw){
+    return text(raw)
+      .replace(/^Област:\s*[^.\n]{1,60}\.\s*/i,'')
+      .replace(/Дај ми соодветни извори и изгради апликациско досие\.?/gi,'')
+      .replace(/\nПроценет буџет:\s*[^\n]*/gi,'')
+      .replace(/\nСтатус на апликант[^\n]*/gi,'')
+      .trim();
+  }
+  function extractTitle(raw,template){
+    if(template==='wpa-ohrid-2027')return 'Ohrid Protocol Conference 2027';
+    if(template==='wpa-journal')return 'WPA Journal — European knowledge and dissemination project';
+    var first=cleanIdea(raw).split(/\n+/)[0].replace(/\s+/g,' ')
+      .replace(/^(сакам|sakam|i want|we want|ми треба|имам проект)\s*/i,'').trim();
+    // Stop after a complete introductory sentence when present, never midword.
+    var match=first.match(/^(.+?[.!?])(?:\s|$)/);
+    if(match&&match[1].length>=16)first=match[1];
+    if(first.length>110){
+      var cut=first.slice(0,110);
+      first=(cut.lastIndexOf(' ')>50?cut.slice(0,cut.lastIndexOf(' ')):cut)+'…';
+    }
+    return first || 'Нов проект';
   }
   function parseProject(input){
-    var s=text(input.idea), extra=text(input.sourceText), combined=(s+'\n'+extra.slice(0,50000)).trim();
-    var kind = isOhrid(combined)?'conference':isJournal(combined)?'journal':tagsFor(combined).includes('health')?'health':tagsFor(combined).includes('agriculture')?'agriculture':tagsFor(combined).includes('education')?'education':'general';
+    var raw=text(input.idea),s=cleanIdea(raw),extra=text(input.sourceText),combined=(raw+'\n'+extra.slice(0,50000)).trim();
+    var categoryTags={farm:'agriculture',conference:'conference',media:'journalism',education:'education',
+      business:'general',other:'general'};
+    var inferred=unique(tagsFor(combined).concat(categoryTags[input.projectCategory]?[categoryTags[input.projectCategory]]:[]));
+    var template=(input.portfolioTemplateId==='wpa-ohrid-2027'&&/Ohrid Protocol Conference 2027/i.test(s))?
+      'wpa-ohrid-2027':(input.portfolioTemplateId==='wpa-journal'&&/WPA Journal/i.test(s)?'wpa-journal':'');
+    var kind=template==='wpa-ohrid-2027'||inferred.includes('conference')?'conference':
+      template==='wpa-journal'||inferred.includes('journal')?'journal':
+      inferred.includes('health')?'health':inferred.includes('agriculture')?'agriculture':
+      inferred.includes('education')?'education':'general';
     var evidence=[];
-    if(kind==='conference') evidence.push({fact:'Working venue: Inex Olgica (proposal; no confirmed reservation)',status:'SOURCE_SNAPSHOT',reference:'Ohrid 2027 MASTER working dossier'});
-    if(kind==='conference') evidence.push({fact:'Working 150-person cost subtotal: 17,604.80 EUR, not a final eligible project budget',status:'SOURCE_SNAPSHOT',reference:'Ohrid 2027 MASTER working dossier'});
-    if(kind==='journal') evidence.push({fact:'WPA Journal is a publishing/dissemination project asset, not automatically a legal applicant',status:'SOURCE_SNAPSHOT',reference:'WPA portfolio registry'});
+    if(template==='wpa-ohrid-2027'){
+      evidence.push({fact:'Working venue: Inex Olgica (proposal; no confirmed reservation)',status:'WPA_DEMO_SNAPSHOT_UNVERIFIED',reference:'Ohrid 2027 MASTER working dossier'});
+      evidence.push({fact:'Working 150-person cost subtotal: 17,604.80 EUR, not a final eligible project budget',status:'WPA_DEMO_SNAPSHOT_UNVERIFIED',reference:'Ohrid 2027 MASTER working dossier'});
+    }
+    if(template==='wpa-journal') evidence.push({fact:'WPA Journal is a publishing/dissemination project asset, not automatically a legal applicant',status:'WPA_DEMO_SNAPSHOT_UNVERIFIED',reference:'WPA portfolio registry'});
     var ds=toDate(input.startDate),de=toDate(input.endDate);
-    if(kind==='conference'&&!ds&&!de){ds='2027-03-01';de='2027-05-31';}
-    var tagset=unique(tagsFor(combined).concat(kind==='conference'?['conference','diplomacy','international','training']:kind==='journal'?['journal','research','international','education']:[]));
+    if(template==='wpa-ohrid-2027'&&!ds&&!de){ds='2027-03-01';de='2027-05-31';}
+    var tagset=unique(inferred.concat(kind==='conference'?['conference']:kind==='journal'?['journal','research']:[]));
     return {
-      id:kind,title:extractTitle(s||extra.slice(0,300),kind),
+      id:kind,title:extractTitle(s||extra.slice(0,300),template),portfolioTemplateId:template,
       idea:s||extra.slice(0,2000), sourceText:extra, tags:tagset,
       country:text(input.country)||'North Macedonia',
       legalApplicant:text(input.legalApplicant), legalType:text(input.legalType)||'unknown',
       consortiumCountries:text(input.consortiumCountries), startDate:ds,endDate:de,
       customCall:text(input.customCall), customCallUrl:text(input.customCallUrl),
       sourceFileName:text(input.sourceFileName),
-      knownBudgetEUR:kind==='conference'?17604.8:null,
-      assumptions:kind==='conference'?['March-May 2027 is a planning window, not a reserved date.','Speakers, applicants, partners, support and project period remain unconfirmed.']:[],
+      knownBudgetEUR:template==='wpa-ohrid-2027'?17604.8:null,
+      assumptions:template==='wpa-ohrid-2027'?['March-May 2027 is a planning window, not a reserved date.','Speakers, applicants, partners, support and project period remain unconfirmed.']:[],
       evidence:evidence
     };
   }
   function checkRoute(project,opp,asOf){
     var reasons=[], blockers=[], conditions=[], code='CONDITIONAL';
-    var current=toDate(asOf)||TODAY;
+    var current=toDate(asOf)||localToday();
     if(opp.status==='OPEN_AT_SNAPSHOT'){
       if(opp.deadline&&opp.deadline<current){blockers.push('Крајниот рок поминал според датумот на проверка.');code='NO_GO';}
       else conditions.push('Отвореноста е потврдена само според архивираната проверка '+opp.verifiedAsOf+'; повторно отворете го официјалниот извор.');
@@ -116,11 +153,11 @@
     if(project.endDate && opp.earliestAwardDate && project.endDate < opp.earliestAwardDate){
       blockers.push('Целата активност завршува пред индикативната одлука ('+opp.earliestAwardDate+').');code='NO_GO_TIMING';
     }
-    if(project.id==='conference' && opp.id==='erasmus-2027-cooperation-route'){
+    if(project.portfolioTemplateId==='wpa-ohrid-2027' && opp.id==='erasmus-2027-cooperation-route'){
       blockers.push('За настан март–мај 2027 не е докажан прифатлив период на спроведување според грантот; патеката е за идна/преместена поширока акција.');code='NO_GO_TIMING';
     }
     if(project.id==='journal'&&opp.id==='erasmus-2027-cooperation-route') conditions.push('Journal може да биде дисеминациски output на вистинско партнерство, не грант за редовни уреднички трошоци.');
-    if(project.id==='conference' && opp.id==='taiex-institutional-assistance') conditions.push('Може да се разработи само издвоена институционална работилница, не финансирање на целата конференција.');
+    if(project.portfolioTemplateId==='wpa-ohrid-2027' && opp.id==='taiex-institutional-assistance') conditions.push('Може да се разработи само издвоена институционална работилница, не финансирање на целата конференција.');
     if(code==='CONDITIONAL' && blockers.length)code='BLOCKED';
     if(code==='CONDITIONAL' && (opp.status==='PROGRAMME_ROUTE'||opp.status==='DISCOVERY_ONLY'||opp.status==='INDICATIVE_2027'||opp.status==='USER_SUPPLIED_UNVERIFIED'))code='WATCH';
     reasons.push((opp.eligibilityRule||'').trim());
@@ -130,7 +167,7 @@
     // Strategic relevance indicator, NOT funding eligibility/award scoring.
     var shared=(opp.topics||[]).filter(function(tag){return project.tags.indexOf(tag)>=0;});
     var strategic = Math.min(25,5+shared.length*5);
-    if(project.id==='conference'&&opp.id==='erasmus-2027-cooperation-route')strategic=23;
+    if(project.portfolioTemplateId==='wpa-ohrid-2027'&&opp.id==='erasmus-2027-cooperation-route')strategic=23;
     if(project.id==='journal'&&opp.id==='erasmus-2027-cooperation-route')strategic=22;
     var impact=Math.min(20,5+Math.max(0,shared.length)*3);
     var readiness=project.sourceText?12:(project.id==='conference'||project.id==='journal'?10:4);
@@ -153,12 +190,15 @@
     });
     var order={'CONDITIONAL':0,'WATCH':1,'BLOCKED':2,'NO_GO_TIMING':3,'NO_GO':4};
     candidates.sort(function(a,b){return (a.opportunity.id==='user-supplied-call'?-1:b.opportunity.id==='user-supplied-call'?1:0)||b.fit.score-a.fit.score|| (order[a.gate.status]??5)-(order[b.gate.status]??5);});
-    return {project:project,candidates:candidates,analyzedAt:new Date().toISOString(),sourceVerifiedAsOf:registry.verifiedAsOf,
+    var assessmentDate=toDate(now)||localToday();
+    var ageDays=snapshotAgeDays(registry.verifiedAsOf,assessmentDate);
+    return {project:project,candidates:candidates,analyzedAt:new Date().toISOString(),assessmentDate:assessmentDate,
+      sourceVerifiedAsOf:registry.verifiedAsOf,sourceSnapshotAgeDays:ageDays,sourceSnapshotStale:ageDays===null||ageDays>7||ageDays<0,
       overall:'ELIGIBILITY NOT VERIFIED — NO SUBMISSION AUTHORISED',
       note:'Фабриката изврши локална анализа врз датирани официјални извори. Нови/изменети повици не се проверени во живо во оваа сесија.'};
   }
   function objective(project){
-    if(project.id==='conference')return 'Да се развијат практични европски образовни и професионални ресурси за протокол, дипломатска комуникација, институционална координација и одговорна употреба на ВИ, со конференција во Охрид како еден од резултатите само ако календарот и правилата дозволуваат.';
+    if(project.id==='conference')return 'Да се развијат одржливи европски образовни и професионални ресурси усогласени со опишаната тема, со конференцијата како една од активностите само ако календарот и правилата дозволуваат.';
     if(project.id==='journal')return 'Да се зајакнат мултијазичната научна дисеминација, преносот на знаење и отворените образовни ресурси преку транснационална академска соработка, со зачувана независност на рецензиите и уредувањето.';
     if(project.id==='health')return 'Да се развие мерлива рамка за дигитална здравствена писменост и безбедно користење на информативни дигитални алатки, со човечки надзор и одделување од медицинска дијагноза.';
     if(project.id==='education')return 'Да се тестира и пренесе образовен модел со меѓународна соработка, достапност и мерливи исходи за учење.';
@@ -180,7 +220,7 @@
   }
   function narrative(project,sel){
     var kind=project.id;
-    var s=kind==='conference'?'Предлогот го третира настанот во Охрид како структурирана активност за меѓународна размена во рамки на поширок проект; финансирање на настанот во март–мај 2027 не се тврди без доказ за дозволен период.':
+    var s=kind==='conference'?'Предлогот ја третира конференцијата како активност во рамки на поширок проект; финансирање не се тврди без доказ за дозволен период на спроведување.':
     kind==='journal'?'Предлогот не бара субвенција за редовна работа на списанието, туку преносливи ресурси, академска соработка и дисеминација со целосно независна рецензија.':
     'Предлогот е концепциски. Потребата, корисниците, baseline и очекуваните резултати мора да се поткрепат со докази, а не со оптимистички претпоставки.';
     return 'Предлог на апликациски наратив: '+project.title+'. '+s+' Главната цел е: '+objective(project)+' Релевантноста и очекуваните резултати мора да се усогласат со вистинскиот предмет на избраниот повик пред поднесување.';
@@ -188,7 +228,7 @@
   function createDossier(analysis,selectionId){
     var project=analysis.project;var sel=analysis.candidates.find(function(c){return c.opportunity.id===selectionId;})||analysis.candidates[0];
     var opp=sel.opportunity, wps=workPackages(project), blockers=gaps(project,sel);
-    var today=new Date().toISOString().slice(0,10);
+    var today=localToday();
     var M=function(s){return s+'\n';}; var md='';
     md+=M('# EU APPLICATION FACTORY — РАБОТНО ДОСИЕ');
     md+=M('**Верзија:** '+VERSION+' · **Изработено:** '+today+' · **Статус:** DRAFT / ELIGIBILITY NOT VERIFIED');
@@ -264,5 +304,5 @@
     md+=M('4. Repeat independent eligibility + red-team review before the Human Gate.\n');
     return {markdown:md,manifest:{version:VERSION,project:project.title,selectedOpportunity:opp.id,callId:opp.callId,status:'DRAFT_NOT_SUBMISSION_READY',eligibility:sel.gate.status,sourceVerifiedAsOf:analysis.sourceVerifiedAsOf,files:['application-dossier.md','application-manifest.json'],blockers:blockers},opportunity:opp,workPackages:wps,gaps:blockers};
   }
-  return {VERSION:VERSION,TAG_RULES:TAG_RULES,tagsFor:tagsFor,parseProject:parseProject,checkRoute:checkRoute,scoreRoute:scoreRoute,analyze:analyze,workPackages:workPackages,createDossier:createDossier,objective:objective,safeName:safeName,money:money};
+  return {VERSION:VERSION,TAG_RULES:TAG_RULES,tagsFor:tagsFor,parseProject:parseProject,checkRoute:checkRoute,scoreRoute:scoreRoute,analyze:analyze,workPackages:workPackages,createDossier:createDossier,objective:objective,safeName:safeName,money:money,localToday:localToday,snapshotAgeDays:snapshotAgeDays,cleanIdea:cleanIdea};
 });
