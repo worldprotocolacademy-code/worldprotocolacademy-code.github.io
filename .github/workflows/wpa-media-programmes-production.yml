@@ -16,6 +16,10 @@ on:
       - 'media/data/programmes.json'
       - 'media/data/presenters.json'
       - '.github/workflows/wpa-media-programmes-production.yml'
+      - '.github/workflows/wpa-news-watchdog.yml'
+      - 'scripts/wpa_news_*.py'
+      - 'tests/test_wpa_news_*.py'
+      - 'ops/wpa-news-cloudflare/**'
       - 'tools/data/daily-protocol-minute-30-days.json'
       - 'scripts/generate_wpa_institute_daily.py'
   workflow_dispatch:
@@ -68,6 +72,7 @@ jobs:
           test -s .wpa-media-selftest/web/status.json
           test -s .wpa-media-selftest/web/teleprompter.md
           python -m unittest discover -s tests -p 'test_wpa_news_*.py' -v
+          node --test ops/wpa-news-cloudflare/test-cron-worker.mjs
 
   produce:
     if: ${{ github.event_name != 'pull_request' }}
