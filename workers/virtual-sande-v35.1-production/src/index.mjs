@@ -8,9 +8,6 @@ const routed = withStrategicPromptRouting(base);
 
 export default {
   async fetch(request, env, ctx) {
-    // Optional read-only multimodal pilot; returns null for all canonical routes.
-    const agent = await maybeHandleAgent(request, env);
-    if (agent) return agent;
     const symbols = await tryHandleSymbols(request, env);
     if (symbols) return symbols;
     return routed.fetch(request, env, ctx);
