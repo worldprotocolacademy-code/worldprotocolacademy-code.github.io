@@ -71,7 +71,8 @@ test('official API is only invoked by bounded discovery; 429 fails closed',async
   return new Response(JSON.stringify(sample()),{status:200,headers:{'Content-Type':'application/json'}});
  };
  const result=await discoverOpenResearch({query:'diplomacy and protocol',fetchFn});
- assert.equal(result.status,200);
+ assert.equal(result.http_status,200);
+ assert.equal(result.status,'METADATA_DISCOVERY_NOT_FULLTEXT');
  assert.equal(result.ok,true);
  assert.equal(result.fulltext_downloaded,false);
  assert.equal(result.paid_ai_called,false);
@@ -102,7 +103,7 @@ test('weekly provider failure does not create a fabricated success snapshot',asy
  let calls=0;
  await assert.rejects(buildOpenResearchSnapshot({
   pause:async()=>{},
-  fetchFn:async()=>{calls++;return new Response('',{status:calls===2?503:200});}
+  fetchFn:async()=>{calls++;return new Response(calls===2?'':JSON.stringify(sample()),{status:calls===2?503:200});}
  }),/OA_SNAPSHOT_PROVIDER_FAILED/);
  assert.equal(calls,2);
 });
