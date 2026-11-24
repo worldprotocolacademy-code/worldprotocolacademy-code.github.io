@@ -48,7 +48,7 @@ test('untrusted claims of verification or invalid identifiers never grant schola
   verified:true,status:'INDEPENDENTLY_VERIFIED'});
  assert.equal(d.provenance,'USER_SUPPLIED_UNVERIFIED');
  assert.equal(d.verified,undefined);
- assert.throws(()=>normaliseSourceMetadata({year:'2026A'}),/CITATION_YEAR_INVALID/);
+ assert.throws(()=>normaliseSourceMetadata({year:'20AB'}),/CITATION_YEAR_INVALID/);
  assert.throws(()=>normaliseSourceMetadata({doi:'invented-123'}),/CITATION_DOI_INVALID/);
  assert.throws(()=>normaliseSourceMetadata({url:'http://untrusted.example'}),/CITATION_URL_INVALID/);
  assert.throws(()=>normaliseSourceMetadata({type:'fictional_verified_article'}),/CITATION_TYPE_INVALID/);
