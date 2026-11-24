@@ -5,6 +5,11 @@ on:
       - 'scripts/virtual-sande-proactive-intent.mjs'
       - 'scripts/virtual-sande-public-widget.js'
       - 'tests/virtual-sande-proactive-intent.test.mjs'
+      - 'scripts/virtual-sande-voice-documents.mjs'
+      - 'scripts/virtual-sande-private-workspace-client.mjs'
+      - 'tools/virtual-sande/wpa-private-workspace-pilot.mjs'
+      - 'tests/virtual-sande-private-workspace-pilot.test.mjs'
+      - 'workers/virtual-sande-private-pilot/**'
       - '.github/workflows/virtual-sande-proactive-intent-ci.yml'
   workflow_dispatch:
 permissions:
@@ -23,5 +28,8 @@ jobs:
           node --check scripts/virtual-sande-public-widget.js
           node --check scripts/virtual-sande-voice-documents.mjs
           node --check scripts/virtual-sande-proactive-intent.mjs
-      - name: Test contextual inference
-        run: node --test tests/virtual-sande-proactive-intent.test.mjs
+          node --check scripts/virtual-sande-private-workspace-client.mjs
+          node --check tools/virtual-sande/wpa-private-workspace-pilot.mjs
+          node --check tests/virtual-sande-private-workspace-pilot.test.mjs
+      - name: Test contextual inference and private pilot with mocked services
+        run: node --test tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-private-workspace-pilot.test.mjs
