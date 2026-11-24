@@ -16,6 +16,8 @@
   var busy = false;
   var history = [];
   var requestVersion = 0; // Reject stale responses after edit or clear.
+  var proactiveIntent = null;
+  function refreshProactive() { try { proactiveIntent?.refresh(); } catch (_) { /* Keep the core chat available. */ } }
   var protocolPractice = null; // WPA_PROTOCOL_PLANNER_RC1; locally computed and opt-in.
 
   function isExcluded() {
@@ -397,6 +399,7 @@
     addMessage(question, 'user', undefined, history.length);
     var working = showWorking();
     history.push({ role: 'user', content: question });
+    refreshProactive();
 
     var button = document.getElementById('wpaPublicVsSend');
     var status = document.getElementById('wpaPublicVsStatus');
@@ -409,6 +412,7 @@
       if (working) working.remove();
       addMessage(result.answer, 'bot', elapsedSeconds(startedAt));
       history.push({ role: 'assistant', content: result.answer });
+      refreshProactive();
       if (status) status.textContent = result.local ? copy().offline : '';
       if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
     } catch (error) {
@@ -465,6 +469,7 @@
             var input=document.getElementById('wpaPublicVsInput');
             if(!input)return;
             input.value=String(question||'').slice(0,690);
+            refreshProactive();
             if(!panel.classList.contains('open')){
               panel.classList.add('open');
               fab.setAttribute('aria-expanded','true');
@@ -477,6 +482,11 @@
         // The original academic chat stays operational if planner assets fail.
         protocolPractice=null;
       });
+
+    // Local suggestions only; typing never sends a background request.
+    import('/scripts/virtual-sande-proactive-intent.mjs?v=20261124-rc1')
+      .then(function(mod){ proactiveIntent=mod.mountProactiveIntent(panel,{getHistory:function(){return history.slice();}}); })
+      .catch(function(){ proactiveIntent=null; });
 
     // Progressive enhancement; existing chat and protocol planner are untouched.
     import('/scripts/virtual-sande-voice-documents.mjs?v=20261124-rc1')
@@ -512,7 +522,14 @@
       history = [];
       if(protocolPractice)protocolPractice.reset();
       document.getElementById('wpaPublicVsMsgs').innerHTML = '';
+      var clearInput = document.getElementById('wpaPublicVsInput');
+      var clearSend = document.getElementById('wpaPublicVsSend');
+      var clearStatus = document.getElementById('wpaPublicVsStatus');
+      if (clearInput) clearInput.value = '';
+      if (clearSend) clearSend.disabled = false;
+      if (clearStatus) clearStatus.textContent = '';
       addMessage(copy().welcome, 'bot');
+      refreshProactive();
     });
 
     document.addEventListener('keydown', function (event) {
