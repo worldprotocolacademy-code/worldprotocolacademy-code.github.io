@@ -47,7 +47,7 @@ export async function discoverOpenResearch({query,type='all',env={},fetchFn=fetc
   const text=await readLimitedText(response,FORAGING_LIMITS.maxResponseBytes);
   const page=JSON.parse(text);
   const data=normaliseOpenAlexPage(page,{query,type,perPage:FORAGING_LIMITS.maxItems});
-  return {status:200,ok:true,...data,query_shared_with_provider:true,
+  return {http_status:200,ok:true,...data,query_shared_with_provider:true,
     provider_data_may_be_stale:true,fulltext_downloaded:false,paid_ai_called:false};
  }catch{return {status:502,error:'OA_PROVIDER_MALFORMED_OR_TOO_LARGE'};}
 }
