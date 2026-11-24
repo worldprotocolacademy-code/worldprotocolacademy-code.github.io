@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {maybeHandleAgent,__test} from '../workers/virtual-sande-v35.1-production/src/agent-gateway.mjs';
+import {maybeHandleAgent,__test} from '../workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs';
 
 const ORIGIN='https://worldprotocolacademy.mk';
 const png='data:image/png;base64,'+Buffer.concat([Buffer.from('89504e470d0a1a0a','hex'),Buffer.alloc(70)]).toString('base64');
