@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/virtual-sande-public-widget.js'
       - 'scripts/virtual-sande-public-voice.mjs'
+      - 'scripts/virtual-sande-local-preview.mjs'
       - 'scripts/virtual-sande-proactive-intent.mjs'
       - 'scripts/virtual-sande-protocol-practice*.mjs'
       - 'scripts/wpa-performance.js'
@@ -28,8 +29,9 @@ jobs:
         run: |
           node --check scripts/virtual-sande-public-widget.js
           node --check scripts/virtual-sande-public-voice.mjs
+          node --check scripts/virtual-sande-local-preview.mjs
           node --check scripts/virtual-sande-proactive-intent.mjs
-          node --test tests/virtual-sande-public-transport.test.mjs tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-practical-protocol.test.mjs
+          node --test tests/virtual-sande-public-transport.test.mjs tests/virtual-sande-proactive-intent.test.mjs tests/virtual-sande-practical-protocol.test.mjs tests/virtual-sande-public-local-preview.test.mjs
       - name: Desktop and mobile Chrome fixture acceptance
         shell: bash
         run: |
