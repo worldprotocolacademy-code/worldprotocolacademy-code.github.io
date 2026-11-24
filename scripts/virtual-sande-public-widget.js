@@ -515,27 +515,65 @@
     if (busy) return;
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
-    if (!question) return;
+    if (!question && !pendingImage) return;
+    if (!question && pendingImage) question = isEnglish() ?
+      'Please describe the image carefully and identify details that require verification.' :
+      'Опиши ја фотографијата внимателно и разграничи што е видливо од тоа што треба да се провери.';
+
+    var useAgent = usingAgent();
+    var status = document.getElementById('wpaPublicVsStatus');
+    if (useAgent && !agentCapabilities.enabled) {
+      if (status) status.textContent = copy().imageUnavailable;
+      return;
+    }
+    if (useAgent && !document.getElementById('wpaPublicVsConsent').checked) {
+      if (status) status.textContent = copy().consentRequired;
+      return;
+    }
+    if (useAgent && !challengeToken) {
+      if (status) status.textContent = copy().captchaRequired;
+      ensureChallenge();
+      return;
+    }
 
     busy = true;
-    input.value = '';
-    addMessage(question, 'user');
-    history.push({ role: 'user', content: question });
+    var userLabel = (pendingImage ? '📷 ' + pendingImage.name + '\n' : '') + question;
+    addMessage(userLabel, 'user');
 
     var button = document.getElementById('wpaPublicVsSend');
-    var status = document.getElementById('wpaPublicVsStatus');
     if (button) button.disabled = true;
     if (status) status.textContent = copy().connecting;
-
     try {
-      var result = await requestAnswer(question);
+      // Academic source retrieval is retained for the standard path; image/general mode is separate.
+      var result = useAgent ? await requestAgent(question) : await requestAnswer(question);
       addMessage(result.answer, 'bot');
+      history.push({ role: 'user', content: question });
       history.push({ role: 'assistant', content: result.answer });
-      if (status) status.textContent = result.local ? copy().offline : '';
-      if (result.local) window.setTimeout(function () { if (status && status.textContent === copy().offline) status.textContent = ''; }, 2200);
+      if (history.length > 12) history = history.slice(-12);
+      if (input) input.value = '';
+      showFollowups(result.data, question);
+      if (useAgent) {
+        resetChallenge();
+        document.getElementById('wpaPublicVsConsent').checked = false;
+        clearImage();
+        if (status) status.textContent = isEnglish() ?
+          'AI-assisted pilot. This answer is not independently source-verified.' :
+          'AI пилот: одговорот не е независно изворно проверен.';
+      } else if (status) {
+        status.textContent = result.local ? copy().offline : '';
+      }
     } catch (error) {
-      addMessage(copy().error, 'bot');
+      if (useAgent) resetChallenge();
+      var message = copy().error;
+      if (useAgent && error && error.message === 'AGENT_HTTP_429') {
+        message = isEnglish() ? 'Request limit reached. Please try later.' :
+          'Достигнато е ограничувањето на барања. Обидете се подоцна.';
+      } else if (useAgent && error && (error.message === 'AGENT_HTTP_403' || error.message === 'AGENT_HTTP_503')) {
+        message = copy().captchaRequired + ' ' + copy().imageUnavailable;
+      }
+      addMessage(message, 'bot');
       if (status) status.textContent = '';
+      // Keep the draft text / attached image in the browser so the user can retry.
     } finally {
       busy = false;
       if (button) button.disabled = false;
