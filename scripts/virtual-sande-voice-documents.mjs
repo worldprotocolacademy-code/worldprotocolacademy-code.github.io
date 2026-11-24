@@ -51,6 +51,7 @@ export function mountVoiceDocuments(panel) {
   toolbar.style.cssText='display:flex;gap:5px;flex-wrap:wrap';
   const button=(label)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='border:1px solid #bcae87;border-radius:7px;background:#fff;color:#132844;padding:5px 8px;cursor:pointer';return b;};
   const mic=button('🎙 '+t.mic),speech=button('🔊 '+t.speak),stopSpeak=button('■ '+t.stopSpeak),attach=button('📎 '+t.attach);
+  mic.dataset.wpaAction='dictate';speech.dataset.wpaAction='read';stopSpeak.dataset.wpaAction='stop-voice';attach.dataset.wpaAction='attach';speech.setAttribute('aria-pressed','false');
   toolbar.append(mic,speech,stopSpeak,attach);
   const choose=document.createElement('input');choose.type='file';choose.multiple=true;choose.hidden=true;choose.accept='.pdf,.docx,.md,.markdown,.csv,.json,.jpg,.jpeg,.png,.txt';
   const zone=document.createElement('div');
@@ -60,7 +61,7 @@ export function mountVoiceDocuments(panel) {
   const status=document.createElement('p');status.setAttribute('role','status');status.style.cssText='margin:5px 0;color:#735523';status.textContent=t.caveat;
   const list=document.createElement('ul');list.style.cssText='list-style:none;margin:5px 0;padding:0;max-height:100px;overflow:auto';
   const removeAll=button(t.clear);
-  const processButton=button(local.process);
+  const processButton=button(local.process);processButton.dataset.wpaAction='process-documents';removeAll.dataset.wpaAction='remove-all-documents';
   const consentWrap=document.createElement('label');
   const consent=document.createElement('input');consent.type='checkbox';
   consentWrap.style.cssText='display:flex;gap:6px;align-items:flex-start;margin:5px 0;font-size:11px';
@@ -68,12 +69,21 @@ export function mountVoiceDocuments(panel) {
   consentWrap.hidden=!client.configured;
   processButton.hidden=!client.configured;
   const updateState=()=>{processButton.disabled=!consent.checked||processing||!staged.length||staged.every(f=>processed.has(f));};
-  consent.onchange=()=>{consented=consent.checked;updateState();};
+  consent.onchange=()=>{
+    consented=consent.checked;
+    if(!consented){
+      generation++;conversionController?.abort();conversionController=null;processing=false;
+      processed.clear();status.textContent=local.need;
+      // Never switch an already-private conversation back to public on revocation.
+      panel.dispatchEvent(new Event('wpa-private-consent-revoked'));
+    }
+    render();
+  };
   mic.title=local.voice;
   const voiceNotice=document.createElement('span');voiceNotice.textContent=local.voice;voiceNotice.style.cssText='display:block;font-size:10px;color:#665b43;margin-top:3px';
   const heading=document.createElement('div');heading.textContent=t.files;heading.style.fontWeight='700';
   const docDrawer=document.createElement('details');
-  docDrawer.style.cssText='max-height:170px;overflow:auto;margin-top:4px';
+  docDrawer.style.cssText='max-height:170px;overflow:auto;margin-top:4px';docDrawer.dataset.wpaDocumentTray='';
   const summary=document.createElement('summary');
   summary.style.cssText='cursor:pointer;font-weight:700';
   summary.textContent=t.files+' — 0/20';
@@ -84,14 +94,15 @@ export function mountVoiceDocuments(panel) {
   status.textContent=client.configured?local.need:local.unavailable;
   form.parentNode.insertBefore(root,form);
   let reading=false;
+  function announceVoice(message){const chatStatus=panel.querySelector('#wpaPublicVsStatus');if(chatStatus)chatStatus.textContent=message;}
   function render(){
     list.replaceChildren();
     staged.forEach((f,i)=>{
       const li=document.createElement('li');li.style.cssText='display:flex;gap:8px;align-items:center;justify-content:space-between';
-      const label=document.createElement('span');label.textContent=f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB) · '+(processed.has(f)?local.ready:local.select);
+      const label=document.createElement('span');label.style.cssText='overflow-wrap:anywhere;min-width:0';label.textContent=f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB) · '+(processed.has(f)?local.ready:local.select);
       const del=button('× '+t.remove);del.setAttribute('aria-label',t.remove+' '+f.name);
       del.disabled=processing;
-      del.onclick=()=>{processed.delete(f);staged.splice(i,1);render();};
+      del.onclick=()=>{processed.delete(f);staged.splice(i,1);render();panel.dispatchEvent(new Event('wpa-documents-changed'));};
       li.append(label,del);list.append(li);
     });
     heading.textContent=t.files+' — '+staged.length+'/20 · '+processed.size+' '+local.ready;
@@ -113,6 +124,7 @@ export function mountVoiceDocuments(panel) {
       staged.push(file);
     }
     render();status.textContent=(issue?issue+' ':'')+(client.configured?local.need:local.unavailable);
+    if(staged.length)panel.dispatchEvent(new Event('wpa-documents-changed'));
   }
   attach.onclick=()=>{docDrawer.open=true;choose.click();};choose.onchange=()=>{addFiles(Array.from(choose.files||[]));choose.value='';};
   zone.onclick=()=>choose.click();
@@ -122,10 +134,11 @@ export function mountVoiceDocuments(panel) {
   zone.addEventListener('drop',(e)=>{e.stopPropagation();addFiles(Array.from(e.dataTransfer?.files||[]));});
   panel.addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types||[]).includes('Files'))e.preventDefault();});
   panel.addEventListener('drop',e=>{const files=Array.from(e.dataTransfer?.files||[]);if(files.length){e.preventDefault();addFiles(files);}});
-  removeAll.onclick=()=>{staged.length=0;processed.clear();render();status.textContent=privateMode?local.mode:(client.configured?local.need:local.unavailable);};
+  removeAll.onclick=()=>{staged.length=0;processed.clear();render();status.textContent=privateMode?local.mode:(client.configured?local.need:local.unavailable);panel.dispatchEvent(new Event('wpa-documents-changed'));};
   processButton.onclick=async()=>{
     if(!client.configured||!consent.checked||processing)return;
     processing=true;consented=true;privateMode=true;
+    panel.dispatchEvent(new Event('wpa-documents-changed'));
     const myGeneration=generation;conversionController=new AbortController();const signal=conversionController.signal;
     render();
     for(const f of staged.slice()){
@@ -153,30 +166,54 @@ export function mountVoiceDocuments(panel) {
       if(recogniser){recogniser.stop();return;}
       try{
         const r=new Recognition();recogniser=r;r.lang=english?'en-GB':'mk-MK';r.interimResults=false;r.continuous=false;
-        r.onresult=(e)=>{const s=Array.from(e.results).map(x=>x[0]?.transcript||'').join(' ');input.value=(input.value+' '+s).trim().slice(0,input.maxLength>0?input.maxLength:700);input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();};
-        r.onerror=(e)=>{status.textContent=e.error||t.noSpeech;};
-        r.onend=()=>{recogniser=null;mic.textContent='🎙 '+t.mic;};
+        r.onresult=(e)=>{
+          if(recogniser!==r)return;
+          const s=Array.from(e.results).map(x=>x[0]?.transcript||'').join(' ');
+          const next=(input.value+' '+s).trim();
+          if(next.length>(input.maxLength>0?input.maxLength:700)){
+            announceVoice(english?'Dictation exceeds the message limit. Shorten the draft before continuing.':'Диктатот ја надминува должината на пораката. Скратете го текстот пред да продолжите.');return;
+          }
+          input.value=next;input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();
+        };
+        r.onerror=(e)=>{if(recogniser===r)announceVoice(e.error||t.noSpeech);};
+        r.onend=()=>{if(recogniser===r){recogniser=null;mic.textContent='🎙 '+t.mic;}};
         r.start();mic.textContent='■ '+t.stop;
-      }catch(e){recogniser=null;status.textContent=t.noSpeech;}
+      }catch(e){recogniser=null;mic.textContent='🎙 '+t.mic;announceVoice(t.noSpeech);}
     };
   }else{mic.disabled=true;mic.title=t.noSpeech;}
   const synth=window.speechSynthesis;
+  function stopVoice(){
+    const current=recogniser;recogniser=null;mic.textContent='🎙 '+t.mic;
+    try{current?.abort();}catch{}
+    reading=false;speech.style.background='#fff';speech.setAttribute('aria-pressed','false');synth?.cancel();
+  }
+  function speakText(value){
+    if(!synth||!value)return;
+    const language=english?'en-GB':'mk-MK';
+    const voice=synth.getVoices().find(v=>v.lang.toLowerCase()===language.toLowerCase())||synth.getVoices().find(v=>v.lang.toLowerCase().startsWith(language.slice(0,2).toLowerCase()));
+    // Do not silently use an unrelated voice for Macedonian.
+    if(!voice&&!english){announceVoice(english?'No matching voice is installed.':'Нема инсталиран македонски глас во прелистувачот.');return;}
+    synth.cancel();
+    // Queue all text in bounded utterances, avoiding silent truncation.
+    const words=value.match(/.{1,900}(?:\s|$)|.{1,900}/gs)||[];
+    for(const part of words){const utter=new SpeechSynthesisUtterance(part);utter.lang=language;if(voice)utter.voice=voice;synth.speak(utter);}
+  }
   speech.onclick=()=>{
-    if(!synth){status.textContent=t.noTts;return;}
-    reading=!reading;speech.style.background=reading?'#ead8a5':'#fff';
+    if(!synth){announceVoice(t.noTts);return;}
+    reading=!reading;speech.style.background=reading?'#ead8a5':'#fff';speech.setAttribute('aria-pressed',String(reading));
     if(!reading){synth.cancel();return;}
-    const last=panel.querySelector('.wpa-public-vs-row:not(.user):last-child .wpa-public-vs-bubble');
-    if(last){synth.cancel();const utter=new SpeechSynthesisUtterance(last.textContent||'');utter.lang=english?'en-GB':'mk-MK';synth.speak(utter);}
+    const replies=panel.querySelectorAll('.wpa-public-vs-row:not(.user) .wpa-public-vs-message-text');
+    const last=replies[replies.length-1];if(last)speakText(last.textContent);
   };
-  stopSpeak.onclick=()=>{reading=false;speech.style.background='#fff';synth?.cancel();};
+  stopSpeak.onclick=stopVoice;
   const msgs=panel.querySelector('#wpaPublicVsMsgs');
   if(msgs) {
     const observer=new MutationObserver((records)=>{
       if(!reading||!synth)return;
       for(const record of records)for(const node of record.addedNodes){
         if(!(node instanceof Element)||!node.classList.contains('wpa-public-vs-row')||node.classList.contains('user'))continue;
-        const response=node.querySelector('.wpa-public-vs-bubble')?.textContent;
-        if(response){synth.cancel();const u=new SpeechSynthesisUtterance(response.slice(0,5000));u.lang=english?'en-GB':'mk-MK';synth.speak(u);}
+        const response=node.querySelector('.wpa-public-vs-message-text')?.textContent;
+        if(response)speakText(response);
       }
     });
     observer.observe(msgs,{childList:true});
@@ -185,12 +222,12 @@ export function mountVoiceDocuments(panel) {
   clear?.addEventListener('click',()=>{
     generation++;conversionController?.abort();conversionController=null;processing=false;
     staged.length=0;processed.clear();consented=false;consent.checked=false;privateMode=false;
-    try{recogniser?.abort();}catch{}synth?.cancel();reading=false;speech.style.background='#fff';
+    stopVoice();
     render();docDrawer.open=false;status.textContent=client.configured?local.need:local.unavailable;
   });
   render();
   return {
-    getStagedFiles:()=>staged.slice(),isServerConnected:client.configured,
+    getStagedFiles:()=>staged.slice(),isServerConnected:client.configured,stopVoice,
     isPrivate:()=>privateMode||staged.length>0,
     canAnalyze:()=>client.configured&&consented&&consent.checked&&!processing&&processed.size===staged.length,
     blockedMessage:()=>client.configured?local.need:local.unavailable,
