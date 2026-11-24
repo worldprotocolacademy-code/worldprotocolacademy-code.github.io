@@ -267,8 +267,10 @@
     return fetch(url, requestOptions).finally(function () { window.clearTimeout(timer); });
   }
 
+  // Separate, opt-in model-only pilot. Never route images through canonical /ask.
+  var AGENT_PILOT_ROOT = 'https://wpa-virtual-sande-agent-pilot.worldprotocolacademy.workers.dev';
   function agentUrl(route) {
-    return ENDPOINTS[0].replace(/\/ask$/, route);
+    return AGENT_PILOT_ROOT + route;
   }
 
   function usingAgent() {
