@@ -149,7 +149,7 @@ export const PRACTICAL_CASES=Object.freeze([
 export function inferPracticalCase(question){
  const q=String(question||'').normalize('NFKC').toLowerCase().slice(0,2000);
  if(/кортеж|моторкејд|моторкад|motorcade|convoy|motorkejd|kortez|службен.*возил/.test(q))return 'motorcade';
- if/прес-конференц|пресс-конференц|press conference|spokesperson|портпарол/.test(q)return 'public_relations';
+ if(/прес-конференц|пресс-конференц|press conference|spokesperson|портпарол/.test(q))return 'public_relations';
  if(/знам(е|иња)|znaminj|zname|flags?|flagpole|јарбол|државн.*симбол/.test(q))return 'flags';
  if(/химн|himn|anthem|national song/.test(q))return 'anthems';
  if(/свечен.*(?:ручек|вечер)|ручек|вечера|банкет|банкетн|ruchek|rucek|vechera|vecera|dinner|luncheon|banquet|формалн.*маса/.test(q))return 'formal_dining';
