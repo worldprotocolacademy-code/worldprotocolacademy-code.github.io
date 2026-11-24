@@ -225,7 +225,8 @@ export async function maybeHandleAgent(request,env={},fetchFn=fetch) {
     const result=await discoverOpenResearch({
       query:url.searchParams.get('q')||'',type:url.searchParams.get('type')||'all',env,fetchFn
     });
-    return reply(request,env,result.status,result.status===200?result:{ok:false,error:result.error});
+    const httpStatus=Number.isInteger(result.http_status)?result.http_status:result.status;
+    return reply(request,env,httpStatus,httpStatus===200?result:{ok:false,error:result.error});
   }
   if (request.method!=='POST') return reply(request,env,405,{ok:false,error:'METHOD_NOT_ALLOWED'});
   if (!ready(env)) return reply(request,env,503,{ok:false,error:'AGENT_NOT_CONFIGURED'});
