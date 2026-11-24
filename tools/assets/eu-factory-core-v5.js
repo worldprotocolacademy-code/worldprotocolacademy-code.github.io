@@ -65,7 +65,7 @@
     if(template==='wpa-ohrid-2027')return 'Ohrid Protocol Conference 2027';
     if(template==='wpa-journal')return 'WPA Journal — European knowledge and dissemination project';
     var first=cleanIdea(raw).split(/\n+/)[0].replace(/\s+/g,' ')
-      .replace(/^(сакам|sakam|i want|we want|ми треба|имам проект)\s*/i,'').trim();
+      .trim();
     // Stop after a complete introductory sentence when present, never midword.
     var match=first.match(/^(.+?[.!?])(?:\s|$)/);
     if(match&&match[1].length>=16)first=match[1];
