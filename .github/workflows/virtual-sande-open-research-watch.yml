@@ -38,7 +38,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if git diff --quiet -- data/open-research/candidates-latest.json; then
+          git add -- data/open-research/candidates-latest.json
+          if git diff --cached --quiet -- data/open-research/candidates-latest.json; then
             echo "No metadata changes: no PR required."
             exit 0
           fi
