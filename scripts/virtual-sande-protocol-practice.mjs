@@ -217,7 +217,7 @@ export function buildProtocolBrief(raw,{lang='mk'}={}){
  if(p.scenario==='formal_dining')visual={kind:'dining',slots:['1','2','3','4','5','6','7','8'],
   note:l==='en'?'Illustrative eight-seat table, no guest-of-honour assignment.':
   'Примерна маса со осум места, без одредување на почесно место.'};
- if(p.scenario==='conference')visual={kind:'conference',slots:['A','B','C','D'],
+ if(p.scenario==='conferences')visual={kind:'conference',slots:['A','B','C','D'],
   note:l==='en'?'Illustrative panel; seat order not determined.':
   'Примерна панел-маса; редоследот на места не е определен.'};
  return Object.freeze({
