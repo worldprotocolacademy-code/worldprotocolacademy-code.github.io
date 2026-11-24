@@ -23,10 +23,10 @@ function installMocks(){
  window.fetch=(input,options={})=>{
   const url=new URL(typeof input==='string'?input:input.url,location.href);
   if(url.hostname==='wpa-virtual-sande-v35-1-production.worldprotocolacademy.workers.dev'&&url.pathname==='/ask'){
-   const question=JSON.parse(options.body).message;
-   const req={question,signal:options.signal};window.testRequests.push({type:'public',question});
+   const payload=JSON.parse(options.body),question=payload.message;
+   const req={question,signal:options.signal};window.testRequests.push({type:'public',question,payload});
    // Intentionally allow a cancelled request to settle late, testing stale-output suppression.
-   return new Promise(resolve=>window.publicPending.push({...req,resolve:text=>resolve(new Response(JSON.stringify({answer:text}),{headers:{'Content-Type':'application/json'}}))}));
+   return new Promise(resolve=>window.publicPending.push({...req,resolve:text=>resolve(new Response(JSON.stringify(typeof text==='string'?{answer:text}:text),{headers:{'Content-Type':'application/json'}}))}));
   }
   if(url.origin===location.origin)return originalFetch(input,options);
   return Promise.reject(new Error('Unexpected network request in isolated browser test'));
@@ -149,6 +149,22 @@ async function browserSuite(){
    clear();
    ok(messages().length===1&&byId('wpaPublicVsInput').value==='','clear restores new conversation');
    ok(window.testRequests.every(r=>r.type==='public'),'all submitted requests used only existing public endpoint');
+   dropFiles([fixtureFile('private-flag-photo.txt','NEVER_TRANSMIT_ATTACHMENT_FIXTURE')]);
+   let confirmations=0;window.confirm=()=>{confirmations++;return false;};
+   type('Analyse the attached flag arrangement');send();await pause();
+   ok(confirmations===1&&window.publicPending.length===4&&byId('wpaPublicVsInput').value==='Analyse the attached flag arrangement','declined general-only confirmation preserves the unsent draft');
+   window.confirm=()=>{confirmations++;return true;};
+   send();await wait(()=>window.publicPending.length===5,'explicit general-only send');
+   const payload=window.testRequests.at(-1).payload;
+   ok(!JSON.stringify(payload).includes('NEVER_TRANSMIT_ATTACHMENT_FIXTURE')&&!JSON.stringify(payload).includes('private-flag-photo.txt'),'attachments never leak into general endpoint');
+   window.publicPending[4].resolve({answer:'A general flag arrangement has several context-dependent considerations. When',sources:['Test source only']});
+   await wait(()=>messages().some(x=>x.includes('Incomplete answer')),'incomplete answer labelled');
+   ok(messages().some(x=>x.includes('General answer — no attachments were analysed.')),'response explicitly excludes local attachments');
+   ok(messages().some(x=>x.includes('Sources reported by the service (not independently checked):')&&x.includes('Test source only')),'reported sources visibly distinguished');
+   type('A new question');send();await wait(()=>window.publicPending.length===6,'follow-up after incomplete');
+   ok(!window.testRequests.at(-1).payload.history.some(x=>x.role==='assistant'&&x.content.includes('considerations. When')),'incomplete answer excluded from later context');
+   window.publicPending[5].resolve('Complete answer.');await wait(()=>messages().some(x=>x.includes('Complete answer.')),'complete answer recovered');
+   clear();
   output.textContent=JSON.stringify({pass:true,checks});output.dataset.status='pass';
  }catch(e){output.textContent=JSON.stringify({pass:false,checks,error:String(e.stack||e)});output.dataset.status='fail';}
 }
