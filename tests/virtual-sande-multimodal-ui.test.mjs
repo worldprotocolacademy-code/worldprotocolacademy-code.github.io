@@ -43,20 +43,20 @@ test('pilot disabled by default, no checked-in secrets',()=>{
 test('public widget exposes honest model and PDF capabilities, not all ChatGPT tools',()=>{
   assert.match(ui,/id='wpaPublicVsCapabilities'/);
   assert.match(ui,/wpaPublicVsCapabilityList/);
-  assert.match(ui,/GPT-6\\.1 Terra/);
+  assert.match(ui,/GPT-6\.1 Terra/);
   assert.match(ui,/НЕ Е ПОВРЗАН/);
-  assert.match(ui,/agentCapabilities\\.enabled===true/);
-  assert.match(ui,/renderCapabilityPanel\\(\\)/);
-  assert.match(ui,/import\\('\/scripts\/virtual-sande-pdf-tool\\.mjs'\\)/);
-  assert.match(cfg,/WPA_AGENT_MODEL\\s*=\\s*"gpt-6\\.1-terra"/);
-  assert.match(cfg,/WPA_AGENT_ENABLED\\s*=\\s*"false"/);
+  assert.match(ui,/agentCapabilities\.enabled===true/);
+  assert.match(ui,/renderCapabilityPanel\(\)/);
+  assert.match(ui,/import\('\/scripts\/virtual-sande-pdf-tool\.mjs'\)/);
+  assert.match(cfg,/WPA_AGENT_MODEL\s*=\s*"gpt-6\.1-terra"/);
+  assert.match(cfg,/WPA_AGENT_ENABLED\s*=\s*"false"/);
 });
 test('cache busting is wired from homepage through runtime loader to new widget',()=>{
   const home=readFileSync('index.html','utf8');
   const perf=readFileSync('scripts/wpa-performance.js','utf8');
   const pricing=readFileSync('scripts/pricing-loader.js','utf8');
-  assert.match(home,/wpa-performance\\.js\\?v=20261124-vs-rc2/);
-  assert.match(pricing,/wpa-performance\\.js\\?v=20261124-vs-rc2/);
-  assert.match(perf,/virtual-sande-public-widget\\.js\\?v=20261124-multimodal-rc2/);
+  assert.match(home,/wpa-performance\.js\?v=20261124-vs-rc2/);
+  assert.match(pricing,/wpa-performance\.js\?v=20261124-vs-rc2/);
+  assert.match(perf,/virtual-sande-public-widget\.js\?v=20261124-multimodal-rc2/);
 });
 console.log('Virtual Sande independent multimodal UI safeguards registered');
