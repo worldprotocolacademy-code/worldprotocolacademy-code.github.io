@@ -119,4 +119,12 @@ test('malicious PDF text remains quoted data and cannot become system instructio
  assert.equal(verifyDocumentCitations('Поддржано [D1 P12].',packet).ok,true);
  assert.equal(verifyDocumentCitations('Непостоечки извор [D2 S9].',packet).ok,false);
 });
+test('previous AI draft may be sent only as bounded editing context, never as source',()=>{
+ const revised=validateDocumentSubmission({...ORIGINAL,revision_context:'Прв нацрт кој бара уредничка доработка.'});
+ const prompt=documentLabPrompt(revised,'Преработи го воведот.');
+ assert.match(prompt,/PREVIOUS AI WORKING DRAFT/);
+ assert.match(prompt,/NOT AN INDEPENDENT SOURCE/);
+ assert.match(prompt,/Прв нацрт/);
+ assert.throws(()=>validateDocumentSubmission({...ORIGINAL,revision_context:'X'.repeat(2201)}),/DOC_LAB_REVISION_TOO_LONG/);
+});
 console.log('Document Lab gateway academic contract tests registered');
