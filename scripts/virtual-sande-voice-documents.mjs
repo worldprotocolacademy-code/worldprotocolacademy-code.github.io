@@ -2,6 +2,7 @@
  * Voice uses native browser APIs. Files are NOT sent to /ask until a verified
  * attachment API exists; this prevents false claims of document analysis.
  */
+import {createPrivateWorkspaceClient} from './virtual-sande-private-workspace-client.mjs';
 export function mountVoiceDocuments(panel) {
   if (!panel || panel.querySelector('[data-wpa-multidoc]')) return;
   const english = document.documentElement.lang?.startsWith('en');
@@ -24,6 +25,22 @@ export function mountVoiceDocuments(panel) {
   };
   const acceptable = /\.(pdf|docx|md|markdown|csv|json|jpe?g|png|txt)$/i;
   const staged = [];
+  const processed = new Map();
+  const client = createPrivateWorkspaceClient({configuredPath:document.querySelector('meta[name="wpa-private-workspace-api"]')?.content||''});
+  let consented=false, privateMode=false, processing=false, generation=0, conversionController=null;
+  const local=english?{
+    process:'Process documents', consent:'Private pilot: I authorize transfer of selected files and submitted conversation context to the configured Cloudflare AI processing service. Do not submit confidential or sensitive documents until institutional approval.',
+    processing:'Processing documents', done:'Extracted text ready', failed:'Processing failed', unavailable:'Private document service is not configured. No document has been uploaded.',
+    need:'Process all selected documents before asking about them.', mode:'Private pilot: no public /ask fallback. New conversation resets this mode.', empty:'Empty file.',
+    ready:'extracted', select:'selected', invalid:'Unable to process documents; inspect the file status.', coverage:'Document evidence coverage (extracted text, not verified page numbers)',
+    voice:'Voice recognition may use your browser provider; check browser microphone privacy. Macedonian voice availability varies.'
+  }:{
+    process:'Обработи документи', consent:'Приватен пилот: дозволувам избраните датотеки и испратениот контекст да се обработат во конфигурираниот Cloudflare AI сервис. Не испраќајте доверливи или чувствителни документи пред институционално одобрување.',
+    processing:'Се обработуваат документи', done:'Извлечениот текст е подготвен', failed:'Обработката не успеа', unavailable:'Приватниот документарен сервис не е конфигуриран. Ниту еден документ не е испратен.',
+    need:'Обработете ги сите избрани документи пред да поставите прашање за нив.', mode:'Приватен пилот: нема пренасочување кон јавниот /ask. Нов разговор го ресетира режимот.', empty:'Празна датотека.',
+    ready:'извлечен текст', select:'избран', invalid:'Документите не може да се обработат; проверете го статусот.', coverage:'Документарна покриеност (извлечен текст, не потврдени страници)',
+    voice:'Гласовното препознавање може да го користи сервисот на прелистувачот. Достапноста на македонски глас варира.'
+  };
   const input = panel.querySelector('#wpaPublicVsInput');
   const form = panel.querySelector('#wpaPublicVsForm');
   if (!input || !form) return;
@@ -43,31 +60,50 @@ export function mountVoiceDocuments(panel) {
   const status=document.createElement('p');status.setAttribute('role','status');status.style.cssText='margin:5px 0;color:#735523';status.textContent=t.caveat;
   const list=document.createElement('ul');list.style.cssText='list-style:none;margin:5px 0;padding:0;max-height:100px;overflow:auto';
   const removeAll=button(t.clear);
+  const processButton=button(local.process);
+  const consentWrap=document.createElement('label');
+  const consent=document.createElement('input');consent.type='checkbox';
+  consentWrap.style.cssText='display:flex;gap:6px;align-items:flex-start;margin:5px 0;font-size:11px';
+  consentWrap.append(consent,document.createTextNode(local.consent));
+  consentWrap.hidden=!client.configured;
+  processButton.hidden=!client.configured;
+  const updateState=()=>{processButton.disabled=!consent.checked||processing||!staged.length||staged.every(f=>processed.has(f));};
+  consent.onchange=()=>{consented=consent.checked;updateState();};
+  mic.title=local.voice;
+  const voiceNotice=document.createElement('span');voiceNotice.textContent=local.voice;voiceNotice.style.cssText='display:block;font-size:10px;color:#665b43;margin-top:3px';
   const heading=document.createElement('div');heading.textContent=t.files;heading.style.fontWeight='700';
-  root.append(toolbar,choose,zone,heading,list,removeAll,status);
+  root.append(toolbar,voiceNotice,choose,zone,heading,list,removeAll,consentWrap,processButton,status);
+  root.dataset.wpaMultidoc=client.configured?'private-pilot-configured':'preview';
+  status.textContent=client.configured?local.need:local.unavailable;
   form.parentNode.insertBefore(root,form);
   let reading=false;
   function render(){
     list.replaceChildren();
     staged.forEach((f,i)=>{
       const li=document.createElement('li');li.style.cssText='display:flex;gap:8px;align-items:center;justify-content:space-between';
-      const label=document.createElement('span');label.textContent=f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB)';
+      const label=document.createElement('span');label.textContent=f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB) · '+(processed.has(f)?local.ready:local.select);
       const del=button('× '+t.remove);del.setAttribute('aria-label',t.remove+' '+f.name);
-      del.onclick=()=>{staged.splice(i,1);render();};
+      del.disabled=processing;
+      del.onclick=()=>{processed.delete(f);staged.splice(i,1);render();};
       li.append(label,del);list.append(li);
     });
-    heading.textContent=t.files+' — '+staged.length+'/20';
+    heading.textContent=t.files+' — '+staged.length+'/20 · '+processed.size+' '+local.ready;
+    removeAll.disabled=processing;
+    attach.disabled=processing;
+    updateState();
   }
   function addFiles(files) {
+    if(processing)return;
     let issue='';
     for(const file of files) {
       if(staged.length>=20){issue=t.limit;break;}
       if(!acceptable.test(file.name)){issue=t.invalid+' '+file.name;continue;}
+      if(!file.size){issue=local.empty+' '+file.name;continue;}
       if(file.size>15*1024*1024){issue=t.large+' '+file.name;continue;}
       if(staged.some(f=>f.name===file.name&&f.size===file.size&&f.lastModified===file.lastModified))continue;
       staged.push(file);
     }
-    render();status.textContent=(issue?issue+' ':'')+t.caveat;
+    render();status.textContent=(issue?issue+' ':'')+(client.configured?local.need:local.unavailable);
   }
   attach.onclick=()=>choose.click();choose.onchange=()=>{addFiles(Array.from(choose.files||[]));choose.value='';};
   zone.onclick=()=>choose.click();
@@ -75,7 +111,30 @@ export function mountVoiceDocuments(panel) {
   for(const kind of ['dragenter','dragover'])zone.addEventListener(kind,(e)=>{e.preventDefault();zone.style.background='#eee2bf';});
   for(const kind of ['dragleave','drop'])zone.addEventListener(kind,(e)=>{e.preventDefault();zone.style.background='';});
   zone.addEventListener('drop',(e)=>{addFiles(Array.from(e.dataTransfer?.files||[]));});
-  removeAll.onclick=()=>{staged.length=0;render();};
+  removeAll.onclick=()=>{staged.length=0;processed.clear();render();status.textContent=privateMode?local.mode:(client.configured?local.need:local.unavailable);};
+  processButton.onclick=async()=>{
+    if(!client.configured||!consent.checked||processing)return;
+    processing=true;consented=true;privateMode=true;
+    const myGeneration=generation;conversionController=new AbortController();const signal=conversionController.signal;
+    render();
+    for(const f of staged.slice()){
+      if(myGeneration!==generation||signal.aborted)break;
+      if(processed.has(f))continue;
+      status.textContent=local.processing+' '+(processed.size+1)+'/'+staged.length+' · '+f.name;
+      try{
+        const d=await client.convert(f,{signal});
+        if(myGeneration!==generation||signal.aborted)break;
+        processed.set(f,{...d,id:crypto.randomUUID()});
+      }catch(e){
+        if(myGeneration!==generation||signal.aborted)break;
+        status.textContent=local.failed+' · '+f.name+' · '+String(e.message||'ERROR');
+        processing=false;conversionController=null;render();return;
+      }
+    }
+    if(myGeneration!==generation)return;
+    processing=false;conversionController=null;render();
+    status.textContent=local.done+' '+processed.size+'/'+staged.length+' · '+local.mode;
+  };
   const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   let recogniser=null;
   if(Recognition) {
@@ -83,7 +142,7 @@ export function mountVoiceDocuments(panel) {
       if(recogniser){recogniser.stop();return;}
       try{
         const r=new Recognition();recogniser=r;r.lang=english?'en-GB':'mk-MK';r.interimResults=false;r.continuous=false;
-        r.onresult=(e)=>{const s=Array.from(e.results).map(x=>x[0]?.transcript||'').join(' ');input.value=(input.value+' '+s).trim().slice(0,700);input.focus();};
+        r.onresult=(e)=>{const s=Array.from(e.results).map(x=>x[0]?.transcript||'').join(' ');input.value=(input.value+' '+s).trim().slice(0,input.maxLength>0?input.maxLength:700);input.dispatchEvent(new Event('input',{bubbles:true}));input.focus();};
         r.onerror=(e)=>{status.textContent=e.error||t.noSpeech;};
         r.onend=()=>{recogniser=null;mic.textContent='🎙 '+t.mic;};
         r.start();mic.textContent='■ '+t.stop;
@@ -112,7 +171,28 @@ export function mountVoiceDocuments(panel) {
     observer.observe(msgs,{childList:true});
   }
   const clear=panel.querySelector('#wpaPublicVsClear');
-  clear?.addEventListener('click',()=>{staged.length=0;render();synth?.cancel();reading=false;});
+  clear?.addEventListener('click',()=>{
+    generation++;conversionController?.abort();conversionController=null;processing=false;
+    staged.length=0;processed.clear();consented=false;consent.checked=false;privateMode=false;
+    try{recogniser?.abort();}catch{}synth?.cancel();reading=false;speech.style.background='#fff';
+    render();status.textContent=client.configured?local.need:local.unavailable;
+  });
   render();
-  return {getStagedFiles:()=>staged.slice(),isServerConnected:false};
+  return {
+    getStagedFiles:()=>staged.slice(),isServerConnected:client.configured,
+    isPrivate:()=>privateMode||staged.length>0,
+    canAnalyze:()=>client.configured&&consented&&consent.checked&&!processing&&processed.size===staged.length,
+    blockedMessage:()=>client.configured?local.need:local.unavailable,
+    async analyze({question,history,signal}){
+      if(!client.configured||!consented||!consent.checked||processing||processed.size!==staged.length)throw Error('PRIVATE_DOCUMENTS_NOT_READY');
+      privateMode=true;
+      const data=await client.analyze({question,history,documents:[...processed.values()].map(({id,name,text,method})=>({id,name,text,method})),lang:english?'en':'mk',signal});
+      const lines=data.coverage.map(x=>x.name+' ['+x.id+']: '+x.selected_chars+'/'+x.chars+' · '+x.method+' · '+x.coverage);
+      return {answer:data.answer+(lines.length?'\n\n'+local.coverage+':\n'+lines.join('\n'):''),local:false,private:true,coverage:data.coverage};
+    },
+    async suggest({question,history,signal}){
+      if(!client.configured||!consented||!consent.checked||!privateMode)throw Error('PRIVATE_PILOT_NOT_READY');
+      return client.suggest({question,history,lang:english?'en':'mk',signal});
+    }
+  };
 }
