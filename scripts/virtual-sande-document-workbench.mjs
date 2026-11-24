@@ -15,6 +15,7 @@ const I18N={
   attach:'Избери до 6 документи: PDF · DOCX · TXT · MD · CSV · HTML',
   area:'Област',product:'Побаран производ',
   clear:'Отстрани документи',md:'Преземи Markdown-нацрт',json:'Преземи изворен регистар',
+  revise:'Продолжи од претходниот нацрт (се испраќа краток дел од AI-текстот како непроверен контекст)',
   empty:'Нема избрани документи. Прикачи ги и потоа прашај во разговорот.',
   progress:'Локално читам',indexed:'Локално индексирани',
   tooBig:'Датотеката/корпусот ги надминува ограничувањата на пилотот.',
@@ -31,6 +32,7 @@ const I18N={
   attach:'Choose up to 6 documents: PDF · DOCX · TXT · MD · CSV · HTML',
   area:'Discipline',product:'Requested deliverable',
   clear:'Remove documents',md:'Download Markdown draft',json:'Download source register',
+  revise:'Continue from previous draft (a short AI text excerpt will be sent as unverified editing context)',
   empty:'No documents selected. Attach documents, then ask in the chat.',
   progress:'Reading locally',indexed:'Indexed locally',
   tooBig:'File/corpus exceeds pilot limits.',
@@ -94,22 +96,24 @@ export function createDocumentWorkbench(panel,config={}){
  const areaLabel=node('label',null,t.area+': ');areaLabel.append(domain);
  const status=node('p','status',t.empty);status.setAttribute('aria-live','polite');
  const progress=node('progress');progress.value=0;progress.max=1;progress.hidden=true;
+ const revise=node('input');revise.type='checkbox';revise.checked=false;revise.disabled=true;
+ const reviseLabel=node('label',null,t.revise);reviseLabel.prepend(revise);
  const clear=node('button',null,t.clear);clear.type='button';
  const md=node('button',null,t.md);md.type='button';md.disabled=true;
  const json=node('button',null,t.json);json.type='button';json.disabled=true;
- wrap.append(desc,label,modeLabel,areaLabel,status,progress,node('p',null,t.info),clear,md,json);
+ wrap.append(desc,label,modeLabel,areaLabel,status,progress,reviseLabel,node('p',null,t.info),clear,md,json);
  form.parentNode.insertBefore(wrap,form);
  let index=null,working=false,last=null,generation=0;
  function notify(){if(typeof config.onChange==='function')config.onChange();}
  function reset(){
    generation++;index=null;last=null;working=false;
    input.value='';status.textContent=t.empty;progress.hidden=true;
-   md.disabled=true;json.disabled=true;notify();
+   md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;notify();
  }
  clear.addEventListener('click',reset);
  input.addEventListener('change',async()=>{
    const files=[...(input.files||[])],run=++generation;
-   index=null;last=null;md.disabled=true;json.disabled=true;notify();
+   index=null;last=null;md.disabled=true;json.disabled=true;revise.checked=false;revise.disabled=true;notify();
    if(!files.length)return;
    if(files.length>DOCUMENT_LIMITS.maxFiles ||
      files.some(file=>file.size>DOCUMENT_LIMITS.maxFileBytes)){
@@ -158,13 +162,14 @@ export function createDocumentWorkbench(panel,config={}){
    if(!config.isEnabled?.())throw new Error('DOCUMENT_MODEL_DISABLED');
    if(consent!==true||!token)throw new Error('DOCUMENT_CONSENT_REQUIRED');
    const packet=createEvidencePacket(index,question,{mode:mode.value,domain:domain.value});
+   const revisionContext=revise.checked&&last?last.answer.slice(0,2200):undefined;
    const controller=new AbortController();
    const timer=setTimeout(()=>controller.abort(),38000);
    let response,data;
    try{
      response=await fetch(endpoint,{method:'POST',credentials:'omit',mode:'cors',
        cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},
-       body:JSON.stringify({...packet,consent:true,turnstile_token:token,lang}),
+       body:JSON.stringify({...packet,revision_context:revisionContext,consent:true,turnstile_token:token,lang}),
        signal:controller.signal});
      if(!response.ok)throw new Error('DOCUMENT_HTTP_'+response.status);
      data=await response.json();
@@ -174,7 +179,7 @@ export function createDocumentWorkbench(panel,config={}){
       !Array.isArray(data.cited_locators)||data.cited_locators.length===0 ||
       data.cited_locators.some(x=>!allowed.has(x)))throw new Error('DOCUMENT_BAD_RESPONSE');
    last={answer:data.answer,packet,citations:data.cited_locators};
-   md.disabled=false;json.disabled=false;
+   md.disabled=false;json.disabled=false;revise.disabled=false;revise.checked=false;
    return {answer:data.answer,data,agent:true,local:false};
  }
  return {isActive:()=>!!index,isBusy:()=>working,reset,ask,
