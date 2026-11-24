@@ -11,7 +11,7 @@ The internal path is source-aware and human-governed. The pilot does NOT inherit
 2. Choose 1–6 files: PDF, DOCX, TXT, Markdown, CSV or HTML. The browser parses them locally. Unreadable/scanned-only files fail closed.
 3. Choose a discipline (protocol, diplomacy, public relations, security, communicology or AI) and a desired working-draft format.
 4. Ask the question in the same chat field and explicitly consent to sending selected excerpts to the AI provider; complete Turnstile.
-5. The assistant analyses up to twelve bounded local excerpts, with source locators such as [D1 P12] and [D2 S3]. The server rejects missing/unsupported citations.
+5. The assistant analyses up to twelve bounded local excerpts, with source locators such as [D1 P12] and [D2 S3]. After the first output, a visitor may explicitly opt to send a capped excerpt of the previous AI draft for revision; that previous draft is unverified editing context, NOT source evidence. The server rejects missing/unsupported citations.
 6. Download the draft as Markdown plus JSON evidence/source register. Verify attribution, scientific/ethical suitability and editorial metadata before any publication.
 
 ## Evidence-first synthesis architecture
