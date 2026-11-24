@@ -3,7 +3,7 @@
 (function(){
   'use strict';
   var Core=window.WPAEUFactoryCore;
-  var registry=null,analysis=null,dossier=null,projectSourceText='',projectSourceFile='';
+  var registry=null,analysis=null,dossier=null,projectSourceText='',projectSourceFile='',portfolioTemplateId='';
   var PATH='/data/eu-application-factory/opportunities-v1.json';
   var STORAGE='wpa-eu-factory-v5-draft';
   var STEP_NAMES=[['RADAR','Регистар'],['ELIGIBILITY','Правни услови'],['TIMELINE','Рокови'],['MATCH','Соодветност'],['DESIGN','Структура'],['WRITE','Досие'],['RED TEAM','Блокатори'],['HUMAN','Човечка порта']];
@@ -28,13 +28,14 @@
   function snapshotNote(){
     if(!registry)return 'Нема локален регистар. Анализа не е извршена.';
     var verified=registry.verifiedAsOf||'НЕПОТВРДЕНО';
-    var age=Math.floor((new Date().getTime()-new Date(verified+'T00:00:00Z').getTime())/86400000);
-    var stale=Number.isFinite(age)&&age>14?' ИЗВОРОТ Е ПОСТАР ОД 14 ДЕНА — не користете статус „отворен“ без повторна проверка.':'';
-    return 'Официјален изворен snapshot: '+verified+'. Нема live EU API проверка за време на оваа сесија.'+stale;
+    var age=Core.snapshotAgeDays(verified,Core.localToday());
+    var stale=age===null||age>7||age<0?' ВНИМАНИЕ: СТАР/НЕПОТВРДЕН РЕГИСТАР — повеќе од 7 дена; не се тврдат тековни отворени грантови.':'';
+    return 'Датиран регистар од '+verified+'. Ова НЕ е пребарување на живи ЕУ повици.'+stale;
   }
   function readForm(){
     return {idea:$('idea').value.trim(),sourceText:projectSourceText,sourceFileName:projectSourceFile,
-      country:'North Macedonia',legalApplicant:$('legalApplicant').value.trim(),legalType:$('legalType').value,
+      country:'North Macedonia',portfolioTemplateId:portfolioTemplateId,projectCategory:$('idea').dataset.wpaCategory||'',
+      legalApplicant:$('legalApplicant').value.trim(),legalType:$('legalType').value,
       startDate:$('startDate').value,endDate:$('endDate').value,consortiumCountries:$('consortiumCountries').value.trim(),
       customCall:$('customCall').value.trim(),customCallUrl:$('customCallUrl').value.trim()};
   }
@@ -62,8 +63,12 @@
     renderSteps();
     var timing=project.startDate?'<div class="call-alert"><strong>Календар:</strong> '+esc(project.startDate)+' до '+esc(project.endDate||'непотврдено')+'. Рокот за повикот и датумот на почеток на грантот не се исто. Сите несоодветни патеки се означени.</div>':'';
     var legal=project.legalApplicant?'<div class="call-alert"><strong>Проверка на апликант:</strong> '+esc(project.legalApplicant)+' е внесен како кандидат. Правната подобност останува НЕПОТВРДЕНА додека нема документи.</div>':'<div class="call-alert"><strong>Клучна пречка:</strong> не е потврдено правно лице-апликант. Рангирањето не ја надминува оваа пречка.</div>';
-    var conclusion=project.id==='conference'?'<div class="call-alert"><strong>Ohrid 2027:</strong> рангирањето не значи дека објавените ЕУ повици можат да ја финансираат конференцијата во пролет 2027. За таа временска рамка посебно разгледај спонзорства и договорни извори; TAIEX само за одвоена јавна институционална задача.</div>':'';
-    $('results').innerHTML='<div class="status-summary"><span class="pill block">ELIGIBILITY — НЕПОТВРДЕНО</span><span class="pill warn">Снимка на извори '+esc(data.sourceVerifiedAsOf)+'</span></div>'+timing+legal+conclusion+
+    var conclusion=project.portfolioTemplateId==='wpa-ohrid-2027'?'<div class="call-alert"><strong>Ohrid 2027:</strong> рангирањето не значи дека објавените ЕУ повици можат да ја финансираат конференцијата во пролет 2027. За таа временска рамка посебно разгледај спонзорства и договорни извори; TAIEX само за одвоена јавна институционална задача.</div>':'';
+    var freshness=data.sourceSnapshotStale?
+      '<div class="call-alert" role="alert"><strong>СТАР РЕГИСТАР:</strong> проверката е од '+esc(data.sourceVerifiedAsOf)+'. Не се повлечени нови официјални повици во реално време. Проверете ја актуелната страница на конкретниот орган пред каква било одлука.</div>':'';
+    var farmNote=project.id==='agriculture'?
+      '<div class="call-alert"><strong>За земјоделци:</strong> ИПАРД и националните мерки се патеки за барање, не автоматски потврден отворен повик. Проверете го тековниот јавен повик, правната регистрација и мерката преку надлежната агенција.</div>':'';
+    $('results').innerHTML='<div class="status-summary"><span class="pill block">ELIGIBILITY — НЕПОТВРДЕНО</span><span class="pill warn">Снимка на извори '+esc(data.sourceVerifiedAsOf)+'</span></div>'+freshness+farmNote+timing+legal+conclusion+
       '<div class="results-grid">'+featured.map(renderMatch).join('')+'</div>'+ 
       '<div class="human-gate"><strong>Human Gate:</strong> финално поднесување, правни изјави, финансиски обврски и договори со партнери не се автоматизираат. Сите генерирани документи имаат статус DRAFT.</div>';
     $('results').querySelectorAll('[data-build]').forEach(function(b){b.addEventListener('click',function(){build(b.getAttribute('data-build'),true);});});
@@ -87,7 +92,7 @@
     if(!input.idea&&!input.sourceText){message('formMessage','Опиши го проектот со барем една реченица или прикачи документ.',true);$('idea').focus();return;}
     if(input.customCallUrl&&!/^https:\/\//i.test(input.customCallUrl)){message('formMessage','Линкот кон повикот треба да започнува со https://',true);return;}
     var project=Core.parseProject(input);
-    analysis=Core.analyze(project,registry,new Date().toISOString().slice(0,10));
+    analysis=Core.analyze(project,registry,Core.localToday());
     if(analysis.error){message('formMessage',analysis.error,true);return;}
     message('formMessage','Анализата е завршена — резултатите и досието се подготвени подолу.');
     renderResults();
@@ -131,6 +136,7 @@
   }
   function reset(){
     ['idea','legalApplicant','startDate','endDate','consortiumCountries','customCall','customCallUrl'].forEach(function(id){$(id).value='';});
+    portfolioTemplateId='';delete $('idea').dataset.wpaCategory;
     $('legalType').value='unknown';$('projectFile').value='';projectSourceText='';projectSourceFile='';
     message('fileStatus','TXT, MD, HTML, JSON · локално читање');message('formMessage','');
     message('exportStatus','');analysis=null;dossier=null;
@@ -142,8 +148,9 @@
   }
   function sample(which){
     reset();
+    portfolioTemplateId=which==='ohrid'?'wpa-ohrid-2027':'wpa-journal';
     if(which==='ohrid'){
-      $('idea').value='Ohrid Protocol Conference 2027: меѓународна конференција за протокол, дипломатија, јавна комуникација и одговорна ВИ во Охрид, март–мај 2027. Работен модел 150 учесници, venue Inex Olgica, професионални работилници и можни peer-reviewed proceedings преку WPA Journal. Дај ми соодветни извори и изгради апликациско досие. Организатор WPA е независна платформа; правниот апликант не е утврден.';
+      $('idea').value='Ohrid Protocol Conference 2027: меѓународна конференција за протокол, дипломатија, јавна комуникација и одговорна ВИ во Охрид, март–мај 2027. Работен модел 150 учесници, venue Inex Olgica, професионални работилници и можни peer-reviewed proceedings преку WPA Journal. Организатор WPA е независна платформа; правниот апликант не е утврден.';
       $('startDate').value='2027-03-01';$('endDate').value='2027-05-31';
     }else{
       $('idea').value='WPA Journal: европска соработка за научна дисеминација, отворен пристап, peer review, мултијазично академско објавување, обуки за уредници и пристапни истражувачки материјали. Потребни се соодветна правна организација и потврдени европски партнери.';
@@ -177,6 +184,7 @@
     $('saveLocal').addEventListener('click',function(){try{localStorage.setItem(STORAGE,JSON.stringify(currentDraft()));message('localStatus','Локална копија е зачувана во овој прелистувач.');}catch(e){message('localStatus','Не е дозволено локално чување: '+e.message,true);}});
     $('restoreLocal').addEventListener('click',function(){try{var item=localStorage.getItem(STORAGE);if(!item)throw new Error('нема зачуван нацрт');restoreDraft(JSON.parse(item));message('localStatus','Локалниот нацрт е вчитан.');}catch(e){message('localStatus','Неуспешно вчитување: '+e.message,true);}});
     $('forgetLocal').addEventListener('click',function(){try{localStorage.removeItem(STORAGE);message('localStatus','Локалниот запис е избришан.');}catch(e){message('localStatus','Неуспешно: '+e.message,true);}});
+    $('idea').addEventListener('input',function(){portfolioTemplateId='';delete this.dataset.wpaCategory;});
     $('idea').addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();analyzeNow();}});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
