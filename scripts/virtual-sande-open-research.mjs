@@ -147,7 +147,7 @@ export function candidateToDocument(item){
  return {name:work.title+'.openalex-abstract.txt',format:'txt',segments:[
   {locator:'S1',text:source+'; METADATA ONLY, NOT ORIGINAL SOURCE TEXT.'},
   {locator:'S2',text:work.abstract_excerpt}
- ],metadata:{title:work.title,year:work.year,authors:work.authors,
-   doi:work.doi,source_url:work.source_url,licence:work.licence,
+ ],metadata:{title:work.title,author:work.authors.join(', '),year:String(work.year||''),
+   type:work.type,doi:work.doi||'',url:work.source_url,licence:work.licence||'',
    provenance:'DISCOVERED_METADATA_NEEDS_VERIFICATION'}};
 }
