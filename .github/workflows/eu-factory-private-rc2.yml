@@ -1,0 +1,25 @@
+name: EU Factory private workspace RC2 QA
+on:
+  pull_request:
+    paths:
+      - 'workers/wpa-eu-factory-private/**'
+      - '.github/workflows/eu-factory-private-rc2.yml'
+      - 'tools/eu-application-factory.html'
+      - 'tools/assets/eu-factory-*.js'
+      - 'data/eu-application-factory/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build isolated allowlisted assets
+        run: node workers/wpa-eu-factory-private/build.mjs
+      - name: Verify signed identity, permissions, radar fixture, simulator and deployment defaults
+        run: node --test workers/wpa-eu-factory-private/tests/worker.test.mjs
