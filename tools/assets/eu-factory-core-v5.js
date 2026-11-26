@@ -158,6 +158,14 @@
     }
     if(project.id==='journal'&&opp.id==='erasmus-2027-cooperation-route') conditions.push('Journal може да биде дисеминациски output на вистинско партнерство, не грант за редовни уреднички трошоци.');
     if(project.portfolioTemplateId==='wpa-ohrid-2027' && opp.id==='taiex-institutional-assistance') conditions.push('Може да се разработи само издвоена институционална работилница, не финансирање на целата конференција.');
+    // A named unregistered WPA Institute or self-declared non-entity cannot be the legal applicant.
+    // An individual may still use a different route where the exact rules permit natural persons.
+    var applicantName=text(project.legalApplicant).normalize('NFKC').replace(/\s+/g,' ').toLowerCase();
+    var knownUnregistered=['wpa institute','wpa-институт','wpa институт','институт wpa','институт на wpa','wpa-институтот'].includes(applicantName);
+    if(opp.legalEntityRequired===true&&(knownUnregistered||project.legalType==='unregistered'||project.legalType==='individual')){
+      blockers.unshift('NO-GO: повикот бара правен субјект. Нерегистрирана платформа или физичко лице не може да го замени. Побарај реален подобен партнер или лична експертска патека.');
+      if(code!=='NO_GO_TIMING')code='NO_GO';
+    }
     if(code==='CONDITIONAL' && blockers.length)code='BLOCKED';
     if(code==='CONDITIONAL' && (opp.status==='PROGRAMME_ROUTE'||opp.status==='DISCOVERY_ONLY'||opp.status==='INDICATIVE_2027'||opp.status==='USER_SUPPLIED_UNVERIFIED'))code='WATCH';
     reasons.push((opp.eligibilityRule||'').trim());
