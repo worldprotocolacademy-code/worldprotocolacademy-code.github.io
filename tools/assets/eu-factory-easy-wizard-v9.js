@@ -111,6 +111,7 @@
       body+='Тип на апликант: '+(p.applicantType==='unknown'?'не знам':p.applicantType)+' (непроверено)\n\n';
       body+=(hasAnalysis?'✅ Подготвена е локална анализа и работно досие подолу.':'ℹ️ Ова е почетен план; автоматската анализа на извори не е потврдена.')+'\n';
       body+='\nПРЕД ОФИЦИЈАЛНО ПОДНЕСУВАЊЕ:\n'+p.mandatoryChecks.map((x,i)=>(i+1)+'. '+x).join('\n');
+      if(p.applicantType==='individual'||p.applicantType==='unregistered')body+='\n\nАко повикот бара правен субјект, оваа форма не е подобен директен апликант. Види ја личната експертска и партнерска патека во v10 модулот.';
       if(p.category==='farm')body+='\n\nИПАРД е програмска можност, НЕ доказ за тековен отворен повик. Националната програма е посебен извор.';
       el('easyOutcome').textContent=body;
       officialLinks(input);go(3);
@@ -121,7 +122,7 @@
       el('idea').value=input.idea.trim();
       el('idea').dispatchEvent(new Event('input',{bubbles:true}));
       el('idea').dataset.wpaCategory=input.category;
-      var map={farm:'farm',individual:'individual',company:'company',ngo:'ngo',public_body:'public_body',unknown:'unknown'};
+      var map={farm:'farm',individual:'individual',unregistered:'unregistered',company:'company',ngo:'ngo',public_body:'public_body',unknown:'unknown'};
       el('legalType').value=map[input.applicant]||'unknown';
       el('easyNext').disabled=true;el('easyNext').textContent='Се проверува…';pending=true;
       // The existing engine uses a dated public-source register. No private data or keys leave this page.
@@ -155,7 +156,7 @@
         if(!stored||stored.expires<Date.now()){if(raw)window.localStorage.removeItem(STORAGE);saveMessage('Нема важечка зачувана пријава на овој уред.');return;}
         var x=stored.data||{};
         var radio=d.querySelector('input[name="easyCategory"][value="'+(validCategory(x.category)?x.category:'other')+'"]');if(radio)radio.checked=true;
-        el('easyIdea').value=t(x.idea);el('easyApplicant').value=['farm','individual','company','ngo','public_body','unknown'].includes(x.applicant)?x.applicant:'unknown';
+        el('easyIdea').value=t(x.idea);el('easyApplicant').value=['farm','individual','unregistered','company','ngo','public_body','unknown'].includes(x.applicant)?x.applicant:'unknown';
         el('easyBudget').value=t(x.budget);el('easyCurrency').value=x.currency==='EUR'?'EUR':'MKD';go(stored.step||0);
         saveMessage('Продолжи од зачуваниот чекор. Правилата и роковите на повиците сепак мора повторно да се проверат.');
       }catch(ex){saveMessage('Зачуваното не може да се вчита. Можеш да почнеш одново.');}

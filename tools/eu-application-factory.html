@@ -90,8 +90,9 @@
 .eu-official-actions a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:520px){.eu-official-actions{display:grid;grid-template-columns:1fr}.eu-official-actions a{width:100%;white-space:normal;text-align:center}}
 </style>
-<script src="/tools/assets/eu-factory-core-v5.js?v=20261124" defer></script>
-<script src="/tools/assets/eu-factory-easy-wizard-v9.js?v=20261124" defer></script>
+<script src="/tools/assets/eu-factory-core-v5.js?v=20261126" defer></script>
+<script src="/tools/assets/eu-factory-evidence-identity-v10.js?v=20261126" defer></script>
+<script src="/tools/assets/eu-factory-easy-wizard-v9.js?v=20261126" defer></script>
 <script src="/tools/assets/eu-factory-ui-v5.js?v=20261124" defer></script>
 <script src="/tools/assets/eu-factory-council-v6.js?v=20261115" defer></script>
 <script src="/tools/assets/eu-factory-wpaws-bridge-v1.js?v=20261115" defer></script>
@@ -99,7 +100,7 @@
 <script src="/tools/assets/eu-factory-monetization-v1.js?v=20261115" defer></script>
 </head>
 <body>
-<header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · лесен режим v9</small></div></div><nav class="pf-reciprocal-nav" aria-label="Поврзани WPA алатки"><a href="/tools/product-factory.html#factory">Product Factory</a><a href="/index.html">← WPA</a></nav></div></header>
+<header class="top"><div class="wrap"><div class="brand"><span class="logo" aria-hidden="true">EU</span><div><b>EU Application Factory</b><small>World Protocol Academy · v10 RC1 · Easy v9 · развој</small></div></div><nav class="pf-reciprocal-nav" aria-label="Поврзани WPA алатки"><a href="/tools/product-factory.html#factory">Product Factory</a><a href="/index.html">← WPA</a></nav></div></header>
 <main>
 <section class="hero"><div class="wrap">
 <div class="eyebrow">SIMPLE OUTSIDE · SERIOUS INSIDE</div>
@@ -141,6 +142,7 @@
     <label class="easy-field-label" for="easyApplicant">Како ќе аплицираш?</label>
     <select class="easy-select" id="easyApplicant">
       <option value="unknown">Не знам / уште немам документи</option>
+      <option value="unregistered">Нерегистрирана иницијатива / платформа</option>
       <option value="farm">Имам регистрирано земјоделско стопанство (за проверка)</option>
       <option value="individual">Како физичко лице (за проверка)</option>
       <option value="company">Имам регистрирана фирма (за проверка)</option>
@@ -172,7 +174,7 @@
 <div class="fileline"><label for="projectFile">Прикачи опис / MASTER:</label><input id="projectFile" type="file" accept=".txt,.md,.html,.htm,.json,.csv,text/plain,text/html,application/json" aria-describedby="fileStatus"><span id="fileStatus" aria-live="polite">TXT, MD, HTML, JSON · локално читање</span></div>
 <details class="details" id="moreOptions"><summary>Напредно · правен апликант, датуми, конзорциум, повик</summary><div class="advanced-grid">
 <div class="field"><label for="legalApplicant">Правно лице — кандидат (ако е потврдено)</label><input id="legalApplicant" placeholder="Не е потврдено" autocomplete="off"></div>
-<div class="field"><label for="legalType">Тип на апликант</label><select id="legalType"><option value="unknown">Непотврдено</option><option value="public_body">Јавна институција</option><option value="ngo">Здружение / непрофитна организација</option><option value="company">Компанија</option><option value="farm">Регистрирано земјоделско стопанство (за проверка)</option><option value="individual">Физичко лице (за проверка)</option><option value="university">Универзитет</option></select></div>
+<div class="field"><label for="legalType">Тип на апликант</label><select id="legalType"><option value="unknown">Непотврдено</option><option value="unregistered">Нерегистрирана иницијатива / платформа</option><option value="public_body">Јавна институција</option><option value="ngo">Здружение / непрофитна организација</option><option value="company">Компанија</option><option value="farm">Регистрирано земјоделско стопанство (за проверка)</option><option value="individual">Физичко лице (за проверка)</option><option value="university">Универзитет</option></select></div>
 <div class="field"><label for="startDate">Планиран почеток (опционално)</label><input id="startDate" type="date"></div>
 <div class="field"><label for="endDate">Планиран крај (опционално)</label><input id="endDate" type="date"></div>
 <div class="field wide"><label for="consortiumCountries">Потврдени партнерски држави (ако постојат)</label><input id="consortiumCountries" placeholder="Само со потврдени партнери; пример за формат: MK, IT, GR"></div>
@@ -195,6 +197,41 @@
 <section class="panel hidden" id="dossierPanel" aria-labelledby="dossierTitle">
 <div class="dossier-head"><div><h2 id="dossierTitle">Апликациско досие</h2><p class="caption">Изработен концепт и контролни листи · статус DRAFT, не READY TO SUBMIT.</p></div><div class="exports"><button class="btn primary small" id="downloadMd" type="button">Преземи .MD</button><button class="btn light small" id="downloadJson" type="button">Преземи .JSON</button><button class="btn light small" id="copyDossier" type="button">Копирај досие</button></div></div>
 <div id="exportStatus" class="toast" role="status"></div><pre class="dossier-view" id="dossierText"></pre>
+</section>
+<section class="panel" id="euEvidenceIdentityV10" aria-labelledby="euEvidenceIdentityHeading">
+<h2 id="euEvidenceIdentityHeading">PAF National Evidence &amp; Expert Participation · v10 RC1</h2>
+<p class="secondary">Локален развоен модул: национален контекст, лични експертски можности и правни предуслови. Нема жив PAF API, тековна проверка на повици, надворешни AI повици или автоматско поднесување. PAF не докажува подобност за грант, ниту проектни резултати.</p>
+<div class="call-alert"><strong>WPA Institute:</strong> засега не е регистриран правен субјект. Автор, истражувач или експерт може да настапи лично каде што правилата го дозволуваат; институционални грантови бараат соодветен подобен апликант. Не користете туѓ правен идентитет или непотврдени OID/PIC.</div>
+<div class="advanced-grid">
+<div class="field"><label for="v10Project">Избери проект од WPA портфолиото</label><select id="v10Project" disabled><option value="">Се вчитува датиран каталог…</option></select></div>
+<div class="field"><label for="v10Role">Патека на учество</label><select id="v10Role"><option value="unregistered">Нерегистрирана платформа</option><option value="individual">Лично — автор, истражувач, експерт</option><option value="partner">Преку подобна партнерска институција</option><option value="registered">Регистриран апликант (за проверка)</option></select></div>
+</div>
+<p id="v10State" role="status" aria-live="polite">Се вчитува локалниот каталог.</p>
+<pre class="dossier-view" id="v10Mapping" aria-live="polite"></pre>
+<p><a href="https://pafnorthmacedonia.mk/en" target="_blank" rel="noopener noreferrer">PAF · официјален каталог</a> · <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/work-as-an-expert" target="_blank" rel="noopener noreferrer">EU Work as an Expert</a> · <a href="https://www.cost.eu/cost-actions/participate-in-an-ongoing-action/" target="_blank" rel="noopener noreferrer">COST · учество во научни мрежи</a> · <a href="https://erasmus-plus.ec.europa.eu/programme-guide/part-b/key-action-2" target="_blank" rel="noopener noreferrer">Erasmus+ · правила</a></p>
+<details class="details"><summary>Внеси национален доказ за човечка ревизија (опционално)</summary>
+<p class="secondary">Само јавни статистички извори. Не внесувај лични или доверливи податоци. Датотеката се хешира локално; не се испраќа и не се вклучува во извозот. Сите внесени вредности остануваат UNVERIFIED. Национален таргет не е проектен KPI.</p>
+<div class="advanced-grid">
+<div class="field"><label for="v10Sector">Сектор</label><select id="v10Sector" disabled></select></div>
+<div class="field"><label for="v10Indicator">Точен назив на индикаторот</label><input id="v10Indicator" maxlength="240" autocomplete="off"></div>
+<div class="field"><label for="v10Series">Серија / дефиниција</label><input id="v10Series" maxlength="240" autocomplete="off"></div>
+<div class="field"><label for="v10Geography">Географија / популација</label><input id="v10Geography" maxlength="160" autocomplete="off"></div>
+<div class="field"><label for="v10Period">Референтен период</label><input id="v10Period" maxlength="80" autocomplete="off"></div>
+<div class="field"><label for="v10Value">Набљудувана вредност (број, не таргет)</label><input id="v10Value" type="number" step="any"></div>
+<div class="field"><label for="v10Unit">Единица</label><input id="v10Unit" maxlength="80" autocomplete="off"></div>
+<div class="field"><label for="v10Publisher">Оригинален издавач</label><input id="v10Publisher" maxlength="160" autocomplete="off"></div>
+<div class="field wide"><label for="v10Url">Официјален HTTPS извор</label><input id="v10Url" type="url" maxlength="1000" autocomplete="off"></div>
+<div class="field"><label for="v10Access">Датум на пристап</label><input id="v10Access" type="date"></div>
+<div class="field"><label for="v10Locator">Страница / табела / ќелија</label><input id="v10Locator" maxlength="160" autocomplete="off"></div>
+<div class="field wide"><label for="v10Method">Методологија, ограничувања и релевантност</label><textarea id="v10Method" maxlength="2000"></textarea></div>
+<div class="field wide"><label for="v10Snapshot">Јавна изворна датотека (макс. 20 MiB; само локален SHA-256)</label><input id="v10Snapshot" type="file" accept=".pdf,.xlsx,.xls,.csv,.txt,.json,.html"></div>
+</div>
+<p class="secondary">Чувај ја оригиналната датотека посебно за независна проверка. Овој модул не потврдува автентичност, лиценца, точност или човечко одобрување.</p>
+<button type="button" class="btn light small" id="v10ExportEvidence" disabled>Преземи доказен нацрт (.JSON)</button>
+</details>
+<div class="exports"><button type="button" class="btn primary small" id="v10ExportPlan" disabled>Преземи проектна / експертска патека (.JSON)</button></div>
+<p id="v10ExportStatus" role="status" aria-live="polite"></p>
+<p class="secondary"><strong>Human Gate HOLD:</strong> нема регистрација, избор за експерт, партнерски договор, финансиска обврска или апликација. За експертски ангажман провери судир на интереси и применливи професионални/службени дозволи.</p>
 </section>
 <section class="panel" id="euCouncilPanel" aria-labelledby="euCouncilTitle">
 <div class="nav-row"><div><h2 id="euCouncilTitle">Планиран WPA Multi-AI Grant Council · Mistral + 12 улоги (НЕПОВРЗАНО)</h2>
@@ -243,6 +280,6 @@
 <details class="details"><summary>Техничка трага · извори и анализи</summary><pre id="trace" class="dossier-view">Нема започнато анализа.</pre></details>
 </section>
 </div></section></main>
-<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v9 Easy · EU Council v6 · WPAWS Bridge v1 · Mistral 3 roles · Sustainability v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
+<footer class="footer"><div class="wrap">World Protocol Academy · EU Application Factory v10 RC1 · Easy v9 · EU Council v6 · WPAWS Bridge v1 · Mistral 3 roles · Sustainability v1 пилот / развој · <a href="/public-disclaimer.html">Public Disclaimer</a> · <a href="/privacy.html">Privacy</a> · Human Gate за сите правно/финансиски обврзувачки дејства.</div></footer>
 </body>
 </html>
