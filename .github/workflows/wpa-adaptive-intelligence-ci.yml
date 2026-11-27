@@ -1,0 +1,31 @@
+name: WPA Adaptive Intelligence candidate CI
+on:
+  pull_request:
+    paths:
+      - 'tools/ai-playground/**'
+      - 'scripts/wpa_adaptive_intelligence.py'
+      - 'data/wpa-adaptive-intelligence.json'
+      - '.github/workflows/wpa-adaptive-intelligence-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Python and browser core unit tests
+        run: |
+          python -m py_compile scripts/wpa_adaptive_intelligence.py
+          python scripts/wpa_adaptive_intelligence.py --self-test
+          node --check tools/ai-playground/app.js
+          node tools/ai-playground/app.js
+      - name: Synthetic cross-language parity
+        run: python tests/test_wpa_adaptive_parity.py
