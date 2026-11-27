@@ -1,7 +1,9 @@
+import datetime as dt
 import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import unittest
 from unittest import mock
 ROOT=Path(__file__).resolve().parents[1]
@@ -10,6 +12,17 @@ import wpa_eu_mistral_specialists as s
 import wpa_eu_monetization_agent as m
 
 class GrowthV8Test(unittest.TestCase):
+ def setUp(self):
+  self.temp_dir=tempfile.TemporaryDirectory(prefix='wpa-mistral-test-')
+  self.addCleanup(self.temp_dir.cleanup)
+  self.fresh_evidence=self.synthetic_evidence(0)
+ def synthetic_evidence(self,age_days):
+  # TEST ONLY: no live call, no actual grant evidence or refreshed production date.
+  p=Path(self.temp_dir.name)/f'evidence-{age_days}.json'
+  p.write_text(json.dumps({'classification':'OFFICIAL_PUBLIC_ONLY',
+   'verifiedAsOf':(dt.date.today()-dt.timedelta(days=age_days)).isoformat(),
+   'sources':[], 'testFixtureOnly':True}),encoding='utf8')
+  return p
  def test_three_mistral_roles(self):
   self.assertEqual(set(s.ROLES),{x['id'] for x in s.manifest()['roles']})
  def test_no_private_evidence(self):
@@ -36,12 +49,12 @@ class GrowthV8Test(unittest.TestCase):
  def test_env_flag_blocks(self):
   env={'WPA_EU_MISTRAL_API_KEY':'test','WPA_EU_MISTRAL_MODEL':'test-model'}
   with mock.patch.dict(os.environ,env,clear=True):
-   r=s.run('document_analyst',s.council.SOURCE,live=True,executor=lambda *_:self.fail('should not run'))
+   r=s.run('document_analyst',self.fresh_evidence,live=True,executor=lambda *_:self.fail('should not run'))
   self.assertFalse(r['executed'])
  def test_mocked_authorised_agent_sdk_execution(self):
   env={'WPA_EU_MISTRAL_API_KEY':'dummy','WPA_EU_MISTRAL_MODEL':'test-model','WPA_EU_COUNCIL_LIVE_ENABLED':'1'}
   with mock.patch.dict(os.environ,env,clear=True):
-   r=s.run('privacy_compliance',s.council.SOURCE,live=True,executor=lambda packet,model:'Example advisory only')
+   r=s.run('privacy_compliance',self.fresh_evidence,live=True,executor=lambda packet,model:'Example advisory only')
   self.assertEqual(r['status'],'COMPLETED_UNVERIFIED')
   self.assertIn('Example',r['output'])
   self.assertTrue(r['executed'])
@@ -49,9 +62,25 @@ class GrowthV8Test(unittest.TestCase):
   env={'WPA_EU_MISTRAL_API_KEY':'dummy','WPA_EU_MISTRAL_MODEL':'test-model','WPA_EU_COUNCIL_LIVE_ENABLED':'1'}
   with mock.patch.dict(os.environ,env,clear=True):
    def fail(*a):raise RuntimeError('dummy SECRET')
-   r=s.run('application_writer',s.council.SOURCE,live=True,executor=fail)
+   r=s.run('application_writer',self.fresh_evidence,live=True,executor=fail)
   self.assertEqual(r['status'],'PROVIDER_ERROR')
   self.assertNotIn('SECRET',json.dumps(r))
+ def test_live_freshness_rejects_stale_and_future_before_executor(self):
+  env={'WPA_EU_MISTRAL_API_KEY':'dummy','WPA_EU_MISTRAL_MODEL':'test-model','WPA_EU_COUNCIL_LIVE_ENABLED':'1'}
+  with mock.patch.dict(os.environ,env,clear=True):
+   for age in (8,-1):
+    with self.subTest(age_days=age):
+     executor=mock.Mock(side_effect=AssertionError('provider must not execute'))
+     with self.assertRaisesRegex(ValueError,'Official evidence too stale for live provider dispatch'):
+      s.run('document_analyst',self.synthetic_evidence(age),live=True,executor=executor)
+     executor.assert_not_called()
+ def test_seven_day_freshness_boundary_with_mock_executor(self):
+  env={'WPA_EU_MISTRAL_API_KEY':'dummy','WPA_EU_MISTRAL_MODEL':'test-model','WPA_EU_COUNCIL_LIVE_ENABLED':'1'}
+  with mock.patch.dict(os.environ,env,clear=True):
+   executor=mock.Mock(return_value='Synthetic advisory only')
+   result=s.run('document_analyst',self.synthetic_evidence(7),live=True,executor=executor)
+   self.assertEqual(result['status'],'COMPLETED_UNVERIFIED')
+   executor.assert_called_once()
  def test_single_user_model_not_fabricated_revenue(self):
   result=m.build()
   self.assertIsNone(result['financialEvidence']['actualCollectedRevenueEUR'])
