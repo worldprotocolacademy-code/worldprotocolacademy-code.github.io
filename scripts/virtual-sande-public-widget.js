@@ -18,6 +18,9 @@
   var requestVersion = 0; // Reject stale responses after edit or clear.
   var proactiveIntent = null;
   var publicVoice = null;
+  var privateWorkspace = null;
+  function privateWorkspaceOnly(){return document.querySelector('meta[name="wpa-private-workspace-only"]')?.content==='true';}
+  function privateReady(){if(!privateWorkspaceOnly()||privateWorkspace?.ready())return true;var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Protected analysis requires explicit consent and a configured service.':'За заштитена анализа е потребна изречна согласност и конфигуриран сервис.';return false;}
   var activeRequest = null;
   var activeWorking = null;
   function invalidateRequest(){
@@ -316,6 +319,7 @@
         save.addEventListener('click',function () {
           var revised = area.value.trim();
           if (!revised) { area.focus(); return; }
+          if(!privateReady())return;
           // Invalidate the in-flight response. An older response must not alter
           // the revised conversation, even if the server finishes later.
           invalidateRequest();
@@ -411,6 +415,10 @@
   }
 
   async function requestAnswer(question, signal) {
+    if(privateWorkspaceOnly()){
+      if(!privateWorkspace?.ready())throw Error('CONSENT_REQUIRED');
+      return privateWorkspace.analyze({question,history:history.slice(0,-1),signal});
+    }
     var lang = String(document.documentElement.lang || 'mk').toLowerCase().slice(0, 2) || 'mk';
     var payload = {
       message: question,
@@ -450,6 +458,7 @@
     var input = document.getElementById('wpaPublicVsInput');
     var question = input ? input.value.trim() : '';
     if (!question) return;
+    if(!privateReady())return;
     busy = true;
     var controller=new AbortController();
     activeRequest=controller;
@@ -481,7 +490,8 @@
     } catch (error) {
       if (myVersion !== requestVersion) return;
       if (working) working.remove();
-      addMessage(copy().error, 'bot', elapsedSeconds(startedAt));
+      var code=/^[A-Z0-9_]{1,80}$/.test(String(error?.message||''))?String(error.message):'';
+      addMessage(privateWorkspaceOnly()?((isEnglish()?'Protected analysis failed. No public fallback.':'Заштитената анализа не успеа. Нема пренасочување кон јавниот сервис.')+(code?' ['+code+']':'')):copy().error, 'bot', elapsedSeconds(startedAt));
       if (status) status.textContent = '';
     } finally {
       if (myVersion !== requestVersion) return;
@@ -556,16 +566,17 @@
       .catch(function(){ proactiveIntent=null; });
 
     // Progressive enhancement; existing chat and protocol planner are untouched.
-    import('/scripts/virtual-sande-public-voice.mjs?v=20261124-phase1')
+    if(!privateWorkspaceOnly())import('/scripts/virtual-sande-public-voice.mjs?v=20261124-phase1')
       .then(function(mod){publicVoice=mod.mountPublicVoice(panel);})
       .catch(function(){/* Keep baseline chat available if asset loading fails. */});
 
     // Local preview stays separate from the public AI transport. No file data
     // is passed to requestAnswer; users explicitly choose chat text themselves.
     import('/scripts/virtual-sande-local-preview.mjs?v=20261124-preview-v1')
-      .then(function(mod){mod.mountLocalPreview(panel);})
+      .then(function(mod){var preview=mod.mountLocalPreview(panel,{privateMode:privateWorkspaceOnly()});if(privateWorkspaceOnly())return import('/scripts/virtual-sande-multimodal-workspace.mjs?v=rc3').then(function(m){privateWorkspace=m.mountMultimodalWorkspace(panel,preview);});})
       .catch(function(){/* Existing public chat remains available. */});
 
+    panel.addEventListener('wpa-private-input-changed',function(){if(!privateWorkspaceOnly())return;if(busy){invalidateRequest();var s=document.getElementById('wpaPublicVsStatus');if(s)s.textContent=isEnglish()?'Stopped: private inputs changed.':'Запрено: приватните влезни податоци се изменети.';}});
     var expand=document.createElement('button');expand.type='button';expand.className='wpa-public-vs-expand';expand.textContent='⛶';
     expand.setAttribute('aria-label',isEnglish()?'Expand conversation':'Прошири разговор');expand.setAttribute('aria-pressed','false');
     panel.querySelector('.wpa-public-vs-close').before(expand);
@@ -582,6 +593,7 @@
     },'wpaPublicVsStop');
     stop.hidden=true;
     tool(isEnglish()?'Export chat':'Извези разговор',function(){
+      if(privateWorkspaceOnly()&&!window.confirm(isEnglish()?'Export this protected conversation to a local file?':'Да се извезе овој заштитен разговор во локална датотека?'))return;
       var content=history.map(function(x){return (x.role==='user'?'USER':'VIRTUAL SANDE')+'\n'+x.content;}).join('\n\n---\n\n');
       if(!content)return;
       var url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'}));

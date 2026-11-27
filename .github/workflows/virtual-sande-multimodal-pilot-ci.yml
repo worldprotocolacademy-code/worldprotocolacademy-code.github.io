@@ -1,0 +1,40 @@
+name: Virtual Sande Multimodal RC3 CI
+on:
+  pull_request:
+    paths:
+      - 'scripts/virtual-sande-*.mjs'
+      - 'scripts/virtual-sande-public-widget.js'
+      - 'scripts/build-virtual-sande-private-pilot.mjs'
+      - 'tools/virtual-sande/wpa-private-workspace-pilot.mjs'
+      - 'workers/virtual-sande-private-pilot/**'
+      - 'tests/virtual-sande-multimodal-pilot.test.mjs'
+      - '.github/workflows/virtual-sande-multimodal-pilot-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  protected-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and protected asset build
+        run: |
+          node --check scripts/virtual-sande-public-widget.js
+          node --check scripts/virtual-sande-multimodal-workspace.mjs
+          node --check scripts/virtual-sande-private-workspace-client.mjs
+          node --check tools/virtual-sande/wpa-private-workspace-pilot.mjs
+          node --check workers/virtual-sande-private-pilot/src/index.mjs
+          node scripts/build-virtual-sande-private-pilot.mjs
+      - name: Test authenticated contract with synthetic provider fixtures
+        run: node --test tests/virtual-sande-multimodal-pilot.test.mjs tests/virtual-sande-public-local-preview.test.mjs tests/virtual-sande-public-transport.test.mjs
+      - name: Public browser regression (mock providers)
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          test -n "$chrome"
+          CHROME_BIN="$chrome" node tests/virtual-sande-public-phase1-browser.mjs
