@@ -347,7 +347,7 @@
     addScript('wpa-public-virtual-sande-widget', '/scripts/virtual-sande-public-widget.js?v=20261124-practical-v1-phase1-preview1');
   }
   if (isHome()) addStylesheet('wpa-home-five-row-nav-css', '/styles/wpa-home-nav-five-rows.css?v=20260810-2');
-  if (isHome()) addScript('wpa-eu-factory-header-cta-runtime', '/scripts/wpa-eu-factory-header-cta.js?v=20261115-1');
+  if (isHome()) addScript('wpa-eu-factory-header-cta-runtime', '/scripts/wpa-eu-factory-header-cta.js?v=20261127-owner-gateway-1');
   if (isPublicSquare()) addScript('wpa-public-square-runtime', '/scripts/wpa-public-square-runtime.js?v=20260827-1');
   addStylesheet('wpa-pilot20-badge-css', '/styles/wpa-pilot20-badge.css?v=20260714-3');
   addScript('wpa-professional-contacts-runtime', '/scripts/wpa-professional-contacts.js?v=20261029-1');

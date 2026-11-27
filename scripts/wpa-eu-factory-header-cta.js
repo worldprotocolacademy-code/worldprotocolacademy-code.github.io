@@ -1,17 +1,17 @@
-/* WPA EU Application Factory header CTA v1.0 · 2026-11-15
+/* WPA EU Application Factory header CTA v1.1 · 2026-11-27
    Scope: WPA home only. Progressive enhancement; no navigation is removed.
-   The linked workbench remains a governed pilot; no automatic grant submission. */
+   The public CTA enters the Owner Gateway at its root. Authentication is server-side; no direct workspace navigation. */
 (function () {
   'use strict';
 
   if (window.WPA_EU_GRANT_CTA_LOADED) return;
   window.WPA_EU_GRANT_CTA_LOADED = true;
 
-  var href = '/tools/eu-application-factory.html#idea';
+  var href = 'https://wpa-identity-gateway.worldprotocolacademy.workers.dev/';
   var copies = [
-    ['mk', 'Внеси проект → Најди грант'],
-    ['en', 'Enter a project → Find a grant'],
-    ['fr', 'Présenter un projet → Trouver un financement']
+    ['mk', 'Внеси проект → Најава'],
+    ['en', 'Enter a project → Sign in'],
+    ['fr', 'Présenter un projet → Connexion']
   ];
 
   function isHome() {
@@ -53,6 +53,7 @@
     a.id = id;
     a.className = 'wpa-eu-grant-cta ' + extraClass;
     a.href = href;
+    a.rel = 'noopener noreferrer';
     a.setAttribute('translate', 'no');
     a.setAttribute('data-no-i18n', 'true');
     copies.forEach(function (copy) {
