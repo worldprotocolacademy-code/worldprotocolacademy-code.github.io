@@ -1,0 +1,63 @@
+name: WPA NEWS edition watchdog (best-effort)
+on:
+  schedule:
+    # Best-effort retries bracketing 09:00 Europe/Skopje in CET/CEST.
+    # GitHub cron is NOT punctual. Use an external authenticated scheduler for a real 09:00 SLA.
+    - cron: '10 7 * * *'
+    - cron: '10 8 * * *'
+    - cron: '10 9 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [wpa-news-watchdog]
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+concurrency:
+  group: wpa-news-edition-watchdog
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Fetch open PRs (fail closed on GitHub API outage)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+            --json number,title,headRefName > "$RUNNER_TEMP/wpa-news-open-prs.json"
+      - name: Assess current Skopje edition
+        id: check
+        run: |
+          python scripts/wpa_news_watchdog.py \
+            --status media/news/production/status.json \
+            --open-prs-json "$RUNNER_TEMP/wpa-news-open-prs.json" \
+            --github-output "$GITHUB_OUTPUT" \
+            --github-summary "$GITHUB_STEP_SUMMARY"
+      - name: Create one actionable GitHub alert for a missing or unapproved edition
+        if: ${{ steps.check.outputs.alert == 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EDITION_DATE: ${{ steps.check.outputs.today }}
+          EDITION_STATE: ${{ steps.check.outputs.state }}
+        run: |
+          set -euo pipefail
+          title="[WPA NEWS] ${EDITION_DATE} missing public edition"
+          gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json title \
+            > "$RUNNER_TEMP/wpa-news-open-issues.json"
+          existing="$(jq --arg title "$title" '[.[] | select(.title == $title)] | length' \
+            "$RUNNER_TEMP/wpa-news-open-issues.json")"
+          if [[ "$existing" == "0" ]]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+              --body "Automated best-effort watchdog at/after 09:00 Europe/Skopje. State: ${EDITION_STATE}. Check the WPA Media Programmes Production run and whether a draft PR awaits Human Gate. Do not bypass editorial QA. This issue reports a missing public edition, not proof of a provider outage."
+          else
+            echo "Alert issue already open: $title"
+          fi
+          echo "::warning title=WPA NEWS alert::${EDITION_DATE} ${EDITION_STATE}; review the GitHub Issue"

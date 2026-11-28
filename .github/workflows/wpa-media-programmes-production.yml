@@ -2,8 +2,8 @@ name: WPA Media Programmes Production
 
 on:
   schedule:
-    # Run both UTC candidates and keep only the one that lands at 06:45 Europe/Skopje.
-    # This preserves the 07:00 local target across CET/CEST.
+    # GitHub schedules may start many hours late; the daily mode is gated by Skopje DATE, not hour.
+    # Candidate UTC slots remain as best-effort fallback across CET/CEST.
     - cron: '45 4 * * *'
     - cron: '45 5 * * *'
     - cron: '15 5 * * 0'
@@ -16,6 +16,10 @@ on:
       - 'media/data/programmes.json'
       - 'media/data/presenters.json'
       - '.github/workflows/wpa-media-programmes-production.yml'
+      - '.github/workflows/wpa-news-watchdog.yml'
+      - 'scripts/wpa_news_*.py'
+      - 'tests/test_wpa_news_*.py'
+      - 'ops/wpa-news-cloudflare/**'
       - 'tools/data/daily-protocol-minute-30-days.json'
       - 'scripts/generate_wpa_institute_daily.py'
   workflow_dispatch:
@@ -67,6 +71,9 @@ jobs:
             --output-dir .wpa-media-selftest/web
           test -s .wpa-media-selftest/web/status.json
           test -s .wpa-media-selftest/web/teleprompter.md
+          python -m unittest discover -s tests -p 'test_wpa_news_*.py' -v
+          node --check media/news/app.js
+          node --test ops/wpa-news-cloudflare/test-cron-worker.mjs ops/wpa-news-cloudflare/test-news-web-ui.mjs
 
   produce:
     if: ${{ github.event_name != 'pull_request' }}
@@ -82,23 +89,40 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Edition date (Europe/Skopje)
+        id: edition_date
+        shell: bash
+        run: echo "today=$(TZ=Europe/Skopje date +%F)" >> "$GITHUB_OUTPUT"
+
       - name: Choose production mode
         id: mode
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_MODE: ${{ inputs.mode }}
+          SCHEDULE_CRON: ${{ github.event.schedule }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "value=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event.schedule }}" = "15 5 * * 0" ]; then
+          if [[ "$SCHEDULE_CRON" == "15 5 * * 0" ]] || \
+             [[ "$EVENT_NAME" == "workflow_dispatch" && "$DISPATCH_MODE" == "weekly" ]]; then
             echo "value=weekly" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "push" ]; then
-            echo "value=all" >> "$GITHUB_OUTPUT"
           else
-            local_hour="$(TZ=Europe/Skopje date +%H)"
-            if [ "$local_hour" = "06" ]; then
-              echo "value=daily" >> "$GITHUB_OUTPUT"
-            else
-              echo "value=skip" >> "$GITHUB_OUTPUT"
+            # Scheduled AND external workflow_dispatch runs share the same date/PR guard.
+            needed="daily"
+            existing="skip"
+            if [[ "$EVENT_NAME" == "push" ]] || [[ "$DISPATCH_MODE" == "all" ]]; then
+              needed="all"
+              existing="weekly"
             fi
+            # Fail closed if GitHub cannot list pending PRs.
+            gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 \
+              --json number,title,headRefName > "$RUNNER_TEMP/wpa-news-open-prs.json"
+            python scripts/wpa_news_schedule_gate.py \
+              --status media/news/production/status.json \
+              --open-prs-json "$RUNNER_TEMP/wpa-news-open-prs.json" \
+              --when-needed "$needed" --when-existing "$existing" \
+              --github-output "$GITHUB_OUTPUT" \
+              --github-summary "$GITHUB_STEP_SUMMARY"
           fi
 
       - name: Generate production pack
@@ -139,8 +163,15 @@ jobs:
           print("WPA MEDIA PRODUCTION BOUNDARY GATE PASS")
           PY
 
+      - name: Editorial quality gate (fail closed; human review still required)
+        if: ${{ steps.mode.outputs.value == 'daily' || steps.mode.outputs.value == 'all' }}
+        run: |
+          python scripts/wpa_news_editorial_qc.py \
+            --pack media/news/production/latest.json \
+            --report wpa-media-output/daily/editorial-qa.json
+
       - name: Archive ready-to-record / episode-master package
-        if: ${{ steps.mode.outputs.value != 'skip' }}
+        if: ${{ always() && steps.mode.outputs.value != 'skip' }}
         uses: actions/upload-artifact@v4
         with:
           name: wpa-media-${{ steps.mode.outputs.value }}-${{ github.run_number }}
@@ -155,15 +186,23 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.WPA_AUTOMATION_TOKEN || github.token }}
           PUBLISH_BRANCH_PREFIX: wpa-news-daily
-          PUBLISH_TITLE: WPA NEWS daily Human-Gate production pack
+          PUBLISH_TITLE: WPA NEWS daily ${{ steps.edition_date.outputs.today }} Human-Gate production pack
+          PUBLISH_HUMAN_GATE_ONLY: "true"
           PUBLISH_BODY: Daily WPA NEWS production pack generated from fresh public-source inputs. The web bundle contains the teleprompter, transcript, captions, shorts, description, social copy and provenance manifest. No voice/avatar render or external social/video publication is claimed. Merge remains the Human Gate.
           PUBLISH_FILES: media/news/production/latest.json media/news/production/status.json media/news/production/teleprompter.md media/news/production/transcript.md media/news/production/captions.vtt media/news/production/shorts.json media/news/production/video-description.md media/news/production/social-copy.md
           PUBLISH_GIT_NAME: wpa-news-production-bot
         run: bash scripts/publish_protected_main.sh
 
       - name: Release boundary
+        env:
+          PROD_MODE: ${{ steps.mode.outputs.value }}
+          PROD_REASON: ${{ steps.mode.outputs.reason }}
         run: |
-          echo "Production pack generated and archived."
+          if [[ "$PROD_MODE" == "skip" ]]; then
+            echo "::notice title=WPA NEWS no new edition::Skipped generation; reason=${PROD_REASON:-already exists}."
+          else
+            echo "Production draft generated and archived. Mode: $PROD_MODE."
+          fi
           echo "No external social/video publication was attempted."
-          echo "Voice/avatar rendering remains dependent on approved canonical assets and production adapters."
-          echo "Human Gate remains required before recording/rendering release and platform delivery."
+          echo "Green workflow status is not proof of publication; Human Gate remains mandatory."
+          echo "Voice/avatar rendering requires approved canonical assets and separate adapters."
