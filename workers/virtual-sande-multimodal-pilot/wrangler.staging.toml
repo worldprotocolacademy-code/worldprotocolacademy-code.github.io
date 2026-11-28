@@ -1,0 +1,20 @@
+# PRIVATE STAGING ONLY. Strictly no model calls or public integration at this stage.
+# Distinct Worker from the deployed canonical academic /ask endpoint and from
+# the future public agent pilot. NO paid credentials in this file.
+name = "wpa-virtual-sande-agent-private-staging"
+main = "src/index.mjs"
+compatibility_date = "2026-11-24"
+workers_dev = true
+preview_urls = false
+
+[vars]
+WPA_AGENT_STAGING_ONLY = "true"
+WPA_AGENT_ENABLED = "false"
+WPA_AGENT_MODEL = "gpt-6.1-terra"
+WPA_AGENT_TURNSTILE_SITE_KEY = ""
+ALLOWED_ORIGINS = "https://worldprotocolacademy.mk,https://www.worldprotocolacademy.mk"
+
+# Required secret to access even /agent/capabilities:
+# WPA_AGENT_STAGING_TOKEN. Set privately in staging Worker.
+# No OPENAI_API_KEY, Turnstile secret or rate limiter is included at this phase.
+# Enabling paid AI would require a separate reviewed release and global cost cap.

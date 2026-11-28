@@ -1,0 +1,42 @@
+name: Virtual Sande S0 — PRIVATE staging code + dry-run check
+on:
+  pull_request:
+    paths:
+      - 'workers/virtual-sande-multimodal-pilot/src/**'
+      - 'workers/virtual-sande-multimodal-pilot/wrangler.staging.toml'
+      - 'tests/virtual-sande-private-staging.test.mjs'
+      - 'scripts/verify-virtual-sande-disabled-staging.mjs'
+      - '.github/workflows/virtual-sande-private-staging-*.yml'
+      - 'docs/virtual-sande-private-staging-S0-20261124.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guard-and-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Staging auth and safety contracts
+        run: |
+          set -euo pipefail
+          node --check workers/virtual-sande-multimodal-pilot/src/index.mjs
+          node --check workers/virtual-sande-multimodal-pilot/src/agent-gateway.mjs
+          node --check scripts/verify-virtual-sande-disabled-staging.mjs
+          node --test tests/virtual-sande-private-staging.test.mjs
+          cmp workers/virtual-sande-v35.1-production/src/index.mjs workers/virtual-sande-v35.1-staging/src/index.mjs
+      - name: Cloudflare Worker bundle validation without credentials or deployment
+        run: npx --yes wrangler@4 deploy --dry-run --config workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+      - name: Verify disabled-only staging configuration
+        run: |
+          set -euo pipefail
+          grep -F 'name = "wpa-virtual-sande-agent-private-staging"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_STAGING_ONLY = "true"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          grep -F 'WPA_AGENT_ENABLED = "false"' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          ! grep -E '^OPENAI_API_KEY[[:space:]]*=|^WPA_AGENT_STAGING_TOKEN[[:space:]]*=' workers/virtual-sande-multimodal-pilot/wrangler.staging.toml
+          echo "PASS: S0 code stage only; canonical /ask unchanged; no paid API enabled"
